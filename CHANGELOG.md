@@ -6,6 +6,7 @@
 * #35202 Bugfix: Markiere Tage als nicht buchbar, wenn für den Slot-Typ die Anzahl der insgesamt verfügbaren Termine null ist
 * #35182 Bugfix: JSON-Serialisierung von Listen aus Entity-Objekten korrgiert
 * #35250 Bugfix: E-Mails werden auch erstellt, wenn zusätzliche Daten wie Zahlungsinformationen fehlen
+* #35007 Bugfix: Einstellungen von der Behörde für den Kiosk bereitstellen, wenn kein Login vorliegt
 
 ## v2.19.00
 

@@ -154,6 +154,9 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
         $entity = clone $this;
         if (isset($entity['preferences'])) {
             unset($entity['preferences']);
+            $entity['preferences'] = [];
+            $entity['preferences']['notifications'] = [];
+            $entity['preferences']['notifications']['enabled'] = $this['preferences']['notifications']['enabled'];
         }
         if (isset($entity['email'])) {
             unset($entity['email']);
