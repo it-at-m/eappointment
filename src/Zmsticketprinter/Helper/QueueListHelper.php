@@ -40,12 +40,12 @@ class QueueListHelper
     protected static function createFullList($scope)
     {
         $fullList = \App::$http->readGetResult('/scope/'. $scope->getId() . '/queue/')->getCollection();
-        return ($fullList->count()) ? $fullList : new QueueList();
+        return ($fullList) ? $fullList : new QueueList();
     }
 
     protected static function createQueueList($scope, $dateTime)
     {
-        return (static::$fullList->count()) ?
+        return (static::$fullList) ?
             static::$fullList
                 ->withStatus(self::$status)
                 ->withEstimatedWaitingTime(
