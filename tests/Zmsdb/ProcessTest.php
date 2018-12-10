@@ -151,6 +151,17 @@ class ProcessTest extends Base
         $query->updateEntity($process, $now);
     }
 
+    public function testUpdateWithNewProcessId()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $input = $this->getTestProcessEntity();
+        $process = (new ProcessStatusFree())->writeEntityReserved($input, $now);
+        $processOld = clone $process;
+        $processNew = (new Query())->updateWithNewProcessId($processOld, $now);
+        $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
+        $this->assertFalse($process->getId() === $processNew->getId());
+    }
+
     public function testUpdateProcessWithStatusProcessing()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");

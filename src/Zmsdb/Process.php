@@ -100,6 +100,18 @@ class Process extends Base implements Interfaces\ResolveReferences
     }
 
     /**
+     * update an old process with new id and keep appointment data
+     *
+     */
+    public function updateWithNewProcessId(
+        \BO\Zmsentities\Process $process,
+        \DateTimeInterface $dateTime
+    ) {
+        $processNew = $this->writeNewProcess($process, $dateTime);
+        return $processNew;
+    }
+
+    /**
      * write a new process to DB
      *
      */
