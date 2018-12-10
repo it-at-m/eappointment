@@ -60,6 +60,7 @@ class Slot extends Base
         if ($scope->preferences['appointment']['startInDaysDefault'] != $startInDaysDefault
             || $scope->preferences['appointment']['endInDaysDefault'] != $endInDaysDefault
         ) {
+            (new Scope())->replacePreferences($scope); //TODO remove after ZMS1 is deactivated
             return true;
         }
         $startInDaysChange = (new Preferences())

@@ -7,6 +7,7 @@
 * Bugfix: Statistik-Daten für Überbuchungen reduzieren jetzt die Daten auf freie Slots
 * #35255 Bugfix: Cluster-Standorte werden beim Löschen eines Clusters nun auch aus der Cluster-Zuordnung entfernt
 * #34134 Bugfix: Öffnungszeiten für Spontankunden werden nicht mehr temporär reserviert beim Aufruf der Öffnungszeiten-Liste
+* #35214 Bugfix: Änderungen an Buchungszeitraum-Einstellungen im Standort auch Aktualisieren, wenn ZMS1 verwendet wurde
 
 ## v2.19.00
 
