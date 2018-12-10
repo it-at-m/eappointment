@@ -24,7 +24,6 @@ class DepartmentAddScope extends Scope
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $currentSource = $this->readCurrentSource($workstation->getScope()->getSource());
         $departmentId = Validator::value($args['id'])->isNumber()->getValue();
         $department = \App::$http
             ->readGetResult('/department/'. $departmentId .'/', ['resolveReferences' => 0])->getEntity();
@@ -51,9 +50,7 @@ class DepartmentAddScope extends Scope
             'organisation' => $organisation,
             'department' => $department,
             'sourceList' => $sourceList,
-            'source' => $currentSource,
             'exception' => (isset($result)) ? $result : null,
-            //'provider' => $workstation->getScope()->provider,
             'providerList' => $providerList
         ));
     }

@@ -58,8 +58,12 @@ class SourceSelectView extends Component {
             }
         }
 
-        const providerExists = () => {
+        const hasProvider = () => {
             return (this.props.scopestate.provider && this.props.scopestate.provider.id) ? true : false;
+        }
+
+        const hasSource = () => {
+            return (this.props.scopestate.source && this.props.scopestate.source.source) ? true : false;
         }
 
         return (
@@ -75,7 +79,7 @@ class SourceSelectView extends Component {
                         />
                         <Inputs.Controls>
                             <Inputs.Select
-                                value={this.props.scopestate.source.source}
+                                value={(hasSource()) ? this.props.scopestate.source.source : 0}
                                 name="provider[source]"
                                 options={sourceOptions}
                                 onChange={onChangeSource}
@@ -91,7 +95,8 @@ class SourceSelectView extends Component {
                         />
                         <Inputs.Controls>
                             <Inputs.Select
-                                value={(providerExists()) ? this.props.scopestate.provider.id : 0}
+                                attributes={(!hasSource()) ? { "disabled": true } : null}
+                                value={(hasProvider()) ? this.props.scopestate.provider.id : 0}
                                 name="provider[id]"
                                 groups={providerGroups}
                                 onChange={onChangeProvider}
@@ -108,12 +113,12 @@ class SourceSelectView extends Component {
                             <Inputs.Text
                                 attributes={{ "readOnly": true, "maxLength": 40 }}
                                 name="contact[name]"
-                                value={(providerExists()) ? this.props.scopestate.provider.contact.name : this.props.labels.notDeclared}
+                                value={(hasProvider()) ? this.props.scopestate.provider.contact.name : this.props.labels.notDeclared}
                             />
                         </Inputs.Controls>
                         <Inputs.Hidden
                             name="provider[name]"
-                            value={(providerExists()) ? this.props.scopestate.provider.name : this.props.labels.notDeclared}
+                            value={(hasProvider()) ? this.props.scopestate.provider.name : this.props.labels.notDeclared}
                         />
                     </Inputs.FormGroup>
                 </div>
@@ -126,7 +131,7 @@ class SourceSelectView extends Component {
                             <Inputs.Text
                                 attributes={{ "readOnly": true, "maxLength": 70 }}
                                 name="contact[street]"
-                                value={(providerExists()) ? this.props.scopestate.provider.contact.street + " " + this.props.scopestate.provider.contact.streetNumber : this.props.labels.notDeclared}
+                                value={(hasProvider()) ? this.props.scopestate.provider.contact.street + " " + this.props.scopestate.provider.contact.streetNumber : this.props.labels.notDeclared}
                             />
                         </Inputs.Controls>
                     </Inputs.FormGroup>
