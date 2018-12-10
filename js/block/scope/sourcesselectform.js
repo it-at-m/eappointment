@@ -58,6 +58,10 @@ class SourceSelectView extends Component {
             }
         }
 
+        const providerExists = () => {
+            return (this.props.scopestate.provider && this.props.scopestate.provider.id) ? true : false;
+        }
+
         return (
             <fieldset>
                 <div>
@@ -87,7 +91,7 @@ class SourceSelectView extends Component {
                         />
                         <Inputs.Controls>
                             <Inputs.Select
-                                value={this.props.scopestate.provider.id}
+                                value={(providerExists()) ? this.props.scopestate.provider.id : 0}
                                 name="provider[id]"
                                 groups={providerGroups}
                                 onChange={onChangeProvider}
@@ -104,12 +108,12 @@ class SourceSelectView extends Component {
                             <Inputs.Text
                                 attributes={{ "readOnly": true, "maxLength": 40 }}
                                 name="contact[name]"
-                                value={(this.props.scopestate.provider.contact.name) ? this.props.scopestate.provider.contact.name : this.props.labels.notDeclared}
+                                value={(providerExists()) ? this.props.scopestate.provider.contact.name : this.props.labels.notDeclared}
                             />
                         </Inputs.Controls>
                         <Inputs.Hidden
                             name="provider[name]"
-                            value={(this.props.scopestate.provider.name) ? this.props.scopestate.provider.name : this.props.labels.notDeclared}
+                            value={(providerExists()) ? this.props.scopestate.provider.name : this.props.labels.notDeclared}
                         />
                     </Inputs.FormGroup>
                 </div>
@@ -122,7 +126,7 @@ class SourceSelectView extends Component {
                             <Inputs.Text
                                 attributes={{ "readOnly": true, "maxLength": 70 }}
                                 name="contact[street]"
-                                value={(this.props.scopestate.provider.contact.street) ? this.props.scopestate.provider.contact.street + " " + this.props.scopestate.provider.contact.streetNumber : this.props.labels.notDeclared}
+                                value={(providerExists()) ? this.props.scopestate.provider.contact.street + " " + this.props.scopestate.provider.contact.streetNumber : this.props.labels.notDeclared}
                             />
                         </Inputs.Controls>
                     </Inputs.FormGroup>

@@ -53,7 +53,7 @@ class DepartmentAddScope extends Scope
             'sourceList' => $sourceList,
             'source' => $currentSource,
             'exception' => (isset($result)) ? $result : null,
-            'provider' => $workstation->getScope()->provider,
+            //'provider' => $workstation->getScope()->provider,
             'providerList' => $providerList
         ));
     }
