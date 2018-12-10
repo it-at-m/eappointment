@@ -13,7 +13,8 @@ class ExchangeRequestdepartment extends Base
 
     const QUERY_READ_REPORT = '
     SELECT
-        d.BehoerdenID as subjectid,
+        d.BehoerdenID as departmentid,
+        statistikJoin.`organisationsid` as organisationid,
         DATE_FORMAT(statistikJoin.`datum`, :groupby) as date,
         (
             CASE
@@ -28,6 +29,7 @@ class ExchangeRequestdepartment extends Base
           SELECT
             s.anliegenid,
             s.behoerdenid,
+            s.organisationsid,
         COUNT(s.anliegenid) as requestscount,
         s.`datum`
       FROM '. self::TABLE .' s
