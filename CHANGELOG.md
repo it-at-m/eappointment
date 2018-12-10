@@ -2,6 +2,7 @@
 
 * #35228 Security: event-stream Version angepasst
 * #31328 Bugfix: Korrektur der Anzahl der Wartenden
+* #35007 Bugfix: SMS-Nachtrag nur erlauben wenn SMS in der Behörde aktiviert ist
 
 ## v2.19.00
 

@@ -8,8 +8,6 @@
 
 <div class="boxontop">
 	{{ block("print") }}
-	<div data-scope={{ process.scope.preferences.ticketprinter.notificationsEnabled|json_encode() }}></div>
-	<div data-dept={{ department.preferences.notifications.enabled|json_encode() }}></div>
 	<div class="noprint">
 		<span class="msg_wartenummer_lautet">
 		    {% trans %}Ihre Wartenummer lautet{% endtrans %}: <br>
