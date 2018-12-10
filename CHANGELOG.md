@@ -7,6 +7,7 @@
 * #31586 Bugfix: Datumsformat in der Erinnerungsmail angepasst
 * #34134 Anpassung des Apiabrufs für Öffnungszeiten per Standort - Parameter reserveEntityIds entfernt
 * #34134 Route /scope/{id}/conflict/ holt Konflikte für einen Standort nach angegebenem Zeitraum
+* #35311 Bugfix: Sessions immer vom schreibenen Datenbank-Host lesen um Synchronisationsprobleme zu umgehen
 
 ## v2.19.00
 
