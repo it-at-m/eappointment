@@ -9,7 +9,9 @@
 * #31586 Bugfix: Versende Mails beim Löschen durch den Tresen
 * #35213 Ergänzung fehlender Information in der Exception
 * #35228 Security: event-stream Version angepasst
-* #33497 Optimizierung von Öfnunngszeiten Abfragen nach Zeitraum Tag/Monat
+* #34875 Nicht benötigte Meldung zu Bearbeitungsrechten entfernt sowie Meldung mindestens 30 Sekunden einblenden
+* #35255 Bugfix: Cluster können wieder hinzugefügt werden
+* #33497 Bugfix: Optimierung der Abfrage bei zu vielen Öffnungszeiten durch einen Filter nach einem Zeitraum
 * #34134 Bugfix: Markierung (grün) für Spontankunden in Öffnungszeiten-Monatsansicht korrigiert
 * #34134 Bugfix: Markierung (rot) für Konflikte nun in Öffnungszeiten-Monats- und Tagesansicht gleich
 * Rechtschreibung: Fehlermeldungen zum Löschen von Standorten, Behörden und Organisationen korrigiert
