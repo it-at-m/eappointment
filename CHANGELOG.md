@@ -13,6 +13,7 @@
 * #34134 Bugfix: Markierung (grün) für Spontankunden in Öffnungszeiten-Monatsansicht korrigiert
 * #34134 Bugfix: Markierung (rot) für Konflikte nun in Öffnungszeiten-Monats- und Tagesansicht gleich
 * Rechtschreibung: Fehlermeldungen zum Löschen von Standorten, Behörden und Organisationen korrigiert
+* #35274 Bugfix: Beim Anlegen eines Standortes wird keine Vorauswahl mehr getroffen
 
 ## v2.19.00
 
