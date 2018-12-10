@@ -22,7 +22,9 @@ class ExchangeRequestscope extends Base
         $entity = new Exchange();
         $entity['title'] = "Dienstleistungsstatistik " . $scope->contact->name . " " . $scope->shortName;
         $entity->setPeriod($datestart, $dateend, $period);
-        $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope', 'scope.id');
+        $entity->addDictionaryEntry('scopeid', 'string', 'ID of a scope', 'scope.id');
+        $entity->addDictionaryEntry('departmentid', 'string', 'ID of a department', '');
+        $entity->addDictionaryEntry('organisationid', 'string', 'ID of an organisation', '');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
         $entity->addDictionaryEntry('name', 'string', 'Name of request');
         $entity->addDictionaryEntry('requestscount', 'number', 'Amount of requests');

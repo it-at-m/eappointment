@@ -23,7 +23,8 @@ class ExchangeRequestdepartment extends Base
         $entity = new Exchange();
         $entity['title'] = "Dienstleistungsstatistik $organisation->name -> $department->name";
         $entity->setPeriod($datestart, $dateend, $period);
-        $entity->addDictionaryEntry('subjectid', 'string', 'ID of a department', 'department.id');
+        $entity->addDictionaryEntry('departmentid', 'string', 'ID of a department', 'department.id');
+        $entity->addDictionaryEntry('organisationid', 'string', 'ID of an organisation', '');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
         $entity->addDictionaryEntry('name', 'string', 'Name of request');
         $entity->addDictionaryEntry('requestscount', 'number', 'Amount of requests');

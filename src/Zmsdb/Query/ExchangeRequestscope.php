@@ -13,15 +13,17 @@ class ExchangeRequestscope extends Base
 
     const QUERY_READ_REPORT = '
     SELECT
-        s.`standortid` as subjectid,
+        s.`standortid` as scopeid,
+        s.`behoerdenid` as departmentid,
+        s.`organisationsid` as organisationid,
         DATE_FORMAT(s.`datum`, :groupby) as date,
         (
-        	CASE
+            CASE
               WHEN s.anliegenid = -1 THEN "Dienstleistung wurde nicht erfasst"
-				      WHEN s.anliegenid = 0 THEN "Dienstleistung konnte nicht erbracht werden"
-				      ELSE r.name
-			    END
-		    ) as name,
+                      WHEN s.anliegenid = 0 THEN "Dienstleistung konnte nicht erbracht werden"
+                      ELSE r.name
+                END
+            ) as name,
         COUNT(s.anliegenid) as requestscount
     FROM '. self::TABLE .' AS s
         LEFT JOIN '. self::REQUESTTABLE .' as r ON r.id = s.anliegenid
