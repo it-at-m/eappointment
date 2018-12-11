@@ -16,6 +16,7 @@
 * #34134 Bugfix: Markierung (rot) für Konflikte nun in Öffnungszeiten-Monats- und Tagesansicht gleich
 * Rechtschreibung: Fehlermeldungen zum Löschen von Standorten, Behörden und Organisationen korrigiert
 * #35274 Bugfix: Beim Anlegen eines Standortes wird keine Vorauswahl mehr getroffen
+* #35334 Bugfix: Fehlerhafte Parameter im Wochenkalender und in der Kundensuche korrigiert
 
 ## v2.19.00
 
