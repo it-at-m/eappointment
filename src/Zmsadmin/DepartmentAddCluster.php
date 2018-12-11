@@ -6,13 +6,9 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Scope as Entity;
+use BO\Zmsentities\Cluster as Entity;
 use BO\Mellon\Validator;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class DepartmentAddCluster extends BaseController
 {
     /**
@@ -32,6 +28,7 @@ class DepartmentAddCluster extends BaseController
 
         if (is_array($input) && array_key_exists('save', $input)) {
             $entity = (new Entity($input))->withCleanedUpFormData();
+            $entity->scopes = (new \BO\Zmsentities\Collection\ScopeList($entity->scopes))->withUniqueScopes();
             $entity = \App::$http
                 ->readPostResult('/department/'. $department->id .'/cluster/', $entity)
                 ->getEntity();
