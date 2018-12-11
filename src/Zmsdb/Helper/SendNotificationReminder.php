@@ -10,9 +10,13 @@ class SendNotificationReminder
 
     protected $verbose = false;
 
-    public function __construct($verbose = false)
+    public function __construct($verbose = false, \DateTimeInterface $now = null)
     {
-        $this->dateTime = (new \DateTimeImmutable());
+        if (!$now) {
+            $now = new \DateTimeImmutable();
+        } else {
+            $this->dateTime = $now;
+        }
         if ($verbose) {
             error_log("INFO: Send notification reminder dependent on lead time");
             $this->verbose = true;
