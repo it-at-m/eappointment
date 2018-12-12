@@ -10,6 +10,11 @@
     "data": {
         "$schema": "https://schema.berlin.de/queuemanagement/department.json",
         "id": "127",
-        "name": "Ordnungsamt"
+        "name": "Ordnungsamt",
+        "preferences": {
+            "notifications": {
+                "enabled": true
+            }
+        }
     }
 }
