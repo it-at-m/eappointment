@@ -1,6 +1,9 @@
-## v2.19.01
+## v2.19.02
 
 * #31487 Bugfix: Array Merge geändert damit Daten vom Terminvereinbarungsformular nicht mehr überschrieben werden von input Daten 
+
+## v2.19.01
+
 * #35273 Bugfix: Falsche Fehlermeldung im Tresen korrigiert, wenn bei Standorten keine Dienstleistungen vorhanden sind
 * #35252 Bugfix: Anzahl der Arbeitsplätze bei Spontankunden im Öffnungszeitenformular ausblenden
 * Bugfix: Standort-Admin mit Auswahl der Quelle für die Dienstleister-Liste
