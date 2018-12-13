@@ -1,22 +1,16 @@
 <?php
 /**
- * @package   BO Slim
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
 namespace BO\Dldb;
 
 /**
-  * Extension for Twig and Slim
+  * Extension for Twig
   *
   */
-class TwigExtension extends \BO\Slim\TwigExtension
+class TwigExtension extends \Twig_Extension
 {
-
-    public function __construct($container)
-    {
-        parent::__construct($container);
-    }
 
     public function getName()
     {
@@ -27,6 +21,7 @@ class TwigExtension extends \BO\Slim\TwigExtension
     {
         return array(
             new \Twig_SimpleFunction('convertOpeningTimes', array($this, 'convertOpeningTimes')),
+            new \Twig_SimpleFunction('csvProperty', array($this, 'csvProperty')),
             new \Twig_SimpleFunction('csvAppointmentLocations', array($this, 'csvAppointmentLocations')),
             new \Twig_SimpleFunction('getAppointmentForService', array($this, 'getAppointmentForService')),
             new \Twig_SimpleFunction('isAppointmentBookable', array($this, 'isAppointmentBookable')),
@@ -35,6 +30,7 @@ class TwigExtension extends \BO\Slim\TwigExtension
             new \Twig_SimpleFunction('dateToTS', array($this, 'dateToTS')),
             new \Twig_SimpleFunction('tsToDate', array($this, 'tsToDate')),
             new \Twig_SimpleFunction('dayIsBookable', array($this, 'dayIsBookable')),
+            new \Twig_SimpleFunction('azPrefixList', array($this, 'azPrefixList')),
         );
     }
 
@@ -92,6 +88,37 @@ class TwigExtension extends \BO\Slim\TwigExtension
             $result = 'subscribecash';
         }
         return $result;
+    }
+
+    public function azPrefixList($list, $property)
+    {
+        $azList = array();
+        foreach ((array)$list as $item) {
+            if (!is_scalar($item) && array_key_exists($property, $item)) {
+                $currentPrefix = self::sortFirstChar($item[$property]);
+                if (!array_key_exists($currentPrefix, $azList)) {
+                    $azList[$currentPrefix] = array(
+                        'prefix' => $currentPrefix,
+                        'sublist' => array(),
+                    );
+                }
+                $azList[$currentPrefix]['sublist'][] = $item;
+                uasort($azList[$currentPrefix]['sublist'], array($this,'sortByName'));
+                ksort($azList);
+            }
+        }
+        return $azList;
+    }
+
+    public function csvProperty($list, $property)
+    {
+        $propertylist = array();
+        foreach ($list as $item) {
+            if (!is_scalar($item) && array_key_exists($property, $item)) {
+                $propertylist[] = $item[$property];
+            }
+        }
+        return implode(',', array_unique($propertylist));
     }
 
     public function csvAppointmentLocations($list, $service_id = '')
