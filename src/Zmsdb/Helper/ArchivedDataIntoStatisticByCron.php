@@ -58,7 +58,7 @@ class ArchivedDataIntoStatisticByCron
             $archived = $this->query->writeArchivedProcessToStatistic(
                 $process,
                 $request->getId(),
-                $cluster->getId(),
+                $cluster ? $cluster->getId() : 0,
                 $scope->getProviderId(),
                 $department->getId(),
                 $organisation->getId(),
