@@ -1,6 +1,6 @@
 ## v2.19.02
 
-* #31487 Bugfix: Array Merge geändert damit Daten vom Terminvereinbarungsformular nicht mehr überschrieben werden von input Daten 
+* #31487 Bugfix: Funktionen, um einen Termin zu archivieren, wurden überarbeitet und die Kundebefragung sollte wieder funktionieren
 
 ## v2.19.01
 
