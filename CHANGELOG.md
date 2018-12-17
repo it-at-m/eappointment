@@ -1,3 +1,7 @@
+## v2.19.02
+
+* #31487 Bugfix: Abbruch der Archivierung bei fehlendem Cluster behoben
+
 ## v2.19.01
 
 * #35275 Bugfix: Fehlerhafte Aktivierung der SMS in neuangelegte Behörden behoben
