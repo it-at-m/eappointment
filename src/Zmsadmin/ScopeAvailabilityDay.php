@@ -44,18 +44,12 @@ class ScopeAvailabilityDay extends BaseController
                 ->getCollection();
         if (!$processList) {
             $processList = new \BO\Zmsentities\Collection\ProcessList();
-            }
+        }
         $processConflictList = \App::$http
             ->readGetResult('/scope/' . $scope->getId() . '/conflict/', [
                 'startDate' => $dateTime->format('Y-m-d'),
             ])
             ->getCollection();
-        $processList = ($processList) ? $processList : new \BO\Zmsentities\Collection\ProcessList();
-        $conflicts = $availabilityList->getConflicts($dateTime, $dateTime);
-        if ($processList) {
-            $conflicts->addList($processList->withOutAvailability($availabilityList));
-        }
-
         $maxSlots = self::getMaxSlotsForAvailabilities($availabilityList);
         $busySlots = self::getBusySlotsForAvailabilities($availabilityList, $processList);
         return [
