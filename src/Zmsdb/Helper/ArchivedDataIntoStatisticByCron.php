@@ -34,18 +34,13 @@ class ArchivedDataIntoStatisticByCron
                 break;
             }
             foreach ($processList as $process) {
-                if ($this->verbose) {
-                    error_log("INFO: Writing archived process list into statistic table");
-                }
-                if ($commit) {
-                    $this->writeProcessInStatisticTable($process, $dateTime);
-                }
+                $this->writeProcessInStatisticTable($process, $dateTime, $commit);
                 $processCount++;
             }
         }
     }
 
-    protected function writeProcessInStatisticTable($process, $dateTime)
+    protected function writeProcessInStatisticTable($process, $dateTime, $commit = false)
     {
         $scope = (new \BO\Zmsdb\Scope())->readEntity($process->scope->getId());
         $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($process->scope->getId());
@@ -61,18 +56,21 @@ class ArchivedDataIntoStatisticByCron
         $requestList = (new \BO\Zmsdb\Request())->readRequestByArchiveId($process->archiveId);
         $requestList = ($requestList->count()) ? $requestList : [new \BO\Zmsentities\Request(['id' => '-1'])];
         foreach ($requestList as $request) {
-            $archived = $this->query->writeArchivedProcessToStatistic(
-                $process,
-                $request->getId(),
-                $cluster ? $cluster->getId() : null,
-                $scope->getProviderId(),
-                $department->getId(),
-                $organisation->getId(),
-                $owner->getId(),
-                $dateTime
-            );
+            $archived = true; // for verbose
+            if ($commit) {
+                $archived = $this->query->writeArchivedProcessToStatistic(
+                    $process,
+                    $request->getId(),
+                    $cluster ? $cluster->getId() : null,
+                    $scope->getProviderId(),
+                    $department->getId(),
+                    $organisation->getId(),
+                    $owner->getId(),
+                    $dateTime
+                );
+            }
             if ($archived && $this->verbose) {
-                error_log("INFO: Process {$process->archiveId} with request {$request->getId()} successfully archived");
+                error_log("INFO: Process {$process->archiveId} with request {$request->getId()} archived");
             } else {
                 error_log("WARN: Could not archive process {$process->archiveId} with request {$request->getId()}!");
             }
