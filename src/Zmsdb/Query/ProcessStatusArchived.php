@@ -98,11 +98,14 @@ class ProcessStatusArchived extends Base implements MappingInterface
                 statistic.StandortID = process.StandortID
                 AND statistic.Datum = process.Datum
                 AND `statistic`.`lastbuergerarchivid` = `process`.`BuergerarchivID`
-                AND `statistic`.`lastbuergerarchivid` IS NULL
             ')
         );
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($dateTime, $scope) {
-            $query->andWith('process.Datum', '>', $dateTime->format('Y-m-d'));
+            $query->andWith(
+                self::expression('statistic.lastbuergerarchivid IS NULL AND process.Datum'),
+                '>',
+                $dateTime->format('Y-m-d')
+            );
             $query->andWith('process.nicht_erschienen', '=', 0);
             $query->andWith('process.StandortID', '=', $scope->id);
         });
