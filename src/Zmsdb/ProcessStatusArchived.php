@@ -41,12 +41,12 @@ class ProcessStatusArchived extends Process
         return $this->readResolvedList($query, $resolveReferences);
     }
 
-    public function readListForStatistic($dateTime, $limit = 500, $resolveReferences = 0)
+    public function readListForStatistic($dateTime, \BO\Zmsentities\Scope $scope, $limit = 500, $resolveReferences = 0)
     {
         $query = new Query\ProcessStatusArchived(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
-            ->addJoinStatisticFailed($dateTime)
+            ->addJoinStatisticFailed($dateTime, $scope)
             ->addLimit($limit);
         return $this->readResolvedList($query, $resolveReferences);
     }
