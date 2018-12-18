@@ -103,8 +103,8 @@ class ProcessStatusArchived extends Base implements MappingInterface
             $query->andWith(
                 self::expression('
                     `statistic`.`lastbuergerarchivid` IS NULL
-                    AND `process`.`Datum`
                     AND `scope`.`StandortID` IS NOT NULL
+                    AND `process`.`Datum`
                 '),
                 '<',
                 $dateTime->format('Y-m-d')
