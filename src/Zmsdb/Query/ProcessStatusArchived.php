@@ -91,20 +91,19 @@ class ProcessStatusArchived extends Base implements MappingInterface
 
     public function addJoinStatisticFailed($dateTime, \BO\Zmsentities\Scope $scope)
     {
+        //use existing index with StandortID and Datum
         $this->leftJoin(
             new Alias(self::STATISTIC_TABLE, 'statistic'),
-            self::expression("`statistic`.`lastbuergerarchivid` = `process`.`BuergerarchivID`")
+            self::expression('
+                statistic.StandortID = process.StandortID
+                AND statistic.Datum = process.Datum
+                AND `statistic`.`lastbuergerarchivid` = `process`.`BuergerarchivID`
+                AND `statistic`.`lastbuergerarchivid` IS NULL
+            ')
         );
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($dateTime, $scope) {
-            $query->andWith(
-                self::expression('
-                    `statistic`.`lastbuergerarchivid` IS NULL
-                    AND `process`.`nicht_erschienen` = 0
-                    AND `process`.`Datum`
-                '),
-                '>',
-                $dateTime->format('Y-m-d')
-            );
+            $query->andWith('process.Datum', '>', $dateTime->format('Y-m-d'));
+            $query->andWith('process.nicht_erschienen', '=', 0);
             $query->andWith('process.StandortID', '=', $scope->id);
         });
         return $this;
