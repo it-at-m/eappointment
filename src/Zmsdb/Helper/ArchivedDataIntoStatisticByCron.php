@@ -32,7 +32,7 @@ class ArchivedDataIntoStatisticByCron
         foreach ($scopeList as $scope) {
             $processList = $this->query->readListForStatistic($dateTime, $scope, $this->limit);
             if (count($processList)) {
-                $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($process->scope->getId());
+                $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($scope->getId());
                 $department = (new \BO\Zmsdb\Department())->readByScopeId($scope->getId());
                 if ($department) {
                     $organisation = (new \BO\Zmsdb\Organisation())->readByDepartmentId($department->getId());
