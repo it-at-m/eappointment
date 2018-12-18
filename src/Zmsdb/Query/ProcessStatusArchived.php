@@ -95,13 +95,20 @@ class ProcessStatusArchived extends Base implements MappingInterface
             new Alias(self::STATISTIC_TABLE, 'statistic'),
             self::expression("`statistic`.`lastbuergerarchivid` = `process`.`BuergerarchivID`")
         );
+        $this->leftJoin(
+            new Alias(Scope::TABLE, 'scope'),
+            self::expression("`scope`.`StandortID` = `process`.`StandortID`")
+        );
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($dateTime) {
             $query->andWith(
-                self::expression('`statistic`.`lastbuergerarchivid` IS NULL AND `process`.`Datum`'),
+                self::expression('
+                    `statistic`.`lastbuergerarchivid` IS NULL
+                    AND `process`.`Datum`
+                    AND `scope`.`StandortID` IS NOT NULL
+                '),
                 '<',
                 $dateTime->format('Y-m-d')
             );
-            $query->andWith('process.StandortID', '!=', 0);
         });
         return $this;
     }

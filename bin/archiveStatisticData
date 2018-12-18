@@ -16,8 +16,8 @@ $usage = <<<EOS
 
 Usage: {$argv[0]} limit [--verbose] --commit
         ATTENTION! Write archived process data into statistic table. USE WITH CAUTION!
-        --commit        no dry run, delete processes
-        --verbose       only shows what would be deleted
+        --commit        no dry run
+        --verbose       only shows what would be archived
 
         !!!!!!!!!!!!!!!!!!!!!!!
         !! DATA LOSS WARNING !!
@@ -29,15 +29,17 @@ $limit = array_shift($limit);
 $verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
 $commit = preg_grep('#^--commit$#', $argv);
 
-if ($commit) {
+if ($commit || $verbose) {
     if (class_exists('\App') && isset(\App::$now)) {
         $now = \App::$now;
     } else {
-        $now = new \DateTimeImmutable('2016-04-02 11:55'); //new \DateTimeImmutable('now');
+        $now = new \DateTimeImmutable();
     }
     $job = new \BO\Zmsdb\Helper\ArchivedDataIntoStatisticByCron($limit, $verbose);
     $job->startProcessing($now, $commit);
-}
-if (!$commit) {
-    error_log("Use with --commit to insert all entries into statistic table.");
+    if (!$commit) {
+        error_log("Use with --commit to insert all entries into statistic table.");
+    }
+} else {
+    echo $usage;
 }
