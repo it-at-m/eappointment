@@ -101,6 +101,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
                 '<',
                 $dateTime->format('Y-m-d')
             );
+            $query->andWith('process.StandortID', '!=', 0);
         });
         return $this;
     }

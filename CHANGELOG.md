@@ -1,6 +1,6 @@
 ## v2.19.02
 
-* #31487 Bugfix: Abbruch der Archivierung bei fehlendem Cluster behoben
+* #31487 Bugfix: Abbruch der Archivierung bei fehlendem Cluster oder Standort behoben
 
 ## v2.19.01
 

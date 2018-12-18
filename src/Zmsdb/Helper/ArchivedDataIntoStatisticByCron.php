@@ -50,15 +50,21 @@ class ArchivedDataIntoStatisticByCron
         $scope = (new \BO\Zmsdb\Scope())->readEntity($process->scope->getId());
         $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($process->scope->getId());
         $department = (new \BO\Zmsdb\Department())->readByScopeId($scope->getId());
-        $organisation = (new \BO\Zmsdb\Organisation())->readByDepartmentId($department->getId());
-        $owner = (new \BO\Zmsdb\Owner())->readByOrganisationId($organisation->getId());
+        if ($department) {
+            $organisation = (new \BO\Zmsdb\Organisation())->readByDepartmentId($department->getId());
+            $owner = (new \BO\Zmsdb\Owner())->readByOrganisationId($organisation->getId());
+        } else {
+            $department = new \BO\Zmsentities\Department();
+            $organisation = new \BO\Zmsentities\Organisation();
+            $owner = new \BO\Zmsentities\Owner();
+        }
         $requestList = (new \BO\Zmsdb\Request())->readRequestByArchiveId($process->archiveId);
         $requestList = ($requestList->count()) ? $requestList : [new \BO\Zmsentities\Request(['id' => '-1'])];
         foreach ($requestList as $request) {
             $archived = $this->query->writeArchivedProcessToStatistic(
                 $process,
                 $request->getId(),
-                $cluster ? $cluster->getId() : 0,
+                $cluster ? $cluster->getId() : null,
                 $scope->getProviderId(),
                 $department->getId(),
                 $organisation->getId(),
