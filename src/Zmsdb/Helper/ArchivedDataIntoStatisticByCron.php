@@ -78,7 +78,7 @@ class ArchivedDataIntoStatisticByCron
                 $archived = $this->query->writeArchivedProcessToStatistic(
                     $process,
                     $request->getId(),
-                    $cluster ? $cluster->getId() : null,
+                    $cluster ? $cluster->getId() : 0,
                     $scope->getProviderId(),
                     $department->getId(),
                     $organisation->getId(),
@@ -87,9 +87,10 @@ class ArchivedDataIntoStatisticByCron
                 );
             }
             if ($archived && $this->verbose) {
+                $processDate = $process->getFirstAppointment()->toDateTime()->format('Y-m-d');
                 error_log(
                     "INFO: Process {$process->archiveId} with request {$request->getId()}"
-                    ." for scope {$scope->getId()} archived"
+                    ." for scope {$scope->getId()} archived on $processDate"
                 );
             } else {
                 error_log("WARN: Could not archive process {$process->archiveId} with request {$request->getId()}!");
