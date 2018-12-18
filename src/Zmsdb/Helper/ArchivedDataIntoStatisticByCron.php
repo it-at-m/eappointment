@@ -79,7 +79,7 @@ class ArchivedDataIntoStatisticByCron
                     $process,
                     $request->getId(),
                     $cluster ? $cluster->getId() : 0,
-                    $scope->getProviderId(),
+                    $scope->toProperty()->provider->id->get(0),
                     $department->getId(),
                     $organisation->getId(),
                     $owner->getId(),
