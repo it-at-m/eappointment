@@ -490,17 +490,17 @@ class Process extends Schema\Entity
     /**
      * Calculate real waiting time, only available after called
      */
-    public function getWaitedSeconds()
+    public function getWaitedSeconds($default = 'now')
     {
         if (!$this->toProperty()->queue->callTime->get()) {
             return null;
         }
-        return $this->getCallTime()->getTimestamp() - $this->getArrivalTime()->getTimestamp();
+        return $this->getCallTime($default)->getTimestamp() - $this->getArrivalTime($default)->getTimestamp();
     }
 
-    public function getWaitedMinutes()
+    public function getWaitedMinutes($default = 'now')
     {
-        return round($this->getWaitedSeconds() / 60, 0);
+        return round($this->getWaitedSeconds($default) / 60, 0);
     }
 
     public function toDerefencedAmendment()
