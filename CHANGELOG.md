@@ -1,3 +1,7 @@
+## v2.19.02
+
+* Cronjob: Datenmigration auf Stage-System vor allen anderen Jobs ausführen
+
 ## v2.19.01
 
 * #34938 Bugfix: Base64-Fehler mit falschen Maskierungen in den Unit-Tests angepasst

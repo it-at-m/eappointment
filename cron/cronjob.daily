@@ -9,14 +9,14 @@ set +a
 
 if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
     if [[ $ZMS_ENV =~ ^prod|dev|stage$ ]]; then
-        $API config cron deleteOldAvailabilityData|grep -q "$ZMS_ENV" && $BIN/deleteOldAvailabilityData 2 --commit
+        $API config cron migrate|grep -q "$ZMS_ENV" && $BIN/migrate --update
         $API config cron archiveStatisticData|grep -q "$ZMS_ENV" && $BIN/archiveStatisticData --commit
         $API config cron resetGhostWorkstationCount|grep -q "$ZMS_ENV" && $BIN/resetGhostWorkstationCount --commit
         $API config cron resetWorkstations|grep -q "$ZMS_ENV" && $BIN/resetWorkstations --commit
-        $API config cron deleteDayoffData|grep -q "$ZMS_ENV" && $BIN/deleteDayoffData 6 --commit
         $API config cron deleteAppointmentData|grep -q "$ZMS_ENV" && $BIN/deleteAppointmentData 1 --commit
+        $API config cron deleteDayoffData|grep -q "$ZMS_ENV" && $BIN/deleteDayoffData 6 --commit
+        $API config cron deleteOldAvailabilityData|grep -q "$ZMS_ENV" && $BIN/deleteOldAvailabilityData 2 --commit
         $API config cron sendProcessListToScopeAdmin|grep -q "$ZMS_ENV" && $BIN/sendProcessListToScopeAdmin --commit 141
         $API config cron calculateSlots|grep -q "$ZMS_ENV" && $BIN/calculateSlots --commit --delete
-        $API config cron migrate|grep -q "$ZMS_ENV" && $BIN/migrate --update
     fi
 fi
