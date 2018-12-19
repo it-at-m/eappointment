@@ -1,3 +1,7 @@
+## v2.19.02
+
+* #35379 Neue Funktionen zur vereinheitlichten Berechnung von Aufruf- und Ankunftszeit und Implementierung in Wartezeitberechnung
+
 ## v2.19.01
 
 * #35158 Bugfix: Berechnung, ob eine Öffnungzeit einen Tag in einer gegebenen Zeitspanne enthält beachtet jetzt auch den letzten Tag der Zeitspanne
