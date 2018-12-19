@@ -1,6 +1,7 @@
 ## v2.19.02
 
 * #35379 Neue Funktionen zur vereinheitlichten Berechnung von Aufruf- und Ankunftszeit und Implementierung in Wartezeitberechnung
+* #35342 Fehlende Hausnummer in einigen Templates nachgetragen, experimentell nicht sichtbaren EventReservation Schema Code hinzugefügt
 
 ## v2.19.01
 
