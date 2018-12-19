@@ -125,6 +125,7 @@ class ProcessArchiveTest extends Base
         $now = new \DateTimeImmutable("2016-04-18 12:55");
         $entity =(new Query)->readEntity(10029, '1c56');
         $entity->appointments = [];
+        $entity->queue['withAppointment'] = 0;
         $updatedEntity = $queryArchived->writeNewArchivedProcess($entity, $now);
         $archivedProcessWaitingData = (new \BO\Zmsdb\ExchangeWaitingscope)->readByDateTime($updatedEntity->scope, $now);
         $this->assertEquals(85, $archivedProcessWaitingData['waitingtime']);
