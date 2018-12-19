@@ -141,10 +141,11 @@ class ProcessTest extends EntityCommonTests
         $entity->queue->withAppointment = 0;
         $seconds = $entity->getWaitedSeconds();
         $this->assertEquals(45, $seconds);
-        $this->assertTrue(0 < $seconds);
 
+        $now = new \DateTimeImmutable();
+        $now = $now->setTimestamp($entity->queue['callTime']);
         $entity->queue['callTime'] = null;
-        $this->assertEquals(null, $entity->getWaitedSeconds());
+        $this->assertEquals(45, $entity->getWaitedSeconds($now));
     }
 
     public function testToDereferencedAmendment()
