@@ -137,6 +137,9 @@ class ProcessTest extends EntityCommonTests
     {
         $entity = $this->getExample();
         $seconds = $entity->getWaitedSeconds();
+        $this->assertEquals(53767, $seconds);
+        $entity->queue->withAppointment = 0;
+        $seconds = $entity->getWaitedSeconds();
         $this->assertEquals(45, $seconds);
         $this->assertTrue(0 < $seconds);
 

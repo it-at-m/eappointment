@@ -308,7 +308,17 @@ class Process extends Schema\Entity
 
     public function getCallTimeString()
     {
-        return (new \DateTimeImmutable)->setTimestamp($this->queue['callTime'])->format('H:i:s');
+        return $this->getCallTime()->format('H:i:s');
+    }
+
+    public function getCallTime($default = 'now')
+    {
+        $callTime = $this->toProperty()->queue->callTime->get();
+        $callDateTime = Helper\DateTime::create($default);
+        if ($callTime) {
+            $callDateTime = $callDateTime->setTimestamp($callTime);
+        }
+        return $callDateTime;
     }
 
     public function getFirstClient()
@@ -455,12 +465,26 @@ class Process extends Schema\Entity
         $queue->waitingTime = ($queue->waitingTime) ? $queue->waitingTime : 0;
         if ($queue->withAppointment) {
             $queue->number = $this->id;
-            $queue->arrivalTime = $this->getFirstAppointment()->date;
         } else {
             $queue->number = $this->toProperty()->queue->number->get();
-            $queue->arrivalTime = ($queue->arrivalTime) ? $queue->arrivalTime : $dateTime->getTimestamp();
         }
+        $queue->arrivalTime = $this->getArrivalTime($dateTime)->getTimestamp();
         return $queue->setProcess($this);
+    }
+
+    public function getArrivalTime($default = 'now')
+    {
+        $arrivalTime = 0;
+        if ($this->isWithAppointment()) {
+            $arrivalTime = $this->getFirstAppointment()->date;
+        } else {
+            $arrivalTime = $this->toProperty()->queue->arrivalTime->get();
+        }
+        $arrivalDateTime = Helper\DateTime::create($default);
+        if ($arrivalTime) {
+            $arrivalDateTime = $arrivalDateTime->setTimestamp($arrivalTime);
+        }
+        return $arrivalDateTime;
     }
 
     /**
@@ -468,10 +492,15 @@ class Process extends Schema\Entity
      */
     public function getWaitedSeconds()
     {
-        if (!$this->queue->callTime) {
+        if (!$this->toProperty()->queue->callTime->get()) {
             return null;
         }
-        return $this->queue->callTime - $this->queue->arrivalTime;
+        return $this->getCallTime()->getTimestamp() - $this->getArrivalTime()->getTimestamp();
+    }
+
+    public function getWaitedMinutes()
+    {
+        return round($this->getWaitedSeconds() / 60, 0);
     }
 
     public function toDerefencedAmendment()
