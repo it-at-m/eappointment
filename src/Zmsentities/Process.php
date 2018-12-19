@@ -490,17 +490,14 @@ class Process extends Schema\Entity
     /**
      * Calculate real waiting time, only available after called
      */
-    public function getWaitedSeconds($default = 'now')
+    public function getWaitedSeconds($defaultTime = 'now')
     {
-        if (!$this->toProperty()->queue->callTime->get()) {
-            return null;
-        }
-        return $this->getCallTime($default)->getTimestamp() - $this->getArrivalTime($default)->getTimestamp();
+        return $this->getCallTime($defaultTime)->getTimestamp() - $this->getArrivalTime($defaultTime)->getTimestamp();
     }
 
-    public function getWaitedMinutes($default = 'now')
+    public function getWaitedMinutes($defaultTime = 'now')
     {
-        return round($this->getWaitedSeconds($default) / 60, 0);
+        return round($this->getWaitedSeconds($defaultTime) / 60, 0);
     }
 
     public function toDerefencedAmendment()
@@ -524,7 +521,8 @@ class Process extends Schema\Entity
         $string .= $this->id;
         $string .= ":".$this->authKey;
         $string .= " (" . $this->status . ")";
-        $string .= " " . $this->getFirstAppointment()->toDateTime()->format('c');
+        $string .= " " . ($this->isWithAppointment() ? "appoint" : "arrival") . ":";
+        $string .= " " . $this->getArrivalTime()->format('c');
         $string .= " " . $this->getFirstAppointment()->slotCount."slots";
         $string .= "*" . count($this->appointments);
         foreach ($this->getRequests() as $request) {
