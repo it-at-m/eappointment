@@ -4,7 +4,7 @@ Sehr geehrte/r Frau oder Herr {{ client.familyName }},<br />
 <br />
 hiermit bestätigen wir Ihnen Ihren gebuchten Termin am <strong> {{ (date|default(getNow))|localizeddate("short","none",NULL,NULL,"EEEE, dd. MMMM Y") }} um {{ (date|default(getNow))|date("H:i") }} {% trans %}Uhr{% endtrans %}</strong>.<br />
 <br />
-<strong>Ort:</strong> {{ process.scope.provider.name ~ " " ~ process.scope.provider.contact.street ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}<br />
+<strong>Ort:</strong> {{ process.scope.provider.name ~ " " ~ process.scope.provider.contact.street ~ " "  ~ process.scope.provider.contact.streetNumber ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}<br />
 {% if process.scope.hint %}
 ({{ process.scope.hint }})<br />
 {% endif %}<br />
@@ -54,4 +54,41 @@ Ihre Terminverwaltung des Landes Berlin
 <br /><br />
 <a href="{{ config.appointments.urlAppointments }}">{{ config.appointments.urlAppointments }}</a>
 </div>
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "EventReservation",
+  "reservationNumber": "{{ process.id }}",
+  "reservationStatus": "http://schema.org/Confirmed",
+  "modifyReservationUrl": "{{ config.appointments.urlChange }}",
+  "modifiedTime": "{{ process.createTimestamp|date('c') }}",
+  "underName": {
+    "@type": "Person",
+    "name": "{{ client.familyName }}"
+  },
+  "reservationFor": {
+    "@type": "Event",
+    "name": "{% for request in process.requests %}{{ request.name }}{% if not loop.last %},{% endif %} {% endfor %}",
+    "startDate": "{{ date|date('c') }}",
+    "location": {
+      "@type": "Place",
+      "name": "{{ process.scope.provider.name }}",
+      "url": "{{process.scope.provider.link}}",
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "{{process.scope.provider.contact.lat}}",
+        "longitude": "{{process.scope.provider.contact.lon}}"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "{{process.scope.provider.contact.street ~ " "  ~ process.scope.provider.contact.streetNumber}}",
+        "addressLocality": "{{process.scope.provider.contact.city}}",
+        "addressRegion": "{{process.scope.provider.contact.city}}",
+        "postalCode": "{{process.scope.provider.contact.postalCode}}",
+        "addressCountry": "DE"
+      }
+    }
+  }
+}
+</script>
 {% endblock %}
