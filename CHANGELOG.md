@@ -1,6 +1,7 @@
 ## v2.19.02
 
 * #31487 Bugfix: Abbruch der Archivierung bei fehlendem Cluster oder Standort behoben
+* #35379 Vereinheitlichung der Wartezeitberechnung
 
 ## v2.19.01
 

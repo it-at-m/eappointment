@@ -133,10 +133,10 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
     /**
      * Write calculated waiting time and count of queued processes into statistic
      */
-    public function writeWaitingTimeCalculated(\BO\Zmsentities\Scope $scope, \DateTimeInterface $date)
+    public function writeWaitingTimeCalculated(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now)
     {
-        $queueList = (new Scope())->readQueueListWithWaitingTime($scope, $date);
-        $existingEntry = $this->readByDateTime($scope, $date);
+        $queueList = (new Scope())->readQueueListWithWaitingTime($scope, $now);
+        $existingEntry = $this->readByDateTime($scope, $now);
         $queueEntry = $queueList->getFakeOrLastWaitingnumber();
         $waitingCalculated = $existingEntry['waitingcalculated'] > $queueEntry['waitingTimeEstimate'] ?
             $existingEntry['waitingcalculated']
@@ -145,14 +145,14 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $waitingCount = $existingEntry['waitingcount'] > $waitingCount ?
             $existingEntry['waitingcount'] : $waitingCount;
         $this->perform(
-            Query\ExchangeWaitingscope::getQueryUpdateByDateTime($date),
+            Query\ExchangeWaitingscope::getQueryUpdateByDateTime($now),
             [
                 'waitingcalculated' => $waitingCalculated,
                 'waitingcount' => $waitingCount,
                 'waitingtime' => $existingEntry['waitingtime'],
                 'scopeid' => $scope->id,
-                'date' => $date->format('Y-m-d'),
-                'hour' => $date->format('H')
+                'date' => $now->format('Y-m-d'),
+                'hour' => $now->format('H')
             ]
         );
         return $this;
@@ -163,18 +163,18 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
      */
     public function writeWaitingTime(
         \BO\Zmsentities\Process $process,
-        \DateTimeInterface $date
+        \DateTimeInterface $now
     ) {
-        $waitingTime = floor(($date->getTimestamp() - $process->toQueue($date)->arrivalTime) / 60);
-        $existingEntry = $this->readByDateTime($process->scope, $date);
+        $waitingTime = $process->getWaitedMinutes($now);
+        $existingEntry = $this->readByDateTime($process->scope, $process->getArrivalTime($now));
         $waitingTime = $existingEntry['waitingtime'] > $waitingTime ? $existingEntry['waitingtime'] : $waitingTime;
-        $this->perform(Query\ExchangeWaitingscope::getQueryUpdateByDateTime($date), [
+        $this->perform(Query\ExchangeWaitingscope::getQueryUpdateByDateTime($now), [
             'waitingcalculated' => $existingEntry['waitingcalculated'],
             'waitingcount' => $existingEntry['waitingcount'],
             'waitingtime' => $waitingTime,
             'scopeid' => $process->scope->id,
-            'date' => $date->format('Y-m-d'),
-            'hour' => $date->format('H')
+            'date' => $now->format('Y-m-d'),
+            'hour' => $now->format('H')
         ]);
         return $this;
     }
