@@ -1,6 +1,9 @@
-## v2.19.01
+## v2.19.02
 
 * #35385 Hinweis zum Entwicklungssystem nur wenn ZMS_ENV prod oder dev entspricht
+
+## v2.19.01
+
 * #35228 Security: event-stream Version angepasst
 * #31328 Bugfix: Korrektur der Anzahl der Wartenden
 * #35007 Bugfix: SMS-Nachtrag nur erlauben wenn SMS in der Behörde aktiviert ist
