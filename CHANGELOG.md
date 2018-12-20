@@ -1,5 +1,6 @@
 ## v2.19.01
 
+* #35385 Hinweis zum Entwicklungssystem nur wenn ZMS_ENV prod oder dev entspricht
 * #31328 Bugfix: Anzahl der Wartenden und die Wartezeit werden ohne "nicht erschienende Kunden" berechnet
 * #35231 Bugfix: Timeout für den Wartebildschirm eingestellt, so dass auch bei langsamen Netzwerken eine Fehler-Meldung angezeigt wird 
 
