@@ -9,7 +9,7 @@
     	{{ parent() }}
     {% endblock %}
     <body class="hiddencursor locale_{{ currentLang() }}" id="{% block pageid %}{% endblock %}" type="{% block pagetype %}{% endblock %}">
-            {% if getSystemStatus('ZMS_ENV') != "www" %}
+            {% if getSystemStatus('ZMS_ENV') in ["dev", "stage"] %}
             {% block devhint %}
             	{{ parent() }}
             {% endblock %}
