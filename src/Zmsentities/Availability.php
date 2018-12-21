@@ -242,8 +242,13 @@ class Availability extends Schema\Entity
     {
         $dateTime = Helper\DateTime::create($dateTime);
         $start = $this->getStartDateTime();
+        $monday = "monday this week";
         if ($this['repeat']['afterWeeks']
-            && 0 === floor($dateTime->getWeeks() - $start->getWeeks()) % $this['repeat']['afterWeeks']
+            && ($this['repeat']['afterWeeks'] == 1
+                || 0 === floor(
+                    $dateTime->modify($monday)->getWeeks() - $start->modify($monday)->getWeeks()
+                ) % $this['repeat']['afterWeeks']
+            )
         ) {
             return true;
         }

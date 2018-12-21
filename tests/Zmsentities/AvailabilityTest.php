@@ -59,7 +59,7 @@ class AvailabilityTest extends EntityCommonTests
         );
         $entity['weekday']['monday'] = 1;
         $this->assertTrue(
-            $entity->hasDate($time->modify('+3days'), $now),
+            $entity->hasDate($time->modify('+10days'), $now),
             'Availability should be valid on a monday if friday and monday is given'
         );
         $this->assertFalse(
@@ -81,12 +81,55 @@ class AvailabilityTest extends EntityCommonTests
         $entity['repeat']['afterWeeks'] = 2;
         $entity['repeat']['weekOfMonth'] = 0;
         $this->assertTrue(
-            $entity->hasDate($time->modify('+3week'), $now),
+            $entity->hasDate($time->modify('+2week'), $now),
             'Availability on afterWeeks=2 should be valid in the third week after startDate +1 day'
         );
         $entity['endDate'] = $time->modify("-1day")
             ->getTimestamp();
         $this->assertFalse($entity->hasDate($time->modify('+1week'), $now), 'EndDate is smaller than startDate');
+    }
+
+    public function testWeekOnDifferentBeginnings()
+    {
+        $entity = new $this->entityclass();
+        // A friday
+        $time = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $entity['startDate'] = $time->getTimestamp();
+        $entity['startTime'] = $time->format('H:i');
+        $entity['endDate'] = $time->modify("+2month")
+            ->getTimestamp();
+        $entity['endTime'] = $time->modify("+2month 17:10:00")
+            ->format('H:i');
+        $entity['weekday']['friday'] = 1;
+        $entity['repeat']['afterWeeks'] = 2;
+        $entity['scope'] = new \BO\Zmsentities\Scope([
+            'dayoff' => new \BO\Zmsentities\Collection\DayoffList(),
+        ]);
+
+        // start = friday
+        $this->assertTrue(
+            $entity->hasDate($time->modify('+2week'), $now),
+            'Availability should be valid in the second week afterwards, if beginning is in the same week'
+        );
+        // start = saturday
+        $entity['startDate'] = $time->modify('+1day')->getTimestamp();
+        $this->assertTrue(
+            $entity->hasDate($time->modify('+2week'), $now),
+            'Availability should be valid in the second week afterwards, if beginning is in the same week'
+        );
+        // start = sunday
+        $entity['startDate'] = $time->modify('+2day')->getTimestamp();
+        $this->assertTrue(
+            $entity->hasDate($time->modify('+2week'), $now),
+            'Availability should be valid in the second week afterwards, if beginning is in the same week'
+        );
+        // start = monday
+        $entity['startDate'] = $time->modify('+3day')->getTimestamp();
+        $this->assertFalse(
+            $entity->hasDate($time->modify('+2week'), $now),
+            'Availability should not be valid in the second week afterwards, if beginning is in the next week'
+        );
     }
 
     public function testGetAvailableSecondsPerDay()
