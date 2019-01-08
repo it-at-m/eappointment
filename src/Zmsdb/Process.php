@@ -247,21 +247,6 @@ class Process extends Base implements Interfaces\ResolveReferences
         \DateTimeInterface $endDate = null,
         $resolveReferences = 0
     ) {
-        $query = new Query\Process(Query\Base::SELECT);
-        $query
-            ->addResolvedReferences($resolveReferences)
-            ->addEntityMapping()
-            ->addConditionScopeId($scope->getId())
-            ->addConditionAssigned()
-            ->addConditionIgnoreSlots();
-        if ($startDate && $endDate) {
-            $query->addConditionTimeframe($startDate, $endDate);
-        } elseif ($startDate) {
-            $query->addConditionTime($startDate);
-        }
-        $statement = $this->fetchStatement($query);
-        $processList = $this->readList($statement, $resolveReferences);
-
         $availabilityList = (new Availability())
             ->readAvailabilityListByScope($scope, 0, $startDate, $endDate)
             ->withScope($scope);
@@ -270,9 +255,24 @@ class Process extends Base implements Interfaces\ResolveReferences
             $availabilityList = $availabilityList->withDateTime($startDate);
             $endDate = $startDate;
         }
-        
+        $currentDate = $startDate;
         $conflictList = $availabilityList->getConflicts($startDate, $endDate);
-        $conflictList->addList($processList->withOutAvailability($availabilityList));
+        while ($currentDate <= $endDate) {
+            $query = new Query\Process(Query\Base::SELECT);
+            $query
+                ->addResolvedReferences($resolveReferences)
+                ->addEntityMapping()
+                ->addConditionScopeId($scope->getId())
+                ->addConditionAssigned()
+                ->addConditionIgnoreSlots();
+            $query->addConditionTime($currentDate);
+            $statement = $this->fetchStatement($query);
+            $processList = $this->readList($statement, $resolveReferences);
+
+            $conflictList->addList($processList->withOutAvailability($availabilityList));
+            $currentDate = $currentDate->modify('+1 day');
+            error_log("".__METHOD__.":".__LINE__."=****".round(memory_get_usage()/1024, 0)."kb****");
+        }
         return $conflictList;
     }
 
