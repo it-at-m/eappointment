@@ -2,6 +2,7 @@
 
 * #31487 Bugfix: Abbruch der Archivierung bei fehlendem Cluster oder Standort behoben
 * #35379 Vereinheitlichung der Wartezeitberechnung
+* #34134 Bugfix: Speicherbedarf für die Konflikt-Berechnung bei Öffnungszeiten reduziert
 
 ## v2.19.01
 

@@ -271,7 +271,6 @@ class Process extends Base implements Interfaces\ResolveReferences
 
             $conflictList->addList($processList->withOutAvailability($availabilityList));
             $currentDate = $currentDate->modify('+1 day');
-            error_log("".__METHOD__.":".__LINE__."=****".round(memory_get_usage()/1024, 0)."kb****");
         }
         return $conflictList;
     }
