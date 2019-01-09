@@ -15,6 +15,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '34',
+      'callcenter' => '34',
+      'intern' => '34',
+      'type' => 'free',
+    ),
   ),
   '25-05-2016' => 
   array (
@@ -28,6 +35,13 @@ return array (
       'intern' => 0,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '34',
+      'callcenter' => '34',
+      'intern' => '34',
+      'type' => 'free',
     ),
   ),
 );
