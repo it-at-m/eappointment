@@ -15,6 +15,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '1350',
+      'callcenter' => '1439',
+      'intern' => '1774',
+      'type' => 'free',
+    ),
   ),
   '02-04-2016' => 
   array (
@@ -28,6 +35,13 @@ return array (
       'intern' => -14,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '46',
+      'callcenter' => '46',
+      'intern' => '46',
+      'type' => 'free',
     ),
   ),
   '04-04-2016' => 
@@ -43,6 +57,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '2330',
+      'callcenter' => '2647',
+      'intern' => '4170',
+      'type' => 'free',
+    ),
   ),
   '05-04-2016' => 
   array (
@@ -56,6 +77,13 @@ return array (
       'intern' => 559,
       'callcenter' => 1,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '2498',
+      'callcenter' => '3042',
+      'intern' => '4366',
+      'type' => 'free',
     ),
   ),
   '06-04-2016' => 
@@ -71,6 +99,13 @@ return array (
       'callcenter' => 1,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '1804',
+      'callcenter' => '2032',
+      'intern' => '3254',
+      'type' => 'free',
+    ),
   ),
   '07-04-2016' => 
   array (
@@ -84,6 +119,13 @@ return array (
       'intern' => 588,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '2400',
+      'callcenter' => '2877',
+      'intern' => '4453',
+      'type' => 'free',
     ),
   ),
   '08-04-2016' => 
@@ -99,6 +141,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '1779',
+      'callcenter' => '2040',
+      'intern' => '3028',
+      'type' => 'free',
+    ),
   ),
   '09-04-2016' => 
   array (
@@ -112,6 +161,13 @@ return array (
       'intern' => -2,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '46',
+      'callcenter' => '46',
+      'intern' => '110',
+      'type' => 'free',
     ),
   ),
   '11-04-2016' => 
@@ -127,6 +183,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '2307',
+      'callcenter' => '2624',
+      'intern' => '4105',
+      'type' => 'free',
+    ),
   ),
   '12-04-2016' => 
   array (
@@ -140,6 +203,13 @@ return array (
       'intern' => 672,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '2422',
+      'callcenter' => '2958',
+      'intern' => '4329',
+      'type' => 'free',
     ),
   ),
   '13-04-2016' => 
@@ -155,6 +225,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '1692',
+      'callcenter' => '1880',
+      'intern' => '3060',
+      'type' => 'free',
+    ),
   ),
   '14-04-2016' => 
   array (
@@ -168,6 +245,13 @@ return array (
       'intern' => 727,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '2228',
+      'callcenter' => '2603',
+      'intern' => '4154',
+      'type' => 'free',
     ),
   ),
   '15-04-2016' => 
@@ -183,6 +267,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '1837',
+      'callcenter' => '2068',
+      'intern' => '3028',
+      'type' => 'free',
+    ),
   ),
   '16-04-2016' => 
   array (
@@ -196,6 +287,13 @@ return array (
       'intern' => 0,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '46',
+      'callcenter' => '46',
+      'intern' => '46',
+      'type' => 'free',
     ),
   ),
   '18-04-2016' => 
@@ -211,6 +309,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '2375',
+      'callcenter' => '2612',
+      'intern' => '3985',
+      'type' => 'free',
+    ),
   ),
   '19-04-2016' => 
   array (
@@ -224,6 +329,13 @@ return array (
       'intern' => 720,
       'callcenter' => 1,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '2346',
+      'callcenter' => '2768',
+      'intern' => '4079',
+      'type' => 'free',
     ),
   ),
   '20-04-2016' => 
@@ -239,6 +351,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '1740',
+      'callcenter' => '1912',
+      'intern' => '3168',
+      'type' => 'free',
+    ),
   ),
   '21-04-2016' => 
   array (
@@ -252,6 +371,13 @@ return array (
       'intern' => 741,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '2228',
+      'callcenter' => '2603',
+      'intern' => '4146',
+      'type' => 'free',
     ),
   ),
   '22-04-2016' => 
@@ -267,6 +393,13 @@ return array (
       'callcenter' => 1,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '1852',
+      'callcenter' => '2069',
+      'intern' => '3049',
+      'type' => 'free',
+    ),
   ),
   '23-04-2016' => 
   array (
@@ -280,6 +413,13 @@ return array (
       'intern' => 0,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '46',
+      'callcenter' => '46',
+      'intern' => '110',
+      'type' => 'free',
     ),
   ),
   '25-04-2016' => 
@@ -295,6 +435,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '2369',
+      'callcenter' => '2617',
+      'intern' => '4038',
+      'type' => 'free',
+    ),
   ),
   '26-04-2016' => 
   array (
@@ -308,6 +455,13 @@ return array (
       'intern' => 813,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '2340',
+      'callcenter' => '2773',
+      'intern' => '4129',
+      'type' => 'free',
     ),
   ),
   '27-04-2016' => 
@@ -323,6 +477,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '1755',
+      'callcenter' => '1927',
+      'intern' => '3149',
+      'type' => 'free',
+    ),
   ),
   '28-04-2016' => 
   array (
@@ -336,6 +497,13 @@ return array (
       'intern' => 841,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '2294',
+      'callcenter' => '2683',
+      'intern' => '4107',
+      'type' => 'free',
     ),
   ),
   '29-04-2016' => 
@@ -351,6 +519,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '1839',
+      'callcenter' => '2076',
+      'intern' => '3037',
+      'type' => 'free',
+    ),
   ),
   '30-04-2016' => 
   array (
@@ -364,6 +539,13 @@ return array (
       'intern' => 0,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '46',
+      'callcenter' => '46',
+      'intern' => '46',
+      'type' => 'free',
     ),
   ),
   '02-05-2016' => 
@@ -379,6 +561,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '2303',
+      'callcenter' => '2558',
+      'intern' => '3962',
+      'type' => 'free',
+    ),
   ),
   '03-05-2016' => 
   array (
@@ -392,6 +581,13 @@ return array (
       'intern' => 973,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '2334',
+      'callcenter' => '2770',
+      'intern' => '4084',
+      'type' => 'free',
     ),
   ),
   '04-05-2016' => 
@@ -407,6 +603,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '1788',
+      'callcenter' => '1960',
+      'intern' => '3078',
+      'type' => 'free',
+    ),
   ),
   '06-05-2016' => 
   array (
@@ -420,6 +623,13 @@ return array (
       'intern' => 691,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '1660',
+      'callcenter' => '1877',
+      'intern' => '2769',
+      'type' => 'free',
     ),
   ),
   '09-05-2016' => 
@@ -435,6 +645,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '2257',
+      'callcenter' => '2494',
+      'intern' => '3918',
+      'type' => 'free',
+    ),
   ),
   '10-05-2016' => 
   array (
@@ -448,6 +665,13 @@ return array (
       'intern' => 960,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '2276',
+      'callcenter' => '2706',
+      'intern' => '3936',
+      'type' => 'free',
     ),
   ),
   '11-05-2016' => 
@@ -463,6 +687,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '1760',
+      'callcenter' => '1960',
+      'intern' => '3106',
+      'type' => 'free',
+    ),
   ),
   '12-05-2016' => 
   array (
@@ -476,6 +707,13 @@ return array (
       'intern' => 939,
       'callcenter' => 1,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '2260',
+      'callcenter' => '2613',
+      'intern' => '4019',
+      'type' => 'free',
     ),
   ),
   '13-05-2016' => 
@@ -491,6 +729,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '1837',
+      'callcenter' => '2088',
+      'intern' => '2972',
+      'type' => 'free',
+    ),
   ),
   '17-05-2016' => 
   array (
@@ -504,6 +749,13 @@ return array (
       'intern' => 977,
       'callcenter' => 1,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '2318',
+      'callcenter' => '2750',
+      'intern' => '3952',
+      'type' => 'free',
     ),
   ),
   '18-05-2016' => 
@@ -519,6 +771,13 @@ return array (
       'callcenter' => 1,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '1760',
+      'callcenter' => '1932',
+      'intern' => '3050',
+      'type' => 'free',
+    ),
   ),
   '19-05-2016' => 
   array (
@@ -532,6 +791,13 @@ return array (
       'intern' => 1044,
       'callcenter' => 2,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '2260',
+      'callcenter' => '2635',
+      'intern' => '4027',
+      'type' => 'free',
     ),
   ),
   '20-05-2016' => 
@@ -547,6 +813,13 @@ return array (
       'callcenter' => 107,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '1837',
+      'callcenter' => '2069',
+      'intern' => '2949',
+      'type' => 'free',
+    ),
   ),
   '21-05-2016' => 
   array (
@@ -560,6 +833,13 @@ return array (
       'intern' => -3,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '46',
+      'callcenter' => '46',
+      'intern' => '46',
+      'type' => 'free',
     ),
   ),
   '23-05-2016' => 
@@ -575,6 +855,13 @@ return array (
       'callcenter' => 175,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '2101',
+      'callcenter' => '2353',
+      'intern' => '3689',
+      'type' => 'free',
+    ),
   ),
   '24-05-2016' => 
   array (
@@ -588,6 +875,13 @@ return array (
       'intern' => 1770,
       'callcenter' => 706,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '2163',
+      'callcenter' => '2601',
+      'intern' => '3801',
+      'type' => 'free',
     ),
   ),
   '25-05-2016' => 
@@ -603,6 +897,13 @@ return array (
       'callcenter' => 467,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '1605',
+      'callcenter' => '1777',
+      'intern' => '2875',
+      'type' => 'free',
+    ),
   ),
   '26-05-2016' => 
   array (
@@ -616,6 +917,13 @@ return array (
       'intern' => 1906,
       'callcenter' => 697,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '2119',
+      'callcenter' => '2483',
+      'intern' => '3829',
+      'type' => 'free',
     ),
   ),
   '27-05-2016' => 
@@ -631,6 +939,13 @@ return array (
       'callcenter' => 335,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '1331',
+      'callcenter' => '1335',
+      'intern' => '1503',
+      'type' => 'free',
+    ),
   ),
   '28-05-2016' => 
   array (
@@ -645,6 +960,13 @@ return array (
       'callcenter' => 4,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '46',
+      'callcenter' => '46',
+      'intern' => '110',
+      'type' => 'free',
+    ),
   ),
   '30-05-2016' => 
   array (
@@ -658,6 +980,13 @@ return array (
       'intern' => 1697,
       'callcenter' => 1378,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '1599',
+      'callcenter' => '1599',
+      'intern' => '1936',
+      'type' => 'free',
     ),
   ),
 );

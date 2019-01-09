@@ -15,6 +15,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '26',
+      'callcenter' => '26',
+      'intern' => '52',
+      'type' => 'free',
+    ),
   ),
   '11-04-2016' => 
   array (
@@ -28,6 +35,13 @@ return array (
       'intern' => 0,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '26',
+      'callcenter' => '26',
+      'intern' => '52',
+      'type' => 'free',
     ),
   ),
   '18-04-2016' => 
@@ -43,6 +57,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '26',
+      'callcenter' => '26',
+      'intern' => '52',
+      'type' => 'free',
+    ),
   ),
   '25-04-2016' => 
   array (
@@ -56,6 +77,13 @@ return array (
       'intern' => 0,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '26',
+      'callcenter' => '26',
+      'intern' => '52',
+      'type' => 'free',
     ),
   ),
   '02-05-2016' => 
@@ -71,6 +99,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '26',
+      'callcenter' => '26',
+      'intern' => '52',
+      'type' => 'free',
+    ),
   ),
   '09-05-2016' => 
   array (
@@ -84,6 +119,13 @@ return array (
       'intern' => 24,
       'callcenter' => 0,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '26',
+      'callcenter' => '26',
+      'intern' => '52',
+      'type' => 'free',
     ),
   ),
   '23-05-2016' => 
@@ -99,6 +141,13 @@ return array (
       'callcenter' => 0,
       'type' => 'sum',
     ),
+    'allAppointments' => 
+    array (
+      'public' => '26',
+      'callcenter' => '26',
+      'intern' => '52',
+      'type' => 'free',
+    ),
   ),
   '30-05-2016' => 
   array (
@@ -112,6 +161,13 @@ return array (
       'intern' => 50,
       'callcenter' => 25,
       'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '26',
+      'callcenter' => '26',
+      'intern' => '52',
+      'type' => 'free',
     ),
   ),
 );
