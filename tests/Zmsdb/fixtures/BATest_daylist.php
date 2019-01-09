@@ -133,12 +133,12 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '12',
-    'status' => 'bookable',
+    'status' => 'full',
     'freeAppointments' => 
     array (
-      'public' => 16,
-      'intern' => 688,
-      'callcenter' => 16,
+      'public' => 0,
+      'intern' => 672,
+      'callcenter' => 0,
       'type' => 'sum',
     ),
   ),
@@ -301,12 +301,12 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '26',
-    'status' => 'bookable',
+    'status' => 'full',
     'freeAppointments' => 
     array (
-      'public' => 16,
-      'intern' => 829,
-      'callcenter' => 16,
+      'public' => 0,
+      'intern' => 813,
+      'callcenter' => 0,
       'type' => 'sum',
     ),
   ),
@@ -441,12 +441,12 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '10',
-    'status' => 'bookable',
+    'status' => 'full',
     'freeAppointments' => 
     array (
-      'public' => 16,
-      'intern' => 976,
-      'callcenter' => 16,
+      'public' => 0,
+      'intern' => 960,
+      'callcenter' => 0,
       'type' => 'sum',
     ),
   ),
@@ -584,9 +584,9 @@ return array (
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 410,
-      'intern' => 1786,
-      'callcenter' => 722,
+      'public' => 394,
+      'intern' => 1770,
+      'callcenter' => 706,
       'type' => 'sum',
     ),
   ),
