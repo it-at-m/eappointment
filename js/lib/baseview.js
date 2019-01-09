@@ -45,7 +45,7 @@ class BaseView extends ErrorHandler {
                     new ExceptionHandler(this.$main, {
                         code: err.status,
                         message: err.responseText,
-                        parent: this.$main
+                        parent: this
                     });
                     hideSpinner(this.$main);
                 } else {
@@ -113,9 +113,12 @@ class BaseView extends ErrorHandler {
         window.location.href = url;
     }
 
-    loadMessage(response, callback) {
-        this.$main.find('.form-actions').hide();
-        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {
+    loadMessage(response, callback, $container = null) {
+        if (!$container) {
+            $container = this.$main;
+        }
+        $container.find('.form-actions').hide();
+        const { lightboxContentElement, destroyLightbox } = lightbox($container, () => {
             destroyLightbox();
             callback();
         });

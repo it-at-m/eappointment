@@ -39,7 +39,7 @@ class View extends RequestView {
     setCallbacks() {
         this.onChangeScope = this.options.onChangeScope;
         this.onAbortProcess = this.options.onAbortProcess;
-        this.onCancelForm = this.options.onCancelForm;
+        this.onCancelForm = this.options.onCancelAppointmentForm;
         this.onDeleteProcess = this.options.onDeleteProcess;
         this.onSaveProcess = this.options.onSaveProcess;
         this.onEditProcess = this.options.onEditProcess;
@@ -54,14 +54,15 @@ class View extends RequestView {
 
     load() {
         const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}&selectedscope=${this.selectedScope}`
-        return this.loadContent(url, 'GET', null, null, this.showLoader).then(() => {
-            this.assigneMainFormValues();
-            this.loadPromise.then(() => {
-                this.initRequestView();
-                this.bindEvents();
-                this.$main.find('select#process_time').trigger('change');
+        return this.loadContent(url, 'GET', null, null, this.showLoader)
+            .then(() => {
+                this.assigneMainFormValues();
+                this.loadPromise.then(() => {
+                    this.initRequestView();
+                    this.bindEvents();
+                    this.$main.find('select#process_time').trigger('change');
+                });
             });
-        });
     }
 
     loadPartials() {
@@ -86,16 +87,6 @@ class View extends RequestView {
             maxChars(this);
         })
         this.$main.find('[name="familyName"]').focus();
-    }
-
-    // Merge conflict: kept this function but might be deprecated -mf
-    loadFormButtons() {
-        return new FormButtons(this.$main.find('[data-form-buttons]'), {
-            includeUrl: this.includeUrl,
-            selectedDate: this.selectedDate,
-            selectedFreeProcessTime: this.selectedFreeProcessTime,
-            selectedProcess: this.selectedProcess
-        });
     }
 
     loadFreeProcessList() {
@@ -139,8 +130,8 @@ class View extends RequestView {
             this.onDeleteProcess(this.$main, event)
         }).on('click', '.form-actions button.process-abort', (event) => {
             this.onAbortProcess(this.$main, event);
-        }).on('click', '.form-actions button.button-cancel', (event) => {
-            this.onCancelForm(this.$main, event);
+        }).on('click', '.form-actions .button-cancel', (event) => {
+            this.onCancelForm(event);
         }).on('click', '[data-action-abort]', (event) => {
             this.onAbortMessage(event);
         }).on('click', '[data-action-printWaitingNumber]', (event) => {

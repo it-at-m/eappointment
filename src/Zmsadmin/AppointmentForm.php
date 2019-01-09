@@ -23,17 +23,21 @@ class AppointmentForm extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $selectedProcess = Helper\AppointmentFormHelper::readSelectedProcess($request);
-
-        $selectedDate = ($selectedProcess)
+        $selectedProcess = Helper\AppointmentFormHelper::readSelectedProcess($request, $workstation);
+        if ($selectedProcess && ! $workstation->hasSuperUseraccount()) {
+            $workstation
+                ->testMatchingProcessScope((new Helper\ClusterHelper($workstation))->getScopeList(), $selectedProcess);
+        }
+        
+        $selectedDate = ($selectedProcess && $selectedProcess->hasId())
             ? $selectedProcess->getFirstAppointment()->toDateTime()->format('Y-m-d')
             : $validator->getParameter('selecteddate')->isString()->getValue();
 
-        $selectedTime = ($selectedProcess)
+        $selectedTime = ($selectedProcess && $selectedProcess->hasId())
             ? $selectedProcess->getFirstAppointment()->getStartTime()->format('H-i')
             : $validator->getParameter('selectedtime')->isString()->getValue();
         
-        $selectedScope = ($selectedProcess)
+        $selectedScope = ($selectedProcess && $selectedProcess->hasId())
             ? $selectedProcess->getCurrentScope()
             : Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
 
@@ -44,8 +48,8 @@ class AppointmentForm extends BaseController
             }
         }
 
-        $requestList = ($selectedScope)
-            ? Helper\AppointmentFormHelper::readRequestList($request, $workstation)
+        $requestList = ($selectedScope && $selectedScope->hasId())
+            ? Helper\AppointmentFormHelper::readRequestList($request, $workstation, $selectedScope)
             : null;
         
         $freeProcessList = ($selectedScope)
