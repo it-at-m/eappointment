@@ -6,8 +6,6 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Zmsentities\Scope;
-
 class AppointmentFormFreeProcessList extends BaseController
 {
     /**

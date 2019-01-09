@@ -50,7 +50,7 @@ class ProcessSave extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         if ($process->toProperty()->queue->withAppointment->get()) {
             $dateTime = (new \DateTime())->setTimestamp($process->getFirstAppointment()->date);
-            $scope = Helper\AppointmentFormHelper::readPreferedScope($request, $input['scope'], $workstation);
+            $scope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
             $process->withUpdatedData($input, $dateTime, $scope);
             $process = Helper\AppointmentFormHelper::writeUpdatedProcess($input, $process, $initiator);
         } else {

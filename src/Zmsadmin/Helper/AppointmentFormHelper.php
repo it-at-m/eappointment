@@ -14,16 +14,15 @@ class AppointmentFormHelper extends AppointmentFormBase
     public static function readFreeProcessList($request, $workstation)
     {
         $validator = $request->getAttribute('validator');
-
-        $selectedScopeId = $validator->getParameter('selectedscope')->isNumber()->getValue();
-        $scope = static::readPreferedScope($request, $selectedScopeId, $workstation);
+        $scope = static::readSelectedScope($request, $workstation);
         $scopeList = ($scope) ? (new ScopeList)->addEntity($scope) : (new ClusterHelper($workstation))->getScopeList();
         $slotType = static::setSlotType($validator);
         $slotsRequired = static::setSlotsRequired($validator, $scope);
 
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
-        $selectedProcess = ($selectedProcessId) ?
-            \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() : null;
+        $selectedProcess = ($selectedProcessId)
+            ? \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity()
+            : null;
         $freeProcessList = static::readProcessListByScopeAndDate($validator, $scopeList, $slotType, $slotsRequired);
         return static::getFreeProcessListWithSelectedProcess(
             $validator,
@@ -31,6 +30,37 @@ class AppointmentFormHelper extends AppointmentFormBase
             $freeProcessList,
             $selectedProcess
         );
+    }
+
+    public static function readRequestList($request, $workstation)
+    {
+        $scope = static::readSelectedScope($request, $workstation);
+        $requestList = new \BO\Zmsentities\Collection\RequestList;
+        if ($scope) {
+            $requestList = \App::$http
+                ->readGetResult('/scope/'. $scope->getId().'/request/')
+                ->getCollection();
+        }
+        return ($requestList) ? $requestList->sortByName() : $requestList;
+    }
+
+    public static function readSelectedScope($request, $workstation)
+    {
+        $validator = $request->getAttribute('validator');
+        $input = $request->getParsedBody();
+        $selectedScopeId = (isset($input['scope']))
+            ? $input['scope']
+            : $validator->getParameter('selectedscope')->isNumber()->getValue();
+        $selectedScope = (! $workstation->queue['clusterEnabled'] && ! $selectedScopeId)
+        ? new \BO\Zmsentities\Scope($workstation->scope)
+        : null;
+
+        if ($selectedScopeId) {
+            $selectedScope = \App::$http
+              ->readGetResult('/scope/'. $selectedScopeId .'/', ['resolveReferences' => 1])
+              ->getEntity();
+        }
+        return $selectedScope;
     }
 
     protected static function readProcessListByScopeAndDate($validator, $scopeList, $slotType, $slotsRequired)
@@ -68,34 +98,10 @@ class AppointmentFormHelper extends AppointmentFormBase
     protected static function setSlotsRequired($validator, $scope)
     {
         $slotsRequired = 0;
-        if ($scope->getPreference('appointment', 'multipleSlotsEnabled')) {
+        if ($scope && $scope->getPreference('appointment', 'multipleSlotsEnabled')) {
             $slotsRequired = $validator->getParameter('slotsRequired')->isNumber()->getValue();
             $slotsRequired = ($slotsRequired) ? $slotsRequired : 0;
         }
         return $slotsRequired;
-    }
-
-    public static function readPreferedScope($request, $scopeId, $workstation)
-    {
-        $scope = new \BO\Zmsentities\Scope($workstation->scope);
-        $clusterHelper = new ClusterHelper($workstation);
-        if ($scopeId > 0) {
-            $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/', ['resolveReferences' => 1])->getEntity();
-        } elseif ($clusterHelper->isClusterEnabled()) {
-            $validator = $request->getAttribute('validator');
-            $slotType = $validator->getParameter('slotType')->isString()->getValue();
-            $slotType = ($slotType) ? $slotType : 'intern';
-            $slotsRequired = $validator->getParameter('slotsRequired')->isNumber()->getValue();
-            $slotsRequired = ($slotsRequired) ? $slotsRequired : 0;
-            $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
-            $calendar = new Calendar($selectedDate);
-            $scopeList = (new ClusterHelper($workstation))->getScopeList();
-            //read free processlist of day and cluster scopelist to get scope with free processes of given day
-            $freeProcessList = $calendar->readAvailableSlotsFromDayAndScopeList($scopeList, $slotType, $slotsRequired);
-            if ($freeProcessList && 0 < $freeProcessList->getAppointmentList()->count()) {
-                $scope = $freeProcessList->getFirst()->scope;
-            }
-        }
-        return $scope;
     }
 }

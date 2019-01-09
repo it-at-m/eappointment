@@ -55,11 +55,6 @@ class ProcessQueueTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_scope_141.json")
@@ -79,70 +74,6 @@ class ProcessQueueTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/100011/8d11/confirmation/notification/',
                     'response' => $this->readFixture("POST_notification.json")
-                ]
-            ]
-        );
-        $response = $this->render($this->arguments, [
-            'slotCount' => 1,
-            'familyName' => 'Test BO',
-            'telephone' => '1234567890',
-            'email' => 'zmsbo@berlinonline.de',
-            'sendConfirmation' => 1,
-            'sendMailConfirmation' => 1,
-            'headsUpTime' => 3600,
-            'requests' => [120703]
-        ], [], 'POST');
-        $this->assertRedirect($response, '/appointmentForm/?selectedprocess=100011&success=process_queued');
-        $this->assertEquals(302, $response->getStatusCode());
-    }
-
-    public function testRenderingWithoutAppointmentFromCluster()
-    {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/process/waitingnumber/',
-                    'response' => $this->readFixture("GET_process_queued.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/availability/',
-                    'parameters' => ['resolveReferences' => 0],
-                    'response' => $this->readFixture("GET_scope_141_availability.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/100011/8d11/confirmation/mail/',
-                    'response' => $this->readFixture("POST_mail.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/100011/8d11/confirmation/notification/',
-                    'response' => $this->readFixture("POST_notification.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
-                    'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ]
             ]
         );
@@ -175,11 +106,6 @@ class ProcessQueueTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/workstation/process/waitingnumber/',
                     'response' => $this->readFixture("GET_process_queued.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
                 ],
                 [
                     'function' => 'readGetResult',
