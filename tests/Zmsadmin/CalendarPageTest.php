@@ -56,11 +56,6 @@ class CalendarPageTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_scope_141.json")

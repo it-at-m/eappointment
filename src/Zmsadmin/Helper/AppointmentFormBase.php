@@ -44,15 +44,14 @@ class AppointmentFormBase
     public static function writeQueuedProcess($request, $workstation, \DateTimeImmutable $dateTime)
     {
         $input = $request->getParsedBody();
-        $scopeId = (isset($input['scope'])) ? $input['scope'] : 0;
-        $scope = static::readPreferedScope($request, $scopeId, $workstation);
+        $scope = static::readSelectedScope($request, $workstation);
         if ($scope->getResolveLevel() < 1) {
             $scope =  \App::$http->readGetResult('/scope/'. $scope->getId() .'/', ['resolveReferences' => 1])
                 ->getEntity();
         }
         try {
             $isOpened = \App::$http
-                ->readGetResult('/scope/'. $scope->id .'/availability/', ['resolveReferences' => 0])
+                ->readGetResult('/scope/'. $scope->getId() .'/availability/', ['resolveReferences' => 0])
                 ->getCollection()
                 ->withScope($scope)
                 ->isOpened(\App::$now);
@@ -140,8 +139,7 @@ class AppointmentFormBase
 
     protected static function getValidatedForm($request, $workstation)
     {
-        $input = $request->getParsedBody();
-        $scope = static::readPreferedScope($request, $input['scope'], $workstation);
+        $scope = static::readSelectedScope($request, $workstation);
         $validationList = FormValidation::fromAdminParameters($scope['preferences']);
         return $validationList;
     }

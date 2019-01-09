@@ -40,11 +40,6 @@ class ProcessSaveTest extends Base
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/process/82252/12a2/',
                     'parameters' => ['initiator' => null],

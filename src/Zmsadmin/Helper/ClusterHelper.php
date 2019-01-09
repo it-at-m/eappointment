@@ -29,20 +29,6 @@ class ClusterHelper
         return static::$workstation->getScopeList(static::$cluster);
     }
 
-    public static function getRequestList()
-    {
-        if (static::isClusterEnabled()) {
-            $requestList = \App::$http
-                ->readGetResult('/cluster/'. static::$cluster->id .'/request/')
-                ->getCollection();
-        } else {
-            $requestList = \App::$http
-                ->readGetResult('/scope/'. static::$workstation->scope['id'] .'/request/')
-                ->getCollection();
-        }
-        return $requestList;
-    }
-
     public static function getProcessList($selectedDate)
     {
         if (static::isClusterEnabled()) {

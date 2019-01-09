@@ -13,6 +13,7 @@ class AppointmentForm extends BaseController
     /**
      * @SuppressWarnings(Param)
      * @SuppressWarnings(Cyclomatic)
+     * @SuppressWarnings(Complexity)
      * @return String
      */
     public function readResponse(
@@ -20,20 +21,21 @@ class AppointmentForm extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $validator = $request->getAttribute('validator');
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $selectedProcess = Helper\AppointmentFormHelper::readSelectedProcess($request);
 
-        $validator = $request->getAttribute('validator');
-        $success = $validator->getParameter('success')->isString()->getValue();
-        $error = $validator->getParameter('error')->isString()->getValue();
-        $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
-        $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();
-        $selectedScope = $this->getSelectedScope($validator, $workstation);
+        $selectedDate = ($selectedProcess)
+            ? $selectedProcess->getFirstAppointment()->toDateTime()->format('Y-m-d')
+            : $validator->getParameter('selecteddate')->isString()->getValue();
 
-        if ($selectedProcess) {
-            $selectedDate = $selectedProcess->getFirstAppointment()->toDateTime()->format('Y-m-d');
-            $selectedTime = $selectedProcess->getFirstAppointment()->getStartTime()->format('H-i');
-        }
+        $selectedTime = ($selectedProcess)
+            ? $selectedProcess->getFirstAppointment()->getStartTime()->format('H-i')
+            : $validator->getParameter('selectedtime')->isString()->getValue();
+        
+        $selectedScope = ($selectedProcess)
+            ? $selectedProcess->getCurrentScope()
+            : Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
 
         if ($request->isPost()) {
             $validatedForm = Helper\AppointmentFormHelper::handlePostRequests($request, $workstation, $selectedProcess);
@@ -42,13 +44,13 @@ class AppointmentForm extends BaseController
             }
         }
 
-        if ($success) {
-            $changedProcess = $selectedProcess;
-            $selectedProcess = null;
-        }
-
-        $requestList = (new Helper\ClusterHelper($workstation))->getRequestList();
-        $freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation);
+        $requestList = ($selectedScope)
+            ? Helper\AppointmentFormHelper::readRequestList($request, $workstation)
+            : null;
+        
+        $freeProcessList = ($selectedScope)
+            ? Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation)
+            : null;
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -56,42 +58,20 @@ class AppointmentForm extends BaseController
             array(
                 'workstation' => $workstation,
                 'scope' => $selectedScope,
-                'preferedScope' => $this->readPreferedScope($request, $workstation, $selectedProcess),
-                'cluster' => (new Helper\ClusterHelper($workstation))->getEntity(),
+                'cluster' => (new Helper\ClusterHelper($workstation, $selectedScope))->getEntity(),
                 'department' =>
                     \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity(),
                 'selectedProcess' => $selectedProcess,
-                'changedProcess' => (isset($changedProcess)) ? $changedProcess : null,
+                'changedProcess' =>
+                    ($validator->getParameter('success')->isString()->getValue()) ? $selectedProcess : null,
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
-                'selectedTime' => ($selectedTime) ? $selectedTime : null,
-                'requestList' => (count($requestList)) ? $requestList->sortByName() : null,
+                'selectedTime' => $selectedTime,
                 'formData' => (isset($validatedForm) && $validatedForm) ? $validatedForm->getStatus(null, true) : null,
-                'success' => $success,
-                'error' => $error,
-                'freeProcessList' => $freeProcessList
+                'success' => $validator->getParameter('success')->isString()->getValue(),
+                'error' => $validator->getParameter('error')->isString()->getValue(),
+                'freeProcessList' => $freeProcessList,
+                'requestList' => $requestList
             )
         );
-    }
-
-    protected function readPreferedScope($request, $workstation, $selectedProcess)
-    {
-        $validator = $request->getAttribute('validator');
-        $selectedScopeId = $validator->getParameter('selectedscope')->isNumber()->getValue();
-        if ($selectedProcess) {
-            $selectedScopeId = $selectedProcess->getFirstAppointment()->getScope()->getId();
-        }
-        return Helper\AppointmentFormHelper::readPreferedScope($request, $selectedScopeId, $workstation);
-    }
-
-    protected function getSelectedScope($validator, $workstation)
-    {
-        $selectedScope = $validator->getParameter('selectedscope')->isNumber()->getValue();
-        if ($selectedScope) {
-            $selectedScope = \App::$http
-              ->readGetResult('/scope/'. $selectedScope .'/', ['resolveReferences' => 1])
-              ->getEntity();
-        }
-
-        return ($selectedScope && $selectedScope->hasId()) ? $selectedScope : $workstation->scope;
     }
 }

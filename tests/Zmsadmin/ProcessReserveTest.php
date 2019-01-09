@@ -40,11 +40,6 @@ class ProcessReserveTest extends Base
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/process/status/confirmed/',
                     'response' => $this->readFixture("GET_process_100005_95a3_confirmed.json")
@@ -82,11 +77,6 @@ class ProcessReserveTest extends Base
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/process/status/confirmed/',
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
@@ -122,11 +112,6 @@ class ProcessReserveTest extends Base
                     'url' => '/scope/141/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -175,11 +160,6 @@ class ProcessReserveTest extends Base
                     'url' => '/scope/141/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
                 ],
                 [
                     'function' => 'readPostResult',

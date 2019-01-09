@@ -19,6 +19,7 @@ class View extends RequestView {
         } else {
             this.loadPartials();
         }
+
         $('textarea.maxchars').each(function () { maxChars(this) });
         this.$main.find('[name="familyName"]').focus();
     }
@@ -38,6 +39,7 @@ class View extends RequestView {
     setCallbacks() {
         this.onChangeScope = this.options.onChangeScope;
         this.onAbortProcess = this.options.onAbortProcess;
+        this.onCancelForm = this.options.onCancelForm;
         this.onDeleteProcess = this.options.onDeleteProcess;
         this.onSaveProcess = this.options.onSaveProcess;
         this.onEditProcess = this.options.onEditProcess;
@@ -86,6 +88,16 @@ class View extends RequestView {
         this.$main.find('[name="familyName"]').focus();
     }
 
+    // Merge conflict: kept this function but might be deprecated -mf
+    loadFormButtons() {
+        return new FormButtons(this.$main.find('[data-form-buttons]'), {
+            includeUrl: this.includeUrl,
+            selectedDate: this.selectedDate,
+            selectedFreeProcessTime: this.selectedFreeProcessTime,
+            selectedProcess: this.selectedProcess
+        });
+    }
+
     loadFreeProcessList() {
         return new FreeProcessView(this.$main.find('[data-free-process-list]'), {
             includeUrl: this.includeUrl,
@@ -127,6 +139,8 @@ class View extends RequestView {
             this.onDeleteProcess(this.$main, event)
         }).on('click', '.form-actions button.process-abort', (event) => {
             this.onAbortProcess(this.$main, event);
+        }).on('click', '.form-actions button.button-cancel', (event) => {
+            this.onCancelForm(this.$main, event);
         }).on('click', '[data-action-abort]', (event) => {
             this.onAbortMessage(event);
         }).on('click', '[data-action-printWaitingNumber]', (event) => {

@@ -22,11 +22,6 @@ class AppointmentFormFreeProcessListTest extends Base
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
                     'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
@@ -47,11 +42,6 @@ class AppointmentFormFreeProcessListTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -76,11 +66,6 @@ class AppointmentFormFreeProcessListTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
                 ],
                 [
                     'function' => 'readPostResult',

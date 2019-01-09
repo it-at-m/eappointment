@@ -30,6 +30,7 @@ class View extends BaseView {
             'loadAllPartials',
             'onAbortMessage',
             'onAbortProcess',
+            'onCancelForm',
             'onChangeScope',
             'onPrintWaitingNumber',
             'onDatePick',
@@ -195,6 +196,14 @@ class View extends BaseView {
         stopEvent(event);
         this.selectedProcess = null;
         this.loadAppointmentForm(true, false, $container);
+    }
+
+    onCancelForm($container, event) {
+        stopEvent(event);
+        this.selectedProcess = null;
+        this.selectedScope = null;
+        this.loadAppointmentForm(true, false, $container);
+        this.loadCalendar();
     }
 
     onAbortMessage(event) {
@@ -420,6 +429,7 @@ class View extends BaseView {
             onCopyProcess: this.onCopyProcess,
             onChangeScope: this.onChangeScope,
             onAbortProcess: this.onAbortProcess,
+            onCancelForm: this.onCancelForm,
             onPrintWaitingNumber: this.onPrintWaitingNumber,
             onAbortMessage: this.onAbortMessage,
             onSelectDateWithOverlay: this.onSelectDateWithOverlay,

@@ -12,6 +12,12 @@
     }
     .form-actions {
         margin-bottom:      0;
+        .button-cancel {
+            @extend
+                .btn,
+                .btn--alert,
+                .btn--shadow;
+        }
     }
     label {
         font-size:          0.8566em; //12px;

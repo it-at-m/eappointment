@@ -33,7 +33,7 @@ class ProcessReserve extends BaseController
 
         $selectedTime = str_replace('-', ':', $input['selectedtime']);
         $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $input['selecteddate'] .' '. $selectedTime);
-        $scope = Helper\AppointmentFormHelper::readPreferedScope($request, $input['scope'], $workstation);
+        $scope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
         $process->withUpdatedData($input, $dateTime, $scope);
         $process = \App::$http
             ->readPostResult('/process/status/reserved/', $process, [

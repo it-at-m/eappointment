@@ -48,7 +48,7 @@ class AppointmentFormTest extends Base
         $this->assertContains('title="Spontankunde"', (string)$response->getBody());
     }
 
-    public function testRenderingClusterEnabled()
+    public function testClusterEnabled()
     {
         $this->setApiCalls(
             [
@@ -67,11 +67,43 @@ class AppointmentFormTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/department/',
                     'response' => $this->readFixture("GET_department_74.json")
+                ]
+            ]
+        );
+        $response = $this->render([], []);
+        $this->assertContains('Bürgeramt Heerstraße', (string)$response->getBody());
+    }
+
+    public function testClusterEnabledWithSelectedScope()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/cluster/109/request/',
-                    'response' => $this->readFixture("GET_cluster_109_requestlist.json")
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/request/',
+                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -81,7 +113,7 @@ class AppointmentFormTest extends Base
                 ]
             ]
         );
-        $response = $this->render([], []);
+        $response = $this->render([], ['selectedscope' => 141]);
         $this->assertContains('Bürgeramt Heerstraße', (string)$response->getBody());
     }
 
@@ -94,12 +126,6 @@ class AppointmentFormTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -217,60 +243,6 @@ class AppointmentFormTest extends Base
             'slotsRequired' => 3
         ], []);
         $this->assertContains('slotCount', (string)$response->getBody());
-    }
-
-    public function testGetPreferedScopeByClusterFailed()
-    {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/prefered/cluster/109/',
-                    'parameters' => ['resolveReferences' => 0],
-                    'exception' => new \BO\Zmsclient\Exception()
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'response' => $this->readFixture("GET_department_74.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/cluster/109/request/',
-                    'response' => $this->readFixture("GET_cluster_109_requestlist.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/100044/',
-                    'response' => $this->readFixture("GET_process_100044_57c2.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
-                    'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
-                ]
-            ]
-        );
-        $response = $this->render([], ['selectedprocess' => 100044]);
-        $this->assertContains('value="141"', (string)$response->getBody());
     }
 
     public function testWithUpdateSuccess()
@@ -515,11 +487,6 @@ class AppointmentFormTest extends Base
                     'url' => '/scope/141/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
                 ]
             ]
         );
@@ -551,11 +518,6 @@ class AppointmentFormTest extends Base
                     'url' => '/scope/141/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -593,11 +555,6 @@ class AppointmentFormTest extends Base
                     'url' => '/scope/141/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
                 ]
             ]
         );
@@ -629,11 +586,6 @@ class AppointmentFormTest extends Base
                     'url' => '/scope/141/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
                 ]
             ]
         );
@@ -704,7 +656,7 @@ class AppointmentFormTest extends Base
     *
     */
 
-    public function testWithSelectedProcess()
+    public function testSelectedProcessWithDate()
     {
         $this->setApiCalls(
             [
@@ -713,12 +665,6 @@ class AppointmentFormTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -768,12 +714,6 @@ class AppointmentFormTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
