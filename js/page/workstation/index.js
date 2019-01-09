@@ -30,7 +30,7 @@ class View extends BaseView {
             'loadAllPartials',
             'onAbortMessage',
             'onAbortProcess',
-            'onCancelForm',
+            'onCancelAppointmentForm',
             'onChangeScope',
             'onPrintWaitingNumber',
             'onDatePick',
@@ -151,20 +151,23 @@ class View extends BaseView {
 
     onSaveProcess($container, event, action = 'update') {
         stopEvent(event);
-        this.selectedProcess = $(event.target).data('id');
+        if ($(event.target).data('id')) {
+            this.selectedProcess = $(event.target).data('id');
+        }
         const sendData = $container.find('form').serializeArray();
         sendData.push({ name: action, value: 1 });
         sendData.push({ name: 'selectedprocess', value: this.selectedProcess });
         sendData.push({ name: 'initiator', value: this.initiator });
         this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then((response) => {
+            if ($(response).find('form').data('savedProcess')) {
+                this.selectedProcess = $(response).find('form').data('savedProcess');
+            }
             if (false === response.toLowerCase().includes('has-error')) {
-                this.selectedProcess = null;
                 this.loadQueueInfo();
                 this.loadQueueTable();
                 this.loadCalendar();
+                this.loadAppointmentForm(true, true);
             }
-        }).then(() => {
-            this.loadAppointmentForm(true, true, $container);
         });
     }
 
@@ -182,13 +185,13 @@ class View extends BaseView {
         sendData.push({ name: 'initiator', value: this.initiator });
         this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then((response) => {
             if (false === response.toLowerCase().includes('has-error')) {
-                this.selectedProcess = null;
-                this.loadQueueInfo();
-                this.loadQueueTable();
-                this.loadCalendar();
+                this.loadMessage(response, () => {
+                    this.loadAppointmentForm(true, true);
+                    this.loadQueueInfo();
+                    this.loadQueueTable();
+                    this.loadCalendar();
+                }, $container);
             }
-        }).then(() => {
-            this.loadAppointmentForm(true, true, $container);
         });
     }
 
@@ -198,11 +201,12 @@ class View extends BaseView {
         this.loadAppointmentForm(true, false, $container);
     }
 
-    onCancelForm($container, event) {
+    onCancelAppointmentForm(event) {
+        //console.log("Cancel Appointment Form")
         stopEvent(event);
         this.selectedProcess = null;
         this.selectedScope = null;
-        this.loadAppointmentForm(true, false, $container);
+        this.loadAppointmentForm();
         this.loadCalendar();
     }
 
@@ -215,25 +219,16 @@ class View extends BaseView {
         stopEvent(event);
         this.selectedProcess = null;
         const processId = $(event.target).data('id');
-        if ($container) {
-            this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', { 'delete': 1, 'processId': processId, 'initiator': this.initiator }, $container).then(() => {
-                this.loadAppointmentForm(true, true, $container);
+        showSpinner();
+        this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', { 'delete': 1, 'processId': processId, 'initiator': this.initiator }).then((response) => {
+            this.loadMessage(response, () => {
+                this.loadAppointmentForm();
                 this.loadQueueInfo();
                 this.loadQueueTable();
                 this.loadCalendar();
+                hideSpinner();
             });
-        } else {
-            showSpinner();
-            this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', { 'delete': 1, 'processId': processId, 'initiator': this.initiator }).then((response) => {
-                this.loadMessage(response, () => {
-                    this.loadAppointmentForm(true, true);
-                    this.loadQueueInfo();
-                    this.loadQueueTable();
-                    this.loadCalendar();
-                    hideSpinner();
-                });
-            });
-        }
+        });
     }
 
     onConfirm(event, template, callback) {
@@ -252,7 +247,7 @@ class View extends BaseView {
         const sendData = $container.find('form').serializeArray();
         sendData.push({ name: 'queue', value: 1 });
         this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then(() => {
-            this.loadAppointmentForm(true, true, $container);
+            //this.loadAppointmentForm(true, true);
             this.loadQueueInfo();
             this.loadQueueTable();
             this.loadCalendar();
@@ -283,6 +278,7 @@ class View extends BaseView {
     }
 
     onCancelNextProcess() {
+        //console.log('CANCEL');
         this.calledProcess = null;
         this.loadClientNext();
     }
@@ -429,7 +425,7 @@ class View extends BaseView {
             onCopyProcess: this.onCopyProcess,
             onChangeScope: this.onChangeScope,
             onAbortProcess: this.onAbortProcess,
-            onCancelForm: this.onCancelForm,
+            onCancelAppointmentForm: this.onCancelAppointmentForm,
             onPrintWaitingNumber: this.onPrintWaitingNumber,
             onAbortMessage: this.onAbortMessage,
             onSelectDateWithOverlay: this.onSelectDateWithOverlay,

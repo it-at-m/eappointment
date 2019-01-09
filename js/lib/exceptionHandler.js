@@ -2,7 +2,7 @@ import $ from 'jquery'
 
 class ExceptionHandler {
 
-    constructor (element, options) {
+    constructor(element, options) {
         this.$main = $(element)
         this.message = options.message;
         this.parent = options.parent || this.$main;
@@ -19,7 +19,7 @@ class ExceptionHandler {
         }
 
         this.$messageElement = $($message.get(0).outerHTML);
-        this.$main.find('.dialog','.exception').remove();
+        this.$main.find('.dialog', '.exception').remove();
         this.$main.find('.body').first().prepend(this.$messageElement);
         var $buttons = this.$messageElement.find('.btn');
         if ($buttons.length == 0) {
@@ -30,8 +30,9 @@ class ExceptionHandler {
             ev.preventDefault();
             ev.stopPropagation();
             var callback = $(ev.target).data('callback');
-            if (this.parent[callback])
+            if (this.parent[callback]) {
                 this.callback = this.parent[callback];
+            }
             this.callback(ev);
         })
         /*setTimeout(() => {

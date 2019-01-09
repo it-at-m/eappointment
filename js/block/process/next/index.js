@@ -6,7 +6,7 @@ window.refreshCounter = null;
 
 class View extends BaseView {
 
-    constructor (element, options) {
+    constructor(element, options) {
         super(element, options);
         this.element = element;
         this.options = options;
@@ -15,11 +15,11 @@ class View extends BaseView {
         this.exclude = "";
         this.processId = options.calledProcess || 0;
         this.refreshCurrentTime = null;
-        this.onNextProcess = options.onNextProcess || (() => {});
-        this.onCallNextProcess = options.onCallNextProcess || (() => {});
-        this.onCancelNextProcess = options.onCancelNextProcess || (() => {});
-        this.onCalledProcess = options.onCalledProcess || (() => {});
-        this.bindPublicMethods('cleanInstance', 'bindEvents','loadClientNext','setTimeSinceCall', 'loadCalled', 'loadProcessing');
+        this.onNextProcess = options.onNextProcess || (() => { });
+        this.onCallNextProcess = options.onCallNextProcess || (() => { });
+        this.onCancelForm = options.onCancelNextProcess || (() => { });
+        this.onCalledProcess = options.onCalledProcess || (() => { });
+        this.bindPublicMethods('cleanInstance', 'bindEvents', 'loadClientNext', 'setTimeSinceCall', 'loadCalled', 'loadProcessing');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
         //console.log('Component: Client', this, options);
@@ -127,9 +127,9 @@ class View extends BaseView {
         this.setNextSinceCallTick(localCallTime);
     }
 
-    setNextSinceCallTick (localCallTime) {
+    setNextSinceCallTick(localCallTime) {
         let diff = Math.floor((new Date() / 1000) - localCallTime);
-        let minute = (diff >= 60) ? Math.floor(diff/60) : 0;
+        let minute = (diff >= 60) ? Math.floor(diff / 60) : 0;
         let second = diff % 60;
         let temp = '';
         second++;
@@ -137,7 +137,7 @@ class View extends BaseView {
             second = 0;
             minute++;
         }
-        temp+=((minute < 10)? "0" : "")+minute + ":" + ((second < 10)? "0" : "")+second;
+        temp += ((minute < 10) ? "0" : "") + minute + ":" + ((second < 10) ? "0" : "") + second;
 
         $("#clock").text(temp);
         clearTimeout(window.refreshCounter);
@@ -146,21 +146,21 @@ class View extends BaseView {
         }, 1000);
     }
 
-    cleanInstance () {
+    cleanInstance() {
         clearTimeout(window.refreshCounter);
         clearTimeout(this.refreshCurrentTime);
         this.setCurrentTime();
         this.calledProcess = 0;
     }
 
-    setCurrentTime () {
-        var time=new Date();
-        var hour=time.getHours();
-        var minute=time.getMinutes();
-        var second=time.getSeconds();
-        var temp=hour;
-        if (second%2) temp+=((minute<10)? ":0" : ":")+minute;
-        else temp+=((minute<10)? " 0" : " ")+minute;
+    setCurrentTime() {
+        var time = new Date();
+        var hour = time.getHours();
+        var minute = time.getMinutes();
+        var second = time.getSeconds();
+        var temp = hour;
+        if (second % 2) temp += ((minute < 10) ? ":0" : ":") + minute;
+        else temp += ((minute < 10) ? " 0" : " ") + minute;
         $('.currentTime').text(temp);
         this.refreshCurrentTime = setTimeout(() => {
             this.setCurrentTime()

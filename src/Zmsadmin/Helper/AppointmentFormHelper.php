@@ -32,16 +32,15 @@ class AppointmentFormHelper extends AppointmentFormBase
         );
     }
 
-    public static function readRequestList($request, $workstation)
+    public static function readRequestList($request, $workstation, $selectedScope = null)
     {
-        $scope = static::readSelectedScope($request, $workstation);
+        $scope = ($selectedScope) ? $selectedScope : static::readSelectedScope($request, $workstation);
         $requestList = new \BO\Zmsentities\Collection\RequestList;
         if ($scope) {
             $requestList = \App::$http
-                ->readGetResult('/scope/'. $scope->getId().'/request/')
-                ->getCollection();
+                ->readGetResult('/scope/'. $scope->getId().'/request/');
         }
-        return ($requestList) ? $requestList->sortByName() : $requestList;
+        return ($requestList) ? $requestList->getCollection()->sortByName() : $requestList;
     }
 
     public static function readSelectedScope($request, $workstation)
