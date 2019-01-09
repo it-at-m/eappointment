@@ -27,7 +27,7 @@ class Counter extends BaseController
         $selectedDate = ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d');
         $selectedTime = $validator->getParameter('time')->isString()->getValue();
         $selectedTime = ($selectedTime) ? $selectedTime : null;
-        $waitingnumber = $validator->getParameter('waitingnumber')->isNumber()->getValue();
+        $selectedprocess = $validator->getParameter('selectedprocess')->isNumber()->getValue();
 
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect(
@@ -46,7 +46,7 @@ class Counter extends BaseController
                 'menuActive' => 'counter',
                 'selectedDate' => $selectedDate,
                 'selectedTime' => $selectedTime,
-                'waitingnumber' => $waitingnumber,
+                'selectedprocess' => $selectedprocess,
                 'workstation' => $workstation->getArrayCopy()            )
         );
     }
