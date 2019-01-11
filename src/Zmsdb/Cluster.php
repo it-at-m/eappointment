@@ -248,7 +248,11 @@ class Cluster extends Base
     {
         if ($entity->mime && $entity->content) {
             $this->deleteImage($clusterId);
-            $imageName = 'c_'. $clusterId .'_bild.'. $entity->getExtension();
+            $extension = $entity->getExtension();
+            if ($extension == 'jpeg') {
+                $extension = 'jpg'; //compatibility ZMS1
+            }
+            $imageName = 'c_'. $clusterId .'_bild.'. $extension;
             $this->perform(
                 (new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData(),
                 array(
