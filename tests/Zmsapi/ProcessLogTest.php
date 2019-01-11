@@ -25,7 +25,7 @@ class ProcessLogTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
         $response = $this->render(['id' => 123], [], []);
-        $this->assertContains('"data":{}', (string)$response->getBody());
+        $this->assertContains('"data":[]', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 }
