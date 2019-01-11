@@ -429,7 +429,11 @@ class Scope extends Base
     {
         if ($entity->mime && $entity->content) {
             $this->deleteImage($scopeId);
-            $imageName = 's_'. $scopeId .'_bild.'. $entity->getExtension();
+            $extension = $entity->getExtension();
+            if ($extension == 'jpeg') {
+                $extension = 'jpg'; //compatibility ZMS1
+            }
+            $imageName = 's_'. $scopeId .'_bild.'. $extension;
             $this->getWriter()->perform(
                 (new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData(),
                 array(
