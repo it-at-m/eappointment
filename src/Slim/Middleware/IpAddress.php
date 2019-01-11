@@ -53,13 +53,13 @@ class IpAddress
      * Constructor
      *
      * @param bool $checkProxyHeaders Whether to use proxy headers to determine client IP
-     * @param array $trustedProxies   List of IP addresses of trusted proxies
+     * @param $trustedProxies   List of IP addresses of trusted proxies or TRUE if all proxies should be trusted
      * @param string $attributeName   Name of attribute added to ServerRequest object
      * @param array $headersToInspect List of headers to inspect
      */
     public function __construct(
         $checkProxyHeaders = false,
-        array $trustedProxies = [],
+        $trustedProxies = [],
         $attributeName = null,
         array $headersToInspect = []
     ) {
