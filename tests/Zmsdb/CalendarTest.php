@@ -59,21 +59,6 @@ class CalendarTest extends Base
         $this->assertEquals(1, $entity->getDay(2016, 4, 19)['freeAppointments']['public']);
     }
 
-    /**
-     * Summing two scopes had a bug resulting in 15 free public appointments
-     * on 2016-04-12
-     */
-    public function testFalkenhagenerWithSum()
-    {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $input = $this->getTestEntity();
-        foreach ([317869, 324414] as $providerId) {
-            $input->addProvider('dldb', $providerId);
-        }
-        $entity = (new Query())->readResolvedEntity($input, $now);
-        $this->assertEquals(16, $entity->getDay(2016, 4, 12)['freeAppointments']['public']);
-    }
-
     public function testHeerstr()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
