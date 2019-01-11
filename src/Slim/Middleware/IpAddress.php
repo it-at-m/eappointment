@@ -95,7 +95,7 @@ class IpAddress
 
         return $response = $next($request, $response);
     }
-    
+
     /**
      * Find out the client's IP address from the headers available to us
      *
@@ -111,19 +111,12 @@ class IpAddress
             $ipAddress = $serverParams['REMOTE_ADDR'];
         }
 
-        $checkProxyHeaders = $this->checkProxyHeaders;
-        if ($checkProxyHeaders && !empty($this->trustedProxies)) {
-            if ($this->trustedProxies !== true && !in_array($ipAddress, $this->trustedProxies)) {
-                $checkProxyHeaders = false;
-            }
-        }
-
-        if ($checkProxyHeaders) {
+        if ($this->isCheckProxyHeaders($ipAddress)) {
             foreach ($this->headersToInspect as $header) {
                 if ($request->hasHeader($header)) {
-                    $ip = trim(current(explode(',', $request->getHeaderLine($header))));
-                    if ($this->isValidIpAddress($ip)) {
-                        $ipAddress = $ip;
+                    $ipString = trim(current(explode(',', $request->getHeaderLine($header))));
+                    if ($this->isValidIpAddress($ipString)) {
+                        $ipAddress = $ipString;
                         break;
                     }
                 }
@@ -133,17 +126,29 @@ class IpAddress
         return $ipAddress;
     }
 
+    protected function isCheckProxyHeaders($ipAddress)
+    {
+        $checkProxyHeaders = $this->checkProxyHeaders;
+        if ($checkProxyHeaders && ($this->trustedProxies === true || !empty($this->trustedProxies))) {
+            if ($this->trustedProxies !== true && !in_array($ipAddress, $this->trustedProxies)) {
+                $checkProxyHeaders = false;
+            }
+        }
+        return $checkProxyHeaders;
+    }
+
     /**
      * Check that a given string is a valid IP address
      *
-     * @param  string  $ip
+     * @param  string  $ipString
      * @return boolean
      */
-    protected function isValidIpAddress($ip)
+    protected function isValidIpAddress($ipString)
     {
         $flags = FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6;
-        if (filter_var($ip, FILTER_VALIDATE_IP, $flags) === false) {
+        if (filter_var($ipString, FILTER_VALIDATE_IP, $flags) === false) {
             return false;
         }
         return true;
-    }}
+    }
+}
