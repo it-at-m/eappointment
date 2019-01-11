@@ -1,3 +1,8 @@
+## v2.19.03
+
+* #35013 Bugfix: Probleme mit kommender PHP Version 7.2 behoben
+* #35345 Unittests: Fehlerhafte Tests entfernt in Folge der korrigierte Berechnung von Öffnungszeiten in mehrwöchigem Abstand
+
 ## v2.19.02
 
 * #31487 Bugfix: Abbruch der Archivierung bei fehlendem Cluster oder Standort behoben
