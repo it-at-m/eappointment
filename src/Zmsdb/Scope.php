@@ -60,7 +60,7 @@ class Scope extends Base
                 [$clusterId]
             );
         }
-        if (count($result)) {
+        if ($result) {
             foreach ($result as $entity) {
                 if (0 == $resolveReferences) {
                     $entity = new Entity(
@@ -122,7 +122,7 @@ class Scope extends Base
                 [$departmentId]
             );
         }
-        if (count($result)) {
+        if ($result) {
             foreach ($result as $entity) {
                 if (0 == $resolveReferences) {
                     $entity = new Entity(

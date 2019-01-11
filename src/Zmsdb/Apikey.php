@@ -98,7 +98,7 @@ class Apikey extends Base
                 'key' => $apiKey
             ]
         );
-        return ($data) ? $data : null;
+        return ($data) ? $data : [];
     }
 
     /**
