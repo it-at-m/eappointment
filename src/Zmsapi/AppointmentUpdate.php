@@ -32,10 +32,11 @@ class AppointmentUpdate extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
 
         $processOld = Process::init()->readEntity($args['id'], $args['authKey'], 1);
+ 
         $this->testProcessData($processOld);
         $this->updateWithNewProcessId($processOld);
         $processNew = $this->updateWithNewAppointment($input, $processOld, $resolveReferences);
-        
+
         $message = Response\Message::create($request);
         $message->data = $processNew;
 
@@ -49,8 +50,6 @@ class AppointmentUpdate extends BaseController
         $authCheck = Process::init()->readAuthKeyByProcessId($entity->id);
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
-            throw new Exception\Process\AuthKeyMatchFailed();
         }
     }
 

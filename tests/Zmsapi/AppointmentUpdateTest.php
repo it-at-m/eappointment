@@ -12,7 +12,7 @@ class AppointmentUpdateTest extends Base
 
     public function testRendering()
     {
-        \App::$now = \App::$now->modify('2016-05-30');
+        \App::$now->modify('2016-05-30');
         $response = $this->render(['id' => self::PROCESS_ID, 'authKey' => self::AUTHKEY], [
             '__body' => $this->readFixture('PostAppointment.json'),
         ], []);
@@ -31,14 +31,6 @@ class AppointmentUpdateTest extends Base
     {
         $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
         $this->render(['id' => 123456, 'authKey' => 'abcd'], [
-            '__body' => $this->readFixture('PostAppointment.json'),
-        ], []);
-    }
-
-    public function testAuthKeyMatchFailed()
-    {
-        $this->expectException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
-        $this->render(['id' => self::PROCESS_ID, 'authKey' => 'abcd'], [
             '__body' => $this->readFixture('PostAppointment.json'),
         ], []);
     }
