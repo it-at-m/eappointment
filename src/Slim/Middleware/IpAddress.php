@@ -6,6 +6,9 @@
 
 namespace BO\Slim\Middleware;
 
+use \Psr\Http\Message\ServerRequestInterface;
+use \Psr\Http\Message\ResponseInterface;
+
 class IpAddress
 {
     /**
