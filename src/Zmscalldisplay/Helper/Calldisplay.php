@@ -44,6 +44,17 @@ class Calldisplay
         return $this->entity;
     }
 
+    public function getSingleScope()
+    {
+        $scope = null;
+        if (1 == $this->getEntity(false)->getScopeList()->count()) {
+            $scope = \App::$http
+                ->readGetResult('/scope/'. $this->getEntity(false)->getScopeList()->getFirst()->getId() .'/')
+                ->getEntity();
+        }
+        return $scope;
+    }
+
     protected static function createInstance($request)
     {
         $calldisplay = new Entity();

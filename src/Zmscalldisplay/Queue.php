@@ -25,6 +25,7 @@ class Queue extends BaseController
         $validator = $request->getAttribute('validator');
 
         $calldisplay = new Helper\Calldisplay($request);
+
         $queueListFull = \App::$http
             ->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false))
             ->getCollection();
@@ -37,6 +38,7 @@ class Queue extends BaseController
             array(
                 'tableSettings' => $validator->getParameter('tableLayout')->isArray()->getValue(),
                 'calldisplay' => $calldisplay->getEntity(false),
+                'scope' => $calldisplay->getSingleScope(),
                 'queueList' => $queueList,
                 'waitingClients' => $queueListFull->withoutStatus(['called'])->count(),
                 'waitingTime' => $queueListFull->getLast()->waitingTimeEstimate,

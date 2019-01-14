@@ -17,6 +17,11 @@ class QueueTest extends Base
                 'function' => 'readPostResult',
                 'url' => '/calldisplay/queue/',
                 'response' => $this->readFixture("GET_queue.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/scope/141/',
+                'response' => $this->readFixture("GET_scope_141.json")
             ]
         ];
     }
