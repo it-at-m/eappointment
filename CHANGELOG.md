@@ -1,3 +1,7 @@
+## v2.19.03
+
+* #34135 Cronjob: Löschen von Öffnungszeiten auf 28 Tage umgestellt
+
 ## v2.19.02
 
 * Cronjob: Datenmigration auf Stage-System vor allen anderen Jobs ausführen
