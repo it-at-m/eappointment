@@ -1,12 +1,18 @@
-
 <div id="waitingClients" style="display:none">
     {{ waitingClients }}
 </div>
 <div id="waitingTime" style="display:none">
-    {% if waitingTime > 120 %}
-        mehr als {{ (waitingTime / 60)|round(0, 'floor') }} Stunden
+    {% if scope and scope.status.queue.ghostWorkstationCount == 0 %}
+        {{ "%s"|format("unbekannt")|trans }}
     {% else %}
-        {{ waitingTimeOptimistic }} - {{ waitingTime }} Minuten
+        {% if waitingTime %}
+            {% if waitingTime < 120 %}
+                {{ waitingTimeOptimistic }} - {{ waitingTime }} Minuten
+            {% else %}
+                {{ (waitingTime / 60)|round(0, 'floor') }} {{ "%s"|format("Stunden")|trans }}
+            {% endif %}
+         {% endif %}
     {% endif %}
+
 </div>
 
