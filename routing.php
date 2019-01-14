@@ -2287,6 +2287,53 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("ProcessGet");
 
+/**
+ *  @swagger
+ *  "/process/{id}/{authKey}/appointment/":
+ *      post:
+ *          summary: Update an appointment of a process
+ *          tags:
+ *              - process
+ *              - appointment
+ *          parameters:
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: authKey
+ *                  description: authentication key
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: appointment
+ *                  description: appointment data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/appointment.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "forbidden, authkey does not match or status changes, only data may be changed"
+ *              404:
+ *                  description: "process id does not exists or Failed to reserve new appointment"
+ */
+\App::$slim->post(
+    '/process/{id:\d{1,11}}/{authKey}/appointment/',
+    '\BO\Zmsapi\AppointmentUpdate'
+)
+    ->setName("AppointmentUpdate");
 
 /**
  *  @swagger
