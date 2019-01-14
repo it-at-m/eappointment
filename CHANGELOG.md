@@ -1,3 +1,7 @@
+## v2.19.03
+
+* #35007 Template: Missverständliches "aktiviert" in der Standort-Maske entfernt
+
 ## v2.19.02
 
 * #31487 Bugfix: Funktionen, um einen Termin zu archivieren, wurden überarbeitet und die Kundebefragung sollte wieder funktionieren
