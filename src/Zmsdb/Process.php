@@ -51,13 +51,12 @@ class Process extends Base implements Interfaces\ResolveReferences
         $query->addConditionProcessId($process['id']);
         $query->addConditionAuthKey($process['authKey']);
         $query->addValuesUpdateProcess($process, $dateTime);
-
+        
         if ($this->perform($query->getLockProcessId(), ['processId' => $process->getId()])) {
             $this->writeItem($query);
             $this->writeRequestsToDb($process);
         }
         $process = $this->readEntity($process->getId(), $process->authKey, $resolveReferences);
-
         if (!$process->getId()) {
             throw new Exception\Process\ProcessUpdateFailed();
         }
@@ -100,15 +99,84 @@ class Process extends Base implements Interfaces\ResolveReferences
     }
 
     /**
-     * update an old process with new id and keep appointment data
-     *
+     * write a new process with appointment and keep id and authkey from original process
      */
-    public function updateWithNewProcessId(
+    public function writeEntityWithNewAppointment(
         \BO\Zmsentities\Process $process,
-        \DateTimeInterface $dateTime
+        \BO\Zmsentities\Appointment $appointment,
+        \DateTimeInterface $dateTime,
+        $slotType = 'public',
+        $slotsRequired = 0,
+        $resolveReferences = 0
     ) {
-        $processNew = $this->writeNewProcess($process, $dateTime);
+        // clone to new process with id = 0 and new appointment to reserve
+        $processNew = clone $process;
+        $processNew->id = 0;
+        $processNew->queue['arrivalTime'] = 0;
+        $processNew->appointments = (new \BO\Zmsentities\Collection\AppointmentList())->addEntity($appointment);
+        $processNew = ProcessStatusFree::init()
+            ->writeEntityReserved($processNew, $dateTime, $slotType, $slotsRequired);
+        $processTempNewId = $processNew->getId();
+
+        //save old process in temp process and delete old process with following processes
+        $this->writeDeletedEntity($process->getId());
+
+        //reserve a new process with temp process data to block process slots
+        $processTemp = new \BO\Zmsentities\Process($process);
+        try {
+            $processTemp->id = 0;
+            $processTemp->queue['arrivalTime'] = 0;
+            $processTemp = ProcessStatusFree::init()->writeEntityReserved(
+                $processTemp,
+                $dateTime,
+                $slotType,
+                $processTemp->getFirstAppointment()->getSlotCount()
+            );
+        } catch (\Exception $exception) {
+            // ignore if not bookable
+        }
+
+        // reassign credentials of new process with credentials of old process
+        $processNew->withReassignedCredentials($process);
+        $processNew->setStatus('confirmed');
+
+        // update new process with new credentials and status, also following slots with ids from old process
+        $processNew = $this
+            ->updateWithFollowingProcesses($processTempNewId, $processNew, $dateTime, $resolveReferences);
+        
+        //delete slot mapping for new process id
+        (new Slot())->deleteSlotProcessMappingFor($processTempNewId);
+
         return $processNew;
+    }
+
+    /**
+     * update following process with new credentials (also change process id if necessary)
+     */
+    public function updateWithFollowingProcesses(
+        $processId,
+        \BO\Zmsentities\Process $processData,
+        \DateTimeInterface $dateTime,
+        $resolveReferences = 0
+    ) {
+        $this->perform(Query\Process::QUERY_REASSIGN_PROCESS_CREDENTIALS, [
+            'newProcessId' => $processData->getId(),
+            'newAuthKey' => $processData->getAuthKey(),
+            'processId' => $processId
+        ]);
+
+        $processEntityList = $this->readEntityList($processId);
+        if ($processEntityList->count()) {
+            foreach ($processEntityList as $entity) {
+                if ($entity->getId() != $processId) {
+                    $this->perform(Query\Process::QUERY_REASSIGN_FOLLWING_PROCESS, [
+                        'newProcessId' => $processData->getId(),
+                        'processId' => $processId
+                    ]);
+                }
+            }
+        }
+        return $this->updateEntity($processData, $dateTime, $resolveReferences);
     }
 
     /**
@@ -193,7 +261,6 @@ class Process extends Base implements Interfaces\ResolveReferences
 
     /**
      * Read list with following processes in DB
-     * DEBUG ONLY
      */
     public function readEntityList($processId, $resolveReferences = 0)
     {
@@ -203,7 +270,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addEntityMapping()
             ->addConditionProcessIdFollow($processId);
         $statement = $this->fetchStatement($query);
-        return $this->readList($statement, $resolveReferences);
+        return $this->readList($statement, $resolveReferences)->sortByAppointmentDate();
     }
 
     public function readByWorkstation(\BO\Zmsentities\Workstation $workstation, $resolveReferences = 0)

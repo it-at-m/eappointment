@@ -102,12 +102,15 @@ class Slot extends Base
             && !$formerChange->hasBookableDateTime($proposedChange->getLastBookableDateTime())
             // Second check if between last slot change and current time could be a bookable slot
             && (
-                (!$formerChange->isOpenedOnLastBookableDay()
+                (
+                    !$formerChange->isOpenedOnLastBookableDay()
                     && $proposedChange->hasBookableDateTimeAfter($formerChange->getLastBookableDateTime())
                 )
                 // if calculation already happened the day before, check if lastChange time was before opening
-                || ($formerChange->isOpenedOnLastBookableDay()
-                    && (!$formerChange->isTimeOpenedOnLastBookableDay()
+                || (
+                    $formerChange->isOpenedOnLastBookableDay()
+                    && (
+                        !$formerChange->isTimeOpenedOnLastBookableDay()
                         || $proposedChange->hasBookableDateTimeAfter(
                             $formerChange->getLastBookableDateTime()->modify('+1day 00:00:00')
                         )
@@ -115,7 +118,8 @@ class Slot extends Base
                 )
             )
             // Check if daytime is after booking start time if bookable end of now is calculated
-            && (!$proposedChange->isOpenedOnLastBookableDay()
+            && (
+                !$proposedChange->isOpenedOnLastBookableDay()
                 || $proposedChange->isTimeOpenedOnLastBookableDay()
             )
         ) {
