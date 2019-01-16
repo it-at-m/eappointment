@@ -9,9 +9,6 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process;
-use \BO\Zmsdb\ProcessStatusFree;
-
-use \BO\Zmsentities\Collection\AppointmentList;
 
 class AppointmentUpdate extends BaseController
 {
@@ -29,49 +26,42 @@ class AppointmentUpdate extends BaseController
         \BO\Zmsdb\Connection\Select::getWriteConnection();
 
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
+        $slotType = Validator::param('slotType')->isString()->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
+        $appointment = new \BO\Zmsentities\Appointment($input);
+        $appointment->testValid();
+        
+        \BO\Zmsdb\Connection\Select::setClusterWideCausalityChecks();
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
 
-        $processOld = Process::init()->readEntity($args['id'], $args['authKey'], 1);
- 
-        $this->testProcessData($processOld);
-        $this->updateWithNewProcessId($processOld);
-        $processNew = $this->updateWithNewAppointment($input, $processOld, $resolveReferences);
+        // get old process and check user rights if slottype or slotrequired is set
+        $process = Process::init()->readEntity($args['id'], $args['authKey'], 1);
+        if (! $process->hasId()) {
+            throw new Exception\Process\ProcessNotFound();
+        }
+        if ($slotType || $slotsRequired) {
+            (new Helper\User($request))->checkRights();
+        } else {
+            $slotsRequired = 0;
+            $slotType = 'public';
+            $process = (new Process)->readSlotCount($process);
+        }
+
+        $process = Process::init()->writeEntityWithNewAppointment(
+            $process,
+            $appointment,
+            \App::$now,
+            $slotType,
+            $slotsRequired,
+            $resolveReferences
+        );
 
         $message = Response\Message::create($request);
-        $message->data = $processNew;
+        $message->data = $process;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
-    }
-
-    protected function testProcessData($entity)
-    {
-        $authCheck = Process::init()->readAuthKeyByProcessId($entity->id);
-        if (! $authCheck) {
-            throw new Exception\Process\ProcessNotFound();
-        }
-    }
-
-    protected function updateWithNewProcessId($processOld)
-    {
-        $processReserved = clone $processOld;
-        $processReserved->status = 'reserved';
-        return Process::init()->updateWithNewProcessId($processReserved, \App::$now);
-    }
-
-    protected function updateWithNewAppointment($input, $processOld, $resolveReferences)
-    {
-        $appointment = new \BO\Zmsentities\Appointment($input);
-        $appointment->testValid();
-        
-        $processNew = clone $processOld;
-        $processNew->appointments = (new AppointmentList())->addEntity($appointment);
-        $freeProcessList = ProcessStatusFree::init()->readFreeProcesses($processNew->toCalendar(), \App::$now);
-        $slotList = (new \BO\Zmsdb\Slot)->readByAppointment($appointment);
-        if (! $freeProcessList->getAppointmentList()->hasAppointment($appointment) || ! $slotList) {
-            throw new Exception\Process\ProcessReserveFailed();
-        }
-        return Process::init()->updateEntity($processNew, \App::$now, $resolveReferences);
     }
 }
