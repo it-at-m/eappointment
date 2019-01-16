@@ -146,7 +146,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         
         //delete slot mapping for new process id
         (new Slot())->deleteSlotProcessMappingFor($processTempNewId);
-
+        Log::writeLogEntry("UPDATE (Process::writeEntityWithNewAppointment) $process ", $processNew->getId());
         return $processNew;
     }
 
