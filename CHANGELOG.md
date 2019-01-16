@@ -1,3 +1,8 @@
+## v2.19.03
+
+* #34496 Neue Funktion zur Änderung von Termin-Zugangsdaten (id und authKey)
+* #34496 Neue Funktion zur Sortierung einer Terminliste nach den Terminzeiten
+
 ## v2.19.02
 
 * #35345 Öffnungszeiten mit Wiederholungen von zwei oder mehr Wochen nehmen jetzt den Montag der Woche als Vergleichstag statt dem Wochentag des Startdatums
