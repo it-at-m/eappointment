@@ -243,6 +243,13 @@ class Process extends Schema\Entity
         return (isset($this['id']) && isset($this['authKey']) && $this['id'] && $this['authKey']);
     }
 
+    public function withReassignedCredentials($process)
+    {
+        $this->id = $process->getId();
+        $this->authKey = $process->getAuthKey();
+        return $this;
+    }
+
     public function hasQueueNumber()
     {
         return (isset($this['queue']) && isset($this['queue']['number']) && $this['queue']['number']);

@@ -94,6 +94,19 @@ class ProcessTest extends EntityCommonTests
         $this->assertFalse($entity->hasAppointment(1447869173, 123), 'appointment date 1447869173 should not exist');
     }
 
+    public function testWithReassignedCredentials()
+    {
+        $entity = $this->getExample();
+        $entity2 = $this->getExample();
+        $entity2->id = 987654;
+        $entity2->authKey = 'dcba';
+
+        $entity->withReassignedCredentials($entity2);
+        
+        $this->assertTrue($entity->getId() == $entity2->getId());
+        $this->assertTrue($entity->getAuthKey() == $entity2->getAuthKey());
+    }
+
     public function testCallTime()
     {
         $entity = $this->getExample();
@@ -366,6 +379,21 @@ class ProcessTest extends EntityCommonTests
         $this->assertEntityList('\BO\Zmsentities\Process', $list[13][1459511423]);
     }
 
+    public function testProcessListSortedByAppointmentDate()
+    {
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $collection->addEntity($entity);
+
+        $entity2 = $this->getExample();
+        $entity2->getFirstAppointment()->date = 1459511423;
+        $collection->addEntity($entity2);
+        $collection->sortByAppointmentDate();
+        $this->assertTrue(
+            $collection->getFirst()->getFirstAppointment()->date < $collection->getLast()->getFirstAppointment()->date
+        );
+    }
+
     public function testProcessListByRequest()
     {
         $collection = new $this->collectionclass();
@@ -395,7 +423,6 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals(2, $collection->count());
         $this->assertEquals(2, $collection->withUniqueScope()->count());
         $this->assertEquals(1, $collection->withUniqueScope(true)->count());
-
     }
 
     public function testWithScopeId()
