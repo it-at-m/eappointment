@@ -3,6 +3,7 @@
 * #35013 Bugfix: Probleme mit kommender PHP Version 7.2 behoben
 * #35345 Unittests: Fehlerhafte Tests entfernt in Folge der korrigierte Berechnung von Öffnungszeiten in mehrwöchigem Abstand
 * #35445 Bugfix: Kompatibilität von JPEG-Dateien zum ZMS1 wiederhergestellt
+* #34496 Funktionen zum Ändern einer Terminzeit bei gleich bleibender Termin-ID
 
 ## v2.19.02
 
