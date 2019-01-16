@@ -45,12 +45,12 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $process;
     }
 
-    public function updateEntity(\BO\Zmsentities\Process $process, \DateTimeInterface $dateTime, $resolveReferences = 0)
+    public function updateEntity(\BO\Zmsentities\Process $process, \DateTimeInterface $now, $resolveReferences = 0)
     {
         $query = new Query\Process(Query\Base::UPDATE);
         $query->addConditionProcessId($process['id']);
         $query->addConditionAuthKey($process['authKey']);
-        $query->addValuesUpdateProcess($process, $dateTime);
+        $query->addValuesUpdateProcess($process, $now);
         
         if ($this->perform($query->getLockProcessId(), ['processId' => $process->getId()])) {
             $this->writeItem($query);
@@ -104,7 +104,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function writeEntityWithNewAppointment(
         \BO\Zmsentities\Process $process,
         \BO\Zmsentities\Appointment $appointment,
-        \DateTimeInterface $dateTime,
+        \DateTimeInterface $now,
         $slotType = 'public',
         $slotsRequired = 0,
         $resolveReferences = 0
@@ -115,7 +115,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $processNew->queue['arrivalTime'] = 0;
         $processNew->appointments = (new \BO\Zmsentities\Collection\AppointmentList())->addEntity($appointment);
         $processNew = ProcessStatusFree::init()
-            ->writeEntityReserved($processNew, $dateTime, $slotType, $slotsRequired);
+            ->writeEntityReserved($processNew, $now, $slotType, $slotsRequired);
         $processTempNewId = $processNew->getId();
 
         //save old process in temp process and delete old process with following processes
@@ -128,7 +128,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             $processTemp->queue['arrivalTime'] = 0;
             $processTemp = ProcessStatusFree::init()->writeEntityReserved(
                 $processTemp,
-                $dateTime,
+                $now,
                 $slotType,
                 $processTemp->getFirstAppointment()->getSlotCount()
             );
@@ -142,7 +142,7 @@ class Process extends Base implements Interfaces\ResolveReferences
 
         // update new process with new credentials and status, also following slots with ids from old process
         $processNew = $this
-            ->updateWithFollowingProcesses($processTempNewId, $processNew, $dateTime, $resolveReferences);
+            ->updateWithFollowingProcesses($processTempNewId, $processNew, $now, $resolveReferences);
         
         //delete slot mapping for new process id
         (new Slot())->deleteSlotProcessMappingFor($processTempNewId);
@@ -156,7 +156,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function updateWithFollowingProcesses(
         $processId,
         \BO\Zmsentities\Process $processData,
-        \DateTimeInterface $dateTime,
+        \DateTimeInterface $now,
         $resolveReferences = 0
     ) {
         $this->perform(Query\Process::QUERY_REASSIGN_PROCESS_CREDENTIALS, [
@@ -176,7 +176,7 @@ class Process extends Base implements Interfaces\ResolveReferences
                 }
             }
         }
-        return $this->updateEntity($processData, $dateTime, $resolveReferences);
+        return $this->updateEntity($processData, $now, $resolveReferences);
     }
 
     /**
