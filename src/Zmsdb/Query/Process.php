@@ -56,6 +56,18 @@ class Process extends Base implements MappingInterface
             OR istFolgeterminvon = ?
         ";
 
+    const QUERY_REASSIGN_PROCESS_CREDENTIALS = "UPDATE `buerger` process
+       SET 
+            process.BuergerID = :newProcessId, 
+            process.absagecode = :newAuthKey
+        WHERE BuergerID = :processId
+    ";
+
+    const QUERY_REASSIGN_FOLLWING_PROCESS = "UPDATE `buerger` process
+        SET process.istFolgeterminvon = :newProcessId
+        WHERE istFolgeterminvon = :processId
+    ";
+
     const QUERY_UPDATE_FOLLOWING_PROCESS = "UPDATE buerger 
         SET vorlaeufigeBuchung = :reserved 
         WHERE istFolgeterminvon = :processID
