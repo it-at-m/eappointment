@@ -198,7 +198,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                         <button className={data.__modified ? "button-new btn--b3igicon" : "btn"}
                             type="save"
                             value="save"
-                            onClick={onSave}>{data.__modified ? "+ merken und später aktivieren" : "Schließen"}</button>
+                            onClick={onSave}>{data.__modified ? "+ merken und später aktivieren" : "Abbrechen"}</button>
                         {data.__modified ?
                             <button className="button-save"
                                 type="save"
