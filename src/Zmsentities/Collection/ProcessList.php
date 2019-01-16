@@ -37,6 +37,14 @@ class ProcessList extends Base
         return $list;
     }
 
+    public function sortByAppointmentDate()
+    {
+        $this->uasort(function ($a, $b) {
+            return ($a->appointments->getFirst()->date - $b->appointments->getFirst()->date);
+        });
+        return $this;
+    }
+
     public function sortByArrivalTime()
     {
         $this->uasort(function ($a, $b) {
