@@ -337,13 +337,14 @@ class ProcessTest extends Base
         $this->assertEquals(3, $process->getFirstAppointment()->slotCount);
     }
 
-    public function testDeleteProcess()
+    public function testCancelProcess()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
-        $process = $query->deleteEntity($process->id, $process->authKey);
+        $process = $query->writeCanceledEntity($process->id, $process->authKey);
+        $this->assertEquals('(abgesagt)', $process->getFirstClient()->familyName);
         $this->assertEquals('deleted', $process->getStatus());
 
         $process = $query->readEntity(); //check null
@@ -352,9 +353,14 @@ class ProcessTest extends Base
 
     public function testDereferenceProcess()
     {
-        $query = new Query();
-        $status = $query->writeDeletedEntity(10029, '1c56');
-        $this->assertTrue($status);
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new ProcessStatusFree();
+        $input = $this->getTestProcessEntity();
+        $process = $query->writeEntityReserved($input, $now);
+        $query->writeBlockedEntity($process);
+        $process = $query->readEntity($process->getId(), 'deref!0');
+        $this->assertEquals('dereferenced', $process->getFirstClient()->familyName);
+        $this->assertEquals('blocked', $process->getStatus());
     }
 
     public function testReserveProcess()
@@ -408,6 +414,21 @@ class ProcessTest extends Base
             );
         }
         $this->assertEquals(46, $processList->count());
+    }
+
+    public function testDeallocateProcess()
+    {
+        $dateTime = new \DateTimeImmutable("2016-05-27 11:20");
+        $query = new ProcessStatusFree();
+        
+        $processList = $query->readDeallocateProcessList($dateTime->modify('+10 minutes'), 500);
+        $this->assertEquals(2, $processList->count());
+
+        $job = new \BO\Zmsdb\Helper\AppointmentDeallocateByCron(false, $dateTime->modify('+10 minutes'));
+        $job->startProcessing(true);
+
+        $processList = $query->readDeallocateProcessList($dateTime->modify('+10 minutes'), 500);
+        $this->assertEquals(0, $processList->count());
     }
 
     public function testReadExpiredReservationsList()

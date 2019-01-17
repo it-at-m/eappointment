@@ -19,9 +19,9 @@ class AppointmentDeallocateByCron
         "deleted"
     ];
 
-    public function __construct($verbose = false)
+    public function __construct($verbose = false, $dateTime = null)
     {
-        $this->time = (new \DateTimeImmutable());
+        $this->time = ($dateTime) ? $dateTime : new \DateTimeImmutable();
         if ($verbose) {
             error_log(
                 "INFO: Deallocate canceled appointments by scopes deallocate preference"
@@ -64,7 +64,7 @@ class AppointmentDeallocateByCron
         if (in_array($process->status, $this->statuslist)) {
             if ($query->writeBlockedEntity($process) && $verbose) {
                 error_log("INFO: Process $process->id successfully deallocated");
-            } else {
+            } elseif ($verbose) {
                 error_log("WARN: Could not deallocate process '$process->id'!");
             }
         } elseif ($verbose) {
