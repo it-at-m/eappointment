@@ -434,8 +434,7 @@ class Process extends Base implements MappingInterface
             }
             if ('deleted' == $status) {
                 $query
-                    ->andWith('process.Name', '=', '(abgesagt)')
-                    ->andWith('process.StandortID', '=', 0);
+                    ->andWith('process.Name', '=', '(abgesagt)');
             }
             if ('reserved' == $status) {
                 $query
@@ -529,7 +528,6 @@ class Process extends Base implements MappingInterface
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($now) {
             $query
                 ->andWith('process.Name', '=', '(abgesagt)')
-                ->andWith('process.StandortID', '=', 0)
                 ->andWith('process.IPTimeStamp', '<', $now->getTimestamp());
         });
         $this->query->orderBy('process.IPTimeStamp', 'ASC');

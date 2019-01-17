@@ -562,6 +562,9 @@ class Process extends Base implements Interfaces\ResolveReferences
             $process->authKey,
             $process->id
         ));
+        if ($status) {
+            (new Slot())->deleteSlotProcessMappingFor($process->id);
+        }
         Log::writeLogEntry("DELETE (Process::writeBlockedEntity) $process ", $process->id);
         return $status;
     }
