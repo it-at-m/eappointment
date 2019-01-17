@@ -521,6 +521,21 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    /**
+     * add condition to get process if deallocation time < now
+     */
+    public function addConditionDeallocate($now)
+    {
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($now) {
+            $query
+                ->andWith('process.Name', '=', '(abgesagt)')
+                ->andWith('process.StandortID', '=', 0)
+                ->andWith('process.IPTimeStamp', '<', $now->getTimestamp());
+        });
+        $this->query->orderBy('process.IPTimeStamp', 'ASC');
+        return $this;
+    }
+
 
     public function addValuesNewProcess(\BO\Zmsentities\Process $process, $parentProcess = 0, $childProcessCount = 0)
     {
