@@ -665,4 +665,20 @@ class Process extends Base implements Interfaces\ResolveReferences
         $statement = $this->fetchStatement($selectQuery);
         return $this->readList($statement, $resolveReferences);
     }
+
+    public function readDeallocateProcessList(
+        \DateTimeInterface $now,
+        $limit = 500,
+        $resolveReferences = 0
+    ) {
+        $selectQuery = new Query\Process(Query\Base::SELECT);
+        $selectQuery
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionDeallocate($now)
+            ->addConditionIgnoreSlots()
+            ->addLimit($limit);
+        $statement = $this->fetchStatement($selectQuery);
+        return $this->readList($statement, $resolveReferences);
+    }
 }
