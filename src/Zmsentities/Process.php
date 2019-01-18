@@ -129,7 +129,7 @@ class Process extends Schema\Entity
         $this->scope = ($scope) ? $scope : $this->scope;
         $this->addAppointmentFromRequest($requestData, $dateTime);
         $requestCsv = isset($requestData['requests']) ? implode(',', $requestData['requests']) : 0;
-        $this->updateRequests('dldb', $requestCsv);
+        $this->updateRequests($scope->getSource(), $requestCsv);
         $this->addClientFromForm($requestData);
         $this->addReminderTimestamp($requestData, $dateTime);
         $this->amendment = (array_key_exists('amendment', $requestData)) ? trim($requestData['amendment']) : null;
