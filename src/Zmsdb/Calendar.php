@@ -70,7 +70,8 @@ class Calendar extends Base
             $request = new \BO\Zmsentities\Request($request);
             $request = $requestReader->readEntity($request->getSource(), $request->getId());
             $calendar['requests'][$key] = $request;
-            foreach ($requestRelationQuery->readListByRequestId($request->getId()) as $requestRelationItem) {
+            $requestRelationList = $requestRelationQuery->readListByRequestId($request->getId(), $request->getSource());
+            foreach ($requestRelationList as $requestRelationItem) {
                 //if (! isset($calendar['processing']['slotinfo'][$slotinfo['provider__id']])) {
                 //    $calendar['processing']['slotinfo'][$slotinfo['provider__id']] = 0;
                 //}

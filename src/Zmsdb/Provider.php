@@ -50,7 +50,8 @@ class Provider extends Base
         if (null !== $requestIdCsv) {
             $query->addConditionRequestCsv($requestIdCsv);
         }
-        return $this->readCollection($query);
+        $providerList = $this->readCollection($query);
+        return ($providerList->count()) ? $providerList->sortByCustomKey('id') : $providerList;
     }
 
     public function writeEntity(Entity $entity)

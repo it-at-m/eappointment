@@ -16,7 +16,36 @@ class RequestRelation extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionProviderId($providerId)
             ->addConditionRequestId($requestId);
-        return $this->fetchOne($query, new Entity());
+        $entity = $this->fetchOne($query, new Entity());
+        return $this->readResolvedReferences($entity, $resolveReferences);
+    }
+
+    /**
+    * resolve entity references
+    *
+    * @return \BO\Zmsentities\RequestRelation
+    */
+    public function readResolvedReferences(
+        \BO\Zmsentities\Schema\Entity $entity,
+        $resolveReferences
+    ) {
+        if (0 < $resolveReferences) {
+            $entity['provider'] = (
+                (new Provider())->readEntity(
+                    $entity->getSource(),
+                    $entity->provider->getId(),
+                    $resolveReferences - 1
+                )
+            );
+            $entity['request'] = (
+                (new Request())->readEntity(
+                    $entity->getSource(),
+                    $entity->request->getId(),
+                    $resolveReferences - 1
+                )
+            );
+        }
+        return $entity;
     }
 
     public function readListBySource($source, $resolveReferences = 0)
@@ -28,31 +57,33 @@ class RequestRelation extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionSource($source);
         $statement = $this->fetchStatement($query);
-        return $this->readList($statement);
+        return $this->readList($statement, $resolveReferences);
     }
 
-    public function readListByRequestId($requestId, $resolveReferences = 0)
+    public function readListByRequestId($requestId, $source, $resolveReferences = 0)
     {
         $query = new Query\RequestRelation(Query\Base::SELECT);
         $query
             ->setResolveLevel(0)
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
-            ->addConditionRequestId($requestId);
+            ->addConditionRequestId($requestId)
+            ->addConditionSource($source);
         $statement = $this->fetchStatement($query);
-        return $this->readList($statement);
+        return $this->readList($statement, $resolveReferences);
     }
 
-    public function readListByProviderId($providerId, $resolveReferences = 0)
+    public function readListByProviderId($providerId, $source, $resolveReferences = 0)
     {
         $query = new Query\RequestRelation(Query\Base::SELECT);
         $query
             ->setResolveLevel(0)
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
-            ->addConditionProviderId($providerId);
+            ->addConditionProviderId($providerId)
+            ->addConditionSource($source);
         $statement = $this->fetchStatement($query);
-        return $this->readList($statement);
+        return $this->readList($statement, $resolveReferences);
     }
 
     public function writeListBySource(\BO\Zmsentities\Source $source)
@@ -110,11 +141,12 @@ class RequestRelation extends Base
         return $this->readListBySource($source);
     }
 
-    protected function readList($statement)
+    protected function readList($statement, $resolveReferences)
     {
         $collection = new Collection();
         while ($requestRelationData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($requestRelationData);
+            $entity = $this->readResolvedReferences($entity, $resolveReferences);
             $collection->addEntity($entity);
         }
         return $collection;

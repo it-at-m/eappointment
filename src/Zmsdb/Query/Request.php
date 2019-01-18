@@ -60,7 +60,7 @@ class Request extends Base
         return $this;
     }
 
-    public function addConditionProviderId($providerId)
+    public function addConditionProvider($providerId, $source)
     {
         $this->leftJoin(
             new Alias("request_provider", 'xrequest'),
@@ -68,7 +68,11 @@ class Request extends Base
             '=',
             'xrequest.request__id'
         );
-        $this->query->where('xrequest.provider__id', '=', $providerId);
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($providerId, $source) {
+            $query->andWith('xrequest.provider__id', '=', $providerId);
+            $query->andWith('xrequest.source', '=', $source);
+        });
+        return $this;
     }
 
     public function addConditionRequestSource($source)
