@@ -30,36 +30,6 @@ class RequestRelation extends Base implements MappingInterface
         ];
     }
 
-    public function addJoin()
-    {
-        return [
-            $this->addJoinRequest(),
-            $this->addJoinProvider(),
-        ];
-    }
-
-    public function addJoinRequest()
-    {
-        $this->leftJoin(
-            new Alias(Request::TABLE, 'request'),
-            self::TABLE .'.request__id',
-            '=',
-            'request.id'
-        );
-        return new Request($this, $this->getPrefixed('request__'));
-    }
-
-    public function addJoinProvider()
-    {
-        $this->leftJoin(
-            new Alias(Provider::TABLE, 'provider'),
-            self::TABLE .'.provider__id',
-            '=',
-            'provider.id'
-        );
-        return new Provider($this, $this->getPrefixed('provider__'));
-    }
-
     public function addConditionRequestId($requestId)
     {
         $this->query->where(self::TABLE .'.request__id', '=', $requestId);

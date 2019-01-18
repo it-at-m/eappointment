@@ -74,7 +74,7 @@ class Request extends Base
         $query = new Query\Request(Query\Base::SELECT);
         $requestRelationQuery = new RequestRelation();
         $query->setResolveLevel($resolveReferences);
-        $query->addConditionProviderId($providerId);
+        $query->addConditionProvider($providerId, $source);
         $query->addConditionRequestSource($source);
         $query->addEntityMapping();
         $requestList = $this->readCollection($query);
@@ -93,7 +93,7 @@ class Request extends Base
         $query->addConditionRequestSource($source);
         $query->addEntityMapping();
         $requestList = $this->readCollection($query);
-        return $requestList;
+        return ($requestList->count()) ? $requestList->sortByCustomKey('id') : $requestList;
     }
 
     public function readListByCluster(\BO\Zmsentities\Cluster $cluster, $resolveReferences = 0)
@@ -119,6 +119,7 @@ class Request extends Base
 
     public function writeEntity(Entity $entity)
     {
+        $additionalData = ($entity->getAdditionalData()) ? json_encode($entity->getAdditionalData()) : '{}';
         $this->writeDeleteEntity($entity->getId(), $entity->getSource());
         $query = new Query\Request(Query\Base::INSERT);
         $query->addValues([
@@ -127,7 +128,7 @@ class Request extends Base
             'name' => $entity->getName(),
             'group' => $entity->getGroup(),
             'link' =>  $entity->getLink(),
-            'data' => ($entity->getAdditionalData()) ? json_encode($entity->getAdditionalData()) : '{}'
+            'data' => $additionalData
         ]);
         $this->writeItem($query);
         return $this->readEntity($entity->getSource(), $entity->getId());

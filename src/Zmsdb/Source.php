@@ -10,6 +10,8 @@ use \BO\Zmsentities\Collection\ProviderList;
 
 use \BO\Zmsentities\Collection\RequestList;
 
+use \BO\Zmsentities\Collection\RequestRelationList;
+
 class Source extends Base
 {
     /**
@@ -65,9 +67,12 @@ class Source extends Base
         $resolveReferences
     ) {
         if (0 < $resolveReferences) {
-            $entity['providers'] = (new Provider())->readListBySource($entity->source, $resolveReferences - 1);
-            $entity['requests'] = (new Request())->readListBySource($entity->source, $resolveReferences - 1);
-            $entity['requestrelation'] = (new RequestRelation())->readListBySource($entity->source);
+            $entity['providers'] = (new ProviderList())
+                ->addList((new Provider())->readListBySource($entity->source, $resolveReferences - 1));
+            $entity['requests'] = (new RequestList())
+                ->addList((new Request())->readListBySource($entity->source, $resolveReferences - 1));
+            $entity['requestrelation'] = (new RequestRelationList())
+                ->addList((new RequestRelation())->readListBySource($entity->source, $resolveReferences - 1));
         }
         return $entity;
     }
