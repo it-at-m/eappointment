@@ -72,7 +72,7 @@ class Source extends Base
             $entity['requests'] = (new RequestList())
                 ->addList((new Request())->readListBySource($entity->source, $resolveReferences - 1));
             $entity['requestrelation'] = (new RequestRelationList())
-                ->addList((new RequestRelation())->readListBySource($entity->source, $resolveReferences - 1));
+                ->addList((new RequestRelation())->readListBySource($entity->source));
         }
         return $entity;
     }
