@@ -37,7 +37,7 @@ class ScopeAvailabilityMonth extends BaseController
         $availabilityList = $this->getAvailabilityList($scope, $startDate, $endDate);
         $processConflictList = \App::$http
             ->readGetResult('/scope/' . $scope->getId() . '/conflict/', [
-                'startDate' => $startDate->format('Y-m-d'),
+                'startDate' => \App::$now->format('Y-m-d'),
                 'endDate' => $endDate->format('Y-m-d'),
             ])
             ->getCollection();
