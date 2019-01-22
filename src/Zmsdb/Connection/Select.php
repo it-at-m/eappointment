@@ -122,7 +122,11 @@ class Select
         } catch (\Exception $exception) {
             // Extend exception message with connection information
             $connectInfo = $dataSourceName;
-            throw new \Exception($connectInfo . $exception->getMessage(), (int)$exception->getCode(), $exception);
+            throw new \BO\Zmsdb\Exception\Pdo\PdoFailed(
+                $connectInfo . $exception->getMessage(),
+                (int)$exception->getCode(),
+                $exception
+            );
         }
         return $pdo;
     }
