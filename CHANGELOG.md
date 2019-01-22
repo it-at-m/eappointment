@@ -4,6 +4,7 @@
 * #35345 Unittests: Fehlerhafte Tests entfernt in Folge der korrigierte Berechnung von Öffnungszeiten in mehrwöchigem Abstand
 * #35445 Bugfix: Kompatibilität von JPEG-Dateien zum ZMS1 wiederhergestellt
 * #34496 Funktionen zum Ändern einer Terminzeit bei gleich bleibender Termin-ID
+* #35311 Werfe einen aussagekräftigeren Fehler bei einer nicht erreichbaren Datenbank
 
 ## v2.19.02
 
