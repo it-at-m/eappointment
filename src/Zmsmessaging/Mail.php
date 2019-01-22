@@ -135,8 +135,7 @@ class Mail extends BaseController
         $mailer->Subject = $entity['subject'];
         $mailer->AltBody = (isset($textPart)) ? $textPart : '';
         $mailer->Body = (isset($htmlPart)) ? $htmlPart : '';
-        $mailer->SetFrom($entity['department']['email']);
-        $mailer->FromName = $entity['department']['name'];
+        $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
         if (null !== $entity->getIcsPart()) {
             $mailer->AddStringAttachment(
                 $icsPart,
