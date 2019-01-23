@@ -47,6 +47,18 @@ class Notification extends BaseController
         } else {
             throw new Exception\ScopeNotFound();
         }
+        if ($process->getFirstClient()->hasTelephone()) {
+            return \BO\Slim\Render::redirect(
+                'Message',
+                [
+                  'status' => 'process_notification_amendment_phonenumber_exists'
+                ],
+                [
+                    'scopeId' => $scopeId,
+                    'notHome' => 1
+                ]
+            );
+        }
 
         return \BO\Slim\Render::withHtml(
             $response,
