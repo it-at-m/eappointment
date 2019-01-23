@@ -220,7 +220,7 @@ class View extends BaseView {
         this.selectedProcess = null;
         const processId = $(event.target).data('id');
         showSpinner();
-        this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', { 'delete': 1, 'processId': processId, 'initiator': this.initiator }).then((response) => {
+        this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', { 'delete': 1, 'processId': processId, 'initiator': this.initiator }, $container).then((response) => {
             this.loadMessage(response, () => {
                 this.loadAppointmentForm();
                 this.loadQueueInfo();
@@ -430,6 +430,7 @@ class View extends BaseView {
             onAbortMessage: this.onAbortMessage,
             onSelectDateWithOverlay: this.onSelectDateWithOverlay,
             onChangeSlotCount: this.onChangeSlotCount,
+            onConfirm: this.onConfirm,
             showLoader: showLoader,
             constructOnly: constructOnly
         });
