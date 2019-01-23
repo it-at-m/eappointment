@@ -184,7 +184,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return ($emailFrom) ? true : false;
     }
 
-    public function hasNotifcationEnabled()
+    public function hasNotificationEnabled()
     {
         $notificationEnabled = $this->getPreference('appointment', 'notificationConfirmationEnabled');
         return ($notificationEnabled) ? true : false;
