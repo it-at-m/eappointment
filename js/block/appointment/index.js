@@ -37,6 +37,7 @@ class View extends RequestView {
     }
 
     setCallbacks() {
+        this.onConfirm = this.options.onConfirm;
         this.onChangeScope = this.options.onChangeScope;
         this.onAbortProcess = this.options.onAbortProcess;
         this.onCancelForm = this.options.onCancelAppointmentForm;
@@ -127,7 +128,7 @@ class View extends RequestView {
         }).on('click', '.form-actions button.process-copy', (event) => {
             this.onCopyProcess(this.$main, event);
         }).on('click', '.form-actions button.process-delete', (event) => {
-            this.onDeleteProcess(this.$main, event)
+            this.onConfirm(event, "confirm_delete", () => { this.onDeleteProcess(null, event) });
         }).on('click', '.form-actions button.process-abort', (event) => {
             this.onAbortProcess(this.$main, event);
         }).on('click', '.form-actions .button-cancel', (event) => {
