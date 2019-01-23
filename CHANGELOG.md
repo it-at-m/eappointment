@@ -1,6 +1,7 @@
 ## v2.19.03
 
-* #35531 - Nachträgliche Telefonnummereingabe wird abgebrochen, wenn Termin schon eine Telefonnummer enthält
+* #35531 Nachträgliche Telefonnummereingabe wird abgebrochen, wenn Termin schon eine Telefonnummer enthält
+* #35530 Bugfix: Die SMS Bestätigung enthält nun die Wartenummer anstatt die Vorgangsnummer
 
 
 ## v2.19.02
