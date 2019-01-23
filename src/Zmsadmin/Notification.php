@@ -117,7 +117,7 @@ class Notification extends BaseController
 
     private function writeNotification($notification, $process)
     {
-        if ($process->scope->hasNotifcationEnabled()) {
+        if ($process->scope->hasNotificationEnabled()) {
             return \App::$http->readPostResult('/notification/', $notification)->getEntity();
         }
     }

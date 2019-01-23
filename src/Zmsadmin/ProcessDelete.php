@@ -59,7 +59,7 @@ class ProcessDelete extends BaseController
                     $process
                 )->getEntity();
         }
-        if ($process->scope->hasNotifcationEnabled() &&
+        if ($process->scope->hasNotificationEnabled() &&
             $process->getFirstClient()->hasTelephone() &&
             $process->isWithAppointment()
         ) {

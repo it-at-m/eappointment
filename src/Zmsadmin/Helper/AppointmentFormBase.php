@@ -147,7 +147,7 @@ class AppointmentFormBase
     protected static function writeNotification($smsConfirmation, Entity $process)
     {
         if ($smsConfirmation &&
-            $process->scope->hasNotifcationEnabled() &&
+            $process->scope->hasNotificationEnabled() &&
             $process->getFirstClient()->hasTelephone()
         ) {
             \App::$http->readPostResult(
