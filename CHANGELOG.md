@@ -1,3 +1,8 @@
+## v2.19.03
+
+* #35531 - Nachträgliche Telefonnummereingabe wird abgebrochen, wenn Termin schon eine Telefonnummer enthält
+
+
 ## v2.19.02
 
 * #35385 Hinweis zum Entwicklungssystem nur wenn ZMS_ENV prod oder dev entspricht
