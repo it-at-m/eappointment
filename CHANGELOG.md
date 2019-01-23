@@ -1,6 +1,7 @@
 ## v2.19.03
 
 * #35007 Template: Missverständliches "aktiviert" in der Standort-Maske entfernt
+* #35314 Ergänzung eines Bestätigung-Dialogs vor dem Löschen eines Termins aus dem Terminvereinbarungsformular heraus
 
 ## v2.19.02
 
