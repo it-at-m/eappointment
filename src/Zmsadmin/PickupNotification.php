@@ -36,7 +36,7 @@ class PickupNotification extends BaseController
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $config = \App::$http->readGetResult('/config/')->getEntity();
 
-        if ($process->scope->hasNotifcationEnabled()) {
+        if ($process->scope->hasNotificationEnabled()) {
             $notification = (new Entity)->toResolvedEntity($process, $config, $department);
             $notification = \App::$http->readPostResult('/notification/', $notification)->getEntity();
         }
