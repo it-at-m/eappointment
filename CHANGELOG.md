@@ -2,6 +2,7 @@
 
 * #35007 Template: Missverständliches "aktiviert" in der Standort-Maske entfernt
 * #35314 Ergänzung eines Bestätigung-Dialogs vor dem Löschen eines Termins aus dem Terminvereinbarungsformular heraus
+* #35371 Kalendertage in der Zukunft sind nun klickbar und der angezeigte Title für nicht buchbare Tage wurde geändert
 
 ## v2.19.02
 
