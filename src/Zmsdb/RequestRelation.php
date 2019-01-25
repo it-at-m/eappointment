@@ -24,7 +24,6 @@ class RequestRelation extends Base
         $query = new Query\RequestRelation(Query\Base::SELECT);
         $query
             ->setResolveLevel(0)
-            ->addConditionMatchRequestAndProviderJoin()
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionSource($source);
