@@ -30,27 +30,6 @@ class RequestRelation extends Base implements MappingInterface
         ];
     }
 
-    public function addConditionMatchRequestAndProviderJoin()
-    {
-        $this->leftJoin(
-            new Alias("provider", 'provider'),
-            self::TABLE.'.provider__id',
-            '=',
-            'provider.id'
-        );
-        $this->leftJoin(
-            new Alias("request", 'request'),
-            self::TABLE.'.request__id',
-            '=',
-            'request.id'
-        );
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) {
-            $query->andWith('request.id', 'IS NOT', null);
-            $query->andWith('provider.id', 'IS NOT', null);
-        });
-        return $this;
-    }
-
     public function addConditionRequestId($requestId)
     {
         $this->query->where(self::TABLE .'.request__id', '=', $requestId);
