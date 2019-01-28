@@ -110,6 +110,14 @@ class TwigExtension extends \Twig_Extension
         return $azList;
     }
 
+    protected static function sortFirstChar($string)
+    {
+        $firstChar = mb_substr($string, 0, 1);
+        $firstChar = mb_strtoupper($firstChar);
+        $firstChar = strtr($firstChar, array('Ä' => 'A', 'Ö' => 'O', 'Ü' => 'U'));
+        return $firstChar;
+    }
+
     public function csvProperty($list, $property)
     {
         $propertylist = array();
