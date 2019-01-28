@@ -17,7 +17,7 @@ class QueueListHelper
 
     protected static $queueList = null;
 
-    protected static $status = ['confirmed', 'queued', 'reserved', 'deleted'];
+    protected static $status = ['confirmed', 'queued', 'reserved', 'deleted', 'fake'];
 
     protected static $missedStatus = ['missed'];
 
@@ -31,6 +31,17 @@ class QueueListHelper
     public static function getList()
     {
         return static::$queueList;
+    }
+
+    public static function getEstimatedWaitingTime()
+    {
+        return self::getList()->getFakeOrLastWaitingnumber()->waitingTimeEstimate;
+    }
+
+    public static function getWaitingCount()
+    {
+        // return count -1 because of faked entry
+        return (self::getList()->count() - 1);
     }
 
     public static function getMissedList()
@@ -53,7 +64,7 @@ class QueueListHelper
                     $scope->getPreference('queue', 'processingTimeAverage'),
                     $scope->getCalculatedWorkstationCount(),
                     $dateTime,
-                    false
+                    true
                 ) :
             new QueueList();
     }
