@@ -1,3 +1,7 @@
+## v2.19.03
+
+* #34579 Wartezeit wird als "unbekannt" angezeigt, wenn virtuelle Sachbearbeiterzahl auf 0 gesetzt ist für einen Standort
+
 ## v2.19.02
 
 * #35385 Hinweis zum Entwicklungssystem nur wenn ZMS_ENV prod oder dev entspricht
