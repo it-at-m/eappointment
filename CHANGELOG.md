@@ -2,6 +2,7 @@
 
 * #35531 Nachträgliche Telefonnummereingabe wird abgebrochen, wenn Termin schon eine Telefonnummer enthält
 * #35530 Bugfix: Die SMS Bestätigung enthält nun die Wartenummer anstatt die Vorgangsnummer
+* #34579 Wartezeit wird als "unbekannt" angezeigt, wenn virtuelle Sachbearbeiterzahl auf 0 gesetzt ist für einen Standort
 
 
 ## v2.19.02
