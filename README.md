@@ -118,6 +118,7 @@ Locations
             },
             "meta": {
                 "url": "https://service.berlin.de/standort/122314/", // Detail URL
+                "locale": "de", // Sprache
                 "lastupdate": "2014-04-25T13:55:31+02:00", // Letzte Aktualisierung
                 "keywords": "Amt für Bürgerdienste,Bürgeramt,Bürgerberatung,Meldestelle,Bürgerbüro,Info,Information,Informationsmaterial,Informationsstelle,Rathaus,Rathaus-Information,Rathaus-Info,Bürger-Service,Abt. Bürgerdienste,Bürgerservice,Beratungen,Beratungsbüro,Beratungsstelle,BüA,BÜB,Büb,büb,Bürgerbüros,Bürgerämter,Bürgerbüro Reinickendorf,bübs,Bübs,Bürgerdienste,Bürgerdienste und Soziales,Bürgerhaus,Bürgerinformation,Bürger,Lohnsteuerersatzkarte,Lohnsteuerkartenersatz,Lohnsteuerkartenerstausstellung,Lohnsteuerkartenlöschung,Lohnsteuerkartenrückgabe,Lohnsteuerkartenstelle" // Schlüsselwörter, welche für die Suche verwendet werden
             },
@@ -272,6 +273,7 @@ Services
          },
          "meta" : {
             "url": "https://service.berlin.de/dienstleistung/326069/", // Detail URL
+            "locale": "de", // Sprache
             "lastupdate" : "2013-11-25T11:12:04+02:00", // letzte Aktualisierung der Dienstleistung
             "keywords" : "Unterhaltsvorschuss, Kind, alleinerziehend, Sozialleistung"
          },
