@@ -126,6 +126,21 @@ class TwigExtension extends \Twig_Extension
         );
     }
 
+    protected static function toSortableString($string)
+    {
+        $string = strtr($string, array(
+            'Ä' => 'Ae',
+            'Ö' => 'Oe',
+            'Ü' => 'Ue',
+            'ä' => 'ae',
+            'ö' => 'oe',
+            'ü' => 'ue',
+            'ß' => 'ss',
+            '€' => 'E',
+        ));
+        return $string;
+    }
+
     public function csvProperty($list, $property)
     {
         $propertylist = array();
