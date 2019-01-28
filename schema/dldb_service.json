@@ -137,6 +137,7 @@
         },
         "meta": {
             "url": "https://service.berlin.de/dienstleistung/326069/",
+            "locale": "de",
             "lastupdate": "2013-11-25T11:12:04+02:00",
             "keywords": "Unterhaltsvorschuss, Kind, alleinerziehend, Sozialleistung"
         },
@@ -177,6 +178,11 @@
                 "url": {
                     "description": "Detail URL zur Anzeige dieser Daten als HTML",
                     "example": "https://service.berlin.de/dienstleistung/326069/",
+                    "type": "string"
+                },
+                "locale": {
+                    "description": "Verwendete Sprache in den Feldern als Kürzel",
+                    "example": "de",
                     "type": "string"
                 },
                 "lastupdate": {
