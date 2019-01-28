@@ -23,10 +23,10 @@ class WorkstationInfo
             static::getWorkstationsByCluster($clusterHelper->getEntity()->getId()) :
             static::getWorkstationsByScope($scope->getId());
 
-        $queueList = (new QueueListHelper($clusterHelper, $scope, $selectedDate))->getList();
-        if ($queueList->count()) {
-            $infoData['waitingTime'] = $queueList->getLast()->waitingTimeEstimate;
-            $infoData['queueCount'] = $queueList->count();
+        $queueListHelper = (new QueueListHelper($clusterHelper, $scope, $selectedDate));
+        if ($queueListHelper->getWaitingCount()) {
+            $infoData['waitingTime'] = $queueListHelper->getEstimatedWaitingTime();
+            $infoData['queueCount'] = $queueListHelper->getWaitingCount();
         }
         return $infoData;
     }
