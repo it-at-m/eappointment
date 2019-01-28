@@ -22,7 +22,7 @@ class Topic extends Base
 
     public function isLinked()
     {
-        return ($this['relation']['navi'] || count($this['relation']['navi']));
+        return ($this['relation']['navi'] || static::subcount($this['relation']['navi']));
     }
 
     public function getServiceLocationLinkList()
