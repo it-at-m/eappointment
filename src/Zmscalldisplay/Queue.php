@@ -40,9 +40,9 @@ class Queue extends BaseController
                 'calldisplay' => $calldisplay->getEntity(false),
                 'scope' => $calldisplay->getSingleScope(),
                 'queueList' => $queueList,
-                'waitingClients' => $queueListFull->withoutStatus(['called'])->count(),
-                'waitingTime' => $queueListFull->getLast()->waitingTimeEstimate,
-                'waitingTimeOptimistic' => $queueListFull->getLast()->waitingTimeOptimistic,
+                'waitingClients' => ($queueListFull->withoutStatus(['called'])->count() - 1), // -1 fake entry
+                'waitingTime' => $queueListFull->getFakeOrLastWaitingnumber()->waitingTimeEstimate,
+                'waitingTimeOptimistic' => $queueListFull->getFakeOrLastWaitingnumber()->waitingTimeOptimistic,
             )
         );
     }
