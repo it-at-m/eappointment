@@ -117,8 +117,10 @@ class Service extends Base
 
         $boolquery->addShould($searchquery);
         $filter = null;
+        $filter = new \Elastica\Filter\BoolFilter();
+        $filter->addMust(Helper::localeFilter($this->locale));
         if ($location_csv) {
-            $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
+            $filter->addMust(new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv)));
         }
         $filteredQuery = new \Elastica\Query\Filtered($boolquery, $filter);
         $query->setQuery($filteredQuery);
