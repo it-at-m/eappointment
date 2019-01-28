@@ -118,6 +118,14 @@ class TwigExtension extends \Twig_Extension
         return $firstChar;
     }
 
+    protected static function sortByName($left, $right)
+    {
+        return strcmp(
+            self::toSortableString(strtolower($left['name'])),
+            strtolower(self::toSortableString($right['name']))
+        );
+    }
+
     public function csvProperty($list, $property)
     {
         $propertylist = array();
