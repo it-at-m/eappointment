@@ -112,6 +112,38 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testLocale()
+    {
+        $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
+        $access->loadFromPath(FIXTURES);
+        $serviceList = $access->fromService('de')->searchAll('');
+        //var_dump(reset($serviceList));exit;
+        //foreach ($serviceList as $service) {
+        //    echo $service['id']. " " .$service['name']."\n";
+        //}
+        $this->assertTrue(
+            $this->listContains($serviceList, 'Aufenthaltserlaubnis zur Aufnahme eines Praktikums'),
+            'Did not find "Aufenthaltserlaubnis zur Aufnahme eines Praktikums" in * search with locale de'
+        );
+        $this->assertFalse(
+            $this->listContains($serviceList, 'Residency to start an internship'),
+            'Did find "Residency to start an internship" in * search with locale de'
+        );
+        $serviceList = $access->fromService('en')->searchAll('');
+        //var_dump(reset($serviceList));exit;
+        //foreach ($serviceList as $service) {
+        //    echo $service['id']. " " .$service['name']."\n";
+        //}
+        $this->assertFalse(
+            $this->listContains($serviceList, 'Aufenthaltserlaubnis zur Aufnahme eines Praktikums'),
+            'Did find "Aufenthaltserlaubnis zur Aufnahme eines Praktikums" in * search with locale en'
+        );
+        $this->assertTrue(
+            $this->listContains($serviceList, 'Residency to start an internship'),
+            'Did not find "Residency to start an internship" in * search with locale en'
+        );
+    }
+
     public function testSearch()
     {
         $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
