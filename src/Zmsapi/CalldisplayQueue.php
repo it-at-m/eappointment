@@ -71,15 +71,10 @@ class CalldisplayQueue extends BaseController
             (new \BO\Zmsdb\Scope)->readWithWorkstationCount($scope->id, \App::$now, $resolveReferences);
 
         // TODO try to fetch only called processes
+        // cant fetch only called processes because we need less api calls as possible for calldisplay
+        // full list is needed for waitingtime and waitingcount calculation
         return (new \BO\Zmsdb\Scope)
-            ->readQueueList($scope->getId(), \App::$now)
-            ->withoutStatus(['missed'])
-            ->withEstimatedWaitingTime(
-                $scope->getPreference('queue', 'processingTimeAverage'),
-                $scope->getCalculatedWorkstationCount(),
-                \App::$now,
-                false
-            )
+            ->readQueueListWithWaitingTime($scope, \App::$now, $resolveReferences)
             ->withPickupDestination($scope);
     }
 }

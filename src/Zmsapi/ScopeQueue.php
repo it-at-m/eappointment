@@ -24,14 +24,14 @@ class ScopeQueue extends BaseController
     ) {
         $query = new Query();
         $selectedDate = Validator::param('date')->isString()->getValue();
-        $dateTime = ($selectedDate) ? new DateTime($selectedDate) : \App::$now;
+        $dateTime = ($selectedDate) ? (new DateTime($selectedDate))->modify(\App::$now->format('H:i')) : \App::$now;
 
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $scope = $query->readEntity($args['id'], $resolveReferences);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        $queueList = $query->readQueueList($scope->getId(), $dateTime);
+        $queueList = $query->readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences);
 
         $message = Response\Message::create($request);
         if ((new Helper\User($request))->hasRights()) {
