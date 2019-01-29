@@ -26,7 +26,7 @@ class ClusterQueue extends BaseController
         $query = new Query();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $selectedDate = Validator::param('date')->isString()->getValue();
-        $dateTime = ($selectedDate) ? new DateTime($selectedDate) : \App::$now;
+        $dateTime = ($selectedDate) ? (new DateTime($selectedDate))->modify(\App::$now->format('H:i')) : \App::$now;
 
         $cluster = $query->readEntity($args['id'], $resolveReferences);
         if (! $cluster) {
@@ -34,7 +34,7 @@ class ClusterQueue extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = $query->readQueueList($cluster->id, $dateTime);
+        $message->data = $query->readQueueList($cluster->id, $dateTime, $resolveReferences);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
