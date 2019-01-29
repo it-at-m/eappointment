@@ -147,7 +147,7 @@ class CalculateSlots
             if ($slotsProcessed = $slotQuery->deleteSlotProcessOnProcess($scope->id)) {
                 $this->log("Finished to free $slotsProcessed slots for changed/deleted processes");
             }
-
+            $slotQuery->writeCanceledByTimeAndScope($now, $scope);
             $slotQuery->deleteSlotProcessOnSlot($scope->id);
             //$this->log("Finished to free slots for cancelled availabilities");
 

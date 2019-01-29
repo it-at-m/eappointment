@@ -42,7 +42,6 @@ class ProcessStatusFree extends Base
                         AND c.month = s.month
                         AND s.day = :day
                         AND s.status = "free"
-                        AND s.time > :currentTime
                 LEFT JOIN slot_hiera h ON h.ancestorID = s.slotID AND h.ancestorLevel <= c.slotsRequired
                 LEFT JOIN slot_process p ON h.slotID = p.slotID
             GROUP BY s.slotID, h.slotID
