@@ -20,7 +20,8 @@ class AvailabilitySnapShot
 
     public function hasOutdatedAvailability()
     {
-        return $this->availability->isNewerThan($this->dateTime);
+        // Lower compared date by one second to make a "<=" comparision
+        return $this->availability->isNewerThan($this->dateTime->modify("-1 second"));
     }
 
     public function hasOutdatedScope()
