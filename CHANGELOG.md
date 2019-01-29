@@ -8,6 +8,7 @@
 * #33875 Schließen-Button im Öffnungszeiten-Formular wurde in Abbrechen umbenannt
 * #35334 Verbesserungen beim Nutzen des Terminformulars in der Sachbearbeiter-Tresen-Ansicht
 * #35306 Wenn Cluster gewählt ist, muss nun im Terminformular erst ein Standort definiert werden, es wird kein "bevorzugter" Standort aus dem Cluster mehr ermittelt, Verbesserungen in der Berechnungszeit
+* #34481 Bugfix: Die zu erwartende Wartezeit wird nun korrekt ermittelt
 
 ## v2.19.02
 
