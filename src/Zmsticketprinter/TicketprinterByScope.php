@@ -32,7 +32,7 @@ class TicketprinterByScope extends BaseController
         $department = \App::$http->readGetResult('/scope/'. $scope->id . '/department/')->getEntity();
         $organisation = $ticketprinterHelper::$organisation;
         
-        $queueListHelper = (new Helper\QueueListHelper($scope, \App::$now));
+        $queueListHelper = new Helper\QueueListHelper($scope);
         
         $template = (new Helper\TemplateFinder($defaultTemplate))->setCustomizedTemplate($ticketprinter, $organisation);
 
@@ -48,7 +48,7 @@ class TicketprinterByScope extends BaseController
                 'scope' => $scope,
                 'queueList' => $queueListHelper->getList(),
                 'waitingTime' => $queueListHelper->getEstimatedWaitingTime(),
-                'waitingClients' => $queueListHelper->getList()->count(),
+                'waitingClients' => $queueListHelper->getClientsBefore(),
                 'buttonDisplay' => $template->getButtonTemplateType($ticketprinter),
                 'config' => $config
             )

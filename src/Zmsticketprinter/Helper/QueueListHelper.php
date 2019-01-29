@@ -17,43 +17,40 @@ class QueueListHelper
 
     protected static $queueList = null;
 
-    protected static $status = ['confirmed', 'queued', 'reserved', 'deleted'];
+    protected static $status = ['confirmed', 'queued', 'reserved', 'deleted', 'fake'];
 
-    protected static $missedStatus = ['missed'];
-
-    public function __construct(\BO\Zmsentities\Scope $scope, $dateTime)
+    public function __construct(\BO\Zmsentities\Scope $scope)
     {
         static::$fullList = static::createFullList($scope);
-        static::$queueList = static::createQueueList($scope, $dateTime);
+        static::$queueList = static::createQueueList();
     }
 
     public static function getList()
     {
-        return static::$queueList->withSortedArrival();
+        return static::$queueList;
     }
 
     public static function getEstimatedWaitingTime()
     {
-        return static::getList()->getLast()->waitingTimeEstimate;
+        return static::getList()->getFakeOrLastWaitingnumber()->waitingTimeEstimate;
+    }
+
+    public static function getClientsBefore()
+    {
+        $entity = static::getList()->getFakeOrLastWaitingnumber();
+        return static::getList()->withSortedWaitingTime()->getQueuePositionByNumber($entity->number);
     }
 
     protected static function createFullList($scope)
     {
-        $fullList = \App::$http->readGetResult('/scope/'. $scope->getId() . '/queue/')->getCollection();
+        $fullList = \App::$http
+            ->readGetResult('/scope/'. $scope->getId() . '/queue/')
+            ->getCollection();
         return ($fullList) ? $fullList : new QueueList();
     }
 
-    protected static function createQueueList($scope, $dateTime)
+    protected static function createQueueList()
     {
-        return (static::$fullList) ?
-            static::$fullList
-                ->withStatus(self::$status)
-                ->withEstimatedWaitingTime(
-                    $scope->getPreference('queue', 'processingTimeAverage'),
-                    $scope->getCalculatedWorkstationCount(),
-                    $dateTime,
-                    false
-                ) :
-            new QueueList();
+        return (static::$fullList->count()) ? static::$fullList->withStatus(self::$status) : new QueueList();
     }
 }
