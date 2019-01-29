@@ -103,6 +103,12 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $queueList->sortByCustomKey('arrivalTime');
     }
 
+    public function withSortedWaitingTime()
+    {
+        $queueList = clone $this;
+        return $queueList->sortByCustomKey('waitingTimeEstimate');
+    }
+
     public function withAppointment()
     {
         $queueList = new self();
@@ -191,7 +197,8 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public function getQueuePositionByNumber($number)
     {
-        foreach ($this as $key => $entity) {
+        $list = array_values($this->getArrayCopy());
+        foreach ($list as $key => $entity) {
             if ($entity->number == $number) {
                 return $key;
             }
