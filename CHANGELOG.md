@@ -7,7 +7,7 @@
 * #35311 Werfe einen aussagekräftigeren Fehler bei einer nicht erreichbaren Datenbank
 * #35313 Bugfix: Erinnerungs-SMS nur senden wenn diese von Behörde erlaubt sind
 * #35568 Script um Dienstleistungen aus der Dienstleister-Liste zu entfernen, die es im Dienstleistungs-Export nicht gibt
-* #35490 Bugfix: freie Termine vor der aktuellen Zeit werden im Query ausgeschlossen
+* #35490 Bugfix: freie Termine vor der aktuellen Zeit werden ausgeschlossen
 * #35550 Helper für Cronjob um abgesagte Termine wieder freizugeben
 * #31592 Liste von Diensleistern mit zugeordneten Dienstleistungen (requestrelation) wird ohne Joins aufgelöst, da diese zu zirkulären Referenzen führten
 
