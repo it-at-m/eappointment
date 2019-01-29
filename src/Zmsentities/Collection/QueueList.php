@@ -206,6 +206,17 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return null;
     }
 
+    public function getCountWithWaitingTime()
+    {
+        $queueList = new self();
+        foreach ($this as $entity) {
+            if ($entity->waitingTime || ! $entity->withAppointment) {
+                $queueList->addEntity(clone $entity);
+            }
+        }
+        return $queueList;
+    }
+
     /**
      * @param array $statusList of possible strings in process.status
      *
