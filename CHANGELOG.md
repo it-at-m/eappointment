@@ -8,6 +8,7 @@
 * #31569 Bugfix: Update des Termins mit Dienstleistungen aus generierter Quelle, nicht mehr dldb als Standard
 * #31592 Bugfix: Data Eigenschaft für provider und request werden auf Inhalt geprüft und als Objekt zurück gegeben oder entfernt
 * #31408 Bugfix: Zeitangaben in SMS Benachrichtigungen werden nun im 24 Stunden Modus angezeigt
+* #34481 Bugfix: Position eines Eintrags in der Warteschlange über die Wartenummer wird nun korrekt ermittelt und es kann nun eine Warteliste nach der vorraussichtlichen Wartezeit sortiert werden
 
 ## v2.19.02
 
