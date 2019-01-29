@@ -8,8 +8,6 @@
 * #31569 Bugfix: Update des Termins mit Dienstleistungen aus generierter Quelle, nicht mehr dldb als Standard
 * #31592 Bugfix: Data Eigenschaft für provider und request werden auf Inhalt geprüft und als Objekt zurück gegeben oder entfernt
 * #31408 Bugfix: Zeitangaben in SMS Benachrichtigungen werden nun im 24 Stunden Modus angezeigt
-* #34496 Neue Funktion zur Sortierung einer Terminliste nach dem Termindatum
-* #34496 Neue Funktion zur Anpassung eines Termins mit neuer ID und AuthKey
 
 ## v2.19.02
 
