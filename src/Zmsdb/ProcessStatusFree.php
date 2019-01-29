@@ -31,10 +31,6 @@ class ProcessStatusFree extends Process
                 'month' => $selectedDate->format('m'),
                 'day' => $selectedDate->format('d'),
                 'slotType' => $slotType,
-                'currentTime' => ($selectedDate->getTimestamp() < $now->getTimestamp())
-                    ? $now->format('H:i')
-                    : $selectedDate->format('H:i')
-
             ]
         );
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {

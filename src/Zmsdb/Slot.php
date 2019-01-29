@@ -360,6 +360,20 @@ class Slot extends Base
         return $this;
     }
 
+    public function writeCanceledByTimeAndScope(\DateTimeInterface $dateTime, \BO\Zmsentities\Scope $scope)
+    {
+        $status = $this->perform(Query\Slot::QUERY_UPDATE_SLOT_MISSING_AVAILABILITY, [
+            'dateString' => $dateTime->format('Y-m-d'),
+        ]);
+        return $this->perform(Query\Slot::QUERY_CANCEL_SLOT_OLD_BY_SCOPE, [
+            'year' => $dateTime->format('Y'),
+            'month' => $dateTime->format('m'),
+            'day' => $dateTime->format('d'),
+            'time' => $dateTime->format('H:i:s'),
+            'scopeID' => $scope->id,
+        ]) && $status;
+    }
+
     public function writeCanceledByTime(\DateTimeInterface $dateTime)
     {
         $status = $this->perform(Query\Slot::QUERY_UPDATE_SLOT_MISSING_AVAILABILITY, [
