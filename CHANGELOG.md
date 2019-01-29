@@ -1,6 +1,7 @@
 ## v2.19.03
 
 * #34579 Wartezeit wird als "unbekannt" angezeigt, wenn virtuelle Sachbearbeiterzahl auf 0 gesetzt ist für einen Standort
+* #34481 Die Anzahl der Wartenden sind jene, denen schon eine Wartezeit zugewiesen wurde plus Spontankunden, Terminkunden die in der Zukunft liegen und noch keine Wartezeit haben sind keine Wartenden
 
 ## v2.19.02
 
