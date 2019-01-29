@@ -3,6 +3,7 @@
 * #34135 Cronjob: Löschen von Öffnungszeiten auf 28 Tage umgestellt
 * #35550 Cronjob: Wiederherstellen abgesagter Termine
 * #34496 Route /process/{id}/{authkey}/appointment/ erlaubt Änderung von Terminzeiten in einem Termin ohne Veränderung der Termin-Zugangsdaten (id und authKey)
+* #34481 Controller zum holen der Standort, Cluster oder Calldisplay Queue wurden vereinfacht und vereinheitlicht
 
 ## v2.19.02
 
