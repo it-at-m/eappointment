@@ -10,6 +10,8 @@
 * #35490 Bugfix: freie Termine vor der aktuellen Zeit werden ausgeschlossen
 * #35550 Helper für Cronjob um abgesagte Termine wieder freizugeben
 * #31592 Liste von Diensleistern mit zugeordneten Dienstleistungen (requestrelation) wird ohne Joins aufgelöst, da diese zu zirkulären Referenzen führten
+* Refactoring: In Klasse Process wurden Parameter "dateTime" in "now" umbenannt, um Verwechslungen zu vermeiden
+* #35311 Refactoring: Verwende die Klasse PDOFailed für Exceptions bei Datenbankproblemen 
 
 ## v2.19.02
 
