@@ -12,6 +12,7 @@
 * #31592 Liste von Diensleistern mit zugeordneten Dienstleistungen (requestrelation) wird ohne Joins aufgelöst, da diese zu zirkulären Referenzen führten
 * Refactoring: In Klasse Process wurden Parameter "dateTime" in "now" umbenannt, um Verwechslungen zu vermeiden
 * #35311 Refactoring: Verwende die Klasse PDOFailed für Exceptions bei Datenbankproblemen 
+* #35634 Bugfix: Wenn die Änderung einer Öffnungszeit und Neuberechnung auf die selbe Sekunde fallen, wird bei der nächsten Berechnung noch einmal neu berechnet.
 
 ## v2.19.02
 
