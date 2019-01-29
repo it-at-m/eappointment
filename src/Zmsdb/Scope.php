@@ -288,7 +288,7 @@ class Scope extends Base
         $queueList = $this->readQueueList($scope->id, $dateTime, $resolveReferences);
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
         $workstationCount = $scope->getCalculatedWorkstationCount();
-        return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
+        return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime)->withSortedArrival();
     }
 
     /**

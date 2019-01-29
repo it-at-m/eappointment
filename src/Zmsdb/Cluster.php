@@ -52,14 +52,14 @@ class Cluster extends Base
         return $entity;
     }
 
-     /**
-     * read list of clusters
-     *
-     * @param
-     * resolveReferences
-     *
-     * @return Resource Collection
-     */
+    /**
+    * read list of clusters
+    *
+    * @param
+    * resolveReferences
+    *
+    * @return Resource Collection
+    */
     public function readList($resolveReferences = 0)
     {
         $clusterList = new Collection();
@@ -138,7 +138,7 @@ class Cluster extends Base
                 $queueList->addList($scopeQueueList);
             }
         }
-        return $queueList;
+        return $queueList->withSortedArrival();
     }
 
     /**
