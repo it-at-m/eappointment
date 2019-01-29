@@ -7,9 +7,6 @@
  */
 namespace BO\Zmscalldisplay;
 
-/**
- * Handle requests concerning services
- */
 class Queue extends BaseController
 {
 
@@ -32,6 +29,11 @@ class Queue extends BaseController
         $queueList = ($queueListFull) ?
             $queueListFull->withStatus($calldisplay::getRequestedQueueStatus($request)) :
             new \BO\Zmsentities\Collection\QueueList();
+
+        $waitingClientsList = $queueListFull
+            ->withStatus(['confirmed', 'queued', 'reserved', 'deleted'])
+            ->getCountWithWaitingTime();
+
         return \BO\Slim\Render::withHtml(
             $response,
             'block/queue/queueTable.twig',
@@ -40,7 +42,7 @@ class Queue extends BaseController
                 'calldisplay' => $calldisplay->getEntity(false),
                 'scope' => $calldisplay->getSingleScope(),
                 'queueList' => $queueList,
-                'waitingClients' => ($queueListFull->withoutStatus(['called'])->count() - 1), // -1 fake entry
+                'waitingClients' => $waitingClientsList->count(),
                 'waitingTime' => $queueListFull->getFakeOrLastWaitingnumber()->waitingTimeEstimate,
                 'waitingTimeOptimistic' => $queueListFull->getFakeOrLastWaitingnumber()->waitingTimeOptimistic,
             )
