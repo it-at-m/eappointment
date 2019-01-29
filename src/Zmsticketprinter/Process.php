@@ -42,7 +42,7 @@ class Process extends BaseController
         $scope = new \BO\Zmsentities\Scope($process->scope);
         $department = \App::$http->readGetResult('/scope/'. $scope->getId() . '/department/')->getEntity();
 
-        $queueListHelper = (new Helper\QueueListHelper($scope, \App::$now));
+        $queueListHelper = (new Helper\QueueListHelper($scope));
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -58,7 +58,7 @@ class Process extends BaseController
                 'process' => $process,
                 'queueList' => $queueListHelper->getList(),
                 'waitingTime' => $queueListHelper->getEstimatedWaitingTime(),
-                'waitingClients' => $queueListHelper->getList()->getQueuePositionByNumber($process->queue->number),
+                'waitingClients' => ($queueListHelper->getClientsBefore() - 1), // -1 fake entry
                 'config' => $config,
                 'department' => $department
             )
