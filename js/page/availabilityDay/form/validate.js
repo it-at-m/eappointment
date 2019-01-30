@@ -1,31 +1,32 @@
+import moment from 'moment'
 
 const validate = data => {
-    let valid = true
     const errors = {}
 
-    console.log(data)
     if (!data.type) {
         errors.type = 'Typ erforderlich'
-        valid = false
     }
 
     // Validate openning times 
+
     var startHour = data.startTime.split(':')[0]
     var endHour = data.endTime.split(':')[0]
     var startMinute = data.startTime.split(':')[1]
     var endMinute = data.endTime.split(':')[1]
+
+    var startTime = moment(data.startDate, 'X').set({ h: startHour, m: startMinute }).unix();
+    var endTime = moment(data.endDate, 'X').set({ h: endHour, m: endMinute }).unix();
     var slotTime = data.slotTimeInMinutes
 
-
-    if (startHour >= endHour) {
-        errors.startTime = 'Endzeit muss nach Startzeit stattfinden'
-        valid = false
+    if (startTime >= endTime) {
+        errors.startTime = 'Das Terminende muss nach dem Terminanfang sein'
     }
 
-    if ((endMinute - startMinute) % slotTime > 0) {
-        errors.type = 'Öffnungszeit kann nicht in Zeitschlitze verteilt werden.'
-        valid = false
+    if ((endTime - startTime) / 60 % slotTime > 0) {
+        errors.type = 'Zeitschlitze müssen sich gleichmäßig in der Öffnungszeit aufteilen lassen'
     }
+
+    let valid = (Object.keys(errors).length) ? false : true
 
     return {
         valid,
