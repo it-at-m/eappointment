@@ -368,7 +368,7 @@ class Slot extends Base
             'day' => $dateTime->format('d'),
             'time' => $dateTime->format('H:i:s'),
             'scopeID' => $scope->id,
-        ]) && $status;
+        ]);
     }
 
     public function writeCanceledByTime(\DateTimeInterface $dateTime)
