@@ -36,9 +36,9 @@ foreach ($providerJson['data'] as $providerKey => $providerItem) {
             $counter++;
             $deletedIds[] = $providerRequestItem['service'];
             unset($providerJson['data'][$providerKey]['services'][$serviceKey]);
-            $providerJson['data'][$providerKey]['services'] = array_values($providerJson['data'][$providerKey]['services']);
         }
     }
+    $providerJson['data'][$providerKey]['services'] = array_values($providerJson['data'][$providerKey]['services']);
     if ($counter) {
         error_log('deleted '. $counter . ' ('. join(',', $deletedIds) .') services for provider '. $providerItem['name']);
         $all += $counter;
@@ -46,4 +46,4 @@ foreach ($providerJson['data'] as $providerKey => $providerItem) {
 }
 error_log('deleted '. $all . ' services at all');
 
-file_put_contents($argv[2], json_encode($providerJson));
+file_put_contents($argv[2], json_encode($providerJson, JSON_PRETTY_PRINT));
