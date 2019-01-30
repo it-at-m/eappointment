@@ -86,6 +86,7 @@ class Slot extends Base implements MappingInterface
              a.OeffnungszeitID IS NULL
                OR a.Endedatum < :dateString
     ';
+
     const QUERY_SELECT_DELETABLE_SLOT_PROCESS = '
         SELECT sp.processID AS processId
             FROM slot_process sp
