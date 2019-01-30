@@ -13,7 +13,12 @@ class WorkstationInfo
 {
     public static function getInfoBoxData(\BO\Zmsentities\Workstation $workstation, $selectedDate)
     {
-        $infoData = array('waitingTime' => 0, 'queueCount' => 0);
+        $infoData = array(
+            'waitingTimeEstimate' => 0,
+            'waitingClientsFullList' => 0,
+            'waitingClientsBeforeNext' => 0,
+            'waitingClientsEffective' => 0
+        );
         $scope = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/workstationcount/')->getEntity();
 
         $clusterHelper = (new ClusterHelper($workstation));
@@ -25,8 +30,10 @@ class WorkstationInfo
 
         $queueListHelper = (new QueueListHelper($clusterHelper, $scope, $selectedDate));
         if ($queueListHelper->getWaitingCount()) {
-            $infoData['waitingTime'] = $queueListHelper->getEstimatedWaitingTime();
-            $infoData['queueCount'] = $queueListHelper->getWaitingCount();
+            $infoData['waitingTimeEstimate'] = $queueListHelper->getEstimatedWaitingTime();
+            $infoData['waitingClientsBeforeNext'] = $queueListHelper->getWaitingClientsBeforeNext();
+            $infoData['waitingClientsEffective'] = $queueListHelper->getWaitingClientsEffective();
+            $infoData['waitingClientsFullList'] = $queueListHelper->getWaitingCount();
         }
         return $infoData;
     }
