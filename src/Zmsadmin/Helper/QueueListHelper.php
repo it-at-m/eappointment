@@ -44,6 +44,19 @@ class QueueListHelper
         return (self::getList()->count() - 1);
     }
 
+    public static function getWaitingClientsEffective()
+    {
+        $effectiveStatus = self::$status;
+        unset($effectiveStatus['fake']);
+        return self::getList()->withoutStatus(['fake'])->getCountWithWaitingTime()->count();
+    }
+
+    public static function getWaitingClientsBeforeNext()
+    {
+        $entity = self::getList()->getFakeOrLastWaitingnumber();
+        return self::getList()->withSortedWaitingTime()->getQueuePositionByNumber($entity->number);
+    }
+
     public static function getMissedList()
     {
         return  static::$fullList->withStatus(self::$missedStatus);
