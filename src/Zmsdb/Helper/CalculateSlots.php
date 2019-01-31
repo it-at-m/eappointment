@@ -162,7 +162,7 @@ class CalculateSlots
         return false;
     }
 
-    public function writeCanceledSlots(\DateTimeInterface $now, $modify = '+10 minutes')
+    public function writeCanceledSlots(\DateTimeInterface $now, $modify = '+5 minutes')
     {
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $slotQuery = new \BO\Zmsdb\Slot();
