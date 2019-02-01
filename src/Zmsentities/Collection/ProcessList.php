@@ -186,7 +186,8 @@ class ProcessList extends Base
         $appointment = (new \BO\Zmsentities\Appointment)->addDate($dateTime->getTimestamp())->addScope($scopeId);
         foreach ($this as $process) {
             if ($process->hasAppointment($dateTime->getTimestamp(), $scopeId) && !$addedAppointment) {
-                $process->appointments->addEntity($appointment);
+                $entity = clone $process;
+                $this->addEntity($entity);
                 $addedAppointment = true;
             }
         }
