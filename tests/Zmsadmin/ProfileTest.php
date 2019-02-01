@@ -25,6 +25,7 @@ class ProfileTest extends Base
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertContains('Nutzerinformation', (string)$response->getBody());
         $this->assertContains('testadmin', (string)$response->getBody());
+        $this->assertContains('value="0"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
