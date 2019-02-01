@@ -32,7 +32,6 @@ class ProcessConfirm extends BaseController
             throw new Exception\Process\ProcessNotReservedAnymore();
         }
         $process = (new Process())->updateProcessStatus($process, 'confirmed', \App::$now, $resolveReferences);
-
         $message = Response\Message::create($request);
         $message->data = $process;
 

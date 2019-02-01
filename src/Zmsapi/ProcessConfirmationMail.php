@@ -9,6 +9,8 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process;
+use \BO\Zmsdb\Config;
+use \BO\Zmsdb\Department;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -28,22 +30,30 @@ class ProcessConfirmationMail extends BaseController
         $process = new \BO\Zmsentities\Process($input);
         $process->testValid();
         $this->testProcessData($process);
+        $process = (new Process())->readEntity($process->id, $process->authKey);
 
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        $config = (new \BO\Zmsdb\Config)->readEntity();
-        $mail = (new \BO\Zmsentities\Mail)->toResolvedEntity($process, $config);
+    
+        $mail = $this->writeMail($process);
+        $message = Response\Message::create($request);
+        $message->data = ($mail->hasId()) ? $mail : null;
 
-        if ($process->getFirstClient()->hasEmail()) {
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
+    }
+
+    protected static function writeMail(\BO\Zmsentities\Process $process)
+    {
+        $config = (new Config)->readEntity();
+        $department = (new Department())->readByScopeId($process->scope['id']);
+        $mail = (new \BO\Zmsentities\Mail)->toResolvedEntity($process, $config)->withDepartment($department);
+        $mail->testValid();
+        if ($process->getFirstClient()->hasEmail() && $process->scope->hasEmailFrom()) {
             $mail = (new \BO\Zmsdb\Mail)->writeInQueue($mail, \App::$now);
             \App::$log->debug("Send mail", [$mail]);
         }
-
-        $message = Response\Message::create($request);
-        $message->data = $mail;
-
-        $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message, 200);
-        return $response;
+        return $mail;
     }
 
     protected function testProcessData($process)
