@@ -12,11 +12,45 @@ class ProcessConfirmationNotificationTest extends Base
 
     public function testRendering()
     {
+        $this->setWorkstation()->getUseraccount()->setRights('scope');
         $response = $this->render([], [
-            '__body' => $this->readFixture('GetProcess_10029.json')
+            '__body' => '{
+                "id": 28816,
+                "authKey": "15dd",
+                "scope": {
+                    "id": 141
+                },
+                "clients": [
+                    {
+                        "familyName": "Max Mustermann",
+                        "email": "max@service.berlin.de",
+                        "telephone": "030 115"
+                    }
+                ],
+                "appointments" : [
+                    {
+                        "date": 1447869172,
+                        "scope": {
+                            "id": 141
+                        },
+                        "slotCount": 2
+                    }
+                ],
+                "status": "confirmed"
+            }'
         ], []);
         $this->assertContains('notification.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+        return $response;
+    }
+
+    public function testNotificationDisabled()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('scope');
+        $response = $this->render([], [
+            '__body' => $this->readFixture('GetProcess_10029.json')
+        ], []);
+        $this->assertContains('"data":null', (string)$response->getBody());
         return $response;
     }
 
