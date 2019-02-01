@@ -4,6 +4,7 @@
 * #35550 Cronjob: Wiederherstellen abgesagter Termine
 * #34496 Route /process/{id}/{authkey}/appointment/ erlaubt Änderung von Terminzeiten in einem Termin ohne Veränderung der Termin-Zugangsdaten (id und authKey)
 * #34481 Controller zum holen der Standort, Cluster oder Calldisplay Queue wurden vereinfacht und vereinheitlicht
+* #35656 Bugfix: Vor dem Eintragen einer Email oder SMS in die Versand-Queue wird nun geprüft ob alle Vorraussetzungen für den Versand auch erfüllt sind
 
 ## v2.19.02
 
