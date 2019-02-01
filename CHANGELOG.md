@@ -10,6 +10,7 @@
 * #35306 Wenn Cluster gewählt ist, muss nun im Terminformular erst ein Standort definiert werden, es wird kein "bevorzugter" Standort aus dem Cluster mehr ermittelt, Verbesserungen in der Berechnungszeit
 * #34481 Bugfix: Die zu erwartende Wartezeit wird nun korrekt ermittelt, zusätzlich wird die Anzahl der Vorgänge vor dem nächsten Spontankunden sowie die Anzahl der Vorgänge mit Wartezeit angezeigt
 * #33874 Bugfix: Korrekte Validierung dass eingestellten Zeitschlitze in die Terminzeiten passen und das Anfangsdatum/Zeit nicht hinter dem Endedatum/Zeit liegt
+* #35667 Bugfix: Zum Ändern der eigenen Profildaten werden nur noch die notwendigen Daten im Formular gesendet damit kein Overload entsteht
 
 ## v2.19.02
 
