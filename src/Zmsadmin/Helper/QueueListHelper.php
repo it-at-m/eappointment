@@ -41,7 +41,7 @@ class QueueListHelper
     public static function getWaitingCount()
     {
         // return count -1 because of faked entry
-        return (self::getList()->count() - 1);
+        return (self::getList()->count()) ? (self::getList()->count() - 1) : 0;
     }
 
     public static function getWaitingClientsEffective()
