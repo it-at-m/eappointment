@@ -11,6 +11,7 @@
 * #34481 Bugfix: Die zu erwartende Wartezeit wird nun korrekt ermittelt, zusätzlich wird die Anzahl der Vorgänge vor dem nächsten Spontankunden sowie die Anzahl der Vorgänge mit Wartezeit angezeigt
 * #33874 Bugfix: Korrekte Validierung dass eingestellten Zeitschlitze in die Terminzeiten passen und das Anfangsdatum/Zeit nicht hinter dem Endedatum/Zeit liegt
 * #35667 Bugfix: Zum Ändern der eigenen Profildaten werden nur noch die notwendigen Daten im Formular gesendet damit kein Overload entsteht
+* #34481 Nach dem Hinzufügen eines neuen Spontankunden wird das Formular zurückgesetzt zur Eingabe weiterer Spontankunden, die Infobox wird nun immer zusammen mit der Queuetable aktualisiert
 
 ## v2.19.02
 
