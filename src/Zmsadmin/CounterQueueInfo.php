@@ -35,7 +35,8 @@ class CounterQueueInfo extends BaseController
             'block/queue/info.twig',
             array(
                 'workstation' => $workstation,
-                'workstationInfo' => $workstationInfo
+                'workstationInfo' => $workstationInfo,
+                'selectedDate' => $selectedDate
             )
         );
     }
