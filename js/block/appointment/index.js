@@ -133,10 +133,6 @@ class View extends RequestView {
             this.onAbortProcess(this.$main, event);
         }).on('click', '.form-actions .button-cancel', (event) => {
             this.onCancelForm(event);
-        }).on('click', '[data-action-abort]', (event) => {
-            this.onAbortMessage(event);
-        }).on('click', '[data-action-printWaitingNumber]', (event) => {
-            this.onPrintWaitingNumber(event);
         });
     }
 

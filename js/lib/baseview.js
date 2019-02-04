@@ -128,6 +128,7 @@ class BaseView extends ErrorHandler {
                 callback();
                 destroyLightbox();
             },
+            parent: this,
             handleLightbox: destroyLightbox
         })
     }
