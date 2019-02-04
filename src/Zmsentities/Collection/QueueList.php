@@ -16,6 +16,8 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     protected $workstationCount;
 
+    protected $transferedProcessList = false;
+
     public function setWaitingTimePreferences($processTimeAverage, $workstationCount)
     {
         if ($processTimeAverage <= 0) {
@@ -23,6 +25,12 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         }
         $this->processTimeAverage = $processTimeAverage;
         $this->workstationCount = $workstationCount;
+        return $this;
+    }
+
+    public function setTransferedProcessList($bool = true)
+    {
+        $this->transferedProcessList = $bool;
         return $this;
     }
 
@@ -101,7 +109,13 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
     public function withSortedArrival()
     {
         $queueList = clone $this;
-        return $queueList->sortByCustomKey('arrivalTime');
+        $queueList->uasort(function ($first, $second) {
+            $firstSort = sprintf("%011d%011d", $first['arrivalTime'], $first['number']);
+            //error_log($firstSort);
+            $secondSort = sprintf("%011d%011d", $second['arrivalTime'], $second['number']);
+            return strcmp($firstSort, $secondSort);
+        });
+        return $queueList;
     }
 
     public function withSortedWaitingTime()
