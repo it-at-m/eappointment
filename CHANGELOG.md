@@ -12,7 +12,7 @@
 * #33874 Bugfix: Korrekte Validierung dass eingestellten Zeitschlitze in die Terminzeiten passen und das Anfangsdatum/Zeit nicht hinter dem Endedatum/Zeit liegt
 * #35667 Bugfix: Zum Ändern der eigenen Profildaten werden nur noch die notwendigen Daten im Formular gesendet damit kein Overload entsteht
 * #34481 Nach dem Hinzufügen eines neuen Spontankunden wird das Formular zurückgesetzt zur Eingabe weiterer Spontankunden, die Infobox wird nun immer zusammen mit der Queuetable aktualisiert
-* #33874 Öffnungszeiten Formular hat jetzt einen Abbrechen Button wenn die Bearbeitung gestartet wurde um das Formular schließen zu können, zudem findet eine Terminzeiten Validierung nicht nur nach Anfangsdatum und Enddatum statt sondern die Anfangszeit darf nicht hinter der Endzeit liegen
+* #33874 Öffnungszeiten Formular hat jetzt einen Abbrechen Button wenn die Bearbeitung gestartet wurde um das Formular schließen zu können, wichtig für das Abbrechen von invaliden Bearbeitungsversuchen
 
 ## v2.19.02
 
