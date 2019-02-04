@@ -114,6 +114,7 @@ class View extends BaseView {
         $container.data('selecteddate', this.selectedDate);
         this.loadCalendar();
         this.loadClientNext();
+        this.loadQueueInfo();
         this.loadQueueTable();
         this.loadAppointmentForm(true, true);
     }
@@ -268,6 +269,7 @@ class View extends BaseView {
 
     onNextProcess() {
         //this.calledProcess = null;
+        this.loadQueueInfo();
         this.loadQueueTable();
     }
 
@@ -373,8 +375,10 @@ class View extends BaseView {
     }
 
     loadReloadPartials() {
-        if (this.$main.find('.lightbox').length == 0)
+        if (this.$main.find('.lightbox').length == 0) {
+            this.loadQueueInfo();
             this.loadQueueTable(false);
+        }
     }
 
     loadCalendar(showLoader = true) {
