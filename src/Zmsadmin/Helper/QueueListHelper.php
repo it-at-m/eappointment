@@ -23,7 +23,7 @@ class QueueListHelper
 
     public function __construct(ClusterHelper $clusterHelper, \BO\Zmsentities\Scope $scope, $selectedDate)
     {
-        $dateTime = (new \DateTimeImmutable($selectedDate))->modify(\App::$now->format('H:i'));
+        $dateTime = (new \DateTimeImmutable($selectedDate))->modify(\App::$now->format('H:i:s'));
         static::$fullList = static::createFullList($clusterHelper, $dateTime);
         static::$queueList = static::createQueueList($scope, $dateTime);
     }
