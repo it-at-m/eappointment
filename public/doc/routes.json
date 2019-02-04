@@ -2737,6 +2737,79 @@
 			}
 		}
 	},
+	"/process/{id}/{authKey}/appointment/": {
+		"post": {
+			"summary": "Update an appointment of a process",
+			"tags": [
+				"process",
+				"appointment"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "process number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "authKey",
+					"description": "authentication key",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "slotsRequired",
+					"description": "On default, the required slots are calculated by fetching preferences for a provider on how much slots each request should take. Priviliged users can change the required slots. To enable this parameter, a X-Authkey header is required.",
+					"in": "query",
+					"type": "integer",
+					"required": false
+				},
+				{
+					"name": "slotType",
+					"description": "On default, the slotType is 'public'. A scope can have non public appointments for booking. This is a reserve for internal use. Only priviliged users can change the slot type. To enable this parameter, a X-Authkey header is required.",
+					"in": "query",
+					"type": "string",
+					"required": false
+				},
+				{
+					"name": "appointment",
+					"description": "appointment data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/appointment.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/process.json"
+							}
+						}
+					}
+				},
+				"400": {
+					"description": "Invalid input"
+				},
+				"403": {
+					"description": "forbidden, authkey does not match or status changes, only data may be changed"
+				},
+				"404": {
+					"description": "process id does not exists or Failed to reserve new appointment"
+				}
+			}
+		}
+	},
 	"/process/{id}/{authKey}/ics/": {
 		"get": {
 			"summary": "Get an ICS-File for a process",

@@ -71,6 +71,8 @@ definitions:
     $ref: "schema/dayoff.json"
   exchange:
     $ref: "schema/exchange.json"
+  link:
+    $ref: "schema/link.json"
   log:
     $ref: "schema/log.json"
   mail:
