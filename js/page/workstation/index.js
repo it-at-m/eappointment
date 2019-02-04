@@ -247,12 +247,16 @@ class View extends BaseView {
         showSpinner($container);
         const sendData = $container.find('form').serializeArray();
         sendData.push({ name: 'queue', value: 1 });
-        this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then(() => {
-            //this.loadAppointmentForm(true, true);
-            this.loadQueueInfo();
-            this.loadQueueTable();
-            this.loadCalendar();
+        this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, false, $container).then((response) => {
+            this.loadMessage(response, () => {
+                this.loadAppointmentForm();
+                this.loadQueueInfo();
+                this.loadQueueTable();
+                this.loadCalendar();
+                hideSpinner();
+            });
         });
+
     }
 
     onResetProcess($container, event) {
@@ -376,7 +380,7 @@ class View extends BaseView {
 
     loadReloadPartials() {
         if (this.$main.find('.lightbox').length == 0) {
-            this.loadQueueInfo();
+            this.loadQueueInfo(false);
             this.loadQueueTable(false);
         }
     }

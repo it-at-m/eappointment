@@ -4,11 +4,12 @@ import DialogHandler from './dialogHandler'
 
 class MessageHandler {
 
-    constructor (element, options) {
+    constructor(element, options) {
         this.$main = $(element)
         this.message = options.message;
-        this.callback = options.callback || (() => {});
-        this.handleLightbox = options.handleLightbox || (() => {});
+        this.parent = options.parent;
+        this.callback = options.callback || (() => { });
+        this.handleLightbox = options.handleLightbox || (() => { });
         this.bindEvents();
         this.render()
     }
@@ -22,7 +23,7 @@ class MessageHandler {
             }
         }
         if (content.length == 0) {
-            new ExceptionHandler(this.$main, {'message': this.message, 'callback': this.callback});
+            new ExceptionHandler(this.$main, { 'message': this.message, 'callback': this.callback });
         } else {
             DialogHandler.hideMessages(true);
             if ($(this.$main.get(0)).hasClass('lightbox__content')) {
@@ -41,6 +42,13 @@ class MessageHandler {
         }).on('click', '.button-abort', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
+            this.handleLightbox();
+        }).on('click', '.button-callback', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            var callback = $(ev.target).data('callback');
+            this.parent[callback](ev);
+            this.callback();
             this.handleLightbox();
         });
     }
