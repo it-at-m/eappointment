@@ -189,21 +189,23 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
 
                 <div className="form-actions">
                     <div className="left">
-                        {data.id ?
-                            <button className="button-delete" type="delete" value="delete" onClick={onDelete}>Löschen</button> :
-                            data.__modified ? <button className="btn" type="abort" onClick={onAbort}>Abbrechen</button> : ''
-                        }
+                        <button className="button-delete" type="delete" value="delete" onClick={onDelete}>Löschen</button>
+                        <button className="btn" type="abort" onClick={onAbort}>Abbrechen</button>
+
                     </div>
                     <div className="right">
-                        <button className={data.__modified ? "button-new btn--b3igicon" : "btn"}
-                            type="save"
-                            value="save"
-                            onClick={onSave}>{data.__modified ? "+ merken und später aktivieren" : "Abbrechen"}</button>
+                        {data.__modified ?
+                            <button className="button-new btn--b3igicon"
+                                type="save"
+                                value="save"
+                                onClick={onSave}>+ merken und später aktivieren
+                            </button> : null}
                         {data.__modified ?
                             <button className="button-save"
                                 type="save"
                                 value="publish"
-                                onClick={onPublish}>Alle Änderungen aktivieren</button> : null}
+                                onClick={onPublish}>Alle Änderungen aktivieren
+                            </button> : null}
                     </div>
                 </div>
             </form>
