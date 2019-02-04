@@ -123,6 +123,8 @@ class View extends RequestView {
             this.onSaveProcess(this.$main, event, 'reserve');
         }).on('click', '.form-actions button.process-save', (event) => {
             this.onSaveProcess(this.$main, event);
+        }).on('click', '.form-actions button.process-print', (event) => {
+            this.onPrintWaitingNumber(event);
         }).on('click', '.form-actions button.process-queue', (event) => {
             this.onQueueProcess(this.$main, event);
         }).on('click', '.form-actions button.process-copy', (event) => {

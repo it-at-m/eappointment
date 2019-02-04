@@ -150,8 +150,26 @@ class View extends BaseView {
         this.onDatePick($container, event)
     }
 
+    onQueueProcess($container, event) {
+        stopEvent(event);
+        showSpinner($container);
+        const sendData = $container.find('form').serializeArray();
+        sendData.push({ name: 'queue', value: 1 });
+        this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, false, $container).then((response) => {
+            this.loadMessage(response, () => {
+                this.loadAppointmentForm();
+                this.loadQueueInfo();
+                this.loadQueueTable();
+                this.loadCalendar();
+                hideSpinner();
+            });
+        });
+
+    }
+
     onSaveProcess($container, event, action = 'update') {
         stopEvent(event);
+        showSpinner($container);
         if ($(event.target).data('id')) {
             this.selectedProcess = $(event.target).data('id');
         }
@@ -159,21 +177,25 @@ class View extends BaseView {
         sendData.push({ name: action, value: 1 });
         sendData.push({ name: 'selectedprocess', value: this.selectedProcess });
         sendData.push({ name: 'initiator', value: this.initiator });
-        this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then((response) => {
+        this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, false, $container).then((response) => {
             if ($(response).find('form').data('savedProcess')) {
                 this.selectedProcess = $(response).find('form').data('savedProcess');
             }
             if (false === response.toLowerCase().includes('has-error')) {
-                this.loadQueueInfo();
-                this.loadQueueTable();
-                this.loadCalendar();
-                this.loadAppointmentForm(true, true);
+                this.loadMessage(response, () => {
+                    this.loadAppointmentForm(true, true);
+                    this.loadQueueInfo();
+                    this.loadQueueTable();
+                    this.loadCalendar();
+                    hideSpinner();
+                });
             }
         });
     }
 
     onCopyProcess($container, event) {
         stopEvent(event);
+        showSpinner($container);
         const sendData = $container.find('form').serializeArray();
         if (0 == $('select#process_time').find(':selected').data('free')) {
             var selectedTime = $('select#process_time').val();
@@ -184,14 +206,18 @@ class View extends BaseView {
         }
         sendData.push({ name: 'reserve', value: 1 });
         sendData.push({ name: 'initiator', value: this.initiator });
-        this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then((response) => {
+        this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, false, $container).then((response) => {
+            if ($(response).find('form').data('savedProcess')) {
+                this.selectedProcess = $(response).find('form').data('savedProcess');
+            }
             if (false === response.toLowerCase().includes('has-error')) {
                 this.loadMessage(response, () => {
                     this.loadAppointmentForm(true, true);
                     this.loadQueueInfo();
                     this.loadQueueTable();
                     this.loadCalendar();
-                }, $container);
+                    hideSpinner();
+                });
             }
         });
     }
@@ -240,23 +266,6 @@ class View extends BaseView {
         this.loadCall(`${this.includeUrl}/dialog/?template=${template}&parameter[id]=${processId}&parameter[name]=${name}`).then((response) => {
             this.loadDialog(response, callback);
         });
-    }
-
-    onQueueProcess($container, event) {
-        stopEvent(event);
-        showSpinner($container);
-        const sendData = $container.find('form').serializeArray();
-        sendData.push({ name: 'queue', value: 1 });
-        this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, false, $container).then((response) => {
-            this.loadMessage(response, () => {
-                this.loadAppointmentForm();
-                this.loadQueueInfo();
-                this.loadQueueTable();
-                this.loadCalendar();
-                hideSpinner();
-            });
-        });
-
     }
 
     onResetProcess($container, event) {
