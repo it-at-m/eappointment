@@ -206,6 +206,7 @@ class ProcessList extends Base
             $queue = $process->toQueue($now);
             $queueList->addEntity($queue);
         }
+        $queueList->setTransferedProcessList(true);
         return $queueList;
     }
 

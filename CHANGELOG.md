@@ -10,6 +10,7 @@
 * #31408 Bugfix: Zeitangaben in SMS Benachrichtigungen werden nun im 24 Stunden Modus angezeigt
 * #34481 Bugfix: Position eines Eintrags in der Warteschlange über die Wartenummer wird nun korrekt ermittelt und es kann nun eine Warteliste nach der vorraussichtlichen Wartezeit sortiert werden
 * #35684 Bugfix: Der nächste Aufruf nutzt jetzt eine nach Wartezeit sortierte Liste. Aufgerufene Kunden werden nicht mehr in die Wartezeitberechnung einbezogen.
+* #35685 Bugfix: Sortiere die Warteschlang neben der Ankunftszeit auch nach Vorgangs-/Wartenummer um zufällige Reihenfolgen zu vermeiden.
 
 ## v2.19.02
 
