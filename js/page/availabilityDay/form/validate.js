@@ -18,7 +18,7 @@ const validate = data => {
     var endTime = moment(data.endDate, 'X').set({ h: endHour, m: endMinute }).unix();
     var slotTime = data.slotTimeInMinutes
 
-    if (startTime >= endTime) {
+    if (startTime >= endTime || startHour >= endHour) {
         errors.startTime = 'Das Terminende muss nach dem Terminanfang sein'
     }
 
