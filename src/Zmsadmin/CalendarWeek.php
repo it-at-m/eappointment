@@ -24,10 +24,9 @@ class CalendarWeek extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
 
         $selectedYear = Validator::value($args['year'])->isNumber()->getValue();
-        $selectedWeek = Validator::value($args['weeknr'])->isNumber()->getValue();
+        $selectedWeek = Validator::value($args['weeknr'])->isString()->getValue();
         $calendar = new Helper\Calendar(null, $selectedWeek, $selectedYear);
         $clusterHelper = (new Helper\ClusterHelper($workstation));
-
         return \BO\Slim\Render::withHtml(
             $response,
             'page/calendarWeek.twig',
@@ -38,7 +37,7 @@ class CalendarWeek extends BaseController
                 'cluster' => $clusterHelper->getEntity(),
                 'calendar' => $calendar,
                 'selectedYear' => $selectedYear,
-                'selectedWeek' => $selectedWeek,
+                'selectedWeek' => number_format($selectedWeek),
                 'selectedDate' => $calendar->getDateTime()->format('Y-m-d'),
                 'dayList' => $calendar->readWeekDayListWithProcessList($clusterHelper->getScopeList())->toSortedByHour()
             )
