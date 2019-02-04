@@ -30,10 +30,10 @@ class WorkstationInfo
 
         $queueListHelper = (new QueueListHelper($clusterHelper, $scope, $selectedDate));
         if ($queueListHelper->getWaitingCount()) {
-            $infoData['waitingTimeEstimate'] = $queueListHelper->getEstimatedWaitingTime();
-            $infoData['waitingClientsBeforeNext'] = $queueListHelper->getWaitingClientsBeforeNext();
-            $infoData['waitingClientsEffective'] = $queueListHelper->getWaitingClientsEffective();
             $infoData['waitingClientsFullList'] = $queueListHelper->getWaitingCount();
+            if ($selectedDate == \App::$now->format('Y-m-d')) {
+                $infoData = static::getAdditionalInfoData($infoData, $queueListHelper);
+            }
         }
         return $infoData;
     }
@@ -51,5 +51,13 @@ class WorkstationInfo
         return \App::$http
             ->readGetResult('/cluster/'. $clusterId . '/workstation/', ['resolveReferences' => 1])
             ->getCollection();
+    }
+
+    protected static function getAdditionalInfoData($infoData, $queueListHelper)
+    {
+        $infoData['waitingTimeEstimate'] = $queueListHelper->getEstimatedWaitingTime();
+        $infoData['waitingClientsBeforeNext'] = $queueListHelper->getWaitingClientsBeforeNext();
+        $infoData['waitingClientsEffective'] = $queueListHelper->getWaitingClientsEffective();
+        return $infoData;
     }
 }
