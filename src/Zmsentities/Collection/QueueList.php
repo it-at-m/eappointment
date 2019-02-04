@@ -16,7 +16,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     protected $workstationCount;
 
-    protected $transferedProcessList = false;
+    protected $fromProcessList = false;
 
     public function setWaitingTimePreferences($processTimeAverage, $workstationCount)
     {
@@ -30,7 +30,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public function setTransferedProcessList($bool = true)
     {
-        $this->transferedProcessList = $bool;
+        $this->fromProcessList = $bool;
         return $this;
     }
 
