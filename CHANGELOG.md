@@ -9,6 +9,7 @@
 * #31592 Bugfix: Data Eigenschaft für provider und request werden auf Inhalt geprüft und als Objekt zurück gegeben oder entfernt
 * #31408 Bugfix: Zeitangaben in SMS Benachrichtigungen werden nun im 24 Stunden Modus angezeigt
 * #34481 Bugfix: Position eines Eintrags in der Warteschlange über die Wartenummer wird nun korrekt ermittelt und es kann nun eine Warteliste nach der vorraussichtlichen Wartezeit sortiert werden
+* #35684 Bugfix: Der nächste Aufruf nutzt jetzt eine nach Wartezeit sortierte Liste. Aufgerufene Kunden werden nicht mehr in die Wartezeitberechnung einbezogen.
 
 ## v2.19.02
 

@@ -43,8 +43,9 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $createFake = true
     ) {
         $this->setWaitingTimePreferences($processTimeAverage, $workstationCount);
-        $queueWithWaitingTime = new self();
         $queueFull = $this->withWaitingTime($dateTime);
+        $queueWithWaitingTime = $queueFull->withStatus(['called']);
+        $queueFull = $queueFull->withoutStatus(['called']);
         if ($createFake) {
             $queueFull = $queueFull->withFakeWaitingnumber($dateTime);
         }
@@ -181,7 +182,12 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
     {
         $excludeNumbers = explode(',', $exclude);
         $queueList = clone $this;
-        $queueList = $queueList->withStatus(['confirmed', 'queued'])->withSortedArrival()->getArrayCopy();
+        // sort by waiting time to get realistic next process
+        $queueList = $queueList
+            ->withStatus(['confirmed', 'queued'])
+            ->withEstimatedWaitingTime(10, 1, $dateTime, false)
+            ->getArrayCopy()
+            ;
         $next = array_shift($queueList);
         $currentTime = $dateTime->getTimestamp();
         while ($next) {
