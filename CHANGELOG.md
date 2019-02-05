@@ -15,6 +15,7 @@
 * #35634 Bugfix: Wenn die Änderung einer Öffnungszeit und Neuberechnung auf die selbe Sekunde fallen, wird bei der nächsten Berechnung noch einmal neu berechnet.
 * #35685 Bugfix: Beim holen der Warteliste darf nicht nach Berechnung der Wartezeit nach Ankunftszeit sortiert werden.
 * #34135 Bugfix: Das Löschen alter Öffnungszeiten wird nun 28 Tage in der Vergangenheit anstatt 28 Wochen starten
+* #35699 Bugfix: Beim Aktualisieren eines Spontankunden wird die Aufnahmzeit nicht mehr überschrieben
 
 ## v2.19.02
 
