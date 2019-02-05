@@ -140,10 +140,21 @@ class View extends BaseView {
         this.loadAppointmentForm();
     }
 
-    onChangeTableView($container, event, $element) {
-        const pathName = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')).split('/').pop();
-        $element.val(pathName);
-        $(event.target).closest('form').submit();
+    onChangeTableView(event, changeScope = false) {
+        stopEvent(event);
+        if (changeScope) this.selectedScope = $(event.target).val();
+        const sendData = $(event.target).closest('form').serializeArray();
+        this.loadCall(`${this.includeUrl}/workstation/select/`, 'POST', sendData).then(() => {
+            if (changeScope) {
+                this.loadAllPartials();
+            } else {
+                return Promise.all([
+                    this.loadQueueTable(),
+                    this.loadQueueInfo()
+                ]);
+            }
+
+        });
     }
 
     onDateToday($container, event) {
@@ -258,14 +269,18 @@ class View extends BaseView {
         });
     }
 
-    onConfirm(event, template, callback) {
+    onConfirm(event, template, callback, abortCallback) {
         stopEvent(event);
         this.selectedProcess = null;
         const processId = $(event.target).data('id');
         const name = $(event.target).data('name');
-        this.loadCall(`${this.includeUrl}/dialog/?template=${template}&parameter[id]=${processId}&parameter[name]=${name}`).then((response) => {
-            this.loadDialog(response, callback);
-        });
+        var url = `${this.includeUrl}/dialog/?template=${template}`;
+        if (processId || name) {
+            url = url + `& parameter[id]=${processId}& parameter[name]=${name}`;
+        }
+        this.loadCall(url).then((response) => {
+            this.loadDialog(response, callback, abortCallback);
+        })
     }
 
     onResetProcess($container, event) {
@@ -456,6 +471,7 @@ class View extends BaseView {
     loadQueueTable(showLoader = true) {
         return new QueueView($.find('[data-queue-table]'), {
             selectedDate: this.selectedDate,
+            selectedScope: this.selectedScope,
             includeUrl: this.includeUrl,
             onDatePick: this.onDatePick,
             onDateToday: this.onDateToday,
@@ -469,6 +485,7 @@ class View extends BaseView {
             onSendCustomMail: this.onSendCustomMail,
             onSendCustomNotification: this.onSendCustomNotification,
             onSendNotificationReminder: this.onSendNotificationReminder,
+            onChangeScope: this.onChangeScope,
             onChangeTableView: this.onChangeTableView,
             onConfirm: this.onConfirm,
             onReloadQueueTable: this.onReloadQueueTable,

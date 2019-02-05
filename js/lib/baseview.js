@@ -133,11 +133,11 @@ class BaseView extends ErrorHandler {
         })
     }
 
-    loadDialog(response, callback) {
-        BaseView.loadDialogStatic(response, callback, this);
+    loadDialog(response, callback, abortCallback) {
+        BaseView.loadDialogStatic(response, callback, abortCallback, this);
     }
 
-    static loadDialogStatic(response, callback, parent, callbackAsBackgroundAction = false) {
+    static loadDialogStatic(response, callback, abortCallback, parent, callbackAsBackgroundAction = false) {
         var $container = null;
         var $loader = null;
         if (parent) {
@@ -155,9 +155,12 @@ class BaseView extends ErrorHandler {
                 callback();
                 destroyLightbox();
             },
+            abortCallback: () => {
+                abortCallback();
+                destroyLightbox();
+            },
             parent: parent,
-            loader: $loader,
-            handleLightbox: destroyLightbox
+            loader: $loader
         })
     }
 
