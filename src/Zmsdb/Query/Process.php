@@ -596,7 +596,9 @@ class Process extends Base implements MappingInterface
         }
         if ($process->status == 'queued') {
             $data['nicht_erschienen'] = 0;
-            $data['wsm_aufnahmezeit'] = $dateTime->format('H:i:s');
+            if (! $process->hasArrivalTime()) {
+                $data['wsm_aufnahmezeit'] = $dateTime->format('H:i:s');
+            }
         }
         if ($process->status == 'missed') {
             $data['nicht_erschienen'] = 1;
