@@ -11,6 +11,7 @@
 * #34481 Bugfix: Position eines Eintrags in der Warteschlange über die Wartenummer wird nun korrekt ermittelt und es kann nun eine Warteliste nach der vorraussichtlichen Wartezeit sortiert werden
 * #35684 Bugfix: Der nächste Aufruf nutzt jetzt eine nach Wartezeit sortierte Liste. Aufgerufene Kunden werden nicht mehr in die Wartezeitberechnung einbezogen.
 * #35685 Bugfix: Sortiere die Warteschlang neben der Ankunftszeit auch nach Vorgangs-/Wartenummer um zufällige Reihenfolgen zu vermeiden.
+* #35699 Neue Funktion um zu prüfen ob ein Termin schon eine Ankunftszeit (Aufnahmezeit) besitzt
 
 ## v2.19.02
 
