@@ -14,6 +14,7 @@ class View extends BaseView {
     }
 
     setOptions(options) {
+        this.selectedScope = options.selectedScope;
         this.source = options.source;
         this.selectedDate = options.selectedDate;
         this.includeUrl = options.includeUrl || "";
@@ -31,6 +32,7 @@ class View extends BaseView {
         this.onSendCustomNotification = options.onSendCustomNotification;
         this.onSendNotificationReminder = options.onSendNotificationReminder;
         this.onChangeTableView = options.onChangeTableView;
+        this.onChangeScope = options.onChangeScope;
         this.onConfirm = options.onConfirm;
         this.onReloadQueueTable = options.onReloadQueueTable;
     }
@@ -44,10 +46,19 @@ class View extends BaseView {
     bindEvents() {
         this.$main.off('click').on('click', '.queue-table .reload', (ev) => {
             this.onReloadQueueTable(ev);
+        }).on('focus', '.queue-table .switchcluster select', (ev) => {
+            this.selectedScope = ev.target.value;
         }).on('change', '.queue-table .switchcluster select', (ev) => {
-            this.onChangeTableView(this.$main, ev, $('.sourceSwitchCluster'));
+            this.onConfirm(ev, "confirm_switch_scope",
+                () => {
+                    this.onChangeTableView(ev, true);
+                },
+                () => {
+                    this.$main.find('.queue-table .switchcluster select').val(this.selectedScope);
+                }
+            )
         }).on('change', '.queue-table .appointmentsOnly input', (ev) => {
-            this.onChangeTableView(this.$main, ev, $('.sourceAppointmentsOnly'));
+            this.onChangeTableView(ev);
         }).on('click', 'a.process-edit', (ev) => {
             this.onEditProcess(ev)
         }).on('click', 'a.process-reset', (ev) => {

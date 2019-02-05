@@ -5,13 +5,13 @@ import settings from '../settings'
 
 class DialogHandler {
 
-    constructor (element, options) {
+    constructor(element, options) {
         this.$main = $(element);
         this.response = options.response;
-        this.callback = options.callback || (() => {});
+        this.callback = options.callback || (() => { });
+        this.abortCallback = options.abortCallback || (() => { });
         this.parent = options.parent;
-        this.loader = options.loader || (() => {});
-        this.handleLightbox = options.handleLightbox || (() => {});
+        this.loader = options.loader || (() => { });
         this.bindEvents();
         this.render();
     }
@@ -26,12 +26,12 @@ class DialogHandler {
             }
         }
         if (content.length == 0) {
-            new ExceptionHandler(this.$main, {'message': this.response});
+            new ExceptionHandler(this.$main, { 'message': this.response });
         } else {
             this.$main.html(content);
         }
 
-        $('textarea.maxchars').each(function() {
+        $('textarea.maxchars').each(function () {
             maxChars(this);
         });
     }
@@ -44,7 +44,7 @@ class DialogHandler {
         }).on('click', '.button-abort', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.handleLightbox();
+            this.abortCallback(ev);
         }).on('click', '.button-callback', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -54,10 +54,9 @@ class DialogHandler {
         });
     }
 
-    static hideMessages(instant = false)
-    {
+    static hideMessages(instant = false) {
         let message = $.find('.message, .dialog');
-        if (message.length && ! instant) {
+        if (message.length && !instant) {
             setTimeout(() => {
                 $(message).not('.message-keep').fadeOut().remove();
             }, settings.hideMessageTime * 1000)

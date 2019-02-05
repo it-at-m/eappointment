@@ -6,7 +6,7 @@ import $ from 'jquery'
 
 class View extends BaseView {
 
-    constructor (element, options) {
+    constructor(element, options) {
         super(element);
         this.$main = $(element);
         this.selectedProcess = options['selected-process'];
@@ -29,24 +29,27 @@ class View extends BaseView {
         this.loadAllPartials().then(() => this.bindEvents());
     }
 
-    bindEvents() {}
+    bindEvents() { }
 
-    onChangeTableView (event) {
+    onChangeTableView(event) {
         $(event.target).closest('form').submit();
     }
 
-    onConfirm(event, template, callback)
-    {
-      stopEvent(event);
-      this.selectedProcess = null;
-      const processId  = $(event.target).data('id');
-      const name  = $(event.target).data('name');
-      this.loadCall(`${this.includeUrl}/dialog/?template=${template}&parameter[id]=${processId}&parameter[name]=${name}`).then((response) => {
-          this.loadDialog(response, callback);
-      });
+    onConfirm(event, template, callback) {
+        stopEvent(event);
+        this.selectedProcess = null;
+        const processId = $(event.target).data('id');
+        const name = $(event.target).data('name');
+        var url = `${this.includeUrl}/dialog/?template=${template}`;
+        if (processId || name) {
+            url = url + `& parameter[id]=${processId}& parameter[name]=${name}`;
+        }
+        this.loadCall(url).then((response) => {
+            this.loadDialog(response, callback);
+        });
     }
 
-    onCancelProcess (event) {
+    onCancelProcess(event) {
         this.selectedProcess = null;
         stopEvent(event);
         return this.loadCall(`${this.includeUrl}/pickup/call/cancel/`).then((response) => {
@@ -56,17 +59,17 @@ class View extends BaseView {
         });
     }
 
-    onFinishProcess (event, processId) {
+    onFinishProcess(event, processId) {
         this.selectedProcess = null;
         if (event) {
             stopEvent(event);
-            processId  = $(event.target).data('id')
+            processId = $(event.target).data('id')
         }
         showSpinner(this.$main);
         this.loadCall(`${this.includeUrl}/pickup/delete/${processId}/`, 'DELETE').then((response) => {
-              this.loadMessage(response, () => {
-                  this.loadAllPartials();
-              });
+            this.loadMessage(response, () => {
+                this.loadAllPartials();
+            });
         });
     }
 
@@ -97,15 +100,15 @@ class View extends BaseView {
     onPickupCall(event, callback, processId) {
         if (event) {
             stopEvent(event);
-            processId  = $(event.target).data('id')
+            processId = $(event.target).data('id')
         }
         return this.loadCall(`${this.includeUrl}/pickup/call/${processId}/`).then((response) => {
-                this.loadDialog(response, callback);
-            }
+            this.loadDialog(response, callback);
+        }
         );
     }
 
-    onMailSent (event) {
+    onMailSent(event) {
         stopEvent(event);
         showSpinner(this.$main);
         const processId = $(event.target).data('process');
@@ -116,7 +119,7 @@ class View extends BaseView {
         );
     }
 
-    onMailCustomSent (event) {
+    onMailCustomSent(event) {
         stopEvent(event);
         const processId = $(event.target).data('process');
         const sendStatus = $(event.target).data('status');
@@ -125,8 +128,8 @@ class View extends BaseView {
                 showSpinner(this.$main);
                 const sendData = $('.dialog form').serializeArray();
                 sendData.push(
-                    {'name': 'submit', 'value':'form'},
-                    {'name': 'dialog', 'value':1}
+                    { 'name': 'submit', 'value': 'form' },
+                    { 'name': 'dialog', 'value': 1 }
                 );
                 this.loadCall(`${this.includeUrl}/mail/`, 'POST', $.param(sendData)).then(
                     (response) => this.loadMessage(response, () => {
@@ -137,7 +140,7 @@ class View extends BaseView {
         });
     }
 
-    onNotificationSent (event) {
+    onNotificationSent(event) {
         stopEvent(event);
         showSpinner(this.$main);
         const processId = $(event.target).data('process');
@@ -148,7 +151,7 @@ class View extends BaseView {
         );
     }
 
-    onNotificationCustomSent (event) {
+    onNotificationCustomSent(event) {
         stopEvent(event);
         const processId = $(event.target).data('process');
         const sendStatus = $(event.target).data('status');
@@ -157,8 +160,8 @@ class View extends BaseView {
                 showSpinner(this.$main);
                 const sendData = $('.dialog form').serializeArray();
                 sendData.push(
-                    {'name': 'submit', 'value':'form'},
-                    {'name': 'dialog', 'value':1}
+                    { 'name': 'submit', 'value': 'form' },
+                    { 'name': 'dialog', 'value': 1 }
                 );
                 this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
                     (response) => this.loadMessage(response, () => {
@@ -169,7 +172,7 @@ class View extends BaseView {
         });
     }
 
-    onProcessNotFound () {
+    onProcessNotFound() {
         this.selectedProcess = null;
         this.loadAllPartials();
     }
@@ -181,7 +184,7 @@ class View extends BaseView {
         return promise;
     }
 
-    loadPickupTable () {
+    loadPickupTable() {
         hideSpinner(this.$main);
         return new PickupTableView(this.$main, {
             source: 'pickup',

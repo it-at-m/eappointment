@@ -13,6 +13,7 @@ class View extends RequestView {
         this.options = options;
         this.setOptions();
         this.setCallbacks();
+        this.bindPublicMethods('load');
         $.ajaxSetup({ cache: false });
         if (!this.constructOnly) {
             this.load();
@@ -82,7 +83,6 @@ class View extends RequestView {
     assigneMainFormValues() {
         this.$main.find('.add-date-picker input#process_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('DD.MM.YYYY'));
         this.$main.find('input#process_selected_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD'));
-        //this.$main.find('.appointment-form .switchcluster select').val(this.selectedScope);
         this.$main.find('[name="familyName"]').focus();
         this.$main.find('textarea.maxchars').each(function () {
             maxChars(this);
