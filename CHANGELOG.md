@@ -5,6 +5,7 @@
 * #34496 Route /process/{id}/{authkey}/appointment/ erlaubt Änderung von Terminzeiten in einem Termin ohne Veränderung der Termin-Zugangsdaten (id und authKey)
 * #34481 Controller zum holen der Standort, Cluster oder Calldisplay Queue wurden vereinfacht und vereinheitlicht
 * #35656 Bugfix: Vor dem Eintragen einer Email oder SMS in die Versand-Queue wird nun geprüft ob alle Vorraussetzungen für den Versand auch erfüllt sind
+* #35697 Bugfix: Die Route /scope/{id}/process/{datum}/ berechnet jetzt die Wartezeit der Prozesse gleich mit, analog zu /cluster/{id}/process/{datum}/
 
 ## v2.19.02
 
