@@ -13,6 +13,7 @@
 * Refactoring: In Klasse Process wurden Parameter "dateTime" in "now" umbenannt, um Verwechslungen zu vermeiden
 * #35311 Refactoring: Verwende die Klasse PDOFailed für Exceptions bei Datenbankproblemen 
 * #35634 Bugfix: Wenn die Änderung einer Öffnungszeit und Neuberechnung auf die selbe Sekunde fallen, wird bei der nächsten Berechnung noch einmal neu berechnet.
+* #35685 Bugfix: Beim holen der Warteliste darf nicht nach Berechnung der Wartezeit nach Ankunftszeit sortiert werden.
 
 ## v2.19.02
 
