@@ -13,7 +13,6 @@ class View extends BaseView {
         this.includeUrl = options.includeurl;
         this.bindPublicMethods(
             'bindEvents',
-            'onChangeTableView',
             'onConfirm',
             'loadPickupTable',
             'onFinishProcess',
@@ -30,10 +29,6 @@ class View extends BaseView {
     }
 
     bindEvents() { }
-
-    onChangeTableView(event) {
-        $(event.target).closest('form').submit();
-    }
 
     onConfirm(event, template, callback) {
         stopEvent(event);
@@ -190,7 +185,6 @@ class View extends BaseView {
             source: 'pickup',
             includeUrl: this.includeUrl,
             selectedProcess: this.selectedProcess,
-            onChangeTableView: this.onChangeTableView,
             onConfirm: this.onConfirm,
             onFinishProcess: this.onFinishProcess,
             onFinishProcessList: this.onFinishProcessList,

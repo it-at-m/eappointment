@@ -3,7 +3,7 @@ import $ from "jquery"
 
 class View extends BaseView {
 
-    constructor (element, options) {
+    constructor(element, options) {
         super(element, options);
         this.$main = $(element);
         this.setOptions(options);
@@ -20,7 +20,6 @@ class View extends BaseView {
     }
 
     setCallbacks(options) {
-        this.onChangeTableView = options.onChangeTableView;
         this.onPickupCall = options.onPickupCall;
         this.onFinishProcess = options.onFinishProcess;
         this.onCancelProcess = options.onCancelProcess;
@@ -42,7 +41,7 @@ class View extends BaseView {
 
     bindEvents() {
         this.$main.off('click').on('click', 'a.process-pickup', (ev) => {
-            this.onPickupCall(ev, () => {this.onFinishProcess(ev)});
+            this.onPickupCall(ev, () => { this.onFinishProcess(ev) });
         });
     }
 }
