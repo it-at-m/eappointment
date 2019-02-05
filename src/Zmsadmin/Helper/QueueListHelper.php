@@ -72,13 +72,7 @@ class QueueListHelper
     {
         return (static::$fullList->count()) ?
             static::$fullList
-                ->withStatus(self::$status)
-                ->withEstimatedWaitingTime(
-                    $scope->getPreference('queue', 'processingTimeAverage'),
-                    $scope->getCalculatedWorkstationCount(),
-                    $dateTime,
-                    true
-                ) :
+                ->withStatus(self::$status) :
             new QueueList();
     }
 }

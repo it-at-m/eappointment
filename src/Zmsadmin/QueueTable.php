@@ -35,7 +35,7 @@ class QueueTable extends BaseController
         $queueListHelper = (new Helper\QueueListHelper($clusterHelper, $scope, $selectedDate));
         $queueList = $queueListHelper->getList();
         $queueListMissed = $queueListHelper->getMissedList();
-        
+
         $changedProcess = ($selectedProcessId)
           ? \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity()
           : null;
@@ -53,8 +53,8 @@ class QueueTable extends BaseController
                 'processList' => $queueList->toProcessList(),
                 'processListMissed' => $queueListMissed->toProcessList(),
                 'changedProcess' => $changedProcess,
-                'success' => $success
-                //'debug' => \App::DEBUG
+                'success' => $success,
+                'debug' => \App::DEBUG,
             )
         );
     }
