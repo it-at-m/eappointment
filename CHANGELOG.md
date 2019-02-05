@@ -14,6 +14,7 @@
 * #34481 Nach dem Hinzufügen eines neuen Spontankunden wird das Formular zurückgesetzt zur Eingabe weiterer Spontankunden, die Infobox wird nun immer zusammen mit der Queuetable aktualisiert
 * #33874 Öffnungszeiten Formular hat jetzt einen Abbrechen Button wenn die Bearbeitung gestartet wurde um das Formular schließen zu können, wichtig für das Abbrechen von invaliden Bearbeitungsversuchen
 * #35683 Bugfix: Einstellige Wochennummern werden im Wochenkalender jetzt korrekt dargestellt. Die führende Null wird dabei entfernt
+* #35697 Bugfix: Die Wartezeitberechnung im Tresen beachtete nur die virtuelle Sachbearbeiterzahl, nicht die tatsächlich eingeloggten (betraf nur die Tabelle)
 * #35306 Wird in der Warteschlangen-Tabelle der Standort gewechselt wird darauf hingewiesen, dass das Terminformular zurückgesetzt wird und es findet nun kein kompletter Seitenreload mehr statt
 
 ## v2.19.02
