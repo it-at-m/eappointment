@@ -188,7 +188,7 @@ class View extends BaseView {
         sendData.push({ name: action, value: 1 });
         sendData.push({ name: 'selectedprocess', value: this.selectedProcess });
         sendData.push({ name: 'initiator', value: this.initiator });
-        this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, false, $container).then((response) => {
+        this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then((response) => {
             if ($(response).find('form').data('savedProcess')) {
                 this.selectedProcess = $(response).find('form').data('savedProcess');
             }
