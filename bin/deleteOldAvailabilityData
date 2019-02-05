@@ -44,7 +44,7 @@ if ($commit || $verbose) {
     if ($dates) {
         $datetime = new \DateTimeImmutable(array_shift($dates));
     } else {
-        $datetime = $now->modify('- '.$dayCount.' weeks');
+        $datetime = $now->modify('- '.$dayCount.' days');
     }
     $job = new \BO\Zmsdb\Helper\AvailabilityDeleteByCron($verbose);
     $job->startProcessing($datetime, $commit);
