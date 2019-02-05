@@ -27,11 +27,11 @@ class ProcessListByScopeAndDate extends BaseController
         $dateTime = $dateTime->modify(\App::$now->format('H:i'));
 
         $query = new Query();
-        $scope = $query->readEntity($args['id'], 0);
+        $scope = $query->readWithWorkstationCount($args['id'], \App::$now, 0);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        $queueList = $query->readQueueList($scope->getId(), $dateTime, $resolveReferences?$resolveReferences:1);
+        $queueList = $query->readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences? $resolveReferences :1);
 
         $message = Response\Message::create($request);
         $message->data = $queueList->toProcessList()->withResolveLevel($resolveReferences);
