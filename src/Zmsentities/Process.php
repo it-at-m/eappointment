@@ -479,6 +479,17 @@ class Process extends Schema\Entity
         return $queue->setProcess($this);
     }
 
+    public function hasArrivalTime()
+    {
+        $arrivalTime = 0;
+        if ($this->isWithAppointment()) {
+            $arrivalTime = $this->getFirstAppointment()->date;
+        } else {
+            $arrivalTime = $this->toProperty()->queue->arrivalTime->get();
+        }
+        return ($arrivalTime) ? true : false;
+    }
+
     public function getArrivalTime($default = 'now')
     {
         $arrivalTime = 0;
