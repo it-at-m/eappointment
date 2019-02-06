@@ -54,7 +54,7 @@ class QueueListHelper
     public static function getWaitingClientsBeforeNext()
     {
         $entity = self::getList()->getFakeOrLastWaitingnumber();
-        return self::getList()->withSortedWaitingTime()->getQueuePositionByNumber($entity->number);
+        return (self::getList()->withSortedWaitingTime()->getQueuePositionByNumber($entity->number) - 1); // -1 fake
     }
 
     public static function getMissedList()
