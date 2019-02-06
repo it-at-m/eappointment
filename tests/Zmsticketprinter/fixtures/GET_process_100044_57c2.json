@@ -779,11 +779,18 @@
     "createIP": "",
     "createTimestamp": "1473340535",
     "queue": {
-      "arrivalTime": "00:00:00",
+      "arrivalTime": 1459510800,
       "callCount": "0",
-      "callTime": "00:00:00",
-      "number": "0",
-      "waitingTime": null
+      "callTime": 0,
+      "number": "100044",
+      "waitingTimeEstimate": 49,
+      "waitingTimeOptimistic": 27,
+      "waitingTime": 24,
+      "status": "confirmed",
+      "lastCallTime": 0,
+      "destination": null,
+      "destinationHint": null,
+      "withAppointment": true
     },
     "workstation": {
       "id": "0"

@@ -38,7 +38,7 @@ class QueueListHelper
     public static function getClientsBefore()
     {
         $entity = static::getList()->getFakeOrLastWaitingnumber();
-        return static::getList()->withSortedWaitingTime()->getQueuePositionByNumber($entity->number);
+        return (static::getList()->getQueuePositionByNumber($entity->number));
     }
 
     protected static function createFullList($scope)
