@@ -66,14 +66,15 @@ class CalldisplayQueue extends BaseController
 
     protected function readCalculatedQueueListFromScope($scope, $resolveReferences)
     {
+        $query = new \BO\Zmsdb\Scope();
         $scope = (isset($this->scopeCache[$scope->id])) ?
             $this->scopeCache[$scope->id] :
-            (new \BO\Zmsdb\Scope)->readWithWorkstationCount($scope->id, \App::$now, $resolveReferences);
+            $query->readWithWorkstationCount($scope->id, \App::$now, $resolveReferences);
 
         // TODO try to fetch only called processes
         // cant fetch only called processes because we need less api calls as possible for calldisplay
         // full list is needed for waitingtime and waitingcount calculation
-        return (new \BO\Zmsdb\Scope)
+        return $query
             ->readQueueListWithWaitingTime($scope, \App::$now, $resolveReferences)
             ->withPickupDestination($scope);
     }
