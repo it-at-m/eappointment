@@ -28,7 +28,7 @@ class WorkstationInfo
             static::getWorkstationsByCluster($clusterHelper->getEntity()->getId()) :
             static::getWorkstationsByScope($scope->getId());
 
-        $queueListHelper = (new QueueListHelper($clusterHelper, $scope, $selectedDate));
+        $queueListHelper = (new QueueListHelper($clusterHelper, $selectedDate));
         if ($queueListHelper->getWaitingCount()) {
             $infoData['waitingClientsFullList'] = $queueListHelper->getWaitingCount();
             if ($selectedDate == \App::$now->format('Y-m-d')) {

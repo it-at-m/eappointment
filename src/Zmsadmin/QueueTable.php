@@ -32,7 +32,7 @@ class QueueTable extends BaseController
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $clusterHelper = (new Helper\ClusterHelper($workstation));
 
-        $queueListHelper = (new Helper\QueueListHelper($clusterHelper, $scope, $selectedDate));
+        $queueListHelper = (new Helper\QueueListHelper($clusterHelper, $selectedDate));
         $queueList = $queueListHelper->getList();
         $queueListMissed = $queueListHelper->getMissedList();
 
@@ -50,7 +50,7 @@ class QueueTable extends BaseController
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'cluster' => $clusterHelper->getEntity(),
                 'clusterEnabled' => $clusterHelper->isClusterEnabled(),
-                'processList' => $queueList->toProcessList(),
+                'processList' => $queueList->withoutStatus(['fake'])->toProcessList(),
                 'processListMissed' => $queueListMissed->toProcessList(),
                 'changedProcess' => $changedProcess,
                 'success' => $success,
