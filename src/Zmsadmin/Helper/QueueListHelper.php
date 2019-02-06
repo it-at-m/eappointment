@@ -21,11 +21,11 @@ class QueueListHelper
 
     protected static $missedStatus = ['missed'];
 
-    public function __construct(ClusterHelper $clusterHelper, \BO\Zmsentities\Scope $scope, $selectedDate)
+    public function __construct(ClusterHelper $clusterHelper, $selectedDate)
     {
         $dateTime = (new \DateTimeImmutable($selectedDate))->modify(\App::$now->format('H:i:s'));
         static::$fullList = static::createFullList($clusterHelper, $dateTime);
-        static::$queueList = static::createQueueList($scope, $dateTime);
+        static::$queueList = static::createQueueList();
     }
 
     public static function getList()
@@ -41,7 +41,7 @@ class QueueListHelper
     public static function getWaitingCount()
     {
         // return count -1 because of faked entry
-        return (self::getList()->count()) ? (self::getList()->count() - 1) : 0;
+        return (self::getList()->count()) ? (self::getList()->withoutStatus(['fake'])->count()) : 0;
     }
 
     public static function getWaitingClientsEffective()
@@ -54,7 +54,7 @@ class QueueListHelper
     public static function getWaitingClientsBeforeNext()
     {
         $entity = self::getList()->getFakeOrLastWaitingnumber();
-        return (self::getList()->withSortedWaitingTime()->getQueuePositionByNumber($entity->number) - 1); // -1 fake
+        return (self::getList()->getQueuePositionByNumber($entity->number));
     }
 
     public static function getMissedList()
@@ -68,7 +68,7 @@ class QueueListHelper
         return ($fullList->count()) ? $fullList->toQueueList($dateTime) : new QueueList();
     }
 
-    protected static function createQueueList($scope, $dateTime)
+    protected static function createQueueList()
     {
         return (static::$fullList->count()) ?
             static::$fullList
