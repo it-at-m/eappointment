@@ -19,6 +19,11 @@ class NotificationAssignTest extends Base
                 'response' => $this->readFixture("GET_process_100044_57c2.json"),
             ],
             [
+                'function' => 'readGetResult',
+                'url' => '/scope/141/queue/',
+                'response' => $this->readFixture("GET_queuelist_141.json"),
+            ],
+            [
                 'function' => 'readPostResult',
                 'url' => '/process/100044/57c2/',
                 'response' => $this->readFixture("GET_process_100044_57c2_updated.json"),

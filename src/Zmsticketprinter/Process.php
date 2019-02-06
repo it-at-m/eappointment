@@ -58,7 +58,7 @@ class Process extends BaseController
                 'process' => $process,
                 'queueList' => $queueListHelper->getList(),
                 'waitingTime' => $queueListHelper->getEstimatedWaitingTime(),
-                'waitingClients' => ($queueListHelper->getClientsBefore() - 1), // -1 fake entry
+                'waitingClients' => ($queueListHelper->getClientsBefore()),
                 'config' => $config,
                 'department' => $department
             )

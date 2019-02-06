@@ -41,21 +41,7 @@ class NotificationAssign extends BaseController
             );
         }
 
-        //update process client data
-        $client = $process->getClients()->getFirst();
-        $client->telephone = $telephone->getValue();
-        $process = \App::$http
-            ->readPostResult('/process/'. $process->id .'/'. $process->authKey .'/', $process)
-            ->getEntity();
-
-
-
-        //add notification to queue
-        $process->status = 'queued';
-        \App::$http->readPostResult(
-            '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
-            $process
-        );
+        $process = $this->writeUpdateProcessWithNotification($process, $telephone);
 
         return \BO\Slim\Render::redirect(
             'Message',
@@ -66,5 +52,33 @@ class NotificationAssign extends BaseController
                 'scopeId' => $process->getScopeId()
             ]
         );
+    }
+
+    protected function writeUpdateProcessWithNotification(\BO\Zmsentities\Process $process, $telephone)
+    {
+        //update process client data
+        $client = $process->getClients()->getFirst();
+        $client->telephone = $telephone->getValue();
+        //update calculated reminderTimestamp
+        $headsUpTime = $process->getCurrentScope()->getPreference('notifications', 'headsUpTime');
+        $queue = $process->queue;
+        $number = ($queue->withAppointment) ? $process->getId() : $queue->number;
+        $waitingTimeEstimate = (new Helper\QueueListHelper($process->getCurrentScope()))
+            ->getList()
+            ->getQueueByNumber($number)
+            ->waitingTimeEstimate;
+        $process->reminderTimestamp = $queue->arrivalTime + ($waitingTimeEstimate * 60) - ($headsUpTime * 60);
+
+        //add notification to queue
+        $process->status = 'queued';
+        $process = \App::$http
+            ->readPostResult('/process/'. $process->id .'/'. $process->authKey .'/', $process)
+            ->getEntity();
+
+        \App::$http->readPostResult(
+            '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
+            $process
+        );
+        return $process;
     }
 }
