@@ -25,7 +25,7 @@ class Queue extends BaseController
 
         $queueListFull = \App::$http
             ->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false))
-            ->getCollection()->withStatus(['confirmed', 'queued', 'reserved', 'deleted', 'fake']);
+            ->getCollection()->withStatus(['called','confirmed', 'queued', 'reserved', 'deleted', 'fake']);
         $queueList = ($queueListFull) ?
             $queueListFull->withStatus($calldisplay::getRequestedQueueStatus($request)) :
             new \BO\Zmsentities\Collection\QueueList();
@@ -43,7 +43,7 @@ class Queue extends BaseController
                 'queueList' => $queueList,
                 'waitingClients' => $waitingClientsBefore,
                 'waitingTime' => $fakeEntity->waitingTimeEstimate,
-                'waitingTimeOptimistic' => $queueListFull->getFakeOrLastWaitingnumber()->waitingTimeOptimistic,
+                'waitingTimeOptimistic' => $fakeEntity->waitingTimeOptimistic,
             )
         );
     }
