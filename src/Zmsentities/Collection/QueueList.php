@@ -171,7 +171,8 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
     public function withFakeWaitingnumber(\DateTimeInterface $dateTime)
     {
         $queueList = clone $this;
-        $entity = new \BO\Zmsentities\Queue();
+        $process = new \BO\Zmsentities\Process(['status' => 'deleted']);
+        $entity = (new \BO\Zmsentities\Queue())->setProcess($process);
         $entity->number = self::FAKE_WAITINGNUMBER;
         $entity->status = 'fake';
         $entity->withAppointment = false;
@@ -326,7 +327,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
                 $exists[$key] = true;
             }
         }
-        return $list->withSortedArrival(); // Cloning with this function
+        return $list; // Cloning with this function
     }
 
     public function getWaitingNumberList()
