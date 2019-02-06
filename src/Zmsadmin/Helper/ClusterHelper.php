@@ -42,7 +42,7 @@ class ClusterHelper
             $processList = \App::$http
                 ->readGetResult(
                     '/scope/'. static::$workstation->scope['id'] .'/process/'. $selectedDate .'/',
-                    ['resolveReferences' => 0]
+                    ['resolveReferences' => 1]
                 )
                 ->getCollection();
         }
