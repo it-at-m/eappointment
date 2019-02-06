@@ -230,6 +230,16 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionHasTelephone()
+    {
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) {
+            $condition
+                ->andWith('process.telefonnummer_fuer_rueckfragen', '!=', '')
+                ->orWith('process.Telefonnummer', '!=', '');
+        });
+        return $this;
+    }
+
     public function addConditionProcessDeleteInterval(\DateTimeInterface $expirationDate)
     {
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($expirationDate) {
