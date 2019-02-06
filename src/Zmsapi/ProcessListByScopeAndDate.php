@@ -25,7 +25,6 @@ class ProcessListByScopeAndDate extends BaseController
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
         $dateTime = $dateTime->modify(\App::$now->format('H:i'));
-
         $query = new Query();
         $scope = $query->readWithWorkstationCount($args['id'], \App::$now, 0);
         if (! $scope) {
