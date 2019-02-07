@@ -15,10 +15,10 @@ class SourceTest extends EntityCommonTests
         $entity->providers[0]['data'] = ['test'];
         $entity->requests[0]['data'] = '{"json":"data","key":"value"}';
         $entity = $entity->withCleanedUpFormData();
-        $this->assertTrue(is_object($entity->getProviderList()->getFirst()['data']));
-        $this->assertTrue(is_object($entity->getRequestList()->getFirst()['data']));
-        $this->assertEquals('data', $entity->getRequestList()->getFirst()['data']->json);
-        $this->assertEquals('value', $entity->getRequestList()->getFirst()['data']->key);
+        $this->assertTrue(is_object($entity->getProviderList()->getFirst()->getAdditionalData()));
+        $this->assertTrue(is_object($entity->getRequestList()->getFirst()->getAdditionalData()));
+        $this->assertEquals('data', $entity->getRequestList()->getFirst()->getAdditionalData()->json);
+        $this->assertEquals('value', $entity->getRequestList()->getFirst()->getAdditionalData()->key);
         $this->assertEquals('dldb', $entity->getSource());
         $this->assertEquals('Dienstleistungsdatenbank', $entity->getLabel());
         $this->assertFalse($entity->isEditable());

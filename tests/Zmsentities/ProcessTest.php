@@ -32,7 +32,8 @@ class ProcessTest extends EntityCommonTests
         $this->assertContains('122305', $entity->getRequestCSV(), 'requests are not accessible');
         $entity->addAmendment(array('amendment' => 'Das ist ein Zusatztext'));
         $entity->addScope('141');
-        $this->assertTrue('141' == $entity->getScopeId(), 'scope is not accessible');
+        $this->assertTrue('141' == $entity->getScopeId(), 'scope id is not accessible');
+        $this->assertTrue('141' == $entity->getCurrentScope()->getId(), 'current scope is not accessible');
         $entity->setRandomAuthKey();
         $this->assertTrue(4 == strlen($entity->getAuthKey()), 'set random authKey failed');
         $this->assertEquals('Das ist ein Zusatztext', $entity->getAmendment());
@@ -78,15 +79,17 @@ class ProcessTest extends EntityCommonTests
 
     public function testAppointment()
     {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
         $entity = $this->getExample();
-        unset($entity->appointments);
         $entity->appointments = array();
         $firstAppointment = $entity->getFirstAppointment();
         $this->assertTrue($firstAppointment instanceof \BO\Zmsentities\Appointment);
-
+        $entity->appointments = array();
         $appointment = (new \BO\Zmsentities\Appointment())->getExample();
+        $appointment->date = $now->getTimestamp();
         $entity->addAppointment($appointment);
-        $this->assertTrue($entity->hasAppointment(1447869172, 123), 'appointment is not accessible');
+        $this->assertTrue($entity->hasArrivalTime());
+        $this->assertTrue($entity->hasAppointment(1451649000, 123), 'appointment is not accessible');
         $this->assertFalse($entity->hasAppointment(1447869173, 123), 'appointment date 1447869173 should not exist');
 
         $appointment = (new \BO\Zmsentities\Appointment())->getExample()->getArrayCopy();
@@ -159,6 +162,21 @@ class ProcessTest extends EntityCommonTests
         $now = $now->setTimestamp($entity->queue['callTime']);
         $entity->queue['callTime'] = null;
         $this->assertEquals(45, $entity->getWaitedSeconds($now));
+    }
+
+    public function testGetWaitedMinutes()
+    {
+        $entity = $this->getExample();
+        $minutes = $entity->getWaitedMinutes();
+        $this->assertEquals(896, $minutes);
+        $entity->queue->withAppointment = 0;
+        $minutes = $entity->getWaitedMinutes();
+        $this->assertEquals(1, $minutes);
+
+        $now = new \DateTimeImmutable();
+        $now = $now->setTimestamp($entity->queue['callTime']);
+        $entity->queue['callTime'] = null;
+        $this->assertEquals(1, $entity->getWaitedMinutes($now));
     }
 
     public function testToDereferencedAmendment()
@@ -450,6 +468,7 @@ class ProcessTest extends EntityCommonTests
         $queueWith = $withAppointment->toQueue($now);
         $queueWithout = $withoutAppointment->toQueue($now);
 
+        $this->assertTrue($withoutAppointment->hasArrivalTime());
         $this->assertTrue($queueWith->withAppointment);
         $this->assertFalse($queueWithout->withAppointment);
     }
