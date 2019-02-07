@@ -664,12 +664,13 @@ class Process extends Base implements MappingInterface
             $data['Timestamp'] = (new \DateTimeImmutable())
                 ->setTimestamp($process->queue['lastCallTime'])->format('H:i:s');
         }
-        if (isset($process->queue['arrivalTime']) &&
-            $process->queue['arrivalTime'] &&
-            (isset($process->queue['withAppointment']) && !$process->queue['withAppointment'])
-        ) {
+        if (isset($process->queue['arrivalTime']) && $process->queue['arrivalTime']) {
             $data['wsm_aufnahmezeit'] = (new \DateTimeImmutable())
                 ->setTimestamp($process->queue['arrivalTime'])->format('H:i:s');
+        }
+        if (isset($data['wsm_aufnahmezeit']) && $data['wsm_aufnahmezeit'] == $data['Uhrzeit']) {
+            // Do not save arrivalTime if it is an appointment
+            $data['wsm_aufnahmezeit'] = 0;
         }
         return $data;
     }
