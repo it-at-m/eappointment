@@ -110,7 +110,7 @@ class ScopeTest extends EntityCommonTests
         $scope = (new $this->entityclass())->getExample();
         $queueEstimatedData = $scope->getWaitingTimeFromQueueList($queueList, $now);
         $this->assertEquals(
-            $scope->getPreference('queue', 'processingTimeAverage') + 2,
+            $scope->getPreference('queue', 'processingTimeAverage') * 2,
             $queueEstimatedData['waitingTimeEstimate']
         );
     }
