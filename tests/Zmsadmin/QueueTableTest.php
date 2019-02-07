@@ -35,7 +35,7 @@ class QueueTableTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
-                    'parameters' => ['resolveReferences' => 0],
+                    'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
             ]
