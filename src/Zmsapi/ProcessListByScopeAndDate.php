@@ -27,7 +27,7 @@ class ProcessListByScopeAndDate extends BaseController
         $dateTime = $dateTime->modify(\App::$now->format('H:i'));
         $query = new Query();
         $scope = $query->readWithWorkstationCount($args['id'], \App::$now, 0);
-        if (! $scope) {
+        if (! $scope || ! $scope->getId()) {
             throw new Exception\Scope\ScopeNotFound();
         }
         $queueList = $query->readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences? $resolveReferences :1);

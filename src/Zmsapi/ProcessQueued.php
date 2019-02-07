@@ -37,7 +37,6 @@ class ProcessQueued extends BaseController
         $cluster = (new \BO\Zmsdb\Cluster)->readByScopeId($workstation->scope['id'], 1);
         $workstation->testMatchingProcessScope($workstation->getScopeList($cluster), $process);
         $process = (new Query())->updateEntity($process, \App::$now);
-
         $message = Response\Message::create($request);
         $message->data = $process;
 
