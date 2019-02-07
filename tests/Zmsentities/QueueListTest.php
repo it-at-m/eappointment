@@ -39,11 +39,13 @@ class QueueListTest extends EntityCommonTests
             $estimatedWaitingData['waitingTimeEstimate'],
             $withWaitingTime->getFakeOrLastWaitingnumber()->waitingTimeEstimate
         );
+        $this->assertEquals(20, $withWaitingTime->getFakeOrLastWaitingnumber()->waitingTimeEstimate);
+        $this->assertEquals(8, $withWaitingTime->getFakeOrLastWaitingnumber()->waitingTimeOptimistic);
 
         $withWaitingTime = $collection->withEstimatedWaitingTime(10, 2, $now);
         $estimatedWaitingData = $withWaitingTime->getEstimatedWaitingTime(10, 2, $now);
-        $this->assertEquals(7, $withWaitingTime->getFakeOrLastWaitingnumber()->waitingTimeEstimate);
-        $this->assertEquals(4, $withWaitingTime->getFakeOrLastWaitingnumber()->waitingTimeOptimistic);
+        $this->assertEquals(10, $withWaitingTime->getFakeOrLastWaitingnumber()->waitingTimeEstimate);
+        $this->assertEquals(0, $withWaitingTime->getFakeOrLastWaitingnumber()->waitingTimeOptimistic);
         $this->assertEquals(2, $estimatedWaitingData['amountBefore']);
 
         $this->assertEquals(null, $collection->getQueueByNumber(999));
