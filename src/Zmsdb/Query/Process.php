@@ -606,8 +606,7 @@ class Process extends Base implements MappingInterface
         }
         if ($process->status == 'queued') {
             $data['nicht_erschienen'] = 0;
-            if (
-                $process->hasArrivalTime() &&
+            if ($process->hasArrivalTime() &&
                 (isset($process->queue['withAppointment']) && $process->queue['withAppointment'])
             ) {
                 $data['wsm_aufnahmezeit'] = $dateTime->format('H:i:s');
@@ -665,8 +664,7 @@ class Process extends Base implements MappingInterface
             $data['Timestamp'] = (new \DateTimeImmutable())
                 ->setTimestamp($process->queue['lastCallTime'])->format('H:i:s');
         }
-        if (
-            isset($process->queue['arrivalTime']) &&
+        if (isset($process->queue['arrivalTime']) &&
             $process->queue['arrivalTime'] &&
             (isset($process->queue['withAppointment']) && !$process->queue['withAppointment'])
         ) {
