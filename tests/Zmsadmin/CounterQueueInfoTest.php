@@ -41,7 +41,7 @@ class CounterQueueInfoTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-05-27/',
-                    'parameters' => ['resolveReferences' => 0],
+                    'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_scope_141_freeProcessList.json")
                 ],
                 [
