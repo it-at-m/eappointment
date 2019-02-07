@@ -96,6 +96,10 @@ class DayTest extends EntityCommonTests
         $this->assertEquals('bookable', $collection->getFirst()->status);
         $collection->setStatusByType('public', $time);
         $this->assertEquals('full', $collection->getFirst()->status);
+
+        $collection->getFirst()->allAppointments['public'] = 0;
+        $collection->setStatusByType('public', $time);
+        $this->assertEquals('notBookable', $collection->getFirst()->status);
     }
 
     public function testWithProcessListSortedByHour()

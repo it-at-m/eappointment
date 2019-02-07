@@ -181,6 +181,15 @@ class DepartmentTest extends EntityCommonTests
         $this->assertEquals(4, $entity->withCompleteScopeList()->scopes->count());
     }
 
+    public function testHasFromMail()
+    {
+        $entity = $this->getExample();
+        $this->assertTrue($entity->hasMail());
+
+        $entity->email = '';
+        $this->assertFalse($entity->hasMail());
+    }
+
     public function testHasNotificationEnabled()
     {
         $entity = $this->getExample();
