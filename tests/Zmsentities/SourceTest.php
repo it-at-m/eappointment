@@ -11,6 +11,14 @@ class SourceTest extends EntityCommonTests
     public function testBasic()
     {
         $entity = (new $this->entityclass())->getExample();
+        $entity->save = 'submit';
+        $entity->providers[0]['data'] = ['test'];
+        $entity->requests[0]['data'] = '{"json":"data","key":"value"}';
+        $entity = $entity->withCleanedUpFormData();
+        $this->assertTrue(is_object($entity->getProviderList()->getFirst()['data']));
+        $this->assertTrue(is_object($entity->getRequestList()->getFirst()['data']));
+        $this->assertEquals('data', $entity->getRequestList()->getFirst()['data']->json);
+        $this->assertEquals('value', $entity->getRequestList()->getFirst()['data']->key);
         $this->assertEquals('dldb', $entity->getSource());
         $this->assertEquals('Dienstleistungsdatenbank', $entity->getLabel());
         $this->assertFalse($entity->isEditable());
