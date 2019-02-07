@@ -606,7 +606,10 @@ class Process extends Base implements MappingInterface
         }
         if ($process->status == 'queued') {
             $data['nicht_erschienen'] = 0;
-            if ($process->hasArrivalTime() && $process->queue->withAppointment) {
+            if (
+                $process->hasArrivalTime() &&
+                (isset($process->queue['withAppointment']) && $process->queue['withAppointment'])
+            ) {
                 $data['wsm_aufnahmezeit'] = $dateTime->format('H:i:s');
             }
         }
