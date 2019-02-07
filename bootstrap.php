@@ -9,15 +9,16 @@ ini_set('session.serialize_handler', 'php_serialize');
 define("APP_PATH", realpath(__DIR__));
 
 // use autoloading offered by composer, see composer.json for path settings
-require (APP_PATH . '/vendor/autoload.php');
+require(APP_PATH . '/vendor/autoload.php');
 
 // initialize the static \App singleton
-require (APP_PATH . '/config.php');
+require(APP_PATH . '/config.php');
 
 // Set option for environment, routing, logging and templating
 \BO\Slim\Bootstrap::init();
 \BO\Slim\Bootstrap::addTwigExtension(new \Twig_Extensions_Extension_Text());
 \BO\Slim\Bootstrap::addTwigExtension(new \Twig_Extensions_Extension_I18n());
+\BO\Slim\Bootstrap::addTwigExtension(new \Twig_Extensions_Extension_Intl());
 
 umask(0002); // Allow group to delete twig cache files
 

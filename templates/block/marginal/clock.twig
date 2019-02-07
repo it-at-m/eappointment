@@ -6,6 +6,6 @@
 </div>
 
 <div id="aufrufanzeige_Datum" class="aufrufanzeige_Datum">
-    {{ toGermanDateFromTs(getNow()|date("U")).fulldate }}<br>
+    {{ getNow()|localizeddate("short","none",NULL,NULL,"EEEE, dd.MM.Y") }}<br>
 </div>
 {% endblock %}
