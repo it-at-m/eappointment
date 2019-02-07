@@ -665,7 +665,7 @@ class Process extends Base implements MappingInterface
         if (
             isset($process->queue['arrivalTime']) &&
             $process->queue['arrivalTime'] &&
-            ! $process->queue->withAppointment
+            (isset($process->queue['withAppointment']) && !$process->queue['withAppointment'])
         ) {
             $data['wsm_aufnahmezeit'] = (new \DateTimeImmutable())
                 ->setTimestamp($process->queue['arrivalTime'])->format('H:i:s');
