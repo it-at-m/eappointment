@@ -53,8 +53,7 @@ class SourceEdit extends BaseController
                 'menuActive' => 'source',
                 'workstation' => $workstation,
                 'source' => ($source) ? $source : null,
-                'success' => $success,
-                'exception' => (isset($result)) ? $result : null
+                'success' => $success
             )
         );
     }
