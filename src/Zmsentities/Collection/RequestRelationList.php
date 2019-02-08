@@ -16,6 +16,17 @@ class RequestRelationList extends Base
         return true;
     }
 
+    public function hasProvider($providerIdCsv)
+    {
+        $providerIdCsv = explode(',', $providerIdCsv);
+        foreach ($providerIdCsv as $providerId) {
+            if (!in_array($providerId, $this->getProviderList()->getIds())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public function getRequestList()
     {
         $requestList = new RequestList();

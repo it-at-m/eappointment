@@ -12,13 +12,6 @@ class SourceTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $entity->save = 'submit';
-        $entity->providers[0]['data'] = ['test'];
-        $entity->requests[0]['data'] = '{"json":"data","key":"value"}';
-        $entity = $entity->withCleanedUpFormData();
-        $this->assertTrue(is_object($entity->getProviderList()->getFirst()->getAdditionalData()));
-        $this->assertTrue(is_object($entity->getRequestList()->getFirst()->getAdditionalData()));
-        $this->assertEquals('data', $entity->getRequestList()->getFirst()->getAdditionalData()->json);
-        $this->assertEquals('value', $entity->getRequestList()->getFirst()->getAdditionalData()->key);
         $this->assertEquals('dldb', $entity->getSource());
         $this->assertEquals('Dienstleistungsdatenbank', $entity->getLabel());
         $this->assertFalse($entity->isEditable());
@@ -26,6 +19,40 @@ class SourceTest extends EntityCommonTests
         $this->assertTrue($entity->getProviderList() instanceof \BO\Zmsentities\Collection\ProviderList);
         $this->assertTrue($entity->getRequestList() instanceof \BO\Zmsentities\Collection\RequestList);
         $this->assertFalse($entity->isCompleteAndEditable());
+    }
+
+    public function testWithDataObject()
+    {
+        // string
+        $entity = (new $this->entityclass())->getExample();
+        $entity->save = 'submit';
+        $entity->providers[0]['data'] = ['test'];
+        $entity->requests[0]['data'] = '{"json":"data","key":"value"}';
+        $entity = $entity->withCleanedUpFormData();
+        $this->assertTrue(is_object($entity->getProviderList()->getFirst()->getAdditionalData()));
+        $this->assertTrue(is_object($entity->getRequestList()->getFirst()->getAdditionalData()));
+        $this->assertEquals('data', $entity->getRequestList()->getFirst()->getAdditionalData()->json);
+        $this->assertEquals('value', $entity->getRequestList()->getFirst()->getAdditionalData()->key);
+
+        // array
+        $entity = (new $this->entityclass())->getExample();
+        $entity->save = 'submit';
+        $entity->providers[0]['data'] = ['test' => 1];
+        $entity->requests[0]['data'] = ['test' => 1];
+        $entity = $entity->withCleanedUpFormData();
+        $this->assertTrue(is_object($entity->getProviderList()->getFirst()->getAdditionalData()));
+        $this->assertTrue(is_object($entity->getRequestList()->getFirst()->getAdditionalData()));
+        $this->assertEquals(1, $entity->getProviderList()->getFirst()->getAdditionalData()->test);
+        $this->assertEquals(1, $entity->getRequestList()->getFirst()->getAdditionalData()->test);
+
+        // empty
+        $entity = (new $this->entityclass())->getExample();
+        $entity->save = 'submit';
+        $entity->providers[0]['data'] = 0;
+        $entity->requests[0]['data'] = 0;
+        $entity = $entity->withCleanedUpFormData();
+        $this->assertNull($entity->getProviderList()->getFirst()->getAdditionalData());
+        $this->assertNull($entity->getRequestList()->getFirst()->getAdditionalData());
     }
 
     public function testProvider()
@@ -47,6 +74,8 @@ class SourceTest extends EntityCommonTests
         $entity = $this->getExample();
         $this->assertTrue($entity->getRequestRelationList()->hasRequest(120335));
         $this->assertFalse($entity->getRequestRelationList()->hasRequest(123456));
+        $this->assertTrue($entity->getRequestRelationList()->hasProvider(21334));
+        $this->assertFalse($entity->getRequestRelationList()->hasProvider(123456));
     }
 
     public function testIsEditable()

@@ -44,14 +44,14 @@ class ProviderList extends Base
     {
         $list = new self();
         foreach ($this as $provider) {
-            if (isset($provider['data'])) {
+            if (isset($provider['data']) && $provider['data']) {
                 if (is_string($provider->data) && '{}' != $provider->data) {
                     $provider->data = json_decode($provider->data);
                 } elseif (is_array($provider->data)) {
                     $provider->data = json_decode(json_encode($provider->data, JSON_FORCE_OBJECT));
-                } else {
-                    unset($provider['data']);
                 }
+            } else {
+                unset($provider['data']);
             }
             $list->addEntity($provider);
         }
