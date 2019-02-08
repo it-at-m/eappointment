@@ -30,5 +30,6 @@ class RequestRelationTest extends EntityCommonTests
         $entity->request = (new \BO\Zmsentities\Request())->getExample();
         $collection->addEntity($entity);
         $this->assertEntityList($this->entityclass, $collection);
+        $this->assertTrue(is_array($collection->jsonSerialize()));
     }
 }

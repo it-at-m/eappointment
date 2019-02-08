@@ -80,6 +80,7 @@ class ProcessList extends Base
         return $this;
     }
 
+    /* todo: remove if not used anymore
     public function toProcessListByStatus($selectedDate, array $status)
     {
         $selectedDateTime = new \DateTimeImmutable($selectedDate);
@@ -90,6 +91,7 @@ class ProcessList extends Base
             ->sortByArrivalTime()
             ->sortByEstimatedWaitingTime();
     }
+    */
 
     public function toConflictListByDay()
     {

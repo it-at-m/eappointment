@@ -122,6 +122,28 @@ class QueueListTest extends EntityCommonTests
         $this->assertEquals('123456', $queueList->getWaitingNumberListCsv());
     }
 
+    public function testWithSortedWaitingTime()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $collection = new \BO\Zmsentities\Collection\ProcessList();
+        $process = (new \BO\Zmsentities\Process)->getExample();
+        $process2 = (new \BO\Zmsentities\Process)->getExample();
+        $process->queue->arrivalTime = $now->getTimestamp();
+        $process2->queue->arrivalTime = $now->modify('+20 minutes')->getTimestamp();
+        $process->getFirstAppointment()->date = $process->queue->arrivalTime;
+        $process2->getFirstAppointment()->date = $process2->queue->arrivalTime;
+        $process->queue->callTime = 0;
+        $process2->queue->callTime = 0;
+        $collection->addEntity($process);
+        $collection->addEntity($process2);
+        $queueList = $collection->toQueueList($now)->withEstimatedWaitingTime(10, 2, $now)->withSortedWaitingTime();
+        $this->assertEquals(5, $queueList->getFirst()->waitingTimeEstimate);
+        $this->assertEquals(10, $queueList[1]->waitingTimeEstimate);
+        $this->assertEquals(23, $queueList->getLast()->waitingTimeEstimate);
+
+        $this->assertEquals(2, $queueList->withoutStatus(['fake'])->getCountWithWaitingTime()->count());
+    }
+
     public function testSetProcessFailed()
     {
         $entity = $this->getExample();
