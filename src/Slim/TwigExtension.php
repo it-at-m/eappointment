@@ -46,7 +46,6 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('currentLocale', array($this, 'currentLocale')),
             new \Twig_SimpleFunction('currentVersion', array($this, 'currentVersion')),
             new \Twig_SimpleFunction('formatDateTime', array($this, 'formatDateTime')),
-            new \Twig_SimpleFunction('toGermanDateFromTs', array($this, 'toGermanDateFromTs')),
             new \Twig_SimpleFunction('toTextFormat', array($this, 'toTextFormat')),
             new \Twig_SimpleFunction('getNow', array($this, 'getNow')),
             new \Twig_SimpleFunction('isNumeric', array($this, 'isNumeric')),
@@ -99,20 +98,6 @@ class TwigExtension extends \Twig_Extension
         $formatDate['ts']       = $datetime->getTimestamp();
 
         return $formatDate;
-    }
-
-    public function toGermanDateFromTs($timestamp)
-    {
-        $datetime = \DateTime::createFromFormat('U', $timestamp);
-        if (false === $datetime) {
-            throw new \Exception("Could not parse timestamp: ".htmlspecialchars($timestamp));
-        }
-        $datetime->setTimezone(new \DateTimeZone(\App::TIMEZONE));
-        return array(
-            'date' => strftime('%a. %d. %B %Y', $datetime->getTimestamp()),
-            'fulldate' => strftime('%A, %d.%m.%Y', $datetime->getTimestamp()),
-            'time' => strftime('%H:%M Uhr', $datetime->getTimestamp())
-        );
     }
 
     public function currentRoute($lang = null)
