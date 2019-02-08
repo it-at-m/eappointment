@@ -457,6 +457,20 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals(1, $collection->withOutScopeId(141)->count());
     }
 
+    public function testToConflictListByDay()
+    {
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $entity2 = $this->getExample();
+        $collection->addEntity($entity);
+        $collection->addEntity($entity2);
+        $list = $collection->toConflictListByDay();
+        $this->assertArrayHasKey('2015-11-18', $list);
+        $this->assertEquals('Beispiel Termin', $list['2015-11-18'][0]['message']);
+        $this->assertEquals('18:52', $list['2015-11-18'][0]['appointments'][0]['startTime']);
+        $this->assertEquals('19:02', $list['2015-11-18'][0]['appointments'][0]['endTime']);
+    }
+
     public function testToQueue()
     {
         $now = new \DateTimeImmutable(self::DEFAULT_TIME);

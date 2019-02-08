@@ -26,7 +26,7 @@ class SourceTest extends EntityCommonTests
         // string
         $entity = (new $this->entityclass())->getExample();
         $entity->save = 'submit';
-        $entity->providers[0]['data'] = ['test'];
+        $entity->providers[0]['data'] = '{"json":"data","key":"value"}';
         $entity->requests[0]['data'] = '{"json":"data","key":"value"}';
         $entity = $entity->withCleanedUpFormData();
         $this->assertTrue(is_object($entity->getProviderList()->getFirst()->getAdditionalData()));
