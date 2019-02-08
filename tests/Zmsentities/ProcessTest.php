@@ -219,7 +219,8 @@ class ProcessTest extends EntityCommonTests
             'sendConfirmation' => 1,
             'sendMailConfirmation' => 1,
             'sendReminder' => 1,
-            'amendment' => 'Test Zusatz'
+            'amendment' => 'Test Zusatz',
+            'requests' => [120335,120697]
         ]);
         $validator->makeInstance();
 
@@ -229,6 +230,7 @@ class ProcessTest extends EntityCommonTests
             'slotCount' => 1,
             'requests' => [120335,120697]
         ];
+
         $scope = (new \BO\Zmsentities\Scope)->getExample();
         $entity->withUpdatedData($input, $now, $scope);
         $this->assertTrue($entity->requests->hasEntity(120335));
