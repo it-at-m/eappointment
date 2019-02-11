@@ -10,24 +10,23 @@ class QueueTest extends Base
 
     protected $parameters = [ ];
 
-    protected function getApiCalls()
-    {
-        return [
-            [
-                'function' => 'readPostResult',
-                'url' => '/calldisplay/queue/',
-                'response' => $this->readFixture("GET_queue.json")
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/scope/141/',
-                'response' => $this->readFixture("GET_scope_141.json")
-            ]
-        ];
-    }
-
     public function testRendering()
     {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/calldisplay/queue/',
+                    'response' => $this->readFixture("GET_queue.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ["keepLessData" => ["status"]],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ]
+            ]
+        );
         $response = $this->render([ ], [
             'collections' => [
                 'scopelist' => '141',

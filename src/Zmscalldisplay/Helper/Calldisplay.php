@@ -48,8 +48,9 @@ class Calldisplay
     {
         $scope = null;
         if (1 == $this->getEntity(false)->getScopeList()->count()) {
+            $scopeId = $this->getEntity(false)->getScopeList()->getFirst()->getId();
             $scope = \App::$http
-                ->readGetResult('/scope/'. $this->getEntity(false)->getScopeList()->getFirst()->getId() .'/')
+                ->readGetResult('/scope/'. $scopeId .'/', ['keepLessData' => ['status']])
                 ->getEntity();
         }
         return $scope;
