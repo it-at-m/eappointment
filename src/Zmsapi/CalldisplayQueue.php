@@ -57,10 +57,10 @@ class CalldisplayQueue extends BaseController
         }
         foreach ($calldisplay->getScopeList() as $scope) {
             $scope = (new \BO\Zmsdb\Scope)->readWithWorkstationCount($scope->getId(), \App::$now, $resolveReferences);
-            $this->scopeCache[$scope->getId()] = $scope;
-            if (! $scope->hasId()) {
+            if (! $scope) {
                 throw new Exception\Scope\ScopeNotFound();
             }
+            $this->scopeCache[$scope->getId()] = $scope;
         }
     }
 
