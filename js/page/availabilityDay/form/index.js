@@ -161,7 +161,7 @@ class AvailabilityForm extends Component {
 
         const onSave = (ev) => {
             ev.preventDefault()
-            const validationResult = validate(data)
+            const validationResult = validate(data, this.props.today)
             if (!data.__modified || validationResult.valid) {
                 this.props.onSave(getDataValuesFromForm(data, this.props.data.scope))
             } else {
@@ -173,7 +173,7 @@ class AvailabilityForm extends Component {
 
         const onPublish = (ev) => {
             ev.preventDefault()
-            const validationResult = validate(data)
+            const validationResult = validate(data, this.props.today)
             if (!data.__modified || validationResult.valid) {
                 this.props.onPublish(getDataValuesFromForm(data, this.props.data.scope))
             } else {
@@ -229,6 +229,7 @@ AvailabilityForm.defaultProps = {
 
 AvailabilityForm.propTypes = {
     data: PropTypes.object,
+    today: PropTypes.date,
     title: PropTypes.string,
     onSave: PropTypes.func,
     onAbort: PropTypes.func,

@@ -38,6 +38,7 @@ class ScopeAvailabilityDay extends BaseController
     protected static function getAvailabilityData($scope, $dateString)
     {
         $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
+        $dateTime = $dateTime->setTime(\App::$now->format('H'), \App::$now->format('i'));
         $availabilityList = static::getAvailabilityList($scope, $dateTime);
         $processList = \App::$http
             ->readGetResult('/scope/' . $scope->getId() . '/process/' . $dateTime->format('Y-m-d') . '/')
