@@ -84,26 +84,13 @@ class Ticketprinter extends Base
             if ('scope' == $button['type']) {
                 $query = new Scope();
                 $scope = $query->readWithWorkstationCount($button['scope']['id'], $now);
-                if (! $scope->hasId()) {
+                if (! $scope) {
                     throw new Exception\Ticketprinter\UnvalidButtonList();
                 }
                 $ticketprinter->buttons[$key]['scope'] = $scope;
                 $ticketprinter->buttons[$key]['enabled'] = $query->readIsEnabled($scope->id, $now);
                 $ticketprinter->buttons[$key]['name'] = $scope->getPreference('ticketprinter', 'buttonName');
             }
-            /* cluster not allowed anymore as button (2018-01-30, Abnahme mit TE)
-            elseif ('cluster' == $button['type']) {
-                $query = new Cluster();
-                $cluster = $query->readEntity($button['cluster']['id'], 1);
-                if (! $cluster) {
-                    throw new Exception\Ticketprinter\UnvalidButtonList();
-                }
-                $scopeList = $query->readEnabledScopeList($cluster->id, $now);
-                $ticketprinter->buttons[$key]['cluster'] = $cluster;
-                $ticketprinter->buttons[$key]['enabled'] = (1 <= $scopeList->count()) ? true : false;
-                $ticketprinter->buttons[$key]['name'] = $cluster->getName();
-            }
-            */
         }
         $this->readExceptions($ticketprinter);
         $ticketprinter = $this->readWithContactData($ticketprinter);
@@ -239,14 +226,14 @@ class Ticketprinter extends Base
         return $this->readList($statement);
     }
 
-     /**
-     * remove an ticketprinter
-     *
-     * @param
-     * itemId
-     *
-     * @return Resource Status
-     */
+    /**
+    * remove an ticketprinter
+    *
+    * @param
+    * itemId
+    *
+    * @return Resource Status
+    */
     public function deleteEntity($itemId)
     {
         $query =  new Query\Ticketprinter(Query\Base::DELETE);
