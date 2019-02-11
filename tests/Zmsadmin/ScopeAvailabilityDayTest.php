@@ -111,6 +111,54 @@ class ScopeAvailabilityDayTest extends Base
         $this->assertContains('data-busyslots="[]"', (string)$response->getBody());
     }
 
+    public function testEmptyProcessList()
+    {
+        $startDate = new \DateTimeImmutable('2016-04-01');
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/availability/',
+                    'parameters' => [
+                        'resolveReferences' => 0,
+                        'startDate' => $startDate->format('Y-m-d')
+                    ],
+                    'response' => $this->readFixture("GET_scope_141_availability.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/conflict/',
+                    'parameters' => [
+                        'startDate' => $startDate->format('Y-m-d')
+                    ],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/process/2016-04-01/',
+                    'response' => $this->readFixture("GET_processList_fake_entry.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertContains('Öffnungszeiten für den Standort Bürgeramt Heerstraße', (string)$response->getBody());
+        $this->assertNotContains('data-busyslots="{&quot;68997&quot;:105}"', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testUnknownException()
     {
         $this->expectException('\BO\Zmsclient\Exception');

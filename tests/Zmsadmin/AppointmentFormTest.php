@@ -48,6 +48,32 @@ class AppointmentFormTest extends Base
         $this->assertContains('title="Spontankunde"', (string)$response->getBody());
     }
 
+    public function testNotSuperUser()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\WorkstationProcessMatchScopeFailed');
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/100044/',
+                    'response' => $this->readFixture("GET_process_not_matching_id.json")
+                ]
+            ]
+        );
+        $this->render([], ['selectedprocess' => 100044]);
+    }
+
     public function testClusterEnabled()
     {
         $this->setApiCalls(

@@ -42,8 +42,11 @@ class ScopeAvailabilityDay extends BaseController
         $availabilityList = static::getAvailabilityList($scope, $dateTime);
         $processList = \App::$http
             ->readGetResult('/scope/' . $scope->getId() . '/process/' . $dateTime->format('Y-m-d') . '/')
-                ->getCollection();
-        if (!$processList) {
+                ->getCollection()
+                ->toQueueList($dateTime)
+                ->withoutStatus(['fake'])
+                ->toProcessList();
+        if (!$processList->count()) {
             $processList = new \BO\Zmsentities\Collection\ProcessList();
         }
         $processConflictList = \App::$http
@@ -57,7 +60,7 @@ class ScopeAvailabilityDay extends BaseController
             'availabilityList' => $availabilityList->getArrayCopy(),
             'availabilityListSlices' => $availabilityList->withCalculatedSlots()->getArrayCopy(),
             'conflicts' => ($processConflictList) ? $processConflictList->getArrayCopy() : [],
-            'processList' => ($processList) ? $processList->getArrayCopy() : [],
+            'processList' => $processList->getArrayCopy(),
             'dateString' => $dateString,
             'timestamp' => $dateTime->getTimestamp(),
             'menuActive' => 'availability',
