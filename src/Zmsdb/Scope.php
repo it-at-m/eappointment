@@ -278,7 +278,7 @@ class Scope extends Base
             ->addSelectWorkstationCount($dateTime);
         $scope = $this->fetchOne($query, new Entity());
         $scope = $this->readResolvedReferences($scope, $resolveReferences);
-        return $scope;
+        return ($scope->hasId()) ? $scope : null;
     }
 
     public function readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences = 0)
