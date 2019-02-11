@@ -206,7 +206,9 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         if (! in_array('dayoff', $keepArray) && $entity->toProperty()->dayoff->isAvailable()) {
             unset($entity['dayoff']);
         }
-        unset($entity['status']);
+        if (! in_array('status', $keepArray)) {
+            unset($entity['status']);
+        }
         if (! in_array('preferences', $keepArray)) {
             unset($entity['preferences']);
         }
