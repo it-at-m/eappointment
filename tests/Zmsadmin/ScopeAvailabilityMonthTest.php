@@ -72,8 +72,6 @@ class ScopeAvailabilityMonthTest extends Base
         $this->expectException('\BO\Zmsclient\Exception');
         $exception = new \BO\Zmsclient\Exception();
         $exception->template = 'BO\Zmsentities\Exception\SchemaValidation';
-        $startDate = new \DateTimeImmutable('2016-04-01');
-        $endDate =  $startDate->modify('Last day of this month');
 
         $this->setApiCalls(
             [
@@ -99,6 +97,49 @@ class ScopeAvailabilityMonthTest extends Base
         );
         $this->render($this->arguments, $this->parameters, []);
     }
+
+    public function testRenderingAvailabilityFailed()
+    {
+        $this->expectException('\BO\Zmsclient\Exception');
+        $exception = new \BO\Zmsclient\Exception();
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  $startDate->modify('Last day of this month');
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/calendar/',
+                    'parameters' => ['fillWithEmptyDays' => 1],
+                    'response' => $this->readFixture("GET_calendar.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/availability/',
+                    'parameters' => [
+                        'resolveReferences' => 0,
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d')
+                    ],
+                    'exception' => $exception
+                ]
+            ]
+        );
+        $this->render($this->arguments, $this->parameters, []);
+    }
+
 
     public function testEmptyAvailabilityList()
     {

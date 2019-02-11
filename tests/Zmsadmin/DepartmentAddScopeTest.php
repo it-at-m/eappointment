@@ -135,4 +135,78 @@ class DepartmentAddScopeTest extends Base
         $this->assertRedirect($response, '/scope/141/?success=scope_created');
         $this->assertEquals(302, $response->getStatusCode());
     }
+
+    public function testUpdateFailed()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\Zmsentities\Exception\SchemaValidation';
+        $exception->data['emailFrom']['messages'] = [
+            'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein'
+        ];
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/source/',
+                    'response' => $this->readFixture("GET_sourcelist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/provider/dldb/',
+                    'parameters' => ['isAssigned' => true],
+                    'response' => $this->readFixture("GET_providerlist_assigned.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/provider/dldb/',
+                    'parameters' => ['isAssigned' => false],
+                    'response' => $this->readFixture("GET_providerlist_notassigned.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/',
+                    'parameters' => ['resolveReferences' => 0],
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/department/74/scope/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'provider' => [
+                'source' => 'dldb',
+                'id' => '122217',
+            ],
+            'contact' => [
+                'name' => 'Bürgeramt Heerstraße',
+                'street' => 'Heerstr. 12',
+                'email' => '',
+            ],
+            'hint' => [
+                'Nr. wird zum Termin aufgerufen ',
+                ' Nr. wird zum Termin aufgerufen'
+            ],
+            'save' => 'save'
+
+        ], [], 'POST');
+        $this->assertContains(
+            'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein',
+            (string)$response->getBody()
+        );
+    }
 }

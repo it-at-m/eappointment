@@ -41,7 +41,6 @@ class DepartmentAddScope extends Scope
                 ]);
             }
         }
-
         return \BO\Slim\Render::withHtml($response, 'page/scope.twig', array(
             'title' => 'Standort',
             'action' => 'add',

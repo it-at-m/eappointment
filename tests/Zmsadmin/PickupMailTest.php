@@ -52,4 +52,35 @@ class PickupMailTest extends Base
         );
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testWithoutEmailFrom()
+    {
+        $this->expectException('\BO\Zmsadmin\Exception\MailFromMissing');
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/82252/',
+                    'response' => $this->readFixture("GET_process_without_emailfrom.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'response' => $this->readFixture("GET_config.json")
+                ]
+            ]
+        );
+        $this->render($this->arguments, $this->parameters, []);
+    }
 }
