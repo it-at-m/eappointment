@@ -228,7 +228,9 @@ class Cluster extends Base
         if ($cluster->toProperty()->scopes->get()) {
             foreach ($cluster->scopes as $scope) {
                 $entity = $scopeQuery->readWithWorkstationCount($scope->id, $dateTime, $resolveReferences = 0);
-                $scopeList->addEntity($entity);
+                if ($entity) {
+                    $scopeList->addEntity($entity);
+                }
             }
         }
         $cluster->scopes = $scopeList;
