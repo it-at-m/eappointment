@@ -27,7 +27,7 @@ class ScopeQueue extends BaseController
         $dateTime = ($selectedDate) ? (new DateTime($selectedDate))->modify(\App::$now->format('H:i')) : \App::$now;
 
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $scope = $query->readEntity($args['id'], $resolveReferences);
+        $scope = (new \BO\Zmsdb\Scope)->readWithWorkstationCount($args['id'], \App::$now, $resolveReferences);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
