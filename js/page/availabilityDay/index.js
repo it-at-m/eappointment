@@ -298,6 +298,7 @@ class AvailabilityPage extends Component {
     renderForm() {
         if (this.state.selectedAvailability) {
             return <AvailabilityForm data={this.state.selectedAvailability}
+                today={this.props.timestamp}
                 title={this.state.formTitle}
                 onSave={this.onUpdateAvailability.bind(this)}
                 onPublish={this.onPublishAvailability.bind(this)}
