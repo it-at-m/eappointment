@@ -78,7 +78,9 @@ class Status
         if (isset($status['sources'])) {
             $now = new \DateTimeImmutable();
             $lastDldbUpdate = new \DateTimeImmutable($status['sources']['dldb']['last']);
-            if (($lastDldbUpdate->getTimestamp() + 7200) < $now->getTimestamp()) {
+            if (($lastDldbUpdate->getTimestamp() + 7200) < $now->getTimestamp() &&
+                ($lastDldbUpdate->getTimestamp() + 14400) > $now->getTimestamp()
+            ) {
                 $result = "WARN - Last DLDB Import is more then 2 hours ago";
             } elseif (($lastDldbUpdate->getTimestamp() + 14400) < $now->getTimestamp()) {
                 $result = "CRIT - Last DLDB Import is more then 4 hours ago";
