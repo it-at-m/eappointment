@@ -16,6 +16,7 @@
 * #35683 Bugfix: Einstellige Wochennummern werden im Wochenkalender jetzt korrekt dargestellt. Die führende Null wird dabei entfernt
 * #35697 Bugfix: Die Wartezeitberechnung im Tresen beachtete nur die virtuelle Sachbearbeiterzahl, nicht die tatsächlich eingeloggten (betraf nur die Tabelle)
 * #35306 Wird in der Warteschlangen-Tabelle der Standort gewechselt wird darauf hingewiesen, dass das Terminformular zurückgesetzt wird und es findet nun kein kompletter Seitenreload mehr statt
+* #35699 Bugfix: Spontankunden können jetzt ohne Validierung von Pflichtfelder aktualisiert werden und Erfolgsmeldungen haben nun einen OK-Button
 
 ## v2.19.02
 
