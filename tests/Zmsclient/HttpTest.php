@@ -8,121 +8,144 @@ class HttpTest extends Base
 {
     public function testStatus()
     {
-        $http = $this->createHttpClient();
-        $result = $http->readGetResult('/status/');
+        $result = static::$http_client->readGetResult('/status/');
         $response = new \BO\Zmsclient\Psr7\Response();
-        $entity = $result->getEntity();
-        $response = \BO\Zmsclient\Status::testStatus($response, $entity);
-        $this->assertTrue($entity instanceof \BO\Zmsentities\Schema\Entity);
+        $status = $result->getEntity();
+        $response = \BO\Zmsclient\Status::testStatus($response, $status);
+        $this->assertTrue($status instanceof \BO\Zmsentities\Schema\Entity);
         $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $result->getResponse());
         $this->assertInstanceOf('\Psr\Http\Message\RequestInterface', $result->getRequest());
+
+        $status['mail']['oldestSeconds'] = 400;
+        $status['notification']['oldestSeconds'] = 400;
+        $status['database']['logbin'] = 'OFF';
+        $status['database']['clusterStatus'] = 'OFF';
+        $status['database']['locks'] = 11;
+        $status['database']['threads'] = 31;
+        $status['database']['nodeConnections'] = 51;
+        $status['processes']['lastCalculate'] = (new \DateTimeImmutable())->modify('- 4 hour')->format('Y-m-d H:i:s');
+        $status['sources']['dldb']['last'] = (new \DateTimeImmutable())->modify('- 3 hour')->format('Y-m-d H:i:s');
+
+        $response = \BO\Zmsclient\Status::testStatus($response, $status);
+        $this->assertContains('Oldest mail with age in seconds: 400s', (string)$response->getBody());
+        $this->assertContains('Oldest sms with age in seconds: 400s', (string)$response->getBody());
+        $this->assertContains('DB connection without replication log detected', (string)$response->getBody());
+        $this->assertContains('DB connection is not part of a galera cluster', (string)$response->getBody());
+        $this->assertContains('High amount of DB-Locks: 11', (string)$response->getBody());
+        $this->assertContains('High amount of DB-Threads: 31', (string)$response->getBody());
+        $this->assertContains('DB connected thread over 50% of available connections', (string)$response->getBody());
+        $this->assertContains('Last DLDB Import is more then 2 hours ago', (string)$response->getBody());
+        $this->assertContains('slot calculation is 14400 seconds old', (string)$response->getBody());
+
+        $status['sources']['dldb']['last'] = (new \DateTimeImmutable())->modify('- 6 hour')->format('Y-m-d H:i:s');
+        $response = \BO\Zmsclient\Status::testStatus($response, $status);
+        $this->assertContains('Last DLDB Import is more then 4 hours ago', (string)$response->getBody());
+    }
+
+    public function testStatusFailed()
+    {
+        $closure = function () {
+            throw new \Exception('Status failed');
+        };
+        $response = new \BO\Zmsclient\Psr7\Response();
+        $response = \BO\Zmsclient\Status::testStatus($response, $closure);
+        $this->assertContains('Status failed', (string)$response->getBody());
     }
 
     public function testCollection()
     {
-        $http = $this->createHttpClient();
+        $now = new \DateTimeImmutable();
         $calendar = new \BO\Zmsentities\Calendar();
-        $calendar->setFirstDayTime(new \DateTime('2016-05-30'));
-        $calendar->setLastDayTime(new \DateTime('2016-05-30'));
+        $calendar->setFirstDayTime($now);
+        $calendar->setLastDayTime($now);
         $calendar->addScope("141");
-        $result = $http->readPostResult('/process/status/free/', $calendar);
+        $result = static::$http_client->readGetResult('/scope/');
         $collection = $result->getCollection();
+        $this->assertContains('141', $result->getIds());
         $this->assertTrue($collection instanceof \BO\Zmsentities\Collection\Base);
     }
 
     public function testMails()
     {
-        $http = $this->writeTestLogin();
+        $now = new \DateTimeImmutable();
         $entity = \BO\Zmsentities\Mail::createExample();
-        $entity->process = $http->readGetResult('/process/82252/12a2/')->getEntity();
-        $result = $http->readPostResult('/mails/', $entity, array('resolveReferences' => 0));
+        
+        $confirmedProcess = static::$http_client->readGetResult('/scope/141/process/'. $now->format('Y-m-d') .'/')
+            ->getCollection()
+            ->toQueueList($now)
+            ->withStatus(['confirmed'])
+            ->toProcessList()
+            ->getFirst();
+        $entity->process = static::$http_client
+            ->readGetResult(
+                '/process/'. $confirmedProcess->getId() .'/'. $confirmedProcess->getAuthKey() .'/',
+                ['resolveReferences' => 0]
+            )->getEntity();
+            
+        $result = static::$http_client->readPostResult('/mails/', $entity, ['resolveReferences' => 0]);
         $entity = $result->getEntity();
         $this->assertTrue($entity instanceof \BO\Zmsentities\Mail);
         $mailId = $entity->id;
 
-        $result = $http->readGetResult('/mails/', array('resolveReferences' => 0));
+        $result = static::$http_client->readGetResult('/mails/');
         $data = $result->getData();
         $this->assertTrue($data[0] instanceof \BO\Zmsentities\Mail);
 
-        $result = $http->readDeleteResult("/mails/$mailId/", array('resolveReferences' => 0));
+        $result = static::$http_client->readDeleteResult("/mails/$mailId/", ['resolveReferences' => 0]);
         $entity = $result->getEntity();
         $this->assertTrue($entity instanceof \BO\Zmsentities\Mail);
-        $this->writeTestLogout($http);
+        $this->writeTestLogout(static::$http_client);
     }
 
     public function testHtml()
     {
         $this->expectException('\BO\Zmsclient\Exception');
-        $http = $this->createHttpClient();
-        $result = $http->readGetResult('/doc/index.html');
+        $result = static::$http_client->readGetResult('/doc/index.html');
         $result->getEntity();
     }
 
     public function testToken()
     {
-        $http = $this->createHttpClient();
-        $result = $http->readGetResult('/config/', null, 'a9b215f1-e460-490c-8a0b-6d42c274d5e4');
+        $result = static::$http_client->readGetResult('/config/', null, 'a9b215f1-e460-490c-8a0b-6d42c274d5e4');
         $entity = $result->getEntity();
         $this->assertTrue($entity instanceof \BO\Zmsentities\Config);
     }
 
+    public function testMeta()
+    {
+        $result = static::$http_client->readGetResult('/config/', null, 'a9b215f1-e460-490c-8a0b-6d42c274d5e4');
+        $this->assertTrue($result->getMeta() instanceof \BO\Zmsentities\Metaresult);
+
+        $result = static::$http_client->readGetResult('/config/');
+        $this->assertTrue($result->getMeta() instanceof \BO\Zmsentities\Metaresult);
+    }
+
     public function testTokenFailed()
     {
+        $this->createHttpClient(null, false);
         $this->expectException('\BO\Zmsclient\Exception');
-        $http = $this->createHttpClient();
-        $result = $http->readGetResult('/config/');
+        $result = static::$http_client->readGetResult('/config/');
         $result->getEntity();
     }
 
     public function testWrongFormat()
     {
         $this->expectException('\BO\Zmsclient\Exception');
-        $http = $this->createHttpClient();
-        $result = $http->readGetResult('/doc/swagger.json');
+        $result = static::$http_client->readGetResult('/doc/swagger.json');
         $result->getEntity();
     }
 
     public function testUnknownUrl()
     {
         $this->expectException('\BO\Zmsclient\Exception');
-        $http = $this->createHttpClient();
-        $result = $http->readGetResult('/unknownUri/');
+        $result = static::$http_client->readGetResult('/unknownUri/');
         $result->getEntity();
     }
 
     public function testDeadlock()
     {
         $this->expectException('\BO\Zmsclient\Exception');
-        $http = $this->createHttpClient();
-        $result = $http->readGetResult('/status/deadlock/');
+        $result = static::$http_client->readGetResult('/status/deadlock/');
         $result->getEntity();
-    }
-
-    protected function writeTestLogin()
-    {
-        $http = $this->createHttpClient();
-        $userAccount = new \BO\Zmsentities\Useraccount(array(
-            'id' => 'berlinonline',
-            'password' => '1palme1'
-        ));
-        try {
-            $workstation = $http->readPostResult('/workstation/login/', $userAccount)->getEntity();
-        } catch (\BO\Zmsclient\Exception $exception) {
-            if (isset($exception->data)) {
-                $workstation = new \BO\Zmsentities\Workstation($exception->data);
-            } else {
-                throw $exception;
-            }
-        }
-        if (isset($workstation->authkey)) {
-            \BO\Zmsclient\Auth::setKey($workstation->authkey);
-            $this->assertEquals($workstation->authkey, \BO\Zmsclient\Auth::getKey());
-        }
-        return $http;
-    }
-
-    protected function writeTestLogout($http)
-    {
-        $http->readDeleteResult('/workstation/login/berlinonline/')->getEntity();
     }
 }

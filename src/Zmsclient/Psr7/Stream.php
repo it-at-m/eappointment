@@ -9,11 +9,8 @@ class Stream extends \Slim\Http\Stream implements \Psr\Http\Message\StreamInterf
 {
     public function __construct($stream = null)
     {
-        if (null === $stream) {
-            $stream = fopen('php://memory', 'w+b');
-        } elseif (!is_resource($stream)) {
-            $stream = fopen($stream, 'w+b');
-        }
+        $stream = (null === $stream) ? fopen('php://memory', 'w+b') : $stream;
+        $stream = (!is_resource($stream)) ? fopen($stream, 'w+b') : $stream;
         parent::__construct($stream);
     }
 }

@@ -12,21 +12,35 @@ abstract class Base extends TestCase
      */
     public static $http_baseurl = null;
 
-    /**
-     * @param \BO\Zmsclient\Psr7\ClientInterface $mockup Add a mockup if necessary
-     *
-     * @return \BO\Zmsclient\Http
-     */
-    protected function createHttpClient($mockup = null)
+    protected static $http_client = null;
+
+    public function setUp()
     {
-        $http = new \BO\Zmsclient\Http($this::$http_baseurl, $mockup);
-        return $http;
+        $this->createHttpClient();
+    }
+
+    public function tearDown()
+    {
+        $this->writeTestLogout();
+        static::$http_client = null;
+    }
+
+    public function createHttpClient($mockup = null, $withUser = true)
+    {
+        static::$http_client = new \BO\Zmsclient\Http($this::$http_baseurl, $mockup);
+        if ($withUser) {
+            static::$http_client->setUserInfo('_system_soap', 'zmssoap');
+        }
+    }
+
+    protected function writeTestLogout()
+    {
+        static::$http_client->readDeleteResult('/workstation/login/_system_soap/');
     }
 
     protected function createSession()
     {
-        $http = $this->createHttpClient();
-        return new \BO\Zmsclient\SessionHandler($http);
+        return new \BO\Zmsclient\SessionHandler(static::$http_client);
     }
 
     protected function createTwigMockup()
