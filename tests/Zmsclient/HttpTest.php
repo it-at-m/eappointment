@@ -67,7 +67,7 @@ class HttpTest extends Base
 
     public function testMails()
     {
-        $now = new \DateTimeImmutable();
+        $now = (new \DateTimeImmutable())->modify('+ 1 day');
         $entity = \BO\Zmsentities\Mail::createExample();
         
         $confirmedProcess = static::$http_client->readGetResult('/scope/141/process/'. $now->format('Y-m-d') .'/')
