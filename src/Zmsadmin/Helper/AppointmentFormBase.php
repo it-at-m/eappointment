@@ -98,7 +98,11 @@ class AppointmentFormBase
     {
         $input = $request->getParsedBody();
         $validatedForm = static::getValidatedForm($request, $workstation);
-        if ($validatedForm->hasFailed() && ! isset($input['delete']) && ! isset($input['queue'])) {
+        if ($validatedForm->hasFailed() &&
+            ! isset($input['delete']) &&
+            ! isset($input['queue']) &&
+            '00-00' != $input['selectedtime']
+        ) {
             return $validatedForm;
         }
         if (isset($input['reserve'])) {
