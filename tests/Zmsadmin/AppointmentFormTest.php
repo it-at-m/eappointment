@@ -529,6 +529,60 @@ class AppointmentFormTest extends Base
         $this->assertEquals(307, $response->getStatusCode());
     }
     
+    public function testWithReserveSubmitRequiredMail()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141_required_mail.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/request/',
+                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/free/',
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'slotCount' => 1,
+            'scope' => 141,
+            'requests' => [120703],
+            'selecteddate' => '2016-04-01',
+            'selectedtime' => '11-55',
+            'familyName' => 'Unittest',
+            'reserve' => 1
+        ], [], 'POST');
+        $this->assertContains(
+            'Für den Standort muss eine gültige E-Mail Adresse eingetragen werden',
+            (string)$response->getBody()
+        );
+    }
+
     public function testWithCopySubmit()
     {
         $this->setApiCalls(

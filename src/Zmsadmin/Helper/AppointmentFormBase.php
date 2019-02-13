@@ -94,15 +94,14 @@ class AppointmentFormBase
             null;
     }
 
-    public static function handlePostRequests($request, $workstation, $selectedProcess)
+    public static function handlePostRequests($request, $workstation, $selectedProcess = null)
     {
         $input = $request->getParsedBody();
-        $validatedForm = static::getValidatedForm($request, $workstation);
-        if ($validatedForm->hasFailed() &&
-            ! isset($input['delete']) &&
-            ! isset($input['queue']) &&
-            '00-00' != $input['selectedtime']
-        ) {
+        $withAppointment = ($selectedProcess)
+            ? $selectedProcess->queue->withAppointment
+            : ((isset($input['queue'])) ? 0 : 1);
+        $validatedForm = static::getValidatedForm($request, $workstation, $withAppointment);
+        if ($validatedForm->hasFailed() && ! isset($input['delete'])) {
             return $validatedForm;
         }
         if (isset($input['reserve'])) {
@@ -141,10 +140,10 @@ class AppointmentFormBase
         return false;
     }
 
-    protected static function getValidatedForm($request, $workstation)
+    protected static function getValidatedForm($request, $workstation, $withAppointment)
     {
         $scope = static::readSelectedScope($request, $workstation);
-        $validationList = FormValidation::fromAdminParameters($scope['preferences']);
+        $validationList = FormValidation::fromAdminParameters($scope['preferences'], $withAppointment);
         return $validationList;
     }
 
