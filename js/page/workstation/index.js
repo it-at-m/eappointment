@@ -166,14 +166,18 @@ class View extends BaseView {
         showSpinner($container);
         const sendData = $container.find('form').serializeArray();
         sendData.push({ name: 'queue', value: 1 });
-        this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, false, $container).then((response) => {
-            this.loadMessage(response, () => {
-                this.loadAppointmentForm();
-                this.loadQueueInfo();
-                this.loadQueueTable();
-                this.loadCalendar();
-                hideSpinner();
-            });
+        this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then((response) => {
+            if (false === response.toLowerCase().includes('has-error')) {
+                this.loadMessage(response, () => {
+                    this.loadAppointmentForm();
+                    this.loadQueueInfo();
+                    this.loadQueueTable();
+                    this.loadCalendar();
+                    hideSpinner();
+                });
+            } else {
+                this.loadAppointmentForm(true, true);
+            }
         });
 
     }
@@ -200,6 +204,8 @@ class View extends BaseView {
                     this.loadCalendar();
                     hideSpinner();
                 });
+            } else {
+                this.loadAppointmentForm(true, true);
             }
         });
     }
@@ -217,7 +223,7 @@ class View extends BaseView {
         }
         sendData.push({ name: 'reserve', value: 1 });
         sendData.push({ name: 'initiator', value: this.initiator });
-        this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, false, $container).then((response) => {
+        this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then((response) => {
             if ($(response).find('form').data('savedProcess')) {
                 this.selectedProcess = $(response).find('form').data('savedProcess');
             }
@@ -229,6 +235,8 @@ class View extends BaseView {
                     this.loadCalendar();
                     hideSpinner();
                 });
+            } else {
+                this.loadAppointmentForm(true, true);
             }
         });
     }
