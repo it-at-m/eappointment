@@ -9,6 +9,11 @@ namespace BO\Zmsentities\Helper;
 
 use BO\Mellon\Validator;
 
+/**
+ *
+ * @SuppressWarnings(Complexity)
+ *
+ */
 class ProcessFormValidation
 {
 
@@ -19,8 +24,8 @@ class ProcessFormValidation
     {
         $collection = array();
         $collection = self::getPersonalParameters($collection, $scopePrefs);
-        $collection = self::getNotificationParameters($collection);
         $collection = self::getAdditionalParameters($collection);
+        $collection = self::getNotificationParameters($collection);
 
         // return validated collection
         $collection = Validator::collection($collection);
@@ -30,13 +35,13 @@ class ProcessFormValidation
     /**
      * form data for reuse in multiple controllers
      */
-    public static function fromAdminParameters($scopePrefs = array())
+    public static function fromAdminParameters($scopePrefs = array(), $withAppointment = false)
     {
         $collection = array();
-        $collection = self::getPersonalParameters($collection, $scopePrefs);
+        $collection = self::getPersonalParameters($collection, $scopePrefs, $withAppointment);
+        $collection = self::getAdditionalAdminParameters($collection, $withAppointment);
         $collection = self::getNotificationParameters($collection);
-        $collection = self::getAdditionalAdminParameters($collection);
-
+        
         // return validated collection
         $collection = Validator::collection($collection);
         return $collection;
@@ -115,47 +120,12 @@ class ProcessFormValidation
         return $process;
     }
 
-    protected static function getPersonalParameters($collection, $scopePrefs)
+    protected static function getPersonalParameters($collection, $scopePrefs, $withAppointment = false)
     {
-        // name
-        $collection['familyName'] = Validator::param('familyName')->isString()
-            ->isBiggerThan(2, "Es muss ein aussagekräftiger Name eingegeben werden")
-            ->isSmallerThan(50, "Der Name sollte 50 Zeichen nicht überschreiten");
-        // email
-        if (!Validator::param('email')->isDeclared()->hasFailed()) {
-            $collection['email'] = Validator::param('email')
-                ->isMail("Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden.")
-                ->hasDNS(
-                    "Zu der angegebenen E-Mail-Adresse können keine Mails verschickt werden. ".
-                    "Der Host zur Domain nach dem '@' ist nicht erreichbar. ".
-                    ""
-                );
-            if (array_key_exists('emailRequired', $scopePrefs['client']) &&
-                $scopePrefs['client']['emailRequired']
-            ) {
-                $collection['email']
-                    ->isBiggerThan(2, "Für den Standort muss eine gültige E-Mail Adresse eingetragen werden");
-            }
-        }
-        // telephone
-        if (!Validator::param('telephone')->isDeclared()->hasFailed()) {
-            $collection['telephone'] = Validator::param('telephone')
-                ->isString()
-                ->isMatchOf("/^\+?[\d\s]*$/", "Die Telefonnummer muss im Format 0170 1234567 eingegeben werden");
-            if (self::isPhoneRequired($scopePrefs)) {
-                $collection['telephone']
-                    ->isBiggerThan(2, "Für den Standort muss eine gültige Telefonnummer eingetragen werden");
-            }
-            if (self::hasCheckedSms()) {
-                $collection['telephone']
-                    ->isBiggerThan(2, "Für den SMS-Versand muss eine gültige Mobilfunknummer angegeben werden");
-            }
-        }
-
-        // survey accepted
-        if (1 == Validator::param('surveyAccepted')->isNumber()->getValue()) {
-            $collection['surveyAccepted'] = Validator::param('surveyAccepted')->isNumber();
-        }
+        $collection = static::testName($collection, $withAppointment);
+        $collection = static::testMail($collection, $scopePrefs, $withAppointment);
+        $collection = static::testTelephone($collection, $scopePrefs, $withAppointment);
+        $collection = static::testSurvey($collection);
         return $collection;
     }
 
@@ -179,6 +149,75 @@ class ProcessFormValidation
         return $collection;
     }
 
+    protected static function testName($collection, $withAppointment)
+    {
+        $length = strlen(Validator::param('familyName')->isString()->getValue());
+        if ($length || $withAppointment) {
+            $collection['familyName'] = Validator::param('familyName')->isString()
+                ->isBiggerThan(2, "Es muss ein aussagekräftiger Name eingegeben werden")
+                ->isSmallerThan(50, "Der Name sollte 50 Zeichen nicht überschreiten");
+        }
+        return $collection;
+    }
+
+    protected static function testMail($collection, $scopePrefs, $withAppointment)
+    {
+        $length = strlen(Validator::param('email')->isString()->getValue());
+        if (self::isMailRequired($scopePrefs) && $withAppointment) {
+            $collection['email'] = Validator::param('email')
+                ->isMail("Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden.")
+                ->isBiggerThan(6, "Für den Standort muss eine gültige E-Mail Adresse eingetragen werden");
+        }
+        if (self::hasCheckedMail() && !$length) {
+            $collection['email'] = Validator::param('email')
+                ->isString()
+                ->isBiggerThan(6, "Für den Email-Versand muss eine gültige E-Mail Adresse angegeben werden");
+        }
+
+        if ($length) {
+            $collection['email'] = Validator::param('email')
+                ->isMail("Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden.")
+                ->hasDNS(
+                    "Zu der angegebenen E-Mail-Adresse können keine Mails verschickt werden. ".
+                    "Der Host zur Domain nach dem '@' ist nicht erreichbar. ".
+                    ""
+                );
+        }
+        return $collection;
+    }
+
+    protected static function testTelephone($collection, $scopePrefs, $withAppointment)
+    {
+        $length = strlen(Validator::param('telephone')->isString()->getValue());
+        if (self::isPhoneRequired($scopePrefs) && $withAppointment) {
+            $collection['telephone'] = Validator::param('telephone')
+                ->isString()
+                ->isBiggerThan(6, "Für den Standort muss eine gültige Telefonnummer eingetragen werden");
+        }
+
+        if (self::hasCheckedSms() && !$length) {
+            $collection['telephone'] = Validator::param('telephone')
+                ->isString()
+                ->isBiggerThan(10, "Für den SMS-Versand muss eine gültige Mobilfunknummer angegeben werden");
+        }
+
+        if ($length) {
+            $collection['telephone'] = Validator::param('telephone')
+                ->isString()
+                ->isBiggerThan(6, "Für den Standort muss eine gültige Telefonnummer eingetragen werden")
+                ->isMatchOf("/^\+?[\d\s]*$/", "Die Telefonnummer muss im Format 0170 1234567 eingegeben werden");
+        }
+        return $collection;
+    }
+
+    protected static function testSurvey($collection)
+    {
+        if (1 == Validator::param('surveyAccepted')->isNumber()->getValue()) {
+            $collection['surveyAccepted'] = Validator::param('surveyAccepted')->isNumber();
+        }
+        return $collection;
+    }
+
     protected static function getAdditionalParameters($collection)
     {
         // amendment
@@ -196,7 +235,7 @@ class ProcessFormValidation
         return $collection;
     }
 
-    protected static function getAdditionalAdminParameters($collection)
+    protected static function getAdditionalAdminParameters($collection, $withAppointment = false)
     {
         // amendment
         if (!Validator::param('amendment')->isDeclared()->hasFailed()) {
@@ -205,11 +244,19 @@ class ProcessFormValidation
         }
 
         // requests
-        if (!Validator::param('requests')->isDeclared()->hasFailed()) {
+        if ($withAppointment) {
             $collection['requests'] = Validator::param('requests')
                 ->isArray("Es muss mindestens eine Dienstleistung ausgewählt werden!");
         }
         return $collection;
+    }
+
+    protected static function isMailRequired($scopePrefs)
+    {
+        return (
+            array_key_exists('emailRequired', $scopePrefs['client']) &&
+            $scopePrefs['client']['emailRequired']
+        );
     }
 
     protected static function isPhoneRequired($scopePrefs)
@@ -226,5 +273,10 @@ class ProcessFormValidation
             1 == Validator::param('sendConfirmation')->isNumber()->getValue() ||
             1 == Validator::param('sendReminder')->isNumber()->getValue()
         );
+    }
+
+    protected static function hasCheckedMail()
+    {
+        return (1 == Validator::param('sendMailConfirmation')->isNumber()->getValue());
     }
 }
