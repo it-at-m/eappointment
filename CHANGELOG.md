@@ -1,3 +1,7 @@
+## v2.20.00
+
+* #35764 Deploy Tokens eingebaut
+
 ## v2.19.03
 
 * #35013 Bugfix: Probleme mit kommender PHP Version 7.2 behoben
