@@ -1,3 +1,7 @@
+## v2.20.00
+
+* #35764 Deploy Tokens eingebaut
+
 ## v2.19.03
 
 * #35007 Template: Missverständliches "aktiviert" in der Standort-Maske entfernt
