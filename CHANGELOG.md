@@ -1,3 +1,7 @@
+## v2.20.00
+
+* #35764 Deploy Tokens eingebaut
+
 ## v2.19.03
 
 * #35531 Nachträgliche Telefonnummereingabe wird abgebrochen, wenn Termin schon eine Telefonnummer enthält
