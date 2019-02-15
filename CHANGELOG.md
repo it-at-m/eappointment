@@ -1,3 +1,7 @@
+## v2.20.00
+
+* #35764 Deploy Tokens eingebaut
+
 ## v2.19.03
 
 * #34579 Wartezeit wird als "unbekannt" angezeigt, wenn virtuelle Sachbearbeiterzahl auf 0 gesetzt ist für einen Standort
