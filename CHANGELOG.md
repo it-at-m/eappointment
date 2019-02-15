@@ -1,3 +1,7 @@
+## v2.20.00
+
+* #35764 Deploy Tokens eingebaut
+
 ## v2.19.02
 
 ## v2.19.01
