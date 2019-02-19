@@ -111,10 +111,14 @@ class AppointmentDeleteByCron
     {
         $verbose = $this->verbose;
         $query = new \BO\Zmsdb\Process();
-        if ($query->writeDeletedEntity($process->id) && $verbose) {
-            error_log("INFO: Process $process->id successfully removed");
+        if ($query->writeDeletedEntity($process->id)) {
+            if ($verbose) {
+                error_log("INFO: Process $process->id successfully removed");
+            }
         } else {
-            error_log("WARN: Could not remove process '$process->id'!");
+            if ($verbose) {
+                error_log("WARN: Could not remove process '$process->id'!");
+            }
         }
     }
 }
