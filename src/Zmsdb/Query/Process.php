@@ -37,7 +37,7 @@ class Process extends Base implements MappingInterface
         SET
             process.Anmerkung = CONCAT(
                 'Abgesagter Termin gebucht am: ',
-                FROM_UNIXTIME(process.IPTimeStamp,'%d-%m-%Y %H:%i'),' | ',
+                FROM_UNIXTIME(process.IPTimeStamp,'%d.%m.%Y, %H:%i'),' Uhr | ',
                 IFNULL(process.Anmerkung,'')
             ),
             process.Name = '(abgesagt)',
