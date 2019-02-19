@@ -348,7 +348,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             $query->addConditionTime($currentDate);
             $statement = $this->fetchStatement($query);
             $processList = $this->readList($statement, $resolveReferences);
-
+            $processList = $processList->toQueueList($currentDate)->withoutStatus(['queued'])->toProcessList();
             $conflictList->addList($processList->withOutAvailability($availabilityList));
             $currentDate = $currentDate->modify('+1 day');
         }
