@@ -572,9 +572,12 @@ class Process extends Base implements Interfaces\ResolveReferences
 
     protected function writeRequestsToDb(\BO\Zmsentities\Process $process)
     {
-        if ($process->requests && count($process->requests)) {
-            // Beware of resolveReferences=0 to not delete the existing requests
+        // Beware of resolveReferences=0 to not delete the existing requests, except for queued processes
+        $hasRequests = ($process->requests && count($process->requests));
+        if ($hasRequests || 'queued' == $process->status) {
             $this->deleteRequestsForProcessId($process->id);
+        }
+        if ($hasRequests) {
             $query = new Query\XRequest(Query\Base::INSERT);
             foreach ($process->requests as $request) {
                 if ($request->id >= 0) { // allow deleting requests with a -1 request
