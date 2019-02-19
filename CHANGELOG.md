@@ -1,6 +1,7 @@
 ## v2.20.00
 
 * #35764 Deploy Tokens eingebaut
+* #35753 Bugfix: Spontankunden denen eine Dienstleistung zugeordnet war, können jetzt beim erneuten Bearbeiten auch ohne Dienstleistung gespeichert werden
 
 ## v2.19.03
 
