@@ -2,6 +2,8 @@
 
 * #35764 Deploy Tokens eingebaut
 * #35753 Bugfix: Spontankunden denen eine Dienstleistung zugeordnet war, können jetzt beim erneuten Bearbeiten auch ohne Dienstleistung gespeichert werden
+* #35744 Spontankunden werden nun nicht mehr als Konflikte erfasst
+* #35745 Die Datums- und Zeitangaben im Anmerkungsfeld sind nun vereinheitlicht auf deutsches Datumsformat
 
 ## v2.19.03
 
