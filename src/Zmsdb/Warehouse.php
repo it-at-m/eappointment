@@ -78,6 +78,11 @@ class Warehouse extends Base
             'description' => 'Gebuchte Zeitschlitze eines Standortes gruppiert nach Datum',
             'right' => 'superuser'
         ],
+        [
+            'subject' => 'unassignedscope',
+            'description' => 'Standorte ohne Zuordnung zur DLDB mit Terminen',
+            'right' => 'superuser'
+        ],
     ];
 
     public function readSubjectsList()
