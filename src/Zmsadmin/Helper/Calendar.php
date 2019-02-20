@@ -90,15 +90,17 @@ class Calendar
             $processList = new \BO\Zmsentities\Collection\ProcessList();
             foreach ($scopeList as $scope) {
                 $this->dateTime = $currentDate;
-                $freeProcessList = $this->readAvailableSlotsFromDayAndScopeList($scopeList);
-                $bookedProcessList = \App::$http
-                    ->readGetResult('/scope/'. $scope->id .'/process/'. $currentDate->format('Y-m-d') .'/')
-                    ->getCollection();
-                if ($bookedProcessList) {
-                    $processList->addList($bookedProcessList);
-                }
-                if ($freeProcessList) {
-                    $processList->addList($freeProcessList);
+                if ($currentDate->format('Y-m-d') >= \App::$now->format('Y-m-d')) {
+                    $freeProcessList = $this->readAvailableSlotsFromDayAndScopeList($scopeList);
+                    $bookedProcessList = \App::$http
+                        ->readGetResult('/scope/'. $scope->id .'/process/'. $currentDate->format('Y-m-d') .'/')
+                        ->getCollection();
+                    if ($bookedProcessList) {
+                        $processList->addList($bookedProcessList);
+                    }
+                    if ($freeProcessList) {
+                        $processList->addList($freeProcessList);
+                    }
                 }
             }
             $day['processList'] = $processList->toProcessListByStatusAndTime();
