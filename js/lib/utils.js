@@ -170,12 +170,14 @@ export const getUrlParameters = () => {
 }
 
 export const forceHttps = () => {
+    var forceCallback = () => {
+        document.location.href = "https://" + document.location.href.substring(document.location.protocol.length, document.location.href.length);
+    }
     if (document.location.protocol !== "https:") {
         Baseview.loadCallStatic(`${settings.includeUrl}/dialog/?template=force_https`).then((response) => {
             Baseview.loadDialogStatic(response,
-                () => {
-                    document.location.href = "https://" + document.location.href.substring(document.location.protocol.length, document.location.href.length);
-                },
+                forceCallback,
+                forceCallback,
                 Baseview,
                 true
             );
