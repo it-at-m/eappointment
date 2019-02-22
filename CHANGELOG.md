@@ -5,6 +5,11 @@
 * #35744 Spontankunden werden nun nicht mehr als Konflikte erfasst
 * #35745 Die Datums- und Zeitangaben im Anmerkungsfeld sind nun vereinheitlicht auf deutsches Datumsformat
 
+## v2.19.04
+
+* #35810 Die Einstellung in der Öffnungszeit hat Vorrang vor der Einstellung im Standort zur Buchung mit mehreren Slots
+
+
 ## v2.19.03
 
 * #35013 Bugfix: Probleme mit kommender PHP Version 7.2 behoben
