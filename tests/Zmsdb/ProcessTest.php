@@ -3,6 +3,9 @@
 namespace BO\Zmsdb\Tests;
 
 use \BO\Zmsdb\Process as Query;
+use \BO\Zmsdb\Availability as AvailabilityQuery;
+use \BO\Zmsdb\Scope as ScopeQuery;
+use \BO\Zmsdb\Process as ProcessQuery;
 use \BO\Zmsdb\ProcessStatusFree;
 use \BO\Zmsdb\ProcessStatusQueued;
 use \BO\Zmsdb\ProcessStatusArchived;
@@ -330,11 +333,92 @@ class ProcessTest extends Base
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new ProcessStatusFree();
+
         $input = $this->getTestProcessEntity();
         $input->getFirstAppointment()->slotCount = 3;
         $process = $query->writeEntityReserved($input, $now);
         $process = $query->readEntity($process->id, $process->authKey);
         $this->assertEquals(3, $process->getFirstAppointment()->slotCount);
+        $processEntityList = $query->readEntityList($process->getId());
+        $this->assertEquals(3, $processEntityList->count());
+    }
+
+    public function testMultipleSlotsScopeDisabled()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new ProcessStatusFree();
+        $availabilityQuery = new AvailabilityQuery();
+        $processQuery = new ProcessQuery();
+        $scopeQuery = new ScopeQuery();
+
+        $input = $this->getTestProcessEntity();
+        $scope = $scopeQuery->readEntity(141);
+        $processTest = new Entity([
+            'appointments' => [
+                new \BO\Zmsentities\Appointment([
+                    "date"=>"1464607800", // 2016-05-30 13:30:00 +02:00
+                    "scope"=>[
+                        "id"=>"141"
+                    ],
+                    "slotCount"=>"2"
+                ])
+            ],
+            'scope' => $scope,
+            'clients' => $input['clients'],
+            'requests' => $input['requests'],
+            'status' => "free"
+        ]);
+        $process = $query->writeEntityReserved($processTest, $now);
+        $processEntityList = $query->readEntityList($process->getId());
+        $this->assertEquals(1, $processEntityList->count());
+        $processQuery->writeDeletedEntity($process->id);
+
+        $availability = $availabilityQuery->readEntity(94666, 0); // scope=141 date=2016-05-30
+        $availability->multipleSlotsAllowed = true;
+        $availability = $availabilityQuery->updateEntity($availability->id, $availability);
+        $process = $query->writeEntityReserved($processTest, $now);
+        $processEntityList = $query->readEntityList($process->getId());
+        $this->assertEquals(2, $processEntityList->count());
+    }
+
+    public function testMultipleSlotsScopeEnabled()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new ProcessStatusFree();
+        $availabilityQuery = new AvailabilityQuery();
+        $processQuery = new ProcessQuery();
+        $scopeQuery = new ScopeQuery();
+
+        $input = $this->getTestProcessEntity();
+        $scope = $scopeQuery->readEntity(141);
+        $scope['preferences']['appointment']['multipleSlotsEnabled'] = true;
+        $scopeQuery->updateEntity($scope->id, $scope);
+        $processTest = new Entity([
+            'appointments' => [
+                new \BO\Zmsentities\Appointment([
+                    "date"=>"1464607800", // 2016-05-30 13:30:00 +02:00
+                    "scope"=>[
+                        "id"=>"141"
+                    ],
+                    "slotCount"=>"2"
+                ])
+            ],
+            'scope' => $scope,
+            'clients' => $input['clients'],
+            'requests' => $input['requests'],
+            'status' => "free"
+        ]);
+        $process = $query->writeEntityReserved($processTest, $now);
+        $processEntityList = $query->readEntityList($process->getId());
+        $this->assertEquals(1, $processEntityList->count());
+        $processQuery->writeDeletedEntity($process->id);
+
+        $availability = $availabilityQuery->readEntity(94666, 0); // scope=141 date=2016-05-30
+        $availability->multipleSlotsAllowed = true;
+        $availability = $availabilityQuery->updateEntity($availability->id, $availability);
+        $process = $query->writeEntityReserved($processTest, $now);
+        $processEntityList = $query->readEntityList($process->getId());
+        $this->assertEquals(2, $processEntityList->count());
     }
 
     public function testCancelProcess()
