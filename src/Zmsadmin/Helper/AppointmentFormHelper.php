@@ -76,7 +76,7 @@ class AppointmentFormHelper extends AppointmentFormBase
         $selectedProcess
     ) {
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
-        if ($freeProcessList && $selectedProcess &&
+        if ($freeProcessList && $selectedProcess && $selectedProcess->queue->withAppointment &&
             $selectedDate == $selectedProcess->getFirstAppointment()->toDateTime()->format('Y-m-d')
           ) {
             $dateTime = $selectedProcess->getFirstAppointment()->toDateTime();
