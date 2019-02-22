@@ -30,7 +30,7 @@ class ProcessStatusFree extends Base
                     IF (:slotType = "public", s.`public`, 0 )
                   )
                 ) available,
-                IF(a.erlaubemehrfachslots, c.slotsRequired, 1) slotsRequired,
+                IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots) slotsRequired,
                 s.*
             FROM
                 calendarscope c
@@ -44,7 +44,7 @@ class ProcessStatusFree extends Base
                         AND s.status = "free"
                 LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
                 LEFT JOIN slot_hiera h ON h.ancestorID = s.slotID
-                    AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, 1)
+                    AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
                 LEFT JOIN slot_process p ON h.slotID = p.slotID
             GROUP BY s.slotID, h.slotID
             ) AS tmp_ancestor

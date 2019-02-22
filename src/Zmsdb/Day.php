@@ -38,7 +38,10 @@ class Day extends Base
         $dayList = new \BO\Zmsentities\Collection\DayList();
         $dayData = $this->getReader()->fetchAll(
             Query\Day::QUERY_DAYLIST_JOIN,
-            []
+            [
+                'forceRequiredSlots' =>
+                    ($slotsRequiredForce === null || $slotsRequiredForce < 1) ? 1 : intval($slotsRequiredForce),
+            ]
         );
         foreach ($dayData as $day) {
             $day = new \BO\Zmsentities\Day($day);
