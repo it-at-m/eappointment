@@ -167,11 +167,13 @@ class View extends RequestView {
 
     onChangeProcessTime(event) {
         this.selectedTime = $(event.target).val();
+        var hasFreeAppointments = (1 <= $(event.target).length && '00-00' != this.selectedTime);
         this.$main.data('selected-time', this.selectedTime);
         new FormButtons(this.$main.find('[data-form-buttons]'), {
             includeUrl: this.includeUrl,
             selectedDate: this.selectedDate,
             selectedProcess: this.selectedProcess,
+            hasFreeAppointments: hasFreeAppointments,
             selectedTime: this.selectedTime
         }).loadButtons().then(() => {
             this.bindEvents();

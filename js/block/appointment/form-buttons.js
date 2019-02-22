@@ -10,6 +10,8 @@ class View extends BaseView {
         this.selectedDate = options.selectedDate;
         this.selectedTime = options.selectedTime || "00-00";
         this.selectedProcess = options.selectedProcess || 0;
+        this.hasFreeAppointments = options.hasFreeAppointments || 0;
+        console.log(this.hasFreeAppointments);
         this.bindPublicMethods('loadButtons');
         $.ajaxSetup({ cache: false });
     }
@@ -23,7 +25,7 @@ class View extends BaseView {
     }
 
     toggleButtonDisabled() {
-        if (0 == this.freeProcessListLength) {
+        if (0 == this.hasFreeAppointments) {
             this.$main.find('button').not('.process-abort, .process-queue').prop("disabled", true);
         }
     }
