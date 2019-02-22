@@ -39,8 +39,7 @@ class Day extends Base
                     SUM(internall) AS allAppointments__intern,
                     "sum" AS freeAppointments__type,
                     "free" AS allAppointments__type,
-                    "bookable" AS status,
-                    erlaubemehrfachslots -- TODO check if needed in entity
+                    "bookable" AS status
         FROM
         (
 
@@ -56,15 +55,13 @@ class Day extends Base
           MIN(CAST(intern AS SIGNED) - confirmed) AS intern,
           MIN(public) AS publicall,
           MIN(callcenter) AS callcenterall,
-          MIN(intern) AS internall,
-          erlaubemehrfachslots
+          MIN(intern) AS internall
         FROM
         (
 
             SELECT
                 IFNULL(COUNT(p.slotID), 0) confirmed,
-                IF(a.erlaubemehrfachslots, c.slotsRequired, 1) slotsRequired,
-                a.erlaubemehrfachslots,
+                IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots) slotsRequired,
                 s.*
             FROM
                 calendarscope c
@@ -72,7 +69,7 @@ class Day extends Base
                     ON c.scopeID = s.scopeID AND c.year = s.year AND c.month = s.month AND s.status = "free"
                 LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
                 LEFT JOIN slot_hiera h ON h.ancestorID = s.slotID
-                    AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, 1)
+                    AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
                 LEFT JOIN slot_process p ON h.slotID = p.slotID
             GROUP BY s.slotID, h.slotID
 

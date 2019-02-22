@@ -32,7 +32,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -2,
+      'intern' => -1,
       'callcenter' => 0,
       'type' => 'sum',
     ),

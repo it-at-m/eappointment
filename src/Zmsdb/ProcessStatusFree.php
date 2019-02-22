@@ -13,7 +13,7 @@ class ProcessStatusFree extends Process
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeInterface $now,
         $slotType = 'public',
-        $slotsRequired = 0,
+        $slotsRequired = null,
         $groupData = false
     ) {
         //$resolvedCalendar = new Calendar();
@@ -31,6 +31,8 @@ class ProcessStatusFree extends Process
                 'month' => $selectedDate->format('m'),
                 'day' => $selectedDate->format('d'),
                 'slotType' => $slotType,
+                'forceRequiredSlots' =>
+                    ($slotsRequired === null || $slotsRequired < 1) ? 1 : intval($slotsRequired),
             ]
         );
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
