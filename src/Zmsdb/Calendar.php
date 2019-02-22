@@ -63,19 +63,14 @@ class Calendar extends Base
     {
         $requestReader = new Request();
         $requestRelationQuery = new RequestRelation();
-        //if (! isset($calendar['processing']['slotinfo'])) {
-        //    $calendar['processing']['slotinfo'] = [];
-        //}
         foreach ($calendar['requests'] as $key => $request) {
             $request = new \BO\Zmsentities\Request($request);
             $request = $requestReader->readEntity($request->getSource(), $request->getId());
             $calendar['requests'][$key] = $request;
             $requestRelationList = $requestRelationQuery->readListByRequestId($request->getId(), $request->getSource());
             foreach ($requestRelationList as $requestRelationItem) {
-                //if (! isset($calendar['processing']['slotinfo'][$slotinfo['provider__id']])) {
-                //    $calendar['processing']['slotinfo'][$slotinfo['provider__id']] = 0;
-                //}
-                //$calendar['processing']['slotinfo'][$slotinfo['provider__id']] += $slotinfo['slots'];
+                // we do not check multipleSlotsEnabled here, because the availability might need this information
+                // so we calculate slots as if multipleSlotsEnabled is true
                 $calendar->scopes->addRequiredSlots(
                     $requestRelationItem->getSource(),
                     $requestRelationItem->getProvider()->getId(),

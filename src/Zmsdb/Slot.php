@@ -23,9 +23,14 @@ class Slot extends Base
      * @return \BO\Zmsentities\Collection\SlotList
      *
      */
-    public function readByAppointment(\BO\Zmsentities\Appointment $appointment)
+    public function readByAppointment(\BO\Zmsentities\Appointment $appointment, $overwriteSlotsCount = null)
     {
+        $appointment = clone $appointment;
         $availability = (new Availability())->readByAppointment($appointment);
+        // Check if availability allows multiple slots, but allow overwrite
+        if (!$availability->multipleSlotsAllowed || $overwriteSlotsCount >= 1) {
+            $appointment->slotCount = ($overwriteSlotsCount >= 1) ? $overwriteSlotsCount : 1;
+        }
         $slotList = $availability->getSlotList()->withSlotsForAppointment($appointment);
         return $slotList;
     }

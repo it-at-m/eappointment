@@ -94,7 +94,7 @@ class ProcessStatusFree extends Process
         $process->status = 'reserved';
         $appointment = $process->getAppointments()->getFirst();
         $freeProcessList = $this->readFreeProcesses($process->toCalendar(), $now, $slotType, $slotsRequired);
-        $slotList = (new Slot)->readByAppointment($appointment);
+        $slotList = (new Slot)->readByAppointment($appointment, $slotsRequired);
         if (!$freeProcessList->getAppointmentList()->hasAppointment($appointment) || ! $slotList) {
             throw new Exception\Process\ProcessReserveFailed();
         }
