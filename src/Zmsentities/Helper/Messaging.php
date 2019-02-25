@@ -188,8 +188,9 @@ class Messaging
     public static function getPlainText($content, $lineBreak = "\n")
     {
         $converter = new \League\HTMLToMarkdown\HtmlConverter();
+        $converter->getConfig()->setOption('remove_nodes', 'script');
+        $converter->getConfig()->setOption('strip_tags', true);
         $text = $converter->convert($content);
-        $text = strip_tags($text);
         $text = str_replace("\n", $lineBreak, $text);
         //error_log(">>>$text<<<");
         return $text;
