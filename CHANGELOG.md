@@ -1,6 +1,8 @@
 ## v2.20.00
 
 * #35764 Deploy Tokens eingebaut
+* #31392 Bugfix: Auswahl von Dienstleistungen im Terminformular führt nun zur korrekten Berechnung der Slotanzahl
+* #31392 Exception Template hinzugefügt zur besseren Darstellung der Fehlermeldung wenn Termin nicht in Slotanzahl passt
 
 ## v2.19.03
 
