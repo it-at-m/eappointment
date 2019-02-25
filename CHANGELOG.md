@@ -2,6 +2,7 @@
 
 * #35764 Deploy Tokens eingebaut
 * #35834 Bugfix: Schema Code taucht nicht mehr in der ICS-Datei auf
+* #35250 Template: Fehlendes Komma in Bestätigungsmail ergänzt
 
 ## v2.19.03
 

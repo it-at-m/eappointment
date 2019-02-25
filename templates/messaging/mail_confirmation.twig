@@ -4,7 +4,7 @@ Sehr geehrte/r Frau oder Herr {{ client.familyName }},<br />
 <br />
 hiermit bestätigen wir Ihnen Ihren gebuchten Termin am <strong> {{ (date|default(getNow))|localizeddate("short","none",NULL,NULL,"EEEE, dd. MMMM Y") }} um {{ (date|default(getNow))|date("H:i") }} {% trans %}Uhr{% endtrans %}</strong>.<br />
 <br />
-<strong>Ort:</strong> {{ process.scope.provider.name ~ " " ~ process.scope.provider.contact.street ~ " "  ~ process.scope.provider.contact.streetNumber ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}<br />
+<strong>Ort:</strong> {{ process.scope.provider.name ~ ", " ~ process.scope.provider.contact.street ~ " "  ~ process.scope.provider.contact.streetNumber ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}<br />
 {% if process.scope.hint %}
 ({{ process.scope.hint }})<br />
 {% endif %}<br />
