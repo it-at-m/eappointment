@@ -1,6 +1,7 @@
 ## v2.20.00
 
 * #35764 Deploy Tokens eingebaut
+* #35834 Bugfix: Schema Code taucht nicht mehr in der ICS-Datei auf
 
 ## v2.19.03
 
