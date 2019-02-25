@@ -156,9 +156,9 @@ class View extends RequestView {
 
     onChangeSlotCount(event) {
         // if human event, not triggered
-        if (event.originalEvent !== undefined) {
-            this.slotsRequired = $(event.target).val();
-        }
+        //if (event.originalEvent !== undefined) {
+        this.slotsRequired = $(event.target).val();
+        //}
         this.loadFreeProcessList().loadList().then(() => {
             this.bindEvents();
         });

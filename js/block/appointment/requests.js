@@ -76,17 +76,17 @@ class View extends BaseView {
     }
 
     calculateSlotCount() {
-        var slotCount = 1;
-        var selectedSlots = this.$main.find('.checkboxdeselect label:visible input:checkbox').map(function () {
-            return $(this).data('slots');
+        let slotCount = 1;
+        var requestList = this.$main.find('.checkboxdeselect label:visible input:checkbox').map(function () {
+            return $(this).data().slots;
         }).toArray();
-        for (var i = 1; i < selectedSlots.length; i++)
-            if (selectedSlots[i] > 0) {
-                slotCount += selectedSlots[i];
-            }
-        if (this.slotsRequired > slotCount) {
-            slotCount = this.slotsRequired;
+
+        if (requestList.length > 0) {
+            slotCount = requestList.reduce((partial_sum, count) => {
+                return partial_sum + count;
+            });
         }
+
         $('#appointmentForm_slotCount').val(slotCount).trigger('change');
     }
 }
