@@ -1,6 +1,7 @@
 ## v2.20.00
 
 * #35764 Deploy Tokens eingebaut
+* #35671 Bugfix: Bei mehrspaltiger Anzeige werden jetzt wieder Anzahl der Wartenden und die Wartezeit angezeigt
 
 ## v2.19.03
 
