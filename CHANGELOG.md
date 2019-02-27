@@ -1,8 +1,11 @@
-## v2.20.00
+## v2.19.05
 
 * #35764 Deploy Tokens eingebaut
-* #31392 Bugfix: Auswahl von Dienstleistungen im Terminformular führt nun zur korrekten Berechnung der Slotanzahl
-* #31392 Exception Template hinzugefügt zur besseren Darstellung der Fehlermeldung wenn Termin nicht in Slotanzahl passt
+* #35668 Bugfix: Zeige keine Termine der Vergangenheit im Wochenkalender
+* #35800 Bugfix: Möglichkeit den HTTPS-Redirect zu umgehen entfernt
+* #35754 Bugfix: Button "als Neu hinzufügen" funktioniert jetzt auch mit Spontankunden
+* #31392 Exception: Aussagekräftige Fehlermeldung, wenn ein Termin mit mehreren Slots nicht mehr passt (AppointmentNotFitInSlotList)
+* #31392 Bugfix: Auswahl der Dienstleistungen im Terminformular ändert jetzt immer die ausgewählte Slot-Anzahl analog zum ZMS1
 
 ## v2.19.03
 
