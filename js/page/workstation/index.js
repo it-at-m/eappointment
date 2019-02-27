@@ -9,6 +9,7 @@ import CalendarView from '../../block/calendar'
 import ClientNextView from '../../block/process/next'
 import QueueInfoView from '../../block/queue/info'
 import AppointmentTimesView from '../../block/appointment/times'
+import ValidationHandler from '../../lib/validationHandler'
 
 class View extends BaseView {
     constructor(element, options) {
@@ -28,7 +29,6 @@ class View extends BaseView {
         this.initiator = 'Sachbearbeiter';
         this.bindPublicMethods(
             'loadAllPartials',
-            'hasErrorResponse',
             'onAbortMessage',
             'onAbortProcess',
             'onCancelAppointmentForm',
@@ -192,9 +192,11 @@ class View extends BaseView {
         const sendData = $container.find('form').serializeArray();
         sendData.push({ name: 'initiator', value: this.initiator });
         this.loadCall(`${this.includeUrl}/process/reserve/`, 'POST', sendData, false, $container).then((response) => {
-            var errors = this.hasErrorResponse(response);
-            if (0 < errors.length) {
-                this.onValidateForm(errors)
+            var validator = new ValidationHandler($container, {
+                response: response
+            });
+            if (validator.hasErrors()) {
+                return validator.render(); 
             } else {
                 this.loadMessage(response, () => {
                     this.loadAppointmentForm();
@@ -206,10 +208,6 @@ class View extends BaseView {
         }).then(() => {
             hideSpinner();
         });
-    }
-
-    onValidateForm(errors) {
-
     }
 
     onSaveProcess($container, event, action = 'update') {
