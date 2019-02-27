@@ -101,16 +101,8 @@ class AppointmentFormBase
             ? $selectedProcess->queue->withAppointment
             : ((isset($input['queue'])) ? 0 : 1);
         $validatedForm = static::getValidatedForm($request, $workstation, $withAppointment);
-        if ($validatedForm->hasFailed() && ! isset($input['delete'])) {
+        if ($validatedForm->hasFailed()) {
             return $validatedForm;
-        }
-        if (isset($input['reserve'])) {
-            return \BO\Slim\Render::redirect(
-                'processReserve',
-                array(),
-                array(),
-                307
-            );
         }
         if (isset($input['update'])) {
             return \BO\Slim\Render::redirect(
@@ -128,13 +120,6 @@ class AppointmentFormBase
                 array(),
                 array(),
                 307
-            );
-        }
-        if (isset($input['delete'])) {
-            return \BO\Slim\Render::redirect(
-                'processDelete',
-                array('id' => $input['processId']),
-                array()
             );
         }
         return false;

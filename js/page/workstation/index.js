@@ -10,10 +10,10 @@ import ClientNextView from '../../block/process/next'
 import QueueInfoView from '../../block/queue/info'
 import AppointmentTimesView from '../../block/appointment/times'
 
-
 class View extends BaseView {
     constructor(element, options) {
         super(element);
+        this.page = 'workstation';
         this.element = $(element).focus();
         this.includeUrl = options.includeurl;
         this.selectedTime = options['selected-time'];
@@ -28,6 +28,7 @@ class View extends BaseView {
         this.initiator = 'Sachbearbeiter';
         this.bindPublicMethods(
             'loadAllPartials',
+            'hasErrorResponse',
             'onAbortMessage',
             'onAbortProcess',
             'onCancelAppointmentForm',
@@ -167,7 +168,10 @@ class View extends BaseView {
         const sendData = $container.find('form').serializeArray();
         sendData.push({ name: 'queue', value: 1 });
         this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, false, $container).then((response) => {
-            if (false === response.toLowerCase().includes('has-error')) {
+            console.log(response)
+            if (this.hasErrorResponse(response)) {
+                this.loadAppointmentForm();
+            } else {
                 this.selectedProcess = null;
                 this.loadMessage(response, () => {
                     this.loadAppointmentForm();
@@ -176,10 +180,35 @@ class View extends BaseView {
                     this.loadCalendar();
                     hideSpinner();
                 });
-            } else {
-                this.loadAppointmentForm();
             }
         });
+
+    }
+
+    onReserveProcess($container, event) {
+        stopEvent(event);
+        showSpinner($container);
+
+        const sendData = $container.find('form').serializeArray();
+        sendData.push({ name: 'initiator', value: this.initiator });
+        this.loadCall(`${this.includeUrl}/process/reserve/`, 'POST', sendData, false, $container).then((response) => {
+            var errors = this.hasErrorResponse(response);
+            if (0 < errors.length) {
+                this.onValidateForm(errors)
+            } else {
+                this.loadMessage(response, () => {
+                    this.loadAppointmentForm();
+                    this.loadQueueInfo();
+                    this.loadQueueTable();
+                    this.loadCalendar();
+                });
+            }
+        }).then(() => {
+            hideSpinner();
+        });
+    }
+
+    onValidateForm(errors) {
 
     }
 
@@ -193,6 +222,7 @@ class View extends BaseView {
         sendData.push({ name: action, value: 1 });
         sendData.push({ name: 'selectedprocess', value: this.selectedProcess });
         sendData.push({ name: 'initiator', value: this.initiator });
+
         this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then((response) => {
             if ($(response).find('form').data('savedProcess')) {
                 this.selectedProcess = $(response).find('form').data('savedProcess');
@@ -248,15 +278,16 @@ class View extends BaseView {
         $(event.target).closest('.message').fadeOut().remove();
     }
 
-    onDeleteProcess($container, event) {
+    onDeleteProcess(event) {
         stopEvent(event);
         this.selectedProcess = null;
         const processId = $(event.target).data('id');
         showSpinner();
-        this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', { 'delete': 1, 'processId': processId, 'initiator': this.initiator }, $container).then((response) => {
+        this.loadCall(`${this.includeUrl}/process/${processId}/delete/?initiator=${this.initiator}`).then((response) => {
             this.loadMessage(response, () => {
                 this.loadAppointmentForm();
-                this.loadQueueInfo();
+                if ('counter' == this.page)
+                    this.loadQueueInfo();
                 this.loadQueueTable();
                 this.loadCalendar();
                 hideSpinner();
@@ -449,6 +480,7 @@ class View extends BaseView {
             onEditProcess: this.onEditProcess,
             onQueueProcess: this.onQueueProcess,
             onSaveProcess: this.onSaveProcess,
+            onReserveProcess: this.onReserveProcess,
             onCopyProcess: this.onCopyProcess,
             onChangeScope: this.onChangeScope,
             onAbortProcess: this.onAbortProcess,

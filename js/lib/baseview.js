@@ -113,6 +113,10 @@ class BaseView extends ErrorHandler {
         window.location.href = url;
     }
 
+    hasErrorResponse(response) {
+        return Object.entries(response).filter(item => 1 < item.filter(error => null !== error.messages).length);
+    }
+
     loadMessage(response, callback, $container = null) {
         if (!$container) {
             $container = this.$main;
