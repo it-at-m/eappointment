@@ -1,9 +1,11 @@
-## v2.20.00
+## v2.19.05
 
 * #35764 Deploy Tokens eingebaut
 * #35753 Bugfix: Spontankunden denen eine Dienstleistung zugeordnet war, können jetzt beim erneuten Bearbeiten auch ohne Dienstleistung gespeichert werden
-* #35744 Spontankunden werden nun nicht mehr als Konflikte erfasst
-* #35745 Die Datums- und Zeitangaben im Anmerkungsfeld sind nun vereinheitlicht auf deutsches Datumsformat
+* #35744 Bugfix: Spontankunden werden nun nicht mehr als Konflikte erfasst
+* #35745 Bugfix: Die Datums- und Zeitangaben im Anmerkungsfeld sind nun vereinheitlicht auf deutsches Datumsformat
+* #35668 Bugfix: Cronjob AppointmentDeleteByCron gibt nur noch Meldungen aus, wenn die Option "verbose" gesetzt ist
+* #34876 Statistik-Report hinzugefügt: Standorte ohne Zuordnung mit aktiven Terminen
 
 ## v2.19.04
 
