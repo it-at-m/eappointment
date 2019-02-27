@@ -1,7 +1,8 @@
-## v2.20.00
+## v2.19.05
 
 * #35764 Deploy Tokens eingebaut
-* #35671 Bugfix: Bei mehrspaltiger Anzeige werden jetzt wieder Anzahl der Wartenden und die Wartezeit angezeigt
+* #35671 Wenn Wartende angezeigt werden sollen, zeige unter Raum/Platz die Wartezeit an
+* #35671 Bei mehrspaltiger Anzeige werden jetzt wieder Anzahl der Wartenden und die Wartezeit angezeigt
 
 ## v2.19.03
 
