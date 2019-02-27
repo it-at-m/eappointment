@@ -28,12 +28,21 @@ class ProcessReserve extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $scope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
         $input = $request->getParams();
+        $validatedForm = FormValidation::fromAdminParameters($scope['preferences'], true);
+        if ($validatedForm->hasFailed()) {
+            return \BO\Slim\Render::withJson(
+                $response,
+                $validatedForm->getStatus(null, true)
+            );
+        }
+        
         $process = new \BO\Zmsentities\Process();
 
         $selectedTime = str_replace('-', ':', $input['selectedtime']);
         $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $input['selecteddate'] .' '. $selectedTime);
-        $scope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
+        
         $process->withUpdatedData($input, $dateTime, $scope);
         $process = \App::$http
             ->readPostResult('/process/status/reserved/', $process, [
@@ -46,15 +55,14 @@ class ProcessReserve extends BaseController
         if ('confirmed' == $process->status) {
             Helper\AppointmentFormHelper::updateMailAndNotification($input, $process);
             $queryParams = array(
-                'selectedprocess' => $process->getId(),
-                'selectedscope' => $scope->getId(),
+                'selectedprocess' => $process,
                 'success' => 'process_reserved'
             );
         }
 
-        return \BO\Slim\Render::redirect(
-            'appointment_form',
-            array(),
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'element/helper/messageHandler.twig',
             $queryParams
         );
     }

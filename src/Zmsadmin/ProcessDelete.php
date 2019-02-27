@@ -33,13 +33,13 @@ class ProcessDelete extends BaseController
         $workstation->testMatchingProcessScope((new Helper\ClusterHelper($workstation))->getScopeList(), $process);
 
         $initiator = Validator::param('initiator')->isString()->getValue();
-        \App::$http->readDeleteResult('/process/'. $process->id .'/', ['initiator' => $initiator])->getEntity();
+        \App::$http->readDeleteResult('/process/'. $process->getId() .'/', ['initiator' => $initiator])->getEntity();
 
         $this->testDeleteMailNotifications($process);
 
-        return \BO\Slim\Render::redirect(
-            'appointment_form',
-            array(),
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'element/helper/messageHandler.twig',
             array(
                 'success' => 'process_deleted',
             )

@@ -4,9 +4,10 @@ import settings from '../../settings'
 
 class View extends Workstation {
 
-    constructor (element, options) {
+    constructor(element, options) {
         super(element, options);
         this.bindPublicMethods();
+        this.page = 'counter';
         //console.log('Component: Counter', this, options);
     }
 

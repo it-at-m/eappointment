@@ -19,7 +19,7 @@ class ExceptionHandler {
         }
 
         this.$messageElement = $($message.get(0).outerHTML);
-        this.$main.find('.dialog', '.exception').remove();
+        this.$main.find('.dialog, .exception').remove();
         this.$main.find('.body').first().prepend(this.$messageElement);
         var $buttons = this.$messageElement.find('.btn');
         if ($buttons.length == 0) {
