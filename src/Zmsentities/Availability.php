@@ -245,9 +245,9 @@ class Availability extends Schema\Entity
         $monday = "monday this week";
         if ($this['repeat']['afterWeeks']
             && ($this['repeat']['afterWeeks'] == 1
-                || 0 === floor(
-                    $dateTime->modify($monday)->getWeeks() - $start->modify($monday)->getWeeks()
-                ) % $this['repeat']['afterWeeks']
+                || 0 ===
+                    $dateTime->modify($monday)->diff($start->modify($monday))->days
+                 % ($this['repeat']['afterWeeks'] * 7)
             )
         ) {
             return true;

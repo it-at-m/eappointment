@@ -132,6 +132,42 @@ class AvailabilityTest extends EntityCommonTests
         );
     }
 
+    public function testWeekCase35851()
+    {
+        $entity = new $this->entityclass();
+        // A friday
+        $time = new \DateTimeImmutable('2019-01-02 11:55:00');
+        $now = new \DateTimeImmutable('2019-02-28 11:55:00');
+        $entity['startDate'] = $time->getTimestamp();
+        $entity['startTime'] = $time->format('H:i');
+        $entity['endDate'] = $time->modify("+12month")
+            ->getTimestamp();
+        $entity['endTime'] = $time->modify("+12month 17:10:00")
+            ->format('H:i');
+        $entity['weekday']['wednesday'] = 1;
+        $entity['repeat']['afterWeeks'] = 2;
+        $entity['scope'] = new \BO\Zmsentities\Scope([
+            'dayoff' => new \BO\Zmsentities\Collection\DayoffList(),
+        ]);
+
+        $this->assertTrue(
+            $entity->hasDate(new \DateTimeImmutable('2019-03-13 00:00:00'), $now),
+            'This week 13.3. should be valid'
+        );
+        $this->assertFalse(
+            $entity->hasDate(new \DateTimeImmutable('2019-03-20 00:00:00'), $now),
+            'This week 20.3. should not be valid'
+        );
+        $this->assertTrue(
+            $entity->hasDate(new \DateTimeImmutable('2019-03-27 00:00:00'), $now),
+            'This week 27.3. should be valid'
+        );
+        $this->assertFalse(
+            $entity->hasDate(new \DateTimeImmutable('2019-04-03 00:00:00'), $now),
+            'This week 3.4. should not be valid'
+        );
+    }
+
     public function testGetAvailableSecondsPerDay()
     {
         $entity = (new $this->entityclass())->getExample();

@@ -3,6 +3,7 @@
 * #35764 Deploy Tokens eingebaut
 * #35834 Bugfix: Schema Code taucht nicht mehr in der ICS-Datei auf
 * #35250 Template: Fehlendes Komma in Bestätigungsmail ergänzt
+* #35851 Bugfix: Beachte bei der Wochendifferenz-Berechnung die DST (Sommerzeit) mit nicht ganzzahligen Werten
 
 ## v2.19.03
 
