@@ -88,7 +88,7 @@ class Exchange extends Schema\Entity
         $entity = clone $this;
         $namePosition = $this->getPositionByName($dateName);
         if ($namePosition) {
-            $totals = array_fill(0, count($entity->data[0]), '');
+            $totals = array_fill(0, count($entity->data[0]), 0);
             $totals[$namePosition] = 'totals';
             foreach ($keysToCalculate as $name) {
                 $calculatePosition = $this->getPositionByName($name);
