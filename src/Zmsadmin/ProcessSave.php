@@ -33,7 +33,7 @@ class ProcessSave extends BaseController
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
         $input = $request->getParams();
         $validatedForm = FormValidation::fromAdminParameters(
-            $scope['preferences'], 
+            $scope['preferences'],
             $process->isWithAppointment()
         );
         if ($validatedForm->hasFailed()) {
