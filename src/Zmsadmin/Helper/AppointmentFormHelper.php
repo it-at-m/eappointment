@@ -26,8 +26,8 @@ class AppointmentFormHelper
         $slotsRequired = static::setSlotsRequired($validator, $scope, $selectedProcess);
         $freeProcessList = static::readProcessListByScopeAndDate(
             $validator,
-            $scopeList, 
-            $slotType, 
+            $scopeList,
+            $slotType,
             $slotsRequired
         );
         return static::getFreeProcessListWithSelectedProcess(
@@ -124,15 +124,15 @@ class AppointmentFormHelper
         return $slotType;
     }
 
-    protected static function setSlotsRequired($validator, \BO\Zmsentities\Scope $scope, $process) 
+    protected static function setSlotsRequired($validator, \BO\Zmsentities\Scope $scope, $process)
     {
         $slotsRequired = 0;
         if ($scope && $scope->getPreference('appointment', 'multipleSlotsEnabled')) {
             $slotsRequired = $validator->getParameter('slotsRequired')->isNumber()->getValue();
             $slotsRequired = ($slotsRequired) ? $slotsRequired : 0;
         }
-        $slotsRequired = (0 == $slotsRequired && $process) 
-            ? $process->getFirstAppointment()->getSlotCount() 
+        $slotsRequired = (0 == $slotsRequired && $process)
+            ? $process->getFirstAppointment()->getSlotCount()
             : $slotsRequired;
         return $slotsRequired;
     }

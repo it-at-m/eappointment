@@ -31,7 +31,6 @@ class ProcessQueue extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $scope = AppointmentFormHelper::readSelectedScope($request, $workstation);
-        $input = $request->getParams();
         $validatedForm = FormValidation::fromAdminParameters($scope['preferences']);
         if ($validatedForm->hasFailed()) {
             return \BO\Slim\Render::withJson(
