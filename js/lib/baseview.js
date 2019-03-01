@@ -156,7 +156,8 @@ class BaseView extends ErrorHandler {
                 destroyLightbox();
             },
             abortCallback: () => {
-                abortCallback();
+                if (abortCallback)
+                    abortCallback();
                 destroyLightbox();
             },
             parent: parent,
