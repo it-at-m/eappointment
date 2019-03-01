@@ -48,8 +48,11 @@ class ProcessSaveTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertRedirect($response, '/appointmentForm/?selectedprocess=82252&success=process_updated');
-        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertContains(
+            'Der Termin mit der Nummer 82252 wurde erfolgreich aktualisiert.', 
+            (string)$response->getBody()
+        );
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testWithQueuedProcess()
@@ -68,6 +71,12 @@ class ProcessSaveTest extends Base
                     'response' => $this->readFixture("GET_process_queued.json")
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/process/100011/8d11/',
                     'parameters' => ['initiator' => null],
@@ -76,10 +85,47 @@ class ProcessSaveTest extends Base
             ]
         );
         $response = $this->render(['id' => 100011], $this->parameters, [], 'POST');
-        $this->assertRedirect(
-            $response,
-            '/appointmentForm/?selectedprocess=100011&success=process_withoutappointment_updated'
+        $this->assertContains(
+            'Der Spontankunde mit der Wartenummer 5 wurde erfolgreich aktualisiert.', 
+            (string)$response->getBody()
         );
-        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testValidationFailed()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/82252/',
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'slotCount' => 1,
+            'familyName' => '',
+            'telephone' => '1234567890',
+            'email' => 'zmsbo@berlinonline.net',
+            'scope' => 141,
+            'selecteddate' => '2016-04-01',
+            'selectedtime' => '11-55'
+        ], [], 'POST');
+        $this->assertContains('Name eingegeben werden', (string)$response->getBody());
+        $this->assertContains('Es muss mindestens eine Dienstleistung', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }

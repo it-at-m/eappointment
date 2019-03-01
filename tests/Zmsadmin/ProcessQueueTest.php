@@ -87,8 +87,8 @@ class ProcessQueueTest extends Base
             'headsUpTime' => 3600,
             'requests' => [120703]
         ], [], 'POST');
-        $this->assertRedirect($response, '/appointmentForm/?selectedprocess=100011&success=process_queued');
-        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertContains('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testRenderingNotOpened()
@@ -135,13 +135,48 @@ class ProcessQueueTest extends Base
             'slotCount' => 1,
             'familyName' => 'Test BO',
             'telephone' => '1234567890',
-            'email' => 'zmsbo@berlinonline.de',
+            'email' => 'zmsbo@berlinonline.net',
             'sendConfirmation' => 1,
             'sendMailConfirmation' => 1,
             'headsUpTime' => 3600,
             'requests' => [120703]
         ], [], 'POST');
-        $this->assertRedirect($response, '/appointmentForm/?selectedprocess=100011&success=process_queued');
-        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertContains('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testValidationFailed()
+    {
+        \App::$now = new \DateTimeImmutable('2016-04-01 19:55:00', new \DateTimeZone('Europe/Berlin'));
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'slotCount' => 1,
+            'familyName' => 'T',
+            'telephone' => '1234567890',
+            'email' => 'zmsbo',
+            'sendConfirmation' => 1,
+            'sendMailConfirmation' => 1,
+            'headsUpTime' => 3600,
+            'requests' => [120703]
+        ], [], 'POST');
+        $this->assertContains('Name eingegeben werden', (string)$response->getBody());
+        $this->assertContains(
+            "Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden", 
+            (string)$response->getBody()
+        );
+        $this->assertContains(
+            "keine Mails verschickt werden. Der Host zur Domain nach dem '@' ist nicht erreichbar.", 
+            (string)$response->getBody()
+        );
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }
