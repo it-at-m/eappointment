@@ -104,16 +104,6 @@ class AppointmentFormBase
         if ($validatedForm->hasFailed()) {
             return $validatedForm;
         }
-        if (isset($input['update'])) {
-            return \BO\Slim\Render::redirect(
-                'processSave',
-                array(
-                  'id' => $selectedProcess->getId()
-                ),
-                array(),
-                307
-            );
-        }
         if (isset($input['queue'])) {
             return \BO\Slim\Render::redirect(
                 'processQueue',

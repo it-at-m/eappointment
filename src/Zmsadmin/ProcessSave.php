@@ -10,7 +10,6 @@ namespace BO\Zmsadmin;
 use BO\Mellon\Validator;
 use BO\Slim\Render;
 use BO\Zmsentities\Helper\ProcessFormValidation as FormValidation;
-use BO\Zmsadmin\Helper\ProcessUpdateHelper;
 
 /**
  * Update a process
@@ -26,31 +25,38 @@ class ProcessSave extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $scope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
+        $input = $request->getParams();
+        $validatedForm = FormValidation::fromAdminParameters($scope['preferences'], true);
+        if ($validatedForm->hasFailed()) {
+            return \BO\Slim\Render::withJson(
+                $response,
+                $validatedForm->getStatus(null, true)
+            );
+        }
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
-        $input = $request->getParsedBody();
-        $process = $this->writeSavedProcess($request, $process, $input);
+        $process = $this->writeSavedProcess($scope, $process, $input);
         $success = ($process->toProperty()->queue->withAppointment->get()) ?
           'process_updated' :
           'process_withoutappointment_updated';
 
-        return \BO\Slim\Render::redirect(
-            'appointment_form',
-            array(),
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'element/helper/messageHandler.twig',
             array(
-                'selectedprocess' => $process->getId(),
+                'selectedprocess' => $process,
                 'success' => $success
             )
         );
     }
 
-    protected function writeSavedProcess($request, $process, $input)
+    protected function writeSavedProcess($scope, $process, $input)
     {
         $initiator = Validator::param('initiator')->isString()->getValue();
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         if ($process->toProperty()->queue->withAppointment->get()) {
             $dateTime = (new \DateTime())->setTimestamp($process->getFirstAppointment()->date);
-            $scope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
             $process->withUpdatedData($input, $dateTime, $scope);
             $process = Helper\AppointmentFormHelper::writeUpdatedProcess($input, $process, $initiator);
         } else {
