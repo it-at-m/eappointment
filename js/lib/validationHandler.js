@@ -1,35 +1,61 @@
 import $ from 'jquery';
 import BaseView from './baseview'
+import { defineObjectForEach } from './utils'
+
+defineObjectForEach();
 
 class ValidationHandler extends BaseView {
 
     constructor(element, options) {
         super(element);
-        this.$main = $(element);
-        this.errors = [];
+        this.scope = element;
+        this.$main = element.$main;
+        this.errors = {};
         this.response = options.response;
         this.bindPublicMethods(
             'getValidationErrorList',
             'hasErrors',
             'render'
         );
-        this.bindEvents();
-        this.getValidationErrorList(this.response);
+        this.getValidationErrorList();
     }
 
     render() {
-        console.log(this.errors)
+        this.errors.forEach((item, key) => {
+            this.$main.find(`input[name^="${key}"]`).each((index, element) => {
+                if (index > 0) {
+                    return false;
+                }
+                $(element).closest('.form-group').addClass('has-error')
+                $(element).closest('.controls').append(this.createDomList(item, key))
+            })
+        })
+        this.scope.bindEvents()
     }
 
-    bindEvents() {
+    createDomList(item, key) {
+        var list = document.createElement("ul");
+        list.classList.add(`error-list`)
+        item.messages.forEach((messageElement) => {
+            var listItem = document.createElement("li")
+            listItem.appendChild(document.createTextNode(messageElement.message));
+            list.appendChild(listItem)
+        })
+        return list;
     }
 
-    getValidationErrorList(response) {
-        this.errors = Object.entries(response).filter(item => 1 < item.filter(error => null !== error.messages).length);
+    getValidationErrorList() {
+        $("ul.error-list").remove();
+        $(".has-error").removeClass("has-error");
+        this.response.forEach((item, key) => {
+            if (item.failed) {
+                Object.assign(this.errors, { [key]: item });
+            }
+        }, {});
     }
 
     hasErrors() {
-        return (this.errors) ? true : false;
+        return (0 < Object.keys(this.errors).length) ? true : false;
     }
 }
 

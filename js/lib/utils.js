@@ -24,6 +24,24 @@ export const range = (start, end, step = 1) => {
     return result
 }
 
+export const defineObjectForEach = () => {
+    if (!Object.prototype.forEach) {
+        Object.defineProperty(Object.prototype, 'forEach', {
+            value: function (callback, thisArg) {
+                if (this == null) {
+                    throw new TypeError('Not an object');
+                }
+                thisArg = thisArg || window;
+                for (var key in this) {
+                    if (this.hasOwnProperty(key)) {
+                        callback.call(thisArg, this[key], key, this);
+                    }
+                }
+            }
+        });
+    }
+}
+
 export const loopWithCallback = (array, callback) => {
     for (var i = 0; i < array.length; i++) {
         let result = callback(array[i])

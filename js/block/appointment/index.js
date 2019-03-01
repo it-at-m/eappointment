@@ -13,7 +13,7 @@ class View extends RequestView {
         this.options = options;
         this.setOptions();
         this.setCallbacks();
-        this.bindPublicMethods('load');
+        this.bindPublicMethods('load', 'bindEvents');
         $.ajaxSetup({ cache: false });
         if (!this.constructOnly) {
             this.load();
@@ -121,9 +121,9 @@ class View extends RequestView {
         }).on('change', 'select#process_time', (event) => {
             this.onChangeProcessTime(event);
         }).on('click', '.form-actions button.process-reserve', (event) => {
-            this.onReserveProcess(this.$main, event);
+            this.onReserveProcess(this, event);
         }).on('click', '.form-actions button.process-save', (event) => {
-            this.onSaveProcess(this.$main, event);
+            this.onSaveProcess(this, event);
         }).on('click', '.form-actions button.process-print', (event) => {
             this.onPrintWaitingNumber(event);
         }).on('click', '.form-actions button.process-queue', (event) => {

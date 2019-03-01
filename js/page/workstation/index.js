@@ -44,6 +44,7 @@ class View extends BaseView {
             'onConfirm',
             'onEditProcess',
             'onSaveProcess',
+            'onReserveProcess',
             'onCopyProcess',
             'onQueueProcess',
             'onResetProcess',
@@ -115,7 +116,8 @@ class View extends BaseView {
         $container.data('selecteddate', this.selectedDate);
         this.loadCalendar();
         this.loadClientNext();
-        this.loadQueueInfo();
+        if ('counter' == this.page)
+            this.loadQueueInfo();
         this.loadQueueTable();
         this.loadAppointmentForm(true, true);
     }
@@ -168,14 +170,14 @@ class View extends BaseView {
         const sendData = $container.find('form').serializeArray();
         sendData.push({ name: 'queue', value: 1 });
         this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, false, $container).then((response) => {
-            console.log(response)
             if (this.hasErrorResponse(response)) {
                 this.loadAppointmentForm();
             } else {
                 this.selectedProcess = null;
                 this.loadMessage(response, () => {
                     this.loadAppointmentForm();
-                    this.loadQueueInfo();
+                    if ('counter' == this.page)
+                        this.loadQueueInfo();
                     this.loadQueueTable();
                     this.loadCalendar();
                     hideSpinner();
@@ -185,22 +187,20 @@ class View extends BaseView {
 
     }
 
-    onReserveProcess($container, event) {
+    onReserveProcess(scope, event) {
         stopEvent(event);
-        showSpinner($container);
-
-        const sendData = $container.find('form').serializeArray();
+        showSpinner(scope.$main);
+        const sendData = scope.$main.find('form').serializeArray();
         sendData.push({ name: 'initiator', value: this.initiator });
-        this.loadCall(`${this.includeUrl}/process/reserve/`, 'POST', sendData, false, $container).then((response) => {
-            var validator = new ValidationHandler($container, {
-                response: response
-            });
+        this.loadCall(`${this.includeUrl}/process/reserve/`, 'POST', sendData, false).then((response) => {
+            var validator = new ValidationHandler(scope, { response: response });
             if (validator.hasErrors()) {
-                return validator.render(); 
+                return validator.render();
             } else {
                 this.loadMessage(response, () => {
                     this.loadAppointmentForm();
-                    this.loadQueueInfo();
+                    if ('counter' == this.page)
+                        this.loadQueueInfo();
                     this.loadQueueTable();
                     this.loadCalendar();
                 });
@@ -210,32 +210,29 @@ class View extends BaseView {
         });
     }
 
-    onSaveProcess($container, event, action = 'update') {
+    onSaveProcess(scope, event) {
         stopEvent(event);
-        showSpinner($container);
+        showSpinner(scope.$main);
         if ($(event.target).data('id')) {
             this.selectedProcess = $(event.target).data('id');
         }
-        const sendData = $container.find('form').serializeArray();
-        sendData.push({ name: action, value: 1 });
-        sendData.push({ name: 'selectedprocess', value: this.selectedProcess });
+        const sendData = scope.$main.find('form').serializeArray();
         sendData.push({ name: 'initiator', value: this.initiator });
-
-        this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then((response) => {
-            if ($(response).find('form').data('savedProcess')) {
-                this.selectedProcess = $(response).find('form').data('savedProcess');
-            }
-            if (false === response.toLowerCase().includes('has-error')) {
+        this.loadCall(`${this.includeUrl}/process/${this.selectedProcess}/save/`, 'POST', sendData, false).then((response) => {
+            var validator = new ValidationHandler(scope, { response: response });
+            if (validator.hasErrors()) {
+                return validator.render();
+            } else {
                 this.loadMessage(response, () => {
-                    this.loadAppointmentForm(true, true);
-                    this.loadQueueInfo();
+                    this.loadAppointmentForm();
+                    if ('counter' == this.page)
+                        this.loadQueueInfo();
                     this.loadQueueTable();
                     this.loadCalendar();
-                    hideSpinner();
                 });
-            } else {
-                this.loadAppointmentForm(true, true);
             }
+        }).then(() => {
+            hideSpinner();
         });
     }
 
@@ -310,7 +307,8 @@ class View extends BaseView {
     onResetProcess($container, event) {
         let selectedProcess = $(event.target).data('id');
         this.loadContent(`${this.includeUrl}/process/queue/reset/?selectedprocess=${selectedProcess}&selecteddate=${this.selectedDate}`, 'GET', null, $container).then(() => {
-            this.loadQueueInfo();
+            if ('counter' == this.page)
+                this.loadQueueInfo();
         });
     }
 
@@ -321,7 +319,8 @@ class View extends BaseView {
 
     onNextProcess() {
         //this.calledProcess = null;
-        this.loadQueueInfo();
+        if ('counter' == this.page)
+            this.loadQueueInfo();
         this.loadQueueTable();
     }
 
@@ -428,7 +427,8 @@ class View extends BaseView {
 
     loadReloadPartials() {
         if (this.$main.find('.lightbox').length == 0) {
-            this.loadQueueInfo(false);
+            if ('counter' == this.page)
+                this.loadQueueInfo(false);
             this.loadQueueTable(false);
         }
     }
