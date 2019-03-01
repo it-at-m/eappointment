@@ -164,14 +164,14 @@ class View extends BaseView {
         this.onDatePick($container, event)
     }
 
-    onQueueProcess($container, event) {
+    onQueueProcess(scope, event) {
         stopEvent(event);
-        showSpinner($container);
-        const sendData = $container.find('form').serializeArray();
-        sendData.push({ name: 'queue', value: 1 });
-        this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, false, $container).then((response) => {
-            if (this.hasErrorResponse(response)) {
-                this.loadAppointmentForm();
+        showSpinner(scope.$main);
+        const sendData = scope.$main.find('form').serializeArray();
+        this.loadCall(`${this.includeUrl}/process/queue/`, 'POST', sendData, false).then((response) => {
+            var validator = new ValidationHandler(scope, { response: response });
+            if (validator.hasErrors()) {
+                return validator.render();
             } else {
                 this.selectedProcess = null;
                 this.loadMessage(response, () => {
@@ -180,9 +180,10 @@ class View extends BaseView {
                         this.loadQueueInfo();
                     this.loadQueueTable();
                     this.loadCalendar();
-                    hideSpinner();
                 });
             }
+        }).then(() => {
+            hideSpinner();
         });
 
     }
@@ -236,20 +237,22 @@ class View extends BaseView {
         });
     }
 
-    onCopyProcess($container, event) {
+    onCopyProcess(scope, event) {
         stopEvent(event);
         var selectedTime = $('select#process_time').val();
         if (0 == $('select#process_time').find(':selected').data('free')) {
             this.loadCall(`${this.includeUrl}/dialog/?template=copy_failed_time_unvalid&parameter[selectedtime]=${selectedTime}`).then((response) => {
-                this.loadDialog(response, () => { this.onAbortProcess($container, event) });
+                this.loadDialog(response, () => {
+                    this.onAbortMessage(event)
+                });
             });
             return false;
         }
         var withAppointment = ('00-00' != selectedTime);
         if (withAppointment) {
-            this.onSaveProcess($container, event, 'reserve');
+            this.onReserveProcess(scope, event);
         } else {
-            this.onQueueProcess($container, event);
+            this.onQueueProcess(scope, event);
         }
     }
 
