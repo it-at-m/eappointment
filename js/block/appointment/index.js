@@ -127,9 +127,9 @@ class View extends RequestView {
         }).on('click', '.form-actions button.process-print', (event) => {
             this.onPrintWaitingNumber(event);
         }).on('click', '.form-actions button.process-queue', (event) => {
-            this.onQueueProcess(this.$main, event);
+            this.onQueueProcess(this, event);
         }).on('click', '.form-actions button.process-copy', (event) => {
-            this.onCopyProcess(this.$main, event);
+            this.onCopyProcess(this, event);
         }).on('click', '.form-actions button.process-delete', (event) => {
             this.onConfirm(event, "confirm_delete", () => { this.onDeleteProcess(event) });
         }).on('click', '.form-actions button.process-abort', (event) => {

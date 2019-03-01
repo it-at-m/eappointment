@@ -41,13 +41,6 @@ class AppointmentForm extends BaseController
             ? $selectedProcess->getCurrentScope()
             : Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
 
-        if ($request->isPost()) {
-            $validatedForm = Helper\AppointmentFormHelper::handlePostRequests($request, $workstation, $selectedProcess);
-            if ($validatedForm instanceof \Psr\Http\Message\ResponseInterface) {
-                return $validatedForm;
-            }
-        }
-
         $requestList = ($selectedScope && $selectedScope->hasId())
             ? Helper\AppointmentFormHelper::readRequestList($request, $workstation, $selectedScope)
             : null;
@@ -66,13 +59,8 @@ class AppointmentForm extends BaseController
                 'department' =>
                     \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity(),
                 'selectedProcess' => $selectedProcess,
-                'changedProcess' =>
-                    ($validator->getParameter('success')->isString()->getValue()) ? $selectedProcess : null,
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'selectedTime' => $selectedTime,
-                'formData' => (isset($validatedForm) && $validatedForm) ? $validatedForm->getStatus(null, true) : null,
-                'success' => $validator->getParameter('success')->isString()->getValue(),
-                'error' => $validator->getParameter('error')->isString()->getValue(),
                 'freeProcessList' => $freeProcessList,
                 'requestList' => $requestList
             )

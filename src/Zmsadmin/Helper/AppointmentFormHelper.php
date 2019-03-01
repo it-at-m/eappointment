@@ -9,21 +9,27 @@ namespace BO\Zmsadmin\Helper;
 
 use \BO\Zmsentities\Collection\ScopeList;
 
-class AppointmentFormHelper extends AppointmentFormBase
+class AppointmentFormHelper
 {
     public static function readFreeProcessList($request, $workstation)
     {
         $validator = $request->getAttribute('validator');
         $scope = static::readSelectedScope($request, $workstation);
         $scopeList = ($scope) ? (new ScopeList)->addEntity($scope) : (new ClusterHelper($workstation))->getScopeList();
-        $slotType = static::setSlotType($validator);
-        $slotsRequired = static::setSlotsRequired($validator, $scope);
-
+  
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $selectedProcess = ($selectedProcessId)
             ? \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity()
             : null;
-        $freeProcessList = static::readProcessListByScopeAndDate($validator, $scopeList, $slotType, $slotsRequired);
+        
+        $slotType = static::setSlotType($validator);
+        $slotsRequired = static::setSlotsRequired($validator, $scope, $selectedProcess);
+        $freeProcessList = static::readProcessListByScopeAndDate(
+            $validator,
+            $scopeList, 
+            $slotType, 
+            $slotsRequired
+        );
         return static::getFreeProcessListWithSelectedProcess(
             $validator,
             $scopeList,
@@ -63,6 +69,29 @@ class AppointmentFormHelper extends AppointmentFormBase
         return $selectedScope;
     }
 
+    public static function readSelectedProcess($request)
+    {
+        $validator = $request->getAttribute('validator');
+        $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
+        return ($selectedProcessId) ?
+            \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() :
+            null;
+    }
+
+    public static function updateMailAndNotification($formData, \BO\Zmsentities\Process $process)
+    {
+        if (isset($formData['sendMailConfirmation'])) {
+            $mailConfirmation = $formData['sendMailConfirmation'];
+            $mailConfirmation = (isset($mailConfirmation['value'])) ? $mailConfirmation['value'] : $mailConfirmation;
+            self::writeMail($mailConfirmation, $process);
+        }
+        if (isset($formData['sendConfirmation'])) {
+            $smsConfirmation = $formData['sendConfirmation'];
+            $smsConfirmation = (isset($smsConfirmation['value'])) ? $smsConfirmation['value'] : $smsConfirmation;
+            self::writeNotification($smsConfirmation, $process);
+        }
+    }
+
     protected static function readProcessListByScopeAndDate($validator, $scopeList, $slotType, $slotsRequired)
     {
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
@@ -95,13 +124,42 @@ class AppointmentFormHelper extends AppointmentFormBase
         return $slotType;
     }
 
-    protected static function setSlotsRequired($validator, $scope)
+    protected static function setSlotsRequired($validator, \BO\Zmsentities\Scope $scope, $process) 
     {
         $slotsRequired = 0;
         if ($scope && $scope->getPreference('appointment', 'multipleSlotsEnabled')) {
             $slotsRequired = $validator->getParameter('slotsRequired')->isNumber()->getValue();
             $slotsRequired = ($slotsRequired) ? $slotsRequired : 0;
         }
+        $slotsRequired = (0 == $slotsRequired && $process) 
+            ? $process->getFirstAppointment()->getSlotCount() 
+            : $slotsRequired;
         return $slotsRequired;
+    }
+
+    protected static function writeNotification($smsConfirmation, \BO\Zmsentities\Process $process)
+    {
+        if ($smsConfirmation &&
+            $process->scope->hasNotificationEnabled() &&
+            $process->getFirstClient()->hasTelephone()
+        ) {
+            \App::$http->readPostResult(
+                '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
+                $process
+            );
+        }
+    }
+
+    protected static function writeMail($mailConfirmation, \BO\Zmsentities\Process $process)
+    {
+        if ($mailConfirmation &&
+            $process->getFirstClient()->hasEmail() &&
+            $process->scope->hasEmailFrom()
+        ) {
+            \App::$http->readPostResult(
+                '/process/'. $process->id .'/'. $process->authKey .'/confirmation/mail/',
+                $process
+            );
+        }
     }
 }
