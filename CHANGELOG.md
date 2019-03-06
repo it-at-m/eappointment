@@ -1,6 +1,7 @@
 ## v2.19.05
 
 * #35764 Deploy Tokens eingebaut
+* #35836 Bugfix: Beim Löschen eines Termins wird jetzt korrekt geprüft ob der Termin vom angemeldeten Sachbearbeiter gelöscht werden darf
 
 ## v2.19.03
 
