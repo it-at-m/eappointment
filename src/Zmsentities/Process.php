@@ -539,8 +539,8 @@ class Process extends Schema\Entity
         $string .= $this->id;
         $string .= ":".$this->authKey;
         $string .= " (" . $this->status . ")";
-        $string .= " " . ($this->isWithAppointment() ? "appoint" : "arrival") . ":";
-        $string .= " " . $this->getArrivalTime()->format('c');
+        $string .= " " . $this->getFirstAppointment()->toDateTime()->format('c');
+        $string .= " " . ($this->isWithAppointment() ? "appoint" : "arrival:" . $this->getArrivalTime()->format('c'));
         $string .= " " . $this->getFirstAppointment()->slotCount."slots";
         $string .= "*" . count($this->appointments);
         foreach ($this->getRequests() as $request) {
