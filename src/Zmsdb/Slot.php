@@ -32,13 +32,17 @@ class Slot extends Base
             $appointment->slotCount = ($overwriteSlotsCount >= 1) ? $overwriteSlotsCount : 1;
         }
         $slotList = $availability->getSlotList()->withSlotsForAppointment($appointment);
+        foreach ($slotList as $slot) {
+            $this->readByAvailability($slot, $availability, $appointment->toDateTime(), true);
+        }
         return $slotList;
     }
 
     public function readByAvailability(
         \BO\Zmsentities\Slot $slot,
         AvailabilityEntity $availability,
-        \DateTimeInterface $date
+        \DateTimeInterface $date,
+        $getLock = false
     ) {
         $data = array();
         $data['scopeID'] = $availability->scope->id;
@@ -47,8 +51,12 @@ class Slot extends Base
         $data['month'] = $date->format('m');
         $data['day'] = $date->format('d');
         $data['time'] = $slot->getTimeString();
+        $sql = Query\Slot::QUERY_SELECT_SLOT;
+        if ($getLock) {
+            $sql .= ' FOR UPDATE';
+        }
         $slotID = $this->fetchRow(
-            Query\Slot::QUERY_SELECT_SLOT,
+            $sql,
             $data
         );
         return $slotID ? $slotID['slotID'] : false ;

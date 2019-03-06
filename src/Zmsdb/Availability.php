@@ -195,6 +195,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
         $query->addConditionDate($appointment->toDateTime());
         $query->addConditionAppointmentTime($appointment->toDateTime());
         $entity = $this->fetchOne($query, new Entity());
+        $entity->scope = $appointment->scope;
         $entity = $this->readResolvedReferences($entity, $resolveReferences);
         return $entity;
     }

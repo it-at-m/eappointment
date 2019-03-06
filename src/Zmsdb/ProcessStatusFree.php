@@ -43,6 +43,7 @@ class ProcessStatusFree extends Process
                 'Y-m-d H:i:s'
             );
             $process->scope = $calendar->scopes->getEntity($process->scope->id);
+            $process->queue['withAppointment'] = 1;
             $process->appointments->getFirst()->scope = $process->scope;
             $processList->addEntity($process);
             //var_dump("$process");
@@ -93,8 +94,8 @@ class ProcessStatusFree extends Process
     ) {
         $process->status = 'reserved';
         $appointment = $process->getAppointments()->getFirst();
-        $freeProcessList = $this->readFreeProcesses($process->toCalendar(), $now, $slotType, $slotsRequired);
         $slotList = (new Slot)->readByAppointment($appointment, $slotsRequired);
+        $freeProcessList = $this->readFreeProcesses($process->toCalendar(), $now, $slotType, $slotsRequired);
         if (!$freeProcessList->getAppointmentList()->hasAppointment($appointment) || ! $slotList) {
             throw new Exception\Process\ProcessReserveFailed();
         }
