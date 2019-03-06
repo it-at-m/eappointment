@@ -7,6 +7,7 @@
 * #35668 Bugfix: Cronjob AppointmentDeleteByCron gibt nur noch Meldungen aus, wenn die Option "verbose" gesetzt ist
 * #34876 Statistik-Report hinzugefügt: Standorte ohne Zuordnung mit aktiven Terminen
 * #35844 Bugfix: Bei der Reservierung ein noch früheres Locking hinzugefügt um eine Doppelbuchung zu vermeiden
+* #35726 Migration: Fehlendes DEFAULT im Feld "source" hinzugefügt für die Kompatibilität zum ZMS1
 
 ## v2.19.04
 
