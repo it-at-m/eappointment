@@ -12,28 +12,39 @@ use \BO\Zmsentities\Calendar;
 class ProcessLockTest extends Base
 {
     protected $pdo = null;
+    protected static $pdoList = [];
 
     public function setUp()
     {
         parent::setUp();
-        $this->pdo = new \Pdo(
+        $this->pdo = static::createPDO();
+        // Set shorter timeout for the test to not block other tests using vendor/bin/paratest
+        \BO\Zmsdb\Connection\Select::getWriteConnection()->perform('SET SESSION innodb_lock_wait_timeout=1');
+    }
+
+    public static function createPDO()
+    {
+        $pdo = new \BO\Zmsdb\Connection\Pdo(
             \BO\Zmsdb\Connection\Select::$readSourceName,
             \BO\Zmsdb\Connection\Select::$username,
             \BO\Zmsdb\Connection\Select::$password,
             []
         );
-        $this->pdo->exec('SET NAMES "UTF8";');
-        $this->pdo->exec('SET SESSION sql_mode = "STRICT_ALL_TABLES";');
-        $this->pdo->exec('SET SESSION innodb_lock_wait_timeout=300');
-        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $this->pdo->beginTransaction();
-        // Set shorter timeout for the test to not block other tests using vendor/bin/paratest
-        \BO\Zmsdb\Connection\Select::getWriteConnection()->perform('SET SESSION innodb_lock_wait_timeout=1');
+        $pdo->exec('SET NAMES "UTF8";');
+        $pdo->exec('SET SESSION sql_mode = "STRICT_ALL_TABLES";');
+        $pdo->exec('SET SESSION innodb_lock_wait_timeout=300');
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $pdo->beginTransaction();
+        static::$pdoList[] = $pdo;
+        return $pdo;
     }
 
     public function tearDown()
     {
-        $this->pdo->rollBack();
+        foreach (static::$pdoList as $pdo) {
+            $pdo->rollBack();
+        }
+        static::$pdoList = [];
         parent::tearDown();
     }
 
@@ -69,5 +80,23 @@ class ProcessLockTest extends Base
         $process->clients[] = new \BO\Zmsentities\Client(['familyName' => 'Unbekannt']);
         $process->queue['lastCallTime'] = 1459511700;
         $process = $query->updateEntity($process, $now);
+    }
+
+    public function testConcurrentOnSameSlot()
+    {
+        $this->setExpectedException("BO\\Zmsdb\\Exception\\Pdo\\LockTimeout");
+        $now = new \DateTimeImmutable("2016-04-01 11:55:00");
+        $statement = $this->pdo
+            ->prepare(
+                "SELECT * FROM slot "
+                ."WHERE scopeID=151 AND year=2016 AND month=5 AND day=27 AND time='12:00:00' FOR UPDATE"
+            );
+        $statement
+            ->execute();
+        $statement->fetchAll();
+        $process = (new ProcessTest)->getTestProcessEntity();
+        $process->getFirstAppointment()->date = 1464343200;// 2016-05-27 12:00:00 (1 slot free)
+        $query = new ProcessStatusFree();
+        $query->writeEntityReserved($process, $now, 'public', 1);
     }
 }
