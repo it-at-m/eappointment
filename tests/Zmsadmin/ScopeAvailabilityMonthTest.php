@@ -60,7 +60,7 @@ class ScopeAvailabilityMonthTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Öffnungszeiten Bürgeramt Heerstraße', (string)$response->getBody());
+        $this->assertContains('Öffnungszeiten für den Standort Bürgeramt Heerstraße', (string)$response->getBody());
         $this->assertContains('availability-monthtable_calendar', (string)$response->getBody());
         $this->assertContains('data-availability-count="24"', (string)$response->getBody());
         $this->assertContains('circle-open', (string)$response->getBody());
@@ -190,7 +190,7 @@ class ScopeAvailabilityMonthTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Öffnungszeiten Bürgeramt Heerstraße', (string)$response->getBody());
+        $this->assertContains('Öffnungszeiten für den Standort Bürgeramt Heerstraße', (string)$response->getBody());
         $this->assertContains('availability-monthtable_calendar', (string)$response->getBody());
         $this->assertContains('data-availability-count="0"', (string)$response->getBody());
     }
