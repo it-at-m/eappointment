@@ -41,7 +41,7 @@ class WorkstationProcessFinished extends BaseController
                 $input,
                 $process,
                 $workstation,
-                $requestList
+                $requestList? $requestList : new \BO\Zmsentities\Collection\RequestList
             );
         }
 
@@ -52,7 +52,7 @@ class WorkstationProcessFinished extends BaseController
                 'title' => 'Sachbearbeiter',
                 'workstation' => $workstation,
                 'pickupList' => $workstation->getScopeList(),
-                'requestList' => $requestList->toSortedByGroup(),
+                'requestList' => $requestList? $requestList->toSortedByGroup() : new \BO\Zmsentities\Collection\RequestList,
                 'menuActive' => 'workstation',
                 'statisticEnabled' => $statisticEnabled,
                 'isDefaultPickup' => $isDefaultPickup
