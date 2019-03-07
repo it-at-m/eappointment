@@ -63,8 +63,11 @@ class Access extends \BO\Slim\Controller
         if (false !== strpos($path, 'department') && ! $this->department) {
             throw new \BO\Zmsentities\Exception\UserAccountAccessRightsFailed();
         }
-        if (false === strpos($path, 'select') && false === strpos($path, 'logout') &&
-            (! isset($this->workstation['scope']) || ! isset($this->workstation['scope']['id']))
+        // TODO: refactor to integrate these access rules in the controller to make them visible
+        if (false === strpos($path, 'select')
+            && false === strpos($path, 'warehouse')
+            && false === strpos($path, 'logout')
+            && (! isset($this->workstation['scope']) || ! isset($this->workstation['scope']['id']))
         ) {
             throw new \BO\Zmsentities\Exception\WorkstationMissingScope();
         }
