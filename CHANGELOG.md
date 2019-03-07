@@ -6,6 +6,7 @@
 * #35754 Bugfix: Button "als Neu hinzufügen" funktioniert jetzt auch mit Spontankunden
 * #31392 Exception: Aussagekräftige Fehlermeldung, wenn ein Termin mit mehreren Slots nicht mehr passt (AppointmentNotFitInSlotList)
 * #31392 Bugfix: Auswahl der Dienstleistungen im Terminformular ändert jetzt immer die ausgewählte Slot-Anzahl analog zum ZMS1
+* #35888 Bugfix: Standortbeschreibungen sind nun in der Monats- und Tagesansicht gleich
 
 ## v2.19.03
 
