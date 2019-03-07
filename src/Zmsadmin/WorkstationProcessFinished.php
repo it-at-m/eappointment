@@ -9,6 +9,7 @@ namespace BO\Zmsadmin;
 use \Psr\Http\Message\RequestInterface;
 use \BO\Zmsadmin\Helper\ProcessFinishedHelper;
 use \BO\Zmsentities\Process as Entity;
+use \BO\Zmsentities\Collection\RequestList;
 
 class WorkstationProcessFinished extends BaseController
 {
@@ -41,7 +42,7 @@ class WorkstationProcessFinished extends BaseController
                 $input,
                 $process,
                 $workstation,
-                $requestList? $requestList : new \BO\Zmsentities\Collection\RequestList
+                $requestList? $requestList : new RequestList()
             );
         }
 
@@ -52,7 +53,7 @@ class WorkstationProcessFinished extends BaseController
                 'title' => 'Sachbearbeiter',
                 'workstation' => $workstation,
                 'pickupList' => $workstation->getScopeList(),
-                'requestList' => $requestList? $requestList->toSortedByGroup() : new \BO\Zmsentities\Collection\RequestList,
+                'requestList' => $requestList ? $requestList->toSortedByGroup() : new RequestList(),
                 'menuActive' => 'workstation',
                 'statisticEnabled' => $statisticEnabled,
                 'isDefaultPickup' => $isDefaultPickup
