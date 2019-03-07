@@ -9,7 +9,8 @@ export const getStateFromProps = props => {
             })
         }),
         availabilitylist: props.availabilitylist,
-        conflicts: props.conflicts
+        conflicts: props.conflicts,
+        today: props.today
     }
 }
 

@@ -119,12 +119,13 @@ class AvailabilityForm extends Component {
         this.state = {
             data: getFormValuesFromData(this.props.data),
             errors: {}
-        }
+        };
 
-        this.errorElement = null
+        this.errorElement = null;
         this.setErrorRef = element => {
             this.errorElement = element
         };
+        this.handleFocus = props.handleFocus
     }
 
     componentWillReceiveProps(newProps) {
@@ -144,12 +145,6 @@ class AvailabilityForm extends Component {
         })
     }
 
-    handleFocus(element) {
-        if (element) {
-            element.scrollIntoView()
-        }
-    }
-
     render() {
 
 
@@ -161,11 +156,10 @@ class AvailabilityForm extends Component {
 
         const onSave = (ev) => {
             ev.preventDefault()
-            const validationResult = validate(data, this.props.today)
+            let validationResult = validate(data, this.props)
             if (!data.__modified || validationResult.valid) {
                 this.props.onSave(getDataValuesFromForm(data, this.props.data.scope))
             } else {
-                console.log('errors', validationResult.errors)
                 this.setState({ errors: validationResult.errors })
                 this.handleFocus(this.errorElement);
             }
@@ -173,11 +167,10 @@ class AvailabilityForm extends Component {
 
         const onPublish = (ev) => {
             ev.preventDefault()
-            const validationResult = validate(data, this.props.today)
+            let validationResult = validate(data, this.props)
             if (!data.__modified || validationResult.valid) {
                 this.props.onPublish(getDataValuesFromForm(data, this.props.data.scope))
             } else {
-                console.log('errors', validationResult.errors)
                 this.setState({ errors: validationResult.errors })
                 this.handleFocus(this.errorElement);
             }
@@ -229,7 +222,6 @@ AvailabilityForm.defaultProps = {
 
 AvailabilityForm.propTypes = {
     data: PropTypes.object,
-    today: PropTypes.date,
     title: PropTypes.string,
     onSave: PropTypes.func,
     onAbort: PropTypes.func,
@@ -238,7 +230,8 @@ AvailabilityForm.propTypes = {
     onChange: PropTypes.func,
     onCopy: PropTypes.func,
     onException: PropTypes.func,
-    onEditInFuture: PropTypes.func
+    onEditInFuture: PropTypes.func,
+    handleFocus: PropTypes.func
 }
 
 export default AvailabilityForm
