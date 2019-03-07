@@ -67,6 +67,7 @@ class ScopeAvailabilityDay extends BaseController
             'maxWorkstationCount' => $availabilityList->getMaxWorkstationCount(),
             'maxSlotsForAvailabilities' => $maxSlots,
             'busySlotsForAvailabilities' => $busySlots,
+            'today' => \App::$now->getTimestamp()
         ];
     }
 

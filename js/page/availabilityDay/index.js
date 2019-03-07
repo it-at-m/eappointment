@@ -1,6 +1,6 @@
 /* global window */
 /* global confirm */
-/* global alert */
+
 import React, { Component, PropTypes } from 'react'
 import $ from 'jquery'
 import moment from 'moment'
@@ -9,6 +9,7 @@ import Conflicts from './conflicts'
 import TimeTable from './timetable'
 import UpdateBar from './updateBar'
 import SaveBar from './saveBar'
+import validate from './form/validate'
 
 import PageLayout from './layouts/page'
 
@@ -169,31 +170,23 @@ class AvailabilityPage extends Component {
     }
 
     onCreateExceptionForAvailability(availability) {
-        const today = moment(this.props.timestamp, 'X').startOf('day')
-
-        const yesterday = today.clone().subtract(1, 'days')
-        const tomorrow = today.clone().add(1, 'days')
-
-        const start = moment(availability.startDate, 'X')
-        const end = moment(availability.endDate, 'X')
-
-        if (start.isAfter(yesterday, 'day')) {
-            alert('Beginn der Öffnungszeit muss mind. 1 Tag zurückliegen.')
-            return
+        const validationResult = validate(availability, this.props)
+        if (false === validationResult.valid) {
+            this.setState({ errors: validationResult.errors })
+            this.handleFocus(this.errorElement);
         }
 
-        if (end.isBefore(tomorrow, 'day')) {
-            alert('Ende der Öffnungszeit muss mind. 1 Tag vorausliegen.')
-            return
-        }
+        const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
+        const yesterday = selectedDay.clone().subtract(1, 'days')
+        const tomorrow = selectedDay.clone().add(1, 'days')
 
         const pastAvailability = Object.assign({}, availability, {
             endDate: parseInt(yesterday.format('X'), 10)
         })
 
         const exceptionAvailability = Object.assign({}, availability, {
-            startDate: parseInt(today.format('X'), 10),
-            endDate: parseInt(today.format('X'), 10),
+            startDate: parseInt(selectedDay.format('X'), 10),
+            endDate: parseInt(selectedDay.format('X'), 10),
             tempId: tempId(),
             id: null,
             description: `Ausnahme für ${formatTimestampDate(this.props.timestamp)}`
@@ -217,22 +210,21 @@ class AvailabilityPage extends Component {
     }
 
     onEditAvailabilityInFuture(availability) {
-        const today = moment(this.props.timestamp, 'X').startOf('day')
-        const yesterday = today.clone().subtract(1, 'days')
-
-        const start = moment(availability.startDate, 'X')
-
-        if (start.isAfter(yesterday, 'day')) {
-            alert('Beginn der Öffnungszeit muss mind. 1 Tag zurückliegen.')
-            return
+        const validationResult = validate(availability, this.props)
+        if (false === validationResult.valid) {
+            this.setState({ errors: validationResult.errors })
+            this.handleFocus(this.errorElement);
         }
+
+        const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
+        const yesterday = selectedDay.clone().subtract(1, 'days')
 
         const pastAvailability = Object.assign({}, availability, {
             endDate: parseInt(yesterday.format('X'), 10)
         })
 
         const futureAvailability = Object.assign({}, availability, {
-            startDate: parseInt(today.format('X'), 10),
+            startDate: parseInt(selectedDay.format('X'), 10),
             tempId: tempId(),
             id: null,
             description: `Änderung ab ${formatTimestampDate(this.props.timestamp)}`
@@ -274,19 +266,19 @@ class AvailabilityPage extends Component {
             })
         }
 
-        const todaysAvailabilities = this.state.availabilitylist.filter(availability => {
+        const selectedDaysAvailabilities = this.state.availabilitylist.filter(availability => {
             const start = moment(availability.startDate, 'X')
             const end = moment(availability.endDate, 'X')
-            const today = moment(this.props.timestamp, 'X').startOf('day')
+            const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
 
-            return start.isSameOrBefore(today) && end.isSameOrAfter(today)
+            return start.isSameOrBefore(selectedDay) && end.isSameOrAfter(selectedDay)
         })
 
 
         return <TimeTable
             timestamp={this.props.timestamp}
             conflicts={this.state.conflicts}
-            availabilities={todaysAvailabilities}
+            availabilities={selectedDaysAvailabilities}
             availabilityListSlices={this.state.availabilitylistslices}
             maxWorkstationCount={this.props.maxworkstationcount}
             links={this.props.links}
@@ -295,10 +287,17 @@ class AvailabilityPage extends Component {
         />
     }
 
+    handleFocus(element) {
+        if (element) {
+            element.scrollIntoView()
+        }
+    }
+
     renderForm() {
         if (this.state.selectedAvailability) {
             return <AvailabilityForm data={this.state.selectedAvailability}
-                today={this.props.timestamp}
+                today={this.state.today}
+                timestamp={this.props.timestamp}
                 title={this.state.formTitle}
                 onSave={this.onUpdateAvailability.bind(this)}
                 onPublish={this.onPublishAvailability.bind(this)}
@@ -307,6 +306,7 @@ class AvailabilityPage extends Component {
                 onCopy={this.onCopyAvailability.bind(this)}
                 onException={this.onCreateExceptionForAvailability.bind(this)}
                 onEditInFuture={this.onEditAvailabilityInFuture.bind(this)}
+                handleFocus={this.handleFocus.bind(this)}
             />
         }
     }
@@ -337,6 +337,7 @@ class AvailabilityPage extends Component {
 }
 
 AvailabilityPage.propTypes = {
+    today: PropTypes.date,
     conflicts: PropTypes.array,
     availabilitylist: PropTypes.array,
     availabilitylistslices: PropTypes.array,
