@@ -7,6 +7,7 @@
 * #31392 Exception: Aussagekräftige Fehlermeldung, wenn ein Termin mit mehreren Slots nicht mehr passt (AppointmentNotFitInSlotList)
 * #31392 Bugfix: Auswahl der Dienstleistungen im Terminformular ändert jetzt immer die ausgewählte Slot-Anzahl analog zum ZMS1
 * #35888 Bugfix: Standortbeschreibungen sind nun in der Monats- und Tagesansicht gleich
+* #35886 Bugfix: zukünftige Öffnungszeiten werden nun korrekt validiert und es können Öffnungszeiten auch nur für den ausgewählten Tag angelegt werden. Öffnungszeiten deren Endzeit vor dem aktuellen Datum liegt können nicht mehr verändert werden. 
 
 ## v2.19.03
 
