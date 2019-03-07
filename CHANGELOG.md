@@ -1,6 +1,7 @@
 ## v2.19.05
 
 * #35764 Deploy Tokens eingebaut
+* #35315 Rohdaten-Link auch ohne ausgewählten Standort anzeigen
 
 ## v2.19.02
 
