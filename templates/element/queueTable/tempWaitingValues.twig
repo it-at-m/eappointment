@@ -7,7 +7,7 @@
     {% else %}
         {% if waitingTime %}
             {% if waitingTime < 120 %}
-                {{ waitingTimeOptimistic }} - {{ waitingTime }} Minuten
+                {{ waitingTimeOptimistic }} - {{ waitingTime }} {{ "%s"|format("Minuten")|trans }}
             {% else %}
                 {{ (waitingTime / 60)|round(0, 'floor') }} {{ "%s"|format("Stunden")|trans }}
             {% endif %}
