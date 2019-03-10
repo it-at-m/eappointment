@@ -48,6 +48,7 @@ class TicketprinterByScope extends BaseController
                 'scope' => $scope,
                 'queueList' => $queueListHelper->getList(),
                 'waitingTime' => $queueListHelper->getEstimatedWaitingTime(),
+                'waitingTimeOptimistic' => $queueListHelper->getOptimisticWaitingTime(),
                 'waitingClients' => $queueListHelper->getClientsBefore(),
                 'buttonDisplay' => $template->getButtonTemplateType($ticketprinter),
                 'config' => $config
