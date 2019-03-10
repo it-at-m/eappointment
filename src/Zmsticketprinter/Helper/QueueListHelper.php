@@ -35,6 +35,11 @@ class QueueListHelper
         return static::getList()->getFakeOrLastWaitingnumber()->waitingTimeEstimate;
     }
 
+    public static function getOptimisticWaitingTime()
+    {
+        return static::getList()->getFakeOrLastWaitingnumber()->waitingTimeOptimistic;
+    }
+
     public static function getClientsBefore()
     {
         $entity = static::getList()->getFakeOrLastWaitingnumber();
