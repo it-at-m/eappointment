@@ -38,6 +38,11 @@ class QueueListHelper
         return self::getList()->getFakeOrLastWaitingnumber()->waitingTimeEstimate;
     }
 
+    public static function getOptimisticWaitingTime()
+    {
+        return self::getList()->getFakeOrLastWaitingnumber()->waitingTimeOptimistic;
+    }
+
     public static function getWaitingCount()
     {
         // return count -1 because of faked entry
