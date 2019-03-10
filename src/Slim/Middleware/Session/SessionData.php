@@ -66,8 +66,10 @@ class SessionData implements SessionInterface
             if ($clear) {
                 $this->clearGroup($index);
             }
-            foreach ($items as $key => $value) {
-                $this->set($key, $value, $index);
+            if (is_array($items) && 0 < count($items)) {
+                foreach ($items as $key => $value) {
+                    $this->set($key, $value, $index);
+                }
             }
         }
     }
