@@ -1,6 +1,7 @@
 ## v2.19.05
 
 * #35764 Deploy Tokens eingebaut
+* #35697 Darstellung der Wartezeit jetzt wie in der Aufrufanzeige mit optimistischer - geschätzter Wartezeit
 
 ## v2.19.03
 
