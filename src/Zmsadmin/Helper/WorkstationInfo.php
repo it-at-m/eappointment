@@ -15,6 +15,7 @@ class WorkstationInfo
     {
         $infoData = array(
             'waitingTimeEstimate' => 0,
+            'waitingTimeOptimistic' => 0,
             'waitingClientsFullList' => 0,
             'waitingClientsBeforeNext' => 0,
             'waitingClientsEffective' => 0
@@ -56,6 +57,7 @@ class WorkstationInfo
     protected static function getAdditionalInfoData($infoData, $queueListHelper)
     {
         $infoData['waitingTimeEstimate'] = $queueListHelper->getEstimatedWaitingTime();
+        $infoData['waitingTimeOptimistic'] = $queueListHelper->getOptimisticWaitingTime();
         $infoData['waitingClientsBeforeNext'] = $queueListHelper->getWaitingClientsBeforeNext();
         $infoData['waitingClientsEffective'] = $queueListHelper->getWaitingClientsEffective();
         return $infoData;
