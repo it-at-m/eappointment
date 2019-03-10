@@ -10,6 +10,7 @@
 * #35886 Bugfix: zukünftige Öffnungszeiten werden nun korrekt validiert und es können Öffnungszeiten auch nur für den ausgewählten Tag angelegt werden. Öffnungszeiten deren Endzeit vor dem aktuellen Datum liegt können nicht mehr verändert werden. 
 * #35306 Bugfix: Fehler behoben, wenn einem Standort keine Dienstleistungen zugeordnet waren.
 * #35803 Bugfix: Hat ein Sonntag eine Öffnungszeit mit buchbaren Terminen ist dieser jetzt im Tresen/Sachbearbeiterplatz auswählbar
+* #35697 Darstellung der Wartezeit jetzt wie in der Aufrufanzeige mit optimistischer - geschätzter Wartezeit
 
 ## v2.19.03
 
