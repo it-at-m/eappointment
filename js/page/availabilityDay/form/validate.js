@@ -30,7 +30,7 @@ const validate = (data, props) => {
         errors.startTime = 'Öffnungszeiten in der Vergangenheit lassen sich nicht bearbeiten'
     }
 
-    if (startTimestamp >= endTimestamp || startHour >= endHour) {
+    if (startTimestamp >= endTimestamp) {
         errors.endTime = 'Das Terminende muss nach dem Terminanfang sein'
     }
 

@@ -27,13 +27,12 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                         <Controls>
                             <Inputs.Select name="type"
                                 attributes={{ disabled: data.id ? 'disabled' : null }}
-                                value={data.type}
-                                {...{ onChange }}
+                                value={data.type} {...{ onChange }}
                                 options={[
                                     { value: "", name: "--Bitte wählen--" },
                                     { value: "openinghours", name: "Spontankunden" },
                                     { value: "appointment", name: "Terminkunden" },
-                                ]} {...{ onChange }} />
+                                ]} />
                         </Controls>
                     </FormGroup>
 
@@ -41,8 +40,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                         <Label>Serie</Label>
                         <Controls>
                             <Inputs.Select name="repeat"
-                                value={data.repeat}
-                                {...{ onChange }}
+                                value={data.repeat} {...{ onChange }}
                                 options={[
                                     { value: "0", name: "einmaliger Termin" },
                                     { value: "-1", name: "jede Woche" },
