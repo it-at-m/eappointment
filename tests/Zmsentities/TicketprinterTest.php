@@ -27,7 +27,7 @@ class TicketprinterTest extends EntityCommonTests
 
     public function testStructuredButtonListFailed()
     {
-        $this->setExpectedException('\BO\Zmsentities\Exception\TicketprinterUnvalidButton');
+        $this->expectException('\BO\Zmsentities\Exception\TicketprinterUnvalidButton');
         $entity = (new $this->entityclass())->getExample();
         $entity->buttonlist = 'test';
         $buttonList = $entity->toStructuredButtonList();

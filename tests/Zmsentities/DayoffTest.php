@@ -47,7 +47,7 @@ class DayoffTest extends EntityCommonTests
 
     public function testHasDatesInYearFailed()
     {
-        $this->setExpectedException('\BO\Zmsentities\Exception\DayoffWrongYear');
+        $this->expectException('\BO\Zmsentities\Exception\DayoffWrongYear');
         $collection = $this->getDayOffExampleList();
         $collection->testDatesInYear(2017);
     }

@@ -28,7 +28,7 @@ class SlotTest extends EntityCommonTests
     {
         $collection = new $this->collectionclass();
         $entity = $this->getExample();
-        $entity2 = new $this->entityclass(array (
+        $entity2 = new $this->entityclass(array(
             'public' => 2,
             'intern' => 9,
             'callcenter' => 5,
@@ -93,7 +93,7 @@ class SlotTest extends EntityCommonTests
         $appointment->setTime('12:50');
         $collection = new $this->collectionclass();
         $entity = $this->getExample();
-        $entity2 = new $this->entityclass(array (
+        $entity2 = new $this->entityclass(array(
             'public' => 2,
             'intern' => 9,
             'callcenter' => 5,
@@ -104,7 +104,7 @@ class SlotTest extends EntityCommonTests
         $this->assertEquals('12:50', $collection->getByDateTime($now)['time']);
         $this->assertFalse($collection->getByDateTime($now->setTime('10', '00')));
 
-        $entity3 = new $this->entityclass(array (
+        $entity3 = new $this->entityclass(array(
             'public' => 2,
             'intern' => 9,
             'callcenter' => 5,
@@ -125,7 +125,7 @@ class SlotTest extends EntityCommonTests
         $appointment->slotCount = 3;
         $collection = new $this->collectionclass();
         $entity = $this->getExample();
-        $entity2 = new $this->entityclass(array (
+        $entity2 = new $this->entityclass(array(
             'public' => 2,
             'intern' => 9,
             'callcenter' => 5,
@@ -140,7 +140,7 @@ class SlotTest extends EntityCommonTests
     {
         $collection = new $this->collectionclass();
         $entity = $this->getExample();
-        $entity2 = new $this->entityclass(array (
+        $entity2 = new $this->entityclass(array(
             'public' => 0,
             'intern' => 9,
             'callcenter' => 5,
@@ -174,7 +174,7 @@ class SlotTest extends EntityCommonTests
 
     public function testSlotFullException()
     {
-        $this->setExpectedException('\BO\Zmsentities\Exception\SlotFull');
+        $this->expectException('\BO\Zmsentities\Exception\SlotFull');
         $entity = $this->getExample();
         $entity->intern = 0;
         $entity->removeAppointment();
@@ -182,7 +182,7 @@ class SlotTest extends EntityCommonTests
 
     public function testGetFreeProcessesFailed()
     {
-        $this->setExpectedException('\BO\Zmsentities\Exception\SlotRequiredWithoutReducing');
+        $this->expectException('\BO\Zmsentities\Exception\SlotRequiredWithoutReducing');
         $collection = new $this->collectionclass();
         $entity = $this->getExample();
         $collection->addEntity($entity);
@@ -193,7 +193,7 @@ class SlotTest extends EntityCommonTests
 
     public function testGetFreeProcessesException()
     {
-        $this->setExpectedException('\BO\Zmsentities\Exception\SlotMissingTime');
+        $this->expectException('\BO\Zmsentities\Exception\SlotMissingTime');
         $collection = new $this->collectionclass();
         $entity = (new $this->entityclass())->getExample();
         unset($entity['time']);
