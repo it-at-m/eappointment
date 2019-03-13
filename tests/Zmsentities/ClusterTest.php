@@ -58,7 +58,7 @@ class ClusterTest extends EntityCommonTests
 
     public function testCollectionAddEntityFailed()
     {
-        $this->setExpectedException('\Exception');
+        $this->expectException('\Exception');
         $collection = new $this->collectionclass();
         $entity = (new \BO\Zmsentities\Scope)->getExample();
         $collection->addEntity($entity);

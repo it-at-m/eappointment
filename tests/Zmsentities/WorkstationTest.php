@@ -104,7 +104,7 @@ class WorkstationTest extends EntityCommonTests
 
     public function testGetDepartmentListFailed()
     {
-        $this->setExpectedException('\BO\Zmsentities\Exception\WorkstationMissingAssignedDepartments');
+        $this->expectException('\BO\Zmsentities\Exception\WorkstationMissingAssignedDepartments');
         $entity = $this->getExample();
         $entity->getUseraccount()->departments = array();
         $entity->testDepartmentList();
@@ -140,7 +140,7 @@ class WorkstationTest extends EntityCommonTests
 
     public function testMatchingProcessScopeFailed()
     {
-        $this->setExpectedException('\BO\Zmsentities\Exception\WorkstationProcessMatchScopeFailed');
+        $this->expectException('\BO\Zmsentities\Exception\WorkstationProcessMatchScopeFailed');
         $entity = $this->getExample();
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         $entity->testMatchingProcessScope($scopeList);

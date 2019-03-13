@@ -59,7 +59,7 @@ class UseraccountTest extends EntityCommonTests
 
     public function testDepartment()
     {
-        $this->setExpectedException('\BO\Zmsentities\Exception\UserAccountMissingDepartment');
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingDepartment');
         $entity = (new $this->entityclass())->getExample();
         $entity->testDepartmentById(55);
     }
@@ -87,7 +87,7 @@ class UseraccountTest extends EntityCommonTests
 
     public function testHasEditAccessFailed()
     {
-        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountAccessRightsFailed');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountAccessRightsFailed');
         $entity = $this->getExample();
         $entity2 = $this->getExample();
         unset($entity2->rights['scope']);

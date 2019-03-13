@@ -156,7 +156,7 @@ class ExchangeTest extends EntityCommonTests
 
     public function testDataFormat()
     {
-        $this->setExpectedException('\Exception');
+        $this->expectException('\Exception');
         $now = new \DateTimeImmutable('2016-04-01 11:55:00');
         $entity = (new $this->entityclass());
         $entity->setPeriod($now, $now);
@@ -168,7 +168,7 @@ class ExchangeTest extends EntityCommonTests
 
     public function testDataLength()
     {
-        $this->setExpectedException('\Exception');
+        $this->expectException('\Exception');
         $now = new \DateTimeImmutable('2016-04-01 11:55:00');
         $entity = (new $this->entityclass());
         $entity->setPeriod($now, $now);
