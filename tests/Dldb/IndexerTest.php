@@ -101,7 +101,13 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($serviceList1, $serviceList2);
             $authorityList1 = $access1->fromAuthority()->fetchList([SERVICE_SINGLE]);
             $authorityList2 = $access2->fromAuthority()->fetchList([SERVICE_SINGLE]);
-            $this->assertEquals($authorityList1, $authorityList2);
+            $authorityList1->ksort();
+            $authorityList2->ksort();
+            // ES uses locations to fetch authorities delivering only the name of the autority
+            $this->assertEquals(
+                array_keys($authorityList1->getArrayCopy()),
+                array_keys($authorityList2->getArrayCopy())
+            );
             $serviceList1 = $access1->fromService()->fetchFromCsv(SERVICE_CSV);
             $serviceList2 = $access2->fromService()->fetchFromCsv(SERVICE_CSV);
             $this->assertEquals($serviceList1, $serviceList2);
