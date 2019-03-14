@@ -109,6 +109,17 @@ class MailTest extends EntityCommonTests
         );
     }
 
+    public function testTemplateNotFound()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\TemplateNotFound');
+        $entity = (new $this->entityclass())->getExample();
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $process->status = 'finished';
+        $process->getFirstClient()->surveyAccepted = 0;
+        $config = (new \BO\Zmsentities\Config())->getExample();
+        $resolvedEntity = $entity->toResolvedEntity($process, $config);
+    }
+
     public function testToCustomMessageEntity()
     {
         $entity = (new $this->entityclass())->getExample();
