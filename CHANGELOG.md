@@ -1,3 +1,6 @@
+## v2.20.00
+* #35865 Bugfix: Beim Speichern eines Clusters werden nicht ausgewählte Scopes mit der ID 0 nicht mehr dem Cluster zugeordnet
+
 ## v2.19.05
 
 * #35764 Deploy Tokens eingebaut
