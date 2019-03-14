@@ -23,6 +23,9 @@ class ApikeyGet extends BaseController
         array $args
     ) {
         $entity = (new Query())->readEntity($args['key']);
+        if (! $entity->hasId()) {
+            throw new Exception\Apikey\ApiKeyNotFound();
+        }
         $message = Response\Message::create($request);
         $message->data = $entity;
 

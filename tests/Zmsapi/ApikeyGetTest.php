@@ -23,9 +23,7 @@ class ApikeyGetTest extends Base
 
     public function testNotFound()
     {
-        $response = $this->render(['key' => 'wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs'], [], []);
-        $this->assertContains('apikey.json', (string)$response->getBody());
-        $this->assertContains('Not found', (string)$response->getBody());
-        $this->assertTrue(404 == $response->getStatusCode());
+        $this->expectException('BO\Zmsapi\Exception\Apikey\ApiKeyNotFound');
+        $this->render(['key' => 'wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs'], [], []);
     }
 }
