@@ -390,13 +390,15 @@ class Cluster extends Base
             ['clusterId' => $clusterId]
         );
         foreach ($scopeList as $scope) {
-            $this->perform(
-                (new Query\Cluster(Query\Base::REPLACE))->getQueryWriteAssignedScopes(),
-                array(
-                'clusterId' => $clusterId,
-                'scopeId' => $scope['id']
-                )
-            );
+            if (0 < $scope['id']) {
+                $this->perform(
+                    (new Query\Cluster(Query\Base::REPLACE))->getQueryWriteAssignedScopes(),
+                    array(
+                    'clusterId' => $clusterId,
+                    'scopeId' => $scope['id']
+                    )
+                );
+            }
         }
     }
 }
