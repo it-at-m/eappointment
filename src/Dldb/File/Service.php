@@ -57,7 +57,7 @@ class Service extends Base
         if ($location_csv) {
             $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use ($location_csv) {
                 $service = new Entity($item);
-                return $service->hasLocation($location_csv);
+                return $service->containsLocation($location_csv);
             }));
         }
         return $servicelist;
