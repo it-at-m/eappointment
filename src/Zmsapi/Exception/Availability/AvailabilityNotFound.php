@@ -2,9 +2,6 @@
 
 namespace BO\Zmsapi\Exception\Availability;
 
-/**
- * example class to generate an exception
- */
 class AvailabilityNotFound extends \Exception
 {
     protected $code = 404;
