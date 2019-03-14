@@ -73,6 +73,9 @@ class Messaging
         if ($initiator) {
             $template = self::getTemplateByProcessStatus('admin', $process);
         }
+        if (!$template) {
+            throw new \BO\Zmsentities\Exception\TemplateNotFound();
+        }
         $message = self::twigView()->render(
             'messaging/' . $template,
             array(
