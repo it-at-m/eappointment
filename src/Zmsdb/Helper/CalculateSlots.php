@@ -107,6 +107,7 @@ class CalculateSlots
         if ($delete) {
             $this->deleteOldSlots($now);
         }
+        $this->writeCanceledSlots($now); // cancel slots for deleted availabilities first, otherwise won't notice change
         $scopeList = (new \BO\Zmsdb\Scope())->readList(1);
         $scopeLength = count($scopeList) - 1;
         foreach ($scopeList as $key => $scope) {
@@ -132,7 +133,6 @@ class CalculateSlots
 
         \BO\Zmsdb\Connection\Select::writeCommit();
         $this->log("Slot calculation finished");
-        $this->writeCanceledSlots($now);
         $this->writeMaintenanceQueries();
     }
 
