@@ -1,5 +1,6 @@
-## v2.20.00
+## v2.19.06
 * #35865 Bugfix: Beim Speichern eines Clusters werden nicht ausgewählte Scopes mit der ID 0 nicht mehr dem Cluster zugeordnet
+* #35973 Bugfix: Die Abarbeitung von gelöschten Öffnungszeiten wurde an den Anfang der Neu-Berechnung von Zeitslots verschoben
 
 ## v2.19.05
 
