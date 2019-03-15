@@ -1,3 +1,7 @@
+## v2.19.06
+
+* #35951 Neue Fehlermeldung wenn ein API-Key nicht existiert
+
 ## v2.19.05
 
 * #35764 Deploy Tokens eingebaut
