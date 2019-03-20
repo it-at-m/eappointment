@@ -171,4 +171,65 @@ class MailTest extends EntityCommonTests
         unset($entity->client);
         $entity->getRecipient();
     }
+
+    public function testMailTemplatesAll()
+    {
+        $status = array(
+            'queued',
+            'appointment', 
+            'reminder',
+            'pickup',
+            'deleted',
+            'blocked',
+            'survey'
+        );
+        $statusAdmin = array(
+            'deleted',
+            'blocked', 
+            'updated'
+        );
+        $statusFailed = array(
+            "free",
+            "reserved",
+            "called",
+            "processing",
+            "pending",
+            "finished",
+            "missed",
+            "archived",
+            "anonymized",
+            "conflict",
+            ""
+        );
+        $entity = (new $this->entityclass())->getExample();
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $process->queue->withAppointment = false;
+        
+        foreach ($status as $key) {
+            $process->status = $key;
+            $config = (new \BO\Zmsentities\Config())->getExample();
+            $entity->addMultiPart(array());
+            $entity->client = null;
+            $resolvedEntity = $entity->toResolvedEntity($process, $config);
+            $this->assertContains('Sehr geehrte/r', $resolvedEntity->getPlainPart());
+        }
+
+        foreach ($statusAdmin as $key) {
+            $process->status = $key;
+            $config = (new \BO\Zmsentities\Config())->getExample();
+            $entity->addMultiPart(array());
+            $entity->client = null;
+            $resolvedEntity = $entity->toResolvedEntity($process, $config, 'unittest');
+            $this->assertContains('initiiert via "unittest"', $resolvedEntity->getPlainPart());
+        }
+
+        foreach ($statusFailed as $key) {
+            $this->expectException('BO\Zmsentities\Exception\TemplateNotFound');
+            $process->status = $key;
+            $config = (new \BO\Zmsentities\Config())->getExample();
+            $entity->addMultiPart(array());
+            $entity->client = null;
+            $resolvedEntity = $entity->toResolvedEntity($process, $config);
+        }
+    }
 }

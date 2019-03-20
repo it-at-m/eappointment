@@ -136,9 +136,7 @@ class Messaging
     public static function getMessagingStatus($process)
     {
         $status = $process->status;
-        if (('confirmed' == $status || 'queued' == $status) &&
-              $process->toProperty()->queue->withAppointment->get()
-          ) {
+        if (('confirmed' == $status || 'queued' == $status) && $process->isWithAppointment()) {
             $status = 'appointment';
         }
         if ('finished' == $status &&  $process->getFirstClient()->hasSurveyAccepted()) {
