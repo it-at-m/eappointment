@@ -28,8 +28,8 @@ class RoutingTest extends Base
         $request = static::createBasicRequest('GET', '/workstation/');
         $exception = new \BO\Zmsentities\Exception\UserAccountMissingRights();
 
-        $container = \App::$slim->getContainer();
-        $response = $container['errorHandler']($request, $this->getResponse(), $exception);
+        $container = \App::$slim->getContainer()->get('errorHandler');
+        $response = $container($request, $this->getResponse(), $exception);
         $this->assertContains('board exception', (string)$response->getBody());
         $this->assertContains(
             'Um diese Seite aufzurufen fehlen Ihnen die notwendigen Rechte',
@@ -39,20 +39,21 @@ class RoutingTest extends Base
 
     public function testErrorHandlerWithExceptionTemplateData()
     {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\Zmsapi\Exception\Workstation\WorkstationNotFound';
         $this->setApiCalls(
             [
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                    'exception' => $exception
                 ]
             ]
         );
 
         $request = static::createBasicRequest('GET', '/workstation/');
-        $exception = new \Exception('System Failure', 404);
-        $container = \App::$slim->getContainer();
-        $response = $container['errorHandler']($request, $this->getResponse(), $exception);
+        $container = \App::$slim->getContainer()->get('errorHandler');
+        $response = $container($request, $this->getResponse(), $exception, 404);
         $this->assertContains('Es ist ein Fehler aufgetreten', (string)$response->getBody());
     }
 
@@ -70,8 +71,8 @@ class RoutingTest extends Base
         );
 
         $request = static::createBasicRequest('GET', '/workstation/');
-        $container = \App::$slim->getContainer();
-        $response = $container['errorHandler']($request, $this->getResponse(), $exception);
+        $container = \App::$slim->getContainer()->get('errorHandler');
+        $response = $container($request, $this->getResponse(), $exception);
         $this->assertContains('board exception', (string)$response->getBody());
         $this->assertContains(
             'Um diese Seite aufzurufen fehlen Ihnen die notwendigen Rechte',
