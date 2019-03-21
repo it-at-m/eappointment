@@ -20,10 +20,10 @@ class ProcessFormValidation
     /**
      * form data for reuse in multiple controllers
      */
-    public static function fromParameters($scopePrefs = array())
+    public static function fromParameters($scopePrefs = array(), $withAppointment = false)
     {
         $collection = array();
-        $collection = self::getPersonalParameters($collection, $scopePrefs);
+        $collection = self::getPersonalParameters($collection, $scopePrefs, $withAppointment);
         $collection = self::getAdditionalParameters($collection);
         $collection = self::getNotificationParameters($collection);
 
@@ -62,9 +62,9 @@ class ProcessFormValidation
         return $collection;
     }
 
-    public static function fromParametersToProcess($process)
+    public static function fromParametersToProcess($process, $withAppointment = true)
     {
-        $form = self::fromParameters($process->scope['preferences']);
+        $form = self::fromParameters($process->scope['preferences'], $withAppointment);
         $formData = self::setFormStatus($form);
         if (isset($formData['failed']) && ! $formData['failed']) {
             $process = self::addClient($process, $formData);
@@ -186,6 +186,19 @@ class ProcessFormValidation
         return $collection;
     }
 
+    protected static function testSurvey($collection)
+    {
+        $length = strlen(Validator::param('email')->isString()->getValue());
+        if (self::hasCheckedSurvey() && !$length) {
+            $collection['surveyAccepted'] = Validator::param('surveyAccepted')->isNumber();
+            $collection['email'] = Validator::param('email')->isString()->isBiggerThan(
+                6,
+                "Für die Teilnahme an der Umfrage muss eine gültige E-Mail Adresse angegeben werden"
+            );
+        }
+        return $collection;
+    }
+
     protected static function testTelephone($collection, $scopePrefs, $withAppointment)
     {
         $length = strlen(Validator::param('telephone')->isString()->getValue());
@@ -206,14 +219,6 @@ class ProcessFormValidation
                 ->isString()
                 ->isBiggerThan(6, "Für den Standort muss eine gültige Telefonnummer eingetragen werden")
                 ->isMatchOf("/^\+?[\d\s]*$/", "Die Telefonnummer muss im Format 0170 1234567 eingegeben werden");
-        }
-        return $collection;
-    }
-
-    protected static function testSurvey($collection)
-    {
-        if (1 == Validator::param('surveyAccepted')->isNumber()->getValue()) {
-            $collection['surveyAccepted'] = Validator::param('surveyAccepted')->isNumber();
         }
         return $collection;
     }
@@ -278,5 +283,10 @@ class ProcessFormValidation
     protected static function hasCheckedMail()
     {
         return (1 == Validator::param('sendMailConfirmation')->isNumber()->getValue());
+    }
+
+    protected static function hasCheckedSurvey()
+    {
+        return (1 == Validator::param('surveyAccepted')->isNumber()->getValue());
     }
 }
