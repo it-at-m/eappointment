@@ -430,8 +430,8 @@ use \Psr\Http\Message\ResponseInterface;
     ->offsetSet(
         'errorHandler',
     function ($container) {
-        return function (RequestInterface $request, ResponseInterface $response, \Exception $exception) {
-            return \BO\Zmsadmin\Helper\TwigExceptionHandler::withHtml($request, $response, $exception);
+        return function (RequestInterface $request, ResponseInterface $response, \Exception $exception, $status = 500) {
+            return \BO\Zmsadmin\Helper\TwigExceptionHandler::withHtml($request, $response, $exception, $status);
         };
     }
     );
