@@ -39,6 +39,7 @@ class AppointmentDeleteByCron
     public function __construct($timeIntervalDays, \DateTimeInterface $now, $verbose = false)
     {
         $deleteInSeconds = (24 * 60 * 60) * $timeIntervalDays;
+        $time = new \DateTimeImmutable();
         $this->time = $time->setTimestamp($now->getTimestamp() - $deleteInSeconds);
         if ($verbose) {
             error_log(
