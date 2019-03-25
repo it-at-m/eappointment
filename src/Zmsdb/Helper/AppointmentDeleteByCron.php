@@ -8,13 +8,13 @@ namespace BO\Zmsdb\Helper;
 class AppointmentDeleteByCron
 {
     protected $verbose = false;
-    
+
     protected $limit = 10000;
-    
+
     protected $loopCount = 500;
 
     protected $time;
-    
+
     protected $statuslist = [
         "reserved",
         "deleted",
@@ -36,11 +36,10 @@ class AppointmentDeleteByCron
         "pending"
     ];
 
-    public function __construct($timeIntervalDays, $verbose = false)
+    public function __construct($timeIntervalDays, \DateTimeInterface $now, $verbose = false)
     {
         $deleteInSeconds = (24 * 60 * 60) * $timeIntervalDays;
-        $time = new \DateTimeImmutable();
-        $this->time = $time->setTimestamp($time->getTimestamp() - $deleteInSeconds);
+        $this->time = $time->setTimestamp($now->getTimestamp() - $deleteInSeconds);
         if ($verbose) {
             error_log(
                 "INFO: Deleting appointments older than $timeIntervalDays days of date " . $this->time->format('c')
