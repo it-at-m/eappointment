@@ -32,7 +32,12 @@ $commit = preg_grep('#^--commit$#', $argv);
 $pending = preg_grep('#^--pending$#', $argv);
 
 if ($timeInterval) {
-    $job = new \BO\Zmsdb\Helper\AppointmentDeleteByCron($timeInterval, $verbose);
+    if (class_exists('\App') && isset(\App::$now)) {
+        $now = \App::$now;
+    } else {
+        $now = new \DateTimeImmutable('now');
+    }
+    $job = new \BO\Zmsdb\Helper\AppointmentDeleteByCron($timeInterval, $now, $verbose);
     $job->startProcessing($commit, $pending);
 } else {
     error_log("Missing time interval argument!$usage");
