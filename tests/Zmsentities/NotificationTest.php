@@ -14,16 +14,19 @@ class NotificationTest extends EntityCommonTests
         $entity->addScope((new \BO\Zmsentities\Scope())->getExample());
         $this->assertTrue(123 == $entity->getScopeId(), 'Getting scope id failed');
         $this->assertTrue(123456 == $entity->getProcessId(), 'Getting process id failed');
+        $this->assertTrue(123456 == $entity->getProcess()->id, 'Getting process id failed');
         $this->assertTrue(74 == $entity->getDepartmentId(), 'Getting department id failed');
         $this->assertTrue('abcd' == $entity->getProcessAuthKey(), 'Getting authKey failed');
         $this->assertContains('Denken Sie an ihren Termin', $entity->getMessage(), 'Getting message failed');
         $this->assertContains('terminvereinbarung@', $entity->getIdentification(), 'Getting message failed');
         $this->assertEquals('Max Mustermann', $entity->getFirstClient()->familyName, 'Getting first client failed');
+        $this->assertEquals('030 115', $entity->getClient()->telephone, 'Wrong telephone number');
         $this->assertEquals(
             'SMS=+4930115@sms.verwalt-berlin.de',
             $entity->getRecipient(),
             'Getting recipient number failed'
         );
+        $this->assertEquals('2015-11-19', $entity->getCreateDateTime()->format('Y-m-d'), 'Wrong date');
     }
 
     public function testGetRecipientFailed()
