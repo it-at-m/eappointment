@@ -41,6 +41,14 @@ class NotificationTest extends Base
         $this->assertTrue($query->writeInCalculationTable($input));
     }
 
+    public function testWriteInCalculationTableWithoutProcess()
+    {
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $input['process'] = new \BO\Zmsentities\Process(['id' => 141]);
+        $this->assertTrue($query->writeInCalculationTable($input));
+    }
+
     public function testExceptionWithoutTelephone()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
@@ -66,7 +74,7 @@ class NotificationTest extends Base
         $input = new Entity(array(
             "id" => 1234,
             "createIP" => "145.15.3.10",
-            "createTimestamp" => 1447931596000,
+            "createTimestamp" => 1447931596,
             "department" => [
                 "id" => 72,
                 "preferences" => [
@@ -103,7 +111,13 @@ class NotificationTest extends Base
                     "id" => 141
                 ],
                 "status" => "confirmed"
+            ],
+            "client" => [
+                "familyName" => "Max Mustermann",
+                "email" => "max@service.berlin.de",
+                "telephone" => "030 115"
             ]
+
         ));
         return $input;
     }

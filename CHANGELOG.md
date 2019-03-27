@@ -1,3 +1,8 @@
+## v2.19.07
+
+* #35933 Bugfix: Die statistische Erfassung einer SMS schlägt nicht mehr fehl, wenn der Vorgang nicht mehr existiert
+* #35313 Bugfix: Bei der statistischen Erfassung wird als Datum jetzt das Versanddatum und nicht das Vorgangsdatum verwendet
+
 ## v2.19.06
 * #35865 Bugfix: Beim Speichern eines Clusters werden nicht ausgewählte Scopes mit der ID 0 nicht mehr dem Cluster zugeordnet
 * #35973 Bugfix: Die Abarbeitung von gelöschten Öffnungszeiten wurde an den Anfang der Neu-Berechnung von Zeitslots verschoben
