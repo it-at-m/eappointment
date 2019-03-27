@@ -4,7 +4,7 @@
     "example": {
         "id": 1234,
         "createIP": "145.15.3.10",
-        "createTimestamp": 1447931596000,
+        "createTimestamp": 1447931596,
         "department": {
             "id": 74,
             "preferences": {

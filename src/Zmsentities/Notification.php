@@ -23,6 +23,16 @@ class Notification extends Schema\Entity
         return $this->toProperty()->process->authKey->get();
     }
 
+    public function getProcess()
+    {
+        if (!isset($this['process'])) {
+            $this->process = new Process();
+        } elseif (!$this->process instanceof Process) {
+            $this->process = new Process($this->process);
+        }
+        return $this->process;
+    }
+
     public function getDepartmentId()
     {
         return $this->toProperty()->department->id->get();
@@ -32,6 +42,25 @@ class Notification extends Schema\Entity
     {
         $this->process['scope'] = $scope;
         return $this;
+    }
+
+    public function getClient()
+    {
+        if (!isset($this['client'])) {
+            $this->client = new Client();
+        } elseif (!$this->client instanceof Client) {
+            $this->client = new Client($this->client);
+        }
+        return $this->client;
+    }
+
+    public function getCreateDateTime($timezone = 'Europe/Berlin')
+    {
+        $dateTime = (new Helper\DateTime())->setTimestamp($this->createTimestamp);
+        if ($dateTime) {
+            $dateTime = $dateTime->setTimeZone(new \DateTimeZone($timezone));
+        }
+        return $dateTime;
     }
 
     public function getFirstClient()
