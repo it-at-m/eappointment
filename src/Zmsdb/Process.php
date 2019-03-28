@@ -96,6 +96,7 @@ class Process extends Base implements Interfaces\ResolveReferences
                 }
             }
         }
+        $appointment->slotCount = round($appointment->slotCount, 0);
         return $process;
     }
 
