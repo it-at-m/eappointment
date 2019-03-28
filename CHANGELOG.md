@@ -2,6 +2,7 @@
 
 * #35933 Bugfix: Die statistische Erfassung einer SMS schlägt nicht mehr fehl, wenn der Vorgang nicht mehr existiert
 * #35313 Bugfix: Bei der statistischen Erfassung wird als Datum jetzt das Versanddatum und nicht das Vorgangsdatum verwendet
+* #35953 Bugfix: Anzahl der Slots werden jetzt auch bei der Reservierung kaufmännisch gerundet (zuvor immer aufgerundet)
 
 ## v2.19.06
 * #35865 Bugfix: Beim Speichern eines Clusters werden nicht ausgewählte Scopes mit der ID 0 nicht mehr dem Cluster zugeordnet
