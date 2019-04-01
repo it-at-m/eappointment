@@ -67,7 +67,7 @@ class HttpTest extends Base
 
     public function testMails()
     {
-        $now = (new \DateTimeImmutable())->modify('+ 1 day');
+        $now = (new \DateTimeImmutable('2016-04-04'));
         $entity = \BO\Zmsentities\Mail::createExample();
         
         $confirmedProcess = static::$http_client->readGetResult('/scope/141/process/'. $now->format('Y-m-d') .'/')
@@ -123,6 +123,7 @@ class HttpTest extends Base
     public function testTokenFailed()
     {
         $this->createHttpClient(null, false);
+        static::$http_client->setUserInfo('noauth', 'noauth');
         $this->expectException('\BO\Zmsclient\Exception');
         $result = static::$http_client->readGetResult('/config/');
         $result->getEntity();
