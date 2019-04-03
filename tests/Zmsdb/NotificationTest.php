@@ -46,7 +46,7 @@ class NotificationTest extends Base
         $query = new Query();
         $input = $this->getTestEntity();
         $input['process'] = new \BO\Zmsentities\Process(['id' => 141]);
-        $this->assertTrue($query->writeInCalculationTable($input));
+        $this->assertFalse($query->writeInCalculationTable($input));
     }
 
     public function testExceptionWithoutTelephone()
