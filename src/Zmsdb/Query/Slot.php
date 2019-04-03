@@ -18,7 +18,7 @@ class Slot extends Base implements MappingInterface
     const QUERY_LAST_CHANGED = 'SELECT MAX(updateTimestamp) AS dateString FROM slot;';
 
     const QUERY_LAST_CHANGED_AVAILABILITY = '
-        SELECT MAX(updateTimestamp) AS dateString FROM slot WHERE availabilityID = :availabilityID;';
+        SELECT MAX(updateTimestamp) AS dateString FROM slot WHERE availabilityID = :availabilityID AND status="free";';
 
     const QUERY_LAST_CHANGED_SCOPE = '
         SELECT MAX(updateTimestamp) AS dateString FROM slot WHERE scopeID = :scopeID;';

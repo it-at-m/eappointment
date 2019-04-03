@@ -289,6 +289,33 @@ class SlotTest extends Base
         $this->assertFalse(!$status, "Availability should rebuild slots on changed scope");
     }
 
+    /**
+     *  @see https://projekte.berlinonline.de/issues/36088
+     */
+    public function testChangeOnCancel()
+    {
+        $now = new \DateTimeImmutable('2016-04-06 07:55:01');
+        $availability = $this->readTestAvailability();
+        $availability->lastChange = $now->modify('-1 minute')->getTimestamp();
+        (new Slot())->perform(
+            "UPDATE slot SET updateTimestamp = :dateTime WHERE availabilityID = :availabilityID",
+            [
+                "availabilityID" => $availability->id,
+                "dateTime" => $now->modify('-2 minutes')->format('Y-m-d H:i:s'),
+            ]
+        );
+        (new Slot())->writeCanceledByTimeAndScope($now->modify('+5 minutes'), $availability->scope);
+        $lastChange = (new Slot())->readLastChangedTimeByAvailability($availability);
+        $this->assertEquals(
+            '2016-04-06 07:53:01',
+            $lastChange->format('Y-m-d H:i:s'),
+            "readLastChangedTimeByAvailability should not return cancelled slots"
+        );
+        $status = (new Slot())->writeByAvailability($availability, $now);
+        //$this->debugOutdated($availability, $now, $now->modify('-1 hour'));
+        $this->assertFalse(!$status, "Availability should rebuild slots if newer");
+    }
+
     public function testChangeByTimeIntegration()
     {
         $availability = $this->readTestAvailability();
