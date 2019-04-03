@@ -77,6 +77,19 @@ class Slot extends Base implements MappingInterface
           b.BuergerID = :processId
     ';
 
+    const QUERY_UPDATE_SLOT_MISSING_AVAILABILITY_BY_SCOPE = '
+    UPDATE
+         slot s
+           LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
+           SET s.status = "cancelled"
+           WHERE
+             (
+               a.OeffnungszeitID IS NULL
+               OR a.Endedatum < :dateString
+             )
+             AND s.scopeID = :scopeID
+    ';
+
     const QUERY_UPDATE_SLOT_MISSING_AVAILABILITY = '
     UPDATE
          slot s
