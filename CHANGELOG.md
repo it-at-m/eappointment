@@ -1,3 +1,7 @@
+## v2.20.00
+
+* #36153 Die Status-Seite zeigt jetzt alle Angaben zur Slot-Berechnung, auch wenn keine Fehler vorliegen
+
 ## v2.19.05
 
 * #35764 Deploy Tokens eingebaut
