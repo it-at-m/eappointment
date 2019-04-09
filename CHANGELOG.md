@@ -1,3 +1,7 @@
+## v2.20.00
+
+* #36152 Bugfix: Fehlermeldung zu nicht vorhandenen Apikey Quotas behoben.
+
 ## v2.19.07
 
 * #35933 Notification jetzt mit neuen Funktionen getProcess(), getClient() und getCreateDateTime() um Fehler bei einem fehlenden Vorgang zu vermeiden
