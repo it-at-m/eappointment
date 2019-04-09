@@ -32,7 +32,9 @@ class Apikey extends Schema\Entity
 
     public function getQuotaPositionByRoute($route)
     {
-        return ($this->quota) ? array_search($route, array_column($this->quota, 'route')) : false;
+        return (isset($this->quota) && is_array($this->quota)) ?
+            array_search($route, array_column($this->quota, 'route'))
+            : false;
     }
 
     public function addQuota($route, $period)
