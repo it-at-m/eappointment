@@ -15,6 +15,8 @@ class SessionHandler implements \SessionHandlerInterface
      */
     public static $useSyncFlag = 0;
 
+    protected static $lastInstance = null;
+
     /**
      * @var \BO\Zmsclient\Http $http
      *
@@ -23,6 +25,17 @@ class SessionHandler implements \SessionHandlerInterface
 
 
     public function __construct(Http $http)
+    {
+        $this->setHttpHandler($http);
+        static::$lastInstance = $this;
+    }
+
+    public static function getLastInstance()
+    {
+        return static::$lastInstance;
+    }
+
+    public function setHttpHandler(Http $http)
     {
         $this->http = $http;
     }
