@@ -30,7 +30,9 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
     {
         \App::$http = $this->getApiMockup();
         $this->sessionClass = new \BO\Zmsentities\Session();
-        \BO\Zmsclient\SessionHandler::getLastInstance()->setHttpHandler(\App::$http);
+        if (\BO\Zmsclient\SessionHandler::getLastInstance() instanceof \BO\Zmsclient\SessionHandler) {
+            \BO\Zmsclient\SessionHandler::getLastInstance()->setHttpHandler(\App::$http);
+        }
     }
 
     public function tearDown()
