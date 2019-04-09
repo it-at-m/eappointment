@@ -1,6 +1,7 @@
 ## v2.20.00
 
 * #36102 Funktionen für Apikey und Workflowkey ergänzt, um die Public API besser testen zu können
+* #35013 SessionHandler angepasst für PHP-Update
 
 ## v2.19.05
 
