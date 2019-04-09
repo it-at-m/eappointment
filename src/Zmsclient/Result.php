@@ -126,6 +126,16 @@ class Result
     }
 
     /**
+     * Get the origin response
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function isStatus($statuscode)
+    {
+        return $this->getResponse()->getStatusCode() == $statuscode;
+    }
+
+    /**
      * Description
      *
      * @return \BO\Zmsentities\Schema\Entity

@@ -43,6 +43,16 @@ class Http
     public static $log = [];
 
     /**
+     * @var String $apikeyString
+     */
+    protected $apikeyString = null;
+
+    /**
+     * @var String $apikeyString
+     */
+    protected $workflowkeyString = null;
+
+    /**
      *
      * @param Psr7\ClientInterface $client
      */
@@ -113,8 +123,26 @@ class Http
         } elseif ($userInfo) {
             $request = $request->withHeader('Authorization', 'Basic '. base64_encode($userInfo));
         }
+        if (null !== $this->apikeyString) {
+            $request = $request->withHeader('X-Api-Key', $this->apikeyString);
+        }
+        if (null !== $this->workflowkeyString) {
+            $request = $request->withHeader('X-Workflow-Key', $this->workflowkeyString);
+        }
 
         return $request;
+    }
+
+    public function setApiKey($apikeyString)
+    {
+        $this->apikeyString = $apikeyString;
+        return $this;
+    }
+
+    public function setWorkflowKey($apikeyString)
+    {
+        $this->workflowkeyString = $apikeyString;
+        return $this;
     }
 
     /**
