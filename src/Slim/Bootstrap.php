@@ -133,11 +133,12 @@ class Bootstrap
         $path = false;
         if (\App::TWIG_CACHE) {
             $path = \App::APP_PATH . \App::TWIG_CACHE;
+            $user = get_current_user();
             $githead = Git::readCurrentHash();
             if ($githead) {
-                $path .= '/' . $githead . '/';
+                $path .= '/' . $user . $githead . '/';
             } else {
-                $path .= '/static/';
+                $path .= '/' . $user . '/';
             }
             if (!is_dir($path)) {
                 mkdir($path);
