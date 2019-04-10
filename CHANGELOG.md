@@ -1,3 +1,7 @@
+## v2.20.00
+
+* #36162 Bugfix: Tresen Block "Informationen" auch für normale Nutzer anzeigen
+
 ## v2.19.06
 
 * #35951 Neue Fehlermeldung wenn ein API-Key nicht existiert
