@@ -41,7 +41,6 @@ class ProcessDelete extends BaseController
             'appointment_form',
             array(),
             array(
-                'selectedprocess' => $process->getId(),
                 'success' => 'process_deleted',
             )
         );

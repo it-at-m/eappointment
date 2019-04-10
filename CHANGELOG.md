@@ -1,6 +1,7 @@
 ## v2.20.00
 
 * #36153 Die Status-Seite zeigt jetzt alle Angaben zur Slot-Berechnung, auch wenn keine Fehler vorliegen
+* #35836 Bugfix: Falsche Fehlermeldung beim Löschen eines Kunden ohne Root-Rechte entfernt
 
 ## v2.19.05
 
