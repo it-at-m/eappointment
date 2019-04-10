@@ -53,7 +53,7 @@ class ProcessDeleteTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertRedirect($response, '/appointmentForm/?selectedprocess=82252&success=process_deleted');
+        $this->assertRedirect($response, '/appointmentForm/?success=process_deleted');
         $this->assertEquals(302, $response->getStatusCode());
     }
 
@@ -86,7 +86,7 @@ class ProcessDeleteTest extends Base
             ]
         );
         $response = $this->render(['id' => '100632'], $this->parameters, []);
-        $this->assertRedirect($response, '/appointmentForm/?selectedprocess=100632&success=process_deleted');
+        $this->assertRedirect($response, '/appointmentForm/?success=process_deleted');
         $this->assertEquals(302, $response->getStatusCode());
     }
 

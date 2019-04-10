@@ -356,7 +356,7 @@ class AppointmentFormTest extends Base
         );
         $response = $this->render([], ['selectedprocess' => 100044, 'success' => 'process_deleted']);
         $this->assertContains(
-            'Der Termin mit der Nummer 100044 wurde erfolgreich entfernt.',
+            'Der Termin wurde erfolgreich entfernt.',
             (string)$response->getBody()
         );
     }
