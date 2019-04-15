@@ -99,7 +99,7 @@ class Workstation extends Schema\Entity
 
     public function getVariantName()
     {
-        return (! $this->name) ? 'counter' : 'workstation';
+        return (! trim($this->name)) ? 'counter' : 'workstation';
     }
 
     public function getName()
@@ -156,9 +156,9 @@ class Workstation extends Schema\Entity
 
     public function setValidatedName(array $formData)
     {
-        if (isset($formData['workstation']) && $formData['workstation']->getValue()) {
+        if (isset($formData['workstation']) && trim($formData['workstation']->getValue())) {
             $this->name = $formData['workstation']->getValue();
-        } elseif (isset($formData['workstation']) && ! $formData['workstation']->getValue()) {
+        } elseif (isset($formData['workstation']) && ! trim($formData['workstation']->getValue())) {
             $this->name = '';
         }
         return $this;
