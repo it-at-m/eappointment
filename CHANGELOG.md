@@ -1,6 +1,7 @@
 ## v2.20.00
 
 * #36152 Bugfix: Fehlermeldung zu nicht vorhandenen Apikey Quotas behoben.
+* #36190 Bugfix: Leerzeichen sind als Platz-/Raumangabe nicht mehr erlaubt
 
 ## v2.19.07
 
