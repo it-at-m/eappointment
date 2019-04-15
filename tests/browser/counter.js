@@ -23,7 +23,7 @@ test('NewAppointment', async t => {
     await t
         .useRole(userRegular)
         .navigateTo(`${Config.baseUrl}/workstation/select/`)
-        .typeText('input[name=workstation]', "\r", {replace: true})
+        .typeText('input[name=workstation]', " ", {replace: true})
         .click('button.button-login')
         .expect(getPageUrl()).contains('counter')
         .click('a[data-date="2016-05-30"]')
