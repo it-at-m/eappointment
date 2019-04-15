@@ -1,18 +1,21 @@
-import { ClientFunction } from 'testcafe';
-import { userRegular } from './lib/roles';
+/* global fixture, test */
 import Config from './lib/config';
-
-const getPageUrl = ClientFunction(() => window.location.href);
+import { getPageUrl } from './lib/client';
 
 fixture `Login`
-    .page `${Config.baseUrl}/`;
+    .page `${Config.baseUrl}/`
+    .httpAuth(Config.credentials)
+;
 
 test('Anmelden-Button', async t => {
     await t
-        .useRole(userRegular)
         // logout before testing to avoid alread logged in message
+        .typeText('input[name=loginName]', 'testuser') // use an account not for testing to avoid conflicts
+        .typeText('input[name=password]', 'vorschau')
+        .click('button.button-login')
         .navigateTo(`${Config.baseUrl}/logout/`)
-        .typeText('input[name=loginName]', 'testuser')
+        // if not logged in, no redirect for / appears, force it
+        .typeText('input[name=loginName]', 'superuser')
         .typeText('input[name=password]', 'vorschau')
         .click('button.button-login')
         .expect(getPageUrl()).contains('workstation/select');
