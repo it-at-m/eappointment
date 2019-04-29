@@ -28,7 +28,7 @@ class Mail extends BaseController
     public function initQueueTransmission($action = false)
     {
         $resultList = [];
-        if (count($this->messagesQueue)) {
+        if ($this->messagesQueue && count($this->messagesQueue)) {
             foreach ($this->messagesQueue as $item) {
                 if ($this->maxRunTime < $this->getSpendTime()) {
                     break;
@@ -132,6 +132,7 @@ class Mail extends BaseController
         $mailer->Encoding = $encoding;
         $mailer->addCustomHeader('Content-Transfer-Encoding', $encoding);
         $mailer->IsHTML(true);
+        $mailer->XMailer = \App::IDENTIFIER;
         $mailer->Subject = $entity['subject'];
         $mailer->AltBody = (isset($textPart)) ? $textPart : '';
         $mailer->Body = (isset($htmlPart)) ? $htmlPart : '';

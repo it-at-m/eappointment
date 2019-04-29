@@ -28,7 +28,7 @@ class Notification extends BaseController
     public function initQueueTransmission($action = false)
     {
         $resultList = [];
-        if (count($this->messagesQueue)) {
+        if ($this->messagesQueue && count($this->messagesQueue)) {
             foreach ($this->messagesQueue as $item) {
                 if ($this->maxRunTime < $this->getSpendTime()) {
                     break;
