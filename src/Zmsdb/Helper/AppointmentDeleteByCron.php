@@ -94,34 +94,38 @@ class AppointmentDeleteByCron
                 break;
             }
             foreach ($processList as $process) {
-                if (!$this->removeProcess($process, $commit)) {
+                if (!$this->removeProcess($process, $commit, $processCount)) {
                     $startposition++;
+                    if (!$commit && $this->verbose) {
+                        $processCount++; //raise if only on verbose
+                    }
+                } else {
+                    $processCount++;
                 }
-                $processCount++;
             }
         }
     }
 
-    protected function removeProcess(\BO\Zmsentities\Process $process, $commit)
+    protected function removeProcess(\BO\Zmsentities\Process $process, $commit, $processCount)
     {
         $verbose = $this->verbose;
         if (in_array($process->status, $this->statuslist)) {
             if (in_array($process->status, $this->archivelist)) {
-                $this->log("INFO: Archive $process");
+                $this->log("INFO: $processCount. Archive $process");
                 $process = $this->updateProcessStatus($process);
                 if ($commit) {
                     $this->archiveProcess($process);
                 }
             }
-            $this->log("INFO: Delete $process");
+            $this->log("INFO: $processCount. Delete $process");
             if ($commit) {
                 $this->deleteProcess($process);
+                return 1;
             }
-            return $commit ? 1 : 0;
         } elseif ($verbose) {
             error_log("INFO: Keep process $process");
-            return 0;
         }
+        return 0;
     }
 
     protected function updateProcessStatus(\BO\Zmsentities\Process $process)
