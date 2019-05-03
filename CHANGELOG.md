@@ -1,3 +1,7 @@
+## v2.20.00
+
+* #36091 Bugfix: Beim Skript deleteAppointmentData wird im Verbose-Modus keine Wiederholung mehr durchgeführt
+
 ## v2.19.07
 
 * #35933 Bugfix: Die statistische Erfassung einer SMS schlägt nicht mehr fehl, wenn der Vorgang nicht mehr existiert
