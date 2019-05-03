@@ -75,10 +75,7 @@ class AppointmentDeleteByCron
                 break;
             }
             foreach ($processList as $process) {
-                $this->log("INFO: Processing $process");
-                if ($commit) {
-                    $this->removeProcess($process);
-                }
+                $this->removeProcess($process, $commit);
                 $processCount++;
             }
             if ($this->verbose && !$commit) {
@@ -99,10 +96,7 @@ class AppointmentDeleteByCron
                 break;
             }
             foreach ($processList as $process) {
-                $this->log("INFO: Processing $process");
-                if ($commit) {
-                    $this->removeProcess($process);
-                }
+                $this->removeProcess($process, $commit);
                 $processCount++;
             }
             if ($this->verbose && !$commit) {
@@ -112,17 +106,23 @@ class AppointmentDeleteByCron
         }
     }
 
-    protected function removeProcess(\BO\Zmsentities\Process $process)
+    protected function removeProcess(\BO\Zmsentities\Process $process, $commit)
     {
         $verbose = $this->verbose;
         if (in_array($process->status, $this->statuslist)) {
             if (in_array($process->status, $this->archivelist)) {
+                $this->log("INFO: Archive $process");
                 $process = $this->updateProcessStatus($process);
-                $this->archiveProcess($process);
+                if ($commit) {
+                    $this->archiveProcess($process);
+                }
             }
-            $this->deleteProcess($process);
+            $this->log("INFO: Delete $process");
+            if ($commit) {
+                $this->deleteProcess($process);
+            }
         } elseif ($verbose) {
-            error_log("INFO: Keep process $process->id");
+            error_log("INFO: Keep process $process");
         }
     }
 
