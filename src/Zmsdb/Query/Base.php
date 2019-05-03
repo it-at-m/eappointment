@@ -370,9 +370,12 @@ abstract class Base
         return $this;
     }
 
-    public function addLimit($count)
+    public function addLimit($count, $offset = null)
     {
         $this->query->limit($count);
+        if ($offset) {
+            $this->query->offset($offset);
+        }
         return $this;
     }
 

@@ -360,20 +360,22 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Read processList by scopeId and status
      *
-     * @param
-     * scopeId
-     *
      * @return Collection processList
      */
-    public function readProcessListByScopeAndStatus($scopeId, $status, $resolveReferences = 0)
-    {
+    public function readProcessListByScopeAndStatus(
+        $scopeId,
+        $status,
+        $resolveReferences = 0,
+        $limit = 1000,
+        $offset = null
+    ) {
         $query = new Query\Process(Query\Base::SELECT);
         $query
             ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
             ->addConditionScopeId($scopeId)
             ->addConditionStatus($status, $scopeId)
-            ->addLimit(1000);
+            ->addLimit($limit, $offset);
         $statement = $this->fetchStatement($query);
         return $this->readList($statement, $resolveReferences);
     }
@@ -608,7 +610,8 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function readExpiredProcessList(
         \DateTimeInterface $expirationDate,
         $limit = 500,
-        $resolveReferences = 0
+        $resolveReferences = 0,
+        $offset = null
     ) {
         $selectQuery = new Query\Process(Query\Base::SELECT);
         $selectQuery
@@ -616,7 +619,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addResolvedReferences($resolveReferences)
             ->addConditionProcessDeleteInterval($expirationDate)
             ->addConditionIgnoreSlots()
-            ->addLimit($limit);
+            ->addLimit($limit, $offset);
         $statement = $this->fetchStatement($selectQuery);
         return $this->readList($statement, $resolveReferences);
     }
