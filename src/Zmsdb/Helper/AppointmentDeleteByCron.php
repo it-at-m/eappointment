@@ -70,6 +70,10 @@ class AppointmentDeleteByCron
                 }
                 $processCount++;
             }
+            if ($this->verbose && !$commit) {
+                echo "\nAttention, without commit, only the first 500 deletable can be displayed\n";
+                break;
+            }
         }
     }
 
