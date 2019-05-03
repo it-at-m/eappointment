@@ -1,6 +1,6 @@
 ## v2.20.00
 
-* #36091 Bugfix: Beim Skript deleteAppointmentData wird im Verbose-Modus keine Wiederholung mehr durchgeführt
+* #36091 Bugfix: Beim Skript deleteAppointmentData werden dereferenzierte Termine in der Zukunft jetzt gelöscht und im Verbose-Modus wird keine Wiederholung mehr durchgeführt
 
 ## v2.19.07
 

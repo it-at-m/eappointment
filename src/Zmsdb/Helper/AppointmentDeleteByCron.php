@@ -49,22 +49,33 @@ class AppointmentDeleteByCron
         }
     }
 
+    protected function log($message)
+    {
+        if ($this->verbose) {
+            error_log($message);
+        }
+    }
+
     public function startProcessing($commit, $pending = false)
     {
-        $query = new \BO\Zmsdb\Process();
         if ($pending) {
             $this->statuslist[] = "pending";
         }
-        $processCount = $this->loopCount;
+        $this->deleteExpiredProcesses($commit);
+        $this->deleteBlockedProcesses($commit);
+    }
+
+    protected function deleteExpiredProcesses($commit)
+    {
+        $query = new \BO\Zmsdb\Process();
+        $processCount = 0;
         while ($processCount < $this->limit) {
             $processList = $query->readExpiredProcessList($this->time, $this->loopCount);
             if (0 == $processList->count()) {
                 break;
             }
             foreach ($processList as $process) {
-                if ($this->verbose) {
-                    error_log("INFO: Processing $process");
-                }
+                $this->log("INFO: Processing $process");
                 if ($commit) {
                     $this->removeProcess($process);
                 }
@@ -72,6 +83,30 @@ class AppointmentDeleteByCron
             }
             if ($this->verbose && !$commit) {
                 echo "\nAttention, without commit, only the first 500 deletable can be displayed\n";
+                break;
+            }
+        }
+    }
+
+    protected function deleteBlockedProcesses($commit)
+    {
+        $query = new \BO\Zmsdb\Process();
+        $this->log("\nDelete blocked processes in the future:");
+        $processCount = 0;
+        while ($processCount < $this->limit) {
+            $processList = $query->readProcessListByScopeAndStatus(0, 'blocked');
+            if (0 == $processList->count()) {
+                break;
+            }
+            foreach ($processList as $process) {
+                $this->log("INFO: Processing $process");
+                if ($commit) {
+                    $this->removeProcess($process);
+                }
+                $processCount++;
+            }
+            if ($this->verbose && !$commit) {
+                echo "\nAttention, without commit, only the first 1000 deletable can be displayed\n";
                 break;
             }
         }
