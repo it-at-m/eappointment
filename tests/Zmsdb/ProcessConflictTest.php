@@ -19,7 +19,7 @@ class ProcessConflictTest extends Base
         $endDate = new \DateTimeImmutable("2016-04-30 23:59");
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141, 1, true);
         $conflictList = (new \BO\Zmsdb\Process())->readConflictListByScopeAndTime($scope, $startDate, $endDate, 0);
-        $this->assertEquals(9, $conflictList->count());
+        $this->assertEquals(10, $conflictList->count());
     }
 
     public function testWithoutQueued()
@@ -37,7 +37,7 @@ class ProcessConflictTest extends Base
 
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141, 1, true);
         $conflictList = (new \BO\Zmsdb\Process())->readConflictListByScopeAndTime($scope, $startDate, $endDate, 0);
-        $this->assertEquals(9, $conflictList->count());
+        $this->assertEquals(10, $conflictList->count());
     }
 
     public function testOverbookedOnDay()
