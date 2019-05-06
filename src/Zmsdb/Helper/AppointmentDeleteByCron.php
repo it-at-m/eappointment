@@ -61,21 +61,25 @@ class AppointmentDeleteByCron
         if ($pending) {
             $this->statuslist[] = "pending";
         }
-        $this->deleteExpiredProcesses($commit);
         $this->deleteBlockedProcesses($commit);
+        $this->deleteExpiredProcesses($commit);
     }
 
     protected function deleteExpiredProcesses($commit)
     {
-        return $this->deleteByCallback($commit, function ($limit, $offset) {
-            $query = new \BO\Zmsdb\Process();
-            $processList = $query->readExpiredProcessList($this->time, $limit, 0, $offset);
-            return $processList;
-        });
+        foreach ($this->statuslist as $status) {
+            $this->log("\nDelete expired processes with status $status:");
+            $this->deleteByCallback($commit, function ($limit, $offset) use ($status) {
+                $query = new \BO\Zmsdb\Process();
+                $processList = $query->readExpiredProcessList($this->time, $status, $limit, $offset);
+                return $processList;
+            });
+        }
     }
 
     protected function deleteBlockedProcesses($commit)
     {
+        $this->log("\nDelete blocked processes in the future:");
         return $this->deleteByCallback($commit, function ($limit, $offset) {
             $query = new \BO\Zmsdb\Process();
             $processList = $query->readProcessListByScopeAndStatus(0, 'blocked', $limit, $offset);
@@ -85,7 +89,6 @@ class AppointmentDeleteByCron
 
     protected function deleteByCallback($commit, \Closure $callback)
     {
-        $this->log("\nDelete blocked processes in the future:");
         $processCount = 0;
         $startposition = 0;
         while ($processCount < $this->limit) {
@@ -96,12 +99,8 @@ class AppointmentDeleteByCron
             foreach ($processList as $process) {
                 if (!$this->removeProcess($process, $commit, $processCount)) {
                     $startposition++;
-                    if (!$commit && $this->verbose) {
-                        $processCount++; //raise if only on verbose
-                    }
-                } else {
-                    $processCount++;
                 }
+                $processCount++;
             }
         }
     }
