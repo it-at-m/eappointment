@@ -18,13 +18,11 @@ class AppointmentDeleteByCron
     protected $statuslist = [
         "reserved",
         "deleted",
-        "blocked",
         "confirmed",
         "queued",
         "called",
         "missed",
         "processing",
-        "free",
     ];
 
     protected $archivelist = [
@@ -35,6 +33,8 @@ class AppointmentDeleteByCron
         "processing",
         "pending"
     ];
+
+    protected $count = [];
 
     public function __construct($timeIntervalDays, \DateTimeInterface $now, $verbose = false)
     {
@@ -61,30 +61,34 @@ class AppointmentDeleteByCron
         if ($pending) {
             $this->statuslist[] = "pending";
         }
+        $this->count = array_fill_keys($this->statuslist, 0);
         $this->deleteBlockedProcesses($commit);
         $this->deleteExpiredProcesses($commit);
+        $this->log("\nSUMMARY: Deleted processes: ".var_export($this->count, true));
     }
 
     protected function deleteExpiredProcesses($commit)
     {
         foreach ($this->statuslist as $status) {
             $this->log("\nDelete expired processes with status $status:");
-            $this->deleteByCallback($commit, function ($limit, $offset) use ($status) {
+            $count = $this->deleteByCallback($commit, function ($limit, $offset) use ($status) {
                 $query = new \BO\Zmsdb\Process();
-                $processList = $query->readExpiredProcessList($this->time, $status, $limit, $offset);
+                $processList = $query->readExpiredProcessListByStatus($this->time, $status, $limit, $offset);
                 return $processList;
             });
+            $this->count[$status] = $count;
         }
     }
 
     protected function deleteBlockedProcesses($commit)
     {
         $this->log("\nDelete blocked processes in the future:");
-        return $this->deleteByCallback($commit, function ($limit, $offset) {
+        $count = $this->deleteByCallback($commit, function ($limit, $offset) {
             $query = new \BO\Zmsdb\Process();
             $processList = $query->readProcessListByScopeAndStatus(0, 'blocked', $limit, $offset);
             return $processList;
         });
+        $this->count["blocked"] = $count;
     }
 
     protected function deleteByCallback($commit, \Closure $callback)
@@ -103,6 +107,7 @@ class AppointmentDeleteByCron
                 $processCount++;
             }
         }
+        return $processCount;
     }
 
     protected function removeProcess(\BO\Zmsentities\Process $process, $commit, $processCount)

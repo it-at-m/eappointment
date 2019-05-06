@@ -148,7 +148,7 @@ class Process extends Base implements MappingInterface
                     THEN "pickup"
                 WHEN process.aufrufzeit != "00:00:00" AND process.NutzerID != 0 AND process.AbholortID = 0
                     THEN "called"
-                WHEN process.wsm_aufnahmezeit != "00:00:00"
+                WHEN process.Uhrzeit = "00:00:00"
                     THEN "queued"
                 WHEN process.vorlaeufigeBuchung = 0 AND IPTimeStamp
                     THEN "confirmed"
@@ -428,13 +428,13 @@ class Process extends Base implements MappingInterface
                 $query->andWith('process.nicht_erschienen', '!=', 0);
             }
             if ('queued' == $status) {
-                $query->andWith('process.wsm_aufnahmezeit', '!=', '00:00:00');
+                $query->andWith('process.Uhrzeit', '=', '00:00:00');
             }
             if ('confirmed' == $status) {
                 $query
                     ->andWith('process.vorlaeufigeBuchung', '=', 0)
                     ->andWith('process.Abholer', '=', 0)
-                    ->andWith('process.wsm_aufnahmezeit', '=', '00:00:00')
+                    ->andWith('process.Uhrzeit', '!=', '00:00:00')
                     ->andWith('process.IPTimeStamp', '!=', 0);
             }
             if ('blocked' == $status) {
