@@ -21,6 +21,7 @@ class ProcessStatusQueued extends Process
     public function writeNewFromAdmin(Entity $process, \DateTimeInterface $dateTime)
     {
         $process->setStatus('queued');
+        $process->getFirstAppointment()->date = $dateTime->modify('00:00:00')->getTimestamp();
         $newQueueNumber = (new Scope())->readWaitingNumberUpdated($process->scope['id'], $dateTime, false);
         $process->addQueue($newQueueNumber, $dateTime);
         $process = $this->writeNewProcess($process, $dateTime);
