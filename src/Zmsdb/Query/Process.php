@@ -134,7 +134,7 @@ class Process extends Base implements MappingInterface
             'CASE
                 WHEN process.Name = "(abgesagt)"
                     THEN "deleted"
-                WHEN process.Name = "dereferenced" AND process.StandortID = 0 AND process.nicht_erschienen = 0
+                WHEN process.StandortID = 0 AND process.AbholortID = 0
                     THEN "blocked"
                 WHEN process.vorlaeufigeBuchung = 1
                     THEN "reserved"
@@ -142,7 +142,7 @@ class Process extends Base implements MappingInterface
                     THEN "missed"
                 WHEN process.Abholer != 0 AND process.AbholortID != 0 AND process.NutzerID = 0
                     THEN "pending"
-                WHEN process.aufruferfolgreich != 0
+                WHEN process.aufruferfolgreich != 0 AND process.NutzerID != 0
                     THEN "processing"
                 WHEN process.AbholortID != 0 AND process.NutzerID != 0
                     THEN "pickup"
@@ -150,7 +150,7 @@ class Process extends Base implements MappingInterface
                     THEN "called"
                 WHEN process.Uhrzeit = "00:00:00"
                     THEN "queued"
-                WHEN process.vorlaeufigeBuchung = 0 AND IPTimeStamp
+                WHEN process.vorlaeufigeBuchung = 0
                     THEN "confirmed"
                 ELSE "free"
             END'
@@ -404,11 +404,38 @@ class Process extends Base implements MappingInterface
     public function addConditionStatus($status, $scopeId = 0)
     {
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($status, $scopeId) {
+            if ('deleted' == $status) {
+                $query
+                    ->andWith('process.Name', '=', '(abgesagt)');
+            }
+            if ('blocked' == $status) {
+                $query
+                    ->andWith('process.StandortID', '=', 0)
+                    ->andWith('process.AbholortID', '=', 0);
+            }
+            if ('reserved' == $status) {
+                $query
+                    ->andWith('process.name', '!=', '(abgesagt)')
+                    ->andWith('process.vorlaeufigeBuchung', '=', 1)
+                    ->andWith('process.StandortID', '!=', 0)
+                    ->andWith('process.istFolgeterminvon', 'is', null);
+            }
+            if ('missed' == $status) {
+                $query->andWith('process.nicht_erschienen', '!=', 0)
+                    ->andWith('process.StandortID', '!=', 0)
+                    ;
+            }
             if ('pending' == $status) {
                 $query
                     ->andWith('process.AbholortID', '=', $scopeId)
                     ->andWith('process.Abholer', '!=', 0)
                     ->andWith('process.NutzerID', '=', 0);
+            }
+            if ('processing' == $status) {
+                $query->andWith('process.aufruferfolgreich', '!=', 1)
+                    ->andWith('process.NutzerID', '!=', 0)
+                    ->andWith('process.StandortID', '!=', 0)
+                    ;
             }
             if ('pickup' == $status) {
                 $query
@@ -419,42 +446,21 @@ class Process extends Base implements MappingInterface
                 $query
                     ->andWith('process.aufrufzeit', '!=', '00:00:00')
                     ->andWith('process.NutzerID', '!=', 0)
+                    ->andWith('process.StandortID', '!=', 0)
                     ->andWith('process.AbholortID', '=', 0);
             }
-            if ('processing' == $status) {
-                $query->andWith('process.aufruferfolgreich', '!=', 0);
-            }
-            if ('missed' == $status) {
-                $query->andWith('process.nicht_erschienen', '!=', 0);
-            }
             if ('queued' == $status) {
-                $query->andWith('process.Uhrzeit', '=', '00:00:00');
+                $query->andWith('process.Uhrzeit', '=', '00:00:00')
+                    ->andWith('process.StandortID', '!=', 0)
+                    ;
             }
             if ('confirmed' == $status) {
                 $query
                     ->andWith('process.vorlaeufigeBuchung', '=', 0)
                     ->andWith('process.Abholer', '=', 0)
+                    ->andWith('process.StandortID', '!=', 0)
                     ->andWith('process.Uhrzeit', '!=', '00:00:00')
                     ->andWith('process.IPTimeStamp', '!=', 0);
-            }
-            if ('blocked' == $status) {
-                $query
-                    ->andWith('process.Name', '=', 'dereferenced')
-                    ->andWith('process.StandortID', '=', 0);
-            }
-            if ('deleted' == $status) {
-                $query
-                    ->andWith('process.Name', '=', '(abgesagt)');
-            }
-            if ('reserved' == $status) {
-                $query
-                    ->andWith('process.name', 'NOT IN', array(
-                        'dereferenced',
-                        '(abgesagt)'
-                    ))
-                    ->andWith('process.vorlaeufigeBuchung', '=', 1)
-                    ->andWith('process.StandortID', '<>', 1)
-                    ->andWith('process.istFolgeterminvon', 'is', null);
             }
         });
         return $this;
