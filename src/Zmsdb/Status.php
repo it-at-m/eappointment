@@ -31,6 +31,8 @@ class Status extends Base
             $outdated = $this->readOutdatedSlots();
             $entity['processes']['outdated'] = $outdated['cnt'];
             $entity['processes']['outdatedOldest'] = $outdated['oldest'];
+            $freeSlots = $this->readFreeSlots();
+            $entity['processes']['freeSlots'] = $freeSlots['cnt'];
         }
         $entity['mail'] = $this->readMailStats();
         $entity['notification'] = $this->readNotificationStats();
@@ -70,7 +72,6 @@ class Status extends Base
     }
 
     /**
-     * Get the information on dldb update status
      * Hint: "cancelled" slots might be older, but do not get updated, if not bookable in availability any longer
      * @return Array
      */
@@ -81,6 +82,21 @@ class Status extends Base
                 COUNT(*) cnt, MIN(a.updateTimestamp) oldest
             FROM slot s LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
             WHERE s.updateTimestamp < a.updateTimestamp AND s.status = "free"
+            '
+        );
+        return $stats;
+    }
+
+    /**
+     * @return Array
+     */
+    protected function readFreeSlots()
+    {
+        $stats = $this->getReader()->fetchOne(
+            'SELECT
+                COUNT(*) cnt
+            FROM slot s
+            WHERE s.status = "free"
             '
         );
         return $stats;
@@ -162,7 +178,12 @@ class Status extends Base
         $processStats = $this->getReader()->fetchOne(
             'SELECT
                 SUM(CASE name WHEN "dereferenced" THEN 1 ELSE NULL END) as blocked,
-                SUM(CASE WHEN b.StandortID != 0 AND vorlaeufigeBuchung = 0 THEN 1 ELSE NULL END) as confirmed,
+                SUM(CASE 
+                    WHEN b.StandortID != 0 AND vorlaeufigeBuchung = 0  AND Abholer = 0 
+                    THEN 1 ELSE NULL END) as confirmed,
+                SUM(CASE 
+                    WHEN (b.StandortID != 0 OR AbholortID != 0) AND vorlaeufigeBuchung = 0  AND Abholer = 1 
+                    THEN 1 ELSE NULL END) as pending,
                 SUM(CASE WHEN name = "(abgesagt)" THEN 1 ELSE NULL END) as deleted,
                 SUM(CASE WHEN nicht_erschienen > 0 AND b.StandortID != 0 THEN 1 ELSE NULL END) as missed,
                 SUM(CASE WHEN vorlaeufigeBuchung = 1 AND b.StandortID != 0 THEN 1 ELSE NULL END) as reserved,
