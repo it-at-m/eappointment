@@ -77,7 +77,7 @@ class AppointmentDeleteByCron
                 $processList = $query->readExpiredProcessListByStatus($this->time, $status, $limit, $offset);
                 return $processList;
             });
-            $this->count[$status] = $count;
+            $this->count[$status] += $count;
         }
     }
 
@@ -89,7 +89,7 @@ class AppointmentDeleteByCron
             $processList = $query->readProcessListByScopeAndStatus(0, 'blocked', 0, $limit, $offset);
             return $processList;
         });
-        $this->count["blocked"] = $count;
+        $this->count["blocked"] += $count;
     }
 
     protected function deleteByCallback($commit, \Closure $callback)
