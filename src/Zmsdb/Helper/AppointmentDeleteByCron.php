@@ -85,7 +85,7 @@ class AppointmentDeleteByCron
         $this->log("\nDelete blocked processes in the future:");
         $count = $this->deleteByCallback($commit, function ($limit, $offset) {
             $query = new \BO\Zmsdb\Process();
-            $processList = $query->readProcessListByScopeAndStatus(0, 'blocked', $limit, $offset);
+            $processList = $query->readProcessListByScopeAndStatus(0, 'blocked', 0, $limit, $offset);
             return $processList;
         });
         $this->count["blocked"] = $count;
