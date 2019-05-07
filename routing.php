@@ -3033,6 +3033,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/process/status/queued/":
  *      post:
  *          summary: set process back to queued status.
+ *          description: This call reverts a missed status to its former status, this might be queued or confirmed. The process should appear in the waiting queue afterwards.
  *          x-since: 2.12
  *          tags:
  *              - process
