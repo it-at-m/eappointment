@@ -16,7 +16,7 @@ class ProcessQueuedTest extends Base
             '__body' => json_encode($process)
         ], []);
 
-        $this->assertContains('queued', (string)$response->getBody());
+        $this->assertContains('confirmed', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
