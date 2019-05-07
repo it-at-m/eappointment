@@ -452,6 +452,7 @@ class Process extends Base implements MappingInterface
             if ('queued' == $status) {
                 $query->andWith('process.Uhrzeit', '=', '00:00:00')
                     ->andWith('process.StandortID', '!=', 0)
+                    ->andWith('process.AbholortID', '=', 0);
                     ;
             }
             if ('confirmed' == $status) {
