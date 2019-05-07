@@ -16,6 +16,7 @@ class AppointmentDeleteByCron
     protected $time;
 
     protected $statuslist = [
+        "blocked",
         "reserved",
         "deleted",
         "confirmed",
