@@ -14,6 +14,9 @@
     .prev {
         padding:            0.1em 0.2em 0.1em 0.4em;
     }
+    .inactive {
+        visibility:         hidden;
+    }
     .next {
         padding:            0.1em 0.4em 0.1em 0.2em;
     }

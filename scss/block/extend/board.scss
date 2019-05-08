@@ -130,6 +130,7 @@ $boardHeaderBlue:                       $blue;
     padding:                0;
     display:                inline-block;
     margin-right:           0.5em;
+    min-width:              15em; //avoid jumping elements on the right side of the title
 }
 
 
