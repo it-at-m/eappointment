@@ -1,6 +1,7 @@
 ## v2.20.00
 
 * #36091 Bugfix: Beim Skript deleteAppointmentData werden dereferenzierte Termine in der Zukunft jetzt gelöscht und im Verbose-Modus wird keine Wiederholung mehr durchgeführt
+* #36279 Bugfix: Mehrfache Anzeige von Standorten entfernt, wenn diese über neue Mandanten angelegt wurden
 
 ## v2.19.07
 

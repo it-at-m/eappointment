@@ -55,6 +55,7 @@ class Scope extends Base implements MappingInterface
             SELECT s.StandortID AS id, p.name AS contact__name
             FROM `standort` AS s
             LEFT JOIN `provider` AS p ON s.InfoDienstleisterID = p.id
+                AND p.source = s.source
             WHERE
                 s.BehoerdenID = ?
         ';
@@ -93,9 +94,7 @@ class Scope extends Base implements MappingInterface
     {
         $this->leftJoin(
             new Alias(Provider::getTablename(), 'provider'),
-            'scope.InfoDienstleisterID',
-            '=',
-            'provider.id'
+            self::expression('scope.InfoDienstleisterID = provider.id && scope.source = provider.source')
         );
         $providerQuery = new Provider($this, $this->getPrefixed('provider__'));
         return [$providerQuery];
