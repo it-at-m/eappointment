@@ -38,7 +38,9 @@ class TwigExceptionHandler extends Controller
             unset($logInfo['responsedata']);
             unset($logInfo['exception']);
             ksort($logInfo);
-            \App::$log->critical("PHP Fatal Exception #{$extendedInfo['uniqueid']}", $logInfo);
+            \App::$log->critical(
+                "PHP Fatal Exception #{$extendedInfo['uniqueid']}: ". preg_replace('#\s+#', ' ', json_encode($logInfo))
+            );
             /*
             \App::$log->critical(
                 "PHP Fatal Exception #{$extendedInfo['uniqueid']}"
