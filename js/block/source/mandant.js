@@ -12,6 +12,9 @@ class MandantView extends Component {
 
     render() {
         const onChange = (field, value) => {
+            if (field == 'source') {
+                value = value.substring(0,10);
+            }
             this.props.changeHandler(field, value)
         }
 
@@ -40,7 +43,7 @@ class MandantView extends Component {
                             <Inputs.Text
                                 name="source"
                                 value={(this.props.source) ? this.props.source.source : ''}
-                                attributes={ {readOnly: this.props.source.lastChange} }
+                                attributes={ {readOnly: this.props.source.lastChange, maxLength: 10} }
                                 onChange={onChange}
                             />
                             <Inputs.Description

@@ -2,6 +2,8 @@
 
 * #36153 Die Status-Seite zeigt jetzt alle Angaben zur Slot-Berechnung, auch wenn keine Fehler vorliegen
 * #35836 Bugfix: Falsche Fehlermeldung beim Löschen eines Kunden ohne Root-Rechte entfernt
+* #36282 Kalender-Navigation fixiert um ein Springen beim Blättern zu vermeiden
+* #31592 Bugfix: Mandanten-Label wurde auf 10 Zeichen beschränkt um DB-Fehler zu vermeiden
 
 ## v2.19.05
 
