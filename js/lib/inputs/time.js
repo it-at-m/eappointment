@@ -9,5 +9,5 @@ export const Time = ({ name, value, onChange }) => {
     const onPick = time => {
         onChange(name, time)
     }
-    return <TimePicker value={value} onChange={onPick} format={TIME_FORMAT}/>
+    return <TimePicker name={name} value={value} onChange={onPick} format={TIME_FORMAT}/>
 }

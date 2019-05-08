@@ -1,4 +1,3 @@
-/* global alert */
 
 import moment from 'moment'
 

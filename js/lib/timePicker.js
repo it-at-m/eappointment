@@ -44,14 +44,16 @@ const TimePicker = (props) => {
     const minute = time.minute()
     const minutePrefix = minute % 15 === 0 ? 'q' : ''
     const selectedMinute = `${minutePrefix}${minute}`
+    const nameHour = props.name + '--hour'
+    const nameMinute = props.name + '--minute'
 
     return (
         <span className="timepicker">
-            <select onChange={onHourChange} value={selectedHour}>
+            <select name={nameHour} onChange={onHourChange} value={selectedHour}>
                 {renderHours()}
             </select>
             {":"}
-            <select onChange={onMinuteChange} value={selectedMinute}>
+            <select name={nameMinute} onChange={onMinuteChange} value={selectedMinute}>
                 <optgroup>
                     {renderQuarters()}
                 </optgroup>
@@ -70,6 +72,7 @@ TimePicker.defaultProps = {
 }
 
 TimePicker.propTypes = {
+    name: PropTypes.string,
     value: PropTypes.string,
     format: PropTypes.string,
     onChange: PropTypes.func

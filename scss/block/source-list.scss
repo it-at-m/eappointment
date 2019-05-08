@@ -1,0 +1,9 @@
+.source-list {
+    @extend 
+        .board;
+    ul {
+        .text {
+            margin-left:    0.5em;
+        }
+    }
+}
