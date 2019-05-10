@@ -1,6 +1,7 @@
 ## v2.20.00
 
 * #36162 Bugfix: Tresen Block "Informationen" auch für normale Nutzer anzeigen
+* #36318 Führe Slot-Berechnung auch nach einem Update der Öffnungszeiten durch
 
 ## v2.19.06
 
