@@ -17,9 +17,9 @@ return array (
     ),
     'allAppointments' => 
     array (
-      'public' => '34',
-      'callcenter' => '34',
-      'intern' => '34',
+      'public' => '36',
+      'callcenter' => '36',
+      'intern' => '36',
       'type' => 'free',
     ),
   ),
@@ -38,9 +38,9 @@ return array (
     ),
     'allAppointments' => 
     array (
-      'public' => '34',
-      'callcenter' => '34',
-      'intern' => '34',
+      'public' => '36',
+      'callcenter' => '36',
+      'intern' => '36',
       'type' => 'free',
     ),
   ),

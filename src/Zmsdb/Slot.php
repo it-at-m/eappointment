@@ -184,11 +184,11 @@ class Slot extends Base
             return ($cancelledSlots > 0) ? true : false;
         }
         $availability['processingNote'][] = "cancelled $cancelledSlots slots";
-        $startDate = $availability->getBookableStart($now);
+        $startDate = $availability->getBookableStart($now)->modify('00:00:00');
         $stopDate = $availability->getBookableEnd($now);
         $slotlist = $availability->getSlotList();
         $slotlistIntern = $slotlist->withValueFor('callcenter', 0)->withValueFor('public', 0);
-        $time = $now;
+        $time = $now->modify('00:00:00');
         $status = false;
         do {
             if ($availability->withData(['bookable' => ['startInDays' => 0]])->hasDate($time, $now)) {
