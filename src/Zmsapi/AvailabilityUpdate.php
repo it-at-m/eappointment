@@ -28,9 +28,13 @@ class AvailabilityUpdate extends BaseController
         if (! $availability->hasId()) {
             throw new Exception\Availability\AvailabilityNotFound();
         }
+        $updatedEntity = (new Query())->updateEntity($args['id'], $entity, 2);
+        (new \BO\Zmsdb\Slot)->writeByAvailability($updatedEntity, \App::$now);
+        (new \BO\Zmsdb\Helper\CalculateSlots(\App::DEBUG))
+            ->writePostProcessingByScope($updatedEntity->scope, \App::$now);
 
         $message = Response\Message::create($request);
-        $message->data = (new Query())->updateEntity($args['id'], $entity);
+        $message->data = $updatedEntity;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

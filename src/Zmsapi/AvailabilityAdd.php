@@ -10,6 +10,9 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Availability as Query;
 
+/**
+ * @SuppressWarnings(Coupling)
+ */
 class AvailabilityAdd extends BaseController
 {
     /**
@@ -36,17 +39,20 @@ class AvailabilityAdd extends BaseController
             if ($entity->id) {
                 $oldentity = (new Query())->readEntity($entity->id);
                 if ($oldentity->hasId()) {
-                    $newEntity = (new Query())->updateEntity($entity->id, $entity);
+                    $newEntity = (new Query())->updateEntity($entity->id, $entity, 2);
                 } elseif ($useMigrationFix) {
                     //Workaround for openinghours migration, remove after AP13
-                    $newEntity = (new Query())->writeEntity($entity);
+                    $newEntity = (new Query())->writeEntity($entity, 2);
                 }
             } else {
-                $newEntity = (new Query())->writeEntity($entity);
+                $newEntity = (new Query())->writeEntity($entity, 2);
             }
             if (! $newEntity) {
                 throw new Exception\Availability\AvailabilityUpdateFailed();
             }
+            (new \BO\Zmsdb\Slot)->writeByAvailability($newEntity, \App::$now);
+            (new \BO\Zmsdb\Helper\CalculateSlots(\App::DEBUG))
+                ->writePostProcessingByScope($newEntity->scope, \App::$now);
             $collection[] = $newEntity;
         }
 
