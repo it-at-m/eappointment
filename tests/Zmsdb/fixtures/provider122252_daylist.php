@@ -2,6 +2,27 @@
 
 // @codingStandardsIgnoreFile
 return array (
+  '01-04-2016' => 
+  array (
+    'year' => '2016',
+    'month' => '04',
+    'day' => '01',
+    'status' => 'notBookable',
+    'freeAppointments' => 
+    array (
+      'public' => 0,
+      'intern' => 149,
+      'callcenter' => 0,
+      'type' => 'sum',
+    ),
+    'allAppointments' => 
+    array (
+      'public' => '0',
+      'callcenter' => '0',
+      'intern' => '220',
+      'type' => 'free',
+    ),
+  ),
   '04-04-2016' => 
   array (
     'year' => '2016',
