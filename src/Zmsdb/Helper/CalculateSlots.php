@@ -143,22 +143,27 @@ class CalculateSlots
             $this->log("Updated $availability with reason " . json_encode($availability['processingNote']));
         }
         if (count($updatedList)) {
-            if ($slotsProcessed = $slotQuery->deleteSlotProcessOnProcess($scope->id)) {
-                $this->log("Finished to free $slotsProcessed slots for changed/deleted processes");
-            }
-            $slotQuery->writeCanceledByTimeAndScope($now, $scope);
-            $slotQuery->deleteSlotProcessOnSlot($scope->id);
-            //$this->log("Finished to free slots for cancelled availabilities");
-
-            if ($slotsProcessed = $slotQuery->updateSlotProcessMapping($scope->id)) {
-                $this->log("Updated Slot-Process-Mapping, mapped $slotsProcessed processes");
-            }
-
+            $this->writePostProcessingByScope($scope, $now);
             \BO\Zmsdb\Connection\Select::writeCommit();
             $this->readLastRun();
             return true;
         }
         return false;
+    }
+
+    public function writePostProcessingByScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now)
+    {
+        $slotQuery = new \BO\Zmsdb\Slot();
+        if ($slotsProcessed = $slotQuery->deleteSlotProcessOnProcess($scope->id)) {
+            $this->log("Finished to free $slotsProcessed slots for changed/deleted processes");
+        }
+        $slotQuery->writeCanceledByTimeAndScope($now, $scope);
+        $slotQuery->deleteSlotProcessOnSlot($scope->id);
+        //$this->log("Finished to free slots for cancelled availabilities");
+
+        if ($slotsProcessed = $slotQuery->updateSlotProcessMapping($scope->id)) {
+            $this->log("Updated Slot-Process-Mapping, mapped $slotsProcessed processes");
+        }
     }
 
     public function writeCanceledSlots(\DateTimeInterface $now, $modify = '+10 minutes')

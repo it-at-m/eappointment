@@ -208,7 +208,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
      *
      * @return Entity
      */
-    public function writeEntity(\BO\Zmsentities\Availability $entity)
+    public function writeEntity(\BO\Zmsentities\Availability $entity, $resolveReferences = 0)
     {
         self::$cache = [];
         $entity->testValid();
@@ -217,12 +217,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
         $query->addValues($values);
         $this->writeItem($query);
         $entity->id = $this->getWriter()->lastInsertId();
-        /* removed 2017-06-13, tested in api
-        if (!$entity->id) {
-            throw new \Exception("Could not insert $entity");
-        }
-        */
-        return $entity;
+        return $this->readEntity($entity->id, $resolveReferences);
     }
 
     /**
