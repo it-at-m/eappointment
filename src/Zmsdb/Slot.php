@@ -179,18 +179,24 @@ class Slot extends Base
         $cancelledSlots = $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
             'availabilityID' => $availability->id,
         ]);
-        if (!$availability->hasBookableDates($now)) {
+        if (!$availability->withData(['bookable' => ['startInDays' => 0]])->hasBookableDates($now)) {
             $availability['processingNote'][] = "cancelled $cancelledSlots slots: availability not bookable ";
             return ($cancelledSlots > 0) ? true : false;
         }
         $availability['processingNote'][] = "cancelled $cancelledSlots slots";
+        $startDate = $availability->getBookableStart($now);
         $stopDate = $availability->getBookableEnd($now);
         $slotlist = $availability->getSlotList();
+        $slotlistIntern = $slotlist->withValueFor('callcenter', 0)->withValueFor('public', 0);
         $time = $now;
         $status = false;
         do {
-            if ($availability->hasDate($time, $now)) {
-                $writeStatus = $this->writeSlotListForDate($time, $slotlist, $availability);
+            if ($availability->withData(['bookable' => ['startInDays' => 0]])->hasDate($time, $now)) {
+                $writeStatus = $this->writeSlotListForDate(
+                    $time,
+                    ($time->getTimestamp() < $startDate->getTimestamp()) ? $slotlistIntern : $slotlist,
+                    $availability
+                );
                 $status = $writeStatus ? $writeStatus : $status;
             }
             $time = $time->modify('+1day');
