@@ -4,7 +4,7 @@ import Config from './lib/config';
 import { userSuper } from './lib/roles';
 import { getPageUrl } from './lib/client';
 
-fixture `Counter`
+fixture `Mandanten Workflow komplett`
     .page `${Config.baseUrl}/`
     .httpAuth(Config.credentials)
 ;
@@ -16,6 +16,7 @@ test('NewSource', async t => {
     const insertOpt = {replace: true, paste: true};
     await t
         .useRole(userSuper)
+        .setNativeDialogHandler(() => true) //disable dialogs
         .navigateTo(`${Config.baseUrl}/source/`)
         .expect(Selector('.source-list td.source--source').withText('dldb').exists).ok('A reference to the DLDB should be visible')
         .click('.button-new')
@@ -57,5 +58,9 @@ test('NewSource', async t => {
         .click('.availability-form select[name=workstationCount_intern]')
         .click('.availability-form select[name=workstationCount_intern] option[value="1"]')
         .click('button.button-save[value=publish]')
+        .click('.user-workstation a')
+        .click('select[name=scope]')
+        .click(Selector('select[name=scope] option').withText(testLabel))
+        .click('button.button-login')
     ;
 });
