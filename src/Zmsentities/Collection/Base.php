@@ -162,6 +162,18 @@ class Base extends \ArrayObject implements \JsonSerializable
     }
 
     /**
+     * Change a parameter on all entries
+     */
+    public function withValueFor($param, $newValue)
+    {
+        $list = new static();
+        foreach ($this as $entry) {
+            $list[] = $entry->withProperty($param, $newValue);
+        }
+        return $list;
+    }
+
+    /**
      * Reduce items data of dereferenced entities to a required minimum
      *
      */

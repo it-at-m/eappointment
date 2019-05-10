@@ -226,6 +226,16 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * Performs addData on a cloned entity
+     */
+    public function withData($mergeData)
+    {
+        $entity = clone $this;
+        $entity->addData($mergeData);
+        return $entity;
+    }
+
     public function hasId()
     {
         return (false !== $this->getId()) ? true : false;
@@ -255,6 +265,16 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public function getProperty($propertyName, $default = '')
     {
         return $this->toProperty()->{$propertyName}->get($default);
+    }
+
+    /**
+     * Change property without changing original
+     */
+    public function withProperty($propertyName, $newValue)
+    {
+        $entity = clone $this;
+        $entity[$propertyName] = $newValue;
+        return $entity;
     }
 
     /**
