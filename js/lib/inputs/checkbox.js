@@ -27,10 +27,10 @@ export const CheckboxGroup = (props) => {
     }
 
     return (
-        <span>
+        <span className={`checkbox--${props.name}`}>
         {props.boxes.map((box, key) => {
             const checked = props.value.indexOf(box.value) > -1
-            const className = `checkbox-lalbel ${props.inline ? 'checkbox-inline' : ''}`
+            const className = `checkbox-label ${props.inline ? 'checkbox-inline' : ''}`
 
             return (
                 <label {...{ key, className }}>

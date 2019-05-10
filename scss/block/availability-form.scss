@@ -12,6 +12,19 @@
     width: 100%;
   }
   
+  .checkbox--weekday {
+      .checkbox-inline {
+          padding-right: 1rem;
+      }
+  }
+
+  .add-date-picker {
+      margin-right: 1rem;
+  }
+
+  .form-input {
+      margin-right: 0.2rem;
+  }
 }
 
 #availability-abort {

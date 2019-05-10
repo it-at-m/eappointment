@@ -28,7 +28,8 @@ $openingBarTop:                 21rem;
         height:                 360px;
         height:                 26rem;
         max-width:              100%;
-        overflow:               hidden; // auto
+        overflow-y:             hidden;
+        overflow-x:             scroll;
         .inner {
             width:              24em;
             height:             100%;

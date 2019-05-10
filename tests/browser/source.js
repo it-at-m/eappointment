@@ -51,7 +51,7 @@ test('NewSource', async t => {
         .click('.availability-form select[name=startTime--minute]')
         .click('.availability-form select[name=startTime--minute] option[value="40"]')
         .click('.availability-form select[name=endTime--hour]')
-        .click('.availability-form select[name=endTime--hour] option[value="8"]')
+        .click('.availability-form select[name=endTime--hour] option[value="21"]')
         .click('.availability-form select[name=endTime--minute]')
         .click('.availability-form select[name=endTime--minute] option[value="10"]')
         .click('.availability-form select[name=workstationCount_intern]')
