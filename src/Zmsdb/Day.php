@@ -9,6 +9,8 @@ use \BO\Zmsentities\Day as Entity;
 class Day extends Base
 {
 
+    protected $tempScopeListExists = false;
+
     public function writeTemporaryScopeList(\BO\Zmsentities\Calendar $calendar, $slotsRequiredForce = null)
     {
         $this->getReader()->exec(Query\Day::QUERY_CREATE_TEMPORARY_SCOPELIST);
@@ -28,6 +30,7 @@ class Day extends Base
                 ]);
             }
         }
+        $this->tempScopeListExists = true;
     }
 
     public function readByCalendar(\BO\Zmsentities\Calendar $calendar, $slotsRequiredForce = null)
@@ -47,7 +50,16 @@ class Day extends Base
             $day = new \BO\Zmsentities\Day($day);
             $dayList[$day->getDayHash()] = $day;
         }
-        $this->getReader()->exec(Query\Day::QUERY_DROP_TEMPORARY_SCOPELIST);
         return $dayList;
+    }
+
+    /**
+     * Remove temporary scope list at destruct to allow other functions to use it
+     */
+    public function __destruct()
+    {
+        if ($this->tempScopeListExists) {
+            $this->getReader()->exec(Query\Day::QUERY_DROP_TEMPORARY_SCOPELIST);
+        }
     }
 }

@@ -4,6 +4,7 @@
 * #36279 Bugfix: Mehrfache Anzeige von Standorten entfernt, wenn diese über neue Mandanten angelegt wurden
 * #36319 Bugfix: Wenn die berechneten Slots vor dem Buchungszeitraum liegen, sollen diese nur intern buchbar sein. (ACHTUNG: Vergleichszahlen in den Tests ändern sich.)
 * #36318 Erlaube das Berechnen von Slots auch via API-Funktionen
+* #36259 Hole die Eigenschaft bookableEnd für den Kalender aus der Datenbank
 
 ## v2.19.07
 
