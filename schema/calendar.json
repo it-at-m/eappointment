@@ -88,6 +88,10 @@
     ],
     "additionalProperties": false,
     "properties": {
+        "bookableEnd": {
+          "type": "number",
+          "description": "unix timestamp of a day representing the end of the bookable time. Paging after thise date should reveal no new appointments."
+        },
         "clusters": {
             "type": "array",
             "items": {

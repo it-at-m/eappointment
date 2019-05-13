@@ -3,6 +3,7 @@
 * #36152 Bugfix: Fehlermeldung zu nicht vorhandenen Apikey Quotas behoben.
 * #36190 Bugfix: Leerzeichen sind als Platz-/Raumangabe nicht mehr erlaubt
 * #36319 Funktionen um Objekte via Immutability mit geänderten Daten zu verwenden
+* #36259 Schema calendar erhält die zusätzliche Eigenschaft "bookableEnd"
 
 ## v2.19.07
 
