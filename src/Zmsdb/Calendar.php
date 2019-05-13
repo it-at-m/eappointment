@@ -122,8 +122,11 @@ class Calendar extends Base
         $slotsRequiredForce
     ) {
         if (!$resolveOnlyScopes) {
-            $dayList = (new Day())->readByCalendar($calendar, $slotsRequiredForce);
+            $dayQuery = new Day();
+            $dayList = $dayQuery->readByCalendar($calendar, $slotsRequiredForce);
             $calendar->days = $dayList->setStatusByType($slotType, $now);
+            $bookableEndString = $this->getReader()->fetchValue(Query\Calendar::QUERY_CALENDAR_BOOKABLEEND);
+            $calendar->bookableEnd = (new \DateTimeImmutable($bookableEndString, $now->getTimezone()))->getTimestamp();
         }
         return $calendar;
     }
