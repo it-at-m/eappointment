@@ -15,6 +15,8 @@ class Calendar extends Base
         FROM
             calendarscope c
             LEFT JOIN slot USING(scopeID)
+        WHERE
+            slot.status = 'free'
         ;
     ";
 }
