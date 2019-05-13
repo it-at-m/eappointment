@@ -16,13 +16,11 @@ class ProcessStatusFree extends Process
         $slotsRequired = null,
         $groupData = false
     ) {
-        //$resolvedCalendar = new Calendar();
         $calendar = (new Calendar())->readResolvedEntity($calendar, $now, true);
-        (new Day)->writeTemporaryScopeList($calendar, $slotsRequired);
+        $dayquery = new Day();
+        $dayquery->writeTemporaryScopeList($calendar, $slotsRequired);
         $selectedDate = $calendar->getFirstDay();
         $processList = new Collection();
-        //$calendar->setLastDayTime($selectedDate);
-        //$calendar = $resolvedCalendar->readResolvedEntity($calendar, $now, $selectedDate, $slotType, $slotsRequired);
         $processData = $this->fetchHandle(
             Query\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAY
             . ($groupData ? Query\ProcessStatusFree::GROUPBY_SELECT_PROCESSLIST_DAY : ''),
@@ -46,10 +44,9 @@ class ProcessStatusFree extends Process
             $process->queue['withAppointment'] = 1;
             $process->appointments->getFirst()->scope = $process->scope;
             $processList->addEntity($process);
-            //var_dump("$process");
         }
         $processData->closeCursor();
-        $this->getReader()->exec(Query\Day::QUERY_DROP_TEMPORARY_SCOPELIST);
+        unset($dayquery); // drop temporary scope list
         return $processList;
     }
 
