@@ -10,7 +10,12 @@ class Day extends Base
 {
 
     const QUERY_CREATE_TEMPORARY_SCOPELIST = '
-        CREATE TEMPORARY TABLE calendarscope ( scopeID INT, year SMALLINT, month TINYINT, slotsRequired TINYINT );
+        CREATE TEMPORARY TABLE calendarscope (
+            scopeID INT,
+            year SMALLINT,
+            month TINYINT,
+            slotsRequired TINYINT
+        );
     ';
 
     const QUERY_INSERT_TEMPORARY_SCOPELIST = '
@@ -62,7 +67,14 @@ class Day extends Base
             SELECT
                 IFNULL(COUNT(p.slotID), 0) confirmed,
                 IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots) slotsRequired,
-                s.*
+                s.slotID,
+                s.year,
+                s.month,
+                s.day,
+                s.time,
+                s.public,
+                s.callcenter,
+                s.intern
             FROM
                 calendarscope c
                 INNER JOIN slot s
