@@ -249,7 +249,7 @@ class Scope extends Base
         if ($resolveReferences > 0) {
             // resolveReferences > 0 is only necessary for a resolved process
             $queueList = (new Process())
-                ->readProcessListByScopeAndTime($scopeId, $dateTime, $resolveReferences)
+                ->readProcessListByScopeAndTime($scopeId, $dateTime, $resolveReferences - 1)
                 ->toQueueList($dateTime);
         } else {
             $queueList = (new Queue())
