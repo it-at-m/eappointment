@@ -2,6 +2,7 @@
 
 * #36162 Bugfix: Tresen Block "Informationen" auch für normale Nutzer anzeigen
 * #36318 Führe Slot-Berechnung auch nach einem Update der Öffnungszeiten durch
+* #32626 Performance-Optimierung für /scope/{id}/queue/{number}/
 
 ## v2.19.06
 
