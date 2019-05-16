@@ -8,6 +8,8 @@ class Schema extends \ArrayObject
 
     protected $asObject = null;
 
+    protected $defaults = [];
+
     /**
      * Read the json schema and let array act like an object
      */
@@ -70,10 +72,15 @@ class Schema extends \ArrayObject
         return $this;
     }
 
+    public function setDefaults($defaults)
+    {
+        $this->defaults = $defaults;
+    }
+
     public function toSanitizedArray($keepEmpty = false)
     {
         $data = $this->getArrayCopy();
-        $data = $this->toSanitizedValue($data, $keepEmpty);
+        $data = $this->toSanitizedValue($data, $keepEmpty, $this->defaults);
         return $data;
     }
 
@@ -81,7 +88,7 @@ class Schema extends \ArrayObject
      * Sanitize value for valid export as JSON
      *
      */
-    protected function toSanitizedValue($value, $keepEmpty = false)
+    protected function toSanitizedValue($value, $keepEmpty = false, $defaults = [])
     {
         if ($value instanceof \BO\Zmsentities\Helper\NoSanitize) {
             return $value;
@@ -89,14 +96,30 @@ class Schema extends \ArrayObject
         if ($value instanceof \BO\Zmsentities\Collection\JsonUnindexed) {
             $value = array_values($value->getArrayCopy());
         } elseif ($value instanceof \ArrayObject) {
+            if (method_exists($value, 'getDefaults')) {
+                $defaults = $value->getDefaults();
+            }
             $value = $value->getArrayCopy();
         }
         if (is_array($value)) {
-            foreach ($value as $key => $item) {
-                $value[$key] = $this->toSanitizedValue($item, $keepEmpty);
-                if (! $keepEmpty && $this->isItemEmpty($value[$key])) {
-                    unset($value[$key]);
+            $value = $this->toSanitizedList($value, $keepEmpty, $defaults);
+        }
+        return $value;
+    }
+
+    protected function toSanitizedList($value, $keepEmpty, $defaults = [])
+    {
+        foreach ($value as $key => $item) {
+            if (isset($defaults[$key])) {
+                $value[$key] = $this->toSanitizedValue($item, $keepEmpty, $defaults[$key]);
+                if ($defaults[$key] === $value[$key]) {
+                    $value[$key] = null;
                 }
+            } else {
+                $value[$key] = $this->toSanitizedValue($item, $keepEmpty);
+            }
+            if (! $keepEmpty && $this->isItemEmpty($value[$key])) {
+                unset($value[$key]);
             }
         }
         return $value;

@@ -180,6 +180,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
             $serialize = $schema;
         } else {
             $schema = new Schema($schema);
+            $schema->setDefaults($this->getDefaults());
             $serialize = $schema->toJsonObject();
         }
         return $serialize;
