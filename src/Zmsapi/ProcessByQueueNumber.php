@@ -22,15 +22,21 @@ class ProcessByQueueNumber extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-        $scope = (new Scope())->readEntity($args['id']);
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $scope = (new Scope())->readWithWorkstationCount(
+            $args['id'],
+            \App::$now,
+            ($resolveReferences > 0) ? $resolveReferences - 1 : 0
+        );
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        $queueLimit = $scope->getPreference('queue', 'lastNumber');
-        $process = ProcessStatusQueued::init()
-            ->readByQueueNumberAndScope($args['number'], $scope->id, $resolveReferences, $queueLimit);
-        if (! $process->hasId()) {
+        $queueList = (new \BO\Zmsdb\Scope)->readQueueListWithWaitingTime($scope, \App::$now, $resolveReferences + 1);
+        $process = $queueList->getQueueByNumber($args['number']);
+        if ($process) {
+            $process = $process->getProcess();
+            $process->scope = $scope;
+        } else {
             throw new Exception\Process\ProcessNotFound();
         }
 
