@@ -30,8 +30,10 @@ $timeInterval = array_shift($timeIntervalList);
 $verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
 $commit = preg_grep('#^--commit$#', $argv);
 $pending = preg_grep('#^--pending$#', $argv);
-
-if ($timeInterval) {
+if ($verbose) {
+    error_log("Using Path $dir");
+}
+if ($timeInterval !== null) {
     if (class_exists('\App') && isset(\App::$now)) {
         $now = \App::$now;
     } else {
