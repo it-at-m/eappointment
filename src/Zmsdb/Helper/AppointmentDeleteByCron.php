@@ -44,7 +44,7 @@ class AppointmentDeleteByCron
         $this->time = $time->setTimestamp($now->getTimestamp() - $deleteInSeconds);
         if ($verbose) {
             error_log(
-                "INFO: Deleting appointments older than $timeIntervalDays days of date " . $this->time->format('c')
+                "INFO: Deleting appointments older than " . $this->time->format('c')
             );
             $this->verbose = true;
         }

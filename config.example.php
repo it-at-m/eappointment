@@ -32,3 +32,11 @@ if (getenv('MYSQL_PASSWORD') || getenv('MYSQL_ROOT_PASSWORD')) {
 ];
 
 \BO\Zmsdb\Source\Dldb::$importPath = 'tests/Zmsdb/fixtures/';
+
+if (getenv('ZMS_TIMEADJUST')) {
+
+    class App {
+        public static $now;
+    }
+    App::$now = new DateTimeImmutable(date(getenv('ZMS_TIMEADJUST')), new DateTimeZone('Europe/Berlin'));
+}
