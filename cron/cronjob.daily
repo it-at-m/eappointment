@@ -13,9 +13,8 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
         $API config cron archiveStatisticData|grep -q "$ZMS_ENV" && $BIN/archiveStatisticData --commit
         $API config cron resetGhostWorkstationCount|grep -q "$ZMS_ENV" && $BIN/resetGhostWorkstationCount --commit
         $API config cron resetWorkstations|grep -q "$ZMS_ENV" && $BIN/resetWorkstations --commit
-        # TODO reset deleteAppointmentData to 1 day, using 3 days keeps ZMS1 in charge for archiving statistical data
-        #$API config cron deleteAppointmentData|grep -q "$ZMS_ENV" && $BIN/deleteAppointmentData 1 --commit
-        $API config cron deleteAppointmentData|grep -q "$ZMS_ENV" && $BIN/deleteAppointmentData 3 --commit
+        # TODO set deleteAppointmentData to 0 day, using 1 day keeps ZMS1 in charge for archiving statistical data
+        $API config cron deleteAppointmentData|grep -q "$ZMS_ENV" && $BIN/deleteAppointmentData 1 --commit
         $API config cron deleteDayoffData|grep -q "$ZMS_ENV" && $BIN/deleteDayoffData 6 --commit
         $API config cron deleteOldAvailabilityData|grep -q "$ZMS_ENV" && $BIN/deleteOldAvailabilityData 28 --commit
         $API config cron sendProcessListToScopeAdmin|grep -q "$ZMS_ENV" && $BIN/sendProcessListToScopeAdmin --commit 141
