@@ -33,8 +33,9 @@ class WarehousePeriodGetTest extends Base
             ['groupby' => 'day'],
             []
         );
+        $entity = (new \BO\Zmsclient\Result($response))->getEntity();
         $this->assertContains('exchange.json', (string)$response->getBody());
-        $this->assertContains('"period":"day"', (string)$response->getBody());
+        $this->assertEquals($entity->period, 'day');
         $this->assertContains('"firstDay":{"year":"2016","month":"03","day":"01"', (string)$response->getBody());
         $this->assertContains('"lastDay":{"year":"2016","month":"03","day":"31"', (string)$response->getBody());
 

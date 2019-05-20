@@ -25,7 +25,7 @@ class OrganisationHashTest extends Base
     {
         $response = $this->render(['id' => 65], [], []); //Friedrichshain-Kreuzberg mit kioskpasswortschutz
         $this->assertContains('ticketprinter.json', (string)$response->getBody());
-        $this->assertContains('"enabled":false', (string)$response->getBody());
+        $this->assertNotContains('"enabled"', (string)$response->getBody()); // enabled=false is default
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
