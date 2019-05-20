@@ -16,8 +16,9 @@ class Source extends Schema\Entity
                 'name' => '',
                 'email' => ''
             ]),
-            'providers' => [],
-            'requests' => [],
+            'providers' => new Collection\ProviderList(),
+            'requests' => new Collection\RequestList(),
+            'requestrelation' => new Collection\RequestRelationList(),
             'label' => '',
             'editable' => false
         ];
