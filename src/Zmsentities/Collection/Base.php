@@ -186,6 +186,13 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $list;
     }
 
+    public function setJsonCompressLevel($jsonCompressLevel)
+    {
+        foreach ($this as $item) {
+            $item->setJsonCompressLevel($jsonCompressLevel);
+        }
+    }
+
     public function jsonSerialize()
     {
         return $this->getArrayCopy();
