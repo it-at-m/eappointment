@@ -31,6 +31,11 @@ class Entity extends \ArrayObject implements \JsonSerializable
     protected $jsonSchema = null;
 
     /**
+     * @var Int $jsonCompressLevel
+     */
+    protected $jsonCompressLevel = 0;
+
+    /**
      * @var Array $schemaCache for not loading and interpreting a schema twice
      *
      */
@@ -170,6 +175,12 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $entity;
     }
 
+    public function setJsonCompressLevel($jsonCompressLevel)
+    {
+        $this->jsonCompressLevel = $jsonCompressLevel;
+        return $this;
+    }
+
     public function jsonSerialize()
     {
         $schema = array(
@@ -181,6 +192,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         } else {
             $schema = new Schema($schema);
             $schema->setDefaults($this->getDefaults());
+            $schema->setJsonCompressLevel($this->jsonCompressLevel);
             $serialize = $schema->toJsonObject();
         }
         return $serialize;

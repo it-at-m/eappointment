@@ -11,6 +11,11 @@ class Schema extends \ArrayObject
     protected $defaults = [];
 
     /**
+     * @var Int $jsonCompressLevel
+     */
+    protected $jsonCompressLevel = 0;
+
+    /**
      * Read the json schema and let array act like an object
      */
     public function __construct($input = [], $flags = \ArrayObject::ARRAY_AS_PROPS, $iterator_class = "ArrayIterator")
@@ -77,6 +82,12 @@ class Schema extends \ArrayObject
         $this->defaults = $defaults;
     }
 
+    public function setJsonCompressLevel($jsonCompressLevel)
+    {
+        $this->jsonCompressLevel = $jsonCompressLevel;
+        return $this;
+    }
+
     public function toSanitizedArray($keepEmpty = false)
     {
         $data = $this->getArrayCopy();
@@ -110,7 +121,7 @@ class Schema extends \ArrayObject
     protected function toSanitizedList($value, $keepEmpty, $defaults = [])
     {
         foreach ($value as $key => $item) {
-            if (isset($defaults[$key])) {
+            if ($this->jsonCompressLevel > 0 && isset($defaults[$key])) {
                 $value[$key] = $this->toSanitizedValue($item, $keepEmpty, $defaults[$key]);
                 if ($defaults[$key] === $value[$key]) {
                     $value[$key] = null;
