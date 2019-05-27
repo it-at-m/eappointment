@@ -47,6 +47,8 @@ class Application extends \BO\Slim\Application
 
     public static $http_curl_config = array();
 
+    const JSON_COMPRESS_LEVEL = 1;
+
     /**
      * HTTP url for api
      */
