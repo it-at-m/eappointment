@@ -2,6 +2,7 @@
 
 * #35764 Deploy Tokens eingebaut
 * #35697 Darstellung der Wartezeit jetzt wie in der Aufrufanzeige mit optimistischer - geschätzter Wartezeit
+* #32626 Config für Performance-Optimierung (kann über JSON_COMPRESS_LEVEL=0 deaktiviert werden)
 
 ## v2.19.03
 
