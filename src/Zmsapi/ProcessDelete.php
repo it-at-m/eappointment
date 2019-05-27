@@ -29,12 +29,20 @@ class ProcessDelete extends BaseController
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $process = (new Process)->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 1);
         $this->testProcessData($process, $args['authKey']);
+        $originalStatus = $process->status;
         $process->status = 'deleted';
-        $this->writeMails($request, $process);
-        $processDeleted = (new Process)->deleteEntity($args['id'], $args['authKey']);
-        if (! $processDeleted || ! $processDeleted->hasId()) {
-            throw new Exception\Process\ProcessDeleteFailed(); // @codeCoverageIgnore
+        if ($originalStatus == 'reserved') {
+            if (!(new Process)->writeBlockedEntity($process)) {
+                throw new Exception\Process\ProcessDeleteFailed(); // @codeCoverageIgnore
+            }
+            $processDeleted = $process;
+        } else {
+            $processDeleted = (new Process)->writeCanceledEntity($args['id'], $args['authKey']);
+            if (! $processDeleted || ! $processDeleted->hasId()) {
+                throw new Exception\Process\ProcessDeleteFailed(); // @codeCoverageIgnore
+            }
         }
+        $this->writeMails($request, $process);
         $message = Response\Message::create($request);
         $message->data = $processDeleted;
 
