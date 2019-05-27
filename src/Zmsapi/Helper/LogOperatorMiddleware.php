@@ -17,7 +17,7 @@ class LogOperatorMiddleware
         callable $next
     ) {
         $authority = $request->getUri()->getAuthority();
-        \BO\Zmsdb\Log::$operator = $this->getAuthorityWithoutPassword($authority);
+        \BO\Zmsdb\Log::$operator = $this->getAuthorityWithoutPassword($authority) . '@' . gethostname();
         if (null !== $next) {
             $response = $next($request, $response);
         }
