@@ -53,6 +53,11 @@ class Http
     protected $workflowkeyString = null;
 
     /**
+     * @var Int $jsonCompressLevel
+     */
+    public static $jsonCompressLevel = null;
+
+    /**
      *
      * @param Psr7\ClientInterface $client
      */
@@ -128,6 +133,9 @@ class Http
         }
         if (null !== $this->workflowkeyString) {
             $request = $request->withHeader('X-Workflow-Key', $this->workflowkeyString);
+        }
+        if (null !== static::$jsonCompressLevel) {
+            $request = $request->withHeader('X-JsonCompressLevel', static::$jsonCompressLevel);
         }
 
         return $request;
