@@ -56,6 +56,20 @@ class Message implements \JsonSerializable
         );
     }
 
+    protected function getJsonCompressLevel()
+    {
+        $jsonCompressLevel = 0;
+        $validator = $this->request->getAttribute('validator');
+        if ($validator) {
+            $jsonCompressLevel = $validator->getParameter('compress')
+                ->isNumber()
+                ->setDefault(0)
+                ->getValue();
+        }
+        $header = intval($this->request->getHeaderLine('X-JsonCompressLevel'));
+        return ($header) ? $header : $jsonCompressLevel;
+    }
+
     /**
      * Update meta-data
      * check for data in response
@@ -85,6 +99,10 @@ class Message implements \JsonSerializable
         $schema .= '://';
         $schema .= $this->request->getUri()->getHost();
         $schema .= \App::$slim->urlFor('index');
+        $jsonCompressLevel = $this->getJsonCompressLevel();
+        if ($jsonCompressLevel > 0 && $this->data) {
+            $this->data->setJsonCompressLevel($jsonCompressLevel);
+        }
         $message = [
             '$schema' => $schema,
             "meta" => $this->meta,
