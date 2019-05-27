@@ -4,6 +4,7 @@
 * #35836 Bugfix: Falsche Fehlermeldung beim Löschen eines Kunden ohne Root-Rechte entfernt
 * #36282 Kalender-Navigation fixiert um ein Springen beim Blättern zu vermeiden
 * #31592 Bugfix: Mandanten-Label wurde auf 10 Zeichen beschränkt um DB-Fehler zu vermeiden
+* #32626 Config für Performance-Optimierung (kann über JSON_COMPRESS_LEVEL=0 deaktiviert werden)
 
 ## v2.19.05
 
