@@ -178,10 +178,12 @@ class SlotTest extends Base
         ];
         $availability['startTime'] = '08:00:00';
         $availability['endTime'] = '12:00:00';
+        $availability['lastChange'] = $availability->startDate;
+        $availability['scope']['lastChange'] = $availability->startDate;
         //var_dump($availability);
 
-        $realLastChange = (new Slot())->readLastChangedTimeByAvailability($availability);
-        $monday = $realLastChange->modify('next monday');
+        $startDate = (new \DateTimeImmutable())->setTimestamp($availability->startDate);
+        $monday = $startDate->modify('next monday');
 
         $this->assertOutdated(
             $monday->modify('06:00:00'),
@@ -384,6 +386,8 @@ class SlotTest extends Base
         $values = "\t%s = %s\n";
         $debug .= sprintf($values, 'now', $now->format('c l'));
         $debug .= sprintf($values, 'last', $lastChange->format('c l'));
+        $debug .= sprintf($values, 'Availability(lastChange)', (new \DateTimeImmutable)
+            ->setTimestamp($availability->lastChange)->format('c l'));
         $debug .= sprintf($values, 'BookableStart(now)', $availability->getBookableStart($now));
         $debug .= sprintf($values, 'BookableStart(last)', $availability->getBookableStart($lastChange));
         $debug .= sprintf($values, 'BookableEnd(now)', $availability->getBookableEnd($now));
