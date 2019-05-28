@@ -152,7 +152,6 @@ class Slot extends Base
             $availability['processingNote'][] = 'outdated: slots invalidated by bookable start';
             return true;
         }
-        //error_log("Not outdated: $availability");
         $availability['processingNote'][] = 'not outdated';
         return false;
     }
