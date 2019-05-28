@@ -1,9 +1,12 @@
+## v2.20.00
+
+* #32626 Config für Performance-Optimierung (kann über JSON_COMPRESS_LEVEL=0 deaktiviert werden)
+
 ## v2.19.05
 
 * #35764 Deploy Tokens eingebaut
 * #35671 Wenn Wartende angezeigt werden sollen, zeige unter Raum/Platz die Wartezeit an
 * #35671 Bei mehrspaltiger Anzeige werden jetzt wieder Anzahl der Wartenden und die Wartezeit angezeigt
-* #32626 Config für Performance-Optimierung (kann über JSON_COMPRESS_LEVEL=0 deaktiviert werden)
 
 ## v2.19.03
 
