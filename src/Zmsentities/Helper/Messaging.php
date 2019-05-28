@@ -23,6 +23,22 @@ class Messaging
         'deleted'
     ];
 
+    public static function isIcsRequired(
+        \BO\Zmsentities\Config $config,
+        \BO\Zmsentities\Process $process
+    ) {
+        $status = static::getMessagingStatus($process);
+        $client = $process->getFirstClient();
+        $noAttachmentDomains = $config->toProperty()->notifications->noAttachmentDomains->get();
+        $noAttachmentDomains = explode(',', (string)$noAttachmentDomains);
+        foreach ($noAttachmentDomains as $matching) {
+            if (trim($matching) && strpos($client->email, '@'.trim($matching))) {
+                return false;
+            }
+        }
+        return (in_array($status, Messaging::$icsRequiredForStatus));
+    }
+
     protected static $templates = array(
         'notification' => array(
             'appointment' => 'notification_appointment.twig',
@@ -135,7 +151,7 @@ class Messaging
         return $template;
     }
 
-    public static function getMessagingStatus($process)
+    public static function getMessagingStatus(Process $process)
     {
         $status = $process->status;
         if (('confirmed' == $status || 'queued' == $status) && $process->isWithAppointment()) {
