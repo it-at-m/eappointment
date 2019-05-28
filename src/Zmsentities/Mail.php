@@ -103,8 +103,7 @@ class Mail extends Schema\Entity
     public function toResolvedEntity(Process $process, Config $config, $initator = null)
     {
         $entity = clone $this;
-        $status = Messaging::getMessagingStatus($process);
-        $icsRequired = (in_array($status, Messaging::$icsRequiredForStatus));
+        $icsRequired = Messaging::isIcsRequired($config, $process);
         $content = Messaging::getMailContent($process, $config, $initator);
         $entity->process = $process;
         $entity->subject = Messaging::getMailSubject($process, $config, $initator);

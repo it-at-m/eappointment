@@ -5,6 +5,7 @@
 * #36319 Funktionen um Objekte via Immutability mit geänderten Daten zu verwenden
 * #36259 Schema calendar erhält die zusätzliche Eigenschaft "bookableEnd"
 * #36370 JSON-Encode der Entitäten entfernt Default-Werte um das Dateiformat kleiner zu machen
+* #36380 ICS-Kalender-Anhänge nicht an konfigurierte Domains senden
 
 ## v2.19.07
 
