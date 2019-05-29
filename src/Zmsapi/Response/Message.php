@@ -100,7 +100,7 @@ class Message implements \JsonSerializable
         $schema .= $this->request->getUri()->getHost();
         $schema .= \App::$slim->urlFor('index');
         $jsonCompressLevel = $this->getJsonCompressLevel();
-        if ($jsonCompressLevel > 0 && $this->data) {
+        if ($jsonCompressLevel > 0 && $this->data && is_object($this->data)) {
             $this->data->setJsonCompressLevel($jsonCompressLevel);
         }
         $message = [
