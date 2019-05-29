@@ -41,6 +41,7 @@ test('NewAppointment', async t => {
         .expect(Selector('.dialog .body').textContent).contains('Vorgangsnummer', 'use right term for an appointment')
         .click('.lightbox .dialog .button-ok')
         .expect(Selector('.queue-table a[data-id="'+processId+'"]').exists).ok()
+        .click(Selector('.queue-table a[data-id="'+processId+'"].process-edit'))
         .click('button.process-delete')
         .click('.lightbox .dialog .button-ok')
         .click('.lightbox .dialog .button-ok')
