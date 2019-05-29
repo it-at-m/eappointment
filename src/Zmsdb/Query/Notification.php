@@ -29,7 +29,8 @@ class Notification extends Base
             'client__telephone' => 'notification.clientTelephone',
             'client__familyName' => 'notification.clientFamilyName',
             'process__id' => 'notification.processID',
-            'department__id' => 'notification.departmentID'
+            'department__id' => 'notification.departmentID',
+            'process__scope__id' => 'notification.scopeID'
         ];
     }
 

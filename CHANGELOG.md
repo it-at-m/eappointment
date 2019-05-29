@@ -7,6 +7,7 @@
 * #36259 Hole die Eigenschaft bookableEnd für den Kalender aus der Datenbank
 * #32626 Performance-Optimierung für /scope/{id}/queue/{number}/
 * #36380 Migration: Füge Config notifications__noAttachmentDomains für outlook.de und ähnliche Domains hinzu
+* #36114 Migration: Erfasse Standort-ID für SMS-Notifications
 
 ## v2.19.07
 
