@@ -38,6 +38,7 @@ class ValidationHandler extends BaseView {
         list.classList.add(`error-list`)
         item.messages.forEach((messageElement) => {
             var listItem = document.createElement("li")
+            listItem.setAttribute('data-key', key);
             listItem.appendChild(document.createTextNode(messageElement.message));
             list.appendChild(listItem)
         })
