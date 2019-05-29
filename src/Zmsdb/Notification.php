@@ -50,12 +50,15 @@ class Notification extends Base
     {
         if (1 <= $resolveReferences) {
             $processQuery = new \BO\Zmsdb\Process();
-            $notification->process = $processQuery
+            $process = $processQuery
                 ->readEntity(
                     $notification->process['id'],
-                    $processQuery->readAuthKeyByProcessId($notification->process['id'])['authKey'],
+                    new Helper\NoAuth(),
                     $resolveReferences - 1
                 );
+            if ($process) {
+                $notification->process = $process;
+            }
             $notification->department = (new \BO\Zmsdb\Department())
                 ->readEntity($notification->department['id'], $resolveReferences - 1);
         }
@@ -77,6 +80,7 @@ class Notification extends Base
         $query = new Query\Notification(Query\Base::INSERT);
         $query->addValues(array(
             'processID' => $notification->process['id'],
+            'scopeID' => $notification->process['scope']['id'],
             'departmentID' => $department->toProperty()->id->get(),
             'createIP' => $notification->createIP,
             'createTimestamp' => time(),
