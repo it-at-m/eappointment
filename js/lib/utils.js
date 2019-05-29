@@ -1,3 +1,4 @@
+/* global window */
 import $ from 'jquery'
 import moment from 'moment'
 import Baseview from './baseview';
