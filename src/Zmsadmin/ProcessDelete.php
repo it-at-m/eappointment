@@ -35,18 +35,19 @@ class ProcessDelete extends BaseController
         $initiator = Validator::param('initiator')->isString()->getValue();
         \App::$http->readDeleteResult('/process/'. $process->getId() .'/', ['initiator' => $initiator])->getEntity();
 
-        $this->testDeleteMailNotifications($process);
+        $this->writeMailNotifications($process);
 
         return \BO\Slim\Render::withHtml(
             $response,
             'element/helper/messageHandler.twig',
             array(
                 'success' => 'process_deleted',
+                'selectedprocess' => $process,
             )
         );
     }
 
-    protected function testDeleteMailNotifications($process)
+    protected function writeMailNotifications($process)
     {
         if ($process->getFirstClient()->hasEmail() &&
             $process->isWithAppointment() &&
