@@ -5,6 +5,8 @@
 * #36282 Kalender-Navigation fixiert um ein Springen beim Blättern zu vermeiden
 * #31592 Bugfix: Mandanten-Label wurde auf 10 Zeichen beschränkt um DB-Fehler zu vermeiden
 * #32626 Config für Performance-Optimierung (kann über JSON_COMPRESS_LEVEL=0 deaktiviert werden)
+* #35835 Bugfix: Nein/Abbruch-Button in Dialog-Box funktioniert wieder
+* #35869 Refactoring: Validierung bei der Terminvereinbarung überarbeitet
 
 ## v2.19.05
 
