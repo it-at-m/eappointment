@@ -53,31 +53,31 @@ Request::ini($client);
 
 $downloads = array(
     array(
-        'url' => '/standorte/export/simple/json/',
+        'url' => '/export/standorte/json/',
         'file' => 'locations_de.json',
     ),
     array(
-        'url' => '/standorte/export/simple/json/en/',
+        'url' => '/export/standorte/json/en/',
         'file' => 'locations_en.json',
     ),
     array(
-        'url' => '/dienstleistungen/export/simple/json/',
+        'url' => '/export/dienstleistungen/json/',
         'file' => 'services_de.json',
     ),
     array(
-        'url' => '/dienstleistungen/export/simple/json/en/',
+        'url' => '/export/dienstleistungen/json/en/',
         'file' => 'services_en.json',
     ),
     array(
-        'url' => '/themen/export/simple/json/',
+        'url' => '/export/themen/json/',
         'file' => 'topic_de.json',
     ),
     array(
-        'url' => '/behoerden/export/simple/json/',
+        'url' => '/export/behoerden/json/',
         'file' => 'authority_de.json',
     ),
     array(
-        'url' => '/settings/export/simple/json/',
+        'url' => '/export/settings/json/',
         'file' => 'settings.json',
     ),
 );
