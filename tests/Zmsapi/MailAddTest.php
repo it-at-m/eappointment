@@ -27,8 +27,8 @@ class MailAddTest extends Base
     public function testUnvalidInput()
     {
         $this->setWorkstation();
-        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
-        $this->expectExceptionCode(400);
+        $this->expectException('\BO\Zmsdb\Exception\Mail\ClientWithoutEmail');
+        $this->expectExceptionCode(404);
         $this->render([], [
             '__body' => '{
               "createIP": "145.15.3.10",
