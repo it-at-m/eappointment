@@ -125,6 +125,7 @@ class Notification extends BaseController
         $mailer->SetFrom($from);
         $mailer->FromName = $sender;
         $mailer->CharSet = 'UTF-8';
+        $mailer->XMailer = \App::IDENTIFIER;
         $mailer->SetLanguage("de");
         return $mailer;
     }
