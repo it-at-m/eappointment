@@ -23,7 +23,7 @@ class NotificationDelete extends BaseController
         (new Helper\User($request))->checkRights('superuser');
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $query = new Query();
-        $notification = $query->readEntity($args['id']);
+        $notification = $query->readEntity($args['id'], 2);
         if ($notification && ! $notification->hasId()) {
             throw new Exception\Notification\NotificationNotFound();
         }
