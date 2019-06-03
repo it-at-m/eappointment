@@ -40,9 +40,10 @@ class Request extends Base
     {
         $this->leftJoin(
             new Alias("buergeranliegen", 'buergeranliegen'),
-            'buergeranliegen.AnliegenID',
-            '=',
-            'request.id'
+            self::expression('
+                buergeranliegen.AnliegenID = request.id
+                AND buergeranliegen.source = request.source
+            ')
         );
         $this->query->where('buergeranliegen.BuergerID', '=', $processId);
         return $this;
@@ -52,9 +53,10 @@ class Request extends Base
     {
         $this->leftJoin(
             new Alias("buergeranliegen", 'buergeranliegen'),
-            'buergeranliegen.AnliegenID',
-            '=',
-            'request.id'
+            self::expression('
+                buergeranliegen.AnliegenID = request.id
+                AND buergeranliegen.source = request.source
+            ')
         );
         $this->query->where('buergeranliegen.BuergerarchivID', '=', $archiveId);
         return $this;

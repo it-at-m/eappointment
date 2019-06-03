@@ -8,6 +8,7 @@
 * #32626 Performance-Optimierung für /scope/{id}/queue/{number}/
 * #36380 Migration: Füge Config notifications__noAttachmentDomains für outlook.de und ähnliche Domains hinzu
 * #36114 Migration: Erfasse Standort-ID für SMS-Notifications
+* #36432 Migration: Source-Feld für Bürgeranliegen um Dienstleistungen aus Mandanten richtig zuzuordnen
 
 ## v2.19.07
 
