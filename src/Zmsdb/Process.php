@@ -587,6 +587,7 @@ class Process extends Base implements Interfaces\ResolveReferences
                     $query->addValues(
                         [
                             'AnliegenID' => $request['id'],
+                            'source' => $request['source'],
                             'BuergerID' => $process->id
                         ]
                     );
