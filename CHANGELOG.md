@@ -4,6 +4,7 @@
 * #36318 Führe Slot-Berechnung auch nach einem Update der Öffnungszeiten durch
 * #32626 Performance-Optimierung für /scope/{id}/queue/{number}/
 * #35912 Reservierte Termine sofort löschen wenn angefordert, nicht erst nach der Reservierungsdauer
+* #36432 Bugfix: Korrektur zur Anzeige der gebuchten Dienstleistungen in der Tresentabelle
 
 ## v2.19.06
 
