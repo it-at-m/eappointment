@@ -10,6 +10,16 @@ class Mail extends Schema\Entity
 
     public static $schema = "mail.json";
 
+    public function getDefaults()
+    {
+        return [
+            'multipart' => new Collection\MimepartList(),
+            'process' => new Process(),
+            'department' => new Department(),
+            'client' => new Client(),
+        ];
+    }
+
     public function getProcessId()
     {
         return $this->toProperty()->process->id->get();
