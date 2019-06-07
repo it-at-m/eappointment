@@ -12,7 +12,7 @@ use \Psr\Http\Message\ResponseInterface;
 /**
   *
   */
-class TwigExceptionHandler
+class TwigExceptionHandler extends Controller
 {
 
     const DEFAULT_TEMPLATE = "exception/default.twig";
@@ -35,8 +35,7 @@ class TwigExceptionHandler
             return true;
         }
         $container = \App::$slim->getContainer();
-        $controller = new Controller($container);
-        $request = $controller->initRequest($request);
+        $request = (new static($container))->initRequest($request);
         if ($exception->getCode() >= 200) {
             $status = $exception->getCode();
         }
