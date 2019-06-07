@@ -5646,8 +5646,9 @@ use \Psr\Http\Message\ResponseInterface;
     };
 });
 
-\App::$slim->getContainer()->offsetSet('errorHandler', function ($container) {
-    return function (RequestInterface $request, ResponseInterface $response, \Exception $exception) {
+
+$throwableHandler = function ($container) {
+    return function (RequestInterface $request, ResponseInterface $response, \Throwable $exception) {
         $message = \BO\Zmsapi\Response\Message::create($request);
         $message->meta->error = true;
         $message->meta->message = $exception->getMessage();
@@ -5673,11 +5674,14 @@ use \Psr\Http\Message\ResponseInterface;
         if ($exception->getCode() >= 500 || !$exception->getCode()) {
             \App::$log->critical(
                 "[API] Fatal Exception: "
-                    . " in " . $exception->getFile() . " +" . $exception->getLine()
-                    . " -> " . $exception->getMessage()
-                    . " | Trace: " . $message->meta->trace
+                . " in " . $exception->getFile() . " +" . $exception->getLine()
+                . " -> " . $exception->getMessage()
+                . " | Trace: " . preg_replace("#(\s)+#", ' ', str_replace('\\',':', $message->meta->trace))
             );
         }
         return \BO\Slim\Render::withJson($response, $message, $status);
     };
-});
+};
+
+\App::$slim->getContainer()->offsetSet('errorHandler', $throwableHandler);
+\App::$slim->getContainer()->offsetSet('phpErrorHandler', $throwableHandler);
