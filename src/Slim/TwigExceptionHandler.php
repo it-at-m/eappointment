@@ -68,7 +68,7 @@ class TwigExceptionHandler
         );
     }
 
-    public static function getExceptionTemplate(\Exception $exception)
+    public static function getExceptionTemplate(\Throwable $exception)
     {
         $twig = \App::$slim->getContainer()->view;
         $loader = $twig->getLoader();
@@ -98,7 +98,7 @@ class TwigExceptionHandler
         return $requestdata;
     }
 
-    public static function getExtendedExceptionInfo(\Exception $exception, RequestInterface $request)
+    public static function getExtendedExceptionInfo(\Throwable $exception, RequestInterface $request)
     {
         $servertime = strftime("%F %T");
         $exceptionclass = get_class($exception);
