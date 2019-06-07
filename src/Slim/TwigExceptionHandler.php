@@ -12,22 +12,31 @@ use \Psr\Http\Message\ResponseInterface;
 /**
   *
   */
-class TwigExceptionHandler extends Controller
+class TwigExceptionHandler
 {
 
     const DEFAULT_TEMPLATE = "exception/default.twig";
 
+    public function __invoke(
+        RequestInterface $request,
+        ResponseInterface $response,
+        \Throwable $exception
+    ) {
+        return static::withHtml($request, $response, $exception, 500);
+    }
+
     public static function withHtml(
         RequestInterface $request,
         ResponseInterface $response,
-        \Exception $exception,
+        \Throwable $exception,
         $status = 500
     ) {
         if ($exception instanceof \Slim\Exception\Stop) {
             return true;
         }
         $container = \App::$slim->getContainer();
-        $request = (new static($container))->initRequest($request);
+        $controller = new Controller($container);
+        $request = $controller->initRequest($request);
         if ($exception->getCode() >= 200) {
             $status = $exception->getCode();
         }
