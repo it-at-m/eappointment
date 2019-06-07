@@ -19,68 +19,73 @@ class MandantView extends Component {
         }
 
         return (
-            <fieldset>
-                <div>
-                    <Inputs.FormGroup>
-                        <Inputs.Label
-                            children={this.props.labelsmandant.label}
-                        />
-                        <Inputs.Controls>
-                            <Inputs.Text
-                                name="label"
-                                value={(this.props.source) ? this.props.source.label : ''}
-                                onChange={onChange}
+            <div>
+                <fieldset>
+                    <div>
+                        <Inputs.FormGroup>
+                            <Inputs.Label
+                                children={this.props.labelsmandant.label}
                             />
-                        </Inputs.Controls>
-                    </Inputs.FormGroup>
-                </div>
-                <div>
-                    <Inputs.FormGroup>
-                        <Inputs.Label
-                            children={this.props.labelsmandant.source}
-                        />
-                        <Inputs.Controls>
-                            <Inputs.Text
-                                name="source"
-                                value={(this.props.source) ? this.props.source.source : ''}
-                                attributes={ {readOnly: this.props.source.lastChange, maxLength: 10} }
-                                onChange={onChange}
+                            <Inputs.Controls>
+                                <Inputs.Text
+                                    name="label"
+                                    value={(this.props.source) ? this.props.source.label : ''}
+                                    onChange={onChange}
+                                />
+                            </Inputs.Controls>
+                        </Inputs.FormGroup>
+                    </div>
+                    <div>
+                        <Inputs.FormGroup>
+                            <Inputs.Label
+                                children={this.props.labelsmandant.source}
                             />
-                            <Inputs.Description
-                                children={this.props.descriptions.mandantlabel}
+                            <Inputs.Controls>
+                                <Inputs.Text
+                                    name="source"
+                                    value={(this.props.source) ? this.props.source.source : ''}
+                                    attributes={ {readOnly: this.props.source.lastChange, maxLength: 10} }
+                                    onChange={onChange}
+                                />
+                                <Inputs.Description
+                                    children={this.props.descriptions.mandantlabel}
+                                />
+                            </Inputs.Controls>
+                        </Inputs.FormGroup>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>{this.props.labelsmandant.contact}</legend>
+                    <div>
+                        <Inputs.FormGroup>
+                            <Inputs.Label
+                                children={this.props.labelsmandant.name}
                             />
-                        </Inputs.Controls>
-                    </Inputs.FormGroup>
-                </div>
-                <div>
-                    <Inputs.FormGroup>
-                        <Inputs.Label
-                            children={this.props.labelsmandant.name}
-                        />
-                        <Inputs.Controls>
-                            <Inputs.Text
-                                name="contact[name]"
-                                value={(this.props.source.contact) ? this.props.source.contact.name : ''}
-                                onChange={onChange}
+                            <Inputs.Controls>
+                                <Inputs.Text
+                                    name="contact[name]"
+                                    value={(this.props.source.contact) ? this.props.source.contact.name : ''}
+                                    onChange={onChange}
+                                />
+                            </Inputs.Controls>
+                        </Inputs.FormGroup>
+                    </div>
+                    <div>
+                        <Inputs.FormGroup>
+                            <Inputs.Label
+                                children={this.props.labelsmandant.email}
                             />
-                        </Inputs.Controls>
-                    </Inputs.FormGroup>
-                </div>
-                <div>
-                    <Inputs.FormGroup>
-                        <Inputs.Label
-                            children={this.props.labelsmandant.email}
-                        />
-                        <Inputs.Controls>
-                            <Inputs.Text
-                                name="contact[email]"
-                                value={(this.props.source.contact) ? this.props.source.contact.email : ''}
-                                onChange={onChange}
-                            />
-                        </Inputs.Controls>
-                    </Inputs.FormGroup>
-                </div>
-            </fieldset>
+                            <Inputs.Controls>
+                                <Inputs.Text
+                                    name="contact[email]"
+                                    value={(this.props.source.contact) ? this.props.source.contact.email : ''}
+                                    onChange={onChange}
+                                />
+                            </Inputs.Controls>
+                        </Inputs.FormGroup>
+                    </div>
+                </fieldset>
+            </div>
         )
     }
 }
