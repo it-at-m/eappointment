@@ -10,7 +10,7 @@ class TwigExceptionHandler extends \BO\Slim\TwigExceptionHandler
     public static function withHtml(
         RequestInterface $request,
         ResponseInterface $response,
-        \Exception $exception,
+        \Throwable $exception,
         $status = 500
     ) {
         $ticketprinterHash = \BO\Zmsclient\Ticketprinter::getHash();
