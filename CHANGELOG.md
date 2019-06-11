@@ -5,6 +5,7 @@
 * #32626 Performance-Optimierung für /scope/{id}/queue/{number}/
 * #35912 Reservierte Termine sofort löschen wenn angefordert, nicht erst nach der Reservierungsdauer
 * #36432 Bugfix: Korrektur zur Anzeige der gebuchten Dienstleistungen in der Tresentabelle
+* #36317 Bugfix: Trennung von unterschiedlichen Fehler-Exceptions ab PHP 7.0 implementiert
 
 ## v2.19.06
 
