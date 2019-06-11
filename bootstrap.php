@@ -24,6 +24,7 @@ require(APP_PATH . '/config.php');
 // Http Logging
 \BO\Slim\Bootstrap::addTwigExtension(new \BO\Zmsclient\TwigExtension(\App::$slim->getContainer()));
 \BO\Zmsclient\Http::$logEnabled = \App::DEBUG;
+\BO\Zmsclient\Http::$jsonCompressLevel = \App::JSON_COMPRESS_LEVEL;
 
 // add slim middleware
 \App::$slim->add(new \BO\Slim\Middleware\TrailingSlash());
