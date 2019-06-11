@@ -1,6 +1,7 @@
 ## v2.20.00
 
 * #32626 Config für Performance-Optimierung (kann über JSON_COMPRESS_LEVEL=0 deaktiviert werden)
+* #36317 Bugfix: Trennung von unterschiedlichen Fehler-Exceptions ab PHP 7.0 implementiert
 
 ## v2.19.05
 
