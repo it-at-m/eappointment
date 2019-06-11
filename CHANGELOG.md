@@ -9,6 +9,7 @@
 * #36380 Migration: Füge Config notifications__noAttachmentDomains für outlook.de und ähnliche Domains hinzu
 * #36114 Migration: Erfasse Standort-ID für SMS-Notifications
 * #36432 Migration: Source-Feld für Bürgeranliegen um Dienstleistungen aus Mandanten richtig zuzuordnen
+* #36476 Migration: Zeichenkodierung für Mandanten von ASCII 7bit auf UTF8 umgestellt
 
 ## v2.19.07
 
