@@ -7,6 +7,7 @@
 * #32626 Config für Performance-Optimierung (kann über JSON_COMPRESS_LEVEL=0 deaktiviert werden)
 * #35835 Bugfix: Nein/Abbruch-Button in Dialog-Box funktioniert wieder
 * #35869 Refactoring: Validierung bei der Terminvereinbarung überarbeitet
+* #36317 Bugfix: Trennung von unterschiedlichen Fehler-Exceptions ab PHP 7.0 implementiert
 
 ## v2.19.05
 
