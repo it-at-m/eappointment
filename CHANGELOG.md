@@ -1,8 +1,11 @@
+## v2.20.00
+
+* #36317 Bugfix: Trennung von unterschiedlichen Fehler-Exceptions ab PHP 7.0 implementiert
+
 ## v2.19.05
 
 * #35764 Deploy Tokens eingebaut
 * #35315 Rohdaten-Link auch ohne ausgewählten Standort anzeigen
-* #36317 Bugfix: Trennung von unterschiedlichen Fehler-Exceptions ab PHP 7.0 implementiert
 
 ## v2.19.02
 
