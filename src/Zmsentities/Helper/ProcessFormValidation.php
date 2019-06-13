@@ -260,7 +260,9 @@ class ProcessFormValidation
     {
         return (
             array_key_exists('emailRequired', $scopePrefs['client']) &&
-            $scopePrefs['client']['emailRequired']
+            array_key_exists('emailFrom', $scopePrefs['client']) &&
+            $scopePrefs['client']['emailRequired'] &&
+            $scopePrefs['client']['emailFrom']
         );
     }
 
