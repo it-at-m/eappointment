@@ -98,14 +98,16 @@ class RequestRelation extends Base
         foreach ($providerList as $provider) {
             if ($provider['address']['postal_code']) {
                 foreach ($provider['services'] as $reference) {
-                    $query = new Query\RequestRelation(Query\Base::REPLACE);
-                    $query->addValues([
-                        'source' => $source,
-                        'provider__id' => $provider['id'],
-                        'request__id' => $reference['service'],
-                        'slots' => $reference['appointment']['slots']
-                    ]);
-                    $this->writeItem($query);
+                    if ($reference['appointment']['allowed']) {
+                        $query = new Query\RequestRelation(Query\Base::REPLACE);
+                        $query->addValues([
+                            'source' => $source,
+                            'provider__id' => $provider['id'],
+                            'request__id' => $reference['service'],
+                            'slots' => $reference['appointment']['slots']
+                        ]);
+                        $this->writeItem($query);
+                    }
                 }
             }
         }

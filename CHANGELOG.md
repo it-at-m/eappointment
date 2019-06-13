@@ -1,3 +1,7 @@
+## v2.20.01
+
+* #36497 Bugfix: Import der DLDB-Daten importiert keine Dienstleistungen mehr, die für die Terminvereinbarung ausgeschlossen wurden
+
 ## v2.20.00
 
 * #36091 Bugfix: Beim Skript deleteAppointmentData werden dereferenzierte Termine in der Zukunft jetzt gelöscht und im Verbose-Modus wird keine Wiederholung mehr durchgeführt
