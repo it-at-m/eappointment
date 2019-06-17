@@ -1,3 +1,7 @@
+## v2.20.01
+
+* #36494 Bugfix: Prüfe bei der Formular-Validierung für E-Mails auch, ob eine Absender-Adresse angegeben wurde, ansonsten ignoriere die Einstellung "E-Mail ist Pflichtfeld"
+
 ## v2.20.00
 
 * #36152 Bugfix: Fehlermeldung zu nicht vorhandenen Apikey Quotas behoben.
