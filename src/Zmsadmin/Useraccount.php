@@ -22,35 +22,28 @@ class Useraccount extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
+        // API call to ownerlist is already restricted to user rights
+        $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
         if ($workstation->hasSuperUseraccount()) {
-            $department = new \BO\Zmsentities\Department([
-                'name' => 'Systemweite Nutzer'
-                ]);
-            $useraccountList = \App::$http->readGetResult(
-                "/useraccount/",
-                [
-                    "resolveReferences" => 0,
-                    "right" => "superuser",
-                ]
-            )
+            $useraccountList = \App::$http
+                ->readGetResult(
+                    "/useraccount/",
+                    [
+                        "resolveReferences" => 0,
+                        "right" => "superuser",
+                    ]
+                )
                 ->getCollection()
                 ;
-            $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
-            $organisationList = $ownerList->getOrganisationsByOwnerId(23);
         } else {
             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-            $department = $workstation->getUseraccount()->getDepartmentList()->getFirst();
-            $departmentId = $department->id;
-            $useraccountList = \App::$http->readGetResult("/department/$departmentId/useraccount/")->getCollection();
-            $organisationList = new \BO\Zmsentities\Collection\OrganisationList();
-            foreach ($workstation->useraccount->departments as $accountDepartment) {
-                if (!$organisationList->getByDepartmentId($accountDepartment->id)->count()) {
-                    $organisation = \App::$http->readGetResult(
-                        "/department/" . $accountDepartment->id . "/organisation/",
-                        array('resolveReferences'=>1)
-                    )->getEntity();
-                    $organisationList->addEntity($organisation);
-                }
+            $departmentList = $workstation->getUseraccount()->getDepartmentList();
+            $useraccountList = new \BO\Zmsentities\Collection\UseraccountList();
+            foreach ($departmentList as $accountDepartment) {
+                $accountUserList = \App::$http
+                    ->readGetResult("/department/$accountDepartment->id/useraccount/")
+                    ->getCollection();
+                $useraccountList->addData($accountUserList);
             }
         }
 
@@ -61,9 +54,8 @@ class Useraccount extends BaseController
                 'title' => 'Nutzer',
                 'menuActive' => 'useraccount',
                 'workstation' => $workstation,
-                'department' => $department,
                 'useraccountList' => $useraccountList,
-                'organisationList' => $organisationList,
+                'ownerlist' => $ownerList,
                 'success' => $success,
             )
         );

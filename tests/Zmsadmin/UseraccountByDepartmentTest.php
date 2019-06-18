@@ -34,9 +34,9 @@ class UseraccountByDepartmentTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/department/74/organisation/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                    'url' => '/owner/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_ownerlist.json")
                 ]
             ]
         );
