@@ -1,6 +1,7 @@
 ## v2.20.01
 
 * #36521 Bugfix: Die Nutzerverwaltung enthält jetzt auch neu angelegte Kunden, nicht mehr nur "Berlin"
+* #36317 Bugfix: Als Fehlerklasse wird statt TypeError jetzt die korrekte Klasse ausgegeben
 
 ## v2.20.00
 
