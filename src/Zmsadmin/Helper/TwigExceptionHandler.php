@@ -15,8 +15,12 @@ class TwigExceptionHandler extends \BO\Slim\TwigExceptionHandler
     ) {
         try {
             $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-            $exception->templatedata = array('workstation' => $workstation, 'sourceData' => $exception->data);
-        } catch (\Exception $workstationexception) {
+            $data = [];
+            if (isset($exception->data)) {
+                $data = $exception->data;
+            }
+            $exception->templatedata = array('workstation' => $workstation, 'sourceData' => $data);
+        } catch (\Throwable $workstationexception) {
             // ignore
         }
         return parent::withHtml($request, $response, $exception, $status);
