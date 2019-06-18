@@ -25,11 +25,7 @@ class UseraccountByDepartment extends BaseController
         $useraccountList = \App::$http->readGetResult("/department/$departmentId/useraccount/")->getCollection();
         $workstationList = \App::$http->readGetResult("/department/$departmentId/workstation/")->getCollection();
 
-        $organisation = \App::$http->readGetResult(
-            "/department/$departmentId/organisation/",
-            array('resolveReferences'=>1)
-        )->getEntity();
-        $organisationList = new \BO\Zmsentities\Collection\OrganisationList([$organisation]);
+        $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -43,7 +39,7 @@ class UseraccountByDepartment extends BaseController
                 'useraccountList' => ($useraccountList) ?
                     $useraccountList->sortByCustomStringKey('id') :
                     new Collection(),
-                'organisationList' => $organisationList,
+                'ownerlist' => $ownerList,
             )
         );
     }

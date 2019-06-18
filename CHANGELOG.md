@@ -1,3 +1,7 @@
+## v2.20.01
+
+* #36521 Bugfix: Die Nutzerverwaltung enthält jetzt auch neu angelegte Kunden, nicht mehr nur "Berlin"
+
 ## v2.20.00
 
 * #36153 Die Status-Seite zeigt jetzt alle Angaben zur Slot-Berechnung, auch wenn keine Fehler vorliegen
