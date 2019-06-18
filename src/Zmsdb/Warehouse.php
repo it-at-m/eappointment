@@ -83,6 +83,11 @@ class Warehouse extends Base
             'description' => 'Standorte ohne Zuordnung zur DLDB mit Terminen',
             'right' => 'superuser'
         ],
+        [
+            'subject' => 'availabilityreview',
+            'description' => 'Review Öffnungszeiten',
+            'right' => 'superuser'
+        ],
     ];
 
     public function readSubjectsList()
