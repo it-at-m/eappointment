@@ -1,6 +1,7 @@
 ## v2.20.01
 
 * #36497 Bugfix: Import der DLDB-Daten importiert keine Dienstleistungen mehr, die für die Terminvereinbarung ausgeschlossen wurden
+* #36274 Statistik: Abfrage für Review der Öffnungszeiten hinzugefügt
 
 ## v2.20.00
 
