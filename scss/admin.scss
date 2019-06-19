@@ -24,6 +24,16 @@
 
 @import "vendor/bo/inuitcss/magic/magic";
 
+
+// @import "vendor/bo/layout-admin/source/scss/zms-styles.scss";
+@import "vendor/bo/layout-admin/source/scss/default-settings"; 
+@import "vendor/bo/layout-admin/source/scss/zms-settings"; 
+@import "vendor/bo/layout-admin/source/scss/mixins";
+@import "vendor/bo/layout-admin/source/scss/template/*.scss";
+@import "vendor/bo/layout-admin/source/scss/atoms/**/*.scss";
+@import "vendor/bo/layout-admin/source/scss/molecules/**/*.scss";
+@import "vendor/bo/layout-admin/source/scss/organisms/**/*.scss";
+
 /**
  * Import our css
  */
