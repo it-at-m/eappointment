@@ -1,0 +1,141 @@
+/**
+ * Import inuit css
+ */
+@import "vendor/bo/inuitcss/inuit-defaults/settings.defaults";
+/*
+// @import "vendor/bo/inuitcss/inuit-responsive-settings/_settings.responsive";
+// we use csswizardry to asign the responsive settings
+*/
+
+@import "settings";
+@import "vendor/bo/inuitcss/csswizardry-grids/csswizardry-grids";
+@import "vendor/bo/inuitcss/inuit-functions/tools.functions";
+@import "vendor/bo/inuitcss/inuit-mixins/tools.mixins";
+@import "vendor/bo/inuitcss/inuit-normalize/generic.normalize";
+@import "vendor/bo/inuitcss/inuit-box-sizing/generic.box-sizing";
+@import "vendor/bo/inuitcss/inuit-headings/_base.headings";
+@import "vendor/bo/inuitcss/inuit-page/base.page";
+@import "vendor/bo/inuitcss/inuit-buttons/_objects.buttons";
+@import "vendor/bo/inuitcss/inuit-tables/_objects.tables.scss";
+@import "vendor/bo/inuitcss/inuit-list-bare/_objects.list-bare.scss";
+@import "vendor/bo/inuitcss/inuit-list-inline/_objects.list-inline.scss";
+@import "vendor/bo/inuitcss/inuit-clearfix/_trumps.clearfix";
+@import "vendor/bo/inuitcss/inuit-responsive-tools/_tools.responsive";
+
+@import "vendor/bo/inuitcss/magic/magic";
+
+
+// //@import "vendor/bo/layout-admin/source/scss/zms-styles.scss";
+//@import "vendor/bo/layout-admin/source/scss/default-settings"; 
+//@import "vendor/bo/layout-admin/source/scss/zms-settings"; 
+//@import "vendor/bo/layout-admin/source/scss/mixins";
+//@import "vendor/bo/layout-admin/source/scss/template/*.scss";
+//@import "vendor/bo/layout-admin/source/scss/atoms/**/*.scss";
+//@import "vendor/bo/layout-admin/source/scss/molecules/**/*.scss";
+//@import "vendor/bo/layout-admin/source/scss/organisms/**/*.scss";
+
+/**
+ * Import our css
+ */
+
+// Main site grid and global layout rules
+@import "layout/main";
+@import "layout/main-header";
+@import "layout/main-body";
+@import "layout/main-footer";
+@import "layout/global";
+@import "layout/table";
+@import "layout/list";
+@import "layout/form";
+@import "layout/font";
+@import "layout/tablelist";
+@import "layout/magic";
+
+// Page grids
+@import "page/lineups";
+
+// Element rules
+@import "element/button";
+@import "element/headline";
+@import "element/link";
+@import "element/paragraph";
+@import "element/pre";
+@import "element/rule";
+@import "element/spinner";
+@import "element/lightbox";
+
+// Block rules
+@import "block/extend/board";
+@import "block/navigation";
+@import "block/breadcrumb";
+@import "block/metalinks";
+@import "block/queue-table";
+@import "block/queue-info";
+@import "block/calendar";
+@import "block/calendar-navigation";
+@import "block/calendar-weektable";
+@import "block/appointment-form";
+@import "block/client-info";
+@import "block/client-next";
+@import "block/client-processed";
+@import "block/client-precall";
+@import "block/client-called";
+@import "block/scope-form";
+@import "block/scope-list";
+@import "block/source-form";
+@import "block/pickup-table";
+@import "block/pickup-table-handheld";
+@import "block/pickup-keyboard-handheld";
+@import "block/department-form";
+@import "block/department-list";
+@import "block/availability-timetable";
+@import "block/availability-updatebar";
+@import "block/availability-monthtable";
+@import "block/availability-form";
+@import "block/availability-conflicts";
+@import "block/owner-overview";
+@import "block/owner-list";
+@import "block/owner-edit";
+@import "block/cluster-form";
+@import "block/cluster-list";
+@import "block/organisation-form";
+@import "block/organisation-list";
+@import "block/welcome";
+@import "block/loginform";
+@import "block/versioninfo";
+@import "block/useraccount-info";
+@import "block/useraccount-changepassword";
+@import "block/useraccount-list";
+@import "block/useraccount-edit";
+@import "block/calldisplay-config";
+@import "block/ticketprinter-status";
+@import "block/ticketprinter-config";
+@import "block/calldisplay-config";
+@import "block/notification-form";
+@import "block/links-edit";
+@import "block/links-list";
+@import "block/search-mask";
+@import "block/searchresults";
+@import "block/dayoff-list";
+@import "block/dayoff-edit";
+@import "block/dayoff-byyear";
+@import "block/dayoff-bydepartment";
+@import "block/dayoff-bydepartmentandyear";
+@import "block/message";
+@import "block/checkboxselect";
+@import "block/timepicker";
+@import "block/emergency";
+@import "block/department-links";
+@import "block/daysoff";
+@import "block/exception";
+@import "block/dialog";
+@import "block/scope-appointments-by-day";
+@import "block/source-list";
+
+
+@import "page/counter";
+@import "page/workstation";
+@import "page/profile";
+
+@import "node_modules/rc-time-picker/assets/index";
+@import "node_modules/react-datepicker/dist/react-datepicker";
