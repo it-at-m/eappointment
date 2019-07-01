@@ -22,7 +22,7 @@ export const Select = ({ name, options = [], groups = [], value, onChange = noOp
     const onSelect = ev => onChange(name, ev.target.value)
 
     return (
-        <select onChange={onSelect} {...{ name }} value={value} {...attributes}>
+        <select onChange={onSelect} {...{ name }} value={value} {...attributes} className="form-control">
             {renderGroups(groups)}
             {renderOptions(options)}
         </select>
