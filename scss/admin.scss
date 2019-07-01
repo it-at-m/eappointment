@@ -64,26 +64,38 @@
 
 // OLD
 @import "node_modules/react-datepicker/dist/react-datepicker";
-
+@import "block/emergency";
 
 
 // ToDo: Put this into Patternlab
 button, input, optgroup, select, textarea {
     max-width: 90vw;
 }
-
-.message > :first-child h2,
-.message > :first-child h3 {
-    margin-top: 0;
+.message {
+    > :first-child h2,
+    > :first-child h3 {
+        margin-top: 0;
+    }
+    > :last-child > :last-child {
+        margin-bottom: 0;
+    }
 }
-.message > :last-child > :last-child {
-    margin-bottom: 0;
-}
 
-form .form-group.has-error {
-    input, select, textarea {
-        border-color: #d52f2e;
-        border-width: 1px 1px 1px 5px;
+form {
+    .form-group.has-error {
+        input, select, textarea {
+            border-color: #d52f2e;
+            border-width: 1px 1px 1px 5px;
+        }
+    }
+    .checkboxselect .inner {
+        border:     1px solid #DDDDDD;
+        background-color: #ffffff;
+        padding: 0.5em;
+    }
+    .checkboxdeselect .inner {
+        border:     1px solid #DDDDDD;
+        padding: 0.5em;
     }
 }
 .button.button--ghost {
@@ -100,9 +112,51 @@ pre {
 .grid__item > :first-child {
     margin-top: 0;
 }
-
 .navigation-primary {
     .nav__wrapper {
         margin-bottom:      1em;
+    }
+}
+
+.block__zmsheader {
+    @media screen and (max-width: 45rem) {
+        > * {
+            margin-bottom: 1em;
+        }
+    }
+    @media print, (min-width: 45.001rem) {
+        display:    flex;
+        .aside {
+            flex-shrink: 0;
+            margin-left: 2em;
+        }
+        .form-group {
+            margin-bottom: 0;
+        }
+        .right {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-grow: 1;
+            flex-shrink: 0;
+            margin-left: 2em;
+            > * {
+                margin-left: 0.5em;
+                margin-bottom: 0;
+            }
+        }
+    }
+}
+
+.button--emergency {
+    background-color:       #E75656;
+    border-color:           #E75656;
+    color:                  #ffffff;
+    margin:                 0 0 0.75em 0;
+    padding:                0.75em;
+    width:                  100%;
+    &:hover {
+        background-color:       darken(#E75656, 10%);
+        border-color:           #E75656;
     }
 }
