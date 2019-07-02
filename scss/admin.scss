@@ -98,10 +98,17 @@ form {
         padding: 0.5em;
     }
 }
-.button.button--ghost {
-    border-color:   $baseTextColor;
-    background-color: transparent;
-    color:  $baseTextColor;
+.button {
+    &.button--ghost {
+        border-color:   $baseTextColor;
+        background-color: transparent;
+        color:  $baseTextColor;
+    }
+    &.button--white {
+        border-color:   $baseTextColor;
+        background-color: $white;
+        color:  $baseTextColor;
+    }
 }
 pre {
     white-space: normal;
@@ -117,7 +124,9 @@ pre {
         margin-bottom:      1em;
     }
 }
-
+.align-center {
+    text-align: center;
+}
 
 // ZMS only
 .block__zmsheader {
@@ -195,5 +204,10 @@ pre {
         font-weight: bold;
         font-size: 1.1em;
         color: #000000;
+    }
+}
+.queue-table {
+    table tr.future .queue-status {
+        background-color: rgb(116, 202, 240);
     }
 }
