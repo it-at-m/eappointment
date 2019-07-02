@@ -149,18 +149,51 @@ pre {
         }
     }
 }
-.button--emergency {
-    background-color:       #E75656;
-    border-color:           #E75656;
-    color:                  #ffffff;
-    margin:                 0 0 0.75em 0;
-    padding:                0.75em;
-    width:                  100%;
-    &:hover {
-        background-color:       darken(#E75656, 10%);
+.emergency {
+    margin:                 0 24px 1.75em 0;
+    .button--emergency {
+        background-color:       #E75656;
         border-color:           #E75656;
+        color:                  #ffffff;
+        margin:                 0;
+        padding:                0.75em;
+        width:                  100%;
+        &:hover {
+            background-color:       darken(#E75656, 10%);
+            border-color:           #E75656;
+        }
     }
 }
 .button-callnextclient {
     background-color:       #ffffff;
+    box-shadow: 1px 1px 0px 0px #333333;
+    position: relative;
+    max-width: 12em;
+    height: auto;
+    text-align: center;
+    padding: 1em 1em ;
+    border: 1px solid #D2D2D2;
+    .user {
+        position: relative;
+        display: block;
+        font-size: 6.5em;
+        line-height: 1.2em;
+        color: #33445E;
+    }
+    .arrow {
+        display: block;
+        font-size: 2.5em;
+        line-height: 1.2em;
+        position: absolute;
+        right: 0.5em;
+        top: 1.1em;
+        color: #33445E;
+    }
+    .text {
+        display: block;
+        margin-top: 0.0em;
+        font-weight: bold;
+        font-size: 1.1em;
+        color: #000000;
+    }
 }
