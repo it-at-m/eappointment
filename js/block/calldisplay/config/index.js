@@ -182,42 +182,40 @@ class CallDisplayConfigView extends Component {
         return (
             <form className="form-group calldisplay-config">
                 {this.state.departments.map(this.renderDepartment.bind(this))}
-                <fieldset>
-                    <FormGroup>
-                        <Label>Angezeigte Aufrufe</Label>
-                        <Controls>
-                            <Select
-                                options={[{ name: 'Alle', value: 'all' }, { name: "Nur Abholer", value: 'pickup' }, { name: "Spontan- und Terminkunden", value: 'called' }]}
-                                value={this.state.queueStatus}
-                                onChange={onQueueStatusChange} />
-                        </Controls>
-                    </FormGroup>
-                    <FormGroup>
-                        <Label>Layout</Label>
-                        <Controls>
-                            <Select
-                                options={[
-                                    { name: 'Uhrzeit, 6-12 Aufrufe | Platz', value: 'defaultplatz' },
-                                    { name: 'Uhrzeit, 6-12 Aufrufe | Raum', value: 'defaultraum' },
-                                    { name: 'Uhrzeit, 6 Aufrufe | Platz', value: 'clock5platz' },
-                                    { name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe | Platz', value: 'clocknrplatz' },
-                                    { name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe | Raum', value: 'clocknrraum' },
-                                    { name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 6-12 Aufrufe | Platz', value: 'clocknrwaitplatz' },
-                                    { name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 6-12 Aufrufe | Raum', value: 'clocknrwaitraum' },
-                                    { name: '6-18 Aufrufe | Platz', value: 'raw18platz' }
-                                ]}
-                                value={this.state.template}
-                                onChange={onTemplateStatusChange} />
-                        </Controls>
-                    </FormGroup>
-                    <FormGroup>
-                        <Label>URL</Label>
-                        <Controls>
-                            <Inputs.Text value={generatedUrl} attributes={{ readOnly: true }} />
-                            <a href={generatedUrl} target="_blank" className="btn button-submit">Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen</a>
-                        </Controls>
-                    </FormGroup>
-                </fieldset>
+                <FormGroup>
+                    <Label>Angezeigte Aufrufe</Label>
+                    <Controls>
+                        <Select
+                            options={[{ name: 'Alle', value: 'all' }, { name: "Nur Abholer", value: 'pickup' }, { name: "Spontan- und Terminkunden", value: 'called' }]}
+                            value={this.state.queueStatus}
+                            onChange={onQueueStatusChange} />
+                    </Controls>
+                </FormGroup>
+                <FormGroup>
+                    <Label>Layout</Label>
+                    <Controls>
+                        <Select
+                            options={[
+                                { name: 'Uhrzeit, 6-12 Aufrufe | Platz', value: 'defaultplatz' },
+                                { name: 'Uhrzeit, 6-12 Aufrufe | Raum', value: 'defaultraum' },
+                                { name: 'Uhrzeit, 6 Aufrufe | Platz', value: 'clock5platz' },
+                                { name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe | Platz', value: 'clocknrplatz' },
+                                { name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe | Raum', value: 'clocknrraum' },
+                                { name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 6-12 Aufrufe | Platz', value: 'clocknrwaitplatz' },
+                                { name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 6-12 Aufrufe | Raum', value: 'clocknrwaitraum' },
+                                { name: '6-18 Aufrufe | Platz', value: 'raw18platz' }
+                            ]}
+                            value={this.state.template}
+                            onChange={onTemplateStatusChange} />
+                    </Controls>
+                </FormGroup>
+                <FormGroup>
+                    <Label>URL</Label>
+                    <Controls>
+                        <Inputs.Text value={generatedUrl} attributes={{ readOnly: true }} />
+                        <a href={generatedUrl} target="_blank" className="btn button-submit">Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen 1</a>
+                    </Controls>
+                </FormGroup>
             </form>
         )
     }
