@@ -118,6 +118,8 @@ pre {
     }
 }
 
+
+// ZMS only
 .block__zmsheader {
     @media screen and (max-width: 45rem) {
         > * {
@@ -147,7 +149,6 @@ pre {
         }
     }
 }
-
 .button--emergency {
     background-color:       #E75656;
     border-color:           #E75656;
@@ -159,4 +160,7 @@ pre {
         background-color:       darken(#E75656, 10%);
         border-color:           #E75656;
     }
+}
+.button-callnextclient {
+    background-color:       #ffffff;
 }
