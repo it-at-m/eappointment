@@ -127,11 +127,24 @@ pre {
 .align-center {
     text-align: center;
 }
+
+// Todo: make header a grid!
+#page-header {
+    display:    block;
+    .page-header__left,
+    .page-header__middle,
+    .page-header__right {
+        width:  auto;
+        align-self: center;
+    }
+    align-items: center !important;
+}
 .page-header__logo svg {
     max-height: 100%;
     max-width: 100%;
     border: 0;
 }
+
 
 // ZMS only
 .block__zmsheader {
@@ -219,7 +232,7 @@ pre {
 }
 
 
-$ownerlist-item-padding: 0.5em 0.75em;
+$ownerlist-item-padding: 0.5rem 0.75rem;
 $ownerlist-organisation-title-bg: #008CCA;
 $ownerlist-department-title-bg: #F0F0F0;
 $ownerlist-border-color: #dddddd;
@@ -229,9 +242,13 @@ $ownerlist-border-color-light: #f1f1f1;
     ul, li {
         margin: 0;
     }
+    .fa-edit {
+        font-size:  14px;
+    }
     .owner-title {
         display: block;
         padding: $ownerlist-item-padding;
+        padding-top: 0;
         padding-left: 0;
         margin: 0;
     }
@@ -284,5 +301,19 @@ $ownerlist-border-color-light: #f1f1f1;
                 }
             }
         }
+    }
+}
+
+form fieldset {
+    margin-bottom: 1em;
+    legend {
+        background: #666666;
+        color: white;
+        margin-left: -20px;
+        margin-right: -20px;
+        padding:  0.75em  20px;
+        box-sizing: content-box;
+        display:    block;
+        width: 100%;
     }
 }
