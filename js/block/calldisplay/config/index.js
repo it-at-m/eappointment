@@ -213,7 +213,7 @@ class CallDisplayConfigView extends Component {
                     <Label>URL</Label>
                     <Controls>
                         <Inputs.Text value={generatedUrl} attributes={{ readOnly: true }} />
-                        <br /><br /><a href={generatedUrl} target="_blank" className="button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen 1</a>
+                        <br /><br /><a href={generatedUrl} target="_blank" className="button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen</a>
                     </Controls>
                 </FormGroup>
             </form>
