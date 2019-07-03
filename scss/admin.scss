@@ -127,6 +127,11 @@ pre {
 .align-center {
     text-align: center;
 }
+.page-header__logo svg {
+    max-height: 100%;
+    max-width: 100%;
+    border: 0;
+}
 
 // ZMS only
 .block__zmsheader {
@@ -214,28 +219,69 @@ pre {
 }
 
 
-// Todo: we need a global "list as table" layout for complex lists
-.owner-overview {
-    .owner-title {
+$ownerlist-item-padding: 0.5em 0.75em;
+$ownerlist-organisation-title-bg: #008CCA;
+$ownerlist-department-title-bg: #F0F0F0;
+$ownerlist-border-color: #dddddd;
+$ownerlist-border-color-light: #f1f1f1;
 
+.owner-list {
+    ul, li {
+        margin: 0;
     }
-    .owner-overview_organisation-list {
-        .owner-overview_organisation-list_title {
-            padding: 0.47633em 0.7145em;
-            background-color: #008CCA;
-            position: relative;
-            color: #FFFFFF;
-            margin-bottom: 0;
+    .owner-title {
+        display: block;
+        padding: $ownerlist-item-padding;
+        padding-left: 0;
+        margin: 0;
+    }
+    .organisation-list {
+        > li {
+            margin-bottom: 2em;
         }
-        .owner-overview_department-list {
-            .owner-overview_department-list_title {
-
+        .organisation-title {
+            padding: $ownerlist-item-padding;
+            background-color: $ownerlist-organisation-title-bg;
+            color: #FFFFFF;
+            margin: 0;
+            display: block;
+            a {
+                color:  #ffffff;
             }
-            .owner-overview_cluster-list {
-
+        }
+        .department-list {
+            .department-title {
+                background-color: $ownerlist-department-title-bg;
+                border-bottom: 1px solid $ownerlist-border-color;
+                padding: $ownerlist-item-padding;
+                margin: 0;
+                display: block;
             }
-            .owner-overview_scope-list {
-
+            .cluster-list {
+                > li {
+                    border-bottom: 1px solid $ownerlist-border-color;
+                    &:last-child {
+                        border-bottom: 0;
+                    }
+                }
+                .cluster-title  {
+                    padding: $ownerlist-item-padding;
+                    border-bottom: 1px dotted $ownerlist-border-color-light;
+                    display: block;
+                    margin: 0;
+                }
+                + .scope-list > li:first-child {
+                    border-top: 1px solid $ownerlist-border-color;
+                }
+            }
+            .scope-list {
+                > li  {
+                    padding: $ownerlist-item-padding;
+                    border-bottom: 1px dotted $ownerlist-border-color-light;
+                    &:last-child {
+                         border-bottom: 0;
+                     }
+                }
             }
         }
     }
