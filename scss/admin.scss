@@ -317,3 +317,20 @@ form fieldset {
         width: 100%;
     }
 }
+
+.calendar {
+    .block--grey {
+        padding: 5px;
+    }
+    .calendar-page {
+        .block--grey,
+        .block--white {
+            padding: 0px;
+        }
+        table {
+            font-size: 12px;
+            padding: 0px;
+            //background: white;
+        }
+    }
+}
