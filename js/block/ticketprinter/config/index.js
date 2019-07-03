@@ -161,7 +161,7 @@ class TicketPrinterConfigView extends Component {
     renderDepartment(department) {
         return (
             <div>
-                <h2>{department.name}</h2>
+                <h2 className="block__heading">{department.name}</h2>
                 {this.renderScopes(department.scopes)}
                 {/* this.renderClusters(department.clusters) */}
             </div>
@@ -220,7 +220,7 @@ class TicketPrinterConfigView extends Component {
                         <Label>URL</Label>
                         <Controls>
                             <Inputs.Text value={generatedUrl} attributes={{readOnly: true}}/>
-                            <a href={generatedUrl} target="_blank" className="btn button-submit">Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen</a>
+                            <br /><br /><a href={generatedUrl} target="_blank" className="button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen</a>
                         </Controls>
                     </FormGroup>
                 </fieldset>
