@@ -55,8 +55,12 @@ class Select
     /**
      * @var Bool $enableWsrepSyncWait
      */
-    public static $enableWsrepSyncWait = true;
+    public static $enableWsrepSyncWait = false;
 
+    /**
+     * @var Bool $enableWsrepSyncWait
+     */
+    public static $galeraConnection = false;
 
     /**
      * @var PdoInterface $readConnection for read only requests
@@ -95,12 +99,6 @@ class Select
      *
      */
     protected static $useQueryCache = true;
-
-    /**
-    * @var Bool $useQueryCache
-    *
-    */
-    protected static $wsrepSyncWaitIndex = null;
 
     /**
      * Create a PDO compatible object
@@ -226,8 +224,10 @@ class Select
             if (self::$useProfiling) {
                 self::$writeConnection->exec('SET profiling = 1;');
             }
-            if (self::$enableWsrepSyncWait && self::$wsrepSyncWaitIndex) {
-                self::$writeConnection->exec('SET SESSION wsrep_sync_wait = '. self::$wsrepSyncWaitIndex .';');
+            if (self::$galeraConnection && self::$enableWsrepSyncWait) {
+                self::$writeConnection->exec(
+                    'SET SESSION wsrep_sync_wait = (SELECT value FROM config WHERE name = "setting__wsrepsync");'
+                );
             }
             // On writing, use the same host to avoid racing/transcation conditions
             self::$readConnection = self::$writeConnection;
@@ -276,15 +276,13 @@ class Select
     }
 
     /**
-     * Set cluster wide causality checks
-     * 6 - UPDATE, DELETE, INSERT and REPLACE
-     *
-     * @param Bool $useProfiling
-     *
+     * Set cluster wide causality checks, needed for critical reads across different nodes
+     * @param Bool $wsrepStatus Set to true for critical reads
      */
-    public static function setClusterWideCausalityChecks($wsrepSyncWaitIndex = 6)
+    public static function setCriticalReadSession($wsrepStatus = true)
     {
-        static::$wsrepSyncWaitIndex = $wsrepSyncWaitIndex;
+        static::$enableWsrepSyncWait = $wsrepStatus;
+        static::getWriteConnection();
     }
 
     /**

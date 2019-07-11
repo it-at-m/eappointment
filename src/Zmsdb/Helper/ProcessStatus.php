@@ -1,9 +1,11 @@
 <?php
 namespace BO\Zmsdb\Helper;
 
+use \BO\Zmsdb\Log;
+
 class ProcessStatus extends \BO\Zmsdb\Process
 {
-    public function readUpdatedStatus(
+    public function writeUpdatedStatus(
         \BO\Zmsentities\Process $process,
         $status,
         \DateTimeInterface $dateTime,
@@ -27,7 +29,9 @@ class ProcessStatus extends \BO\Zmsdb\Process
 
         $entity = call_user_func_array(array($this, $statusList[$status]), array($process));
         $query->addValuesUpdateProcess($entity, $dateTime);
-
+        
+        Log::writeLogEntry("UPDATE (ProcessStatus::writeUpdatedStatus) $process ", $process->id);
+        
         $this->writeItem($query, 'process', $query::TABLE);
         $this->perform(\BO\Zmsdb\Query\Process::QUERY_UPDATE_FOLLOWING_PROCESS, [
             'reserved' => ($process->status == 'reserved') ? 1 : 0,

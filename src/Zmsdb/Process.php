@@ -483,8 +483,7 @@ class Process extends Base implements Interfaces\ResolveReferences
      */
     public function updateProcessStatus(Entity $process, $status, \DateTimeInterface $dateTime, $resolveReferences = 0)
     {
-        //\App::$log->debug('UPDATE STATUS');
-        $process = (new ProcessStatus())->readUpdatedStatus($process, $status, $dateTime, $resolveReferences);
+        $process = (new ProcessStatus())->writeUpdatedStatus($process, $status, $dateTime, $resolveReferences);
         return $process;
     }
 
