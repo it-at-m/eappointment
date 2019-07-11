@@ -17,7 +17,6 @@ require_once(APP_PATH . '/config.php');
 
 // Set option for environment, routing, logging and templating
 \BO\Zmsdb\Connection\Select::$enableProfiling = \App::DEBUG;
-\BO\Zmsdb\Connection\Select::$enableWsrepSyncWait = \App::DB_ENABLE_WSREPSYNCWAIT;
 \BO\Zmsdb\Connection\Select::$readSourceName = \App::DB_DSN_READONLY;
 \BO\Zmsdb\Connection\Select::$writeSourceName = \App::DB_DSN_READWRITE;
 \BO\Zmsdb\Connection\Select::$username = \App::DB_USERNAME;
