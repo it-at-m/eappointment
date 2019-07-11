@@ -55,6 +55,11 @@ class Application extends \BO\Slim\Application
     const DB_PASSWORD = 'internet';
 
     /**
+     * @var String DB_IS_GALERA
+     */
+    const DB_IS_GALERA = true;
+
+    /**
      * @var String Security Token for Api Access -> get config for example
      */
     const SECURE_TOKEN = 'a9b215f1-e460-490c-8a0b-6d42c274d5e4';

@@ -21,8 +21,7 @@ class ProcessConfirm extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        \BO\Zmsdb\Connection\Select::setClusterWideCausalityChecks();
-        \BO\Zmsdb\Connection\Select::getWriteConnection();
+        \BO\Zmsdb\Connection\Select::setCriticalReadSession();
         
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(3)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();

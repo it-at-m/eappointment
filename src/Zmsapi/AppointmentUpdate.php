@@ -22,8 +22,7 @@ class AppointmentUpdate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        \BO\Zmsdb\Connection\Select::setClusterWideCausalityChecks();
-        \BO\Zmsdb\Connection\Select::getWriteConnection();
+        \BO\Zmsdb\Connection\Select::setCriticalReadSession();
 
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
@@ -31,9 +30,6 @@ class AppointmentUpdate extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $appointment = new \BO\Zmsentities\Appointment($input);
         $appointment->testValid();
-        
-        \BO\Zmsdb\Connection\Select::setClusterWideCausalityChecks();
-        \BO\Zmsdb\Connection\Select::getWriteConnection();
 
         // get old process and check user rights if slottype or slotrequired is set
         $process = Process::init()->readEntity($args['id'], $args['authKey'], 1);
