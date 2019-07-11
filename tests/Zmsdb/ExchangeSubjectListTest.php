@@ -13,6 +13,6 @@ class ExchangeSubjectListTest extends Base
         $query = new Query();
         $entity = $query->readSubjectsList();
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(15, count($entity->data));
+        $this->assertEquals(16, count($entity->data));
     }
 }
