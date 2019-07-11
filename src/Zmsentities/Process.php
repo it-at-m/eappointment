@@ -28,7 +28,8 @@ class Process extends Schema\Entity
             'reminderTimestamp' => 0,
             'requests' => new Collection\RequestList(),
             'scope' => new Scope(),
-            'status' => 'free'
+            'status' => 'free',
+            'lastChange' => time()
         ];
     }
 
