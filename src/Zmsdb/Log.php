@@ -25,7 +25,7 @@ class Log extends Base
             "referenceId" => $referenceId,
             "type" => $type,
             ];
-        error_log("$message ".static::backtraceLogEntry());
+        //error_log("$message ".static::backtraceLogEntry());
         return $log->perform($sql, $parameters);
     }
 
@@ -38,7 +38,7 @@ class Log extends Base
         return $logList;
     }
 
-    protected function backtraceLogEntry()
+    protected static function backtraceLogEntry()
     {
         $trace = debug_backtrace();
         $short = '';
