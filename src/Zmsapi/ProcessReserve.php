@@ -30,8 +30,7 @@ class ProcessReserve extends BaseController
             throw new Exception\Process\ProcessReserveFailed();
         }
 
-        \BO\Zmsdb\Connection\Select::setClusterWideCausalityChecks();
-        \BO\Zmsdb\Connection\Select::getWriteConnection();
+        \BO\Zmsdb\Connection\Select::setCriticalReadSession();
         
         if ($slotType || $slotsRequired) {
             (new Helper\User($request))->checkRights();
@@ -41,7 +40,7 @@ class ProcessReserve extends BaseController
             $process = (new Process)->readSlotCount($process);
         }
 
-        $process = ProcessStatusFree::init()->writeEntityReserved($process, \App::$now, $slotType, $slotsRequired);
+        $process = (new ProcessStatusFree)->writeEntityReserved($process, \App::$now, $slotType, $slotsRequired);
 
         $message = Response\Message::create($request);
         $message->data = $process;

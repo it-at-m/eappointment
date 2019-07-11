@@ -26,13 +26,13 @@ class ProcessConfirmationMail extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        \BO\Zmsdb\Connection\Select::setCriticalReadSession();
+
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
         $process->testValid();
         $this->testProcessData($process);
         $process = (new Process())->readEntity($process->id, $process->authKey);
-
-        \BO\Zmsdb\Connection\Select::getWriteConnection();
     
         $mail = $this->writeMail($process);
         $message = Response\Message::create($request);

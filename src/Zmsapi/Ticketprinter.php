@@ -28,8 +28,7 @@ class Ticketprinter extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        \BO\Zmsdb\Connection\Select::setClusterWideCausalityChecks();
-        \BO\Zmsdb\Connection\Select::getWriteConnection();
+        \BO\Zmsdb\Connection\Select::setCriticalReadSession();
         
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new Entity($input);

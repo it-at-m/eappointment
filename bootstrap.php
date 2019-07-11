@@ -22,6 +22,7 @@ require_once(APP_PATH . '/config.php');
 \BO\Zmsdb\Connection\Select::$writeSourceName = \App::DB_DSN_READWRITE;
 \BO\Zmsdb\Connection\Select::$username = \App::DB_USERNAME;
 \BO\Zmsdb\Connection\Select::$password = \App::DB_PASSWORD;
+\BO\Zmsdb\Connection\Select::$galeraConnection = \App::DB_IS_GALERA;
 \BO\Zmsdb\Connection\Select::$pdoOptions = [
     \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 ];

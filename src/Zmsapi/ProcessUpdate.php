@@ -33,8 +33,7 @@ class ProcessUpdate extends BaseController
         $entity->testValid();
         $this->testProcessData($entity);
 
-        \BO\Zmsdb\Connection\Select::setClusterWideCausalityChecks();
-        \BO\Zmsdb\Connection\Select::getWriteConnection();
+        \BO\Zmsdb\Connection\Select::setCriticalReadSession();
 
         $process = (new Process)->readEntity($args['id'], $args['authKey'], 1);
         $initiator = Validator::param('initiator')->isString()->getValue();
@@ -47,7 +46,7 @@ class ProcessUpdate extends BaseController
 
         $message = Response\Message::create($request);
         $message->data = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
-
+        
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
