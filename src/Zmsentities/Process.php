@@ -157,7 +157,7 @@ class Process extends Schema\Entity
     {
         $client = new Client();
         foreach ($requestData as $key => $value) {
-            if (null !== $value && array_key_exists($key, $client)) {
+            if (null !== $value && $client->offsetExists($key)) {
                 $client[$key] = (isset($value['value'])) ? $value['value'] : $value;
             }
         }
@@ -547,6 +547,7 @@ class Process extends Schema\Entity
             $string .= " " . $request['source'] . "." . $request['id'];
         }
         $string .= " scope." . $this['scope']['id'];
+        $string .= " ~" . base_convert($this['lastChange'], 10, 35);
         return $string;
     }
 }
