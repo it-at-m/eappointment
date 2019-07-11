@@ -22,6 +22,7 @@
     ],
     "createIP": "145.15.3.10",
     "createTimestamp": 1447931596,
+    "lastChange": 1447931596,
     "id": 123456,
     "queue": {
       "arrivalTime": 1447922893,
