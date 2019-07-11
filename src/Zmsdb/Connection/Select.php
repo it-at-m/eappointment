@@ -226,7 +226,9 @@ class Select
             }
             if (self::$galeraConnection && self::$enableWsrepSyncWait) {
                 self::$writeConnection->exec(
-                    'SET SESSION wsrep_sync_wait = (SELECT CAST(value AS INT) FROM config WHERE name = "setting__wsrepsync");'
+                    'SET SESSION wsrep_sync_wait = (
+                        SELECT CAST(value AS INT) FROM config WHERE name = "setting__wsrepsync"
+                    );'
                 );
             }
             // On writing, use the same host to avoid racing/transcation conditions
