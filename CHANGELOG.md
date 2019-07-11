@@ -1,6 +1,7 @@
 ## v2.20.01
 
 * #36494 Bugfix: Prüfe bei der Formular-Validierung für E-Mails auch, ob eine Absender-Adresse angegeben wurde, ansonsten ignoriere die Einstellung "E-Mail ist Pflichtfeld"
+* #36616 Debugging: Im Log taucht jetzt zu Vorgängen ein verkürzter Zeitstempel zum letzten Änderungsdatum auf
 
 ## v2.20.00
 
