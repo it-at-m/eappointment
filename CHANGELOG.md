@@ -1,3 +1,7 @@
+## v2.20.01
+
+* #36616 Bugfix: Beim Erhöhen des Zählers beim Versenden einer Erinnerungsmail wird jetzt ein "critical read" verwendet
+
 ## v2.20.00
 
 * #36162 Bugfix: Tresen Block "Informationen" auch für normale Nutzer anzeigen
