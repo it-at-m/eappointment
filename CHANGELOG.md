@@ -2,6 +2,7 @@
 
 * #36494 Bugfix: Prüfe bei der Formular-Validierung für E-Mails auch, ob eine Absender-Adresse angegeben wurde, ansonsten ignoriere die Einstellung "E-Mail ist Pflichtfeld"
 * #36616 Debugging: Im Log taucht jetzt zu Vorgängen ein verkürzter Zeitstempel zum letzten Änderungsdatum auf
+* #35798 Debugging: Error-Log Einträge zu fehlenden E-Mail-Templates geben jetzt mehr Informationen aus, um die Ursache des Fehlers zu identifizieren
 
 ## v2.20.00
 

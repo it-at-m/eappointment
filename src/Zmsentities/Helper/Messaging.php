@@ -90,7 +90,7 @@ class Messaging
             $template = self::getTemplateByProcessStatus('admin', $process);
         }
         if (!$template) {
-            $exception = new \BO\Zmsentities\Exception\TemplateNotFound();
+            $exception = new \BO\Zmsentities\Exception\TemplateNotFound("Template for $process not found");
             $exception->data = $process;
             throw $exception;
         }
@@ -127,6 +127,11 @@ class Messaging
     {
         $appointment = $process->getFirstAppointment();
         $template = self::getTemplateByProcessStatus('notification', $process);
+        if (!$template) {
+            $exception = new \BO\Zmsentities\Exception\TemplateNotFound("Template for $process not found");
+            $exception->data = $process;
+            throw $exception;
+        }
         $message = self::twigView()->render(
             'messaging/' . $template,
             array(
