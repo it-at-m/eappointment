@@ -49,7 +49,7 @@ class ProcessSaveTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
         $this->assertContains(
-            'Der Termin mit der Nummer 82252 wurde erfolgreich aktualisiert.', 
+            '82252',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -86,7 +86,7 @@ class ProcessSaveTest extends Base
         );
         $response = $this->render(['id' => 100011], $this->parameters, [], 'POST');
         $this->assertContains(
-            'Der Spontankunde mit der Wartenummer 5 wurde erfolgreich aktualisiert.', 
+            'Der Spontankunde mit der Wartenummer 5 wurde erfolgreich aktualisiert.',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
