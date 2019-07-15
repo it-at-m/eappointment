@@ -44,7 +44,8 @@ class Process extends Base implements MappingInterface
             process.IPadresse = '',
             process.IPTimeStamp = FLOOR(UNIX_TIMESTAMP()) + (IFNULL(s.loeschdauer, 15) * 60),
             process.NutzerID = 0,
-            process.vorlaeufigeBuchung = 1
+            process.vorlaeufigeBuchung = 1,
+            process.absagecode = RIGHT(MD5(CONCAT(process.absagecode, 'QUERY_CANCELED')), 4)
         WHERE
             (process.BuergerID = ? AND process.absagecode = ?)
             OR process.istFolgeterminvon = ?
