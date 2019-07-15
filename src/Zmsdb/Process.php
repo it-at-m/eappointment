@@ -540,7 +540,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             $processId
         ));
         Log::writeLogEntry("DELETE (Process::writeCanceledEntity) $processId ", $processId);
-        return $this->readEntity($processId, $authKey, 0);
+        return $this->readEntity($processId, new Helper\NoAuth(), 0);
     }
 
     /**

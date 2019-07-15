@@ -427,9 +427,11 @@ class ProcessTest extends Base
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
+        $processOld = $process;
         $process = $query->writeCanceledEntity($process->id, $process->authKey);
         $this->assertEquals('(abgesagt)', $process->getFirstClient()->familyName);
         $this->assertEquals('deleted', $process->getStatus());
+        $this->assertNotEquals($process->authKey, $processOld->authKey);
 
         $process = $query->readEntity(); //check null
         $this->assertEquals(null, $process);
