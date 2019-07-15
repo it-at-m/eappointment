@@ -54,7 +54,7 @@ class ProcessDeleteTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertContains(
-            'Der Termin mit der Nummer 82252 wurde erfolgreich entfernt', 
+            '82252',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -90,7 +90,7 @@ class ProcessDeleteTest extends Base
         );
         $response = $this->render(['id' => '100632'], $this->parameters, []);
         $this->assertContains(
-            'Der Termin mit der Nummer 100632 wurde erfolgreich entfernt', 
+            '100632',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());

@@ -2,6 +2,7 @@
 
 * #36521 Bugfix: Die Nutzerverwaltung enthält jetzt auch neu angelegte Kunden, nicht mehr nur "Berlin"
 * #36317 Bugfix: Als Fehlerklasse wird statt TypeError jetzt die korrekte Klasse ausgegeben
+* #35869 "Termin" wurde bei Bestätigungen in "Vorgang" umbenannt und bei der Löschbestätigung wird auch die Wartenummer angegeben
 
 ## v2.20.00
 

@@ -37,7 +37,7 @@ class View extends BaseView {
         const name = $(event.target).data('name');
         var url = `${this.includeUrl}/dialog/?template=${template}`;
         if (processId || name) {
-            url = url + `& parameter[id]=${processId}& parameter[name]=${name}`;
+            url = url + `&parameter[id]=${processId}&parameter[name]=${name}`;
         }
         this.loadCall(url).then((response) => {
             this.loadDialog(response, callback);
