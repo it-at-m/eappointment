@@ -4,6 +4,7 @@
 * #36274 Statistik: Abfrage für Review der Öffnungszeiten hinzugefügt
 * #36616 Einstellung zu wsrep_sync für "critical reads" wird jetzt in der Config-Tabelle unter setting__wsrepsync festgelegt
 * #35912 Bugfix: Absagecode wurde beim Löschen eines Termins nicht verändert
+* #36681 Bugfix: Beim Anlegen von Organisation wird eine Bezirks-ID > 12 gesetzt, damit im ZMS1 beim Speichern der Standorte keine Zuordnung verloren geht 
 
 ## v2.20.00
 

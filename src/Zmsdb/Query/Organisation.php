@@ -84,6 +84,7 @@ class Organisation extends Base implements MappingInterface
             $data['KundenID'] = $parentId;
         }
         $data['Organisationsname'] = $entity->name;
+        $data['InfoBezirkID'] = 14;
         $data['Anschrift'] =(isset($entity->contact['street'])) ?$entity->contact['street'] : '';
         $data['kioskpasswortschutz'] = ($entity->getPreference('ticketPrinterProtectionEnabled')) ? 1 : 0;
         $data = array_filter($data, function ($value) {
