@@ -23,23 +23,28 @@ class QueueTable extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $scope = new Scope($workstation->scope);
-        $department = \App::$http->readGetResult('/scope/'. $scope->getId() .'/department/')->getEntity();
+        // parameters
         $validator = $request->getAttribute('validator');
         $success = $validator->getParameter('success')->isString()->getValue();
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
+        $selectedDateTime = $selectedDate ? new \DateTimeImmutable($selectedDate) : \App::$now;
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
-        $clusterHelper = (new Helper\ClusterHelper($workstation));
-
-        $queueListHelper = (new Helper\QueueListHelper($clusterHelper, $selectedDate));
-        $queueList = $queueListHelper->getList();
-        $queueListMissed = $queueListHelper->getMissedList();
-
+        
+        // HTTP requests
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
+        $department = $workstationRequest->readDepartment();
+        $processList = $workstationRequest->readProcessListByDate($selectedDateTime);
         $changedProcess = ($selectedProcessId)
           ? \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity()
           : null;
 
+        // data refinement
+        $queueList = $processList->toQueueList(\App::$now);
+        $queueListVisible = $queueList->withStatus(['confirmed', 'queued', 'reserved', 'deleted']);
+        $queueListMissed = $queueList->withStatus(['missed']);
+
+        // rendering
         return \BO\Slim\Render::withHtml(
             $response,
             'block/queue/table.twig',
@@ -47,10 +52,10 @@ class QueueTable extends BaseController
                 'workstation' => $workstation->getArrayCopy(),
                 'department' => $department,
                 'source' => $workstation->getVariantName(),
-                'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
-                'cluster' => $clusterHelper->getEntity(),
-                'clusterEnabled' => $clusterHelper->isClusterEnabled(),
-                'processList' => $queueList->withoutStatus(['fake'])->toProcessList(),
+                'selectedDate' => $selectedDateTime->format('Y-m-d'),
+                'cluster' => $workstationRequest->readCluster(),
+                'clusterEnabled' => $workstation->isClusterEnabled(),
+                'processList' => $queueListVisible->toProcessList(),
                 'processListMissed' => $queueListMissed->toProcessList(),
                 'changedProcess' => $changedProcess,
                 'success' => $success,

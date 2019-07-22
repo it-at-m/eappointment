@@ -7,11 +7,6 @@
  */
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Scope as Entity;
-use BO\Mellon\Validator;
-
-use Helper\AppointmentsByDayHelper;
-
 class ScopeAppointmentsByDay extends BaseController
 {
 
@@ -24,28 +19,43 @@ class ScopeAppointmentsByDay extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-
+        //parameters
         $scopeId = $args['id'];
-        $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/')->getEntity();
         $selectedDate = $args['date'];
+        $selectedDateTime = $selectedDate ? new \DateTimeImmutable($selectedDate) : \App::$now;
+        
+        // HTTP requests
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
+        if ($workstation->getScope()->id != $scopeId) {
+            $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/')->getEntity();
+            $workstationRequest->setDifferentScope($scope);
+        }
+        $processList = $workstationRequest->readProcessListByDate($selectedDateTime);
 
-        $selectedDateTime = new \DateTimeImmutable($selectedDate);
-        $queueList = Helper\AppointmentsByDayHelper::getAppointmentsByDayForScope(
-            $workstation,
-            $scope,
-            $selectedDate
-        );
+        // data refinement
+        $visibleProcessList = $processList
+            ->toQueueList(\App::$now)
+            ->withStatus(['confirmed', 'queued'])
+            ->withSortedArrival()
+            ->toProcessList();
+
+        // rendering
         return \BO\Slim\Render::withHtml(
             $response,
             'page/scopeAppointmentsByDay.twig',
             array(
-                'title' => 'Termine für ' . $scope->contact['name'] . ' am ' . $selectedDateTime->format('d.m.Y'),
-                'menuActive' => 'owner',
+                'title' =>
+                    'Termine für '
+                    . $workstationRequest->getScope()->contact['name']
+                    . ' am '
+                    . $selectedDateTime->format('d.m.Y'),
+                'menuActive' => 'counter',
                 'workstation' => $workstation,
                 'date' => $selectedDate,
-                'scope' => $scope,
-                'processList' => $queueList->toProcessList(),
+                'scope' => $workstationRequest->getScope(),
+                'clusterEnabled' => $workstation->isClusterEnabled(),
+                'processList' => $visibleProcessList,
             )
         );
     }
