@@ -32,7 +32,8 @@ class ProcessListByClusterAndDate extends BaseController
             throw new Exception\Cluster\ClusterNotFound();
         }
 
-        $queueList = $query->readQueueList($cluster->id, $dateTime, $resolveReferences ? $resolveReferences : 1);
+        // resolveReferences is for process, for queue we have to +1
+        $queueList = $query->readQueueList($cluster->id, $dateTime, $resolveReferences ? $resolveReferences + 1 : 1);
 
         $message = Response\Message::create($request);
         $message->data = $queueList->toProcessList()->withResolveLevel($resolveReferences);
