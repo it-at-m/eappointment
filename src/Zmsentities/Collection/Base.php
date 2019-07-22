@@ -161,6 +161,17 @@ class Base extends \ArrayObject implements \JsonSerializable
         return implode(',', $this->getIds());
     }
 
+    public function getCsvForProperty($propertyName)
+    {
+        $list = [];
+        foreach ($this as $entry) {
+            if ($entry->hasProperty($propertyName)) {
+                $list[] = $entry->getProperty($propertyName);
+            }
+        }
+        return implode(',', $list);
+    }
+
     /**
      * Change a parameter on all entries
      */
