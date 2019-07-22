@@ -109,7 +109,7 @@ class Workstation extends Schema\Entity
 
     public function getScope()
     {
-        if (!array_key_exists('scope', $this)) {
+        if (!$this->offsetExists('scope')) {
             $this->scope = new Scope();
         } elseif (!$this->scope instanceof Scope) {
             $this->scope = new Scope($this->scope);
@@ -193,5 +193,10 @@ class Workstation extends Schema\Entity
             $formData['appointmentsOnly']->getValue() :
             0;
         return $this;
+    }
+
+    public function isClusterEnabled()
+    {
+        return $this->queue['clusterEnabled'] ? true : false;
     }
 }
