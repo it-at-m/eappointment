@@ -14,10 +14,10 @@ use \Psr\Http\Message\ResponseInterface;
  * Availability
  * -------------------------------------------------------------------------
  */
- \App::$slim->post('/availability/', '\BO\Zmsadmin\AvailabilityUpdate')
+ \App::$slim->post('/availability/', \BO\Zmsadmin\AvailabilityUpdate::class)
      ->setName("AvailabilityUpdate");
 
- \App::$slim->delete('/availability/{id:\d{1,11}}/', '\BO\Zmsadmin\AvailabilityDelete')
+ \App::$slim->delete('/availability/{id:\d{1,11}}/', \BO\Zmsadmin\AvailabilityDelete::class)
      ->setName("AvailabilityDelete");
 
  /*
@@ -25,7 +25,7 @@ use \Psr\Http\Message\ResponseInterface;
   * Calldisplay
   * -------------------------------------------------------------------------
   */
- \App::$slim->get('/calldisplay/', '\BO\Zmsadmin\Calldisplay')
+ \App::$slim->get('/calldisplay/', \BO\Zmsadmin\Calldisplay::class)
      ->setName("calldisplay");
 
  /*
@@ -33,7 +33,7 @@ use \Psr\Http\Message\ResponseInterface;
   * Calendar
   * -------------------------------------------------------------------------
   */
- \App::$slim->get('/calendar/{year:\d\d\d\d}/{weeknr:\d{1,2}}/', '\BO\Zmsadmin\CalendarWeek')
+ \App::$slim->get('/calendar/{year:\d\d\d\d}/{weeknr:\d{1,2}}/', \BO\Zmsadmin\CalendarWeek::class)
      ->setName("calendar_week");
 
 
@@ -42,7 +42,7 @@ use \Psr\Http\Message\ResponseInterface;
   * Config
   * -------------------------------------------------------------------------
   */
- \App::$slim->get('/config/', '\BO\Zmsadmin\ConfigInfo')
+ \App::$slim->get('/config/', \BO\Zmsadmin\ConfigInfo::class)
      ->setName("configinfo");
 
  /*
@@ -50,13 +50,13 @@ use \Psr\Http\Message\ResponseInterface;
   * Counter
   * -------------------------------------------------------------------------
   */
-\App::$slim->get('/counter/', '\BO\Zmsadmin\Counter')
+\App::$slim->get('/counter/', \BO\Zmsadmin\Counter::class)
     ->setName("counter");
 
-\App::$slim->get('/counter/queueInfo/', '\BO\Zmsadmin\CounterQueueInfo')
+\App::$slim->get('/counter/queueInfo/', \BO\Zmsadmin\CounterQueueInfo::class)
     ->setName("counter_queue_info");
 
-\App::$slim->get('/counter/appointmentTimes/', '\BO\Zmsadmin\CounterAppointmentTimes')
+\App::$slim->get('/counter/appointmentTimes/', \BO\Zmsadmin\CounterAppointmentTimes::class)
     ->setName("counter_appointment_times");
 
 /*
@@ -64,10 +64,10 @@ use \Psr\Http\Message\ResponseInterface;
  * Dayoff
  * -------------------------------------------------------------------------
  */
- \App::$slim->get('/dayoff/', '\BO\Zmsadmin\Dayoff')
+ \App::$slim->get('/dayoff/', \BO\Zmsadmin\Dayoff::class)
      ->setName("dayoff");
 
-\App::$slim->map(['GET', 'POST'], '/dayoff/{year:\d+}/', '\BO\Zmsadmin\DayoffByYear')
+\App::$slim->map(['GET', 'POST'], '/dayoff/{year:\d+}/', \BO\Zmsadmin\DayoffByYear::class)
     ->setName("dayoffByYear");
 
 
@@ -76,28 +76,28 @@ use \Psr\Http\Message\ResponseInterface;
  * Department
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET','POST'], '/department/{id:\d+}/', '\BO\Zmsadmin\Department')
+\App::$slim->map(['GET','POST'], '/department/{id:\d+}/', \BO\Zmsadmin\Department::class)
     ->setName("department");
 
-\App::$slim->map(['GET','POST'], '/department/{departmentId:\d+}/cluster/{clusterId:\d+}/', '\BO\Zmsadmin\Cluster')
+\App::$slim->map(['GET','POST'], '/department/{departmentId:\d+}/cluster/{clusterId:\d+}/', \BO\Zmsadmin\Cluster::class)
     ->setName("cluster");
 
-\App::$slim->get('/department/{departmentId:\d+}/cluster/{clusterId:\d+}/delete/', '\BO\Zmsadmin\ClusterDelete')
+\App::$slim->get('/department/{departmentId:\d+}/cluster/{clusterId:\d+}/delete/', \BO\Zmsadmin\ClusterDelete::class)
     ->setName("clusterDelete");
 
-\App::$slim->map(['GET','POST'], '/department/{departmentId:\d+}/cluster/', '\BO\Zmsadmin\DepartmentAddCluster')
+\App::$slim->map(['GET','POST'], '/department/{departmentId:\d+}/cluster/', \BO\Zmsadmin\DepartmentAddCluster::class)
     ->setName("departmentAddCluster");
 
-\App::$slim->map(['GET','POST'], '/department/{id:\d+}/scope/', '\BO\Zmsadmin\DepartmentAddScope')
+\App::$slim->map(['GET','POST'], '/department/{id:\d+}/scope/', \BO\Zmsadmin\DepartmentAddScope::class)
     ->setName("departmentAddScope");
 
-\App::$slim->get('/department/delete/{id:\d+}/', '\BO\Zmsadmin\DepartmentDelete')
+\App::$slim->get('/department/delete/{id:\d+}/', \BO\Zmsadmin\DepartmentDelete::class)
     ->setName("departmentDelete");
 
-\App::$slim->get('/department/{id:\d+}/useraccount/', '\BO\Zmsadmin\UseraccountByDepartment')
+\App::$slim->get('/department/{id:\d+}/useraccount/', \BO\Zmsadmin\UseraccountByDepartment::class)
     ->setName("useraccountByDepartment");
 
-\App::$slim->post('/department/{id:\d+}/useraccount/logout/', '\BO\Zmsadmin\LogoutBySuperuser')
+\App::$slim->post('/department/{id:\d+}/useraccount/logout/', \BO\Zmsadmin\LogoutBySuperuser::class)
     ->setName("logoutBySuperuser");
 
 
@@ -106,10 +106,10 @@ use \Psr\Http\Message\ResponseInterface;
  * Login
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET','POST'], '/', '\BO\Zmsadmin\Index')
+\App::$slim->map(['GET','POST'], '/', \BO\Zmsadmin\Index::class)
     ->setName("index");
 
-\App::$slim->get('/workstation/quicklogin/', '\BO\Zmsadmin\QuickLogin')
+\App::$slim->get('/workstation/quicklogin/', \BO\Zmsadmin\QuickLogin::class)
     ->setName("quickLogin");
 
 /*
@@ -117,7 +117,7 @@ use \Psr\Http\Message\ResponseInterface;
  * Logout
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/logout/', '\BO\Zmsadmin\Logout')
+\App::$slim->get('/logout/', \BO\Zmsadmin\Logout::class)
     ->setName("logout");
 
 /*
@@ -125,7 +125,7 @@ use \Psr\Http\Message\ResponseInterface;
  * Mail
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET', 'POST'], '/mail/', '\BO\Zmsadmin\Mail')
+\App::$slim->map(['GET', 'POST'], '/mail/', \BO\Zmsadmin\Mail::class)
     ->setName("mail");
 
 /*
@@ -134,7 +134,7 @@ use \Psr\Http\Message\ResponseInterface;
  * -------------------------------------------------------------------------
  */
 
-\App::$slim->map(['GET', 'POST'], '/notification/', '\BO\Zmsadmin\Notification')
+\App::$slim->map(['GET', 'POST'], '/notification/', \BO\Zmsadmin\Notification::class)
     ->setName("notification");
 
 /*
@@ -142,13 +142,13 @@ use \Psr\Http\Message\ResponseInterface;
  * Organisation
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET','POST'], '/organisation/{id:\d+}/department/', '\BO\Zmsadmin\OrganisationAddDepartment')
+\App::$slim->map(['GET','POST'], '/organisation/{id:\d+}/department/', \BO\Zmsadmin\OrganisationAddDepartment::class)
     ->setName("organisationAddDepartment");
 
-\App::$slim->map(['GET','POST'], '/organisation/{id:\d+}/', '\BO\Zmsadmin\Organisation')
+\App::$slim->map(['GET','POST'], '/organisation/{id:\d+}/', \BO\Zmsadmin\Organisation::class)
     ->setName("organisation");
 
-\App::$slim->get('/organisation/delete/{id:\d+}/', '\BO\Zmsadmin\OrganisationDelete')
+\App::$slim->get('/organisation/delete/{id:\d+}/', \BO\Zmsadmin\OrganisationDelete::class)
     ->setName("organisationDelete");
 
 
@@ -157,19 +157,19 @@ use \Psr\Http\Message\ResponseInterface;
  * Owner
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET','POST'], '/owner/{id:\d+}/organisation/', '\BO\Zmsadmin\OwnerAddOrganisation')
+\App::$slim->map(['GET','POST'], '/owner/{id:\d+}/organisation/', \BO\Zmsadmin\OwnerAddOrganisation::class)
     ->setName("ownerAddOrganisation");
 
 \App::$slim->get('/owner/', '\BO\Zmsadmin\OwnerOverview')
     ->setName("owner_overview");
 
-\App::$slim->map(['GET','POST'], '/owner/{id:\d+}/', '\BO\Zmsadmin\Owner')
+\App::$slim->map(['GET','POST'], '/owner/{id:\d+}/', \BO\Zmsadmin\Owner::class)
     ->setName("owner");
 
-\App::$slim->map(['GET','POST'], '/owner/add/', '\BO\Zmsadmin\OwnerAdd')
+\App::$slim->map(['GET','POST'], '/owner/add/', \BO\Zmsadmin\OwnerAdd::class)
     ->setName("owner_add");
 
-\App::$slim->get('/owner/delete/{id:\d+}/', '\BO\Zmsadmin\OwnerDelete')
+\App::$slim->get('/owner/delete/{id:\d+}/', \BO\Zmsadmin\OwnerDelete::class)
     ->setName("ownerDelete");
 
 /*
@@ -178,34 +178,34 @@ use \Psr\Http\Message\ResponseInterface;
  * -------------------------------------------------------------------------
  */
 
- \App::$slim->get('/pickup/', '\BO\Zmsadmin\Pickup')
+ \App::$slim->get('/pickup/', \BO\Zmsadmin\Pickup::class)
      ->setName("pickup");
 
- \App::$slim->get('/pickup/queue/', '\BO\Zmsadmin\PickupQueue')
+ \App::$slim->get('/pickup/queue/', \BO\Zmsadmin\PickupQueue::class)
      ->setName("pickup_queue");
 
- \App::$slim->delete('/pickup/delete/{id:\d+}/', '\BO\Zmsadmin\PickupDelete')
+ \App::$slim->delete('/pickup/delete/{id:\d+}/', \BO\Zmsadmin\PickupDelete::class)
      ->setName("pickup_delete");
 
- \App::$slim->map(['GET','POST'], '/pickup/handheld/', '\BO\Zmsadmin\PickupHandheld')
+ \App::$slim->map(['GET','POST'], '/pickup/handheld/', \BO\Zmsadmin\PickupHandheld::class)
      ->setName("pickup_handheld");
 
- \App::$slim->get('/pickup/keyboard/', '\BO\Zmsadmin\PickupKeyboard')
+ \App::$slim->get('/pickup/keyboard/', \BO\Zmsadmin\PickupKeyboard::class)
      ->setName("pickup_keyboard");
 
- \App::$slim->get('/pickup/spreadsheet/', '\BO\Zmsadmin\PickupSpreadSheet')
+ \App::$slim->get('/pickup/spreadsheet/', \BO\Zmsadmin\PickupSpreadSheet::class)
      ->setName("pickup_spreadsheet");
 
- \App::$slim->get('/pickup/mail/', '\BO\Zmsadmin\PickupMail')
+ \App::$slim->get('/pickup/mail/', \BO\Zmsadmin\PickupMail::class)
      ->setName("pickup_mail");
 
- \App::$slim->get('/pickup/notification/', '\BO\Zmsadmin\PickupNotification')
+ \App::$slim->get('/pickup/notification/', \BO\Zmsadmin\PickupNotification::class)
      ->setName("pickup_notification");
 
- \App::$slim->get('/pickup/call/{id:\d+}/', '\BO\Zmsadmin\PickupCall')
+ \App::$slim->get('/pickup/call/{id:\d+}/', \BO\Zmsadmin\PickupCall::class)
      ->setName("pickup_call");
 
- \App::$slim->get('/pickup/call/cancel/', '\BO\Zmsadmin\PickupCallCancel')
+ \App::$slim->get('/pickup/call/cancel/', \BO\Zmsadmin\PickupCallCancel::class)
      ->setName("pickup_call_cancel");
 
 /*
@@ -214,19 +214,19 @@ use \Psr\Http\Message\ResponseInterface;
  * -------------------------------------------------------------------------
  */
 
- \App::$slim->post('/process/reserve/', '\BO\Zmsadmin\ProcessReserve')
+ \App::$slim->post('/process/reserve/', \BO\Zmsadmin\ProcessReserve::class)
      ->setName("processReserve");
 
- \App::$slim->map(['GET','POST'], '/process/queue/', '\BO\Zmsadmin\ProcessQueue')
+ \App::$slim->map(['GET','POST'], '/process/queue/', \BO\Zmsadmin\ProcessQueue::class)
      ->setName("processQueue");
 
- \App::$slim->get('/process/queue/reset/', '\BO\Zmsadmin\ProcessQueueReset')
+ \App::$slim->get('/process/queue/reset/', \BO\Zmsadmin\ProcessQueueReset::class)
      ->setName("processQueueReset");
 
- \App::$slim->post('/process/{id:\d+}/save/', '\BO\Zmsadmin\ProcessSave')
+ \App::$slim->post('/process/{id:\d+}/save/', \BO\Zmsadmin\ProcessSave::class)
      ->setName("processSave");
 
- \App::$slim->get('/process/{id:\d+}/delete/', '\BO\Zmsadmin\ProcessDelete')
+ \App::$slim->get('/process/{id:\d+}/delete/', \BO\Zmsadmin\ProcessDelete::class)
     ->setName("processDelete");
 
 
@@ -235,7 +235,7 @@ use \Psr\Http\Message\ResponseInterface;
  * Profile
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET', 'POST'], '/profile/', '\BO\Zmsadmin\Profile')
+\App::$slim->map(['GET', 'POST'], '/profile/', \BO\Zmsadmin\Profile::class)
     ->setName("profile");
 
 
@@ -244,37 +244,37 @@ use \Psr\Http\Message\ResponseInterface;
  * Scope
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET','POST'], '/scope/{id:\d+}/', '\BO\Zmsadmin\Scope')
+\App::$slim->map(['GET','POST'], '/scope/{id:\d+}/', \BO\Zmsadmin\Scope::class)
     ->setName("scope");
 
-\App::$slim->get('/scope/{id:\d+}/process/{date:\d\d\d\d-\d\d-\d\d}/', '\BO\Zmsadmin\ScopeAppointmentsByDay')
+\App::$slim->get('/scope/{id:\d+}/process/{date:\d\d\d\d-\d\d-\d\d}/', \BO\Zmsadmin\ScopeAppointmentsByDay::class)
     ->setName("scopeAppointmentsByDay");
 
-\App::$slim->get('/scope/{id:\d+}/process/{date:\d\d\d\d-\d\d-\d\d}/xlsx/', '\BO\Zmsadmin\ScopeAppointmentsByDayXlsExport')
+\App::$slim->get('/scope/{id:\d+}/process/{date:\d\d\d\d-\d\d-\d\d}/xlsx/', \BO\Zmsadmin\ScopeAppointmentsByDayXlsExport::class)
     ->setName("scopeAppointmentsByDayXls");
 
-\App::$slim->get('/scope/delete/{id:\d+}/', '\BO\Zmsadmin\ScopeDelete')
+\App::$slim->get('/scope/delete/{id:\d+}/', \BO\Zmsadmin\ScopeDelete::class)
     ->setName("scopeDelete");
 
-\App::$slim->get('/scope/{id:\d+}/availability/day/{date:\d\d\d\d-\d\d-\d\d}/', '\BO\Zmsadmin\ScopeAvailabilityDay')
+\App::$slim->get('/scope/{id:\d+}/availability/day/{date:\d\d\d\d-\d\d-\d\d}/', \BO\Zmsadmin\ScopeAvailabilityDay::class)
     ->setName("scopeAvailabilityDay");
 
-\App::$slim->get('/scope/{id:\d+}/availability/day/{date:\d\d\d\d-\d\d-\d\d}/conflicts/', '\BO\Zmsadmin\ScopeAvailabilityDayConflicts')
+\App::$slim->get('/scope/{id:\d+}/availability/day/{date:\d\d\d\d-\d\d-\d\d}/conflicts/', \BO\Zmsadmin\ScopeAvailabilityDayConflicts::class)
     ->setName("scopeAvailabilityDayConflict");
 
-\App::$slim->get('/scope/{id:\d+}/availability/month/[{date:\d\d\d\d-\d\d}/]', '\BO\Zmsadmin\ScopeAvailabilityMonth')
+\App::$slim->get('/scope/{id:\d+}/availability/month/[{date:\d\d\d\d-\d\d}/]', \BO\Zmsadmin\ScopeAvailabilityMonth::class)
     ->setName("scopeAvailabilityMonth");
 
-\App::$slim->map(['DELETE','POST'], '/scope/{id:\d+}/emergency/', '\BO\Zmsadmin\ScopeEmergency')
+\App::$slim->map(['DELETE','POST'], '/scope/{id:\d+}/emergency/', \BO\Zmsadmin\ScopeEmergency::class)
     ->setName("scope_emergency");
 
-\App::$slim->post('/scope/{id:\d+}/emergency/respond/', '\BO\Zmsadmin\ScopeEmergencyResponse')
+\App::$slim->post('/scope/{id:\d+}/emergency/respond/', \BO\Zmsadmin\ScopeEmergencyResponse::class)
     ->setName('scope_emergency_response');
 
-\App::$slim->get('/scope/ticketprinter/', '\BO\Zmsadmin\TicketprinterConfig')
+\App::$slim->get('/scope/ticketprinter/', \BO\Zmsadmin\TicketprinterConfig::class)
     ->setName("ticketprinter");
 
-\App::$slim->map(['GET', 'POST'], '/scope/{id:\d+}/ticketprinter/', '\BO\Zmsadmin\TicketprinterStatusByScope')
+\App::$slim->map(['GET', 'POST'], '/scope/{id:\d+}/ticketprinter/', \BO\Zmsadmin\TicketprinterStatusByScope::class)
     ->setName("ticketprinterStatusByScope");
 
 /*
@@ -282,7 +282,7 @@ use \Psr\Http\Message\ResponseInterface;
  * Search
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/search/', '\BO\Zmsadmin\Search')
+\App::$slim->get('/search/', \BO\Zmsadmin\Search::class)
     ->setName("search");
 
 /*
@@ -290,13 +290,13 @@ use \Psr\Http\Message\ResponseInterface;
  * Source
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/source/', '\BO\Zmsadmin\SourceIndex')
+\App::$slim->get('/source/', \BO\Zmsadmin\SourceIndex::class)
     ->setName("sourceindex");
 
-\App::$slim->map(['GET','POST'], '/source/{name}/', '\BO\Zmsadmin\SourceEdit')
+\App::$slim->map(['GET','POST'], '/source/{name}/', \BO\Zmsadmin\SourceEdit::class)
     ->setName("sourceEdit");
 
-\App::$slim->map(['POST'], '/source/delete/{loginname}/', '\BO\Zmsadmin\SourceDelete')
+\App::$slim->map(['POST'], '/source/delete/{loginname}/', \BO\Zmsadmin\SourceDelete::class)
     ->setName("sourceDelete");
 
 
@@ -305,16 +305,16 @@ use \Psr\Http\Message\ResponseInterface;
  * Useraccount
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/useraccount/', '\BO\Zmsadmin\Useraccount')
+\App::$slim->get('/useraccount/', \BO\Zmsadmin\Useraccount::class)
     ->setName("useraccount");
 
-\App::$slim->map(['GET', 'POST'], '/useraccount/add/', '\BO\Zmsadmin\UseraccountAdd')
+\App::$slim->map(['GET', 'POST'], '/useraccount/add/', \BO\Zmsadmin\UseraccountAdd::class)
     ->setName("useraccountAdd");
 
-\App::$slim->map(['GET','POST'], '/useraccount/{loginname}/', '\BO\Zmsadmin\UseraccountEdit')
+\App::$slim->map(['GET','POST'], '/useraccount/{loginname}/', \BO\Zmsadmin\UseraccountEdit::class)
     ->setName("useraccountEdit");
 
-\App::$slim->get('/useraccount/delete/{loginname}/', '\BO\Zmsadmin\UseraccountDelete')
+\App::$slim->get('/useraccount/delete/{loginname}/', \BO\Zmsadmin\UseraccountDelete::class)
     ->setName("useraccountDelete");
 
 
@@ -323,43 +323,43 @@ use \Psr\Http\Message\ResponseInterface;
  * Workstation
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET','POST'], '/workstation/select/', '\BO\Zmsadmin\WorkstationSelect')
+\App::$slim->map(['GET','POST'], '/workstation/select/', \BO\Zmsadmin\WorkstationSelect::class)
     ->setName("workstationSelect");
 
-\App::$slim->get('/workstation/status/', '\BO\Zmsadmin\WorkstationStatus')
+\App::$slim->get('/workstation/status/', \BO\Zmsadmin\WorkstationStatus::class)
     ->setName("workstationStatus");
 
-\App::$slim->get('/workstation/{loginName}/', '\BO\Zmsadmin\WorkstationLogin')
+\App::$slim->get('/workstation/{loginName}/', \BO\Zmsadmin\WorkstationLogin::class)
     ->setName("workstationLogin");
 
-\App::$slim->get('/workstation/process/next/', '\BO\Zmsadmin\WorkstationProcessNext')
+\App::$slim->get('/workstation/process/next/', \BO\Zmsadmin\WorkstationProcessNext::class)
     ->setName("workstationProcessNext");
 
-\App::$slim->get('/workstation/process/{id:\d+}/precall/', '\BO\Zmsadmin\WorkstationProcessPreCall')
+\App::$slim->get('/workstation/process/{id:\d+}/precall/', \BO\Zmsadmin\WorkstationProcessPreCall::class)
     ->setName("workstationProcessPreCall");
 
-\App::$slim->get('/workstation/process/{id:\d+}/called/', '\BO\Zmsadmin\WorkstationProcessCalled')
+\App::$slim->get('/workstation/process/{id:\d+}/called/', \BO\Zmsadmin\WorkstationProcessCalled::class)
     ->setName("workstationProcessCalled");
 
-\App::$slim->get('/workstation/process/processing/', '\BO\Zmsadmin\WorkstationProcessProcessing')
+\App::$slim->get('/workstation/process/processing/', \BO\Zmsadmin\WorkstationProcessProcessing::class)
     ->setName("workstationProcessProcessing");
 
-\App::$slim->map(['GET','POST'], '/workstation/process/finished/', '\BO\Zmsadmin\WorkstationProcessFinished')
+\App::$slim->map(['GET','POST'], '/workstation/process/finished/', \BO\Zmsadmin\WorkstationProcessFinished::class)
     ->setName("workstationProcessFinished");
 
-\App::$slim->get('/workstation/call/{id:\d+}/', '\BO\Zmsadmin\WorkstationProcessCall')
+\App::$slim->get('/workstation/call/{id:\d+}/', \BO\Zmsadmin\WorkstationProcessCall::class)
     ->setName("workstationProcessCall");
 
-\App::$slim->get('/workstation/process/cancel/', '\BO\Zmsadmin\WorkstationProcessCancel')
+\App::$slim->get('/workstation/process/cancel/', \BO\Zmsadmin\WorkstationProcessCancel::class)
     ->setName("workstationProcessCancel");
 
-\App::$slim->get('/workstation/process/cancel/next/', '\BO\Zmsadmin\WorkstationProcessCancelNext')
+\App::$slim->get('/workstation/process/cancel/next/', \BO\Zmsadmin\WorkstationProcessCancelNext::class)
     ->setName("workstationProcessCancelNext");
 
-\App::$slim->get('/workstation/process/callbutton/', '\BO\Zmsadmin\WorkstationProcess')
+\App::$slim->get('/workstation/process/callbutton/', \BO\Zmsadmin\WorkstationProcess::class)
     ->setName("workstationProcessCallButton");
 
-\App::$slim->map(['GET','POST'], '/workstation/', '\BO\Zmsadmin\Workstation')
+\App::$slim->map(['GET','POST'], '/workstation/', \BO\Zmsadmin\Workstation::class)
     ->setName("workstation");
 
 /*
@@ -367,25 +367,25 @@ use \Psr\Http\Message\ResponseInterface;
  * Other Ajax Components
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/calendarPage/[{date:\d}/]', '\BO\Zmsadmin\CalendarPage')
+\App::$slim->get('/calendarPage/[{date:\d}/]', \BO\Zmsadmin\CalendarPage::class)
     ->setName("counter_calendar_page");
 
-\App::$slim->map(['GET', 'POST'], '/appointmentForm/', '\BO\Zmsadmin\AppointmentForm')
+\App::$slim->map(['GET', 'POST'], '/appointmentForm/', \BO\Zmsadmin\AppointmentForm::class)
     ->setName("appointment_form");
 
-\App::$slim->get('/appointmentForm/processlist/free/', '\BO\Zmsadmin\AppointmentFormFreeProcessList')
+\App::$slim->get('/appointmentForm/processlist/free/', \BO\Zmsadmin\AppointmentFormFreeProcessList::class)
     ->setName("appointment_form_free_processes");
 
-\App::$slim->get('/appointmentForm/buttons/', '\BO\Zmsadmin\AppointmentFormButtons')
+\App::$slim->get('/appointmentForm/buttons/', \BO\Zmsadmin\AppointmentFormButtons::class)
     ->setName("appointment_form_buttons");
 
-\App::$slim->get('/queueTable/', '\BO\Zmsadmin\QueueTable')
+\App::$slim->get('/queueTable/', \BO\Zmsadmin\QueueTable::class)
     ->setName("queue_table");
 
-\App::$slim->get('/dialog/', '\BO\Zmsadmin\Helper\DialogHandler')
+\App::$slim->get('/dialog/', \BO\Zmsadmin\Helper\DialogHandler::class)
     ->setName("dialogHandler");
 
-\App::$slim->get('/provider/{source}/', '\BO\Zmsadmin\Helper\ProviderHandler')
+\App::$slim->get('/provider/{source}/', \BO\Zmsadmin\Helper\ProviderHandler::class)
 ->setName("providerHandler");
 
 /*
@@ -404,16 +404,16 @@ use \Psr\Http\Message\ResponseInterface;
  * maintenance
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/testpage/', '\BO\Zmsadmin\Testpage')
+\App::$slim->get('/testpage/', \BO\Zmsadmin\Testpage::class)
     ->setName("testpage");
 
-\App::$slim->get('/changelog/', '\BO\Zmsadmin\Changelog')
+\App::$slim->get('/changelog/', \BO\Zmsadmin\Changelog::class)
     ->setName("changelog");
 
-\App::$slim->get('/status/', '\BO\Zmsadmin\Status')
+\App::$slim->get('/status/', \BO\Zmsadmin\Status::class)
     ->setName("status");
 
-\App::$slim->get('/healthcheck/', '\BO\Zmsadmin\Healthcheck')
+\App::$slim->get('/healthcheck/', \BO\Zmsadmin\Healthcheck::class)
     ->setName("healthcheck");
 
 \App::$slim->getContainer()->offsetSet('notFoundHandler', function ($container) {
