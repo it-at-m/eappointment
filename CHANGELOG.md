@@ -1,3 +1,7 @@
+## v2.20.01
+
+* #36528 Refactoring: Gemeinsame Funktionen zum Holen der Warteliste vom Sachbearbeiter und Ticketprinter hierher verschoben
+
 ## v2.20.00
 
 * #36102 Funktionen für Apikey und Workflowkey ergänzt, um die Public API besser testen zu können
