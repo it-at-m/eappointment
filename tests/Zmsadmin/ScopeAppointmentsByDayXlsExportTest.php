@@ -25,16 +25,6 @@ class ScopeAppointmentsByDayXlsExportTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/',
-                    'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")

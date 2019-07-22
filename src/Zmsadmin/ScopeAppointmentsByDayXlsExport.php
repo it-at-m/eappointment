@@ -7,11 +7,6 @@
  */
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Scope as Entity;
-use BO\Mellon\Validator;
-
-use Helper\AppointmentsByDayHelper;
-
 use \XLSXWriter;
 
 /**
@@ -29,51 +24,56 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-
+        //parameters
         $scopeId = $args['id'];
-        $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/')->getEntity();
         $selectedDate = $args['date'];
+        $selectedDateTime = $selectedDate ? new \DateTimeImmutable($selectedDate) : \App::$now;
 
-        $queueList = Helper\AppointmentsByDayHelper::getAppointmentsByDayForScope(
-            $workstation,
-            $scope,
-            $selectedDate
-        );
+        // HTTP requests
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
+        if ($workstation->getScope()->id != $scopeId) {
+            $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/')->getEntity();
+            $workstationRequest->setDifferentScope($scope);
+        }
+        $processList = $workstationRequest->readProcessListByDate($selectedDateTime);
 
-        $xlsSheetTitle = \DateTimeImmutable::createFromFormat('Y-m-d', $selectedDate)->format('d.m.Y');
+        // data refinement
+        $visibleProcessList = $processList
+            ->toQueueList(\App::$now)
+            ->withStatus(['confirmed', 'queued'])
+            ->withSortedArrival()
+            ->toProcessList();
 
+        // rendering
+        $xlsSheetTitle = $selectedDateTime->format('d.m.Y');
+
+        $clusterColumn = $workstation->isClusterEnabled() ? 'Kürzel' : 'Lfd. Nummer';
         $xlsHeaders = [
-            'Lfd. Nummer' => 'integer',
-            'Uhrzeit' => 'string',
+            $clusterColumn => $workstation->isClusterEnabled() ? 'string' : 'integer',
+            'Uhrzeit/Ankunftszeit' => 'string',
             'Nr.' => 'integer',
             'Name' => 'string',
-            'Absagecode' => 'string',
             'Telefon' => 'string',
             'Email' => 'string',
             'Dienstleistung' => 'string',
             'Anmerkungen' => 'string'
         ];
         $writer = new XLSXWriter();
-
         $writer->writeSheetHeader($xlsSheetTitle, $xlsHeaders);
 
-        foreach ($queueList->toProcessList()->getArrayCopy() as $key => $queueItem) {
-            $client = count($queueItem->clients) > 0 ? $queueItem->clients[0] : [];
+        $key = 1;
+        foreach ($visibleProcessList as $queueItem) {
+            $client = $queueItem->getFirstClient();
             $request = count($queueItem->requests) > 0 ? $queueItem->requests[0] : [];
-
-            $date = new \DateTime('@' . $queueItem->queue['arrivalTime']);
-            $date->setTimezone(\App::$now->getTimezone());
-
             $row = [
-                $key + 1,
-                $date->format('H:i:s'),
+                $workstation->isClusterEnabled() ? $queueItem->getCurrentScope()->shortName : $key++ ,
+                $queueItem->getArrivalTime()->format('H:i:s'),
                 $queueItem->queue['number'],
                 $client['familyName'],
-                $queueItem->authKey,
                 $client['telephone'],
                 $client['email'],
-                (isset($request['name'])) ? $request['name'] : '',
+                $queueItem->requests->getCsvForProperty('name'),
                 $queueItem->amendment
             ];
 
