@@ -138,7 +138,7 @@ class Cluster extends Base
                 $queueList->addList($scopeQueueList);
             }
         }
-        return $queueList->withSortedArrival();
+        return $queueList->withSortedWaitingTime();
     }
 
     /**
