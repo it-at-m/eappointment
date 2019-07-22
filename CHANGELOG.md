@@ -1,6 +1,7 @@
 ## v2.20.01
 
 * #36616 Bugfix: Beim Erhöhen des Zählers beim Versenden einer Erinnerungsmail wird jetzt ein "critical read" verwendet
+* #36528 Bugfix: Dienstleistungen der Vorgänge werden auch in der Clusteransicht wieder angezeigt
 
 ## v2.20.00
 
