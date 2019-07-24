@@ -14,7 +14,7 @@ class DayList extends Base implements JsonUnindexed
     public function getDay($year, $month, $dayNumber, $createDay = true)
     {
         $dateHash = Day::getCalculatedDayHash($dayNumber, $month, $year);
-        if (array_key_exists($dateHash, $this)) {
+        if ($this->offsetExists($dateHash)) {
             return $this[$dateHash];
         }
         foreach ($this as $key => $day) {
@@ -131,20 +131,6 @@ class DayList extends Base implements JsonUnindexed
             }
         }
         return null;
-    }
-
-
-    public function toSortedByHour()
-    {
-        $list = array();
-        foreach ($this as $day) {
-            $list['days'][] = $day;
-            $dayKey = $day->year .'-'. $day->month .'-'. $day->day;
-            foreach ($day['processList'] as $hour => $processList) {
-                $list['hours'][$hour][$dayKey] = $processList;
-            }
-        }
-        return $list;
     }
 
     public function withDaysInDateRange(\DateTimeInterface $startDate, \DateTimeInterface $endDate)

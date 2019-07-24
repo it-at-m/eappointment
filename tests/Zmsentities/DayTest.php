@@ -102,17 +102,6 @@ class DayTest extends EntityCommonTests
         $this->assertEquals('notBookable', $collection->getFirst()->status);
     }
 
-    public function testWithProcessListSortedByHour()
-    {
-        $entity = $this->getExample();
-        $entity['processList'] = (new \BO\Zmsentities\Collection\ProcessList)
-            ->addEntity((new \BO\Zmsentities\Process)->getExample())->toProcessListByStatusAndTime();
-        $collection = new $this->collectionclass();
-        $collection->addEntity($entity);
-        $list = $collection->toSortedByHour();
-        $this->assertEntityList('\BO\Zmsentities\Process', $list['hours'][18]['2015-11-19'][1447869171]);
-    }
-
     public function testGetWithStatus()
     {
         $time = new \DateTimeImmutable(self::DEFAULT_TIME);
