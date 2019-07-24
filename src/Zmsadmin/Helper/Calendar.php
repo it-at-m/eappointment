@@ -8,6 +8,9 @@
 namespace BO\Zmsadmin\Helper;
 
 use \BO\Zmsentities\Calendar as Entity;
+use \BO\Zmsentities\Day;
+use \BO\Zmsentities\Collection\DayList;
+use \BO\Zmsentities\Collection\ProcessList;
 
 class Calendar
 {
@@ -53,7 +56,7 @@ class Calendar
                 throw $exception;
             }
         }
-    } // @codeCoverageIgnore
+    }
 
     public function readAvailableSlotsFromDayAndScopeList(
         \BO\Zmsentities\Collection\ScopeList $scopeList,
@@ -69,7 +72,7 @@ class Calendar
                 $this->calendar,
                 [
                     'slotType' => $slotType,
-                    'slotsRequired' => $slotsRequired
+                    'slotsRequired' => $slotsRequired,
                 ]
             )->getCollection();
         } catch (\BO\Zmsclient\Exception $exception) {
@@ -77,7 +80,7 @@ class Calendar
                 throw $exception;
             }
         }
-    } // @codeCoverageIgnore
+    }
 
     public function readWeekDayListWithProcessList(\BO\Zmsentities\Collection\ScopeList $scopeList)
     {
@@ -86,7 +89,8 @@ class Calendar
         $endDate = clone $this->dateTime->modify('Sunday this week');
         $currentDate = $startDate;
         while ($currentDate <= $endDate) {
-            $day = (new \BO\Zmsentities\Day)->setDateTime($currentDate);
+            $day = (new Day)->setDateTime($currentDate);
+            $day->status = Day::DETAIL;
             $processList = new \BO\Zmsentities\Collection\ProcessList();
             foreach ($scopeList as $scope) {
                 $this->dateTime = $currentDate;
@@ -103,16 +107,65 @@ class Calendar
                     }
                 }
             }
-            $day['processList'] = $processList->toProcessListByStatusAndTime();
+            $day['processList'] = $this->toProcessListByHour($processList);
             $dayList->addEntity($day);
             $currentDate = $currentDate->modify('+1 day');
         }
-        return $dayList;
+        return $this->toDayListByHour($dayList);
     }
 
     protected function getDateTimeFromWeekAndYear($week, $year)
     {
         $dateTime = new \DateTimeImmutable();
         return $dateTime->setISODate($year, $week);
+    }
+
+    public function toProcessListByHour(ProcessList $processList)
+    {
+        $list = array();
+        $oldList = clone $processList;
+        $oldList->sortByArrivalTime();
+        foreach ($oldList as $process) {
+            if (in_array($process->status, [ 'confirmed', 'free'])) {
+                $appointment = $process->getFirstAppointment();
+                $hour = (int)$appointment->toDateTime()->format('H');
+                if (!isset($list[$hour])) {
+                    $list[$hour] = array();
+                }
+                if (!isset($list[$hour][intval($appointment['date'])])) {
+                    $list[$hour][intval($appointment['date'])] = new ProcessList();
+                }
+                $list[$hour][intval($appointment['date'])]->addEntity(clone $process);
+                ksort($list[$hour]);
+            }
+        }
+        ksort($list);
+        return $list;
+    }
+
+    public function toDayListByHour(DayList $dayList)
+    {
+        $list = array();
+        $hours = array();
+        $dayKeys = array();
+        foreach ($dayList as $day) {
+            $list['days'][] = $day;
+            $dayKey = $day->year .'-'. $day->month .'-'. $day->day;
+            $dayKeys[$dayKey] = $dayKey;
+            foreach ($day['processList'] as $hour => $processList) {
+                $list['hours'][$hour][$dayKey] = $processList;
+                $hours[$hour] = $hour;
+            }
+        }
+        foreach ($hours as $hour) {
+            foreach ($dayKeys as $dayKey) {
+                if (!isset($list['hours'][$hour][$dayKey])) {
+                    $list['hours'][$hour][$dayKey] = new ProcessList();
+                }
+            }
+            ksort($list['hours'][$hour]);
+        }
+        ksort($list['hours']);
+        return $list;
     }
 }

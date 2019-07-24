@@ -21,12 +21,21 @@ class CalendarWeek extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-
+        // parameters
         $selectedYear = Validator::value($args['year'])->isNumber()->getValue();
         $selectedWeek = Validator::value($args['weeknr'])->isString()->getValue();
+        
+        // HTTP requests
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
+        $cluster = $workstationRequest->readCluster();
         $calendar = new Helper\Calendar(null, $selectedWeek, $selectedYear);
-        $clusterHelper = (new Helper\ClusterHelper($workstation));
+        $dayList = $calendar->readWeekDayListWithProcessList($workstation->getScopeList());
+        //var_dump($dayList);exit;
+
+        // data refinement
+        
+        // rendering
         return \BO\Slim\Render::withHtml(
             $response,
             'page/calendarWeek.twig',
@@ -34,12 +43,12 @@ class CalendarWeek extends BaseController
                 'title' => 'Kalender',
                 'workstation' => $workstation,
                 'source' => $workstation->getVariantName(),
-                'cluster' => $clusterHelper->getEntity(),
+                'cluster' => $cluster,
                 'calendar' => $calendar,
                 'selectedYear' => $selectedYear,
                 'selectedWeek' => number_format($selectedWeek),
                 'selectedDate' => $calendar->getDateTime()->format('Y-m-d'),
-                'dayList' => $calendar->readWeekDayListWithProcessList($clusterHelper->getScopeList())->toSortedByHour()
+                'dayList' => $dayList,
             )
         );
     }
