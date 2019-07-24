@@ -4,6 +4,7 @@
 * #36616 Debugging: Im Log taucht jetzt zu Vorgängen ein verkürzter Zeitstempel zum letzten Änderungsdatum auf
 * #35798 Debugging: Error-Log Einträge zu fehlenden E-Mail-Templates geben jetzt mehr Informationen aus, um die Ursache des Fehlers zu identifizieren
 * #36258 Zusatzfunktionen zur Vereinfachung der Darstellung der Tresenliste
+* #36690 Doku: Schema "Day" um Status "detail" und Eigenschaft "processList" ergänzt (wird im Wochenkalender verwendet)
 
 ## v2.20.00
 

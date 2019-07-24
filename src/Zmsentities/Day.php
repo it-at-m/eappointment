@@ -13,6 +13,8 @@ class Day extends Schema\Entity
     const NOTBOOKABLE = 'notBookable';
 
     const RESTRICTED = 'restricted';
+    
+    const DETAIL = 'detail';
 
     public static $schema = "day.json";
 

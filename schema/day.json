@@ -55,15 +55,23 @@
         "lastAppointmentTimestamp": {
             "$ref": "slot.json"
         },
+        "processList": {
+            "type": "array",
+            "description": "list of processes, only available if status is detail",
+            "items": {
+                "$ref": "process.json"
+            }
+        },
         "status": {
             "type": "string",
             "enum": [
                 "bookable",
                 "notBookable",
                 "restricted",
-                "full"
+                "full",
+                "detail"
             ],
-            "description": "Status of day. The following values are possible:\n  * bookable: day has free appointments\n  * notBookable: day is not bookable because of missing availabilities\n  * restricted: not bookable because of dayoff times\n  * full: not bookable because missing free appointments\n"
+            "description": "Status of day. The following values are possible:\n  * bookable: day has free appointments\n  * notBookable: day is not bookable because of missing availabilities\n  * restricted: not bookable because of dayoff times\n  * full: not bookable because missing free appointments\n  * detail: non calculated status, every process for the day is available unter processList (very expansive in resources, use with caution)\n"
         }
     }
 }

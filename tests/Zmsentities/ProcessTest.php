@@ -386,19 +386,6 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals(999, $collection->getFirst()->getFirstAppointment()->getScope()->getId());
     }
 
-    public function testProcessListByStatusAndTime()
-    {
-        $collection = new $this->collectionclass();
-        $entity = $this->getExample();
-        $collection->addEntity($entity);
-
-        $entity2 = $this->getExample();
-        $entity2->getFirstAppointment()->date = 1459511423;
-        $collection->addEntity($entity2);
-        $list = $collection->toProcessListByStatusAndTime();
-        $this->assertEntityList('\BO\Zmsentities\Process', $list[13][1459511423]);
-    }
-
     public function testProcessListSortedByAppointmentDate()
     {
         $collection = new $this->collectionclass();
