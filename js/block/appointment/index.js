@@ -23,6 +23,7 @@ class View extends RequestView {
 
         $('textarea.maxchars').each(function () { maxChars(this) });
         this.$main.find('[name="familyName"]').focus();
+        //console.log('Component: AppointmentView', this, options);
     }
 
     setOptions() {
@@ -56,7 +57,7 @@ class View extends RequestView {
     }
 
     load() {
-        const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}&selectedscope=${this.selectedScope}`
+        const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}&selectedtime=${this.selectedTime}&selectedprocess=${this.selectedProcess}&selectedscope=${this.selectedScope}`
         return this.loadContent(url, 'GET', null, null, this.showLoader)
             .then(() => {
                 this.assigneMainFormValues();

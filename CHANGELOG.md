@@ -5,6 +5,7 @@
 * #35869 "Termin" wurde bei Bestätigungen in "Vorgang" umbenannt und bei der Löschbestätigung wird auch die Wartenummer angegeben
 * #36528 Bugfix: Die Warteliste beim Drucken und der Excel-Export zeigen jetzt auch Standort-Kürzel, wenn die Clusteransicht ausgewählt wurde
 * #36690 Bugfix: Der Wochenkalender zeigt jetzt auch Uhrzeiten außerhalb von 7-18 Uhr an
+* #36699 Bugfix: Links zu freien Terminen im Wochenkalender übernehmen beim Buchungsformular jetzt die Uhrzeit
 
 ## v2.20.00
 
