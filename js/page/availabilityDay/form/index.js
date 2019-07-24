@@ -45,8 +45,8 @@ const getFormValuesFromData = data => {
         workstations.callcenter = workstations.intern
     }
 
-    if (parseInt(workstations.public, 10) > parseInt(workstations.callcenter, 10)) {
-        workstations.public = workstations.callcenter
+    if (parseInt(workstations.public, 10) > parseInt(workstations.intern, 10)) {
+        workstations.public = workstations.intern
     }
 
     const repeat = (repeat => {
@@ -103,7 +103,7 @@ const cleanupFormData = data => {
     let callcenterCount = parseInt(data.workstationCount_callcenter, 10);
     callcenterCount = (callcenterCount > internCount) ? internCount : callcenterCount;
     let publicCount = parseInt(data.workstationCount_public, 10);
-    publicCount = (publicCount > callcenterCount) ? callcenterCount : publicCount;
+    publicCount = (publicCount > internCount) ? internCount : publicCount;
     return Object.assign({}, data, {
         workstationCount_callcenter: callcenterCount,
         workstationCount_public: publicCount,
