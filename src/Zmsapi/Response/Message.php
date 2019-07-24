@@ -70,6 +70,21 @@ class Message implements \JsonSerializable
         return ($header) ? $header : $jsonCompressLevel;
     }
 
+    protected function getGraphQL()
+    {
+        $validator = $this->request->getAttribute('validator');
+        if ($validator) {
+            $gqlString = $validator->getParameter('gql')
+                ->isString()
+                ->getValue();
+            if ($gqlString) {
+                $graphqlInterpreter = new GraphQLInterpreter($gqlString);
+                return $graphqlInterpreter;
+            }
+        }
+        return null;
+    }
+
     /**
      * Update meta-data
      * check for data in response
@@ -100,8 +115,13 @@ class Message implements \JsonSerializable
         $schema .= $this->request->getUri()->getHost();
         $schema .= \App::$slim->urlFor('index');
         $jsonCompressLevel = $this->getJsonCompressLevel();
+        
         if ($jsonCompressLevel > 0 && $this->data && is_object($this->data)) {
             $this->data->setJsonCompressLevel($jsonCompressLevel);
+        }
+        $graphqlInterpreter = $this->getGraphQL();
+        if ($graphqlInterpreter) {
+            $this->data = $graphqlInterpreter->setJson(json_encode($this->data));
         }
         $message = [
             '$schema' => $schema,

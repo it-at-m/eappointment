@@ -1,7 +1,8 @@
 ## v2.20.01
 
 * #36616 Bugfix: Beim Erhöhen des Zählers beim Versenden einer Erinnerungsmail wird jetzt ein "critical read" verwendet
-* #36528 Bugfix: Dienstleistungen der Vorgänge werden auch in der Clusteransicht wieder angezeigt
+* #36528 Bugfix: Route /cluster/{id}/process/{datum}/ gibt jetzt korrekt Dienstleistungen zu Vorgängen zurück, Sortierung jetzt nach Wartezeit statt Ankunftszeit
+* #36370 Experimenteller optionaler Parameter "gql" um zu übertragene Daten zu minimieren 
 
 ## v2.20.00
 
