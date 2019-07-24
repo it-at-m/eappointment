@@ -265,7 +265,7 @@ class Scope extends Base
      * scopeId
      * now
      *
-     * @return number
+     * @return \BO\Zmsentities\Scope
      */
     public function readWithWorkstationCount($scopeId, $dateTime, $resolveReferences = 0)
     {
