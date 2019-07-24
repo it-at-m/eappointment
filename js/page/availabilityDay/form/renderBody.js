@@ -172,7 +172,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                                     <Inputs.Select name="workstationCount_public"
                                         value={data.workstationCount_public}
                                         {...{ onChange }}
-                                        options={range(0, data.workstationCount_callcenter).map(n => {
+                                        options={range(0, data.workstationCount_intern).map(n => {
                                             return {
                                                 value: `${n}`,
                                                 name: `${n}`

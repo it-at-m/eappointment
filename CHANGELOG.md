@@ -6,6 +6,7 @@
 * #36528 Bugfix: Die Warteliste beim Drucken und der Excel-Export zeigen jetzt auch Standort-Kürzel, wenn die Clusteransicht ausgewählt wurde
 * #36690 Bugfix: Der Wochenkalender zeigt jetzt auch Uhrzeiten außerhalb von 7-18 Uhr an
 * #36699 Bugfix: Links zu freien Terminen im Wochenkalender übernehmen beim Buchungsformular jetzt die Uhrzeit
+* #35885 Callcenter- und Internet-Arbeitsplätze lassen sich jetzt unabhängig voneinander einstellen
 
 ## v2.20.00
 
