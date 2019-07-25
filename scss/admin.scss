@@ -50,7 +50,6 @@
 @import './vendor/bo/layout-admin/source/scss/molecules/navigation/breadcrumb.scss';
 @import './vendor/bo/layout-admin/source/scss/molecules/navigation/footer-servicelinks.scss';
 @import './vendor/bo/layout-admin/source/scss/molecules/navigation/header-hamburger.scss';
-@import './vendor/bo/layout-admin/source/scss/molecules/navigation/header-metanavi.scss';
 //@import './vendor/bo/layout-admin/source/scss/molecules/navigation/metanavi-popup.scss';
 @import './vendor/bo/layout-admin/source/scss/molecules/navigation/navigation-primary.scss';
 @import './vendor/bo/layout-admin/source/scss/molecules/navigation/pagination.scss';
@@ -66,117 +65,49 @@
 @import "node_modules/react-datepicker/dist/react-datepicker";
 @import "block/emergency";
 
-// ToDo: Put this into Patternlab
-button, input, optgroup, select, textarea {
-    max-width: 90vw;
-}
-.message {
-    > :first-child h2,
-    > :first-child h3 {
-        margin-top: 0;
-    }
-    > :last-child > :last-child {
-        margin-bottom: 0;
-    }
-}
+
+
+// ToDo: Put this into Patternlab?
+
+
 
 form {
     .form-group.has-error {
         input, select, textarea {
-            border-color: #d52f2e;
-            border-width: 1px 1px 1px 5px;
+            border-color:       #d52f2e;
+            border-width:       1px 1px 1px 5px;
         }
     }
     // Todo: we need a global checkbox select layout
-    .checkboxselect .inner {
-        border:     1px solid #DDDDDD;
-        background-color: #ffffff;
-        padding: 0.5em;
+    .checkboxselect {
+        .inner {
+            border:             1px solid #DDDDDD;
+            background-color:   #ffffff;
+            padding:            0.5em;
+        }
+        label {
+            word-break:         break-word;
+        }
     }
-    .checkboxdeselect .inner {
-        border:     1px solid #DDDDDD;
-        padding: 0.5em;
+    .checkboxdeselect {
+        @include clearfix();
+        .inner {
+            border:             1px solid #DDDDDD;
+            padding:            0.5em;
+            min-height:         5em;
+            overflow:           auto;
+            max-height:         20em;
+        }
+        label {
+            word-break:         break-word;
+        }
+        .clear-list {
+            float:              right;
+        }
     }
-}
-.button {
-    &.button--ghost {
-        border-color:   $baseTextColor;
-        background-color: transparent;
-        color:  $baseTextColor;
-    }
-    &.button--white {
-        border-color:   $baseTextColor;
-        background-color: $white;
-        color:  $baseTextColor;
-    }
-}
-pre {
-    white-space: normal;
-}
-.list--horizontal {
-    flex-wrap: wrap;
-}
-.grid__item > :first-child {
-    margin-top: 0;
-}
-.navigation-primary {
-    .nav__wrapper {
-        margin-bottom:      1em;
-    }
-}
-.align-center {
-    text-align: center;
-}
-
-// Todo: make header a grid!
-#page-header {
-    display:    block;
-    .page-header__left,
-    .page-header__middle,
-    .page-header__right {
-        width:  auto;
-        align-self: center;
-    }
-    align-items: center !important;
-}
-.page-header__logo svg {
-    max-height: 100%;
-    max-width: 100%;
-    border: 0;
 }
 
 
-// ZMS only
-.block__zmsheader {
-    // Todo: we need a global block header layout
-    @media screen and (max-width: 45rem) {
-        > * {
-            margin-bottom: 1em;
-        }
-    }
-    @media print, (min-width: 45.001rem) {
-        display:    flex;
-        .aside {
-            flex-shrink: 0;
-            margin-left: 2em;
-        }
-        .form-group {
-            margin-bottom: 0;
-        }
-        .right {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            flex-grow: 1;
-            flex-shrink: 0;
-            margin-left: 2em;
-            > * {
-                margin-left: 0.5em;
-                margin-bottom: 0;
-            }
-        }
-    }
-}
 .emergency {
     margin:                 0 24px 1.75em 0;
     .button--emergency {
@@ -229,12 +160,46 @@ pre {
     table tr.future .queue-status {
         background-color: rgb(116, 202, 240);
     }
+    td.queue-status, th.queue-status {
+        padding: 0.2em;
+    }
 }
 
+// board information:
+#{$namespace}ul.list--table {
+    display:            table;
+    margin-left:        0;
+    padding-left:       0;
+    li {
+        display:        table-row;
+        .cell {
+            display:    table-cell;
+            padding-right:  0.25em;
+            &:last-child {
+                padding-right:  0;
+            }
+            &.middle {
+                vertical-align: middle;
+            }
+            &.right {
+                text-align: right;
+            }
+        }
+    }
+    &.bordered {
+        li {
+           .cell { 
+                border-bottom:  1px solid $color-border;
+                margin: 0.3em 0;
+                padding: 0.3em 0;
+           }
+        }
+    }
+}
 
 $ownerlist-item-padding: 0.5rem 0.75rem;
-$ownerlist-organisation-title-bg: #008CCA;
-$ownerlist-department-title-bg: #F0F0F0;
+$ownerlist-organisation-title-bg: #dddddd;
+
 $ownerlist-border-color: #dddddd;
 $ownerlist-border-color-light: #f1f1f1;
 
@@ -259,20 +224,24 @@ $ownerlist-border-color-light: #f1f1f1;
         .organisation-title {
             padding: $ownerlist-item-padding;
             background-color: $ownerlist-organisation-title-bg;
-            color: #FFFFFF;
+            color:$color-text-seperationheading;
             margin: 0;
             display: block;
             a {
-                color:  #ffffff;
+                //color:$color-text-seperationheading;
             }
         }
         .department-list {
             .department-title {
-                background-color: $ownerlist-department-title-bg;
+                background-color: $color-block-seperationheading;
                 border-bottom: 1px solid $ownerlist-border-color;
                 padding: $ownerlist-item-padding;
                 margin: 0;
                 display: block;
+                color:  $color-text-seperationheading;
+                a {
+                    //color:$color-text-seperationheading;
+                }
             }
             .cluster-list {
                 > li {
@@ -304,17 +273,10 @@ $ownerlist-border-color-light: #f1f1f1;
     }
 }
 
-form fieldset {
+fieldset {
     margin-bottom: 1em;
     legend {
-        background: #666666;
-        color: white;
-        margin-left: -20px;
-        margin-right: -20px;
-        padding:  0.75em  20px;
-        box-sizing: content-box;
-        display:    block;
-        width: 100%;
+        
     }
 }
 
