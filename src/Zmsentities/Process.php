@@ -319,10 +319,10 @@ class Process extends Schema\Entity
         return $this->getCallTime()->format('H:i:s');
     }
 
-    public function getCallTime($default = 'now')
+    public function getCallTime($default = 'now', $timezone = null)
     {
         $callTime = $this->toProperty()->queue->callTime->get();
-        $callDateTime = Helper\DateTime::create($default);
+        $callDateTime = Helper\DateTime::create($default, $timezone);
         if ($callTime) {
             $callDateTime = $callDateTime->setTimestamp($callTime);
         }
@@ -491,7 +491,7 @@ class Process extends Schema\Entity
         return ($arrivalTime) ? true : false;
     }
 
-    public function getArrivalTime($default = 'now')
+    public function getArrivalTime($default = 'now', $timezone = null)
     {
         $arrivalTime = 0;
         if ($this->isWithAppointment()) {
@@ -499,7 +499,7 @@ class Process extends Schema\Entity
         } else {
             $arrivalTime = $this->toProperty()->queue->arrivalTime->get();
         }
-        $arrivalDateTime = Helper\DateTime::create($default);
+        $arrivalDateTime = Helper\DateTime::create($default, $timezone);
         if ($arrivalTime) {
             $arrivalDateTime = $arrivalDateTime->setTimestamp($arrivalTime);
         }

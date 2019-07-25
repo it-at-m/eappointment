@@ -5,6 +5,7 @@
 * #35798 Debugging: Error-Log Einträge zu fehlenden E-Mail-Templates geben jetzt mehr Informationen aus, um die Ursache des Fehlers zu identifizieren
 * #36258 Zusatzfunktionen zur Vereinfachung der Darstellung der Tresenliste
 * #36690 Doku: Schema "Day" um Status "detail" und Eigenschaft "processList" ergänzt (wird im Wochenkalender verwendet)
+* #36702 Bugfix: Die Funktion zur Ankunftszeit eines Vorgangs bekommt einen Parameter Zeitzone
 
 ## v2.20.00
 
