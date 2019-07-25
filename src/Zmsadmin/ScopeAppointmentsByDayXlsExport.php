@@ -68,7 +68,7 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
             $request = count($queueItem->requests) > 0 ? $queueItem->requests[0] : [];
             $row = [
                 $workstation->isClusterEnabled() ? $queueItem->getCurrentScope()->shortName : $key++ ,
-                $queueItem->getArrivalTime()->format('H:i:s'),
+                $queueItem->getArrivalTime()->setTimezone(\App::$now->getTimezone())->format('H:i:s'),
                 $queueItem->queue['number'],
                 $client['familyName'],
                 $client['telephone'],
