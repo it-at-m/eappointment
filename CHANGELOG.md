@@ -7,6 +7,7 @@
 * #36690 Bugfix: Der Wochenkalender zeigt jetzt auch Uhrzeiten außerhalb von 7-18 Uhr an
 * #36699 Bugfix: Links zu freien Terminen im Wochenkalender übernehmen beim Buchungsformular jetzt die Uhrzeit
 * #35885 Callcenter- und Internet-Arbeitsplätze lassen sich jetzt unabhängig voneinander einstellen
+* #36702 Excel-Export am Tresen zeigt Uhrzeiten jetzt in der richtigen Zeitzone an
 
 ## v2.20.00
 
