@@ -13,6 +13,10 @@ namespace BO\Mellon;
 
 class Unvalidated extends \BO\Mellon\Parameter
 {
+    /**
+     * @var callable $setValid
+     */
+    protected $setValid;
 
     /**
      * Return a valid parameter
@@ -35,6 +39,18 @@ class Unvalidated extends \BO\Mellon\Parameter
     }
 
     /**
+     * Set a callback to receive a reference on the validated object
+     * The first parameter of this callback receives the validated object
+     *
+     * @return \BO\Mellon\Unvalidated
+     */
+    public function setCallback(callable $setValid)
+    {
+        $this->setValid = $setValid;
+        return $this;
+    }
+
+    /**
      * Try to find a class for a validation function
      *
      * @param String $name like "isUrl" where "ValidUrl" is an existing class
@@ -49,7 +65,11 @@ class Unvalidated extends \BO\Mellon\Parameter
         if (isset($partList[1])) {
             $class = __NAMESPACE__ . '\\Valid' . $partList[1];
             if (class_exists($class)) {
-                return new $class($this->value, $this->name);
+                $newClass = new $class($this->value, $this->name);
+                if ($this->setValid) {
+                    $this->setValid($newClass);
+                }
+                return $newClass;
             } else {
                 throw new Exception("Validation class $class does not exists");
             }
