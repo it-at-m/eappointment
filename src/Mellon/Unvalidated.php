@@ -67,7 +67,8 @@ class Unvalidated extends \BO\Mellon\Parameter
             if (class_exists($class)) {
                 $newClass = new $class($this->value, $this->name);
                 if ($this->setValid) {
-                    $this->setValid($newClass);
+                    $callback = $this->setValid;
+                    $callback($newClass);
                 }
                 return $newClass;
             } else {
