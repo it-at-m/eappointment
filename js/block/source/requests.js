@@ -138,11 +138,14 @@ class RequestsView extends Component {
 
         return (
             <div className="requests__list">
-                <table className="clean">
+                <table className="table--base">
                     <thead>
-                        <th>LfdNr.</th>
-                        <th>Bezeichnung</th>
-                        <th>Link und weitere Daten</th>
+                        <tr>
+                            <th>LfdNr.</th>
+                            <th>Bezeichnung</th>
+                            <th>Link und weitere Daten</th>
+                            <th></th>
+                        </tr>
                     </thead>
                     <tbody>
                         {this.getRequestsWithLabels(onChange, onDeleteClick)}

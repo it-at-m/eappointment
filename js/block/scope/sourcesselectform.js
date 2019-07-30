@@ -67,7 +67,7 @@ class SourceSelectView extends Component {
         }
 
         return (
-            <fieldset>
+            <fieldset className="panel--heavy">
                 <div>
                     <Inputs.Hidden
                         name="id"

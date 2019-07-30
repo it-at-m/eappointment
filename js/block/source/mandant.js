@@ -21,7 +21,7 @@ class MandantView extends Component {
         return (
             <div>
                 <fieldset>
-                    <div>
+                    <div className="panel--heavy">
                         <Inputs.FormGroup>
                             <Inputs.Label
                                 children={this.props.labelsmandant.label}
@@ -34,8 +34,6 @@ class MandantView extends Component {
                                 />
                             </Inputs.Controls>
                         </Inputs.FormGroup>
-                    </div>
-                    <div>
                         <Inputs.FormGroup>
                             <Inputs.Label
                                 children={this.props.labelsmandant.source}
@@ -56,7 +54,7 @@ class MandantView extends Component {
                 </fieldset>
                 <fieldset>
                     <legend>{this.props.labelsmandant.contact}</legend>
-                    <div>
+                    <div className="panel--heavy">
                         <Inputs.FormGroup>
                             <Inputs.Label
                                 children={this.props.labelsmandant.name}
@@ -69,8 +67,6 @@ class MandantView extends Component {
                                 />
                             </Inputs.Controls>
                         </Inputs.FormGroup>
-                    </div>
-                    <div>
                         <Inputs.FormGroup>
                             <Inputs.Label
                                 children={this.props.labelsmandant.email}

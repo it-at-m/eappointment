@@ -90,12 +90,14 @@ class RequestRelationView extends Component {
                     <Inputs.Description
                         children={this.props.descriptions.requestrelation}
                     />
-                    <table className="clean">
+                    <table className="table--base">
                         <thead>
-                            <th>{this.props.labelsrequestrelation.request}</th>
-                            <th>{this.props.labelsrequestrelation.provider}</th>
-                            <th>{this.props.labelsrequestrelation.slots}</th>
-                            <th>{this.props.labelsrequestrelation.delete}</th>
+                            <tr>
+                                <th>{this.props.labelsrequestrelation.request}</th>
+                                <th>{this.props.labelsrequestrelation.provider}</th>
+                                <th>{this.props.labelsrequestrelation.slots}</th>
+                                <th>{this.props.labelsrequestrelation.delete}</th>
+                            </tr>
                         </thead>
                         <tbody>
                             {this.getRequestRelation(onChange, onDeleteClick)}
