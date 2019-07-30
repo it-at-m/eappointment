@@ -178,11 +178,14 @@ class ProvidersView extends Component {
 
         return (
             <div className="department-providers__list">
-                <table className="clean">
+                <table className="table--base">
                     <thead>
-                        <th>LfdNr.</th>
-                        <th>Bezeichnung</th>
-                        <th>Link und weitere Daten</th>
+                        <tr>
+                            <th>LfdNr.</th>
+                            <th>Bezeichnung</th>
+                            <th>Link und weitere Daten</th>
+                            <th></th>
+                        </tr>
                     </thead>
                     <tbody>
                         {this.getProvidersWithLabels(onChange, onDeleteClick)}
