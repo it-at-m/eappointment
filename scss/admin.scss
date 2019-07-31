@@ -37,6 +37,7 @@
 //@import "vendor/bo/layout-admin/source/scss/molecules/**/*.scss";
 @import './vendor/bo/layout-admin/source/scss/molecules/block/accordion.scss';
 @import './vendor/bo/layout-admin/source/scss/molecules/block/block.scss';
+@import './vendor/bo/layout-admin/source/scss/molecules/block/calendar.scss';
 @import './vendor/bo/layout-admin/source/scss/molecules/block/panel.scss';
 @import './vendor/bo/layout-admin/source/scss/molecules/block/board.scss';
 @import './vendor/bo/layout-admin/source/scss/molecules/block/legend.scss';
@@ -64,10 +65,20 @@
 
 
 // OLD
+/*
+$inuit-table-border-color: $color-border;
+$white: $color-white;
+$grey: $color-grey;
+$black: $color-black;
+$backgroundColorDateDisabled: $color-text-disabled;
+$backgroundColorDateFree: green;
+$backgroundColorDateBusy: red;
+*/
 @import "node_modules/react-datepicker/dist/react-datepicker";
 @import "block/emergency";
 @import "element/lightbox";
 @import "element/spinner";
+//@import "block/calendar-weektable";
 
 // ToDo: Put this into Patternlab?
 
@@ -244,19 +255,4 @@ $ownerlist-border-color-light: #f1f1f1;
 }
 
 
-.calendar {
-    .block--grey {
-        padding: 5px;
-    }
-    .calendar-page {
-        .block--grey,
-        .block--white {
-            padding: 0px;
-        }
-        table {
-            font-size: 12px;
-            padding: 0px;
-            //background: white;
-        }
-    }
-}
+
