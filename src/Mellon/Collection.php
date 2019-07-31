@@ -7,7 +7,7 @@
 namespace BO\Mellon;
 
 /**
-  * Collection for Validation tests
+  * validatorList for Validation tests
   *
   */
 class Collection
@@ -70,7 +70,7 @@ class Collection
             if ($value instanceof Valid) {
                 $messages[$key] = $value->getStatus($getUnvalidated);
             } else {
-                $messages[$key] = $this->getStatus($value);
+                $messages[$key] = $this->getStatus($value, $getUnvalidated);
             }
         }
         return $messages;
@@ -82,5 +82,30 @@ class Collection
     public function getValues()
     {
         return $this->validatorList;
+    }
+
+
+    public function addValid(Valid ...$validList)
+    {
+        foreach ($validList as $valid) {
+            $this->validatorList[$valid->getName()] = $valid;
+        }
+    }
+
+    public function getValid($parameterName): Parameter
+    {
+        if (isset($this->validatorList[$parameterName])) {
+            return $this->validatorList[$parameterName];
+        }
+        throw new Exception("No property $parameterName");
+    }
+
+    public function validatedAction(Valid $valid, callable $action): self
+    {
+        $this->addValid($valid);
+        if (!$valid->hasFailed()) {
+            $action($valid->getValue());
+        }
+        return $this;
     }
 }
