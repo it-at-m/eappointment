@@ -190,6 +190,18 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return ($notificationEnabled) ? true : false;
     }
 
+    public function isEmailRequired()
+    {
+        $emailFrom = $this->getPreference('client', 'emailFrom');
+        $emailRequired = $this->getPreference('client', 'emailRequired');
+        return ($emailFrom && $emailRequired) ? true : false;
+    }
+
+    public function isTelephoneRequired()
+    {
+        $telephoneRequired = $this->getPreference('client', 'telephoneRequired');
+        return $telephoneRequired ? true : false;
+    }
 
     public function hasAccess(Useraccount $useraccount)
     {
