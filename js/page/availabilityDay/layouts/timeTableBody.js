@@ -38,7 +38,7 @@ const refScroll = (element) => {
 const TimeTableBodyLayout = (props) => {
     return (
         <div className="grid">
-            <div className="grid__item one-tenth">
+            <div className="grid__item two-twelfths">
                 <div className="availability-timetable_legend">
                   { props.showConflicts ? <div className="legend__item legend_conflict">Konflikte</div> : null }
                     <div className="legend__item legend_numberofappointment">Freie Slots</div>
@@ -46,7 +46,7 @@ const TimeTableBodyLayout = (props) => {
                     <div className="legend__item legend_opening">Spontan&shy;kunden</div>
                 </div>
             </div>
-            <div className="grid__item nine-tenths">
+            <div className="grid__item ten-twelfths">
                 <div className="availability-timetable_container" ref={refScroll} style={{fontSize: "70px"}} >
                     <div className="inner">
                         {background()}

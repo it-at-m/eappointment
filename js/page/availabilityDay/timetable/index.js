@@ -12,9 +12,9 @@ import OpeningTimebar from '../widgets/timeBars/opening'
 
 const headerRight = (links, onNewClick) => {
     return(
-        <span>
+        <span className="right">
             <a href={links.monthView}>zurück zur Monatsansicht</a>
-            <button className="button-new" onClick={onNewClick}>neue Öffnungszeit</button>
+            <button className="button button--diamond button-new" onClick={onNewClick}>neue Öffnungszeit</button>
         </span>
     )
 }

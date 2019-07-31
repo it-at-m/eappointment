@@ -5,13 +5,13 @@ const calendarNavigation = (links) => {
     return (
         <div className="calendar-navigation">
             {(links.previousDay >= links.sameDay) &&  
-                    <a href={links.previousDay} title="Tag zurück" className="icon prev">◀</a>
+                    <a href={links.previousDay} title="Tag zurück" className="icon prev"><i className="fas fa-caret-square-left" aria-hidden="true"></i> <span className="aural">Tag zurück</span></a>
             }
             {(links.previousDay >= links.sameDay) ||  
-                    <span title="Tag zurück nicht möglich" className="icon prev inactive">◀</span>
+                    <span title="Tag zurück nicht möglich" className="icon prev inactive"><i className="fas fa-caret-square-left color-text-disabled" aria-hidden="true"></i></span>
             }
-            <a href={links.sameDay} className="today">Heute</a>
-            <a href={links.nextDay} title="Tag vor" className="icon next">▶</a> 
+            <a href={links.sameDay} className="today">Heute</a> 
+            <a href={links.nextDay} title="Tag vor" className="icon next"><i className="fas fa-caret-square-right" aria-hidden="true"></i> <span className="aural">Tag vor</span></a> 
         </div>
     )
 }
