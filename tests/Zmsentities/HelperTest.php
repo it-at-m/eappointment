@@ -91,4 +91,28 @@ class HelperTest extends EntityCommonTests
         }
         return $collection;
     }
+
+    public function testDelegate()
+    {
+        $process = new \BO\Zmsentities\Process();
+        $process->amendment = "old";
+        $process->queue->status = 'fake';
+        $process->getFirstClient()->familyName = 'Older';
+        $delegate = new \BO\Zmsentities\Helper\Delegate($process);
+        
+        $this->assertEquals('old', $process->amendment);
+        $setterAmendment = $delegate->setter('amendment');
+        $setterAmendment('new');
+        $this->assertEquals('new', $process->amendment);
+
+        $this->assertEquals('fake', $process->queue->status);
+        $setterAmendment = $delegate->setter('queue', 'status');
+        $setterAmendment('new');
+        $this->assertEquals('new', $process->queue->status);
+
+        $this->assertEquals('Older', $process->getFirstClient()->familyName);
+        $setterAmendment = $delegate->setter('clients', 0, 'familyName');
+        $setterAmendment('Newer');
+        $this->assertEquals('Newer', $process->getFirstClient()->familyName);
+    }
 }

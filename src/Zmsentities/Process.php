@@ -215,6 +215,7 @@ class Process extends Schema\Entity
     public function getClients()
     {
         if (!$this['clients'] instanceof Collection\ClientList) {
+            var_dump($this['clients']);
             $this['clients'] = new Collection\ClientList($this['clients']);
             foreach ($this['clients'] as $index => $client) {
                 if (! $client instanceof Client) {
@@ -236,6 +237,10 @@ class Process extends Schema\Entity
      */
     public function isWithAppointment()
     {
+        $appointment = $this->getFirstAppointment();
+        if ($appointment->hasTime()) {
+            return true;
+        }
         return (1 == $this->toProperty()->queue->withAppointment->get());
     }
 
@@ -280,7 +285,7 @@ class Process extends Schema\Entity
         return $scopeId;
     }
 
-    public function getCurrentScope()
+    public function getCurrentScope(): Scope
     {
         return $this->getProperty('scope');
     }
