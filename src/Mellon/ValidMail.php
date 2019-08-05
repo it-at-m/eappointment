@@ -13,6 +13,12 @@ namespace BO\Mellon;
 class ValidMail extends \BO\Mellon\ValidString
 {
     /**
+     * For unit tests, it might be necessary to disable DNS checks globally
+     * Use \BO\Mellon\ValidMail::$disableDnsChecks = true;
+     */
+    public static $disableDnsChecks = false;
+
+    /**
      * Allow only valid mails
      *
      * @param String $message error message in case of failure
@@ -32,7 +38,7 @@ class ValidMail extends \BO\Mellon\ValidString
     public function hasDNS($message = 'no valid DNS entry found')
     {
         $this->validated = true;
-        if ($this->value) {
+        if ($this->value && !$this::$disableDnsChecks) {
             $domain = substr($this->value, strpos($this->value, '@') + 1);
             $hasDNS = ($domain) ? checkdnsrr($domain, 'ANY') : false;
             if (false === $hasDNS) {
