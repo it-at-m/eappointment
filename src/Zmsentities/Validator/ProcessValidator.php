@@ -40,6 +40,7 @@ class ProcessValidator
         $length = strlen($valid->getUnvalidated());
         $process = $this->getProcess();
 
+        /*
         error_log(
             "Mail validate: ".$valid->getUnvalidated()
             ." ($length) with scope mail required="
@@ -49,6 +50,7 @@ class ProcessValidator
             ." with callback="
             . ( ($isRequiredCallback && $isRequiredCallback()) ? 'yes' : 'no')
         );
+        */
         if (!$length && $process->getCurrentScope()->isEmailRequired() && $process->isWithAppointment()) {
             $valid->isBiggerThan(
                 6,
@@ -88,9 +90,20 @@ class ProcessValidator
     {
         $valid = $unvalid->isString();
         $length = strlen($valid->getValue());
+        /*
+        error_log(
+            "Phone validate: ".$valid->getUnvalidated()
+            ." ($length) with scope phone required="
+            . ($this->getProcess()->getCurrentScope()->isTelephoneRequired() ? 'yes' : 'no')
+            ." with appointment="
+            . ($this->getProcess()->isWithAppointment() ? 'yes' : 'no')
+            ." with callback="
+            . ( ($isRequiredCallback && $isRequiredCallback()) ? 'yes' : 'no')
+        );
+        */
         if (!$length
             && $this->getProcess()->getCurrentScope()->isTelephoneRequired()
-            && $this->getProcess()->getCurrentScope()->isWithAppointment()
+            && $this->getProcess()->isWithAppointment()
             ) {
             $valid
                 ->isBiggerThan(6, "Für den Standort muss eine gültige Telefonnummer eingetragen werden");
@@ -108,7 +121,7 @@ class ProcessValidator
 
     public function validateSurvey(Unvalidated $unvalid, callable $setter): self
     {
-        $valid = $unvalid->isNumber();
+        $valid = $unvalid->isNumber("Bitte wählen Sie eine Option");
         $this->getCollection()->validatedAction($valid, $setter);
         return $this;
     }
