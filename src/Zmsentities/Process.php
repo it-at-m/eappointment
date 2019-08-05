@@ -215,7 +215,6 @@ class Process extends Schema\Entity
     public function getClients()
     {
         if (!$this['clients'] instanceof Collection\ClientList) {
-            var_dump($this['clients']);
             $this['clients'] = new Collection\ClientList($this['clients']);
             foreach ($this['clients'] as $index => $client) {
                 if (! $client instanceof Client) {
