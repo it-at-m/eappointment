@@ -8,6 +8,7 @@ use \BO\Mellon\Validator;
 use \BO\Mellon\Parameter;
 use \BO\Mellon\Collection;
 use \BO\Zmsentities\Process;
+use \BO\Zmsentities\Helper\Delegate;
 
 /**
  *
@@ -32,6 +33,13 @@ class ProcessValidator
     public function getProcess(): Process
     {
         return $this->process;
+    }
+
+    public function getDelegatedProcess(): Delegate
+    {
+        $process = $this->getProcess();
+        $delegatedProcess = new Delegate($process);
+        return $delegatedProcess;
     }
 
     public function validateMail(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
