@@ -1,4 +1,4 @@
-## v2.20.01
+## v2.21.00
 
 * #36494 Bugfix: Prüfe bei der Formular-Validierung für E-Mails auch, ob eine Absender-Adresse angegeben wurde, ansonsten ignoriere die Einstellung "E-Mail ist Pflichtfeld"
 * #36616 Debugging: Im Log taucht jetzt zu Vorgängen ein verkürzter Zeitstempel zum letzten Änderungsdatum auf
@@ -6,6 +6,7 @@
 * #36258 Zusatzfunktionen zur Vereinfachung der Darstellung der Tresenliste
 * #36690 Doku: Schema "Day" um Status "detail" und Eigenschaft "processList" ergänzt (wird im Wochenkalender verwendet)
 * #36702 Bugfix: Die Funktion zur Ankunftszeit eines Vorgangs bekommt einen Parameter Zeitzone
+* #36655 Validierung von Formularen durch unterschiedliche Anforderungen an Internetbuchung und Tresen in die jeweiligen Projekte verschoben (erst einmal nur Internetbuchung)
 
 ## v2.20.00
 
