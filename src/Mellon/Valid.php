@@ -139,6 +139,80 @@ class Valid extends \BO\Mellon\Parameter
     }
 
     /**
+     * Allow only values equal to the given value
+     *
+     * @param Int $value value to compare
+     * @param String $message error message in case of failure
+     *
+     * @return self
+     */
+    public function isEqualTo($value, $message = 'not matching')
+    {
+        $this->validated = true;
+        if ($this->value != $value) {
+            $this->setFailure($message);
+        }
+        return $this;
+    }
+
+    /**
+     * Allow only values not equal to the given value
+     *
+     * @param Int $value value to compare
+     * @param String $message error message in case of failure
+     *
+     * @return self
+     */
+    public function isNotEqualTo($value, $message = 'not matching')
+    {
+        $this->validated = true;
+        if ($this->value == $value) {
+            $this->setFailure($message);
+        }
+        return $this;
+    }
+
+    /**
+     * Allow only values equal to the given value
+     *
+     * @param Int $value value to compare
+     * @param String $message error message in case of failure
+     *
+     * @return self
+     */
+    public function isOneOf(array $list, $message = 'not matching')
+    {
+        $this->validated = true;
+        foreach ($list as $value) {
+            if ($this->value != $value) {
+                $this->setFailure($message);
+                return $this;
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * Allow only values equal to the given value
+     *
+     * @param Int $value value to compare
+     * @param String $message error message in case of failure
+     *
+     * @return self
+     */
+    public function isDevoidOf(array $list, $message = 'not matching')
+    {
+        $this->validated = true;
+        foreach ($list as $value) {
+            if ($this->value == $value) {
+                $this->setFailure($message);
+                return $this;
+            }
+        }
+        return $this;
+    }
+
+    /**
      * Get the validated value or the default value
      *
      * @return Mixed
