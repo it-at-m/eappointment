@@ -236,6 +236,10 @@ class Process extends Schema\Entity
      */
     public function isWithAppointment()
     {
+        $appointment = $this->getFirstAppointment();
+        if ($appointment->hasTime()) {
+            return true;
+        }
         return (1 == $this->toProperty()->queue->withAppointment->get());
     }
 
@@ -280,7 +284,7 @@ class Process extends Schema\Entity
         return $scopeId;
     }
 
-    public function getCurrentScope()
+    public function getCurrentScope(): Scope
     {
         return $this->getProperty('scope');
     }

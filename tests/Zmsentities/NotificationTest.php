@@ -77,6 +77,7 @@ class NotificationTest extends EntityCommonTests
         unset($entity['client']);
         $process = (new \BO\Zmsentities\Process())->getExample();
         $process['queue']['withAppointment'] = 0;
+        $process->getFirstAppointment()->setDateByString('2016-04-01 00:00');
         $config = (new \BO\Zmsentities\Config())->getExample();
         $department = (new \BO\Zmsentities\Department())->getExample();
 

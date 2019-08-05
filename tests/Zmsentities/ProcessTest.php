@@ -155,6 +155,7 @@ class ProcessTest extends EntityCommonTests
         $seconds = $entity->getWaitedSeconds();
         $this->assertEquals(53767, $seconds);
         $entity->queue->withAppointment = 0;
+        $entity->getFirstAppointment()->setDateByString('2016-04-01 00:00');
         $seconds = $entity->getWaitedSeconds();
         $this->assertEquals(45, $seconds);
 
@@ -170,6 +171,7 @@ class ProcessTest extends EntityCommonTests
         $minutes = $entity->getWaitedMinutes();
         $this->assertEquals(896, $minutes);
         $entity->queue->withAppointment = 0;
+        $entity->getFirstAppointment()->setDateByString('2016-04-01 00:00');
         $minutes = $entity->getWaitedMinutes();
         $this->assertEquals(1, $minutes);
 
