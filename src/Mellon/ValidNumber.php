@@ -59,40 +59,6 @@ class ValidNumber extends Valid
     }
 
     /**
-     * Allow only numbers equal to the given value
-     *
-     * @param Int $number value to compare
-     * @param String $message error message in case of failure
-     *
-     * @return self
-     */
-    public function isEqualTo($number, $message = 'not matching')
-    {
-        $this->validated = true;
-        if ($this->value != $number) {
-            $this->setFailure($message);
-        }
-        return $this;
-    }
-
-    /**
-     * Allow only numbers not equal to the given value
-     *
-     * @param Int $number value to compare
-     * @param String $message error message in case of failure
-     *
-     * @return self
-     */
-    public function isNotEqualTo($number, $message = 'not matching')
-    {
-        $this->validated = true;
-        if ($this->value == $number) {
-            $this->setFailure($message);
-        }
-        return $this;
-    }
-
-    /**
      * Allow only numbers lower or equal than the given value
      *
      * @param Int $number value to compare

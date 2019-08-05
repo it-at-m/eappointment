@@ -12,6 +12,7 @@ class Condition
 
     public function __construct(Valid ...$validList)
     {
+        $this->collection = new Collection([]);
         foreach ($validList as $valid) {
             $this->addValid($valid);
         }
@@ -19,13 +20,13 @@ class Condition
 
     public function addValid(Valid $valid)
     {
-        $this->collection = $valid;
+        $this->getCollection()->addValid($valid);
         return $this;
     }
 
     public function getCollection(): Collection
     {
-        return new Collection($this->collection);
+        return $this->collection;
     }
 
     public function hasFailed(): bool
