@@ -2798,7 +2798,18 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: integer
  *          responses:
  *              200:
- *                  description: get a list of available processes, if no process found, return empty list
+ *                  description: get a list of available processes
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              404:
+ *                  description: if no process found, return empty list
  *                  schema:
  *                      type: object
  *                      properties:
