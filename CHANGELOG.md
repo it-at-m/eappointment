@@ -1,4 +1,4 @@
-## v2.20.01
+## v2.21.00
 
 * #36521 Bugfix: Die Nutzerverwaltung enthält jetzt auch neu angelegte Kunden, nicht mehr nur "Berlin"
 * #36317 Bugfix: Als Fehlerklasse wird statt TypeError jetzt die korrekte Klasse ausgegeben
@@ -8,6 +8,7 @@
 * #36699 Bugfix: Links zu freien Terminen im Wochenkalender übernehmen beim Buchungsformular jetzt die Uhrzeit
 * #35885 Callcenter- und Internet-Arbeitsplätze lassen sich jetzt unabhängig voneinander einstellen
 * #36702 Excel-Export am Tresen zeigt Uhrzeiten jetzt in der richtigen Zeitzone an
+* #36656 Beispiel für die Kundenumfrage jetzt unter "Systemkonfiguration"
 
 ## v2.20.00
 
