@@ -7,6 +7,7 @@
 * #36690 Doku: Schema "Day" um Status "detail" und Eigenschaft "processList" ergänzt (wird im Wochenkalender verwendet)
 * #36702 Bugfix: Die Funktion zur Ankunftszeit eines Vorgangs bekommt einen Parameter Zeitzone
 * #36655 Validierung von Formularen durch unterschiedliche Anforderungen an Internetbuchung und Tresen in die jeweiligen Projekte verschoben (erst einmal nur Internetbuchung)
+* #36656 Der Versand einer Kundenbefragung kann jetzt mittels Platzhaltern dynamisch angepasst werden
 
 ## v2.20.00
 

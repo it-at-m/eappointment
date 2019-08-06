@@ -12,6 +12,7 @@ use \BO\Zmsentities\Schema\Entity;
 /**
  * @SuppressWarnings(NumberOfChildren)
  * @SuppressWarnings(Public)
+ * @SuppressWarnings(Complexity)
  *
  */
 class Base extends \ArrayObject implements \JsonSerializable
@@ -161,7 +162,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         return implode(',', $this->getIds());
     }
 
-    public function getCsvForProperty($propertyName)
+    public function getCsvForProperty($propertyName, $csvSeperator = ',')
     {
         $list = [];
         foreach ($this as $entry) {
@@ -169,7 +170,27 @@ class Base extends \ArrayObject implements \JsonSerializable
                 $list[] = $entry->getProperty($propertyName);
             }
         }
-        return implode(',', $list);
+        return implode($csvSeperator, $list);
+    }
+
+    public function getCsvForPropertyList(array $propertyList, $propertySeperator = '', $csvSeperator = ',')
+    {
+        $list = [];
+        foreach ($this as $entry) {
+            $propertyConcat = '';
+            foreach ($propertyList as $propertyName) {
+                if ($entry->hasProperty($propertyName)) {
+                    if ($propertyConcat) {
+                        $propertyConcat .= $propertySeperator;
+                    }
+                    $propertyConcat .= $entry->getProperty($propertyName);
+                }
+            }
+            if ($propertyConcat) {
+                $list[] = $propertyConcat;
+            }
+        }
+        return implode($csvSeperator, $list);
     }
 
     /**

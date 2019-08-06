@@ -52,7 +52,7 @@
                 "statisticsEnabled": true
             },
             "survey": {
-                "emailContent": "Wir würden uns sehr freuen, wenn Sie an der Umfrage teilnehmen würden: <a href=\"http://in.berlin.de/umfrage/\">Zur Umfrage</a>",
+                "emailContent": "Wir würden uns sehr freuen, wenn Sie an der Umfrage teilnehmen würden: <a href=\"http://in.berlin.de/umfrage/?token=###TOKEN###\">Zur Umfrage</a>. Standort ###SCOPE###/###PROVIDER### aus ###DEPARTMENT###, Termin ###DATE### ###TIME### gebucht ###RESERVETIME### mit Dienstleistungen ###REQUESTCSV###.",
                 "enabled": true,
                 "label": "Teilnahme an der Kundenzufriedensheits-Umfrage"
             },
