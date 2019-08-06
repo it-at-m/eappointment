@@ -1,4 +1,4 @@
-## v2.20.01
+## v2.21.00
 
 * #36616 Bugfix: Beim Erhöhen des Zählers beim Versenden einer Erinnerungsmail wird jetzt ein "critical read" verwendet
 * #36528 Bugfix: Route /cluster/{id}/process/{datum}/ gibt jetzt korrekt Dienstleistungen zu Vorgängen zurück, Sortierung jetzt nach Wartezeit statt Ankunftszeit
