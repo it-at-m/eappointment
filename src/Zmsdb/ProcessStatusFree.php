@@ -87,7 +87,8 @@ class ProcessStatusFree extends Process
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now,
         $slotType = "public",
-        $slotsRequired = 0
+        $slotsRequired = 0,
+        $resolveReferences = 0
     ) {
         $process->status = 'reserved';
         $appointment = $process->getAppointments()->getFirst();
@@ -109,6 +110,6 @@ class ProcessStatusFree extends Process
             }
         }
         $this->writeRequestsToDb($process);
-        return $process;
+        return $this->readEntity($process->getId(), $process->authKey, $resolveReferences);
     }
 }
