@@ -39,7 +39,7 @@ class GraphQLNode extends GraphQLElement
     public function addSubNode(): self
     {
         $lastkey = $this->getLastKey();
-        if (!$lastkey) {
+        if (false === $lastkey) {
             // root node
             $node = new self();
         } else {

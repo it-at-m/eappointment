@@ -2891,6 +2891,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: query
  *                  type: string
  *                  required: false
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: get a list of processes
