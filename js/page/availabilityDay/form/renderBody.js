@@ -186,25 +186,23 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                 </fieldset>
 
                 <div className="form-actions">
-                    <div className="left">
-                        <button className="button-delete" type="delete" value="delete" onClick={onDelete}>Löschen</button>
-                        <button className="btn" type="abort" onClick={onAbort}>Abbrechen</button>
+                   
+                    <button className="button button--destructive button-delete" type="delete" value="delete" onClick={onDelete}>Löschen</button>
+                    <button className="button btn" type="abort" onClick={onAbort}>Abbrechen</button>
 
-                    </div>
-                    <div className="right">
-                        {data.__modified ?
-                            <button className="button-new btn--b3igicon"
-                                type="save"
-                                value="save"
-                                onClick={onSave}>+ merken und später aktivieren
-                            </button> : null}
-                        {data.__modified ?
-                            <button className="button-save"
-                                type="save"
-                                value="publish"
-                                onClick={onPublish}>Alle Änderungen aktivieren
-                            </button> : null}
-                    </div>
+                    {data.__modified ?
+                        <button className="button button-new btn--b3igicon"
+                            type="save"
+                            value="save"
+                            onClick={onSave}><i className="far fa-bookmark" aria-hidden="true"></i> merken und später aktivieren
+                        </button> : null}
+                    {data.__modified ?
+                        <button className="button button--positive button-save"
+                            type="save"
+                            value="publish"
+                            onClick={onPublish}>Alle Änderungen aktivieren
+                        </button> : null}
+                
                 </div>
             </form>
         </div>

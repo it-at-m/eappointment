@@ -52,7 +52,7 @@ const TimeTable = (props) => {
                           />
 
     return (
-        <Board className="availability-timetable"
+        <Board className="board--light availability-timetable"
             title={titleTime}
             titleAside={calendarNavigation(props.links)}
             headerRight={headerRight(props.links, props.onNewAvailability)}
