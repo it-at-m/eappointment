@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
-import Board from '../layouts/board'
+//import Board from '../layouts/board'
+import Message from '../layouts/message'
 import moment from 'moment'
 
 const renderLink = (conflict, onClick) => {
@@ -50,7 +51,7 @@ const renderConflicts = (conflicts, onSelect) => {
 
 const Conflicts = (props) => {
     return (
-        <Board className="availability-conflicts"
+        <Message className="message--error availability-conflicts"
             title="Konflikte"
             body={renderConflicts(props.conflicts, props.onSelect)}
         />

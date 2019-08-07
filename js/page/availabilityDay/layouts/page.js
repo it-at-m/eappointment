@@ -6,11 +6,11 @@ const PageLayout = (props) => {
             {props.saveBar}
             {props.timeTable}
             {props.updateBar}
-            <div className="lineup lineup--availability"> 
-                <div className="lineup_actor lineup_actor--left">
+            <div className="grid"> 
+                <div className="grid__item two-thirds">
                     {props.form}
                 </div>
-                <div className="lineup_actor lineup_actor--right">
+                <div className="grid__item one-third">
                     {props.conflicts}
                 </div>
             </div>

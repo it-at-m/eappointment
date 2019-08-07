@@ -1,6 +1,6 @@
+//@import "vendor/bo/layout-admin/source/scss/zms-styles.scss"; // <- ToDo: do this work again
 
 // Settings & Mixins
-//@import "vendor/bo/layout-admin/source/scss/zms-styles.scss";
 @import "vendor/bo/layout-admin/source/scss/default-settings"; 
 @import "vendor/bo/layout-admin/source/scss/zms-settings"; 
 @import "vendor/bo/layout-admin/source/scss/mixins";
@@ -64,25 +64,25 @@
 @import './vendor/bo/layout-admin/source/scss/organisms/page-header.scss';
 
 
-// OLD
-/*
-$inuit-table-border-color: $color-border;
-$white: $color-white;
-$grey: $color-grey;
-$black: $color-black;
-$backgroundColorDateDisabled: $color-text-disabled;
-$backgroundColorDateFree: green;
-$backgroundColorDateBusy: red;
-*/
+// -----------------------------------------------------------------------
+
+
+// ZMS special
+@import './vendor/bo/layout-admin/source/scss/themes/zms/availability-timetable.scss';
+
+
+// ToDo: Build new or move to themes/zms 
 @import "node_modules/react-datepicker/dist/react-datepicker";
 @import "block/emergency";
 @import "element/lightbox";
 @import "element/spinner";
-//@import "block/calendar-weektable";
-
-// ToDo: Put this into Patternlab?
 
 
+// -----------------------------------------------------------------------
+
+
+
+// ToDo: Put this into Patternlab
 
 form {
     .form-group.has-error {
@@ -91,7 +91,7 @@ form {
             border-width:       1px 1px 1px 5px;
         }
     }
-    // Todo: we need a global checkbox select layout
+    // ToDo: we need a global checkbox select layout
     .checkboxselect {
         .inner {
             border:             1px solid #DDDDDD;
@@ -106,6 +106,7 @@ form {
         @include clearfix();
         .inner {
             border:             1px solid #DDDDDD;
+            background-color:   $color-white;
             padding:            0.5em;
             min-height:         5em;
             overflow:           auto;
@@ -113,6 +114,7 @@ form {
         }
         label {
             word-break:         break-word;
+            font-weight:        normal;
         }
         .clear-list {
             float:              right;

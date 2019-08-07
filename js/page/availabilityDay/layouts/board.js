@@ -16,7 +16,7 @@ const Board = (props) => {
     const className = `board ${props.className}`
 
     return (
-        <div className={className}>
+        <section className={className}>
             <div className="board__header header">
                 <h2 className="board__heading title">{props.title}</h2>
             </div>
@@ -31,7 +31,7 @@ const Board = (props) => {
              <div className="board__footer footer">
                 {props.footer}
             </div> : null }
-        </div>
+        </section>
     )
 }
 
