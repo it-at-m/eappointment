@@ -2,7 +2,8 @@
 
 * #36616 Bugfix: Beim Erhöhen des Zählers beim Versenden einer Erinnerungsmail wird jetzt ein "critical read" verwendet
 * #36528 Bugfix: Route /cluster/{id}/process/{datum}/ gibt jetzt korrekt Dienstleistungen zu Vorgängen zurück, Sortierung jetzt nach Wartezeit statt Ankunftszeit
-* #36370 Experimenteller optionaler Parameter "gql" um zu übertragene Daten zu minimieren 
+* #36370 Experimenteller optionaler Parameter "gql" um zu übertragene Daten zu minimieren
+* #36756 Bugfix: Route POST /process/status/reserved/ akzeptiert jetzt auch den Parameter "resolveReferences"
 
 ## v2.20.00
 
