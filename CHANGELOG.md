@@ -1,4 +1,4 @@
-## v2.20.01
+## v2.21.00
 
 * #36497 Bugfix: Import der DLDB-Daten importiert keine Dienstleistungen mehr, die für die Terminvereinbarung ausgeschlossen wurden
 * #36274 Statistik: Abfrage für Review der Öffnungszeiten hinzugefügt
@@ -6,6 +6,7 @@
 * #35912 Bugfix: Absagecode wurde beim Löschen eines Termins nicht verändert
 * #36681 Bugfix: Beim Anlegen von Organisation wird eine Bezirks-ID > 12 gesetzt, damit im ZMS1 beim Speichern der Standorte keine Zuordnung verloren geht 
 * #36528 Bugfix: Sortierung der Vorgänge bei der Clusteransicht war noch auf Ankunftszeit statt Wartezeit
+* #36756 Bugfix: Reservierung von Vorgängen liefert nun auch Daten zum Standort zurück, falls angefordert
 
 ## v2.20.00
 
