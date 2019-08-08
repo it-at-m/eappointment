@@ -90,6 +90,7 @@ class ProcessStatusFree extends Process
         $slotsRequired = 0,
         $resolveReferences = 0
     ) {
+        $process = clone $process;
         $process->status = 'reserved';
         $appointment = $process->getAppointments()->getFirst();
         $slotList = (new Slot)->readByAppointment($appointment, $slotsRequired);
@@ -110,6 +111,6 @@ class ProcessStatusFree extends Process
             }
         }
         $this->writeRequestsToDb($process);
-        return $this->readEntity($process->getId(), $process->authKey, $resolveReferences);
+        return $this->readEntity($process->getId(), new Helper\NoAuth(), $resolveReferences);
     }
 }
