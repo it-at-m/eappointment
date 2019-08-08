@@ -12,7 +12,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                 <Errors {...{ errors }} />
             </div>
             <form>
-                <fieldset>
+                
                     <FormGroup>
                         <Label>Anmerkung</Label>
                         <Controls>
@@ -35,7 +35,6 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                                 ]} />
                         </Controls>
                     </FormGroup>
-
                     <FormGroup>
                         <Label>Serie</Label>
                         <Controls>
@@ -55,81 +54,103 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                         </Controls>
                     </FormGroup>
 
-                    <FormGroup>
-                        <Label>Wochentage:</Label>
-                        <Controls>
-                            <Inputs.CheckboxGroup name="weekday"
-                                value={data.weekday}
-                                inline={true}
-                                {...{ onChange }}
-                                boxes={[
-                                    { value: "monday", label: "Mo" },
-                                    { value: "tuesday", label: "Di" },
-                                    { value: "wednesday", label: "Mi" },
-                                    { value: "thursday", label: "Do" },
-                                    { value: "friday", label: "Fr" },
-                                    { value: "saturday", label: "Sa" },
-                                    { value: "sunday", label: "So" }
-                                ]} />
-                        </Controls>
-                    </FormGroup>
-
-                    <FormGroup>
-                        <Label>Uhrzeit:</Label>
-                        <Controls>
-                            von <Inputs.Time name="startTime" value={data.startTime} {...{ onChange }} /> Uhr
-                        bis <Inputs.Time name="endTime" value={data.endTime} {...{ onChange }} /> Uhr
+                    <fieldset>
+                        <legend className="label">Wochentage</legend>
+                        <FormGroup>
+                            <Controls>
+                                <Inputs.CheckboxGroup name="weekday"
+                                    value={data.weekday}
+                                    inline={true}
+                                    {...{ onChange }}
+                                    boxes={[
+                                        { value: "monday", label: "Mo" },
+                                        { value: "tuesday", label: "Di" },
+                                        { value: "wednesday", label: "Mi" },
+                                        { value: "thursday", label: "Do" },
+                                        { value: "friday", label: "Fr" },
+                                        { value: "saturday", label: "Sa" },
+                                        { value: "sunday", label: "So" }
+                                    ]} />
                             </Controls>
-                    </FormGroup>
+                        </FormGroup>
+                    </fieldset>
 
-                    <FormGroup>
-                        <Label>Datum:</Label>
-                        <Controls>
-                            Startdatum: <Inputs.Date name="startDate" value={data.startDate} {...{ onChange }} />
-                            {" "}
-                            Enddatum: <Inputs.Date name="endDate" value={data.endDate} {...{ onChange }} />
-                        </Controls>
-                    </FormGroup>
+                    <fieldset>
+                        <legend className="label">Uhrzeit</legend>
+                        <FormGroup inline={true}>
+                            <Controls>
+                                <span>von</span> <Inputs.Time name="startTime" value={data.startTime} {...{ onChange }} /> Uhr
+                            </Controls>
+                            <Controls>
+                                <span>bis</span> <Inputs.Time name="endTime" value={data.endTime} {...{ onChange }} /> Uhr
+                            </Controls>
+                        </FormGroup>
+                    </fieldset>
 
-                    <FormGroup>
-                        <Label>Zeitschlitz:</Label>
-                        <Controls>
-                            <Inputs.Text name="slotTimeInMinutes"
-                                value={data.slotTimeInMinutes}
-                                width="1"
-                                attributes={{ maxLength: 3 }}
-                                {...{ onChange }} />
-                            Minuten Abstand zweier aufeinander folgender Termine
+                    <fieldset>
+                        <legend className="label">Datum</legend>
+                        <FormGroup inline={true}>
+                            <span>Startdatum:</span> 
+                            <Controls>
+                                <Inputs.Date name="startDate" value={data.startDate} {...{ onChange }} />
+                            </Controls>
+                            <span>Enddatum:</span>
+                            <Controls>
+                                <Inputs.Date name="endDate" value={data.endDate} {...{ onChange }} />
+                            </Controls>
+                        </FormGroup>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend className="label">Zeitschlitz</legend>
+                        <FormGroup inline={true}>    
+                            <Controls>
+                                <Inputs.Text name="slotTimeInMinutes"
+                                    value={data.slotTimeInMinutes}
+                                    width="1"
+                                    attributes={{ maxLength: 3 }}
+                                    {...{ onChange }} />
+                                Minuten Abstand zweier aufeinander folgender Termine
+                                    
+                            </Controls>
+                        </FormGroup>
+                        <FormGroup inline={true} className="form-check">    
+                            <Controls>
                                 <Label>
-                                Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen:&nbsp;
                                     <Inputs.Checkbox name="multipleSlotsAllowed"
-                                    checked={true == data.multipleSlotsAllowed} {...{ onChange }} />
-                            </Label>
-                        </Controls>
-                    </FormGroup>
+                                        checked={true == data.multipleSlotsAllowed} {...{ onChange }} />
+                                    Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen
+                                </Label>
+                            </Controls>
+                        </FormGroup>
+                    </fieldset>
 
-                    <FormGroup>
-                        <Label>Buchbar:</Label>
-                        <Controls>
-                            von&nbsp;
-                                <Inputs.Text name="open_from"
-                                width="1"
-                                value={data.open_from}
-                                attributes={{ placeholder: data.scope.preferences.appointment.startInDaysDefault }}
-                                {...{ onChange }}
-                            />
-                            &nbsp;bis&nbsp;
-                                <Inputs.Text name="open_to"
-                                width="1"
-                                value={data.open_to}
-                                attributes={{ placeholder: data.scope.preferences.appointment.endInDaysDefault }}
-                                {...{ onChange }}
-                            />&nbsp;
-                            Tage im voraus
-                                <Description>(Keine Eingabe = Einstellungen vom Standort übernehmen)</Description>
-                        </Controls>
-                    </FormGroup>
-                </fieldset>
+                    <fieldset>
+                        <legend className="label">Buchbar</legend>
+                        <FormGroup inline={true}>
+                            <Controls>
+                                <span>von</span>
+                                    <Inputs.Text name="open_from"
+                                    width="1"
+                                    value={data.open_from}
+                                    attributes={{ placeholder: data.scope.preferences.appointment.startInDaysDefault }}
+                                    {...{ onChange }}
+                                />
+                            </Controls>
+                            <Controls>
+                                <span>bis</span>
+                                    <Inputs.Text name="open_to"
+                                    width="1"
+                                    value={data.open_to}
+                                    attributes={{ placeholder: data.scope.preferences.appointment.endInDaysDefault }}
+                                    {...{ onChange }}
+                                />
+                                <span>Tage im voraus</span>
+                            </Controls>
+                            <Description>(Keine Eingabe = Einstellungen vom Standort übernehmen)</Description>
+                        </FormGroup>
+                        
+                    </fieldset>
 
                 <fieldset>
                     {data.type !== 'openinghours' ? <legend>Terminarbeitsplätze</legend> : null}

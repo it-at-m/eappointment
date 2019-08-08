@@ -3,7 +3,8 @@ import React, { PropTypes } from 'react'
 
 const noOp = () => {}
 
-export const Checkbox = ({name, value, checked = false, onChange = noOp, attributes = {}}) => {
+export const Checkbox = ({name, value, checked = false, onChange = noOp, attributes = {}, className = 'form-check-input'}) => {
+
     const onInput = () => {
         //ev.preventDefault()
         onChange(name, !checked)
@@ -13,7 +14,7 @@ export const Checkbox = ({name, value, checked = false, onChange = noOp, attribu
         attributes.checked = "checked"
     }
 
-    return <input type="checkbox" {...{ name, value }} {...attributes} onChange={onInput} />
+    return <input type="checkbox" {...{ name, value }} {...attributes} onChange={onInput} className={className} />
 }
 
 export const CheckboxGroup = (props) => {
@@ -30,16 +31,18 @@ export const CheckboxGroup = (props) => {
         <span className={`checkbox--${props.name}`}>
         {props.boxes.map((box, key) => {
             const checked = props.value.indexOf(box.value) > -1
-            const className = `checkbox-label ${props.inline ? 'checkbox-inline' : ''}`
+            const className = `form-check${props.inline ? ' form-check-inline' : ''}`
 
             return (
-                <label {...{ key, className }}>
-                    <Checkbox name={`${props.name}[]`}
-                        value={box.value}
-                        checked={checked}
-                        onChange={() => toggle(box.value)} />
-                {box.label}
-                </label>
+                <div className={className}>
+                    <label className="form-check-label" {...{ key }}>
+                        <Checkbox name={`${props.name}[]`}
+                            value={box.value}
+                            checked={checked}
+                            onChange={() => toggle(box.value)} />
+                    {box.label}
+                    </label>
+                </div>
             )
         })}
         </span>
