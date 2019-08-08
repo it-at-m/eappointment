@@ -13,7 +13,7 @@ export const Text = ({ name, value, onChange = noOp, placeholder = "", width = f
 
     const onInput = (ev) => onChange(name, ev.target.value)
 
-    return <input placeholder={placeholder} type="text" onChange={onInput} {...{ name, value }} {...attributes} {...{ className }} />
+    return <input size={width} placeholder={placeholder} type="text" onChange={onInput} {...{ name, value }} {...attributes} {...{ className }} />
 }
 
 export const Hidden = ({ name, value }) => {
@@ -30,10 +30,10 @@ export const Textarea = ({ name, value, onChange = noOp, placeholder = "", width
     </textarea>
 }
 
-export const Label = ({ children }) => <label className="label">{children}</label>
+export const Label = ({ children }) => <label>{children}</label>
 
 export const FormGroup = (props) => {
-    const className = `form-group ${props.error ? "has-error" : ""} ${props.className || ""}`
+    const className = `form-group${props.inline ? " form-group--inline" : ""}${props.error ? " has-error" : ""} ${props.className || ""}`
     return <div {...{ className }}>{props.children}</div>
 }
 

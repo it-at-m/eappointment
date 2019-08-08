@@ -49,11 +49,11 @@ const TimePicker = (props) => {
 
     return (
         <span className="timepicker">
-            <select name={nameHour} onChange={onHourChange} value={selectedHour}>
+            <select className="form-control" name={nameHour} onChange={onHourChange} value={selectedHour}>
                 {renderHours()}
             </select>
-            {":"}
-            <select name={nameMinute} onChange={onMinuteChange} value={selectedMinute}>
+            <span className="delimiter">{":"}</span>
+            <select className="form-control" name={nameMinute} onChange={onMinuteChange} value={selectedMinute}>
                 <optgroup>
                     {renderQuarters()}
                 </optgroup>
