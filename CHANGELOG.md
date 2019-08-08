@@ -7,6 +7,7 @@
 * #36681 Bugfix: Beim Anlegen von Organisation wird eine Bezirks-ID > 12 gesetzt, damit im ZMS1 beim Speichern der Standorte keine Zuordnung verloren geht 
 * #36528 Bugfix: Sortierung der Vorgänge bei der Clusteransicht war noch auf Ankunftszeit statt Wartezeit
 * #36756 Bugfix: Reservierung von Vorgängen liefert nun auch Daten zum Standort zurück, falls angefordert
+* #36494 Bugfix: Flags für Pflichtfelder bei Telefon oder E-Mail können jetzt nur noch positiv sein, wenn diese Felder angezeigt werden können
 
 ## v2.20.00
 
