@@ -324,7 +324,7 @@ class ProcessTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
-        $process = $query->writeEntityReserved($input, $now);
+        $process = $query->writeEntityReserved($input, $now, "public", 0, 1);
         $process = $query->readSlotCount($process);
         $this->assertEquals(3, $process->getAppointments()->getFirst()['slotCount']);
     }
