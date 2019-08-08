@@ -340,6 +340,12 @@ class Scope extends Base implements MappingInterface
         $data[$this->getPrefixed("lastChange")] =
             (new \DateTime($data[$this->getPrefixed("lastChange")] . \BO\Zmsdb\Connection\Select::$connectionTimezone))
             ->getTimestamp();
+        if (!$data[$this->getPrefixed('preferences__client__emailFrom')]) {
+            $data[$this->getPrefixed("preferences__client__emailRequired")] = 0;
+        }
+        if (!$data[$this->getPrefixed('preferences__client__telephoneActivated')]) {
+            $data[$this->getPrefixed("preferences__client__telephoneRequired")] = 0;
+        }
         return $data;
     }
 }
