@@ -59,7 +59,7 @@ class WorkstationProcessCalledTest extends Base
             'Dieser Arbeitsplatz hat schon einen Termin aufgerufen. Dieser wird weiterhin verwendet.',
             (string)$response->getBody()
         );
-        $this->assertContains('message-error', (string)$response->getBody());
+        $this->assertContains('message--error', (string)$response->getBody());
         $this->assertContains('data-exclude="82252,9999999"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
