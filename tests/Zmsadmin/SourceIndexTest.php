@@ -30,7 +30,7 @@ class SourceIndexTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertContains('Liste der verfügbaren Mandanten', (string)$response->getBody());
-        $this->assertContains('<a href="/source/unittest/">Bearbeiten</a>', (string)$response->getBody());
+        $this->assertContains('href="/source/unittest/"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
