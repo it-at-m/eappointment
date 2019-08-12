@@ -1,6 +1,7 @@
 ## Upcoming
 
 * Der Name des Systemnutzers wurde zum Twig Cache-Pfad hinzugefügt, um Rechte-Probleme zu vermeiden
+* #36523 Erlaube mehr Reloads bevor ein Captcha angezeigt wird
 
 ## v2.19.05
 
