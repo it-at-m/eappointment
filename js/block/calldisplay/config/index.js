@@ -119,9 +119,11 @@ class CallDisplayConfigView extends Component {
             return carry || (current.id === item.id && current.type === item.type)
         }, false)
         return (
-            <div className="form-check ticketprinter-config__item">
-                {this.renderCheckbox(itemEnabled, onChange)}
-                <label className="form-check-label">{prefix}{text}</label>
+            <div className="form-check ticketprinter-config__item">  
+                <label className="form-check-label">
+                    {this.renderCheckbox(itemEnabled, onChange)}
+                    {prefix}{text}
+                </label>
             </div>
         )
     }
@@ -129,12 +131,14 @@ class CallDisplayConfigView extends Component {
     renderScopes(scopes) {
         if (scopes.length > 0) {
             return (
-                <div className="form-group">
-                    <Label>Standorte</Label>
-                    <Controls>
-                        {scopes.map(this.renderItem.bind(this))}
-                    </Controls>
-                </div>
+                <fieldset>
+                    <legend className="label">Standorte</legend>
+                    <div className="form-group">
+                        <Controls>
+                            {scopes.map(this.renderItem.bind(this))}
+                        </Controls>
+                    </div>
+                </fieldset>
             )
         }
     }
@@ -155,7 +159,7 @@ class CallDisplayConfigView extends Component {
     renderDepartment(department) {
         return (
             <div>
-                <h2>{department.name}</h2>
+                <h2 className="block__heading">{department.name}</h2>
                 {this.renderScopes(department.scopes)}
                 {this.renderClusters(department.clusters)}
             </div>
@@ -178,7 +182,7 @@ class CallDisplayConfigView extends Component {
         }
 
         return (
-            <form className="form-group calldisplay-config">
+            <form className="form--base panel--heavy form-group calldisplay-config">
                 {this.state.departments.map(this.renderDepartment.bind(this))}
                 <FormGroup>
                     <Label>Angezeigte Aufrufe</Label>
@@ -211,9 +215,11 @@ class CallDisplayConfigView extends Component {
                     <Label>URL</Label>
                     <Controls>
                         <Inputs.Text value={generatedUrl} attributes={{ readOnly: true }} />
-                        <br /><br /><a href={generatedUrl} target="_blank" className="button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen</a>
                     </Controls>
                 </FormGroup>
+                <div className="form-actions">
+                    <a href={generatedUrl} target="_blank" className="button button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen</a>
+                </div>
             </form>
         )
     }
