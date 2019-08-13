@@ -80,7 +80,7 @@ class TicketPrinterConfigView extends Component {
         const availableSlots = [null, 1, 2, 3, 4, 5, 6].filter(slot => usedSlots.indexOf(slot) < 0 || slot === value)
 
         return (
-            <select {... { onChange, value }} >
+            <select {... { onChange, value }} className="form-control">
                 {availableSlots.map(n => <option value={n}>{n ? `Position ${n}` : 'nicht anzeigen'}</option>)}
             </select>
         )
@@ -123,11 +123,11 @@ class TicketPrinterConfigView extends Component {
         const position = (this.state.selectedItems.filter(i => i.id === item.id)[0] || {}).position
 
         return (
-            <div className="ticketprinter-config__item">
+            <div className="form-group ticketprinter-config__item">
                 <label>{prefix}{text}</label>
-                <span>
+                <Controls>
                     {this.renderNumberSelect(position, onChange)}
-                </span>
+                </Controls>
             </div>
         )
     }
@@ -135,12 +135,12 @@ class TicketPrinterConfigView extends Component {
     renderScopes(scopes) {
         if (scopes.length > 0) {
             return (
-                <div className="form-group">
-                    <Label>Standorte</Label>
-                    <Controls>
+                <fieldset>
+                    <legend className="label">Standorte</legend>
+                    <div className="panel--heavy">
                         {scopes.map(this.renderItem.bind(this))}
-                    </Controls>
-                </div>
+                    </div>
+                </fieldset>
             )
         }
     }
@@ -148,12 +148,12 @@ class TicketPrinterConfigView extends Component {
     renderClusters(clusters) {
         if (clusters.length > 0) {
             return (
-                <div className="form-group">
-                    <Label>Standort­gruppe</Label>
-                    <Controls>
+                <fieldset>
+                    <legend className="label">Standort­gruppe</legend>
+                    <div className="panel--heavy">
                         {clusters.map(this.renderItem.bind(this))}
-                    </Controls>
-                </div>
+                    </div>
+                </fieldset>
             )
         }
     }
@@ -186,7 +186,7 @@ class TicketPrinterConfigView extends Component {
         const generatedUrl = this.buildUrl()
 
         return (
-            <form className="form-group ticketprinter-config">
+            <form className="form--base panel--heavy form-group ticketprinter-config">
                 {this.state.departments.map(this.renderDepartment.bind(this))}
                 <fieldset>
                     <FormGroup>
@@ -220,9 +220,11 @@ class TicketPrinterConfigView extends Component {
                         <Label>URL</Label>
                         <Controls>
                             <Inputs.Text value={generatedUrl} attributes={{readOnly: true}}/>
-                            <br /><br /><a href={generatedUrl} target="_blank" className="button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen</a>
                         </Controls>
                     </FormGroup>
+                    <div className="form-actions">
+                        <a href={generatedUrl} target="_blank" className="button button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen</a>
+                    </div>
                 </fieldset>
             </form>
         )

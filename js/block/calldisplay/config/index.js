@@ -133,11 +133,7 @@ class CallDisplayConfigView extends Component {
             return (
                 <fieldset>
                     <legend className="label">Standorte</legend>
-                    <div className="form-group">
-                        <Controls>
-                            {scopes.map(this.renderItem.bind(this))}
-                        </Controls>
-                    </div>
+                    {scopes.map(this.renderItem.bind(this))}
                 </fieldset>
             )
         }
@@ -146,12 +142,10 @@ class CallDisplayConfigView extends Component {
     renderClusters(clusters) {
         if (clusters.length > 0) {
             return (
-                <div className="form-group">
-                    <Label>Standort­gruppe</Label>
-                    <Controls>
-                        {clusters.map(this.renderItem.bind(this))}
-                    </Controls>
-                </div>
+                <fieldset>
+                    <legend className="label">Standort­gruppe</legend>
+                    {clusters.map(this.renderItem.bind(this))}
+                </fieldset>
             )
         }
     }
