@@ -26,11 +26,19 @@ class View extends BaseView {
 
     changeInputCounter (ev) {
         let $input = $(ev.currentTarget).find('input');
+        let $decrementBtn = $(ev.currentTarget).find('.decrement');
         let number = $input.val();
         if ($(ev.target).hasClass('decrement')) {
             $input.val(number > 0 ? --number : 0);
         } else {
             $input.val(++number);
+        }
+        // Enable / Disable decrement button if on 0 
+        if ($input.val() == 0) {
+            $decrementBtn.prop('disabled', true);
+        }
+        else {
+            $decrementBtn.prop('disabled', false);
         }
         $input.attr('value', $input.val());
         return false;

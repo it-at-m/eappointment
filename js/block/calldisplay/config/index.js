@@ -119,11 +119,9 @@ class CallDisplayConfigView extends Component {
             return carry || (current.id === item.id && current.type === item.type)
         }, false)
         return (
-            <div className="ticketprinter-config__item">
-                <label>{prefix}{text}</label>
-                <span>
-                    {this.renderCheckbox(itemEnabled, onChange)}
-                </span>
+            <div className="form-check ticketprinter-config__item">
+                {this.renderCheckbox(itemEnabled, onChange)}
+                <label className="form-check-label">{prefix}{text}</label>
             </div>
         )
     }
