@@ -176,7 +176,7 @@ class CallDisplayConfigView extends Component {
         }
 
         return (
-            <form className="form--base panel--heavy form-group calldisplay-config">
+            <form className="form--base form-group calldisplay-config">
                 {this.state.departments.map(this.renderDepartment.bind(this))}
                 <FormGroup>
                     <Label>Angezeigte Aufrufe</Label>
