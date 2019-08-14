@@ -51,7 +51,7 @@ const renderConflicts = (conflicts, onSelect) => {
 
 const Conflicts = (props) => {
     return (
-        <Message className="message--error availability-conflicts"
+        <Message className="message message--error message-keep availability-conflicts"
             title="Konflikte"
             body={renderConflicts(props.conflicts, props.onSelect)}
         />
