@@ -123,8 +123,8 @@ class TicketPrinterConfigView extends Component {
         const position = (this.state.selectedItems.filter(i => i.id === item.id)[0] || {}).position
 
         return (
-            <div className="form-group ticketprinter-config__item">
-                <label>{prefix}{text}</label>
+            <div className="form-group--inline ticketprinter-config__item">
+                <label className="light">{prefix}{text}</label>
                 <Controls>
                     {this.renderNumberSelect(position, onChange)}
                 </Controls>
@@ -137,9 +137,7 @@ class TicketPrinterConfigView extends Component {
             return (
                 <fieldset>
                     <legend className="label">Standorte</legend>
-                    <div className="panel--heavy">
-                        {scopes.map(this.renderItem.bind(this))}
-                    </div>
+                    {scopes.map(this.renderItem.bind(this))}
                 </fieldset>
             )
         }
@@ -150,9 +148,7 @@ class TicketPrinterConfigView extends Component {
             return (
                 <fieldset>
                     <legend className="label">Standort­gruppe</legend>
-                    <div className="panel--heavy">
-                        {clusters.map(this.renderItem.bind(this))}
-                    </div>
+                    {clusters.map(this.renderItem.bind(this))}
                 </fieldset>
             )
         }
@@ -186,7 +182,7 @@ class TicketPrinterConfigView extends Component {
         const generatedUrl = this.buildUrl()
 
         return (
-            <form className="form--base panel--heavy form-group ticketprinter-config">
+            <form className="form--base ticketprinter-config">
                 {this.state.departments.map(this.renderDepartment.bind(this))}
                 <fieldset>
                     <FormGroup>
