@@ -189,15 +189,19 @@ class ProvidersView extends Component {
                     </thead>
                     <tbody>
                         {this.getProvidersWithLabels(onChange, onDeleteClick)}
+                    </tbody>
+                    <tfoot>
                         <tr>
                             <td colSpan="4">
-                                <button className="button-default" onClick={onNewClick}>Neuer Dienstleister</button>
+                                <p>
                                 <Inputs.Description
                                     children={this.props.descriptions.delete}
                                 />
+                                </p>
+                                <button className="link button-default" onClick={onNewClick}><i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer Dienstleister</button>
                             </td>
                         </tr>
-                    </tbody>
+                    </tfoot>
                 </table>
             </div>
         )
