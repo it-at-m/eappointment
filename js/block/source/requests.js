@@ -149,15 +149,19 @@ class RequestsView extends Component {
                     </thead>
                     <tbody>
                         {this.getRequestsWithLabels(onChange, onDeleteClick)}
+                    </tbody>
+                    <tfoot>
                         <tr>
                             <td colSpan="4">
-                                <button className="button-default" onClick={onNewClick}>Neue Dienstleistung</button>
+                                <p>
                                 <Inputs.Description
                                     children={this.props.descriptions.delete}
                                 />
+                                </p>
+                                <button className="link button-default" onClick={onNewClick}><i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neue Dienstleistung</button>
                             </td>
                         </tr>
-                    </tbody>
+                    </tfoot>
                 </table>
             </div>
         )

@@ -101,7 +101,9 @@ class DaysOffView extends Component {
                     <tbody>
                         {this.state.days.map((day, index) => renderDay(day, index, onChange, onDeleteClick))}
                         <tr><td colSpan="3">
-                            <button className="button-default" onClick={onNewClick} >Neuer freier Tag</button>
+                            <button className="link button-default" onClick={onNewClick} >
+                                <i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer freier Tag
+                            </button>
                         </td></tr>
                         <tr><td colSpan="3">
                             &nbsp;

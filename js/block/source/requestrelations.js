@@ -103,7 +103,7 @@ class RequestRelationView extends Component {
                             {this.getRequestRelation(onChange, onDeleteClick)}
                             <tr>
                                 <td colSpan="4">
-                                    <button className="button-default requestrelation--new" onClick={onNewClick}>{this.props.labelsrequestrelation.new}</button>
+                                    <button className="link button-default requestrelation--new" onClick={onNewClick}><i className="fas fa-plus-square color-positive" aria-hidden="true"></i> {this.props.labelsrequestrelation.new}</button>
                                 </td>
                             </tr>
                         </tbody>
