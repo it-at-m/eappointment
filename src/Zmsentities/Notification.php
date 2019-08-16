@@ -85,7 +85,10 @@ class Notification extends Schema\Entity
 
     public function getRecipient()
     {
-        if (! isset($this->client['telephone']) || "" == $this->client['telephone']) {
+        if (! isset($this->client['telephone'])
+            || "" == $this->client['telephone']
+            || strlen($this->client['telephone']) < 7
+        ) {
             throw new Exception\NotificationMissedNumber();
         }
         $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
