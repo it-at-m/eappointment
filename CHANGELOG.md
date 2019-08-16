@@ -1,3 +1,7 @@
+## v2.xx
+
+* #36805 Ein SMS-Empfänger muss jetzt mindestens 7 Zeichen lang sein
+
 ## v2.21.00
 
 * #36494 Bugfix: Prüfe bei der Formular-Validierung für E-Mails auch, ob eine Absender-Adresse angegeben wurde, ansonsten ignoriere die Einstellung "E-Mail ist Pflichtfeld"
