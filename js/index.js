@@ -39,6 +39,29 @@ import preventFormResubmit from './element/form/preventFormResubmit'
 import maxChars from './element/form/maxChars'
 import DialogHandler from './lib/dialogHandler'
 
+// Import JS from patternlab
+import accordion from '../vendor/bo/layout-admin/source/js/behavior/accordion';
+import tabs from '../vendor/bo/layout-admin/source/js/behavior/tabs';
+import collapse from '../vendor/bo/layout-admin/source/js/behavior/collapse';
+import stickytrigger from '../vendor/bo/layout-admin/source/js/behavior/form-actions--sticky-trigger';
+import navigationprimary from '../vendor/bo/layout-admin/source/js/behavior/navigation-primary';
+import datepicker from '../vendor/bo/layout-admin/source/js/behavior/datepicker';
+import infotext from '../vendor/bo/layout-admin/source/js/behavior/form-infotext-flyin';
+import hamburger from '../vendor/bo/layout-admin/source/js/behavior/hamburger';
+import metanavi from '../vendor/bo/layout-admin/source/js/behavior/header-metanavi-popup';
+import formalerts from '../vendor/bo/layout-admin/source/js/behavior/formalerts-flyin';
+function loadResources() {
+    accordion();
+    tabs();
+    collapse();
+    datepicker();
+    stickytrigger();
+    infotext();
+    formalerts();
+    hamburger();
+    metanavi();
+    navigationprimary();   
+}
 
 // Bind jQuery on $ for testing
 window.$ = $;
@@ -106,6 +129,9 @@ $('textarea.maxchars').each(function () {
 printScopeAppointmentsByDay();
 printWaitingNumber();
 DialogHandler.hideMessages();
+
+// load patternlab JS
+loadResources();
 
 // Say hello
 console.log("Welcome to the ZMS admin interface...");
