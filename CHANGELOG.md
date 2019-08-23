@@ -1,3 +1,7 @@
+## v2.x
+
+* #36829 Bugfix: Bei der Verwendung von nicht ganzzahligen Slots von 0,4 und kleiner werden ausgebuchte Terminslots jetzt korrekt erkannt.
+
 ## v2.21.00
 
 * #36497 Bugfix: Import der DLDB-Daten importiert keine Dienstleistungen mehr, die für die Terminvereinbarung ausgeschlossen wurden
