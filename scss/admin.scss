@@ -32,6 +32,7 @@
 @import './vendor/bo/layout-admin/source/scss/atoms/list.scss';
 @import './vendor/bo/layout-admin/source/scss/atoms/paragraph.scss';
 @import './vendor/bo/layout-admin/source/scss/atoms/table.scss';
+@import './vendor/bo/layout-admin/source/scss/atoms/spinner.scss';
 
 // Molecules
 //@import "vendor/bo/layout-admin/source/scss/molecules/**/*.scss";
@@ -67,195 +68,17 @@
 // -----------------------------------------------------------------------
 
 
-// ZMS special
+// ZMS special css
 @import './vendor/bo/layout-admin/source/scss/themes/zms/availability-timetable.scss';
 @import './vendor/bo/layout-admin/source/scss/themes/zms/form-input-counter.scss';
 @import './vendor/bo/layout-admin/source/scss/themes/zms/pickup-keyboard-handheld.scss';
+@import './vendor/bo/layout-admin/source/scss/themes/zms/emergency.scss';
+@import './vendor/bo/layout-admin/source/scss/themes/zms/icon-char-circle.scss';
+@import './vendor/bo/layout-admin/source/scss/themes/zms/button-callnextclient.scss';
+@import './vendor/bo/layout-admin/source/scss/themes/zms/queue-table.scss';
+@import './vendor/bo/layout-admin/source/scss/themes/zms/owner-list.scss';
 
 // ToDo: Build new or move to themes/zms 
 @import "node_modules/react-datepicker/dist/react-datepicker";
-@import "block/emergency";
 @import "element/lightbox";
-@import "element/spinner";
-
-
-// -----------------------------------------------------------------------
-
-
-
-// ToDo: Put this into Patternlab
-
-form {
-    .form-group.has-error {
-        input, select, textarea {
-            border-color:       #d52f2e;
-            border-width:       1px 1px 1px 5px;
-        }
-    }
-    // ToDo: we need a global checkbox select layout
-    .checkboxselect {
-        .inner {
-            border:             1px solid #DDDDDD;
-            background-color:   #ffffff;
-            padding:            0.5em;
-        }
-        label {
-            word-break:         break-word;
-        }
-    }
-    .checkboxdeselect {
-        @include clearfix();
-        .inner {
-            border:             1px solid #DDDDDD;
-            background-color:   $color-white;
-            padding:            0.5em;
-            min-height:         5em;
-            overflow:           auto;
-            max-height:         20em;
-        }
-        label {
-            word-break:         break-word;
-            font-weight:        normal;
-        }
-        .clear-list {
-            float:              right;
-        }
-    }
-}
-
-
-.emergency {
-    margin:                 0 24px 1.75em 0;
-    .button--emergency {
-        background-color:       #E75656;
-        border-color:           #E75656;
-        color:                  #ffffff;
-        margin:                 0;
-        padding:                0.75em;
-        width:                  100%;
-        &:hover {
-            background-color:       darken(#E75656, 10%);
-            border-color:           #E75656;
-        }
-    }
-}
-.button-callnextclient {
-    background-color:       #ffffff;
-    box-shadow: 1px 1px 0px 0px #333333;
-    position: relative;
-    max-width: 12em;
-    height: auto;
-    text-align: center;
-    padding: 1em 1em ;
-    border: 1px solid #D2D2D2;
-    .user {
-        position: relative;
-        display: block;
-        font-size: 6.5em;
-        line-height: 1.2em;
-        color: #33445E;
-    }
-    .arrow {
-        display: block;
-        font-size: 2.5em;
-        line-height: 1.2em;
-        position: absolute;
-        right: 0.5em;
-        top: 1.1em;
-        color: #33445E;
-    }
-    .text {
-        display: block;
-        margin-top: 0.0em;
-        font-weight: bold;
-        font-size: 1.1em;
-        color: #000000;
-    }
-}
-.queue-table {
-    table tr.future .queue-status {
-        background-color: rgb(116, 202, 240);
-    }
-    td.queue-status, th.queue-status {
-        padding: 0.2em;
-    }
-}
-
-$ownerlist-item-padding: 0.5rem 0.75rem;
-$ownerlist-organisation-title-bg: #dddddd;
-
-$ownerlist-border-color: #dddddd;
-$ownerlist-border-color-light: #f1f1f1;
-
-.owner-list {
-    ul, li {
-        margin: 0;
-    }
-    .fa-edit {
-        font-size:  14px;
-    }
-    .owner-title {
-        display: block;
-        padding: $ownerlist-item-padding;
-        padding-top: 0;
-        padding-left: 0;
-        margin: 0;
-    }
-    .organisation-list {
-        > li {
-            margin-bottom: 2em;
-        }
-        .organisation-title {
-            padding: $ownerlist-item-padding;
-            background-color: $ownerlist-organisation-title-bg;
-            color:$color-text-seperationheading;
-            margin: 0;
-            display: block;
-            a {
-                //color:$color-text-seperationheading;
-            }
-        }
-        .department-list {
-            .department-title {
-                background-color: $color-block-seperationheading;
-                border-bottom: 1px solid $ownerlist-border-color;
-                padding: $ownerlist-item-padding;
-                margin: 0;
-                display: block;
-                color:  $color-text-seperationheading;
-                a {
-                    //color:$color-text-seperationheading;
-                }
-            }
-            .cluster-list {
-                > li {
-                    border-bottom: 1px solid $ownerlist-border-color;
-                    &:last-child {
-                        border-bottom: 0;
-                    }
-                }
-                .cluster-title  {
-                    padding: $ownerlist-item-padding;
-                    border-bottom: 1px dotted $ownerlist-border-color-light;
-                    display: block;
-                    margin: 0;
-                }
-                + .scope-list > li:first-child {
-                    border-top: 1px solid $ownerlist-border-color;
-                }
-            }
-            .scope-list {
-                > li  {
-                    padding: $ownerlist-item-padding;
-                    border-bottom: 1px dotted $ownerlist-border-color-light;
-                    &:last-child {
-                         border-bottom: 0;
-                     }
-                }
-            }
-        }
-    }
-}
-
-
 
