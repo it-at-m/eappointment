@@ -58,7 +58,8 @@ class DialogHandler {
         let message = $.find('.message, .dialog');
         if (message.length && !instant) {
             setTimeout(() => {
-                $(message).not('.message-keep').fadeOut().remove();
+                // we dont want to remove messages
+                //$(message).not('.message-keep').fadeOut().remove();
             }, settings.hideMessageTime * 1000)
         } else if (message.length && instant) {
             $(message).not('.message-keep').fadeOut().remove();
