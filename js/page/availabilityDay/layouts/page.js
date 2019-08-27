@@ -4,16 +4,10 @@ const PageLayout = (props) => {
     return (
         <div>
             {props.saveBar}
+            {props.conflicts}
             {props.timeTable}
             {props.updateBar}
-            <div className="grid"> 
-                <div className="grid__item two-thirds">
-                    {props.form}
-                </div>
-                <div className="grid__item one-third">
-                    {props.conflicts}
-                </div>
-            </div>
+            {props.form}
         </div>
     )
 }

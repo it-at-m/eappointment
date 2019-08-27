@@ -50,6 +50,8 @@ import infotext from '../vendor/bo/layout-admin/source/js/behavior/form-infotext
 import hamburger from '../vendor/bo/layout-admin/source/js/behavior/hamburger';
 import metanavi from '../vendor/bo/layout-admin/source/js/behavior/header-metanavi-popup';
 import formalerts from '../vendor/bo/layout-admin/source/js/behavior/formalerts-flyin';
+
+// load patternlab JS
 function loadResources() {
     accordion();
     tabs();
@@ -62,6 +64,7 @@ function loadResources() {
     metanavi();
     navigationprimary();   
 }
+loadResources();
 
 // Bind jQuery on $ for testing
 window.$ = $;
@@ -129,9 +132,6 @@ $('textarea.maxchars').each(function () {
 printScopeAppointmentsByDay();
 printWaitingNumber();
 DialogHandler.hideMessages();
-
-// load patternlab JS
-loadResources();
 
 // Say hello
 console.log("Welcome to the ZMS admin interface...");

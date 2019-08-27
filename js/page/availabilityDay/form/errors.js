@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 
 const renderErrors = errors => errors.map(err => {
     return (
-        <div className="message-error">
+        <div className="message message--error">
             <p>{err.errorMessage}</p>
         </div>
     )

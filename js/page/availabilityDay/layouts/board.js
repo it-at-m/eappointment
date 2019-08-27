@@ -17,13 +17,15 @@ const Board = (props) => {
 
     return (
         <section className={className}>
+            {props.title ?
             <div className="board__header header">
                 <h2 className="board__heading title">{props.title}</h2>
-            </div>
+            </div> : null }
+            {props.titleAside || props.headerRight ?
             <div className="board__actions">
                 {titleAside(props.titleAside)}
                 {headerRight(props.headerRight)}
-            </div>
+            </div> : null }
             <div className="board__body body">
                 {props.body}
             </div>
