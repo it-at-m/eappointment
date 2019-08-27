@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react'
-//import Board from '../layouts/board'
-import Message from '../layouts/message'
+import Board from '../layouts/board'
 import moment from 'moment'
 
 const renderLink = (conflict, onClick) => {
@@ -33,13 +32,13 @@ const renderConflicts = (conflicts, onSelect) => {
             }
 
             return (
-                <span key={key}>
+                <div className="message message--error message-keep" role="alert" key={key}>
                     {renderLink(conflict, onClick)}
                     {conflict.queue.withAppointment
                      ? <p>Termin außerhalb der Öffnungszeiten oder überbucht</p>
                      : <p>{conflict.amendment}</p>
                     }
-                </span>
+                </div>
             )
         })
     } else {
@@ -51,7 +50,7 @@ const renderConflicts = (conflicts, onSelect) => {
 
 const Conflicts = (props) => {
     return (
-        <Message className="message message--error message-keep availability-conflicts"
+        <Board className="board--spaceless availability-conflicts"
             title="Konflikte"
             body={renderConflicts(props.conflicts, props.onSelect)}
         />

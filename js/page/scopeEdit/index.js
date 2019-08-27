@@ -50,13 +50,13 @@ class ScopeView extends Component {
 
     render() {
         return (
-            <fieldset>
+            <div>
                 <SourceView
                     {...this.props}
                     changeHandler={this.changeHandler}
                     onChangeSourceHandler={this.onChangeSourceHandler}
                 />
-            </fieldset>
+            </div>
         );
     }
 }

@@ -37,6 +37,7 @@
 // Molecules
 //@import "vendor/bo/layout-admin/source/scss/molecules/**/*.scss";
 @import './vendor/bo/layout-admin/source/scss/molecules/block/accordion.scss';
+@import './vendor/bo/layout-admin/source/scss/molecules/block/tabs.scss';
 @import './vendor/bo/layout-admin/source/scss/molecules/block/block.scss';
 @import './vendor/bo/layout-admin/source/scss/molecules/block/calendar.scss';
 @import './vendor/bo/layout-admin/source/scss/molecules/block/panel.scss';
@@ -77,6 +78,7 @@
 @import './vendor/bo/layout-admin/source/scss/themes/zms/button-callnextclient.scss';
 @import './vendor/bo/layout-admin/source/scss/themes/zms/queue-table.scss';
 @import './vendor/bo/layout-admin/source/scss/themes/zms/owner-list.scss';
+@import './vendor/bo/layout-admin/source/scss/themes/zms/checkboxselect.scss';
 
 // ToDo: Build new or move to themes/zms 
 @import "node_modules/react-datepicker/dist/react-datepicker";
