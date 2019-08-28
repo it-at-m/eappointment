@@ -64,7 +64,6 @@ function loadResources() {
     metanavi();
     navigationprimary();   
 }
-loadResources();
 
 // Bind jQuery on $ for testing
 window.$ = $;
@@ -76,6 +75,8 @@ forceHttps();
 
 // Init Views
 new AccessKeyView(document);
+
+loadResources();
 
 $('.emergency').each(function () {
     new EmergencyView(this, getDataAttributes(this));
