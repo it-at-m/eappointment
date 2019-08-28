@@ -109,8 +109,10 @@ class View extends BaseView {
     }
 
     onDatePick($container, event) {
+        // use ev.currentTarget instead of ev.target to get 
+        // the original a element and not the inner (icon) element
         stopEvent(event);
-        this.selectedDate = $(event.target).attr('data-date');
+        this.selectedDate = $(event.currentTarget).attr('data-date');
         $container.removeClass('lightbox');
         $container.removeClass('lightbox__content');
         $container.data('selecteddate', this.selectedDate);
