@@ -15,9 +15,9 @@ class MessageHandler {
     }
 
     render() {
-        var content = $(this.message).filter('div.dialog');
+        var content = $(this.message).filter('.dialog');
         if (content.length == 0) {
-            var message = $(this.message).find('div.dialog');
+            var message = $(this.message).find('.dialog');
             if (message.length > 0) {
                 content = message;
             }

@@ -18,9 +18,9 @@ class DialogHandler {
 
     render() {
         DialogHandler.hideMessages(false);
-        var content = $(this.response).filter('div.dialog');
+        var content = $(this.response).filter('.dialog');
         if (content.length == 0) {
-            var message = $(this.response).find('div.dialog');
+            var message = $(this.response).find('.dialog');
             if (message.length > 0) {
                 content = message.get(0).outerHTML;
             }
