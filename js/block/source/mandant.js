@@ -19,39 +19,37 @@ class MandantView extends Component {
         }
 
         return (
-            <div>
-                <fieldset>
-                    <div className="panel--heavy">
-                        <Inputs.FormGroup>
-                            <Inputs.Label
-                                children={this.props.labelsmandant.label}
+            <div>   
+                <div className="fieldset panel--heavy">
+                    <Inputs.FormGroup>
+                        <Inputs.Label
+                            children={this.props.labelsmandant.label}
+                        />
+                        <Inputs.Controls>
+                            <Inputs.Text
+                                name="label"
+                                value={(this.props.source) ? this.props.source.label : ''}
+                                onChange={onChange}
                             />
-                            <Inputs.Controls>
-                                <Inputs.Text
-                                    name="label"
-                                    value={(this.props.source) ? this.props.source.label : ''}
-                                    onChange={onChange}
-                                />
-                            </Inputs.Controls>
-                        </Inputs.FormGroup>
-                        <Inputs.FormGroup>
-                            <Inputs.Label
-                                children={this.props.labelsmandant.source}
+                        </Inputs.Controls>
+                    </Inputs.FormGroup>
+                    <Inputs.FormGroup>
+                        <Inputs.Label
+                            children={this.props.labelsmandant.source}
+                        />
+                        <Inputs.Controls>
+                            <Inputs.Text
+                                name="source"
+                                value={(this.props.source) ? this.props.source.source : ''}
+                                attributes={ {readOnly: this.props.source.lastChange, maxLength: 10} }
+                                onChange={onChange}
                             />
-                            <Inputs.Controls>
-                                <Inputs.Text
-                                    name="source"
-                                    value={(this.props.source) ? this.props.source.source : ''}
-                                    attributes={ {readOnly: this.props.source.lastChange, maxLength: 10} }
-                                    onChange={onChange}
-                                />
-                                <Inputs.Description
-                                    children={this.props.descriptions.mandantlabel}
-                                />
-                            </Inputs.Controls>
-                        </Inputs.FormGroup>
-                    </div>
-                </fieldset>
+                            <Inputs.Description
+                                children={this.props.descriptions.mandantlabel}
+                            />
+                        </Inputs.Controls>
+                    </Inputs.FormGroup>
+                </div>
                 <fieldset>
                     <legend>{this.props.labelsmandant.contact}</legend>
                     <div className="panel--heavy">

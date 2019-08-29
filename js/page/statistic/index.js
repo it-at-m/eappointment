@@ -18,7 +18,7 @@ class View extends BaseView {
         this.$main.off('click')
         .on('change', 'input[type="checkbox"]', () => {
             this.toggleButtons();
-        }).on('click', 'div.form-input-counter', (ev) => {
+        }).on('click', '.form-input-counter', (ev) => {
             this.changeInputCounter(ev);
             this.toggleButtons();
         })
@@ -57,7 +57,7 @@ class View extends BaseView {
 
     checkInputCounter() {
         let isSelected = false;
-        $('div.input-counter input').each((index, item) => {
+        $('.input-counter input').each((index, item) => {
             if ($(item).val() > 0) {
                 //console.log($(item).val(), $(item).parent().next('.label').text());
                 isSelected = true;
