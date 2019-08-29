@@ -177,7 +177,12 @@ class View extends BaseView {
         } else {
             this.$.removeAttr('data-minimized')
         }
-
+        // Barrierefreiheit
+        if (state == 'clear') {
+            this.$.find('.emergency__overlay').attr('hidden', 'hidden')
+        } else {
+            this.$.find('.emergency__overlay').removeAttr('hidden')
+        }
 
 
         this.$.attr('data-source', source)
