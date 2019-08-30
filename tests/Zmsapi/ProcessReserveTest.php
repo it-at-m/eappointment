@@ -84,4 +84,52 @@ class ProcessReserveTest extends Base
             '__body' => json_encode($process)
         ], []);
     }
+
+    public function testWithClientkey()
+    {
+        $this->setWorkstation();
+        $processList = new \BO\Zmsentities\Collection\ProcessList(
+            json_decode($this->readFixture("GetFreeProcessList.json"))
+        );
+        $process = $processList->getFirst();
+        $response = $this->render([], [
+            '__body' => json_encode($process),
+           'clientkey' => 'default'
+        ], []);
+
+        $this->assertContains('reserved', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testWithClientkeyBlocked()
+    {
+        $query = new \BO\Zmsdb\Process();
+        $this->expectException('BO\Zmsapi\Exception\Process\ApiclientInvalid');
+        $this->expectExceptionCode(403);
+        $this->setWorkstation();
+        $processList = new \BO\Zmsentities\Collection\ProcessList(
+            json_decode($this->readFixture("GetFreeProcessList.json"))
+        );
+        $process = $processList->getFirst();
+        $this->render([], [
+            '__body' => json_encode($process),
+            'clientkey' => '8pnaRHkUBYJqz9i9NPDEeZq6mUDMyRHE'
+        ], []);
+    }
+
+    public function testWithClientkeyInvalid()
+    {
+        $query = new \BO\Zmsdb\Process();
+        $this->expectException('BO\Zmsapi\Exception\Process\ApiclientInvalid');
+        $this->expectExceptionCode(403);
+        $this->setWorkstation();
+        $processList = new \BO\Zmsentities\Collection\ProcessList(
+            json_decode($this->readFixture("GetFreeProcessList.json"))
+        );
+        $process = $processList->getFirst();
+        $this->render([], [
+            '__body' => json_encode($process),
+            'clientkey' => '__invalid'
+        ], []);
+    }
 }

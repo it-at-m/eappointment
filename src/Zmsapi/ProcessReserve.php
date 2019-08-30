@@ -11,6 +11,9 @@ use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process;
 use \BO\Zmsdb\ProcessStatusFree;
 
+/**
+ * @SuppressWarnings(Coupling)
+ */
 class ProcessReserve extends BaseController
 {
     /**
@@ -24,6 +27,7 @@ class ProcessReserve extends BaseController
     ) {
         $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
         $slotType = Validator::param('slotType')->isString()->getValue();
+        $clientKey = Validator::param('clientkey')->isString()->getValue();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
@@ -35,6 +39,14 @@ class ProcessReserve extends BaseController
         
         if ($slotType || $slotsRequired) {
             (new Helper\User($request))->checkRights();
+        } elseif ($clientKey) {
+            $apiClient = (new \BO\Zmsdb\Apiclient)->readEntity($clientKey);
+            if (!$apiClient || !isset($apiClient->accesslevel) || $apiClient->accesslevel == 'blocked') {
+                throw new Exception\Process\ApiclientInvalid();
+            }
+            $slotType = $apiClient->accesslevel;
+            $slotsRequired = $apiClient->accesslevel == 'intern' ? $slotsRequired : 0;
+            $process->apiclient = $apiClient;
         } else {
             $slotsRequired = 0;
             $slotType = 'public';
