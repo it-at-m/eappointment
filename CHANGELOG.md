@@ -1,6 +1,7 @@
-## v2.xx
+## v2.22.00
 
 * #36805 Ein SMS-Empfänger muss jetzt mindestens 7 Zeichen lang sein
+* #36427 Entity Apiclient hinzugefügt mit Referenzen in Apikey und Process
 
 ## v2.21.00
 

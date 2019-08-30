@@ -70,6 +70,9 @@
       "description": "additional information for this process from the client",
       "default": ""
     },
+    "apiclient": {
+      "$ref": "apiclient.json"
+    },
     "appointments": {
       "type": "array",
       "items": {
