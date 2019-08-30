@@ -1,3 +1,7 @@
+## v2.22.00
+
+* #36427 Der Parameter "clientkey" kann jetzt bei den Routen POST /process/status/reserved/ und POST /apikey/ verwendet werden
+
 ## v2.21.00
 
 * #36616 Bugfix: Beim Erhöhen des Zählers beim Versenden einer Erinnerungsmail wird jetzt ein "critical read" verwendet

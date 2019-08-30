@@ -67,6 +67,11 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: body
  *                  schema:
  *                      $ref: "schema/apikey.json"
+ *              -   name: clientkey
+ *                  description: clientkey to identify api client
+ *                  type: string
+ *                  in: query
+ *                  required: false
  *          responses:
  *              200:
  *                  description: "success"
@@ -82,7 +87,7 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->post(
     '/apikey/',
-    '\BO\Zmsapi\ApikeyUpdate'
+    \BO\Zmsapi\ApikeyUpdate::class
 )
     ->setName("ApikeyUpdate");
 
@@ -2885,6 +2890,11 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "On default, the required slots are calculated by fetching preferences for a provider on how much slots each request should take. Priviliged users can change the required slots. To enable this parameter, a X-Authkey header is required."
  *                  in: query
  *                  type: integer
+ *                  required: false
+ *              -   name: clientkey
+ *                  description: clientkey to identify api client
+ *                  type: string
+ *                  in: query
  *                  required: false
  *              -   name: slotType
  *                  description: "On default, the slotType is 'public'. A scope can have non public appointments for booking. This is a reserve for internal use. Only priviliged users can change the slot type. To enable this parameter, a X-Authkey header is required."

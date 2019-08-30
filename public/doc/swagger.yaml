@@ -77,6 +77,8 @@ paths:
 definitions:
   apikey:
     $ref: "schema/apikey.json"
+  apiclient:
+    $ref: "schema/apiclient.json"
   appointment:
     $ref: "schema/appointment.json"
   availability:
