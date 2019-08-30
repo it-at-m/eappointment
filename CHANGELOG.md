@@ -1,6 +1,7 @@
-## v2.x
+## v2.22.00
 
 * #36829 Bugfix: Bei der Verwendung von nicht ganzzahligen Slots von 0,4 und kleiner werden ausgebuchte Terminslots jetzt korrekt erkannt.
+* #36427 Neue Tabelle "apiclient" sowie Integration in Apikey und Process
 
 ## v2.21.00
 

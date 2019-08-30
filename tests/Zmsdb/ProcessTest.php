@@ -460,6 +460,20 @@ class ProcessTest extends Base
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
     }
 
+
+    public function testReserveProcessWithApiclient()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new ProcessStatusFree();
+        $input = $this->getTestProcessEntity();
+        $input['apiclient']['apiClientID'] = 1;
+        $process = $query->writeEntityReserved($input, $now);
+        $authCheck = $query->readAuthKeyByProcessId($process->id);
+        $process = $query->readEntity($process->id, $authCheck['authKey']);
+        $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
+        $this->assertEquals($process->apiclient->shortname, 'default');
+    }
+
     public function testReadListByScopeAndTime()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");

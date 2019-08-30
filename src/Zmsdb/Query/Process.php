@@ -555,14 +555,18 @@ class Process extends Base implements MappingInterface
 
     public function addValuesNewProcess(\BO\Zmsentities\Process $process, $parentProcess = 0, $childProcessCount = 0)
     {
-        $this->addValues([
+        $values = [
             'BuergerID' => $process->id,
             'IPTimeStamp' => $process->createTimestamp,
             'absagecode' => $process->authKey,
             'hatFolgetermine' => $childProcessCount,
             'istFolgeterminvon' => $parentProcess,
             'wartenummer' => $process->queue['number']
-        ]);
+        ];
+        if ($process->toProperty()->apiclient->apiClientID->isAvailable()) {
+            $values['apiClientID'] = $process->apiclient->apiClientID;
+        }
+        $this->addValues($values);
     }
 
     public function addValuesUpdateProcess(\BO\Zmsentities\Process $process, \DateTimeInterface $dateTime)
