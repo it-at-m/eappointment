@@ -10,14 +10,31 @@ class Apikey extends Schema\Entity
 
     public function getDefaults()
     {
-        return [];
+        return [
+            'apiclient' => new Apiclient(),
+        ];
     }
 
-    public function getHashFromCaptcha($text, $secret)
+    public function setApiClient(Apiclient $apiClient)
     {
-        $hash = hash('sha256', $text . $secret);
-        $hash = substr($hash, 29);
-        return str_replace('/', '', $hash);
+        $this['apiclient'] = $apiClient;
+    }
+
+    public function getApiClient(): Apiclient
+    {
+        return $this['apiclient'];
+    }
+
+    public function getHashFromCaptcha($text)
+    {
+        $hash = password_hash($text, PASSWORD_BCRYPT);
+        $hash = substr($hash, 7);
+        return base64_encode($hash);
+    }
+
+    public function isCaptchaFromHash($text, $hash)
+    {
+        return password_verify($text, '$2y$10$' . base64_decode($hash));
     }
 
     public function withCaptchaData($base64_jpg)

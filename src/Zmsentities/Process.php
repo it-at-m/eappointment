@@ -18,6 +18,7 @@ class Process extends Schema\Entity
         return [
             'amendment' => '',
             'appointments' => new Collection\AppointmentList(),
+            'apiclient' => new Apiclient(),
             'authKey' => '',
             'clients' => new Collection\ClientList(),
             'createIP' => '',
@@ -343,7 +344,7 @@ class Process extends Schema\Entity
         return $client;
     }
 
-    public function getFirstAppointment()
+    public function getFirstAppointment(): Appointment
     {
         $appointment = $this->getAppointments()->getFirst();
         if (!$appointment) {
