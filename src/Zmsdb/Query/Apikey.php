@@ -14,11 +14,24 @@ class Apikey extends Base implements MappingInterface
 
     const QUOTATABLE = 'apiquota';
 
+    protected function addRequiredJoins()
+    {
+        $this->leftJoin(
+            new Alias('apiclient', 'apiclientkey'),
+            'apikey.apiClientID',
+            '=',
+            'apiclientkey.apiClientID'
+        );
+    }
+
+
     public function getEntityMapping()
     {
         $mapping = [
             'key' => 'apikey.key',
             'createIP' => 'apikey.createIP',
+            'apiclient__clientKey' => 'apiclientkey.clientKey',
+            'apiclient__accesslevel' => 'apiclientkey.accesslevel',
             'ts' => 'apikey.ts'
         ];
         return $mapping;
