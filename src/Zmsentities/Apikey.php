@@ -25,16 +25,25 @@ class Apikey extends Schema\Entity
         return $this['apiclient'];
     }
 
-    public function getHashFromCaptcha($text)
+    /**
+     * @param String $text usually the captcha text
+     * @param String $secret use a secret to avoid crafted api keys
+     */
+    public function getHashFromCaptcha($text, $secret = '4Td8x5Qn5hjW3uSc6MWWVQPwrw6b74fL')
     {
-        $hash = password_hash($text, PASSWORD_BCRYPT);
+        $hash = password_hash($text . $secret, PASSWORD_BCRYPT);
         $hash = substr($hash, 7);
         return base64_encode($hash);
     }
 
-    public function isCaptchaFromHash($text, $hash)
+    /**
+     * @param String $text usually the captcha text
+     * @param String $hash usually the apikey
+     * @param String $secret has to be same secret used by self::getHashFromCaptcha()
+     */
+    public function isCaptchaFromHash($text, $hash, $secret = '4Td8x5Qn5hjW3uSc6MWWVQPwrw6b74fL')
     {
-        return password_verify($text, '$2y$10$' . base64_decode($hash));
+        return password_verify($text . $secret, '$2y$10$' . base64_decode($hash));
     }
 
     public function withCaptchaData($base64_jpg)
