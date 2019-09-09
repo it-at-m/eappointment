@@ -30,7 +30,7 @@ class ProcessReserveTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/reserved/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0, 'clientkey' => ''],
                     'response' => $this->readFixture("GET_process_100005_95a3_reserved.json")
                 ],
                 [
@@ -65,7 +65,7 @@ class ProcessReserveTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/reserved/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0, 'clientkey' => ''],
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ],
                 [
@@ -100,7 +100,7 @@ class ProcessReserveTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/reserved/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0, 'clientkey' => ''],
                     'response' => $this->readFixture("GET_process_194104_2b88_notification.json")
                 ],
                 [
@@ -127,7 +127,7 @@ class ProcessReserveTest extends Base
             ]
         );
         $parameters = array_merge(
-            $this->parameters, 
+            $this->parameters,
             array('sendConfirmation' => 1, 'sendMailConfirmation' => 1)
         );
         $response = $this->render($this->arguments, $parameters, [], 'POST');
@@ -149,7 +149,7 @@ class ProcessReserveTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/reserved/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 3],
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 3, 'clientkey' => ''],
                     'response' => $this->readFixture("GET_process_100005_95a3_reserved.json")
                 ],
                 [
@@ -216,7 +216,7 @@ class ProcessReserveTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/reserved/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0, 'clientkey' => ''],
                     'response' => $this->readFixture("GET_process_100005_95a3_reserved.json")
                 ],
                 [
@@ -244,7 +244,7 @@ class ProcessReserveTest extends Base
         ], [], 'POST');
         $this->assertContains('Name eingegeben werden', (string)$response->getBody());
         $this->assertContains(
-            'Es muss mindestens eine Dienstleistung ausgew\u00e4hlt werden!', 
+            'Es muss mindestens eine Dienstleistung ausgew\u00e4hlt werden!',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());

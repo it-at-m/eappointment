@@ -50,6 +50,8 @@ class Application extends \BO\Slim\Application
 
     public static $http_curl_config = array();
 
+    const CLIENTKEY = '';
+
     const JSON_COMPRESS_LEVEL = 1;
 
     /**
