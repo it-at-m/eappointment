@@ -132,6 +132,33 @@ class CalendarTest extends Base
         $this->assertEquals(60, $entity->getDay(2016, 5, 30)['freeAppointments']['public']);
     }
 
+    public function testWithSlotsRequiredFloat1()
+    {
+        $freeProcessesDate = new \DateTimeImmutable("2016-05-30");
+        $input = $this->getTestEntity();
+        $input->addScope(141); // Bürgeramt Heerstr.
+        $entity = (new Query())->readResolvedEntity($input, $freeProcessesDate, null, 'public', 0.4);
+        $this->assertEquals(72, $entity->getDay(2016, 5, 30)['freeAppointments']['public']);
+    }
+
+    public function testWithSlotsRequiredFloat2()
+    {
+        $freeProcessesDate = new \DateTimeImmutable("2016-05-30");
+        $input = $this->getTestEntity();
+        $input->addScope(141); // Bürgeramt Heerstr.
+        $entity = (new Query())->readResolvedEntity($input, $freeProcessesDate, null, 'public', 2.6);
+        $this->assertEquals(60, $entity->getDay(2016, 5, 30)['freeAppointments']['public']);
+    }
+
+    public function testWithSlotsRequiredFloat3()
+    {
+        $freeProcessesDate = new \DateTimeImmutable("2016-05-30");
+        $input = $this->getTestEntity();
+        $input->addScope(141); // Bürgeramt Heerstr.
+        $entity = (new Query())->readResolvedEntity($input, $freeProcessesDate, null, 'public', 3.4);
+        $this->assertEquals(60, $entity->getDay(2016, 5, 30)['freeAppointments']['public']);
+    }
+
     public function testOverallDayOff()
     {
         $freeProcessesDate = new \DateTimeImmutable("2016-05-16");

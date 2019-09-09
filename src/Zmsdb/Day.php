@@ -43,7 +43,7 @@ class Day extends Base
             Query\Day::QUERY_DAYLIST_JOIN,
             [
                 'forceRequiredSlots' =>
-                    ($slotsRequiredForce === null || $slotsRequiredForce < 1) ? 1 : intval($slotsRequiredForce),
+                    ($slotsRequiredForce === null || $slotsRequiredForce < 1) ? 1 : round($slotsRequiredForce),
             ]
         );
         foreach ($dayData as $day) {
