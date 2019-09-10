@@ -1,3 +1,7 @@
+## v2.22.00
+
+* #36425 HTTPS ist bei Cookies im Ticketprinter keine Pflicht mehr
+
 ## v2.20.01
 
 * #36528 Refactoring: Gemeinsame Funktionen zum Holen der Warteliste vom Sachbearbeiter und Ticketprinter hierher verschoben
