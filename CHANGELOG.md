@@ -1,3 +1,7 @@
+## v2.22.00
+
+* #36425 Der HTTPS-Redirect wurde entfernt, um eine Nutzung per HTTP zu ermöglichen
+
 ## v2.20.00
 
 * #32626 Config für Performance-Optimierung (kann über JSON_COMPRESS_LEVEL=0 deaktiviert werden)
