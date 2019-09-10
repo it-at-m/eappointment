@@ -8,7 +8,7 @@ import 'babel-polyfill';
 import window from "window";
 import $ from "jquery";
 import settings from './settings';
-import { forceHttps } from './lib/utils'
+//import { forceHttps } from './lib/utils'
 
 // Import Views
 import Reload from "./page/main";
@@ -40,4 +40,4 @@ $('form').each(function() {
 console.log("Welcome to the ZMS Ticketprinter interface...");
 
 // Force https protocol
-forceHttps();
+//forceHttps();
