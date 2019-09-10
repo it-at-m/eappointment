@@ -85,6 +85,13 @@ class Application
      */
     public static $templatedefaults = array();
 
+    /**
+     * Default parameters for middleware HttpBasicAuth
+     *
+     */
+    public static $httpBasicAuth = array();
+
+
     /*
      * -----------------------------------------------------------------------
      * Logging PSR3 compatible
