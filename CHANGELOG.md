@@ -2,6 +2,7 @@
 
 * #36805 Ein SMS-Empfänger muss jetzt mindestens 7 Zeichen lang sein
 * #36427 Entity Apiclient hinzugefügt mit Referenzen in Apikey und Process
+* #36425 Die Beispiel-Entity für Sessions nutzt jetzt die Dienstleistung "Personalausweis beantragen", da die vorherige keine Terminvereinbarung im Standort anbot
 
 ## v2.21.00
 
