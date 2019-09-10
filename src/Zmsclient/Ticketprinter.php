@@ -26,7 +26,7 @@ class Ticketprinter
                 time() + (60*60*24*365*10),
                 $request->getUri()->getBasePath(),
                 null,
-                true
+                false
             );
         }
         // @codeCoverageIgnoreEnd
@@ -56,7 +56,7 @@ class Ticketprinter
         $_COOKIE[self::HOME_URL_COOKIE_NAME] = $url;
         // @codeCoverageIgnoreStart
         if (!headers_sent()) {
-            setcookie(self::HOME_URL_COOKIE_NAME, $url, 0, $request->getUri()->getBasePath(), null, true, true);
+            setcookie(self::HOME_URL_COOKIE_NAME, $url, 0, $request->getUri()->getBasePath(), null, false, true);
         }
         // @codeCoverageIgnoreEnd
     }
