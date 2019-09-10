@@ -13,7 +13,7 @@ class View extends BaseView {
     }
 
     load () {
-        cookie.remove("Ticketprinter", { secure: true });
+        cookie.remove("Ticketprinter");
         this.setTimeout();
     }
 
