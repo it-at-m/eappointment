@@ -6,7 +6,7 @@
         "id": "7b89b1c1fd6c7a52fa748ff663babd0c",
         "content": {
             "basket": {
-                "requests": "120656",
+                "requests": "120703",
                 "providers": "122217",
                 "scope": "123",
                 "process": "1234567",
@@ -32,7 +32,7 @@
             "entry": {
                 "source": "specific",
                 "providers": "122217",
-                "requests": "120656",
+                "requests": "120703",
                 "scope": 123
             },
             "source": "dldb",
