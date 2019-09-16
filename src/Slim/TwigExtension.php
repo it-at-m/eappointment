@@ -51,6 +51,7 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('isNumeric', array($this, 'isNumeric')),
             new \Twig_SimpleFunction('dumpAppProfiler', array($this, 'dumpAppProfiler'), $safe),
             new \Twig_SimpleFunction('getSystemStatus', array($this, 'getSystemStatus'), $safe),
+            new \Twig_SimpleFunction('getClientHost', array($this, 'getClientHost')),
         );
     }
 
@@ -224,6 +225,18 @@ class TwigExtension extends \Twig_Extension
     public function baseUrl()
     {
         return $this->includeUrl(false);
+    }
+
+    public function getClientHost()
+    {
+        $request = $this->container['request'];
+        $headerList = ['host', 'x-forwarded-host'];
+        foreach ($headerList as $headername) {
+            if ($request->hasHeader($headername)) {
+                $hostname = $request->getHeaderLine($headername);
+            }
+        }
+        return $hostname;
     }
 
     protected static function toSortableString($string)
