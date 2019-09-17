@@ -106,7 +106,7 @@ class LinksView extends Component {
 
         return (
             <div className="department-links__list">
-                <table className="clean">
+                <table className="table--base clean">
                     <thead>
                         <th>Bezeichnung</th>
                         <th>Link</th>
@@ -115,14 +115,16 @@ class LinksView extends Component {
                     </thead>
                     <tbody>
                         {this.state.links.map((link, index) => renderLink(link, index, onChange, onDeleteClick))}
-                        <tr><td colSpan="4">
-                            <button className="button-default" onClick={onNewClick} >Neuer Link</button>
-                        </td></tr>
-                        <tr><td colSpan="4">
-                            &nbsp;
-                    </td></tr>
                     </tbody>
+                    <tfoot>
+                        <tr><td colSpan="4">
+                            <button className="link button-default" onClick={onNewClick} >
+                                <i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer Link
+                            </button>
+                        </td></tr>
+                    </tfoot>
                 </table>
+
             </div>
         )
     }

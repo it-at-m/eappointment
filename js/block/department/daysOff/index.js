@@ -92,7 +92,7 @@ class DaysOffView extends Component {
 
         return (
             <div className="daysoff">
-                <table className="clean">
+                <table className="table--base clean">
                     <thead>
                         <th>Bezeichnung</th>
                         <th>Datum</th>
@@ -100,15 +100,14 @@ class DaysOffView extends Component {
                     </thead>
                     <tbody>
                         {this.state.days.map((day, index) => renderDay(day, index, onChange, onDeleteClick))}
+                    </tbody>
+                    <tfoot>
                         <tr><td colSpan="3">
                             <button className="link button-default" onClick={onNewClick} >
                                 <i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer freier Tag
                             </button>
                         </td></tr>
-                        <tr><td colSpan="3">
-                            &nbsp;
-                    </td></tr>
-                    </tbody>
+                    </tfoot>
                 </table>
             </div>
         )

@@ -57,7 +57,6 @@ class SourceView extends Component {
                 />
                 <fieldset>
                     <legend>Dienstleistungen</legend>
-                    <div className="panel--heavy">
                     <RequestsView
                         {...this.props}
                         source={this.state.source}
@@ -65,11 +64,9 @@ class SourceView extends Component {
                         addNewHandler={this.addNewHandler}
                         deleteHandler={this.deleteHandler}
                     />
-                    </div>
                 </fieldset>
                 <fieldset>
                     <legend>Dienstleister</legend>
-                    <div className="panel--heavy">
                     <ProvidersView
                         {...this.props}
                         source={this.state.source}
@@ -77,11 +74,9 @@ class SourceView extends Component {
                         addNewHandler={this.addNewHandler}
                         deleteHandler={this.deleteHandler}
                     />
-                    </div>
                 </fieldset>
                 <fieldset>
                     <legend>Zeitslots</legend>
-                    <div className="panel--heavy">
                     <RequestRelationView
                         {...this.props}
                         source={this.state.source}
@@ -89,7 +84,6 @@ class SourceView extends Component {
                         addNewHandler={this.addNewHandler}
                         deleteHandler={this.deleteHandler}
                     />
-                    </div>
                 </fieldset>
             </div>
         );
