@@ -186,22 +186,29 @@ class TicketPrinterConfigView extends Component {
                 {this.state.departments.map(this.renderDepartment.bind(this))}
                 <fieldset>
                     <FormGroup>
-                        <Label>Name zur internen Identifikation (optional)</Label>
+                        <Label attributes={{"htmlFor": "ticketprinterName"}}>Name zur internen Identifikation (optional)</Label>
                         <Controls>
-                            <Inputs.Text onChange={onNameChange}/>
+                            <Inputs.Text 
+                                attributes = {{"id": "ticketprinterName"}} 
+                                onChange={onNameChange}
+                            />
                         </Controls>
                     </FormGroup>
                     <FormGroup>
-                        <Label>StartUrl (optional)</Label>
-                        <Controls>
-                            <Inputs.Text onChange={onHomeChange}/>
-                            <Description>Tragen Sie eine alternative URL ein, wenn nach der Ausgabe einer Wartenummer eine alternative Startseite aufgerufen werden soll</Description>
+                        <Label attributes={{"htmlFor": "ticketprinterStarturl"}}>StartUrl (optional)</Label>
+                        <Controls> 
+                            <Inputs.Text 
+                                attributes = {{"id": "ticketprinterStarturl", "aria-describedby": "help_ticketprinterStarturl"}} 
+                                onChange={onHomeChange}
+                            />
+                            <Description attributes={{"id": "help_ticketprinterStarturl"}}>Tragen Sie eine alternative URL ein, wenn nach der Ausgabe einer Wartenummer eine alternative Startseite aufgerufen werden soll</Description>
                         </Controls>
                     </FormGroup>
                     <FormGroup>
-                        <Label>Layout</Label>
+                        <Label attributes={{"htmlFor": "ticketprinterLayout"}}>Layout</Label>
                         <Controls>
                             <Select
+                                attributes = {{"id": "ticketprinterLayout"}} 
                                 options={[
                                     {name: 'Standard', value: 'default'},
                                     {name: 'Mit wartenden Kunden', value: 'wait'},
@@ -213,9 +220,10 @@ class TicketPrinterConfigView extends Component {
                         </Controls>
                     </FormGroup>
                     <FormGroup>
-                        <Label>URL</Label>
+                        <Label attributes={{"htmlFor": "ticketprinterUrl"}}>URL</Label>
                         <Controls>
-                            <Inputs.Text value={generatedUrl} attributes={{readOnly: true}}/>
+                            <Inputs.Text 
+                                value={generatedUrl} attributes={{readOnly: true, "id": "ticketprinterUrl"}}/>
                         </Controls>
                     </FormGroup>
                     <div className="form-actions">

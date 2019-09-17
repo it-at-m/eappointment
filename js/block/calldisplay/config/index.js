@@ -179,18 +179,20 @@ class CallDisplayConfigView extends Component {
             <form className="form--base form-group calldisplay-config">
                 {this.state.departments.map(this.renderDepartment.bind(this))}
                 <FormGroup>
-                    <Label>Angezeigte Aufrufe</Label>
+                    <Label attributes={{"htmlFor": "visibleCalls"}}>Angezeigte Aufrufe</Label>
                     <Controls>
                         <Select
                             options={[{ name: 'Alle', value: 'all' }, { name: "Nur Abholer", value: 'pickup' }, { name: "Spontan- und Terminkunden", value: 'called' }]}
                             value={this.state.queueStatus}
+                            attributes = {{"id": "visibleCalls"}}
                             onChange={onQueueStatusChange} />
                     </Controls>
                 </FormGroup>
                 <FormGroup>
-                    <Label>Layout</Label>
+                    <Label attributes={{"htmlFor": "calldisplayLayout"}}>Layout</Label>
                     <Controls>
                         <Select
+                            attributes = {{"id": "calldisplayLayout"}}
                             options={[
                                 { name: 'Uhrzeit, 6-12 Aufrufe | Platz', value: 'defaultplatz' },
                                 { name: 'Uhrzeit, 6-12 Aufrufe | Raum', value: 'defaultraum' },
@@ -206,9 +208,11 @@ class CallDisplayConfigView extends Component {
                     </Controls>
                 </FormGroup>
                 <FormGroup>
-                    <Label>URL</Label>
+                    <Label attributes={{"htmlFor": "calldisplayUrl"}}>URL</Label>
                     <Controls>
-                        <Inputs.Text value={generatedUrl} attributes={{ readOnly: true }} />
+                        <Inputs.Text 
+                            value={generatedUrl} 
+                            attributes={{ readOnly: true, id: "calldisplayUrl" }} />
                     </Controls>
                 </FormGroup>
                 <div className="form-actions">

@@ -11,22 +11,27 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
             <div ref={setErrorRef}>
                 <Errors {...{ errors }} />
             </div>
-            <form>
+            <form className="form--base">
                 
                     <FormGroup>
-                        <Label>Anmerkung</Label>
+                        <Label attributes={{"htmlFor": "AvDayDescription"}}>Anmerkung</Label> 
                         <Controls>
-                            <Inputs.Text name="description" value={data.description} {...{ onChange }} />
-                            <Description>(optionale Angabe zur Kennzeichnung des Termins)
+                            <Inputs.Text 
+                                attributes={{ "id": "AvDayDescription", "aria-describedby": "help_AvDayDescription" }}
+                                name="description" 
+                                value={data.description} 
+                                {...{ onChange }} 
+                            />
+                            <Description attributes={{ "id": "help_AvDayDescription" }}>Optionale Angabe zur Kennzeichnung des Termins.
                                 {data.id ? " Die ID der Öffnungszeit ist " + data.id : " Die Öffnungszeit hat noch keine ID"}
                             </Description>
                         </Controls>
                     </FormGroup>
                     <FormGroup>
-                        <Label>Typ</Label>
+                        <Label attributes={{"htmlFor": "AvDayType"}}>Typ</Label>
                         <Controls>
                             <Inputs.Select name="type"
-                                attributes={{ disabled: data.id ? 'disabled' : null }}
+                                attributes={{ disabled: data.id ? 'disabled' : null, "id": "AvDayType" }}
                                 value={data.type} {...{ onChange }}
                                 options={[
                                     { value: "", name: "--Bitte wählen--" },
@@ -36,9 +41,11 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                         </Controls>
                     </FormGroup>
                     <FormGroup>
-                        <Label>Serie</Label>
+                        <Label attributes={{"htmlFor": "AvDaySeries"}}>Serie</Label>
                         <Controls>
-                            <Inputs.Select name="repeat"
+                            <Inputs.Select 
+                                name="repeat"
+                                attributes={{ "id": "AvDaySeries" }} 
                                 value={data.repeat} {...{ onChange }}
                                 options={[
                                     { value: "0", name: "einmaliger Termin" },
@@ -90,13 +97,13 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                     <fieldset>
                         <legend className="label">Datum</legend>
                         <FormGroup inline={true}>
-                            <span>Startdatum:</span> 
+                            <Label attributes={{"htmlFor": "AvDayStartdate", "className": "light"}}>Startdatum:</Label> 
                             <Controls>
-                                <Inputs.Date name="startDate" value={data.startDate} {...{ onChange }} />
+                                <Inputs.Date attributes={{ "id": "AvDayStartdate" }} name="startDate" value={data.startDate} {...{ onChange }} />
                             </Controls>
-                            <span>Enddatum:</span>
+                            <Label attributes={{"htmlFor": "AvDayEnddate", "className": "light"}}>Enddatum:</Label> 
                             <Controls>
-                                <Inputs.Date name="endDate" value={data.endDate} {...{ onChange }} />
+                                <Inputs.Date attributes={{ "id": "AvDayEnddate" }} name="endDate" value={data.endDate} {...{ onChange }} />
                             </Controls>
                         </FormGroup>
                     </fieldset>
@@ -108,10 +115,9 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                                 <Inputs.Text name="slotTimeInMinutes"
                                     value={data.slotTimeInMinutes}
                                     width="1"
-                                    attributes={{ maxLength: 3 }}
+                                    attributes={{ maxLength: 3, "id": "AvDaySlottime" }}
                                     {...{ onChange }} />
-                                Minuten Abstand zweier aufeinander folgender Termine
-                                    
+                                <Label attributes={{"htmlFor": "AvDaySlottime", "className": "light"}}>Minuten Abstand zweier aufeinander folgender Termine</Label>
                             </Controls>
                         </FormGroup>
                         <FormGroup inline={true} className="form-check">    
@@ -129,25 +135,25 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                         <legend className="label">Buchbar</legend>
                         <FormGroup inline={true}>
                             <Controls>
-                                <span>von</span>
-                                    <Inputs.Text name="open_from"
+                                <Label attributes={{"htmlFor": "AvDayOpenfrom", "className": "light"}}>von</Label> 
+                                <Inputs.Text name="open_from"
                                     width="1"
                                     value={data.open_from}
-                                    attributes={{ placeholder: data.scope.preferences.appointment.startInDaysDefault }}
+                                    attributes={{ placeholder: data.scope.preferences.appointment.startInDaysDefault, "id": "AvDayOpenfrom", "aria-describedby": "help_AvDayOpenfromto" }}
                                     {...{ onChange }}
                                 />
                             </Controls>
                             <Controls>
-                                <span>bis</span>
+                                <Label attributes={{"htmlFor": "AvDayOpento", "className": "light"}}>bis</Label> 
                                     <Inputs.Text name="open_to"
                                     width="1"
                                     value={data.open_to}
-                                    attributes={{ placeholder: data.scope.preferences.appointment.endInDaysDefault }}
+                                    attributes={{ placeholder: data.scope.preferences.appointment.endInDaysDefault, "id": "AvDayOpento", "aria-describedby": "help_AvDayOpenfromto" }}
                                     {...{ onChange }}
                                 />
-                                <span>Tage im voraus</span>
+                                <span aria-hidden="true">Tage im voraus</span>
                             </Controls>
-                            <Description>(Keine Eingabe = Einstellungen vom Standort übernehmen)</Description>
+                            <Description attributes={{ "id": "help_AvDayOpenfromto" }}>Tage im voraus (Keine Eingabe bedeutet die Einstellungen vom Standort zu übernehmen).</Description>
                         </FormGroup>
                         
                     </fieldset>
@@ -157,10 +163,11 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                     {data.type !== 'openinghours' ?
                         <div>
                             <FormGroup>
-                                <Label>Insgesamt</Label>
+                                <Label attributes={{"htmlFor": "WsCountIntern"}}>Insgesamt</Label>
                                 <Controls>
                                     <Inputs.Select name="workstationCount_intern"
                                         value={data.workstationCount_intern}
+                                        attributes={{"id": "WsCountIntern"}}
                                         {...{ onChange }}
                                         options={range(0, 50).map(n => {
                                             return {
@@ -172,10 +179,11 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                             </FormGroup>
 
                             <FormGroup>
-                                <Label>Callcenter</Label>
+                                <Label attributes={{"htmlFor": "WsCountCallcenter"}}>Callcenter</Label>
                                 <Controls>
                                     <Inputs.Select name="workstationCount_callcenter"
                                         value={data.workstationCount_callcenter}
+                                        attributes={{"id": "WsCountCallcenter", "aria-describedby": "help_WsCountCallcenter"}}
                                         {...{ onChange }}
                                         options={range(0, data.workstationCount_intern).map(n => {
                                             return {
@@ -183,15 +191,16 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                                                 name: `${n}`
                                             }
                                         })} />
-                                    <Description>wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Callcenter zur Verfügung gestellt werden.</Description>
+                                    <Description attributes={{"id": "help_WsCountCallcenter"}}>Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Callcenter zur Verfügung gestellt werden.</Description>
                                 </Controls>
                             </FormGroup>
 
                             <FormGroup>
-                                <Label>Internet</Label>
+                                <Label attributes={{"htmlFor": "WsCountPublic"}}>Internet</Label>
                                 <Controls>
                                     <Inputs.Select name="workstationCount_public"
                                         value={data.workstationCount_public}
+                                        attributes={{"id": "WsCountPublic", "aria-describedby": "help_WsCountPublic"}}
                                         {...{ onChange }}
                                         options={range(0, data.workstationCount_intern).map(n => {
                                             return {
@@ -199,7 +208,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                                                 name: `${n}`
                                             }
                                         })} />
-                                    <Description>wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Internet zur Verfügung gestellt werden.</Description>
+                                    <Description attributes={{"htmlFor": "help_WsCountPublic"}}>Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Internet zur Verfügung gestellt werden.</Description>
                                 </Controls>
                             </FormGroup>
                         </div>

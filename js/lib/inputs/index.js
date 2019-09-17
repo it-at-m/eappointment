@@ -30,7 +30,7 @@ export const Textarea = ({ name, value, onChange = noOp, placeholder = "", width
     </textarea>
 }
 
-export const Label = ({ children }) => <label>{children}</label>
+export const Label = ({ children, attributes = {} }) => <label {...attributes}>{children}</label>
 
 export const FormGroup = (props) => {
     const className = `form-group${props.inline ? " form-group--inline" : ""}${props.error ? " has-error" : ""} ${props.className || ""}`
@@ -39,6 +39,6 @@ export const FormGroup = (props) => {
 
 export const Controls = ({ children }) => <div className="controls">{children}</div>
 
-export const Description = ({ children }) => {
-    return (<small className="formgroup__help">{children}</small>)
+export const Description = ({ children, attributes = {} }) => {
+    return (<small className="formgroup__help" {...attributes}>{children}</small>)
 }
