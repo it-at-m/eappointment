@@ -8,7 +8,7 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
 
     return (
         <tr className="request-item">
-            <td className="request-item__id" width="12%">
+            <td className="request-item__id" width="auto">
                 <Inputs.Text
                     name={`${formName}[id]`}
                     placeholder={labels.id}
@@ -16,7 +16,7 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                     attributes={{ "readOnly": "1" }}
                 />
             </td>
-            <td className="request-item__name" width="28%">
+            <td className="request-item__name" width="auto">
                 <Inputs.Text
                     name={`${formName}[name]`}
                     placeholder={labels.name}
@@ -137,7 +137,7 @@ class RequestsView extends Component {
         }
 
         return (
-            <div className="requests__list">
+            <div className="table-responsive-wrapper requests__list">
                 <table className="table--base">
                     <thead>
                         <tr>

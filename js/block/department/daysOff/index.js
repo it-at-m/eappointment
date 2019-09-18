@@ -16,6 +16,7 @@ const renderDay = (day, index, onChange, onDeleteClick) => {
                     placeholder="Name"
                     value={day.name}
                     onChange={onChangeName}
+                    attributes={{"aria-label":"Bezeichnung"}}
                 />
             </td>
             <td className="daysoff-item__date">
@@ -24,11 +25,12 @@ const renderDay = (day, index, onChange, onDeleteClick) => {
                     placeholder="Datum"
                     value={day.date}
                     onChange={onChangeDate}
+                    attributes={{"aria-label":"Datum"}}
                 />
             </td>
             <td className="daysoff-item__delete">
                 <label className="checkboxdeselect daysoff__delete-button">
-                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} /><span></span>
+                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} /><span className="aural">Löschen</span>
                 </label>
             </td>
         </tr>
