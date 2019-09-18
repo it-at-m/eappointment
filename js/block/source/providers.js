@@ -8,7 +8,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
 
     return (
         <tr className="provider-item">
-            <td className="provider-item__id" width="12%">
+            <td className="provider-item__id" width="auto">
                 <Inputs.Text
                     name={`${formName}[id]`}
                     placeholder={labels.id}
@@ -16,7 +16,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                     attributes={{ "readOnly": "1" }}
                 />
             </td>
-            <td className="provider-item__name" width="28%">
+            <td className="provider-item__name" width="auto">
                 <Inputs.Text
                     name={`${formName}[name]`}
                     placeholder={labels.name}
@@ -177,7 +177,7 @@ class ProvidersView extends Component {
         }
 
         return (
-            <div className="department-providers__list">
+            <div className="table-responsive-wrapper department-providers__list">
                 <table className="table--base">
                     <thead>
                         <tr>

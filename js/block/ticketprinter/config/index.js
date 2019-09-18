@@ -124,10 +124,12 @@ class TicketPrinterConfigView extends Component {
 
         return (
             <div className="form-group--inline ticketprinter-config__item">
-                <label className="light">{prefix}{text}</label>
-                <Controls>
-                    {this.renderNumberSelect(position, onChange)}
-                </Controls>
+                <label className="light">
+                    <span>{prefix}{text}</span>
+                    <Controls>
+                        {this.renderNumberSelect(position, onChange)}
+                    </Controls>
+                </label>
             </div>
         )
     }

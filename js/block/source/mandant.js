@@ -24,28 +24,32 @@ class MandantView extends Component {
                     <Inputs.FormGroup>
                         <Inputs.Label
                             children={this.props.labelsmandant.label}
+                            attributes={{"htmlFor":"mandantLabel"}}
                         />
                         <Inputs.Controls>
                             <Inputs.Text
                                 name="label"
                                 value={(this.props.source) ? this.props.source.label : ''}
                                 onChange={onChange}
+                                attributes={{"id":"mandantLabel"}}
                             />
                         </Inputs.Controls>
                     </Inputs.FormGroup>
                     <Inputs.FormGroup>
                         <Inputs.Label
                             children={this.props.labelsmandant.source}
+                            attributes={{"htmlFor":"mandantSource"}}
                         />
                         <Inputs.Controls>
                             <Inputs.Text
                                 name="source"
                                 value={(this.props.source) ? this.props.source.source : ''}
-                                attributes={ {readOnly: this.props.source.lastChange, maxLength: 10} }
+                                attributes={ {readOnly: this.props.source.lastChange, maxLength: 10, "id":"mandantSource", "aria-describedby":"help_mandantSource"} }
                                 onChange={onChange}
                             />
                             <Inputs.Description
                                 children={this.props.descriptions.mandantlabel}
+                                attributes={{"id":"help_mandantSource"}}
                             />
                         </Inputs.Controls>
                     </Inputs.FormGroup>
@@ -56,24 +60,28 @@ class MandantView extends Component {
                         <Inputs.FormGroup>
                             <Inputs.Label
                                 children={this.props.labelsmandant.name}
+                                attributes={{"htmlFor":"mandantContact"}}
                             />
                             <Inputs.Controls>
                                 <Inputs.Text
                                     name="contact[name]"
                                     value={(this.props.source.contact) ? this.props.source.contact.name : ''}
                                     onChange={onChange}
+                                    attributes={{"id":"mandantContact"}}
                                 />
                             </Inputs.Controls>
                         </Inputs.FormGroup>
                         <Inputs.FormGroup>
                             <Inputs.Label
                                 children={this.props.labelsmandant.email}
+                                attributes={{"htmlFor":"mandantEmail"}}
                             />
                             <Inputs.Controls>
                                 <Inputs.Text
                                     name="contact[email]"
                                     value={(this.props.source.contact) ? this.props.source.contact.email : ''}
                                     onChange={onChange}
+                                    attributes={{"id":"mandantEmail"}}
                                 />
                             </Inputs.Controls>
                         </Inputs.FormGroup>
