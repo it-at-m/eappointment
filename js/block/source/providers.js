@@ -13,7 +13,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                     name={`${formName}[id]`}
                     placeholder={labels.id}
                     value={provider.id}
-                    attributes={{ "readOnly": "1" }}
+                    attributes={{ "readOnly": "1", "aria-label": "Laufende Nummer" }}
                 />
             </td>
             <td className="provider-item__name" width="auto">
@@ -22,12 +22,14 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                     placeholder={labels.name}
                     value={provider.name}
                     onChange={onChange}
+                    attributes={{ "aria-label": "Bezeichnung" }}
                 />
             </td>
             <td className="provider-item__link">
-                <Inputs.FormGroup>
+                <Inputs.FormGroup className="form-group--inline">
                     <Inputs.Label
                         children={`${labels.url}`}
+                        attributes={{ "htmlFor": `providersUrl${index}` }}
                     />
                     <Inputs.Controls>
                         <Inputs.Text
@@ -35,12 +37,14 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             placeholder={labels.url}
                             value={provider.link}
                             onChange={onChange}
+                            attributes={{ "id": `providersUrl${index}` }}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
-                <Inputs.FormGroup>
+                <Inputs.FormGroup className="form-group--inline">
                     <Inputs.Label
                         children={labels.street}
+                        attributes={{ "htmlFor": `providersStreet${index}` }}
                     />
                     <Inputs.Controls>
                         <Inputs.Text
@@ -48,12 +52,14 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             placeholder={labels.street}
                             value={provider.contact.street}
                             onChange={onChange}
+                            attributes={{ "id": `providersStreet${index}` }}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
-                <Inputs.FormGroup>
+                <Inputs.FormGroup className="form-group--inline">
                     <Inputs.Label
                         children={labels.streetNumber}
+                        attributes={{ "htmlFor": `providersStreetnumber${index}` }}
                     />
                     <Inputs.Controls>
                         <Inputs.Text
@@ -61,12 +67,14 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             placeholder={labels.streetNumber}
                             value={provider.contact.streetNumber}
                             onChange={onChange}
+                            attributes={{ "id": `providersStreetnumber${index}` }}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
-                <Inputs.FormGroup>
+                <Inputs.FormGroup className="form-group--inline">
                     <Inputs.Label
                         children={labels.postalCode}
+                        attributes={{ "htmlFor": `providersPostalcode${index}` }}
                     />
                     <Inputs.Controls>
                         <Inputs.Text
@@ -74,12 +82,14 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             placeholder={labels.postalCode}
                             value={provider.contact.postalCode}
                             onChange={onChange}
+                            attributes={{ "id": `providersPostalcode${index}` }}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
-                <Inputs.FormGroup>
+                <Inputs.FormGroup className="form-group--inline">
                     <Inputs.Label
                         children={labels.city}
+                        attributes={{ "htmlFor": `providersCity${index}` }}
                     />
                     <Inputs.Controls>
                         <Inputs.Text
@@ -87,12 +97,14 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             placeholder={labels.city}
                             value={provider.contact.city}
                             onChange={onChange}
+                            attributes={{ "id": `providersCity${index}` }}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
-                <Inputs.FormGroup>
+                <Inputs.FormGroup className="form-group--inline">
                     <Inputs.Label
                         children={labels.data}
+                        attributes={{ "htmlFor": `providersData${index}` }}
                     />
                     <Inputs.Controls>
                         <Inputs.Textarea
@@ -100,9 +112,11 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             value={(provider.data) ? JSON.stringify(provider.data) : ''}
                             placeholder="{}"
                             onChange={onChange}
+                            attributes={{ "id": `providersData${index}`, "aria-describedby": `help_providersData${index}` }}
                         />
                         <Inputs.Description
                             children={descriptions.data}
+                            attributes={{ "id": `help_providersData${index}` }}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
@@ -113,7 +127,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
             </td>
             <td className="provider-item__delete">
                 <label className="checkboxdeselect provider__delete-button">
-                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} /><span></span>
+                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} aria-label="Diesen Datensatz löschen" /><span title="Löschen"></span>
                 </label>
             </td>
         </tr >
