@@ -38,6 +38,7 @@ class RequestRelationView extends Component {
                         options={
                             this.props.source.requests.map((request) => this.renderOption(request))
                         } {...{ onChange }}
+                        attributes={{"aria-label": "Dienstleistung"}}
                     />
                 </td>
                 <td className="requestrelation-item__provider">
@@ -48,6 +49,7 @@ class RequestRelationView extends Component {
                         options={
                             this.props.source.providers.map((provider) => this.renderOption(provider))
                         } {...{ onChange }}
+                        attributes={{"aria-label": "Dienstleister"}}
                     />
                 </td>
                 <td className="requestrelation-item__slots">
@@ -55,11 +57,12 @@ class RequestRelationView extends Component {
                         name={`${formName}[slots]`}
                         value={(item.slots) ? item.slots : 1}
                         onChange={onChange}
+                        attributes={{"aria-label": "Zeitslots"}}
                     />
                 </td>
                 <td className="request-item__delete">
                     <label className="checkboxdeselect requestrelation__delete-button">
-                        <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} /><span></span>
+                        <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} aria-label="Diesen Datensatz löschen" /><span title="Löschen"></span>
                     </label>
                 </td>
             </tr >

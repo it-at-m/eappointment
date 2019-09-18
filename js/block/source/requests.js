@@ -13,7 +13,7 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                     name={`${formName}[id]`}
                     placeholder={labels.id}
                     value={request.id}
-                    attributes={{ "readOnly": "1" }}
+                    attributes={{ "readOnly": "1", "aria-label": "Laufende Nummer"}}
                 />
             </td>
             <td className="request-item__name" width="auto">
@@ -22,12 +22,14 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                     placeholder={labels.name}
                     value={request.name}
                     onChange={onChange}
+                    attributes={{"aria-label": "Bezeichnung"}}
                 />
             </td>
             <td className="request-item__link">
-                <Inputs.FormGroup>
+                <Inputs.FormGroup className="form-group--inline">
                     <Inputs.Label
                         children={`${labels.url}`}
+                        attributes={{"htmlFor": `requestUrl${index}` }}
                     />
                     <Inputs.Controls>
                         <Inputs.Text
@@ -35,12 +37,14 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                             placeholder={labels.url}
                             value={request.link}
                             onChange={onChange}
+                            attributes={{"id": `requestUrl${index}`}}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
-                <Inputs.FormGroup>
+                <Inputs.FormGroup className="form-group--inline">
                     <Inputs.Label
                         children={labels.group}
+                        attributes={{"htmlFor": `requestGroup${index}`}}
                     />
                     <Inputs.Controls>
                         <Inputs.Text
@@ -48,12 +52,14 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                             placeholder={labels.group}
                             value={request.group}
                             onChange={onChange}
+                            attributes={{"id": `requestGroup${index}`}}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
-                <Inputs.FormGroup>
+                <Inputs.FormGroup className="form-group--inline">
                     <Inputs.Label
                         children={labels.data}
+                        attributes={{"htmlFor": `requestData${index}`}}
                     />
                     <Inputs.Controls>
                         <Inputs.Textarea
@@ -61,9 +67,11 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                             value={(request.data) ? JSON.stringify(request.data) : ''}
                             placeholder="{}"
                             onChange={onChange}
+                            attributes={{"id": `requestData${index}`, "aria-describedby": `help_requestData${index}`}}
                         />
                         <Inputs.Description
                             children={descriptions.data}
+                            attributes={{"id": `help_requestData${index}`}}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
@@ -74,7 +82,7 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
             </td>
             <td className="request-item__delete">
                 <label className="checkboxdeselect request__delete-button">
-                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} /><span></span>
+                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} aria-label="Diesen Datensatz löschen" /><span title="Löschen"></span>
                 </label>
             </td>
         </tr >
