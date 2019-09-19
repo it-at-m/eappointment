@@ -145,7 +145,7 @@ class RequestsView extends Component {
         }
 
         return (
-            <div className="table-responsive-wrapper requests__list">
+            <div className="table-responsive-wrapper requests__list" aria-live="polite" id="liveregionRequestList">
                 <table className="table--base">
                     <thead>
                         <tr>

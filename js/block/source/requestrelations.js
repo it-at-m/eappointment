@@ -89,7 +89,7 @@ class RequestRelationView extends Component {
 
         return (
             <fieldset>
-                <div className="requestrelation__list">
+                <div className="requestrelation__list" aria-live="polite" id="liveregionRequestrelationList">
                     <Inputs.Description
                         children={this.props.descriptions.requestrelation}
                     />
