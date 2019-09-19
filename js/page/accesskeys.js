@@ -46,7 +46,7 @@ class View extends BaseView {
 		$main.off().on('keydown', ':not(input, textarea, select)', (keyEvent) => {
 			var isModifierKey = !!keyEvent.metaKey || !!keyEvent.ctrlKey || !!keyEvent.shiftKey;
 			var key = keyEvent.key;
-			var targetIsInputElement = $(keyEvent.currentTarget).is('input, textarea, select');
+			var targetIsInputElement = $(keyEvent.target).is('input, textarea, select');
 			var isReturnKey = key === 13;
 
 			// Only if key isn't a modifier, not enter, not inside an input element and exists as a keyboard shortcut
