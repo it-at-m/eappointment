@@ -24,7 +24,7 @@ class View extends BaseView {
     }
 
     appendNumber (event) {
-        let $content = $(event.target).closest('button').find('.number');
+        let $content = $(event.currentTarget).closest('button').find('.number');
         let number = $content.text();
         this.$numberInput.val(this.$numberInput.val() + '' + number);
         this.checkNumber();

@@ -14,7 +14,7 @@ class View extends BaseView {
     }
 
     itemClick (event) {
-        let $link = $(event.target).closest('a.item-bar');
+        let $link = $(event.currentTarget).closest('a.item-bar');
         let animationName = 'spaceInUp';
         let $form = $('.availability-form');
         let $clonedForm = $('.availability-form').clone();
