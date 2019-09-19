@@ -82,7 +82,7 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
             </td>
             <td className="request-item__delete">
                 <label className="checkboxdeselect request__delete-button">
-                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} aria-label="Diesen Datensatz löschen" /><span title="Löschen"></span>
+                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} role="button" aria-label="Diesen Datensatz löschen" /><span title="Löschen"></span>
                 </label>
             </td>
         </tr >

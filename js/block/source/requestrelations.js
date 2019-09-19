@@ -62,7 +62,7 @@ class RequestRelationView extends Component {
                 </td>
                 <td className="request-item__delete">
                     <label className="checkboxdeselect requestrelation__delete-button">
-                        <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} aria-label="Diesen Datensatz löschen" /><span title="Löschen"></span>
+                        <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} role="button" aria-label="Diesen Datensatz löschen" /><span title="Löschen"></span>
                     </label>
                 </td>
             </tr >

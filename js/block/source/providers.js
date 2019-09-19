@@ -127,7 +127,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
             </td>
             <td className="provider-item__delete">
                 <label className="checkboxdeselect provider__delete-button">
-                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} aria-label="Diesen Datensatz löschen" /><span title="Löschen"></span>
+                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} role="button" aria-label="Diesen Datensatz löschen" /><span title="Löschen"></span>
                 </label>
             </td>
         </tr >
