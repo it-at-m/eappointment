@@ -191,7 +191,7 @@ class ProvidersView extends Component {
         }
 
         return (
-            <div className="table-responsive-wrapper department-providers__list">
+            <div className="table-responsive-wrapper department-providers__list" aria-live="polite" id="liveregionProvidersList">
                 <table className="table--base">
                     <thead>
                         <tr>
