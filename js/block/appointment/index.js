@@ -145,21 +145,21 @@ class View extends RequestView {
     }
 
     onAddRequest(event) {
-        this.addServiceToList($(event.target), 'serviceListSelected');
-        this.removeServiceFromList($(event.target), 'serviceList');
+        this.addServiceToList($(event.currentTarget), 'serviceListSelected');
+        this.removeServiceFromList($(event.currentTarget), 'serviceList');
         this.updateLists();
     }
 
     onRemoveRequest(event) {
-        this.removeServiceFromList($(event.target), 'serviceListSelected');
-        this.addServiceToList($(event.target), 'serviceList');
+        this.removeServiceFromList($(event.currentTarget), 'serviceListSelected');
+        this.addServiceToList($(event.currentTarget), 'serviceList');
         this.updateLists();
     }
 
     onChangeSlotCount(event) {
         // if human event, not triggered
         //if (event.originalEvent !== undefined) {
-        this.slotsRequired = $(event.target).val();
+        this.slotsRequired = $(event.currentTarget).val();
         //}
         this.loadFreeProcessList().loadList().then(() => {
             this.bindEvents();
@@ -168,8 +168,8 @@ class View extends RequestView {
     }
 
     onChangeProcessTime(event) {
-        this.selectedTime = $(event.target).val();
-        var hasFreeAppointments = (1 <= $(event.target).length && '00-00' != this.selectedTime);
+        this.selectedTime = $(event.currentTarget).val();
+        var hasFreeAppointments = (1 <= $(event.currentTarget).length && '00-00' != this.selectedTime);
         this.$main.data('selected-time', this.selectedTime);
         new FormButtons(this.$main.find('[data-form-buttons]'), {
             includeUrl: this.includeUrl,

@@ -33,8 +33,8 @@ class View extends BaseView {
     onConfirm(event, template, callback) {
         stopEvent(event);
         this.selectedProcess = null;
-        const processId = $(event.target).data('id');
-        const name = $(event.target).data('name');
+        const processId = $(event.currentTarget).data('id');
+        const name = $(event.currentTarget).data('name');
         var url = `${this.includeUrl}/dialog/?template=${template}`;
         if (processId || name) {
             url = url + `&parameter[id]=${processId}&parameter[name]=${name}`;
@@ -58,7 +58,7 @@ class View extends BaseView {
         this.selectedProcess = null;
         if (event) {
             stopEvent(event);
-            processId = $(event.target).data('id')
+            processId = $(event.currentTarget).data('id')
         }
         showSpinner(this.$main);
         this.loadCall(`${this.includeUrl}/pickup/delete/${processId}/`, 'DELETE').then((response) => {
@@ -95,7 +95,7 @@ class View extends BaseView {
     onPickupCall(event, callback, processId) {
         if (event) {
             stopEvent(event);
-            processId = $(event.target).data('id')
+            processId = $(event.currentTarget).data('id')
         }
         return this.loadCall(`${this.includeUrl}/pickup/call/${processId}/`).then((response) => {
             this.loadDialog(response, callback);
@@ -106,7 +106,7 @@ class View extends BaseView {
     onMailSent(event) {
         stopEvent(event);
         showSpinner(this.$main);
-        const processId = $(event.target).data('process');
+        const processId = $(event.currentTarget).data('process');
         this.loadCall(`${this.includeUrl}/pickup/mail/?selectedprocess=${processId}`).then(
             (response) => this.loadMessage(response, () => {
                 this.loadAllPartials();
@@ -116,8 +116,8 @@ class View extends BaseView {
 
     onMailCustomSent(event) {
         stopEvent(event);
-        const processId = $(event.target).data('process');
-        const sendStatus = $(event.target).data('status');
+        const processId = $(event.currentTarget).data('process');
+        const sendStatus = $(event.currentTarget).data('status');
         this.loadCall(`${this.includeUrl}/mail/?selectedprocess=${processId}&status=${sendStatus}&dialog=1`).then((response) => {
             this.loadDialog(response, (() => {
                 showSpinner(this.$main);
@@ -138,7 +138,7 @@ class View extends BaseView {
     onNotificationSent(event) {
         stopEvent(event);
         showSpinner(this.$main);
-        const processId = $(event.target).data('process');
+        const processId = $(event.currentTarget).data('process');
         this.loadCall(`${this.includeUrl}/pickup/notification/?selectedprocess=${processId}`).then(
             (response) => this.loadMessage(response, () => {
                 this.loadAllPartials();
@@ -148,8 +148,8 @@ class View extends BaseView {
 
     onNotificationCustomSent(event) {
         stopEvent(event);
-        const processId = $(event.target).data('process');
-        const sendStatus = $(event.target).data('status');
+        const processId = $(event.currentTarget).data('process');
+        const sendStatus = $(event.currentTarget).data('status');
         this.loadCall(`${this.includeUrl}/notification/?selectedprocess=${processId}&status=${sendStatus}&dialog=1`).then((response) => {
             this.loadDialog(response, (() => {
                 showSpinner(this.$main);

@@ -210,7 +210,7 @@ export const showSpinner = ($container = null) => {
     if ($container !== null) {
         loaderContainer = $container.find('.body').first();
     }
-    loaderContainer.prepend('<div class="loader"><div class="spinner"></div></div>');
+    loaderContainer.prepend('<div class="loader" aria-hidden="true"><div class="spinner"></div></div>');
 }
 
 export const hideSpinner = ($container = null) => {

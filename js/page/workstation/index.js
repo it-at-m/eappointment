@@ -136,21 +136,21 @@ class View extends BaseView {
     }
 
     onChangeSlotCount(event) {
-        this.slotsRequired = $(event.target).val();
+        this.slotsRequired = $(event.currentTarget).val();
         this.loadCalendar();
     }
 
     onChangeScope(event) {
         stopEvent(event);
-        this.selectedScope = $(event.target).val();
+        this.selectedScope = $(event.currentTarget).val();
         this.loadCalendar();
         this.loadAppointmentForm();
     }
 
     onChangeTableView(event, changeScope = false) {
         stopEvent(event);
-        if (changeScope) this.selectedScope = $(event.target).val();
-        const sendData = $(event.target).closest('form').serializeArray();
+        if (changeScope) this.selectedScope = $(event.currentTarget).val();
+        const sendData = $(event.currentTarget).closest('form').serializeArray();
         this.loadCall(`${this.includeUrl}/workstation/select/`, 'POST', sendData).then(() => {
             if (changeScope) {
                 this.loadAllPartials();
@@ -218,8 +218,8 @@ class View extends BaseView {
     onSaveProcess(scope, event) {
         stopEvent(event);
         showSpinner(scope.$main);
-        if ($(event.target).data('id')) {
-            this.selectedProcess = $(event.target).data('id');
+        if ($(event.currentTarget).data('id')) {
+            this.selectedProcess = $(event.currentTarget).data('id');
         }
         const sendData = scope.$main.find('form').serializeArray();
         sendData.push({ name: 'initiator', value: this.initiator });
@@ -277,13 +277,13 @@ class View extends BaseView {
 
     onAbortMessage(event) {
         stopEvent(event);
-        $(event.target).closest('.message').fadeOut().remove();
+        $(event.currentTarget).closest('.message').fadeOut().remove();
     }
 
     onDeleteProcess(event) {
         stopEvent(event);
         this.selectedProcess = null;
-        const processId = $(event.target).data('id');
+        const processId = $(event.currentTarget).data('id');
         showSpinner();
         this.loadCall(`${this.includeUrl}/process/${processId}/delete/?initiator=${this.initiator}`).then((response) => {
             this.loadMessage(response, () => {
@@ -300,8 +300,8 @@ class View extends BaseView {
     onConfirm(event, template, callback, abortCallback) {
         stopEvent(event);
         this.selectedProcess = null;
-        const processId = $(event.target).data('id');
-        const name = $(event.target).data('name');
+        const processId = $(event.currentTarget).data('id');
+        const name = $(event.currentTarget).data('name');
         var url = `${this.includeUrl}/dialog/?template=${template}`;
         if (processId || name) {
             url = url + `& parameter[id]=${processId}& parameter[name]=${name}`;
@@ -312,7 +312,7 @@ class View extends BaseView {
     }
 
     onResetProcess($container, event) {
-        let selectedProcess = $(event.target).data('id');
+        let selectedProcess = $(event.currentTarget).data('id');
         this.loadContent(`${this.includeUrl}/process/queue/reset/?selectedprocess=${selectedProcess}&selecteddate=${this.selectedDate}`, 'GET', null, $container).then(() => {
             if ('counter' == this.page)
                 this.loadQueueInfo();
@@ -320,7 +320,7 @@ class View extends BaseView {
     }
 
     onEditProcess(event) {
-        this.selectedProcess = $(event.target).data('id');
+        this.selectedProcess = $(event.currentTarget).data('id');
         this.loadAppointmentForm();
     }
 
@@ -350,15 +350,15 @@ class View extends BaseView {
 
     onPrintWaitingNumber(event) {
         stopEvent(event);
-        const processId = $(event.target).data('id');
-        $(event.target).closest('.message').fadeOut().remove();
+        const processId = $(event.currentTarget).data('id');
+        $(event.currentTarget).closest('.message').fadeOut().remove();
         window.open(`${this.includeUrl}/process/queue/?print=1&selectedprocess=${processId}`)
     }
 
     onSendCustomMail($container, event) {
         stopEvent(event);
-        const processId = $(event.target).data('process');
-        const sendStatus = $(event.target).data('status');
+        const processId = $(event.currentTarget).data('process');
+        const sendStatus = $(event.currentTarget).data('status');
         this.loadCall(`${this.includeUrl}/mail/?selectedprocess=${processId}&status=${sendStatus}&dialog=1`).then((response) => {
             this.loadDialog(response, (() => {
                 showSpinner($container);
@@ -378,8 +378,8 @@ class View extends BaseView {
 
     onSendCustomNotification($container, event) {
         stopEvent(event);
-        const processId = $(event.target).data('process');
-        const sendStatus = $(event.target).data('status');
+        const processId = $(event.currentTarget).data('process');
+        const sendStatus = $(event.currentTarget).data('status');
         this.loadCall(`${this.includeUrl}/notification/?selectedprocess=${processId}&status=${sendStatus}&dialog=1`).then((response) => {
             this.loadDialog(response, (() => {
                 showSpinner($container);
@@ -400,7 +400,7 @@ class View extends BaseView {
     onSendNotificationReminder($container, event) {
         stopEvent(event);
         showSpinner($container);
-        const processId = $(event.target).data('process');
+        const processId = $(event.currentTarget).data('process');
         const sendData = {
             'selectedprocess': processId,
             'status': 'queued',
@@ -416,8 +416,8 @@ class View extends BaseView {
     onGhostWorkstationChange($container, event) {
         let selectedDate = this.selectedDate
         let ghostWorkstationCount = "-1";
-        if (event.target.value > -1)
-            ghostWorkstationCount = event.target.value;
+        if (event.currentTarget.value > -1)
+            ghostWorkstationCount = event.currentTarget.value;
         this.loadContent(`${this.includeUrl}/counter/queueInfo/?ghostworkstationcount=${ghostWorkstationCount}&selecteddate=${selectedDate}`, null, null, $container).then(() => {
             this.loadAllPartials();
         });

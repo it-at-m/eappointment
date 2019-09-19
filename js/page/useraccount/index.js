@@ -24,7 +24,7 @@ class View extends BaseView {
     onConfirm(event, template, callback)
     {
       stopEvent(event);
-      const userName  = $(event.target).data('name');
+      const userName  = $(event.currentTarget).data('name');
       this.loadCall(`${this.includeUrl}/dialog/?template=${template}&parameter[name]=${userName}`).then((response) => {
            this.loadDialog(response, callback);
       });
