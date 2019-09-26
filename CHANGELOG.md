@@ -1,3 +1,7 @@
+## v2.22.01
+
+* #36863 Validierung der Vorgangsnummer und des Absagecodes mit neuen Fehlermeldungen
+
 ## v2.22.00
 
 * #36805 Ein SMS-Empfänger muss jetzt mindestens 7 Zeichen lang sein
