@@ -542,7 +542,7 @@ class Process extends Schema\Entity
     public function __toString()
     {
         $string = "process#";
-        $string .= $this->id;
+        $string .= $this->id ?: $this->archiveId;
         $string .= ":".$this->authKey;
         $string .= " (" . $this->status . ")";
         $string .= " " . $this->getFirstAppointment()->toDateTime()->format('c');
@@ -554,6 +554,7 @@ class Process extends Schema\Entity
         }
         $string .= " scope." . $this['scope']['id'];
         $string .= " ~" . base_convert($this['lastChange'], 10, 35);
+        $string .= " client:" . $this['apiclient']['shortname'];
         return $string;
     }
 }
