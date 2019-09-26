@@ -42,6 +42,35 @@ class ProcessValidator
         return $delegatedProcess;
     }
 
+    public function validateId(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
+    {
+        $valid = $unvalid->isNumber("Eine Vorgangsnnummer besteht nur aus den Ziffern 0-9");
+        $length = strlen((string)$valid->getValue());
+        if ($length) {
+            $valid
+                ->isGreaterThan(100000, "Eine Vorgangsnummer besteht aus mindestens 6 Ziffern")
+                ;
+        } elseif (!$length && $isRequiredCallback && $isRequiredCallback()) {
+            $valid
+                ->isRequired("Eine Vorgangsnummer wird benötigt.");
+        }
+        $this->getCollection()->validatedAction($valid, $setter);
+        return $this;
+    }
+
+    public function validateAuthKey(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
+    {
+        $valid = $unvalid->isString();
+        $length = strlen($valid->getValue());
+        if ($length || ($isRequiredCallback && $isRequiredCallback())) {
+            $valid
+                ->isBiggerThan(4, "Es müssen mindestens 4 Zeichen eingegeben werden.")
+                ;
+        }
+        $this->getCollection()->validatedAction($valid, $setter);
+        return $this;
+    }
+
     public function validateMail(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
     {
         $valid = $unvalid->isString();
