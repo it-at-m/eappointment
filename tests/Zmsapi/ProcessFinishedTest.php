@@ -38,7 +38,7 @@ class ProcessFinishedTest extends Base
         $mailQuery = new \BO\Zmsdb\Mail();
         $mailList = $mailQuery->readList(0)->withProcess(10030);
         $this->assertCount(1, $mailList);
-        $this->assertContains('Dayoff', $mailList->getFirst()->getPlainPart());
+        $this->assertContains('Text E-Mail-Kundenbefragung', $mailList->getFirst()->getPlainPart());
         $scope = $scopeQuery->readEntity($process['scope']['id']);
         $this->assertContains($scope->getPreference('survey', 'emailContent'), $mailList->getFirst()->getPlainPart());
     }
