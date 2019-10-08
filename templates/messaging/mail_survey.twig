@@ -1,10 +1,11 @@
 {% block german %}
-    Sehr geehrte/r Frau oder Herr {{ client.familyName }},
-    <br /><br />
     {{ process.scope.preferences.survey.emailContent|replace({
         '###TOKEN###': random(),
+        '###CLIENTNAME###': client.familyName,
         '###SCOPE###': process.scope.id,
         '###PROVIDER###': process.scope.provider.id,
+        '###PROVIDERID###': process.scope.provider.source ~ "" ~ process.scope.provider.id,
+        '###PROVIDERNAME###': process.scope.contact.name,
         '###DATE###': process.appointments|first.date|date('Y-m-d'),
         '###TIME###': process.appointments|first.date|date('H:i:s'),
         '###RESERVETIME###': process.createTimestamp|date('c'),
