@@ -1,6 +1,7 @@
 ## v2.22.01
 
 * #36863 Validierung der Vorgangsnummer und des Absagecodes mit neuen Fehlermeldungen
+* #37064 Änderung Subject und Einleitungstext in der Kundenbefragung sowie die neuen Platzhalter PROVIDERNAME, PROVIDERID, CLIENTNAME
 
 ## v2.22.00
 

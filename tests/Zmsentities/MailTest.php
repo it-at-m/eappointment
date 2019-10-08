@@ -203,6 +203,7 @@ class MailTest extends EntityCommonTests
         );
         $entity = (new $this->entityclass())->getExample();
         $process = (new \BO\Zmsentities\Process())->getExample();
+        $process->scope = (new \BO\Zmsentities\Scope())->getExample();
         $process->queue->withAppointment = false;
         
         foreach ($status as $key) {
