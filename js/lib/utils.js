@@ -214,7 +214,7 @@ export const showSpinner = ($container = null) => {
 }
 
 export const hideSpinner = ($container = null) => {
-    var loaderContainer = $('#main');
+    var loaderContainer = $('#main-content');
     if ($container !== null) {
         loaderContainer = $container.find('.body').first();
         loaderContainer.find('.loader').detach();

@@ -13,7 +13,7 @@ test('Loaded', async t => {
     await t
         .useRole(userRegular)
         .navigateTo(`${Config.baseUrl}/counter/`)
-        .expect(Selector('.queue-table .header .title').textContent).contains('01. April 2016')
+        .expect(Selector('.queue-table .board__actions .date').textContent).contains('01. April 2016')
         .expect(Selector('.calendar-page .header').textContent).contains('April 2016')
         .expect(Selector('.queue-info-appointment-times').textContent).contains('08:00')
     ;
@@ -24,7 +24,7 @@ test('NewAppointment', async t => {
         .useRole(userRegular)
         .navigateTo(`${Config.baseUrl}/workstation/select/`)
         .typeText('input[name=workstation]', " ", {replace: true})
-        .click('button.button-login')
+        .click('button.type-login')
         .expect(getPageUrl()).contains('counter')
         .click('a[data-date="2016-05-30"]')
         .wait(200)
@@ -35,10 +35,10 @@ test('NewAppointment', async t => {
         .typeText('input[name=familyName]', "Test e2e", {replace: true})
         .click('button.process-reserve')
     ;
-    const dialogContent = await Selector('.dialog .body').textContent;
+    const dialogContent = await Selector('.dialog .message__body').textContent;
     const processId = dialogContent.match(/\d{6,}/)[0];
     await t
-        .expect(Selector('.dialog .body').textContent).contains('Vorgangsnummer', 'use right term for an appointment')
+        .expect(Selector('.dialog .message__body').textContent).contains('Vorgangsnummer', 'use right term for an appointment')
         .click('.lightbox .dialog .button-ok')
         .expect(Selector('.queue-table a[data-id="'+processId+'"]').exists).ok()
         .click(Selector('.queue-table a[data-id="'+processId+'"].process-edit'))
@@ -58,14 +58,14 @@ test('ValidationQueue', async t => {
         .typeText('input[name=workstation]', "33", {replace: true})
         .click(Selector('select[name="scope"]'))
         .click(Selector('select[name="scope"] option').withAttribute('value', "142")) //BA Wilmersdorfer Str.
-        .click('button.button-login')
+        .click('button.type-login')
         .expect(getPageUrl()).contains('workstation')
         // Check if queue entry is without validation as expected
         .click('button.process-queue')
         ;
-    const processId = await Selector('.dialog .body a[name="printWaitingNumber"]').getAttribute("data-id");
+    const processId = await Selector('.dialog .message__body a[name="printWaitingNumber"]').getAttribute("data-id");
     await t
-        .expect(Selector('.dialog .body').textContent).contains('Wartenummer', 'use right term for an queue entry')
+        .expect(Selector('.dialog .message__body').textContent).contains('Wartenummer', 'use right term for an queue entry')
         .click('.lightbox .dialog .button-ok')
     ;
     const queueStatusVisible = await Selector('div.appointmentsOnly input[type=checkbox]').checked;
@@ -77,7 +77,7 @@ test('ValidationQueue', async t => {
     await t
         .expect(Selector('.queue-table a[data-id="'+processId+'"]').exists).ok()
         .click(Selector('.queue-table a[data-id="'+processId+'"].process-delete'))
-        .expect(Selector('.dialog .body').textContent).contains(processId, 'use right term for an appointment')
+        .expect(Selector('.dialog .board__body').textContent).contains(processId, 'use right term for an appointment')
         .click('.lightbox .dialog .button-abort')
         .click(Selector('.queue-table a.reload'))
         .expect(Selector('.queue-table a[data-id="'+processId+'"]').exists).ok()
@@ -96,7 +96,7 @@ test('ValidationAppointment', async t => {
         .typeText('input[name=workstation]', "33", {replace: true})
         .click(Selector('select[name="scope"]'))
         .click(Selector('select[name="scope"] option').withAttribute('value', "142")) //BA Wilmersdorfer Str.
-        .click('button.button-login')
+        .click('button.type-login')
         .expect(getPageUrl()).contains('workstation')
         // Now check appointment
         .click('a[data-date="2016-05-30"]')
@@ -118,9 +118,9 @@ test('ValidationAppointment', async t => {
         .typeText('input[name=email]', "server@service.berlinonline.de", {replace: true})
         .click('button.process-reserve')
         ;
-    const processId = await Selector('.dialog .body a[name="printWaitingNumber"]').getAttribute("data-id");
+    const processId = await Selector('.dialog .message__body a[name="printWaitingNumber"]').getAttribute("data-id");
     await t
-        .expect(Selector('.dialog .body').textContent).contains('Vorgangsnummer', 'use right term for an queue entry')
+        .expect(Selector('.dialog .message__body').textContent).contains('Vorgangsnummer', 'use right term for an queue entry')
         .click('.lightbox .dialog .button-ok')
         .expect(Selector('.queue-table a[data-id="'+processId+'"]').exists).ok()
         .click(Selector('.queue-table a[data-id="'+processId+'"].process-delete'))

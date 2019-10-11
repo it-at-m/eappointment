@@ -14,7 +14,7 @@ class View extends BaseView {
     bindKeyEvents() {
         const $main = this.$main;
         const keySelectorMap = {
-            'a': 'input[name=email], .button-login',
+            'a': 'input[name=email], .type-login',
             'b': 'input[name=sendConfirmation]',
             'g': '.service-checkbox:first',
             'h': '.process-queue',
