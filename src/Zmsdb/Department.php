@@ -207,6 +207,9 @@ class Department extends Base
      */
     protected function writeDepartmentDayoffs($departmentId, $dayoffList)
     {
+        if (!$departmentId) {
+            throw new Exception\Department\InvalidId();
+        }
         $existingDayoffs = (new DayOff())->readByDepartmentId($departmentId);
         if ($existingDayoffs->count()) {
             foreach ($existingDayoffs as $item) {
@@ -239,6 +242,9 @@ class Department extends Base
      */
     protected function writeDepartmentLinks($departmentId, $links)
     {
+        if (!$departmentId) {
+            throw new Exception\Department\InvalidId();
+        }
         $existingLinks = (new Link())->readByDepartmentId($departmentId);
         if ($existingLinks->count()) {
             foreach ($existingLinks as $item) {

@@ -1,3 +1,7 @@
+## v2.22.01
+
+* #37015 Bugfix: Versucht man eine Behörde mit der ID 0 zu speichern, erscheint jetzt eine Fehlermeldung.
+
 ## v2.22.00
 
 * #36829 Bugfix: Bei der Verwendung von nicht ganzzahligen Slots von 0,4 und kleiner werden ausgebuchte Terminslots jetzt korrekt erkannt.
