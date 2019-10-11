@@ -210,7 +210,7 @@ class Department extends Base
         if (!$departmentId) {
             throw new Exception\Department\InvalidId();
         }
-        $existingDayoffs = (new DayOff())->readByDepartmentId($departmentId);
+        $existingDayoffs = (new DayOff())->readOnlyByDepartmentId($departmentId);
         if ($existingDayoffs->count()) {
             foreach ($existingDayoffs as $item) {
                 $query = new DayOff();
