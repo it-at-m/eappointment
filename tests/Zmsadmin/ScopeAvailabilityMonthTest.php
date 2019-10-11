@@ -63,7 +63,7 @@ class ScopeAvailabilityMonthTest extends Base
         $this->assertContains('Öffnungszeiten für den Standort Bürgeramt Heerstraße', (string)$response->getBody());
         $this->assertContains('availability-monthtable_calendar', (string)$response->getBody());
         $this->assertContains('data-availability-count="24"', (string)$response->getBody());
-        $this->assertContains('circle-open', (string)$response->getBody());
+        $this->assertContains('daystatus--ticketprinter', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
