@@ -113,13 +113,14 @@ class BaseView extends ErrorHandler {
         window.location.href = url;
     }
 
-    loadMessage(response, callback, $container = null) {
+    loadMessage(response, callback, $container = null, returnTarget = null) {
         if (!$container) {
             $container = this.$main;
         }
         $container.find('.form-actions').hide();
         const { lightboxContentElement, destroyLightbox } = lightbox($container, () => {
             destroyLightbox();
+            returnTarget.focus();
             callback();
         });
         new MessageHandler(lightboxContentElement, {
@@ -127,17 +128,18 @@ class BaseView extends ErrorHandler {
             callback: () => {
                 callback();
                 destroyLightbox();
+                returnTarget.focus();
             },
             parent: this,
             handleLightbox: destroyLightbox
         })
     }
 
-    loadDialog(response, callback, abortCallback) {
-        BaseView.loadDialogStatic(response, callback, abortCallback, this);
+    loadDialog(response, callback, abortCallback, returnTarget) {
+        BaseView.loadDialogStatic(response, callback, abortCallback, this, false, returnTarget);
     }
 
-    static loadDialogStatic(response, callback, abortCallback, parent, callbackAsBackgroundAction = false) {
+    static loadDialogStatic(response, callback, abortCallback, parent, callbackAsBackgroundAction = false, returnTarget = false) {
         var $container = null;
         var $loader = null;
         if (parent) {
@@ -154,13 +156,16 @@ class BaseView extends ErrorHandler {
             callback: () => {
                 callback();
                 destroyLightbox();
+                returnTarget.focus();
             },
             abortCallback: () => {
                 if (abortCallback)
                     abortCallback();
                 destroyLightbox();
+                returnTarget.focus();
             },
             parent: parent,
+            returnTarget: returnTarget,
             loader: $loader
         })
     }

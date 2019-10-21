@@ -10,10 +10,13 @@ class DialogHandler {
         this.response = options.response;
         this.callback = options.callback || (() => { });
         this.abortCallback = options.abortCallback || (() => { });
+        this.escapeCallback = options.abortCallback || options.callback;
+        this.returnTarget = options.returnTarget;
         this.parent = options.parent;
         this.loader = options.loader || (() => { });
         this.bindEvents();
         this.render();
+        this.$main.find('.btn').first().focus();
     }
 
     render() {
