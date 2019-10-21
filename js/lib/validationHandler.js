@@ -35,7 +35,11 @@ class ValidationHandler extends BaseView {
 
     createDomList(item, key) {
         var list = document.createElement("ul");
-        list.classList.add(`error-list`)
+        list.classList.add(`error-list`);
+        list.classList.add(`list--clean`);
+        list.classList.add(`message`);
+        list.classList.add(`message--error`);
+        list.setAttribute(`role`, `alert`);
         item.messages.forEach((messageElement) => {
             var listItem = document.createElement("li")
             listItem.setAttribute('data-key', key);
