@@ -184,7 +184,7 @@ class View extends BaseView {
                         this.loadQueueInfo();
                     this.loadQueueTable();
                     this.loadCalendar();
-                });
+                }, null, event.currentTarget);
             }
         }).then(() => {
             hideSpinner();
@@ -208,7 +208,7 @@ class View extends BaseView {
                         this.loadQueueInfo();
                     this.loadQueueTable();
                     this.loadCalendar();
-                });
+                }, null, event.currentTarget);
             }
         }).then(() => {
             hideSpinner();
@@ -234,7 +234,7 @@ class View extends BaseView {
                         this.loadQueueInfo();
                     this.loadQueueTable();
                     this.loadCalendar();
-                });
+                }, null, event.currentTarget);
             }
         }).then(() => {
             hideSpinner();
@@ -248,7 +248,7 @@ class View extends BaseView {
             this.loadCall(`${this.includeUrl}/dialog/?template=copy_failed_time_unvalid&parameter[selectedtime]=${selectedTime}`).then((response) => {
                 this.loadDialog(response, () => {
                     this.onAbortMessage(event)
-                });
+                }, null, event.currentTarget);
             });
             return false;
         }
@@ -293,7 +293,7 @@ class View extends BaseView {
                 this.loadQueueTable();
                 this.loadCalendar();
                 hideSpinner();
-            });
+            }, null, event.currentTarget);
         });
     }
 
@@ -307,7 +307,7 @@ class View extends BaseView {
             url = url + `& parameter[id]=${processId}& parameter[name]=${name}`;
         }
         this.loadCall(url).then((response) => {
-            this.loadDialog(response, callback, abortCallback);
+            this.loadDialog(response, callback, abortCallback, event.currentTarget);
         })
     }
 
@@ -370,9 +370,9 @@ class View extends BaseView {
                 this.loadCall(`${this.includeUrl}/mail/`, 'POST', $.param(sendData), false, $container).then(
                     (response) => this.loadMessage(response, () => {
                         this.loadQueueTable();
-                    })
+                    }, null, event.currentTarget)
                 );
-            }))
+            }), null, event.currentTarget)
         });
     }
 
@@ -391,9 +391,9 @@ class View extends BaseView {
                 this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
                     (response) => this.loadMessage(response, () => {
                         this.loadQueueTable();
-                    })
+                    }, null, event.currentTarget)
                 );
-            }))
+            }), null, event.currentTarget)
         });
     }
 
@@ -409,7 +409,7 @@ class View extends BaseView {
         this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
             (response) => this.loadMessage(response, () => {
                 this.loadQueueTable();
-            })
+            }, null, event.currentTarget)
         );
     }
 

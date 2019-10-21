@@ -12,6 +12,7 @@ class MessageHandler {
         this.handleLightbox = options.handleLightbox || (() => { });
         this.bindEvents();
         this.render()
+        this.$main.find('.btn').first().focus();
     }
 
     render() {

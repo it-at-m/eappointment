@@ -40,7 +40,7 @@ class View extends BaseView {
             url = url + `&parameter[id]=${processId}&parameter[name]=${name}`;
         }
         this.loadCall(url).then((response) => {
-            this.loadDialog(response, callback);
+            this.loadDialog(response, callback, null, event.currentTarget);
         });
     }
 
@@ -50,7 +50,7 @@ class View extends BaseView {
         return this.loadCall(`${this.includeUrl}/pickup/call/cancel/`).then((response) => {
             this.loadMessage(response, () => {
                 this.loadAllPartials();
-            });
+            }, null, event.currentTarget);
         });
     }
 
@@ -64,7 +64,7 @@ class View extends BaseView {
         this.loadCall(`${this.includeUrl}/pickup/delete/${processId}/`, 'DELETE').then((response) => {
             this.loadMessage(response, () => {
                 this.loadAllPartials();
-            });
+            }, null, event.currentTarget);
         });
     }
 
@@ -83,7 +83,7 @@ class View extends BaseView {
                     return this.loadCall(url, 'DELETE').then((response) => {
                         this.loadMessage(response, () => {
                             this.loadAllPartials();
-                        });
+                        }, null, event.currentTarget);
                     });
                 }
                 return this.loadCall(url, 'DELETE').then(deleteFromQueue);
@@ -98,7 +98,7 @@ class View extends BaseView {
             processId = $(event.currentTarget).data('id')
         }
         return this.loadCall(`${this.includeUrl}/pickup/call/${processId}/`).then((response) => {
-            this.loadDialog(response, callback);
+            this.loadDialog(response, callback, null, event.currentTarget);
         }
         );
     }
@@ -110,7 +110,7 @@ class View extends BaseView {
         this.loadCall(`${this.includeUrl}/pickup/mail/?selectedprocess=${processId}`).then(
             (response) => this.loadMessage(response, () => {
                 this.loadAllPartials();
-            })
+            }, null, event.currentTarget)
         );
     }
 
@@ -129,9 +129,9 @@ class View extends BaseView {
                 this.loadCall(`${this.includeUrl}/mail/`, 'POST', $.param(sendData)).then(
                     (response) => this.loadMessage(response, () => {
                         this.loadAllPartials();
-                    })
+                    }, null, event.currentTarget)
                 );
-            }))
+            }), null, event.currentTarget)
         });
     }
 
@@ -142,7 +142,7 @@ class View extends BaseView {
         this.loadCall(`${this.includeUrl}/pickup/notification/?selectedprocess=${processId}`).then(
             (response) => this.loadMessage(response, () => {
                 this.loadAllPartials();
-            })
+            }, null, event.currentTarget)
         );
     }
 
@@ -161,9 +161,9 @@ class View extends BaseView {
                 this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
                     (response) => this.loadMessage(response, () => {
                         this.loadAllPartials();
-                    })
+                    }, null, event.currentTarget)
                 );
-            }))
+            }), null, event.currentTarget)
         });
     }
 

@@ -63,8 +63,8 @@ class AppointmentFormButtonsTest extends Base
         $response = $this->render([], ['selectedprocess' => '100044'], []);
         $this->assertContains('Speichern', (string)$response->getBody());
         $this->assertContains('Löschen', (string)$response->getBody());
-        $this->assertContains('Wartenummer drucken', (string)$response->getBody());
-        $this->assertContains('als neu hinzufügen', (string)$response->getBody());
+        $this->assertContains('Wartenr. drucken', (string)$response->getBody());
+        $this->assertContains('Als neu hinzufügen', (string)$response->getBody());
         $this->assertContains('Abbrechen', (string)$response->getBody());
     }
 }
