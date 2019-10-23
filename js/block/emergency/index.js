@@ -10,6 +10,7 @@ class View extends BaseView {
     constructor (element, options) {
         super(element)
         this.includeUrl = options.includeurl
+        this.returnTarget = options.returnTarget
         this.workstationName = ""+options.workstationname
         this.scope = options.scope
         this.data = Object.assign({}, deepGet(this, ['scope', 'status', 'emergency']))
@@ -28,6 +29,16 @@ class View extends BaseView {
         this.$.find('.emergency__button-help').on('click', this.comeForHelp)
         this.$.find('.emergency__button-hide').on('click', this.minimize)
         this.$.find('.emergency__button-show').on('click', this.show)
+        this.$.on('keydown', function exitKeyEventListener (ev){
+            var key = ev.keyCode || ev.which;
+            switch(key) {
+            case 27: // ESC   
+                console.log('ESC'); 
+                this.minimize; // ToDo: Don't work yet
+                break;
+            }
+        })
+        
 
         this.render()
         this.refresh()
@@ -184,7 +195,6 @@ class View extends BaseView {
             this.$.find('.emergency__overlay').removeAttr('hidden')
         }
 
-
         this.$.attr('data-source', source)
         this.$.attr('data-state', state)
         this.$.find('.emergency__source').text((data.calledByWorkstation === '0') ? 'Tresen' : `Platz ${data.calledByWorkstation}`)
@@ -194,27 +204,72 @@ class View extends BaseView {
     minimize() {
         this.minimized = true
         this.render()
+        //console.log('minimize emergency');
+        this.removeFocusTrap(this.$.find('.emergency__overlay-layout'));
     }
 
     show() {
         this.minimized = false
         this.render()
+        //console.log('maximize emergency');
+        this.addFocusTrap(this.$.find('.emergency__overlay-layout'));
     }
 
     triggerEmergency () {
         this.update({activated: "1", calledByWorkstation: this.workstationName })
         this.sendEmergencyCall().then(this.refresh)
+        //console.log('start emergency');
+        this.addFocusTrap(this.$.find('.emergency__overlay-layout'));
     }
 
     comeForHelp () {
         this.update({acceptedByWorkstation: this.workstationName})
         this.sendEmergencyResponse().then(this.refresh)
+        //console.log('comeforhelp emergency');
     }
 
     endEmergency() {
         this.update({activated: "0", calledByWorkstation: "-1", acceptedByWorkstation: "-1"})
         this.sendEmergencyCancel().then(this.refresh)
+        //console.log('end emergency');
+        this.removeFocusTrap(this.$.find('.emergency__overlay-layout'));
     }
+
+    removeFocusTrap(elem) {
+        var tabbable = elem.find('select, input, textarea, button, a, *[role="button"]');
+        tabbable.unbind('keydown');
+    }
+
+    addFocusTrap(elem) {
+        // Get all focusable elements inside our trap container
+        var tabbable = elem.find('select, input, textarea, button, a, *[role="button"]');
+        // Focus the first element
+        if (tabbable.length ) {
+            tabbable.filter(':visible').first().focus();
+            //console.log(tabbable.filter(':visible').first());
+        }
+        tabbable.bind('keydown', function (e) {
+            if (e.keyCode === 9) { // TAB pressed
+                // we need to update the visible last and first focusable elements everytime tab is pressed,
+                // because elements can change their visibility
+                var firstVisible = tabbable.filter(':visible').first();
+                var lastVisible = tabbable.filter(':visible').last();
+                if (firstVisible && lastVisible) {
+                    if (e.shiftKey && ( $(firstVisible)[0] === $(this)[0] ) ) {
+                        // TAB + SHIFT pressed on first visible element
+                        e.preventDefault();
+                        lastVisible.focus();
+                    } 
+                    else if (!e.shiftKey && ( $(lastVisible)[0] === $(this)[0] ) ) {
+                        // TAB pressed pressed on last visible element
+                        e.preventDefault();
+                        firstVisible.focus();
+                    }
+                }
+            }
+        });
+    }
+
 }
 
 export default View;

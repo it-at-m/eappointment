@@ -113,8 +113,15 @@ class View extends RequestView {
             this.onClearRequestList();
         }).on('change', '#appointmentForm_slotCount', (event) => {
             this.onChangeSlotCount(event);
-        }).on('click', '.add-date-picker', () => {
-            this.onSelectDateWithOverlay();
+        }).on('click', '.add-date-picker input', (event) => {
+            this.onSelectDateWithOverlay(event);
+        }).on('keydown', '.add-date-picker input', (event) => {
+            var key = event.keyCode || event.which;
+            switch(key) {
+            case 13: // ENTER    
+                this.onSelectDateWithOverlay(event);
+                break;
+            }
         }).on('change', '.appointment-form .switchcluster select', (event) => {
             this.onChangeScope(event);
         }).on('change', 'select#process_time', (event) => {
