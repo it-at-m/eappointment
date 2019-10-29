@@ -81,7 +81,8 @@ class Authority extends Base
         return $authoritylist;
     }
 
-    public function fetchSource() {
+    public function fetchSource()
+    {
         return $this->getItemList();
     }
 }

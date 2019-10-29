@@ -10,6 +10,7 @@ use \BO\Dldb\Collection\Services as Collection;
 use \BO\Dldb\File\Service as Base;
 
 /**
+ * @SuppressWarnings(Coupling)
  */
 class Service extends Base
 {
@@ -178,7 +179,8 @@ class Service extends Base
         return $serviceList;
     }
 
-    public function fetchServicesForCompilation($authoritys = [], $locations = [], $services = []) {
+    public function fetchServicesForCompilation($authoritys = [], $locations = [], $services = [])
+    {
         $limit = 1000;
 
         $localeFilter = new \Elastica\Query\Term(array(
