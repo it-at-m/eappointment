@@ -12,7 +12,7 @@ namespace BO\Dldb;
 class TwigExtension extends \Twig_Extension
 {
 
-    public function __construct($container)
+    public function __construct($container = null)
     {
         $this->container = $container;
     }
