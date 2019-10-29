@@ -10,6 +10,7 @@ use \BO\Dldb\Collection\Locations as Collection;
 use \BO\Dldb\File\Location as Base;
 
 /**
+ * @SuppressWarnings(Coupling)
  */
 class Location extends Base
 {
@@ -215,7 +216,7 @@ class Location extends Base
             ->fromLocationResults($resultList);
     }
 
-    public function fetchGeoJson($category = null, $getAll = false)
+    protected function fetchGeoJsonLocations($category, $getAll)
     {
         $query = new \Elastica\Query();
         $query->setSource(['id', 'name', 'address.*', 'geo.*', 'meta.*', 'category.*']);
@@ -226,7 +227,6 @@ class Location extends Base
             $filter = new \Elastica\Query\BoolQuery();
             $termFilter = new \Elastica\Query\Term(['category.identifier' => $category]);
             $filter->addMust($termFilter);
-            $geoJson['category'] = $category;
         }
         $query->setQuery($filter);
         $query->addSort(['office' => ['order' => 'asc']]);
@@ -236,9 +236,20 @@ class Location extends Base
             ->getType('location')
             ->search($query, 1000)
         ;
-        
-        $geoJson = [];
+        return $resultList;
+    }
 
+    /**
+     * @todo Refactoring required, functions in this class should return entities, not JSON data
+     */
+    public function fetchGeoJson($category = null, $getAll = false)
+    {
+        $resultList = $this->fetchGeoJsonLocations($category, $getAll);
+        $geoJson = [];
+        // TODO check refactoring: the following lines were ineffective cause the line $geoJson=[] happened afterwards
+        //if (!empty($category) && false === $getAll) {
+        //    $geoJson['category'] = $category;
+        //}
         foreach ($resultList as $result) {
             $location = new Entity($result->getData());
             if (empty($location['category']['identifier'])) {
@@ -248,7 +259,12 @@ class Location extends Base
                 $geoJson[$location['category']['identifier']] = [
                     'name' => $location['category']['name'],
                     'type' => 'cluster',
-                    'active' => !empty($category) && $category == $location['category']['identifier'] ? TRUE : (!empty($category) && $category != $location['category']['identifier'] ? FALSE : TRUE),
+                    'active' => (
+                        !empty($category)
+                        && $category == $location['category']['identifier'] ? true : (
+                            !empty($category) && $category != $location['category']['identifier'] ? false : true
+                        )
+                    ),
                     'data' => ['type' => 'FeatureCollection', 'features' => []]
                 ];
             }
@@ -258,7 +274,8 @@ class Location extends Base
         return $geoJson;
     }
 
-    public function fetchLocationsForCompilation($authoritys = [], $locations = []) {
+    public function fetchLocationsForCompilation($authoritys = [], $locations = [])
+    {
         $limit = 1000;
 
         $localeFilter = new \Elastica\Query\Term(array(
