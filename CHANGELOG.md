@@ -2,6 +2,7 @@
 
 * #37015 Bugfix: Versucht man eine Behörde mit der ID 0 zu speichern, erscheint jetzt eine Fehlermeldung.
 * #37117 Bugfix: Erlaube Zeitslots größer 255 Minuten
+* #36795 Migration: Repariert die Nutzerzuordnung von Nutzerkonten zu Behörden
 
 ## v2.22.00
 
