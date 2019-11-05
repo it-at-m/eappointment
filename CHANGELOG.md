@@ -1,3 +1,7 @@
+## v2.23.00
+
+* #35447 Auf barrierefreiheit optimiertes Layout für den Admin-Bereich inkl. Tresen und Sachbearbeiterplatz (Öffnungszeiten-Administration ist noch offen)
+
 ## v2.21.00
 
 * #36521 Bugfix: Die Nutzerverwaltung enthält jetzt auch neu angelegte Kunden, nicht mehr nur "Berlin"
