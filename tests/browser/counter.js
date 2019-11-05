@@ -63,7 +63,7 @@ test('ValidationQueue', async t => {
         // Check if queue entry is without validation as expected
         .click('button.process-queue')
         ;
-    const processId = await Selector('.dialog .message__body a[name="printWaitingNumber"]').getAttribute("data-id");
+    const processId = await Selector('.dialog .message__body button[name="printWaitingNumber"]').getAttribute("data-id");
     await t
         .expect(Selector('.dialog .message__body').textContent).contains('Wartenummer', 'use right term for an queue entry')
         .click('.lightbox .dialog .button-ok')
@@ -118,7 +118,7 @@ test('ValidationAppointment', async t => {
         .typeText('input[name=email]', "server@service.berlinonline.de", {replace: true})
         .click('button.process-reserve')
         ;
-    const processId = await Selector('.dialog .message__body a[name="printWaitingNumber"]').getAttribute("data-id");
+    const processId = await Selector('.dialog .message__body button[name="printWaitingNumber"]').getAttribute("data-id");
     await t
         .expect(Selector('.dialog .message__body').textContent).contains('Vorgangsnummer', 'use right term for an queue entry')
         .click('.lightbox .dialog .button-ok')
