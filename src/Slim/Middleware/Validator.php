@@ -28,7 +28,7 @@ class Validator
         } else {
             $queryParams = $request->getQueryParams();
             $parameters = $request->getParsedBody();
-            $parameters = $parameters ? $parameters : [];
+            $parameters = is_array($parameters) ? $parameters : [];
             $parameters = array_merge($queryParams, $parameters);
             $validator = new \BO\Mellon\Validator($parameters);
             $body = (string)$request->getBody();

@@ -52,8 +52,8 @@ class HttpBasicAuth
         callable $next
     ): ResponseInterface {
         $serverParams = $request->getServerParams();
-        $authUser = $serverParams['PHP_AUTH_USER'];
-        $authPass = $serverParams['PHP_AUTH_PW'];
+        $authUser = $serverParams['PHP_AUTH_USER'] ?? '';
+        $authPass = $serverParams['PHP_AUTH_PW'] ?? '';
         if ($this->isAuthorized->call($this, $authUser, $authPass)) {
             $response = $next($request, $response);
         } else {
