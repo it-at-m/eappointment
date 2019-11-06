@@ -139,6 +139,9 @@ class TwigExceptionHandler
             $templatedata = $exception->templatedata;
         }
         return array_merge(array(
+            "_file" => $exception->getFile(),
+            "_line" => $exception->getLine(),
+            "_trace" => $trace,
             "debug" => \App::DEBUG,
             "data" => $data,
             "failed" => $exception->getMessage(),
@@ -146,21 +149,18 @@ class TwigExceptionHandler
             "exceptionclass" => $exceptionclass,
             "exceptioncode" => $exception->getCode(),
             "basefile" => basename($exception->getFile(), '.php'),
-            "file" => $exception->getFile(),
-            "line" => $exception->getLine(),
-            "trace" => $trace,
             "servertime" => $servertime,
             "uniqueid" => $uniqueId,
             "request" => $request,
             "requesturi" => $request->getUri(),
-            "requestdata" => $requestdata,
             "requestmethod" => $request->getMethod(),
             "apirequest" => $apirequest,
             "apirequesturi" => $apirequesturi,
-            "apirequestdata" => $apirequestdata,
             "apirequestmethod" => $apirequestmethod,
             "response" => $response,
-            "responsedata" => $responsedata,
+            "x-requestdata" => $requestdata,
+            "x-requestdata_api" => $apirequestdata,
+            "x-responsedata" => $responsedata,
         ), $templatedata);
     }
 }
