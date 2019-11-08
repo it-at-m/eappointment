@@ -21,7 +21,6 @@ class OwnerOverview extends BaseController
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 4))->getCollection();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         return \BO\Slim\Render::withHtml(
-
             $response,
             'page/ownerOverview.twig',
             array(

@@ -1,6 +1,7 @@
 ## v2.23.00
 
 * #35447 Auf barrierefreiheit optimiertes Layout für den Admin-Bereich inkl. Tresen und Sachbearbeiterplatz (Öffnungszeiten-Administration ist noch offen)
+* #37713 Bugfix: Korrekte Jahreszahl für die erste Woche im Jahr
 
 ## v2.21.00
 
