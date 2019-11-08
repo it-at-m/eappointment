@@ -1,3 +1,7 @@
+## v2.23.00
+
+* #37713 Bugfix: Korrekte Jahreszahl für die erste Woche im Jahr
+
 ## v2.20.00
 
 * #32626 Config für Performance-Optimierung (kann über JSON_COMPRESS_LEVEL=0 deaktiviert werden)
