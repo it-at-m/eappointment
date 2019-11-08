@@ -18,6 +18,24 @@ class MailTest extends EntityCommonTests
         $this->assertTrue('Max Mustermann' == $entity->getFirstClient()['familyName'], 'Getting first client failed');
     }
 
+    public function testDateformat()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $dateTime = new \DateTimeImmutable("2019-12-30 11:55:00", new \DateTimeZone('Europe/Berlin'));
+        $process->getFirstAppointment()->setDateTime($dateTime);
+        $config = (new \BO\Zmsentities\Config())->getExample();
+        $entity->addMultiPart(array());
+        $entity->client = null;
+        $resolvedEntity = $entity->toResolvedEntity($process, $config);
+        $this->assertContains(
+            'Montag, 30. Dezember 2019 um 11:55 Uhr',
+            $resolvedEntity->getHtmlPart(),
+            'Wrong date/time format'
+        );
+    }
+
+
     public function testCollection()
     {
         $collection = new $this->collectionclass();
