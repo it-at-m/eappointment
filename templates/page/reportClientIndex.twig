@@ -71,7 +71,7 @@
                         <tbody>
                             {% if exchangeClient.data %}
                                 <tr>
-                                    {% set totaldate = period|localizeddate("medium","none",NULL,NULL,"MMMM Y") %}
+                                    {% set totaldate = period|localizeddate("medium","none",NULL,NULL,"MMMM y") %}
                                     {% if exchangeClient.period == "month" %}
                                     {% set totaldate = "Kalenderjahr " ~ period %}
                                     {% endif %}
