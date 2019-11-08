@@ -6,7 +6,7 @@ Bitte antworten Sie nicht auf diese Mail, sie kann nicht bearbeitet werden.<br /
 <br />
 Sehr geehrte/r Frau oder Herr {{ client.familyName }},
 <br /><br />
-hiermit teilen wir Ihnen mit, dass Ihr Termin am {{ (date|default(getNow))|localizeddate("short","none",NULL,NULL,"EEEE, dd. MMMM Y") }} {% trans %}um{% endtrans %} {{ (date|default(getNow))|date("H:i") }} {% trans %}Uhr{% endtrans %} 
+hiermit teilen wir Ihnen mit, dass Ihr Termin am {{ (date|default(getNow))|localizeddate("short","none",NULL,NULL,"EEEE, dd. MMMM y") }} {% trans %}um{% endtrans %} {{ (date|default(getNow))|date("H:i") }} {% trans %}Uhr{% endtrans %} 
 abgesagt wurde.<br />
 <br />
 Ihre Vorgangsnummer <strong>{{ process.id }}</strong> ist nun ungültig.

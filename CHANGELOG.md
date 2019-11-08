@@ -1,7 +1,8 @@
-## v2.22.01
+## v2.23.00
 
 * #36863 Validierung der Vorgangsnummer und des Absagecodes mit neuen Fehlermeldungen
 * #37064 Änderung Subject und Einleitungstext in der Kundenbefragung sowie die neuen Platzhalter PROVIDERNAME, PROVIDERID, CLIENTNAME
+* #37713 Bugfix: Korrektes Jahreszahl für die erste Woche im Jahr
 
 ## v2.22.00
 
