@@ -1,3 +1,7 @@
+## v2.23.00
+
+* #37713 Bugfix: Korrekte Jahreszahl für die erste Woche im Jahr
+
 ## v2.20.00
 
 * #36317 Bugfix: Trennung von unterschiedlichen Fehler-Exceptions ab PHP 7.0 implementiert
