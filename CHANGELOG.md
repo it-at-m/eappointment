@@ -1,3 +1,7 @@
+## v2.23.00
+
+* #32183 Cronjob, um E-Mail-Adressen aus einer Blacklist im ZMS zu löschen
+
 ## v2.22.00
 
 * #36427 Der Parameter "clientkey" kann jetzt bei den Routen POST /process/status/reserved/ und POST /apikey/ verwendet werden
