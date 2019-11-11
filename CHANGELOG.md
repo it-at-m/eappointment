@@ -1,4 +1,4 @@
-## v2.22.01
+## v2.23.00
 
 * #37015 Bugfix: Versucht man eine Behörde mit der ID 0 zu speichern, erscheint jetzt eine Fehlermeldung.
 * #37117 Bugfix: Erlaube Zeitslots größer 255 Minuten
