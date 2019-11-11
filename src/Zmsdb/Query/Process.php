@@ -515,6 +515,20 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionMail($mailAddress, $exactMatching = false)
+    {
+        if ($exactMatching) {
+            $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($mailAddress) {
+                $query->andWith('process.Email', '=', $mailAddress);
+            });
+        } else {
+            $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($mailAddress) {
+                $query->andWith('process.Email', 'LIKE', "%$mailAddress%");
+            });
+        }
+        return $this;
+    }
+
     public function addConditionAmendment($amendment)
     {
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($amendment) {
