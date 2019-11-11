@@ -407,7 +407,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readList($statement, $resolveReferences);
     }
 
-    protected function addSearchConditions($query, $parameter)
+    protected function addSearchConditions(Query\Process $query, $parameter)
     {
         if (isset($parameter['processId']) && $parameter['processId']) {
             $query->addConditionProcessId($parameter['processId']);
@@ -471,6 +471,26 @@ class Process extends Base implements Interfaces\ResolveReferences
         $statement = $this->fetchStatement($query);
         $result = $statement->fetch(\PDO::FETCH_ASSOC);
         return $result['processCount'];
+    }
+
+       /**
+     * Read processList by mail address
+     *
+     * @return Collection processList
+     */
+    public function readProcessListByMailAddress(
+        $mailAddress,
+        $resolveReferences = 0
+    ) : Collection {
+        $query = new Query\Process(Query\Base::SELECT);
+        $query
+            ->addResolvedReferences($resolveReferences)
+            ->addEntityMapping()
+            ->addConditionMail($mailAddress)
+            ->addConditionIgnoreSlots()
+            ;
+        $statement = $this->fetchStatement($query);
+        return $this->readList($statement, $resolveReferences);
     }
 
     /**
