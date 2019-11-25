@@ -1,3 +1,7 @@
+## v2.23.01
+
+* #38145 Workaround: DNS-Abfragen zu E-Mail-Domains finden jetzt in einer Kombination von MX und ANY statt.
+
 ## v2.23.00
 
 * #36863 Validierung der Vorgangsnummer und des Absagecodes mit neuen Fehlermeldungen
