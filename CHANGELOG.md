@@ -1,3 +1,7 @@
+## v2.23.01
+
+* #38445 Bugfix: Anpassung auf Grund eines Updates der Bibliothek slimframework
+
 ## v2.23.00
 
 * #35447 Auf barrierefreiheit optimiertes Layout für den Admin-Bereich inkl. Tresen und Sachbearbeiterplatz (Öffnungszeiten-Administration ist noch offen)
