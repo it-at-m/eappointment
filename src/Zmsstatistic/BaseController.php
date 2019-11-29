@@ -18,11 +18,6 @@ use \BO\Mellon\Validator;
  */
 abstract class BaseController extends Helper\Access
 {
-    public function __construct(\Interop\Container\ContainerInterface $containerInterface)
-    {
-        parent::__construct($containerInterface);
-    }
-
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
         $request = $this->initRequest($request);
