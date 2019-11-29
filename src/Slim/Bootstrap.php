@@ -133,7 +133,8 @@ class Bootstrap
         $path = false;
         if (\App::TWIG_CACHE) {
             $path = \App::APP_PATH . \App::TWIG_CACHE;
-            $user = get_current_user();
+            $userinfo = posix_getpwuid(posix_getuid());
+            $user = $userinfo['name'];
             $githead = Git::readCurrentHash();
             if ($githead) {
                 $path .= '/' . $user . $githead . '/';
