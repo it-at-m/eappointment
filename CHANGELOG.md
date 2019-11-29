@@ -1,3 +1,7 @@
+## v2.23.01
+
+* #38445 Bugfix: Anpassung auf Grund eines Updates der Bibliothek slimframework
+
 ## v2.22.00
 
 * #36425 Der HTTPS-Redirect wurde entfernt, um eine Nutzung per HTTP zu ermöglichen
