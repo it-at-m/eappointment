@@ -6,14 +6,14 @@
 
 namespace BO\Slim;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 abstract class Controller
 {
     /**
-     * @var \Interop\Container\ContainerInterface $containerInterface
+     * @var \Psr\Container\ContainerInterface $containerInterface
      *
      */
     protected $containerInterface = null;
@@ -31,7 +31,7 @@ abstract class Controller
     protected $response = null;
 
     /**
-     * @param \Interop\Container\ContainerInterface $containerInterface
+     * @param \Psr\Container\ContainerInterface $containerInterface
      *
      */
     public function __construct(ContainerInterface $containerInterface)
