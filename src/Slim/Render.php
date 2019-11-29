@@ -6,7 +6,7 @@
 
 namespace BO\Slim;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use \Slim\Http\Headers;
@@ -17,7 +17,7 @@ class Render
 {
 
     /**
-     * @var \Interop\Container\ContainerInterface $containerInterface
+     * @var \Psr\Container\ContainerInterface $containerInterface
      *
      */
     public static $container = null;
