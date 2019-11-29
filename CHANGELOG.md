@@ -1,3 +1,7 @@
+## v2.23.01
+
+* #38445 Bugfix: Anpassung auf Grund eines Updates der Bibliothek slimframework
+
 ## v2.23.00
 
 * #32183 Cronjob, um E-Mail-Adressen aus einer Blacklist im ZMS zu löschen

@@ -15,11 +15,6 @@ use \Psr\Http\Message\ResponseInterface;
  */
 abstract class BaseController extends \BO\Slim\Controller
 {
-    public function __construct(\Interop\Container\ContainerInterface $containerInterface)
-    {
-        parent::__construct($containerInterface);
-    }
-
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
         $request = $this->initRequest($request);
