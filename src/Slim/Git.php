@@ -29,6 +29,8 @@ class Git
         $githashFile = \App::APP_PATH . '/.git/' . $headString;
         if (is_readable($githashFile)) {
             $githash = trim(fgets(fopen($githashFile, 'r')));
+        } else {
+            $githash = $headString;
         }
         return $githash;
     }
