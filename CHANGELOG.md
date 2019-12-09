@@ -1,6 +1,7 @@
 ## v2.23.01
 
 * #38445 Bugfix: Anpassung auf Grund eines Updates der Bibliothek slimframework
+* #38421 Bugfix: Cache-Pfad wird nun anhand der Prozess-NutzerID statt der Skript-NutzerID erstellt
 
 ## v2.23.00
 
