@@ -45,7 +45,11 @@ class ProcessReserve extends BaseController
                 throw new Exception\Process\ApiclientInvalid();
             }
             $slotType = $apiClient->accesslevel;
-            $slotsRequired = $apiClient->accesslevel == 'intern' ? $slotsRequired : 0;
+            if ($apiClient->accesslevel != 'intern') {
+                $slotsRequired = 0;
+                $slotType = $apiClient->accesslevel;
+                $process = (new Process)->readSlotCount($process);
+            }
             $process->apiclient = $apiClient;
         } else {
             $slotsRequired = 0;

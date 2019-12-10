@@ -1,6 +1,7 @@
 ## v2.23.01
 
 * #38445 Bugfix: Anpassung auf Grund eines Updates der Bibliothek slimframework
+* #38901 Bugfix: Wenn ein Clientkey gesetzt wurde, wird jetzt wieder die Slot-Anzahl aus der DLDB verwendet
 
 ## v2.23.00
 
