@@ -38,7 +38,7 @@ class RequestRelationView extends Component {
                         options={
                             this.props.source.requests.map((request) => this.renderOption(request))
                         } {...{ onChange }}
-                        attributes={{"aria-label": "Dienstleistung"}}
+                        attributes={{"aria-label": this.props.labelsrequestrelation.request}}
                     />
                 </td>
                 <td className="requestrelation-item__provider">
@@ -49,7 +49,7 @@ class RequestRelationView extends Component {
                         options={
                             this.props.source.providers.map((provider) => this.renderOption(provider))
                         } {...{ onChange }}
-                        attributes={{"aria-label": "Dienstleister"}}
+                        attributes={{"aria-label": this.props.labelsrequestrelation.provider}}
                     />
                 </td>
                 <td className="requestrelation-item__slots">
@@ -57,13 +57,16 @@ class RequestRelationView extends Component {
                         name={`${formName}[slots]`}
                         value={(item.slots) ? item.slots : 1}
                         onChange={onChange}
-                        attributes={{"aria-label": "Zeitslots"}}
+                        attributes={{"aria-label": this.props.labelsrequestrelation.slots}}
                     />
                 </td>
                 <td className="request-item__delete">
-                    <label className="checkboxdeselect requestrelation__delete-button">
-                        <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} role="button" aria-label="Diesen Datensatz löschen" /><span title="Löschen"></span>
-                    </label>
+                    <div className="form-check">
+                        <label className="checkboxdeselect requestrelation__delete-button form-check-label">
+                            <input className="form-check-input" type="checkbox" checked={true} onClick={() => onDeleteClick(index)} role="button" aria-label="Diesen Datensatz löschen" />
+                            <span>Löschen</span>
+                        </label>
+                    </div>
                 </td>
             </tr >
         )
@@ -90,9 +93,6 @@ class RequestRelationView extends Component {
         return (
             <fieldset>
                 <div className="requestrelation__list" aria-live="polite" id="liveregionRequestrelationList">
-                    <Inputs.Description
-                        children={this.props.descriptions.requestrelation}
-                    />
                     <table className="table--base">
                         <thead>
                             <tr>
@@ -104,13 +104,20 @@ class RequestRelationView extends Component {
                         </thead>
                         <tbody>
                             {this.getRequestRelation(onChange, onDeleteClick)}
+                        </tbody>
+                        <tfoot>
                             <tr>
                                 <td colSpan="4">
-                                    <button className="link button-default requestrelation--new" onClick={onNewClick}><i className="fas fa-plus-square color-positive" aria-hidden="true"></i> {this.props.labelsrequestrelation.new}</button>
+                                    <Inputs.Description
+                                        children={this.props.descriptions.requestrelation}
+                                    />
                                 </td>
                             </tr>
-                        </tbody>
+                        </tfoot>
                     </table>
+                    <div className="table-actions">
+                        <button className="link button-default requestrelation--new" onClick={onNewClick}><i className="fas fa-plus-square color-positive" aria-hidden="true"></i> {this.props.labelsrequestrelation.new}</button>
+                    </div>
                 </div>
             </fieldset>
         )

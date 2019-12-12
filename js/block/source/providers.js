@@ -26,7 +26,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                 />
             </td>
             <td className="provider-item__link">
-                <Inputs.FormGroup className="form-group--inline">
+                <Inputs.FormGroup>
                     <Inputs.Label
                         children={`${labels.url}`}
                         attributes={{ "htmlFor": `providersUrl${index}` }}
@@ -41,7 +41,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
-                <Inputs.FormGroup className="form-group--inline">
+                <Inputs.FormGroup>
                     <Inputs.Label
                         children={labels.street}
                         attributes={{ "htmlFor": `providersStreet${index}` }}
@@ -56,7 +56,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
-                <Inputs.FormGroup className="form-group--inline">
+                <Inputs.FormGroup>
                     <Inputs.Label
                         children={labels.streetNumber}
                         attributes={{ "htmlFor": `providersStreetnumber${index}` }}
@@ -71,7 +71,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
-                <Inputs.FormGroup className="form-group--inline">
+                <Inputs.FormGroup>
                     <Inputs.Label
                         children={labels.postalCode}
                         attributes={{ "htmlFor": `providersPostalcode${index}` }}
@@ -86,7 +86,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
-                <Inputs.FormGroup className="form-group--inline">
+                <Inputs.FormGroup>
                     <Inputs.Label
                         children={labels.city}
                         attributes={{ "htmlFor": `providersCity${index}` }}
@@ -101,7 +101,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
-                <Inputs.FormGroup className="form-group--inline">
+                <Inputs.FormGroup>
                     <Inputs.Label
                         children={labels.data}
                         attributes={{ "htmlFor": `providersData${index}` }}
@@ -126,9 +126,12 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                 />
             </td>
             <td className="provider-item__delete">
-                <label className="checkboxdeselect provider__delete-button">
-                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} role="button" aria-label="Diesen Datensatz löschen" /><span title="Löschen"></span>
-                </label>
+                <div className="form-check">
+                    <label className="checkboxdeselect provider__delete-button form-check-label">
+                        <input className="form-check-input" type="checkbox" checked={true} onClick={() => onDeleteClick(index)} role="button" aria-label="Diesen Datensatz löschen" />
+                        <span>Löschen</span>
+                    </label>
+                </div>
             </td>
         </tr >
     )
@@ -212,11 +215,13 @@ class ProvidersView extends Component {
                                     children={this.props.descriptions.delete}
                                 />
                                 </p>
-                                <button className="link button-default" onClick={onNewClick}><i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer Dienstleister</button>
                             </td>
                         </tr>
                     </tfoot>
                 </table>
+                <div className="table-actions">
+                    <button className="link button-default" onClick={onNewClick}><i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer Dienstleister</button>
+                </div>
             </div>
         )
     }

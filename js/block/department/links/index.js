@@ -14,35 +14,42 @@ const renderLink = (link, index, onChange, onDeleteClick) => {
             <td className="link-item__name">
                 <Inputs.Text
                     name={`${formName}[name]`}
-                    placeholder="Name"
                     value={link.name}
                     onChange={onChangeName}
+                    placeholder="Name"
+                    attributes={{"aria-label":"Bezeichnung"}}
                 />
             </td>
             <td className="link-item__url">
                 <Inputs.Text
                     name={`${formName}[url]`}
-                    placeholder="URL"
                     value={link.url}
                     onChange={onChangeUrl}
+                    placeholder="URL"
+                    attributes={{"aria-label":"URL"}}
                 />
             </td>
             <td className="link-item__target">
-                <label className="checkbox-label">
-                    <Inputs.Checkbox
-                        name={`${formName}[target]`}
-                        key="In neuem Fenster öffnen"
-                        onChange={onChangeTarget}
-                        value={link.target}
-                        checked={1 == link.target}
-                    />
-
-                </label>
+                <div className="form-check">
+                    <label className="checkbox-label">
+                        <Inputs.Checkbox
+                            name={`${formName}[target]`}
+                            key="In neuem Fenster öffnen"
+                            onChange={onChangeTarget}
+                            value={link.target}
+                            checked={1 == link.target}
+                        />
+                        <span className="form-check-label">Im neuen Fenster öffnen</span>
+                    </label>
+                </div>
             </td>
             <td className="link-item__delete">
-                <label className="checkboxdeselect link__delete-button">
-                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} /><span></span>
-                </label>
+                <div className="form-check">
+                    <label className="checkboxdeselect link__delete-button">
+                        <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} />
+                        <span className="form-check-label">Löschen</span>
+                    </label>
+                </div>
             </td>
         </tr>
     )
@@ -105,7 +112,7 @@ class LinksView extends Component {
         }
 
         return (
-            <div className="department-links__list">
+            <div className="department-links__list table-responsive-wrapper">
                 <table className="table--base clean">
                     <thead>
                         <th>Bezeichnung</th>
@@ -116,15 +123,12 @@ class LinksView extends Component {
                     <tbody>
                         {this.state.links.map((link, index) => renderLink(link, index, onChange, onDeleteClick))}
                     </tbody>
-                    <tfoot>
-                        <tr><td colSpan="4">
-                            <button className="link button-default" onClick={onNewClick} >
-                                <i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer Link
-                            </button>
-                        </td></tr>
-                    </tfoot>
                 </table>
-
+                <div className="table-actions">
+                    <button className="link button-default" onClick={onNewClick} >
+                        <i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer Link
+                    </button>
+                </div>
             </div>
         )
     }
