@@ -26,7 +26,7 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                 />
             </td>
             <td className="request-item__link">
-                <Inputs.FormGroup className="form-group--inline">
+                <Inputs.FormGroup>
                     <Inputs.Label
                         children={`${labels.url}`}
                         attributes={{"htmlFor": `requestUrl${index}` }}
@@ -41,7 +41,7 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
-                <Inputs.FormGroup className="form-group--inline">
+                <Inputs.FormGroup>
                     <Inputs.Label
                         children={labels.group}
                         attributes={{"htmlFor": `requestGroup${index}`}}
@@ -56,7 +56,7 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
-                <Inputs.FormGroup className="form-group--inline">
+                <Inputs.FormGroup>
                     <Inputs.Label
                         children={labels.data}
                         attributes={{"htmlFor": `requestData${index}`}}
@@ -81,9 +81,12 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                 />
             </td>
             <td className="request-item__delete">
-                <label className="checkboxdeselect request__delete-button">
-                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} role="button" aria-label="Diesen Datensatz löschen" /><span title="Löschen"></span>
-                </label>
+                <div className="form-check">
+                    <label className="checkboxdeselect request__delete-button form-check-label">
+                        <input className="form-check-input" type="checkbox" checked={true} onClick={() => onDeleteClick(index)} role="button" />
+                        <span>Löschen</span>
+                    </label>
+                </div>
             </td>
         </tr >
     )
@@ -152,7 +155,7 @@ class RequestsView extends Component {
                             <th>LfdNr.</th>
                             <th>Bezeichnung</th>
                             <th>Link und weitere Daten</th>
-                            <th></th>
+                            <th>Löschen</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -166,11 +169,13 @@ class RequestsView extends Component {
                                     children={this.props.descriptions.delete}
                                 />
                                 </p>
-                                <button className="link button-default" onClick={onNewClick}><i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neue Dienstleistung</button>
                             </td>
                         </tr>
                     </tfoot>
                 </table>
+                <div className="table-actions">
+                    <button className="link button-default" onClick={onNewClick}><i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neue Dienstleistung</button>
+                </div>
             </div>
         )
     }
