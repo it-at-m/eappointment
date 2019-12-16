@@ -22,7 +22,7 @@ class View extends RequestView {
         }
 
         $('textarea.maxchars').each(function () { maxChars(this) });
-        this.$main.find('[name="familyName"]').focus();
+        //this.$main.find('[name="familyName"]').focus(); // -> nicht barrierefrei
         //console.log('Component: AppointmentView', this, options);
     }
 
@@ -85,11 +85,11 @@ class View extends RequestView {
     assigneMainFormValues() {
         this.$main.find('.add-date-picker input#process_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('DD.MM.YYYY'));
         this.$main.find('input#process_selected_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD'));
-        this.$main.find('[name="familyName"]').focus();
+        //this.$main.find('[name="familyName"]').focus(); // -> nicht barrierefrei
         this.$main.find('textarea.maxchars').each(function () {
             maxChars(this);
         })
-        this.$main.find('[name="familyName"]').focus();
+        //this.$main.find('[name="familyName"]').focus(); // -> nicht barrierefrei
     }
 
     loadFreeProcessList() {

@@ -77,7 +77,7 @@ class View extends BaseView {
     }
 
     bindEvents() {
-        this.$main.on('click', '.button-callnextclient a', (ev) => {
+        this.$main.on('click', '.button-callnextclient .button', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.loadClientNext();
