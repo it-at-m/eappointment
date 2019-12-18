@@ -19,18 +19,42 @@ class View extends BaseView {
         .on('change', 'input[type="checkbox"]', () => {
             this.toggleButtons();
         }).on('click', '.form-input-counter', (ev) => {
-            this.changeInputCounter(ev);
+            this.changeInputCounterFromButton(ev);
+            this.toggleButtons();
+        }).on('change', 'input[role="spinbutton"]', (ev) => {
+            this.changeInputCounterFromInput(ev);
             this.toggleButtons();
         })
     }
 
-    changeInputCounter (ev) {
-        let $input = $(ev.currentTarget).find('input');
-        let $decrementBtn = $(ev.currentTarget).find('.decrement');
+    changeInputCounterFromInput (ev) {
+        let $input = $(ev.currentTarget);
+        let $decrementBtn = $(ev.currentTarget).parent().find('.decrement');
         let number = $input.val();
+        console.log(number);
+        // Enable / Disable decrement button if on 0 
+        if (number == 0) {
+            $decrementBtn.prop('disabled', true);
+        }
+        else {
+            $decrementBtn.prop('disabled', false);
+        }
+        $input.attr('value', number);
+        return false;
+    }
+
+    changeInputCounterFromButton (ev) {
+        let $input = $(ev.currentTarget).find('input');
+        if ($input == undefined) {
+            $input = $(ev.currentTarget);
+        } 
+        let $decrementBtn = $(ev.currentTarget).find('.decrement');
+        //let $incrementBtn = $(ev.currentTarget).find('.increment');
+        let number = $input.val();
+        console.log(number);
         if ($(ev.target).hasClass('decrement')) {
             $input.val(number > 0 ? --number : 0);
-        } else {
+        } else if ($(ev.target).hasClass('increment')) {
             $input.val(++number);
         }
         // Enable / Disable decrement button if on 0 
