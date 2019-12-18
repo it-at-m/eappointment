@@ -9,7 +9,7 @@ class View extends BaseView {
         this.element = $(element);
         this.includeUrl = options.includeurl;
         this.bindPublicMethods('bindEvents','checkCheckboxes','checkInputCounter','toggleButtons');
-        console.log('Page: Statistic', this, options);
+        //console.log('Page: Statistic', this, options);
         this.$.ready(this.toggleButtons);
         this.bindEvents();
     }
@@ -31,7 +31,6 @@ class View extends BaseView {
         let $input = $(ev.currentTarget);
         let $decrementBtn = $(ev.currentTarget).parent().find('.decrement');
         let number = $input.val();
-        console.log(number);
         // Enable / Disable decrement button if on 0 
         if (number == 0) {
             $decrementBtn.prop('disabled', true);
@@ -51,7 +50,6 @@ class View extends BaseView {
         let $decrementBtn = $(ev.currentTarget).find('.decrement');
         //let $incrementBtn = $(ev.currentTarget).find('.increment');
         let number = $input.val();
-        console.log(number);
         if ($(ev.target).hasClass('decrement')) {
             $input.val(number > 0 ? --number : 0);
         } else if ($(ev.target).hasClass('increment')) {
