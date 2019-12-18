@@ -127,7 +127,7 @@ export const tryJson = (input) => {
     }
 }
 
-const lightboxHtml = '<div class="lightbox"><div class="lightbox__content"></div></div>'
+const lightboxHtml = '<div class="lightbox"><div class="lightbox__content" role="dialog" aria-modal="true"></div></div>'
 
 export const lightbox = (parentElement, onBackgroundClick) => {
     const lightboxElement = $(lightboxHtml)

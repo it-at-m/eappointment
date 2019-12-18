@@ -130,7 +130,10 @@ class View extends BaseView {
     onSelectDateWithOverlay(event) {
         const container = $.find('[data-calendar]');
         var returnTarget = $(event.currentTarget); 
-        $(container).find('.calendar').addClass('lightbox__content');
+        $(container).find('.calendar')
+            .addClass('lightbox__content')
+            .attr('role', 'dialog')
+            .attr('aria-modal', 'true');
         $(container).addClass('lightbox').on('click', () => {
             $(container).removeClass('lightbox');
             $(container).removeClass('lightbox__content');
