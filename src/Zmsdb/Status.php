@@ -18,7 +18,7 @@ class Status extends Base
         $statusVariables = $this->readStatusVariables();
         $nodeConnections = round($statusVariables['Threads_connected'] / $configVariables['max_connections'], 2);
         $entity['database']['problems'] = $this->getConfigProblems($configVariables);
-        $entity['database']['locks'] = $this->readInnodbLocks();
+        $entity['database']['locks'] = $statusVariables['Innodb_row_lock_current_waits'];
         $entity['database']['threads'] = $statusVariables['Threads_connected'];
         $entity['database']['nodeConnections'] = $nodeConnections;
         $entity['database']['clusterStatus'] =
@@ -135,19 +135,6 @@ class Status extends Base
             '
         );
         return $stats;
-    }
-
-    /**
-     * Get table locks
-     *
-     * @return Array
-     */
-    protected function readInnodbLocks()
-    {
-        $stats = $this->getReader()->fetchOne(
-            'SELECT COUNT(*) cnt FROM information_schema.innodb_trx WHERE trx_state = "LOCK WAIT";'
-        );
-        return $stats['cnt'];
     }
 
     /**
