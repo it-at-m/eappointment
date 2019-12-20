@@ -12,6 +12,11 @@ class StatusTest extends Base
         return [
             [
                 'function' => 'readGetResult',
+                'url' => '/workstation/',
+                'response' => $this->readFixture("GET_workstation_basic.json")
+            ],
+            [
+                'function' => 'readGetResult',
                 'url' => '/status/',
                 'response' => $this->readFixture("GET_status.json")
             ]
