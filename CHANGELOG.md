@@ -1,3 +1,7 @@
+## v2.23.02
+
+* #36250 Bugfix: Healthcheck-Prüfung auf eine zu langsame Datenbank nutzt jetzt einen anderen Mechanismus
+
 ## v2.23.00
 
 * #37015 Bugfix: Versucht man eine Behörde mit der ID 0 zu speichern, erscheint jetzt eine Fehlermeldung.
