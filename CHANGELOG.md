@@ -1,6 +1,7 @@
 ## v2.23.02
 
 * #36250 Bugfix: Healthcheck-Prüfung auf eine zu langsame Datenbank nutzt jetzt einen anderen Mechanismus
+* #32183 Bugfix: Das Skript zum löschen von E-Mail-Adressen aus einer Blacklist hat jetzt ausreichend Zugriffsrechte
 
 ## v2.23.00
 
