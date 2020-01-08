@@ -217,7 +217,6 @@ class Availability extends Base implements Interfaces\ResolveReferences
         $query->addValues($values);
         $this->writeItem($query);
         $entity->id = $this->getWriter()->lastInsertId();
-        var_export($entity);
         return $this->readEntity($entity->id, $resolveReferences);
     }
 
