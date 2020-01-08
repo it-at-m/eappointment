@@ -97,6 +97,8 @@ class AvailabilityTest extends Base
         $input->type = 'openinghours';
         $entity = $query->writeEntity($input);
         $lastInsertedId = $entity->id;
+        var_export($entity);
+
 
         $entity = $query->readEntity($lastInsertedId, 1);
         var_export($entity);
