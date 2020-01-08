@@ -99,6 +99,7 @@ class AvailabilityTest extends Base
         $lastInsertedId = $entity->id;
 
         $entity = $query->readEntity($lastInsertedId, 1);
+        var_export($entity);
         $this->assertEquals('openinghours', $entity->type);
     }
 
