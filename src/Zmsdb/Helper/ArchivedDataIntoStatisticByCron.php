@@ -30,8 +30,10 @@ class ArchivedDataIntoStatisticByCron
         $scopeList = (new \BO\Zmsdb\Scope())->readList(0);
         $dateTime = $dateTime->modify($this->timespan);
         foreach ($scopeList as $scope) {
+            $this->logMessage("INFO: Processing $scope");
             $processList = $this->query->readListForStatistic($dateTime, $scope, $this->limit);
             if (count($processList)) {
+                $this->logMessage("INFO: ".count($processList)." processes for $scope");
                 $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($scope->getId());
                 $department = (new \BO\Zmsdb\Department())->readByScopeId($scope->getId());
                 if ($department) {
@@ -54,9 +56,16 @@ class ArchivedDataIntoStatisticByCron
                         $commit
                     );
                 }
-            } elseif ($this->verbose) {
-                error_log("INFO: No changes for scope $scope");
+            } else {
+                $this->logMessage("INFO: No changes for scope $scope");
             }
+        }
+    }
+
+    protected function logMessage($message)
+    {
+        if ($this->verbose) {
+            error_log($message);
         }
     }
 
