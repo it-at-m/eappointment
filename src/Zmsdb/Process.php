@@ -480,7 +480,8 @@ class Process extends Base implements Interfaces\ResolveReferences
      */
     public function readProcessListByMailAddress(
         $mailAddress,
-        $resolveReferences = 0
+        $resolveReferences = 0,
+        $limit = 2000
     ) : Collection {
         $query = new Query\Process(Query\Base::SELECT);
         $query
@@ -488,6 +489,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addEntityMapping()
             ->addConditionMail($mailAddress)
             ->addConditionIgnoreSlots()
+            ->addLimit($limit)
             ;
         $statement = $this->fetchStatement($query);
         return $this->readList($statement, $resolveReferences);

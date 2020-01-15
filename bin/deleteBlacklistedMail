@@ -25,16 +25,19 @@ foreach ($mailAddressList as $mailAddress) {
         if ($verbose) {
             echo "### DELETE mail address $mailAddress ###\n";
         }
-        $results = $query->readProcessListByMailAddress($mailAddress);
-        foreach ($results as $process) {
-            if ($verbose) {
-                echo "  CHANGE $process\n";
+        $results = [];
+        do {
+            foreach ($results as $process) {
+                if ($verbose) {
+                    echo "  CHANGE $process\n";
+                }
+                if ($commit) {
+                    $process->getFirstClient()->email = '';
+                    $query->updateEntity($process, new \DateTimeImmutable());
+                }
             }
-            if ($commit) {
-                $process->getFirstClient()->email = '';
-                $query->updateEntity($process, new \DateTimeImmutable());
-            }
-        }
+            $results = $query->readProcessListByMailAddress($mailAddress, 0, 500);
+        } while ($results->count());
     }
 }
 

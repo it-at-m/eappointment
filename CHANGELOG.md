@@ -1,3 +1,7 @@
+## v2.23.03
+
+* #39753 Bugfix: Das Skript zum Löschen von E-Mail-Adressen löscht nicht mehr alle Vorkommen gleichzeitig um Speicherplatz-Probleme zu umgehen.
+
 ## v2.23.02
 
 * #36250 Bugfix: Healthcheck-Prüfung auf eine zu langsame Datenbank nutzt jetzt einen anderen Mechanismus
