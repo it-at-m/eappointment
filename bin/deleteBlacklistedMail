@@ -26,6 +26,7 @@ foreach ($mailAddressList as $mailAddress) {
             echo "### DELETE mail address $mailAddress ###\n";
         }
         $results = [];
+        $maxRuns = $verbose ? 1 : 20;
         do {
             foreach ($results as $process) {
                 if ($verbose) {
@@ -37,7 +38,7 @@ foreach ($mailAddressList as $mailAddress) {
                 }
             }
             $results = $query->readProcessListByMailAddress($mailAddress, 0, 500);
-        } while ($results->count());
+        } while ($results->count() && $maxRuns--);
     }
 }
 
