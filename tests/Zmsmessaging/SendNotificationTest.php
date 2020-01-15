@@ -41,4 +41,29 @@ class SendNotificationTest extends Base
             }
         }
     }
+
+    public function testMessageEncoding()
+    {
+        $item =  new \BO\Zmsentities\Notification(
+            json_decode($this->readFixture("GET_notification_appointment.json"), 1)
+        );
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $process['queue']['withAppointment'] = 1;
+        $process['id'] = 4567;
+        $config = (new \BO\Zmsentities\Config())->getExample();
+        $department = (new \BO\Zmsentities\Department())->getExample();
+
+        $resolvedEntity = $item->toResolvedEntity($process, $config, $department);
+
+
+
+        $preferences = (new \BO\Zmsentities\Config())->getNotificationPreferences();
+        $url = $preferences['gatewayUrl'] .
+            urlencode(utf8_encode($resolvedEntity->getMessage())) .
+            '&sender='. urlencode($resolvedEntity->getIdentification()) .
+            '&recipient=' .
+            urlencode($resolvedEntity->client['telephone'])
+        ;
+        $this->assertContains('Bürgeramt', utf8_decode(urldecode($url)));
+    }
 }
