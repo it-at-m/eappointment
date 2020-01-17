@@ -24,7 +24,7 @@ if (preg_grep('#--?v(erbose)?#', $argv)) {
             $item = new \BO\Zmsentities\Notification($notification['item']);
             $preferences = (new \BO\Zmsentities\Config())->getNotificationPreferences();
             $url = $preferences['gatewayUrl'] .
-                urlencode($item->getMessage()) .
+                urlencode(utf8_encode($item->getMessage())) .
                 '&sender='. urlencode($item->getIdentification()) .
                 '&recipient=' .
                 urlencode($item->client['telephone'])
