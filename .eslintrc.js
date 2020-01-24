@@ -1,5 +1,4 @@
 module.exports = {
-    "parser": "babel-eslint",
     "parserOptions": {
         "ecmaVersion": 6,
         "sourceType": "module",
@@ -8,12 +7,13 @@ module.exports = {
             "jsx": true
         }
     },
+    "env": {
+        "browser": true
+    },
     "plugins": [],
     "globals": {
         "console": true,
-        "setTimeout": true,
-        "document": true,
-        "Promise": true
+        "document": true
     },
     "extends": ["eslint:recommended"],
     "rules": {
