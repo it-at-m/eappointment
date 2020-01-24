@@ -10,23 +10,15 @@ now: # Dummy target
 build: css vendorjs js # Build javascript and css
 
 css: now
-	node_modules/.bin/gulp scss
-
-css-print: now
-	node_modules/.bin/gulp scss-print
+	npm run css
 
 js: now
-	node_modules/.bin/gulp js
-
-vendorjs: now
-	node_modules/.bin/gulp vendor
+	npm run js
 
 fix: # run code fixing
 	php vendor/bin/phpcbf --standard=psr2 src/
 	php vendor/bin/phpcbf --standard=psr2 tests/
-
-watch:
-	node_modules/.bin/gulp watch
+	npm run fix
 
 live: # init live system
 	$(COMPOSER) install --no-dev --prefer-dist
