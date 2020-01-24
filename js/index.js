@@ -2,10 +2,10 @@
 // ZMS Statistic behavior
 // --------------------------------------------------------
 
-import 'babel-polyfill';
+//import 'babel-polyfill';
 
 // Import base libs
-import window from "window";
+//import window from "window";
 import $ from "jquery";
 import moment from 'moment'
 import 'moment/locale/de';

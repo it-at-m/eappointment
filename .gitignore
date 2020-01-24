@@ -11,3 +11,4 @@ vendor.update
 VERSION
 public/_tests
 composer.*.lock
+.cache
