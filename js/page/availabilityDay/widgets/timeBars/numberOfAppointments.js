@@ -1,4 +1,6 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+
+import propTypeAvailability from '../../../../lib/propTypeAvailability'
 import { timeToFloat } from '../../../../lib/utils'
 
 const NumberOfAppointments = props => {
@@ -31,9 +33,7 @@ const NumberOfAppointments = props => {
 }
 
 NumberOfAppointments.propTypes = {
-    data: PropTypes.shape({
-        type: PropTypes.oneOf(['appointment'])
-    })
+    data: propTypeAvailability
 }
 
 export default NumberOfAppointments

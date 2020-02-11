@@ -1,4 +1,4 @@
-/* global window */
+
 import Workstation from '../workstation'
 import settings from '../../settings'
 

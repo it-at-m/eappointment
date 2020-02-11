@@ -1,4 +1,6 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+
+import propTypeConflict from '../../../../lib/propTypeConflict'
 import { timestampToFloat } from '../../../../lib/utils'
 import moment from 'moment'
 
@@ -30,9 +32,7 @@ const Conflict = props => {
 }
 
 Conflict.propTypes = {
-    data: PropTypes.shape({
-        type: PropTypes.oneOf(['conflict'])
-    })
+    data: propTypeConflict
 }
 
 export default Conflict

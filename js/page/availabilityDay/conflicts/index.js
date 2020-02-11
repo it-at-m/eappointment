@@ -1,4 +1,7 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
+
+
 import Board from '../layouts/board'
 import moment from 'moment'
 

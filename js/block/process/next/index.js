@@ -1,4 +1,4 @@
-/* global window */
+
 import BaseView from '../../../lib/baseview'
 import $ from 'jquery'
 

@@ -1,4 +1,3 @@
-/* global window */
 import $ from 'jquery'
 import { getUrlParameters } from '../../lib/utils'
 
