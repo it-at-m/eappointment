@@ -64,6 +64,10 @@ abstract class Base
      */
     public function getReader()
     {
+        if (null !== $this->writeDb) {
+            // if readDB gets a reset, still use writeDB
+            return $this->writeDb;
+        }
         if (null === $this->readDb) {
             $this->readDb= Connection\Select::getReadConnection();
         }

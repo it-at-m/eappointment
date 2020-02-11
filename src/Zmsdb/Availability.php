@@ -215,7 +215,9 @@ class Availability extends Base implements Interfaces\ResolveReferences
         $query = new Query\Availability(Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
-        $this->writeItem($query);
+        if (!$this->writeItem($query)) {
+            throw new Exception\Availability\AvailabilityCreateFailed();
+        }
         $entity->id = $this->getWriter()->lastInsertId();
         return $this->readEntity($entity->id, $resolveReferences);
     }
