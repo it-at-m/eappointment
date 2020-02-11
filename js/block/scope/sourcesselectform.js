@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import * as Inputs from '../../lib/inputs'
 import { loopWithCallback } from '../../lib/utils'
 import { sortByName } from '../../lib/sort'

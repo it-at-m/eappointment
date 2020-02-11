@@ -1,4 +1,3 @@
-/* global window */
 import BaseView from '../../lib/baseview'
 import { stopEvent, showSpinner, hideSpinner } from '../../lib/utils'
 import $ from 'jquery'

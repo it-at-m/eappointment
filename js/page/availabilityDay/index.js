@@ -1,7 +1,7 @@
-/* global window */
-/* global confirm */
 
-import React, { Component, PropTypes } from 'react'
+
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import $ from 'jquery'
 import moment from 'moment'
 import AvailabilityForm from './form'

@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component} from 'react'
+import PropTypes from 'prop-types'
 import { deepMerge, makeNestedObj, getFieldList } from '../../lib/utils'
 import MandantView from '../../block/source/mandant'
 import RequestsView from '../../block/source/requests'

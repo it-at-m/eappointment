@@ -1,4 +1,7 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
+
+import propTypeAvailability from '../../../../lib/propTypeAvailability'
 import { timeToFloat } from '../../../../lib/utils'
 
 const Appointment = props => {
@@ -33,9 +36,7 @@ const Appointment = props => {
 }
 
 Appointment.propTypes = {
-    data: PropTypes.shape({
-        type: PropTypes.oneOf(['appointment'])
-    }),
+    data: propTypeAvailability,
     maxWorkstationCount: PropTypes.number,
     onSelect: PropTypes.func.isRequired
 }

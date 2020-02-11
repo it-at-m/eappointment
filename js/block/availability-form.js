@@ -1,4 +1,3 @@
-/* global confirm */
 import $ from "jquery";
 import BaseView from '../lib/baseview';
 

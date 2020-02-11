@@ -1,4 +1,7 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
+
+import propTypeAvailability from '../../../../lib/propTypeAvailability'
 import { timeToFloat } from '../../../../lib/utils'
 
 const Opening = props => {
@@ -27,9 +30,7 @@ const Opening = props => {
 }
 
 Opening.propTypes = {
-    data: PropTypes.shape({
-        type: PropTypes.oneOf(['openinghours'])
-    }),
+    data: propTypeAvailability,
     onSelect: PropTypes.func.isRequired
 }
 

@@ -1,4 +1,6 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+
 
 import * as Inputs from '../../../lib/inputs'
 const { FormGroup, Label, Controls, Select } = Inputs
@@ -216,7 +218,7 @@ class CallDisplayConfigView extends Component {
                     </Controls>
                 </FormGroup>
                 <div className="form-actions">
-                    <a href={generatedUrl} target="_blank" className="button button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen</a>
+                    <a href={generatedUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen</a>
                 </div>
             </form>
         )
