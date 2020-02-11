@@ -12,3 +12,4 @@ VERSION
 public/_tests
 package-lock.json
 #composer.*.lock
+.cache

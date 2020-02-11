@@ -8,6 +8,9 @@ module.exports = {
             "jsx": true
         }
     },
+    "env": {
+        "browser": true
+    },
     "plugins": ["react"],
     "globals": {
         "console": true,
