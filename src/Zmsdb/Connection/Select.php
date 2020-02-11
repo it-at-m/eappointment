@@ -231,7 +231,7 @@ class Select
                     );'
                 );
             }
-            // On writing, use the same host to avoid racing/transcation conditions
+            // On writing, use the same host to avoid racing/transaction conditions
             self::$readConnection = self::$writeConnection;
         }
         return self::$writeConnection;

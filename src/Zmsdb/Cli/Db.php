@@ -37,7 +37,7 @@ class Db
         echo "\nTook $time seconds\n";
     }
 
-    public static function startUsingDatabase($dbname = null)
+    public static function startUsingDatabase($dbname = null) : \BO\Zmsdb\Connection\Pdo
     {
         if (!self::$baseDSN) {
             self::$baseDSN = \BO\Zmsdb\Connection\Select::$writeSourceName;
@@ -61,6 +61,7 @@ class Db
         $dbname_zms =& \BO\Zmsdb\Connection\Select::$dbname_zms;
 
         $pdo = self::startUsingDatabase('information_schema');
+        $pdo->exec("DROP DATABASE IF EXISTS `$dbname_zms`;");
         $pdo->exec("CREATE DATABASE IF NOT EXISTS `$dbname_zms`;");
 
         self::startExecuteSqlFile($fixtures .'/'. $filename);

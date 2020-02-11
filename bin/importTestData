@@ -22,7 +22,7 @@ if (preg_grep('/--commit/', $argv)) {
     \BO\Zmsdb\Cli\Db::startConfigDataImport();
     $importer = new \BO\Zmsdb\Source\Dldb();
     $importer->startImport(true);
-    \BO\Zmsdb\Cli\Db::startTestDataImport($fixtures, 'mysql_mandantory_unittests_data.sql.gz');
+    \BO\Zmsdb\Cli\Db::startExecuteSqlFile($fixtures . '/mysql_mandantory_unittests_data.sql.gz');
     if (! preg_grep('#^--withoutcalculation$#', $argv)) {
         $calculator = new \BO\Zmsdb\Helper\CalculateSlots(true);
         $calculator->writeCalculations(new \DateTimeImmutable("2016-04-01"), 3600);
