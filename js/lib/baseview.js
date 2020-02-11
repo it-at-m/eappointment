@@ -1,4 +1,3 @@
-import window from "window"
 import $ from "jquery";
 import ErrorHandler from './errorHandler';
 import ExceptionHandler from './exceptionHandler';

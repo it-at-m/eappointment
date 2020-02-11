@@ -2,10 +2,9 @@
 // ZMS Admin behavior
 // --------------------------------------------------------
 
-import 'babel-polyfill';
+//import 'babel-polyfill';
 
 // Import base libs
-import window from "window";
 import $ from "jquery";
 import moment from 'moment'
 import 'moment/locale/de';
@@ -143,3 +142,5 @@ console.log("Welcome to the ZMS admin interface...");
 //bindReact('[data-department-daysoff]', DepartmentDaysOffView)
 //bindReact('[data-ticketprinter-config]', TicketPrinterConfigView)
 //bindReact('[data-calldisplay-config]', CallDisplayConfigView)
+
+
