@@ -1,6 +1,4 @@
-/* global setTimeout */
 import BaseView from '../lib/baseview';
-import window from "window";
 
 class View extends BaseView {
 
