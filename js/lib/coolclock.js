@@ -1,9 +1,9 @@
-/* global jQuery, setTimeout, clearTimeout */
 //modified with pull request https://github.com/simonbaird/CoolClock/pull/16/files
 //by Torsten Kunst
 //14.12.2016
 
-import window from "window";
+import jQuery from "jquery";
+
 
 // Constructor for CoolClock objects
 let CoolClock = function(options) {

@@ -1,5 +1,4 @@
 module.exports = {
-    "parser": "babel-eslint",
     "parserOptions": {
         "ecmaVersion": 6,
         "sourceType": "module",
@@ -11,6 +10,9 @@ module.exports = {
     "plugins": [],
     "globals": {
         "console": true,
+        "window": true,
+        "setTimeout": true,
+        "clearTimeout": true,
         "document": true
     },
     "extends": ["eslint:recommended"],
