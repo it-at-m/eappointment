@@ -1,6 +1,4 @@
-/* global setTimeout */
 import BaseView from '../lib/baseview';
-import window from "window";
 import cookie from "js-cookie";
 import $ from "jquery";
 

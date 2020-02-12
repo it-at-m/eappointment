@@ -12,3 +12,4 @@ cache
 vendor.old
 vendor.update
 #composer.*.lock
+.cache

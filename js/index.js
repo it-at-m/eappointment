@@ -2,10 +2,7 @@
 // ZMS Ticketprinter behavior
 // --------------------------------------------------------
 
-import 'babel-polyfill';
-
 // Import base libs
-import window from "window";
 import $ from "jquery";
 import settings from './settings';
 //import { forceHttps } from './lib/utils'
