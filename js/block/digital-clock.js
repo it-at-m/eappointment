@@ -1,4 +1,3 @@
-/* global setInterval */
 import BaseView from '../lib/baseview';
 
 class View extends BaseView {
