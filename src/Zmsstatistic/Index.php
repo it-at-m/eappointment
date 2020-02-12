@@ -24,7 +24,7 @@ class Index extends BaseController
     ) {
         try {
             $this->workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        } catch (\Exception $workstationexception) {
+        } catch (\Throwable $workstationexception) {
             $this->workstation = null;
         }
 

@@ -13,7 +13,8 @@ module.exports = {
     "plugins": [],
     "globals": {
         "console": true,
-        "document": true
+        "document": true,
+        "Promise": true
     },
     "extends": ["eslint:recommended"],
     "rules": {
