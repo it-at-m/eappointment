@@ -34,6 +34,11 @@ class IndexTest extends Base
         $this->setApiCalls(
             [
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
