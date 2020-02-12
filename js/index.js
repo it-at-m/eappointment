@@ -3,7 +3,6 @@
 // --------------------------------------------------------
 
 // Import base libs
-import window from "window";
 import $ from "jquery";
 import settings from './settings';
 

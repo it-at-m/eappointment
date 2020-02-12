@@ -7,7 +7,8 @@ help:
 now: # Dummy target
 
 build: # Build javascript and css
-	node_modules/.bin/gulp
+	npm run js
+	npm run css
 
 update: # update with devel composer.json
 	COMPOSER=composer.devel.json $(COMPOSER) update
@@ -15,18 +16,14 @@ update: # update with devel composer.json
 fix: # run code fixing
 	php vendor/bin/phpcbf --standard=psr2 src/
 	php vendor/bin/phpcbf --standard=psr2 tests/
-
-watch:
-	node_modules/.bin/gulp watch
+	npm run fix
 
 css: now
-	node_modules/.bin/gulp scss
+	npm run css
 
 js: now
-	node_modules/.bin/gulp js
+	npm run js
 
-vendorjs: now
-	node_modules/.bin/gulp vendor
 
 live: # init live system
 	$(COMPOSER) install --no-dev --prefer-dist
