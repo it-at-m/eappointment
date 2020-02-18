@@ -7,13 +7,19 @@ if (!defined('APP_PATH')) {
 }
 
 // use autoloading offered by composer, see composer.json for path settings
-require_once(APP_PATH . '/vendor/autoload.php');
+if (file_exists(APP_PATH . '/vendor/autoload.php')) {
+    define('VENDOR_PATH', APP_PATH . '/vendor');
+} else {
+    define('VENDOR_PATH', APP_PATH . '/../..');
+}
+require_once(VENDOR_PATH . '/autoload.php');
+
 
 // initialize the static \App singleton
 require_once(APP_PATH . '/config.php');
 
 \BO\Slim\Bootstrap::init();
-\BO\Slim\Bootstrap::addTwigTemplateDirectory('dldb', APP_PATH . '/vendor/bo/clientdldb/templates');
+\BO\Slim\Bootstrap::addTwigTemplateDirectory('dldb', VENDOR_PATH . '/bo/clientdldb/templates');
 
 // Set option for environment, routing, logging and templating
 \BO\Zmsdb\Connection\Select::$enableProfiling = \App::DEBUG;
