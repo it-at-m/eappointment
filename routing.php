@@ -5665,7 +5665,7 @@ use \Psr\Http\Message\ResponseInterface;
     return function (RequestInterface $request, ResponseInterface $response) {
         $message = \BO\Zmsapi\Response\Message::create($request);
         $message->meta->error = true;
-        $message->meta->message = "Could not find a resource with the given URL";
+        $message->meta->message = "Could not find a resource with the given URL " . $request->getUri()->getPath();
         $response = \BO\Slim\Render::withLastModified($response, time(), '0');
         return \BO\Slim\Render::withJson($response, $message, 404);
     };
