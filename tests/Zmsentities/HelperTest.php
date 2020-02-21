@@ -9,7 +9,7 @@ class HelperTest extends EntityCommonTests
     public function testProperty()
     {
         $collection = $this->getExampleList();
-        $entity = reset($collection);
+        $entity = $collection->getIterator()->current();
 
         $this->assertTrue($entity->toProperty()->offsetExists('date'), 'Property offset date not exists');
         $this->assertContains('Karfreitag', $entity->toProperty()->__toString(), 'Property __toString failed');
