@@ -34,9 +34,9 @@ class DayoffTest extends EntityCommonTests
         );
 
         $collection->sortByName();
-        $this->assertTrue('Christi Himmelfahrt' == reset($collection)->name, 'Dayoff list sort by name failed');
+        $this->assertTrue('Christi Himmelfahrt' == $collection->getIterator()->current()->name, 'Dayoff list sort by name failed');
         $collection->sortByCustomKey('date');
-        $this->assertTrue('Karfreitag' == reset($collection)->name, 'Dayoff list sort by time failed');
+        $this->assertTrue('Karfreitag' == $collection->getIterator()->current()->name, 'Dayoff list sort by time failed');
     }
 
     public function testHasDatesInYear()

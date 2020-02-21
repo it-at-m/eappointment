@@ -12,7 +12,7 @@ class ScopeList extends Base
 
     public function getAlternateRedirectUrl()
     {
-        $scope = reset($this);
+        $scope = $this->getIterator()->current();
         return (1 == count($this) && $scope->getAlternateRedirectUrl()) ? $scope->getAlternateRedirectUrl() : null;
     }
 

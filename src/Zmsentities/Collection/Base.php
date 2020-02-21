@@ -26,13 +26,14 @@ class Base extends \ArrayObject implements \JsonSerializable
 
     public function getFirst()
     {
-        $item = reset($this);
+        $item = $this->getIterator()->current();
         return $item;
     }
 
     public function getLast()
     {
-        $item = end($this);
+        $copy = $this->getArrayCopy();
+        $item = end($copy);
         return $item;
     }
 
