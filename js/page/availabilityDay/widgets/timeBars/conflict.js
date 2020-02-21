@@ -25,7 +25,7 @@ const Conflict = props => {
     }
 
     return (
-        <div className="item-bar" {...{ title, style}} >
+        <div className="item-bar" {...{ title, style }} >
             <span className="item-bar_inner">⚡</span>
         </div>
     )

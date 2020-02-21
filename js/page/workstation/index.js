@@ -128,7 +128,7 @@ class View extends BaseView {
 
     onSelectDateWithOverlay(event) {
         const container = $.find('[data-calendar]');
-        var returnTarget = $(event.currentTarget); 
+        var returnTarget = $(event.currentTarget);
         $(container).find('.calendar')
             .addClass('lightbox__content')
             .attr('role', 'dialog')
@@ -139,23 +139,23 @@ class View extends BaseView {
             returnTarget.focus();
         }).on('keydown', (ev) => {
             var key = ev.keyCode || ev.which;
-            switch(key) {
-            case 27: // ESC    
-                $(container).removeClass('lightbox');
-                $(container).removeClass('lightbox__content');
-                returnTarget.focus();
-                break;
+            switch (key) {
+                case 27: // ESC    
+                    $(container).removeClass('lightbox');
+                    $(container).removeClass('lightbox__content');
+                    returnTarget.focus();
+                    break;
             }
         });
         this.addFocusTrap($(container));
-         
+
     }
-    
+
     addFocusTrap(elem) {
         // Get all focusable elements inside our trap container
         var tabbable = elem.find('select, input, textarea, button, a, *[role="button"]');
         // Focus the first element
-        if (tabbable.length ) {
+        if (tabbable.length) {
             tabbable.filter(':visible').first().focus();
         }
         tabbable.bind('keydown', function (e) {
@@ -165,12 +165,12 @@ class View extends BaseView {
                 var firstVisible = tabbable.filter(':visible').first();
                 var lastVisible = tabbable.filter(':visible').last();
                 if (firstVisible && lastVisible) {
-                    if (e.shiftKey && ( $(firstVisible)[0] === $(this)[0] ) ) {
+                    if (e.shiftKey && ($(firstVisible)[0] === $(this)[0])) {
                         // TAB + SHIFT pressed on first visible element
                         e.preventDefault();
                         lastVisible.focus();
-                    } 
-                    else if (!e.shiftKey && ( $(lastVisible)[0] === $(this)[0] ) ) {
+                    }
+                    else if (!e.shiftKey && ($(lastVisible)[0] === $(this)[0])) {
                         // TAB pressed pressed on last visible element
                         e.preventDefault();
                         firstVisible.focus();

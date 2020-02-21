@@ -3,8 +3,7 @@ import ErrorHandler from './errorHandler';
 import ExceptionHandler from './exceptionHandler';
 import MessageHandler from './messageHandler';
 import DialogHandler from './dialogHandler';
-import { lightbox, showSpinner, hideSpinner } from './utils';
-import { noOp } from './utils'
+import { lightbox, showSpinner, hideSpinner, noOp } from './utils';
 
 class BaseView extends ErrorHandler {
 

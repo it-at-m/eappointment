@@ -8,13 +8,13 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
     const formName = `requests[${index}]`
 
     return (
-        <tr className="request-item">
+        <tr key={index} className="request-item">
             <td className="request-item__id" width="auto">
                 <Inputs.Text
                     name={`${formName}[id]`}
                     placeholder={labels.id}
                     value={request.id}
-                    attributes={{ "readOnly": "1", "aria-label": "Laufende Nummer"}}
+                    attributes={{ "readOnly": "1", "aria-label": "Laufende Nummer" }}
                 />
             </td>
             <td className="request-item__name" width="auto">
@@ -23,14 +23,14 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                     placeholder={labels.name}
                     value={request.name}
                     onChange={onChange}
-                    attributes={{"aria-label": "Bezeichnung"}}
+                    attributes={{ "aria-label": "Bezeichnung" }}
                 />
             </td>
             <td className="request-item__link">
                 <Inputs.FormGroup>
                     <Inputs.Label
-                        children={`${labels.url}`}
-                        attributes={{"htmlFor": `requestUrl${index}` }}
+                        value={`${labels.url}`}
+                        attributes={{ "htmlFor": `requestUrl${index}` }}
                     />
                     <Inputs.Controls>
                         <Inputs.Text
@@ -38,14 +38,14 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                             placeholder={labels.url}
                             value={request.link}
                             onChange={onChange}
-                            attributes={{"id": `requestUrl${index}`}}
+                            attributes={{ "id": `requestUrl${index}` }}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
                 <Inputs.FormGroup>
                     <Inputs.Label
-                        children={labels.group}
-                        attributes={{"htmlFor": `requestGroup${index}`}}
+                        value={labels.group}
+                        attributes={{ "htmlFor": `requestGroup${index}` }}
                     />
                     <Inputs.Controls>
                         <Inputs.Text
@@ -53,14 +53,14 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                             placeholder={labels.group}
                             value={request.group}
                             onChange={onChange}
-                            attributes={{"id": `requestGroup${index}`}}
+                            attributes={{ "id": `requestGroup${index}` }}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
                 <Inputs.FormGroup>
                     <Inputs.Label
-                        children={labels.data}
-                        attributes={{"htmlFor": `requestData${index}`}}
+                        value={labels.data}
+                        attributes={{ "htmlFor": `requestData${index}` }}
                     />
                     <Inputs.Controls>
                         <Inputs.Textarea
@@ -68,11 +68,11 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                             value={(request.data) ? JSON.stringify(request.data) : ''}
                             placeholder="{}"
                             onChange={onChange}
-                            attributes={{"id": `requestData${index}`, "aria-describedby": `help_requestData${index}`}}
+                            attributes={{ "id": `requestData${index}`, "aria-describedby": `help_requestData${index}` }}
                         />
                         <Inputs.Description
-                            children={descriptions.data}
-                            attributes={{"id": `help_requestData${index}`}}
+                            value={descriptions.data}
+                            attributes={{ "id": `help_requestData${index}` }}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
@@ -84,7 +84,7 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
             <td className="request-item__delete">
                 <div className="form-check">
                     <label className="checkboxdeselect request__delete-button form-check-label">
-                        <input className="form-check-input" type="checkbox" checked={true} onClick={() => onDeleteClick(index)} role="button" />
+                        <input className="form-check-input" type="checkbox" readOnly={true} checked={true} onClick={() => onDeleteClick(index)} role="button" />
                         <span>Löschen</span>
                     </label>
                 </div>
@@ -124,12 +124,6 @@ class RequestsView extends Component {
         //console.log("updated request component")
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.source.source !== this.props.source) {
-            //console.log("props changed", nextProps)
-        }
-    }
-
     render() {
         const onNewClick = ev => {
             ev.preventDefault()
@@ -166,9 +160,9 @@ class RequestsView extends Component {
                         <tr>
                             <td colSpan="4">
                                 <p>
-                                <Inputs.Description
-                                    children={this.props.descriptions.delete}
-                                />
+                                    <Inputs.Description
+                                        value={this.props.descriptions.delete}
+                                    />
                                 </p>
                             </td>
                         </tr>
@@ -183,12 +177,12 @@ class RequestsView extends Component {
 }
 
 RequestsView.propTypes = {
-    labelsrequests: PropTypes.array.isRequired,
-    descriptions: PropTypes.array.isRequired,
-    source: PropTypes.array.isRequired,
-    changeHandler: PropTypes.changeHandler,
-    addNewHandler: PropTypes.addNewHandler,
-    deleteHandler: PropTypes.deleteHandler
+    labelsrequests: PropTypes.object.isRequired,
+    descriptions: PropTypes.object.isRequired,
+    source: PropTypes.object.isRequired,
+    changeHandler: PropTypes.func,
+    addNewHandler: PropTypes.func,
+    deleteHandler: PropTypes.func
 }
 
 export default RequestsView

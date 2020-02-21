@@ -60,9 +60,9 @@ class CallDisplayConfigView extends Component {
 
             return carry
         }, {
-                scopelist: [],
-                clusterlist: []
-            })
+            scopelist: [],
+            clusterlist: []
+        })
 
         let parameters = []
 
@@ -121,7 +121,7 @@ class CallDisplayConfigView extends Component {
             return carry || (current.id === item.id && current.type === item.type)
         }, false)
         return (
-            <div className="form-check ticketprinter-config__item">  
+            <div key={item.id} className="form-check ticketprinter-config__item">
                 <label className="form-check-label">
                     {this.renderCheckbox(itemEnabled, onChange)}
                     {prefix}{text}
@@ -154,7 +154,7 @@ class CallDisplayConfigView extends Component {
 
     renderDepartment(department) {
         return (
-            <div>
+            <div key={department.id}>
                 <h2 className="block__heading">{department.name}</h2>
                 {this.renderScopes(department.scopes)}
                 {this.renderClusters(department.clusters)}
@@ -181,20 +181,20 @@ class CallDisplayConfigView extends Component {
             <form className="form--base form-group calldisplay-config">
                 {this.state.departments.map(this.renderDepartment.bind(this))}
                 <FormGroup>
-                    <Label attributes={{"htmlFor": "visibleCalls"}}>Angezeigte Aufrufe</Label>
+                    <Label attributes={{ "htmlFor": "visibleCalls" }}>Angezeigte Aufrufe</Label>
                     <Controls>
                         <Select
                             options={[{ name: 'Alle', value: 'all' }, { name: "Nur Abholer", value: 'pickup' }, { name: "Spontan- und Terminkunden", value: 'called' }]}
                             value={this.state.queueStatus}
-                            attributes = {{"id": "visibleCalls"}}
+                            attributes={{ "id": "visibleCalls" }}
                             onChange={onQueueStatusChange} />
                     </Controls>
                 </FormGroup>
                 <FormGroup>
-                    <Label attributes={{"htmlFor": "calldisplayLayout"}}>Layout</Label>
+                    <Label attributes={{ "htmlFor": "calldisplayLayout" }}>Layout</Label>
                     <Controls>
                         <Select
-                            attributes = {{"id": "calldisplayLayout"}}
+                            attributes={{ "id": "calldisplayLayout" }}
                             options={[
                                 { name: 'Uhrzeit, 6-12 Aufrufe | Platz', value: 'defaultplatz' },
                                 { name: 'Uhrzeit, 6-12 Aufrufe | Raum', value: 'defaultraum' },
@@ -210,10 +210,10 @@ class CallDisplayConfigView extends Component {
                     </Controls>
                 </FormGroup>
                 <FormGroup>
-                    <Label attributes={{"htmlFor": "calldisplayUrl"}}>URL</Label>
+                    <Label attributes={{ "htmlFor": "calldisplayUrl" }}>URL</Label>
                     <Controls>
-                        <Inputs.Text 
-                            value={generatedUrl} 
+                        <Inputs.Text
+                            value={generatedUrl}
                             attributes={{ readOnly: true, id: "calldisplayUrl" }} />
                     </Controls>
                 </FormGroup>

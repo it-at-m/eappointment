@@ -17,7 +17,7 @@ const renderDay = (day, index, onChange, onDeleteClick) => {
                     value={day.name}
                     placeholder="Name"
                     onChange={onChangeName}
-                    attributes={{"aria-label":"Bezeichnung"}}
+                    attributes={{ "aria-label": "Bezeichnung" }}
                 />
             </td>
             <td className="daysoff-item__date">
@@ -25,7 +25,7 @@ const renderDay = (day, index, onChange, onDeleteClick) => {
                     name={`${formName}[date]`}
                     value={day.date}
                     onChange={onChangeDate}
-                    attributes={{"aria-label":"Datum"}}
+                    attributes={{ "aria-label": "Datum" }}
                 />
             </td>
             <td className="daysoff-item__delete">
@@ -123,7 +123,7 @@ DaysOffView.defaultProps = {
 
 DaysOffView.propTypes = {
     days: PropTypes.array,
-    year: PropTypes.number.isRequired
+    year: PropTypes.number
 }
 
 export default DaysOffView

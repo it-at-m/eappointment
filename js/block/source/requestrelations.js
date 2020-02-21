@@ -26,7 +26,7 @@ class RequestRelationView extends Component {
         const formName = `requestrelation[${index}]`
 
         return (
-            <tr className="request-item">
+            <tr key={index} className="request-item">
                 <td className="requestrelation-item__request">
                     <Inputs.Hidden
                         name={`${formName}[source]`}
@@ -39,7 +39,7 @@ class RequestRelationView extends Component {
                         options={
                             this.props.source.requests.map((request) => this.renderOption(request))
                         } {...{ onChange }}
-                        attributes={{"aria-label": this.props.labelsrequestrelation.request}}
+                        attributes={{ "aria-label": this.props.labelsrequestrelation.request }}
                     />
                 </td>
                 <td className="requestrelation-item__provider">
@@ -50,7 +50,7 @@ class RequestRelationView extends Component {
                         options={
                             this.props.source.providers.map((provider) => this.renderOption(provider))
                         } {...{ onChange }}
-                        attributes={{"aria-label": this.props.labelsrequestrelation.provider}}
+                        attributes={{ "aria-label": this.props.labelsrequestrelation.provider }}
                     />
                 </td>
                 <td className="requestrelation-item__slots">
@@ -58,13 +58,13 @@ class RequestRelationView extends Component {
                         name={`${formName}[slots]`}
                         value={(item.slots) ? item.slots : 1}
                         onChange={onChange}
-                        attributes={{"aria-label": this.props.labelsrequestrelation.slots}}
+                        attributes={{ "aria-label": this.props.labelsrequestrelation.slots }}
                     />
                 </td>
                 <td className="request-item__delete">
                     <div className="form-check">
                         <label className="checkboxdeselect requestrelation__delete-button form-check-label">
-                            <input className="form-check-input" type="checkbox" checked={true} onClick={() => onDeleteClick(index)} role="button" aria-label="Diesen Datensatz löschen" />
+                            <input className="form-check-input" type="checkbox" readOnly={true} checked="checked" onClick={() => onDeleteClick(index)} role="button" aria-label="Diesen Datensatz löschen" />
                             <span>Löschen</span>
                         </label>
                     </div>
@@ -110,7 +110,7 @@ class RequestRelationView extends Component {
                             <tr>
                                 <td colSpan="4">
                                     <Inputs.Description
-                                        children={this.props.descriptions.requestrelation}
+                                        value={this.props.descriptions.requestrelation}
                                     />
                                 </td>
                             </tr>
@@ -126,12 +126,12 @@ class RequestRelationView extends Component {
 }
 
 RequestRelationView.propTypes = {
-    labelsrequestrelation: PropTypes.array.isRequired,
-    source: PropTypes.array.isRequired,
-    changeHandler: PropTypes.changeHandler,
-    addNewHandler: PropTypes.addNewHandler,
-    deleteHandler: PropTypes.deleteHandler,
-    descriptions: PropTypes.array
+    labelsrequestrelation: PropTypes.object.isRequired,
+    source: PropTypes.object.isRequired,
+    changeHandler: PropTypes.func,
+    addNewHandler: PropTypes.func,
+    deleteHandler: PropTypes.func,
+    descriptions: PropTypes.object
 }
 
 export default RequestRelationView
