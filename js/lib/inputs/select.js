@@ -15,8 +15,8 @@ const SelectOptGroup = ({ label, options = [], selectedValue }) => {
     )
 }
 
-const renderOptions = (options) => options.map((option, key) => <SelectOption {...option} {...{ key }} />)
-const renderGroups = (groups) => groups.map((group, key) => <SelectOptGroup {...group} {...{ key }} />)
+const renderOptions = (options) => options.map((option, key) => <SelectOption key={key} {...option} {...{ key }} />)
+const renderGroups = (groups) => groups.map((group, key) => <SelectOptGroup key={key} {...group} {...{ key }} />)
 
 export const Select = ({ name, options = [], groups = [], value, onChange = noOp, attributes = {} }) => {
     const onSelect = ev => onChange(name, ev.target.value)

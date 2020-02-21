@@ -31,8 +31,7 @@ import WeekCalendarPage from './page/weekCalendar'
 import printScopeAppointmentsByDay from './page/scopeAppointmentsByDay/print'
 import printWaitingNumber from './page/waitingnumber/print'
 //import bindReact from './lib/bindReact.js'
-import { getDataAttributes } from './lib/utils'
-import { forceHttps } from './lib/utils'
+import { getDataAttributes, forceHttps } from './lib/utils'
 
 import preventFormResubmit from './element/form/preventFormResubmit'
 import maxChars from './element/form/maxChars'
@@ -61,7 +60,7 @@ function loadResources() {
     formalerts();
     hamburger();
     metanavi();
-    navigationprimary();   
+    navigationprimary();
 }
 
 // Bind jQuery on $ for testing

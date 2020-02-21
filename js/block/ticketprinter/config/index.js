@@ -81,7 +81,7 @@ class TicketPrinterConfigView extends Component {
 
         return (
             <select {... { onChange, value }} className="form-control">
-                {availableSlots.map(n => <option value={n}>{n ? `Position ${n}` : 'nicht anzeigen'}</option>)}
+                {availableSlots.map(n => <option key={n} value={n}>{n ? `Position ${n}` : 'nicht anzeigen'}</option>)}
             </select>
         )
     }
@@ -90,7 +90,7 @@ class TicketPrinterConfigView extends Component {
         const items = this.state.selectedItems.filter(i => i.id !== item.id)
         const newItem = Object.assign({}, item, { position })
         items.push(newItem)
-        items.sort((a,b) => {
+        items.sort((a, b) => {
             const aPos = a.position
             const bPos = b.position
 
@@ -168,11 +168,11 @@ class TicketPrinterConfigView extends Component {
 
     render() {
         const onNameChange = (name, value) => {
-            this.setState({ticketPrinterName: value})
+            this.setState({ ticketPrinterName: value })
         }
 
         const onHomeChange = (name, value) => {
-            this.setState({homeUrl: value})
+            this.setState({ homeUrl: value })
         }
 
         const onTemplateStatusChange = (_, value) => {
@@ -188,44 +188,44 @@ class TicketPrinterConfigView extends Component {
                 {this.state.departments.map(this.renderDepartment.bind(this))}
                 <fieldset>
                     <FormGroup>
-                        <Label attributes={{"htmlFor": "ticketprinterName"}}>Name zur internen Identifikation (optional)</Label>
+                        <Label attributes={{ "htmlFor": "ticketprinterName" }}>Name zur internen Identifikation (optional)</Label>
                         <Controls>
-                            <Inputs.Text 
-                                attributes = {{"id": "ticketprinterName"}} 
+                            <Inputs.Text
+                                attributes={{ "id": "ticketprinterName" }}
                                 onChange={onNameChange}
                             />
                         </Controls>
                     </FormGroup>
                     <FormGroup>
-                        <Label attributes={{"htmlFor": "ticketprinterStarturl"}}>StartUrl (optional)</Label>
-                        <Controls> 
-                            <Inputs.Text 
-                                attributes = {{"id": "ticketprinterStarturl", "aria-describedby": "help_ticketprinterStarturl"}} 
+                        <Label attributes={{ "htmlFor": "ticketprinterStarturl" }}>StartUrl (optional)</Label>
+                        <Controls>
+                            <Inputs.Text
+                                attributes={{ "id": "ticketprinterStarturl", "aria-describedby": "help_ticketprinterStarturl" }}
                                 onChange={onHomeChange}
                             />
-                            <Description attributes={{"id": "help_ticketprinterStarturl"}}>Tragen Sie eine alternative URL ein, wenn nach der Ausgabe einer Wartenummer eine alternative Startseite aufgerufen werden soll</Description>
+                            <Description attributes={{ "id": "help_ticketprinterStarturl" }}>Tragen Sie eine alternative URL ein, wenn nach der Ausgabe einer Wartenummer eine alternative Startseite aufgerufen werden soll</Description>
                         </Controls>
                     </FormGroup>
                     <FormGroup>
-                        <Label attributes={{"htmlFor": "ticketprinterLayout"}}>Layout</Label>
+                        <Label attributes={{ "htmlFor": "ticketprinterLayout" }}>Layout</Label>
                         <Controls>
                             <Select
-                                attributes = {{"id": "ticketprinterLayout"}} 
+                                attributes={{ "id": "ticketprinterLayout" }}
                                 options={[
-                                    {name: 'Standard', value: 'default'},
-                                    {name: 'Mit wartenden Kunden', value: 'wait'},
-                                    {name: 'Mit voraussichtlicher Wartezeit', value: 'time'},
-                                    {name: 'Mit wartenden Kunden und voraussichtlicher Wartezeit', value: 'timewait'}
+                                    { name: 'Standard', value: 'default' },
+                                    { name: 'Mit wartenden Kunden', value: 'wait' },
+                                    { name: 'Mit voraussichtlicher Wartezeit', value: 'time' },
+                                    { name: 'Mit wartenden Kunden und voraussichtlicher Wartezeit', value: 'timewait' }
                                 ]}
                                 value={this.state.template}
                                 onChange={onTemplateStatusChange} />
                         </Controls>
                     </FormGroup>
                     <FormGroup>
-                        <Label attributes={{"htmlFor": "ticketprinterUrl"}}>URL</Label>
+                        <Label attributes={{ "htmlFor": "ticketprinterUrl" }}>URL</Label>
                         <Controls>
-                            <Inputs.Text 
-                                value={generatedUrl} attributes={{readOnly: true, "id": "ticketprinterUrl"}}/>
+                            <Inputs.Text
+                                value={generatedUrl} attributes={{ readOnly: true, "id": "ticketprinterUrl" }} />
                         </Controls>
                     </FormGroup>
                     <div className="form-actions">

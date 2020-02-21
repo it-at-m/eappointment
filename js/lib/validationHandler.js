@@ -1,8 +1,5 @@
 import $ from 'jquery';
 import BaseView from './baseview'
-import { defineObjectForEach } from './utils'
-
-defineObjectForEach();
 
 class ValidationHandler extends BaseView {
 
@@ -21,7 +18,7 @@ class ValidationHandler extends BaseView {
     }
 
     render() {
-        this.errors.forEach((item, key) => {
+        Object.entries(this.errors).forEach((item, key) => {
             this.$main.find(`input[name^="${key}"]`).each((index, element) => {
                 if (index > 0) {
                     return false;
@@ -40,7 +37,7 @@ class ValidationHandler extends BaseView {
         list.classList.add(`message`);
         list.classList.add(`message--error`);
         list.setAttribute(`role`, `alert`);
-        item.messages.forEach((messageElement) => {
+        Object.entries(item.messages).forEach((messageElement) => {
             var listItem = document.createElement("li")
             listItem.setAttribute('data-key', key);
             listItem.appendChild(document.createTextNode(messageElement.message));
@@ -52,7 +49,7 @@ class ValidationHandler extends BaseView {
     getValidationErrorList() {
         $("ul.error-list").remove();
         $(".has-error").removeClass("has-error");
-        this.response.forEach((item, key) => {
+        Object.entries(this.response).forEach((item, key) => {
             if (item.failed) {
                 Object.assign(this.errors, { [key]: item });
             }

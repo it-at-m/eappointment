@@ -1,4 +1,4 @@
-import React, { Component} from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { deepMerge, makeNestedObj, getFieldList } from '../../lib/utils'
 import MandantView from '../../block/source/mandant'
@@ -12,11 +12,10 @@ class SourceView extends Component {
         this.changeHandler = this.changeHandler.bind(this)
         this.addNewHandler = this.addNewHandler.bind(this)
         this.deleteHandler = this.deleteHandler.bind(this)
-        this.state = this.props
     }
 
     changeHandler(field, value) {
-        let newstate = this.state.source
+        let newstate = this.props.source
         const fieldList = getFieldList(field)
         if (fieldList.length === 1) {
             newstate[fieldList.pop()] = value
@@ -27,14 +26,14 @@ class SourceView extends Component {
     }
 
     addNewHandler(field, props) {
-        let newstate = this.state.source
-        newstate[field] = this.state.source[field].concat(props)
+        let newstate = this.props.source
+        newstate[field] = this.props.source[field].concat(props)
         this.setState({ source: newstate })
     }
 
     deleteHandler(field, deleteIndex) {
-        let newstate = this.state.source
-        newstate[field] = this.state.source[field].filter((item, index) => {
+        let newstate = this.props.source
+        newstate[field] = this.props.source[field].filter((item, index) => {
             return index !== deleteIndex
         })
         this.setState({ source: newstate })
@@ -53,14 +52,14 @@ class SourceView extends Component {
             <div>
                 <MandantView
                     {...this.props}
-                    source={this.state.source}
+                    source={this.props.source}
                     changeHandler={this.changeHandler}
                 />
                 <fieldset>
                     <legend>Dienstleistungen</legend>
                     <RequestsView
                         {...this.props}
-                        source={this.state.source}
+                        source={this.props.source}
                         changeHandler={this.changeHandler}
                         addNewHandler={this.addNewHandler}
                         deleteHandler={this.deleteHandler}
@@ -70,7 +69,7 @@ class SourceView extends Component {
                     <legend>Dienstleister</legend>
                     <ProvidersView
                         {...this.props}
-                        source={this.state.source}
+                        source={this.props.source}
                         changeHandler={this.changeHandler}
                         addNewHandler={this.addNewHandler}
                         deleteHandler={this.deleteHandler}
@@ -80,7 +79,7 @@ class SourceView extends Component {
                     <legend>Zeitslots</legend>
                     <RequestRelationView
                         {...this.props}
-                        source={this.state.source}
+                        source={this.props.source}
                         changeHandler={this.changeHandler}
                         addNewHandler={this.addNewHandler}
                         deleteHandler={this.deleteHandler}
@@ -92,10 +91,7 @@ class SourceView extends Component {
 }
 
 SourceView.propTypes = {
-    requests: PropTypes.array,
-    labels: PropTypes.array.isRequired,
-    descriptions: PropTypes.array.isRequired,
-    source: PropTypes.array.isRequired
+    source: PropTypes.object
 }
 
 export default SourceView

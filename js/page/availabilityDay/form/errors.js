@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 
 const renderErrors = errors => errors.map(err => {
     return (
-        <div className="message message--error">
+        <div key={err.key} className="message message--error">
             <p>{err.errorMessage}</p>
         </div>
     )

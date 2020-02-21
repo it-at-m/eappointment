@@ -129,10 +129,12 @@ class AvailabilityForm extends Component {
         this.handleFocus = props.handleFocus
     }
 
-    componentWillReceiveProps(newProps) {
-        this.setState({
-            data: getFormValuesFromData(newProps.data)
-        })
+    componentDidUpdate(prevProps) {
+        if (this.props.data !== prevProps.data) {
+            this.setState({
+                data: getFormValuesFromData(this.props.data)
+            })
+        }
     }
 
     handleChange(name, value) {

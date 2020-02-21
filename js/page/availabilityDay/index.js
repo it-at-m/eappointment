@@ -40,7 +40,7 @@ class AvailabilityPage extends Component {
         this.state = getInitialState(props)
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.unloadHandler = ev => {
             const confirmMessage = "Es wurden nicht alle Änderungen gespeichert. Diese gehen beim schließen verloren."
             if (this.state.stateChanged) {
@@ -337,10 +337,6 @@ class AvailabilityPage extends Component {
 }
 
 AvailabilityPage.propTypes = {
-    today: PropTypes.date,
-    conflicts: PropTypes.array,
-    availabilitylist: PropTypes.array,
-    availabilitylistslices: PropTypes.array,
     maxworkstationcount: PropTypes.number,
     timestamp: PropTypes.number,
     scope: PropTypes.object,

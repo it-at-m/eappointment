@@ -14,7 +14,7 @@ import NumberOfAppointmentsTimeBar from '../widgets/timeBars/numberOfAppointment
 import OpeningTimebar from '../widgets/timeBars/opening'
 
 const headerRight = (links, onNewClick) => {
-    return(
+    return (
         <span className="right">
             <a href={links.monthView}>zurück zur Monatsansicht</a>
             <button className="button button--diamond button-new" onClick={onNewClick}>neue Öffnungszeit</button>
@@ -23,21 +23,21 @@ const headerRight = (links, onNewClick) => {
 }
 
 const renderConflicts = conflicts => conflicts
-    .map((data, key) => <ConflictTimeBar {...{ key, data }} />)
+    .map((data, key) => <ConflictTimeBar key={key} {...{ key, data }} />)
 
 const renderNumberOfAppointments = (items) => items
     .filter(item => item.type === 'appointment')
-    .map((data, key) => <NumberOfAppointmentsTimeBar {...{ key, data }} />)
+    .map((data, key) => <NumberOfAppointmentsTimeBar key={key} {...{ key, data }} />)
 
 
 const renderAppointments = (items, maxWorkstationCount, onSelect) => items
     .filter(item => item.type === 'appointment')
-    .map((data, key) => <AppointmentTimeBar {...{ key, data, maxWorkstationCount, onSelect }} />)
+    .map((data, key) => <AppointmentTimeBar key={key} {...{ key, data, maxWorkstationCount, onSelect }} />)
 
 
 const renderOpenings = (items, onSelect) => items
     .filter(item => item.type === "openinghours")
-    .map((data, key) => <OpeningTimebar {...{ key, data, onSelect }} />)
+    .map((data, key) => <OpeningTimebar key={key} {...{ key, data, onSelect }} />)
 
 const renderFooter = () => <small>Zum Bearbeiten einer Öffnungszeit, bitte auf den entsprechenden blauen oder grünen Zeitstrahl klicken.</small>
 
@@ -47,12 +47,12 @@ const TimeTable = (props) => {
     const titleTime = moment(timestamp, 'X').format('dddd, DD.MM.YYYY')
 
     const timeTableBody = <TimeTableBodyLayout
-                              showConflicts={props.conflicts.length > 0}
-                              conflicts={renderConflicts(props.conflicts)}
-                              appointments={renderAppointments(props.availabilities, props.maxWorkstationCount, onSelect)}
-                              numberOfAppointments={renderNumberOfAppointments(props.availabilityListSlices)}
-                              openings={renderOpenings(props.availabilities, onSelect)}
-                          />
+        showConflicts={props.conflicts.length > 0}
+        conflicts={renderConflicts(props.conflicts)}
+        appointments={renderAppointments(props.availabilities, props.maxWorkstationCount, onSelect)}
+        numberOfAppointments={renderNumberOfAppointments(props.availabilityListSlices)}
+        openings={renderOpenings(props.availabilities, onSelect)}
+    />
 
     return (
         <Board className="board--light availability-timetable"
@@ -65,7 +65,7 @@ const TimeTable = (props) => {
 }
 
 TimeTable.defaultProps = {
-    onNewAvailability: () => {},
+    onNewAvailability: () => { },
     availabilities: [],
     conflicts: []
 }

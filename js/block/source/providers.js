@@ -8,7 +8,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
     const formName = `providers[${index}]`
 
     return (
-        <tr className="provider-item">
+        <tr key={index} className="provider-item">
             <td className="provider-item__id" width="auto">
                 <Inputs.Text
                     name={`${formName}[id]`}
@@ -29,7 +29,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
             <td className="provider-item__link">
                 <Inputs.FormGroup>
                     <Inputs.Label
-                        children={`${labels.url}`}
+                        value={`${labels.url}`}
                         attributes={{ "htmlFor": `providersUrl${index}` }}
                     />
                     <Inputs.Controls>
@@ -44,7 +44,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                 </Inputs.FormGroup>
                 <Inputs.FormGroup>
                     <Inputs.Label
-                        children={labels.street}
+                        value={labels.street}
                         attributes={{ "htmlFor": `providersStreet${index}` }}
                     />
                     <Inputs.Controls>
@@ -59,7 +59,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                 </Inputs.FormGroup>
                 <Inputs.FormGroup>
                     <Inputs.Label
-                        children={labels.streetNumber}
+                        value={labels.streetNumber}
                         attributes={{ "htmlFor": `providersStreetnumber${index}` }}
                     />
                     <Inputs.Controls>
@@ -74,7 +74,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                 </Inputs.FormGroup>
                 <Inputs.FormGroup>
                     <Inputs.Label
-                        children={labels.postalCode}
+                        value={labels.postalCode}
                         attributes={{ "htmlFor": `providersPostalcode${index}` }}
                     />
                     <Inputs.Controls>
@@ -89,7 +89,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                 </Inputs.FormGroup>
                 <Inputs.FormGroup>
                     <Inputs.Label
-                        children={labels.city}
+                        value={labels.city}
                         attributes={{ "htmlFor": `providersCity${index}` }}
                     />
                     <Inputs.Controls>
@@ -104,7 +104,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                 </Inputs.FormGroup>
                 <Inputs.FormGroup>
                     <Inputs.Label
-                        children={labels.data}
+                        value={labels.data}
                         attributes={{ "htmlFor": `providersData${index}` }}
                     />
                     <Inputs.Controls>
@@ -116,7 +116,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             attributes={{ "id": `providersData${index}`, "aria-describedby": `help_providersData${index}` }}
                         />
                         <Inputs.Description
-                            children={descriptions.data}
+                            value={descriptions.data}
                             attributes={{ "id": `help_providersData${index}` }}
                         />
                     </Inputs.Controls>
@@ -129,7 +129,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
             <td className="provider-item__delete">
                 <div className="form-check">
                     <label className="checkboxdeselect provider__delete-button form-check-label">
-                        <input className="form-check-input" type="checkbox" checked={true} onClick={() => onDeleteClick(index)} role="button" aria-label="Diesen Datensatz löschen" />
+                        <input className="form-check-input" type="checkbox" readOnly={true} checked={true} onClick={() => onDeleteClick(index)} role="button" aria-label="Diesen Datensatz löschen" />
                         <span>Löschen</span>
                     </label>
                 </div>
@@ -169,13 +169,6 @@ class ProvidersView extends Component {
         //console.log("updated provider component")
     }
 
-    componentWillReceiveProps(nextProps) {
-        // You don't have to do this check first, but it can help prevent an unneeded render
-        if (nextProps.source.source !== this.props.source) {
-            //console.log("props changed", nextProps)
-        }
-    }
-
     render() {
         const onNewClick = ev => {
             ev.preventDefault()
@@ -212,9 +205,9 @@ class ProvidersView extends Component {
                         <tr>
                             <td colSpan="4">
                                 <p>
-                                <Inputs.Description
-                                    children={this.props.descriptions.delete}
-                                />
+                                    <Inputs.Description
+                                        value={this.props.descriptions.delete}
+                                    />
                                 </p>
                             </td>
                         </tr>
@@ -229,12 +222,12 @@ class ProvidersView extends Component {
 }
 
 ProvidersView.propTypes = {
-    labelsproviders: PropTypes.array.isRequired,
-    descriptions: PropTypes.array.isRequired,
-    source: PropTypes.array.isRequired,
-    changeHandler: PropTypes.changeHandler,
-    addNewHandler: PropTypes.addNewHandler,
-    deleteHandler: PropTypes.deleteHandler
+    labelsproviders: PropTypes.object.isRequired,
+    descriptions: PropTypes.object.isRequired,
+    source: PropTypes.object.isRequired,
+    changeHandler: PropTypes.func,
+    addNewHandler: PropTypes.func,
+    deleteHandler: PropTypes.func
 }
 
 export default ProvidersView
