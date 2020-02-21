@@ -1,7 +1,4 @@
 <?php
-// @codingStandardsIgnoreFile
-chdir(__DIR__);
-
 // define the application path as single global constant
 define("APP_PATH", realpath(__DIR__));
 
