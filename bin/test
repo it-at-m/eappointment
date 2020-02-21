@@ -29,5 +29,5 @@ fi
 $ROOT/vendor/bin/phpcs --standard=psr2 $PHPFILES || exit 1
 $ROOT/vendor/bin/phpmd $ROOT/src text phpmd.rules.xml || exit 1
 $ROOT/vendor/bin/phpunit || exit 1
-$ROOT/node_modules/.bin/gulp codecheck || exit 1
+npm run lint || exit 1
 
