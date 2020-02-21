@@ -25,15 +25,14 @@ require(APP_PATH . '/config.php');
 \BO\Slim\Bootstrap::addTwigExtension(new \Twig_Extensions_Extension_I18n());
 \BO\Slim\Bootstrap::addTwigExtension(new \Twig_Extensions_Extension_Intl());
 
-umask(0002); // Allow group to delete twig cache files
+\App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL);
+\BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
 
 // Http API Logging
 \BO\Slim\Bootstrap::addTwigExtension(new \BO\Zmsclient\TwigExtension(\App::$slim->getContainer()));
 \BO\Zmsclient\Http::$logEnabled = \App::DEBUG;
 \BO\Zmsclient\Http::$jsonCompressLevel = \App::JSON_COMPRESS_LEVEL;
 
-\App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL);
-\BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
 
 \App::$now = (\App::$now) ? \App::$now : new \DateTimeImmutable();
 
