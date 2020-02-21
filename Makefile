@@ -17,6 +17,9 @@ css:
 js: now
 	npm run js
 
+watch:
+	npm run jswatch
+
 fix: # run code fixing
 	php vendor/bin/phpcbf --standard=psr2 src/
 	php vendor/bin/phpcbf --standard=psr2 tests/

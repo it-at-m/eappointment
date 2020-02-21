@@ -1,4 +1,4 @@
 <?php
 // Do not add any functionality here
-include('../bootstrap.php');
+include(__DIR__ . '/../bootstrap.php');
 \App::$slim->run();
