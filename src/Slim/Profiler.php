@@ -40,11 +40,14 @@ class Profiler
 
     protected $message = '';
     protected $instanceMicrotime = null;
+    protected $includedFiles = 0;
 
     public function __construct($message)
     {
         $this->message = $message;
         $this->instanceMicrotime = microtime(true);
+        $opcacheStatus = opcache_get_status(false);
+        $this->includedFiles = count(get_included_files());
     }
 
     public function getSeconds()
@@ -59,6 +62,6 @@ class Profiler
 
     public function __toString()
     {
-        return $this->message . "=" . $this->getMilliSeconds() . "ms";
+        return $this->message . "=" . $this->getMilliSeconds() . "ms/#".$this->includedFiles;
     }
 }
