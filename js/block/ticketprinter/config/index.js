@@ -232,7 +232,7 @@ class TicketPrinterConfigView extends Component {
                         <a href={generatedUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen</a>
                     </div>
                 </fieldset>
-            </form>
+            </form >
         )
     }
 }
