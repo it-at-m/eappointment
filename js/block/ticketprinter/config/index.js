@@ -123,21 +123,21 @@ class TicketPrinterConfigView extends Component {
         const position = (this.state.selectedItems.filter(i => i.id === item.id)[0] || {}).position
 
         return (
-            <div className="form-group--inline ticketprinter-config__item">
+            <div key={item.type + "-" + item.id} className="form-group--inline ticketprinter-config__item" >
                 <label className="light">
                     <span>{prefix}{text}</span>
                     <Controls>
                         {this.renderNumberSelect(position, onChange)}
                     </Controls>
                 </label>
-            </div>
+            </div >
         )
     }
 
     renderScopes(scopes) {
         if (scopes.length > 0) {
             return (
-                <fieldset>
+                <fieldset key="scopeList">
                     <legend className="label">Standorte</legend>
                     {scopes.map(this.renderItem.bind(this))}
                 </fieldset>
@@ -148,7 +148,7 @@ class TicketPrinterConfigView extends Component {
     renderClusters(clusters) {
         if (clusters.length > 0) {
             return (
-                <fieldset>
+                <fieldset key="clusterList">
                     <legend className="label">Standort­gruppe</legend>
                     {clusters.map(this.renderItem.bind(this))}
                 </fieldset>
@@ -158,7 +158,7 @@ class TicketPrinterConfigView extends Component {
 
     renderDepartment(department) {
         return (
-            <div>
+            <div key={department.id}>
                 <h2 className="block__heading">{department.name}</h2>
                 {this.renderScopes(department.scopes)}
                 {/* this.renderClusters(department.clusters) */}
@@ -186,8 +186,8 @@ class TicketPrinterConfigView extends Component {
         return (
             <form className="form--base ticketprinter-config">
                 {this.state.departments.map(this.renderDepartment.bind(this))}
-                <fieldset>
-                    <FormGroup>
+                <fieldset key="ticketprinter-fieldset">
+                    <FormGroup key="ticketprinter-name">
                         <Label attributes={{ "htmlFor": "ticketprinterName" }}>Name zur internen Identifikation (optional)</Label>
                         <Controls>
                             <Inputs.Text
@@ -196,7 +196,7 @@ class TicketPrinterConfigView extends Component {
                             />
                         </Controls>
                     </FormGroup>
-                    <FormGroup>
+                    <FormGroup key="ticketprinter-Starturl">
                         <Label attributes={{ "htmlFor": "ticketprinterStarturl" }}>StartUrl (optional)</Label>
                         <Controls>
                             <Inputs.Text
@@ -206,7 +206,7 @@ class TicketPrinterConfigView extends Component {
                             <Description attributes={{ "id": "help_ticketprinterStarturl" }}>Tragen Sie eine alternative URL ein, wenn nach der Ausgabe einer Wartenummer eine alternative Startseite aufgerufen werden soll</Description>
                         </Controls>
                     </FormGroup>
-                    <FormGroup>
+                    <FormGroup key="ticketprinter-layout">
                         <Label attributes={{ "htmlFor": "ticketprinterLayout" }}>Layout</Label>
                         <Controls>
                             <Select
@@ -221,7 +221,7 @@ class TicketPrinterConfigView extends Component {
                                 onChange={onTemplateStatusChange} />
                         </Controls>
                     </FormGroup>
-                    <FormGroup>
+                    <FormGroup key="ticketprinter-url">
                         <Label attributes={{ "htmlFor": "ticketprinterUrl" }}>URL</Label>
                         <Controls>
                             <Inputs.Text
