@@ -87,20 +87,20 @@ export const lightbox = (parentElement, onBackgroundClick) => {
     }
 }
 
-export const noOp = () => {}
+export const noOp = () => { }
 
 export const getUrlParameters = () => {
     return document.location.search.replace(/^\?/, "")
-                   .split("&")
-                   .reduce((carry, current) => {
-                       const [key, value] = current.split('=')
+        .split("&")
+        .reduce((carry, current) => {
+            const [key, value] = current.split('=')
 
-                       if (key) {
-                           return Object.assign({}, carry, {[key]: value})
-                       } else {
-                           return carry
-                       }
-                   }, {})
+            if (key) {
+                return Object.assign({}, carry, { [key]: value })
+            } else {
+                return carry
+            }
+        }, {})
 }
 
 export const forceHttps = () => {
@@ -115,4 +115,23 @@ export const forceHttps = () => {
             );
         });
     }
+}
+
+export const showSpinner = ($container = null) => {
+    var loaderContainer = $('#main');
+    if ($container !== null) {
+        loaderContainer = $container.find('.body').first();
+    }
+    loaderContainer.prepend('<div class="loader" aria-hidden="true"><div class="spinner"></div></div>');
+}
+
+export const hideSpinner = ($container = null) => {
+    var loaderContainer = $('#main-content');
+    if ($container !== null) {
+        loaderContainer = $container.find('.body').first();
+        loaderContainer.find('.loader').detach();
+    } else {
+        loaderContainer.find('.loader').first().detach();
+    }
+
 }

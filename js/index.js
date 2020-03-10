@@ -10,9 +10,7 @@ import $ from "jquery";
 import moment from 'moment'
 import 'moment/locale/de';
 //import bindReact from './lib/bindReact.js'
-import { getDataAttributes } from './lib/utils'
-import { forceHttps } from './lib/utils'
-
+import { getDataAttributes, forceHttps } from './lib/utils'
 import PeriodListView from './block/periodlist'
 import WarehouseReportView from './block/warehousereport'
 
@@ -27,10 +25,10 @@ forceHttps();
 // Say hello
 console.log("Welcome to the ZMS statistics interface...");
 
-$('.report-period').each(function() {
+$('.report-period').each(function () {
     new PeriodListView(this, getDataAttributes(this));
 })
 
-$('.warehouse-report').each(function() {
+$('.warehouse-report').each(function () {
     new WarehouseReportView(this, getDataAttributes(this));
 })

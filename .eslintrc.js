@@ -16,7 +16,11 @@ module.exports = {
         "document": true,
         "Promise": true
     },
-    "extends": ["eslint:recommended"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:import/warnings",
+        "plugin:import/errors"
+    ],
     "rules": {
         "complexity": [
             "error",
