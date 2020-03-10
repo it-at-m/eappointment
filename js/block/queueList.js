@@ -1,11 +1,10 @@
-/* global window, setTimeout */
 import BaseView from '../lib/baseview';
 import $ from "jquery";
 import RingAudio from "../block/ringAudio";
 
 class View extends BaseView {
 
-    constructor (element) {
+    constructor(element) {
         super(element);
         this.bindPublicMethods('initRequest', 'setInterval');
         console.log('Found queueList container');
@@ -13,7 +12,7 @@ class View extends BaseView {
         $.ajaxSetup({ cache: false });
     }
 
-    initRequest () {
+    initRequest() {
         const ajaxopt = {
             type: "POST",
             url: this.getUrl('/queue/'),
@@ -23,7 +22,7 @@ class View extends BaseView {
         $.ajax(ajaxopt)
             .done(data => {
                 this.hideMessages(0);
-                $( '#queueImport' ).html( data );
+                $('#queueImport').html(data);
                 this.setColorForNewCall();
                 this.setWaitingClients(data);
                 this.setWaitingTime(data);
@@ -31,66 +30,61 @@ class View extends BaseView {
                 audioCheck.initSoundCheck();
                 this.getDestinationToNumber();
             })
-            .fail(function() {
-                $( '.fatal' ).show();
+            .fail(function () {
+                $('.fatal').show();
             });
         this.setInterval();
     }
 
-    setInterval () {
+    setInterval() {
         var reloadTime = window.bo.zmscalldisplay.reloadInterval;
         setTimeout(this.initRequest, reloadTime * 1000);
     }
 
-    getUrl (relativePath) {
+    getUrl(relativePath) {
         let includepath = window.bo.zmscalldisplay.includepath;
         return includepath + relativePath;
     }
 
-    setWaitingClients (data)
-    {
+    setWaitingClients(data) {
         var waitingClients = $(data).filter("div#waitingClients").text();
         if (0 < waitingClients) {
             $("#wartende").html(waitingClients);
         }
     }
 
-    setWaitingTime (data)
-    {
+    setWaitingTime(data) {
         var waitingTime = $(data).filter("div#waitingTime").text();
         $("#wartezeit").html(waitingTime);
     }
 
-    setColorForNewCall()
-    {
+    setColorForNewCall() {
         let isNewTime = window.bo.zmscalldisplay.serverTime;
-        $( '#queueImport td.wartenummer[data-callTime]').each(function() {
+        $('#queueImport td.wartenummer[data-callTime]').each(function () {
             if (parseInt($(this).attr('data-callTime')) + window.bo.zmscalldisplay.queue.timeUntilOld > isNewTime) {
                 $("div.aufrufanzeigenummer", this).addClass('newprocess');
             }
         });
     }
 
-    getDestinationToNumber()
-    {
+    getDestinationToNumber() {
         if (window.bo.zmscalldisplay.queue.showOnlyNumeric) {
-            $( '#queueImport .destination').each(function() {
+            $('#queueImport .destination').each(function () {
                 let string = $(this).text();
                 let regex = /\d/g;
                 if (regex.test(string)) {
-                    $(this).text(string.replace(/\D/g,''));
+                    $(this).text(string.replace(/\D/g, ''));
                 }
             });
         }
     }
 
-    hideMessages(delay = 5000)
-    {
+    hideMessages(delay = 5000) {
         let message = $.find('[data-hide-message]');
         if (message.length) {
             setTimeout(() => {
                 $(message).fadeOut();
-            },delay)
+            }, delay)
         }
     }
 }
