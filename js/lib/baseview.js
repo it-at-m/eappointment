@@ -2,8 +2,7 @@ import $ from "jquery";
 import BindHandler from "./bindHandler";
 import ExceptionHandler from './exceptionHandler';
 import DialogHandler from './dialogHandler';
-import { lightbox, showSpinner, hideSpinner } from './utils';
-import { noOp } from './utils'
+import { lightbox, showSpinner, hideSpinner, noOp } from './utils';
 
 class BaseView extends BindHandler {
 
@@ -15,7 +14,7 @@ class BaseView extends BindHandler {
         this.loadPromise = Promise.reject(null).catch(noOp);
     }
 
-    get $ () {
+    get $() {
         return this.$main;
     }
 
@@ -53,7 +52,7 @@ class BaseView extends BindHandler {
         });
     }
 
-    static loadDialogStatic (response, callback, parent, callbackAsBackgroundAction = false) {
+    static loadDialogStatic(response, callback, parent, callbackAsBackgroundAction = false) {
         var $container = null;
         var $loader = null;
         if (parent) {
@@ -63,7 +62,7 @@ class BaseView extends BindHandler {
 
         const { lightboxContentElement, destroyLightbox } = lightbox($container, () => {
             destroyLightbox(),
-            (callbackAsBackgroundAction) ? callback() : () => {}
+                (callbackAsBackgroundAction) ? callback() : () => { }
         });
         new DialogHandler(lightboxContentElement, {
             response: response,
