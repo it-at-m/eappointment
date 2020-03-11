@@ -38,16 +38,16 @@ import maxChars from './element/form/maxChars'
 import DialogHandler from './lib/dialogHandler'
 
 // Import JS from patternlab
-import accordion from '../../layout-admin/source/js/behavior/accordion';
-import tabs from '../../layout-admin/source/js/behavior/tabs';
-import collapse from '../../layout-admin/source/js/behavior/collapse';
-import stickytrigger from '../../layout-admin/source/js/behavior/form-actions--sticky-trigger';
-import navigationprimary from '../../layout-admin/source/js/behavior/navigation-primary';
-import datepicker from '../../layout-admin/source/js/behavior/datepicker';
-import infotext from '../../layout-admin/source/js/behavior/form-infotext-flyin';
-import hamburger from '../../layout-admin/source/js/behavior/hamburger';
-import metanavi from '../../layout-admin/source/js/behavior/header-metanavi-popup';
-import formalerts from '../../layout-admin/source/js/behavior/formalerts-flyin';
+import accordion from 'masterlayout/source/js/behavior/accordion';
+import tabs from 'masterlayout/source/js/behavior/tabs';
+import collapse from 'masterlayout/source/js/behavior/collapse';
+import stickytrigger from 'masterlayout/source/js/behavior/form-actions--sticky-trigger';
+import navigationprimary from 'masterlayout/source/js/behavior/navigation-primary';
+import datepicker from 'masterlayout/source/js/behavior/datepicker';
+import infotext from 'masterlayout/source/js/behavior/form-infotext-flyin';
+import hamburger from 'masterlayout/source/js/behavior/hamburger';
+import metanavi from 'masterlayout/source/js/behavior/header-metanavi-popup';
+import formalerts from 'masterlayout/source/js/behavior/formalerts-flyin';
 
 // load patternlab JS
 function loadResources() {
