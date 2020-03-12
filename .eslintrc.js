@@ -4,8 +4,7 @@ module.exports = {
         "sourceType": "module",
         "ecmaFeatures": {
             "impliedStrict": true,
-            "jsx": true,
-            "json": true
+            "jsx": true
         }
     },
     "env": {
