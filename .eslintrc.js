@@ -4,7 +4,8 @@ module.exports = {
         "sourceType": "module",
         "ecmaFeatures": {
             "impliedStrict": true,
-            "jsx": true
+            "jsx": true,
+            "json": true
         }
     },
     "env": {
@@ -38,6 +39,7 @@ module.exports = {
         "react/prop-types": 1,
     },
     "settings": {
+        "eslint.workingDirectories": ["./js"],
         "react": {
             // default to "createReactClass"
             "pragma": "React",  // Pragma to use, default to "React"
