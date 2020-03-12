@@ -39,6 +39,11 @@ module.exports = {
     },
     "settings": {
         "eslint.workingDirectories": ["./js"],
+        "import/resolver": {
+            "node": {
+                "extensions": [".js", ".json"]
+            }
+        },
         "react": {
             // default to "createReactClass"
             "pragma": "React",  // Pragma to use, default to "React"
