@@ -79,7 +79,7 @@ class ElasticSearch
         } elseif (is_file($importOrLocationFile)) {
             $this->dldb = new FileAccess($importOrLocationFile, $servicesFile);
         } else {
-            throw new Exception("Invalid import parameters for ElasticSearch indexer");
+            throw new \Exception("Invalid import parameters for ElasticSearch indexer");
         }
     }
 
