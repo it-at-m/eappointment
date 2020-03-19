@@ -53,7 +53,7 @@ class WorkstationRequests
     public function readDepartment(): \BO\Zmsentities\Department
     {
         if (!$this->department) {
-            $this->department = $this->http->readGetResult('/scope/'. $this->workstation->scope['id'] .'/department/')
+            $this->department = $this->http->readGetResult('/scope/'. $this->scope['id'] .'/department/')
                 ->getEntity();
         }
         return $this->cluster ? $this->cluster : new \BO\Zmsentities\Department();
@@ -62,7 +62,7 @@ class WorkstationRequests
     public function readCluster(): \BO\Zmsentities\Cluster
     {
         if (!$this->cluster) {
-            $this->cluster = $this->http->readGetResult('/scope/'. $this->workstation->scope['id'] .'/cluster/')
+            $this->cluster = $this->http->readGetResult('/scope/'. $this->scope['id'] .'/cluster/')
                 ->getEntity();
         }
         return $this->cluster ? $this->cluster : new \BO\Zmsentities\Cluster();
@@ -80,7 +80,7 @@ class WorkstationRequests
         } else {
             $processList = $this->http
                 ->readGetResult(
-                    '/scope/'. $this->workstation->scope['id'] .'/process/'. $selectedDate->format('Y-m-d') .'/',
+                    '/scope/'. $this->scope['id'] .'/process/'. $selectedDate->format('Y-m-d') .'/',
                     ['resolveReferences' => 1]
                 )
                 ->getCollection();
@@ -98,7 +98,7 @@ class WorkstationRequests
         } else {
             $process = $this->http
                 ->readGetResult(
-                    '/scope/'. $this->workstation->scope['id'] .'/queue/next/',
+                    '/scope/'. $this->scope['id'] .'/queue/next/',
                     ['exclude' => $excludedIds]
                 )
                 ->getEntity();
