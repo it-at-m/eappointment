@@ -22,6 +22,7 @@ class WorkstationProcessNext extends BaseController
         $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
         $excludedIds = ($excludedIds) ? $excludedIds : '';
         $process = (new Helper\ClusterHelper($workstation))->getNextProcess($excludedIds);
+
         if (! $process->hasId() || $process->getFirstAppointment()->date > \App::$now->getTimestamp()) {
             return \BO\Slim\Render::withHtml(
                 $response,
