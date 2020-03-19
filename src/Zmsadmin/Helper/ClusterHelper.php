@@ -61,7 +61,7 @@ class ClusterHelper
             return \App::$http
                 ->readGetResult('/cluster/'. static::$cluster['id'] .'/queue/next/', ['exclude' => $excludedIds])
                 ->getEntity();
-        } 
+        }
         return \App::$http->readGetResult(
             '/scope/'. static::$workstation->scope['id'] .'/queue/next/',
             ['exclude' => $excludedIds]
