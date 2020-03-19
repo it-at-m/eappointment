@@ -51,19 +51,21 @@ class ClusterHelper
 
     public static function getNextProcess($excludedIds)
     {
+        $hasQueue = static::getProcessList(\App::$now->format('Y-m-d'))->toQueueList(\App::$now)
+            ->withoutStatus(['fake'])
+            ->count();
+        if (! $hasQueue) {
+            return new \BO\Zmsentities\Process();
+        }
         if (static::isClusterEnabled()) {
-            $process = \App::$http
+            return \App::$http
                 ->readGetResult('/cluster/'. static::$cluster['id'] .'/queue/next/', ['exclude' => $excludedIds])
                 ->getEntity();
-        } else {
-            $process = \App::$http
-                ->readGetResult(
-                    '/scope/'. static::$workstation->scope['id'] .'/queue/next/',
-                    ['exclude' => $excludedIds]
-                )
-                ->getEntity();
-        }
-        return $process;
+        } 
+        return \App::$http->readGetResult(
+            '/scope/'. static::$workstation->scope['id'] .'/queue/next/',
+            ['exclude' => $excludedIds]
+        )->getEntity();
     }
 
     public static function isClusterEnabled()
