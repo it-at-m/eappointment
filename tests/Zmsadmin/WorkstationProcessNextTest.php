@@ -14,6 +14,7 @@ class WorkstationProcessNextTest extends Base
 
     public function testRendering()
     {
+        \App::$now = new \DateTimeImmutable('2016-04-01 08:55:00', new \DateTimeZone('Europe/Berlin'));
         $this->setApiCalls(
             [
                 [
@@ -21,6 +22,12 @@ class WorkstationProcessNextTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/process/2016-04-01/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -50,6 +57,12 @@ class WorkstationProcessNextTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/process/2016-04-01/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -85,6 +98,12 @@ class WorkstationProcessNextTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/cluster/109/process/2016-04-01/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/cluster/109/queue/next/',
                     'parameters' => ['exclude' => '999999'],
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
@@ -111,6 +130,12 @@ class WorkstationProcessNextTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/process/2016-04-01/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ],
                 [
                     'function' => 'readGetResult',

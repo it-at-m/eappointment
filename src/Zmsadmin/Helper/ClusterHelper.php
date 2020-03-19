@@ -36,25 +36,22 @@ class ClusterHelper
                 ->readGetResult(
                     '/cluster/'. static::$cluster->id .'/process/'. $selectedDate .'/',
                     ['resolveReferences' => 1]
-                )
-                ->getCollection();
+                );
         } else {
             $processList = \App::$http
                 ->readGetResult(
                     '/scope/'. static::$workstation->scope['id'] .'/process/'. $selectedDate .'/',
                     ['resolveReferences' => 1]
-                )
-                ->getCollection();
+                );
         }
-        return ($processList) ? $processList : new \BO\Zmsentities\Collection\ProcessList();
+        return ($processList) ? $processList->getCollection() : new \BO\Zmsentities\Collection\ProcessList();
     }
 
     public static function getNextProcess($excludedIds)
     {
-        $hasQueue = static::getProcessList(\App::$now->format('Y-m-d'))->toQueueList(\App::$now)
-            ->withoutStatus(['fake'])
-            ->count();
-        if (! $hasQueue) {
+        $queueList = static::getProcessList(\App::$now->format('Y-m-d'))->toQueueList(\App::$now)
+            ->withoutStatus(['fake']);
+        if (1 > $queueList->count()) {
             return new \BO\Zmsentities\Process();
         }
         if (static::isClusterEnabled()) {
