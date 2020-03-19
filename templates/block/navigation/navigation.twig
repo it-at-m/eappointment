@@ -8,7 +8,7 @@
                 <h3 class="navigation__title">Statistik</h3>
                 <ul>
                     <li>
-                            <a class="nav__item{% if menuActive == 'select' %} active{% endif %}" href="{{ urlGet('workstationSelect', {}, {}) }}">Standort auswählen</a>
+                            <a title="{% trans %}Wählen Sie hier den Standort für Ihre Statistikabfragen{% endtrans %}" class="nav__item{% if menuActive == 'select' %} active{% endif %}" href="{{ urlGet('workstationSelect', {}, {}) }}">Standort auswählen</a>
                     </li>
                 </ul>
             </li>
@@ -18,13 +18,13 @@
                 <h3 class="navigation__title">Auswertungen</h3>
                 <ul>
                         <li>
-                                <a class="nav__item{% if menuActive == 'client' %} active{% endif %}" href="{{ urlGet('ReportClientIndex', {}, {}) }}">Kundenstatistik</a>
+                                <a title="{% trans %}Ausgabe der Kundenstatistik (wieviele Kunden mit wievielen Dienstleistungen in welchem Zeitraum), inkl. SMS-Auswertung{% endtrans %}" class="nav__item{% if menuActive == 'client' %} active{% endif %}" href="{{ urlGet('ReportClientIndex', {}, {}) }}">Kundenstatistik</a>
                         </li>
                         <li>
-                                <a class="nav__item{% if menuActive == 'request' %} active{% endif %}" href="{{ urlGet('ReportRequestIndex', {}, {}) }}">Dienstleistungsstatistik</a>
+                                <a title="{% trans %}Ausgabe der Dienstleistungsstatistik (wieviele und welche Dienstleistungen in welchem Zeitraum){% endtrans %}" class="nav__item{% if menuActive == 'request' %} active{% endif %}" href="{{ urlGet('ReportRequestIndex', {}, {}) }}">Dienstleistungsstatistik</a>
                         </li>
                         <li>
-                                <a class="nav__item{% if menuActive == 'waiting' %} active{% endif %}" href="{{ urlGet('ReportWaitingIndex', {}, {}) }}">Wartestatistik</a>
+                                <a title="{% trans %}Ausgabe der Wartestatistik{% endtrans %}" class="nav__item{% if menuActive == 'waiting' %} active{% endif %}" href="{{ urlGet('ReportWaitingIndex', {}, {}) }}">Wartestatistik</a>
                         </li>
                 </ul>
             </li>
@@ -33,7 +33,7 @@
                 <h3 class="navigation__title">Rohdaten</h3>
                 <ul>
                         <li>
-                                <a class="nav__item{% if menuActive == 'warehouse' %} active{% endif %}" href="{{ urlGet('WarehouseIndex', {}, {}) }}">Kategorien</a>
+                                <a title="{% trans %}Ausgabe der Statistik-Rohdaten nach Kategorien{% endtrans %}" class="nav__item{% if menuActive == 'warehouse' %} active{% endif %}" href="{{ urlGet('WarehouseIndex', {}, {}) }}">Kategorien</a>
                         </li>
                 </ul>
             </li>
@@ -41,7 +41,7 @@
                 <h3 class="navigation__title">Weiterführende Links</h3>
                 <ul>
                     <li>
-                        <a class="nav__item extern" href="/terminvereinbarung/admin/" target="_blank">Tresen/Sachbearbeiter</a>
+                        <a title="{% trans %}Zum Sachbearbeiter / Tresenplatz{% endtrans %}" class="nav__item extern" href="{{ includeUrl() }}/admin/" target="_blank">Tresen/Sachbearbeiter</a>
                     </li>
                 </ul>
             </li>
