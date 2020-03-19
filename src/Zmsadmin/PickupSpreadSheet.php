@@ -21,6 +21,7 @@ class PickupSpreadSheet extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $processList = \App::$http->readGetResult('/workstation/process/pickup/')->getCollection();
+        $processList = ($processList) ? $processList : new \BO\Zmsentities\Collection\ProcessList();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
 
         $providerName = $workstation->scope['provider']['name'];
