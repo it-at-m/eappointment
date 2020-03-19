@@ -40,7 +40,7 @@ class CalendarWeek extends BaseController
             $response,
             'page/calendarWeek.twig',
             array(
-                'title' => 'Kalender',
+                'title' => 'Wochenkalender',
                 'workstation' => $workstation,
                 'source' => $workstation->getVariantName(),
                 'cluster' => $cluster,
