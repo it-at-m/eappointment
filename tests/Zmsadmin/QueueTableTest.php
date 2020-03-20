@@ -76,7 +76,40 @@ class QueueTableTest extends Base
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertContains('queue-table', (string)$response->getBody());
         $this->assertContains('Kürzel', (string)$response->getBody());
+        $this->assertNotContains('Alle Clusterstandorte anzeigen', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testWithMultipleClusterScopes()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_cluster_scopelist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/169/department/',
+                    'response' => $this->readFixture("GET_department_81.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/169/cluster/',
+                    'response' => $this->readFixture("GET_cluster_117.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/169/process/2016-04-01/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_processlist_scope_169.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertContains('Alle Clusterstandorte anzeigen', (string)$response->getBody());
     }
 
     public function testWithResetedProcess()
