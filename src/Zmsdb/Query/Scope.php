@@ -192,8 +192,12 @@ class Scope extends Base implements MappingInterface
             'status__queue__lastGivenNumber' => 'scope.letztewartenr',
             'status__queue__lastGivenNumberTimestamp' => 'scope.wartenrdatum',
             'status__ticketprinter__deactivated' => 'scope.wartenrsperre',
-            'provider__id' => 'scopeprovider.id',
-            'provider__source' => 'scopeprovider.source',
+            'provider__id' => self::expression(
+                'IF(`scopeprovider`.`id`!="", `scopeprovider`.`id`, `scope`.`InfoDienstleisterID`)'
+            ),
+            'provider__source' => self::expression(
+                'IF(`scopeprovider`.`source`!="", `scopeprovider`.`source`, `scope`.`source`)'
+            ),
             'source' => 'scope.source'
         ];
     }
