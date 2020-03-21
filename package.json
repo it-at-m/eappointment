@@ -1,0 +1,26 @@
+{
+  "name": "bo-zmsentities",
+  "version": "1.0.0",
+  "description": "entities for zms",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "make"
+  },
+  "keywords": [],
+  "author": "BerlinOnline GmbH & Co. KG",
+  "license": "SEE LICENSE IN LICENSE",
+  "devDependencies": {
+  },
+  "dependencies": {
+    "swiper": "~4.3.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.berlinonline.net/land-intranet/zmsentities.git"
+  },
+  "files": [
+    "schema/*.json"
+  ]
+}
