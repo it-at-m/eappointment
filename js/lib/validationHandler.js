@@ -18,13 +18,13 @@ class ValidationHandler extends BaseView {
     }
 
     render() {
-        Object.entries(this.errors).forEach((item, key) => {
+        Object.keys(this.errors).forEach(key => {
             this.$main.find(`input[name^="${key}"]`).each((index, element) => {
                 if (index > 0) {
                     return false;
                 }
                 $(element).closest('.form-group').addClass('has-error')
-                $(element).closest('.controls').append(this.createDomList(item, key))
+                $(element).closest('.controls').append(this.createDomList(this.errors[key], key))
             })
         })
         this.scope.bindEvents()
@@ -37,7 +37,7 @@ class ValidationHandler extends BaseView {
         list.classList.add(`message`);
         list.classList.add(`message--error`);
         list.setAttribute(`role`, `alert`);
-        Object.entries(item.messages).forEach((messageElement) => {
+        Object.values(item.messages).forEach((messageElement) => {
             var listItem = document.createElement("li")
             listItem.setAttribute('data-key', key);
             listItem.appendChild(document.createTextNode(messageElement.message));
@@ -49,9 +49,9 @@ class ValidationHandler extends BaseView {
     getValidationErrorList() {
         $("ul.error-list").remove();
         $(".has-error").removeClass("has-error");
-        Object.entries(this.response).forEach((item, key) => {
-            if (item.failed) {
-                Object.assign(this.errors, { [key]: item });
+        Object.entries(this.response).forEach((item) => {
+            if (item[1].failed) {
+                Object.assign(this.errors, { [item[0]]: item[1] });
             }
         }, {});
     }
