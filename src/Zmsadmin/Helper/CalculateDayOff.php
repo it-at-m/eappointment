@@ -2,7 +2,7 @@
 
 namespace BO\Zmsadmin\Helper;
 
-class CalculateDayOff 
+class CalculateDayOff
 {
     protected $dayOffList = [
         'Y-01-01' => 'Neujahr',
@@ -33,7 +33,7 @@ class CalculateDayOff
         $collection = new \BO\Zmsentities\Collection\DayoffList();
         $dateEaster = $this->calculateEaster($year);
         foreach ($this->dayOffList as $dateExpr => $description) {
-            if ( strpos($dateExpr, 'E') === 0 ) {
+            if (strpos($dateExpr, 'E') === 0) {
                 $dateExpr = ltrim($dateExpr, 'E');
                 $dtCurr = clone $dateEaster;
                 $date = $dtCurr->modify($dateExpr.' day')->format($this->dateFormat);
@@ -49,7 +49,7 @@ class CalculateDayOff
                 ]);
             }
             $collection->addEntity($entity);
-        } 
+        }
         return $collection;
     }
 
@@ -58,7 +58,7 @@ class CalculateDayOff
         $date = clone $this->dateTime;
         if ($year) {
             $date = $date->setDate($year, $date->format('m'), $date->format('d'));
-        } 
+        }
         $easterDate = \easter_date($date->format('Y'));
         
         return $date->setTimestamp($easterDate);
@@ -71,5 +71,4 @@ class CalculateDayOff
             \App::$http->readPostResult('/dayoff/'. $loopYear .'/', $collection);
         }
     }
-    
 }
