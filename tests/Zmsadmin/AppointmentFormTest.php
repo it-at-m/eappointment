@@ -46,6 +46,7 @@ class AppointmentFormTest extends Base
         $response = parent::testRendering();
         $this->assertContains('Terminvereinbarung Neu', (string)$response->getBody());
         $this->assertContains('title="Spontankunde"', (string)$response->getBody());
+        $this->assertContains('Liste leeren', (string)$response->getBody());
     }
 
     public function testNotSuperUser()
@@ -368,4 +369,51 @@ class AppointmentFormTest extends Base
         $this->assertContains('17:00 (noch 0 frei)', (string)$response->getBody());
         $this->assertNotContains('title="Spontankunde"', (string)$response->getBody());
     }
+
+    /**
+    *
+    * Test appointment form with empty request list
+    *
+    */
+
+    public function testWithWithRequestListEmpty()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/request/',
+                    'response' => $this->readFixture("GET_scope_requestlist_empty.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/free/',
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
+                ]
+            ]
+        );
+        $response = parent::testRendering();
+        $this->assertContains(
+            'Dem ausgewählten Standort sind keine Dienstleistungen zugeordnet', 
+            (string)$response->getBody()
+        );
+    }
+
 }
