@@ -10,7 +10,7 @@ const renderDay = (day, index, onChange, onDeleteClick) => {
     const onChangeDate = (_, value) => onChange(index, 'date', value)
 
     return (
-        <tr className="daysoff-item">
+        <tr className="daysoff-item" key={index}>
             <td className="daysoff-item__name">
                 <Inputs.Text
                     name={`${formName}[name]`}
@@ -31,7 +31,7 @@ const renderDay = (day, index, onChange, onDeleteClick) => {
             <td className="daysoff-item__delete">
                 <div className="form-check">
                     <label className="checkboxdeselect daysoff__delete-button form-check-label">
-                        <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} />
+                        <input type="checkbox" checked={true} onChange={() => {}} onClick={() => onDeleteClick(index)} />
                         <span className="form-check-label">Löschen</span>
                     </label>
                 </div>
@@ -47,7 +47,7 @@ class DaysOffView extends Component {
     }
 
     componentDidMount() {
-        getEntity('day').then((entity) => {
+        getEntity('dayoff').then((entity) => {
             entity.date = Date.now() / 1000
             this.setState({
                 days: this.props.days.length > 0 ? this.props.days : [entity]
@@ -99,9 +99,11 @@ class DaysOffView extends Component {
             <div className="daysoff table-responsive-wrapper">
                 <table className="table--base clean">
                     <thead>
-                        <th>Bezeichnung</th>
-                        <th>Datum</th>
-                        <th>Löschen</th>
+                        <tr>
+                            <th>Bezeichnung</th>
+                            <th>Datum</th>
+                            <th>Löschen</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {this.state.days.map((day, index) => renderDay(day, index, onChange, onDeleteClick))}
