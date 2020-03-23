@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
