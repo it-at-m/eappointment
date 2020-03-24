@@ -75,7 +75,7 @@ class CalculateDayOff
         for ($loopYear = $this->dateTime->format('Y'); $loopYear <= $this->targetYear; $loopYear++) {
             $collection = $this->calculateDayOffByYear($loopYear);
             if ($this->verbose) {
-                error_log(var_export($loopYear,1));
+                error_log(var_export($loopYear, 1));
             }
             if ($commit) {
                 $collection->testDatesInYear($loopYear);
