@@ -1,5 +1,7 @@
 #!/usr/bin/env php
 <?php
+require_once(__DIR__."/script_bootstrap.php");
+
 $usage = <<<EOS
 Usage: {$argv[0]} [requestJsonFile] [providerJsonFile]
         ATTENTION! Delete services from provider json that does not exists in request json file. USE WITH CAUTION!

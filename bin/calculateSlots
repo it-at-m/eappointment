@@ -1,18 +1,7 @@
 #!/usr/bin/env php
 <?php
-$dir = is_dir(getcwd() . '/vendor/bo/zmsdb') ? realpath(getcwd()) : realpath(__DIR__);
-while ($dir != '/' && !file_exists("$dir/config.php")) {
-    $dir = dirname($dir);
-    if (file_exists("$dir/autoload.php")) {
-        require_once("$dir/autoload.php");
-    }
-}
-if (file_exists("$dir/bootstrap.php")) {
-    require("$dir/bootstrap.php");
-} else {
-    require("$dir/config.php");
-}
 ini_set('memory_limit', '1024M');
+require_once(__DIR__."/script_bootstrap.php");
 
 $dates = preg_grep('#^\d\d\d\d-\d\d?-\d\d?#', $argv);
 $now = new \DateTimeImmutable();
