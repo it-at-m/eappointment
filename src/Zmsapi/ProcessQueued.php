@@ -30,7 +30,7 @@ class ProcessQueued extends BaseController
         $entity = new \BO\Zmsentities\Process($input);
         $entity->testValid();
         $this->testProcessData($entity);
-        $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 0);
+        $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 1);
         $process->status = 'queued';
         $process->queue['callCount'] = 0;
         $process->queue['lastCallTime'] = 0;
