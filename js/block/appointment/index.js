@@ -130,6 +130,8 @@ class View extends RequestView {
             this.onReserveProcess(this, event);
         }).on('click', '.form-actions button.process-save', (event) => {
             this.onSaveProcess(this, event);
+        }).on('click', '.form-actions button.process-edit', (event) => {
+            this.onEditProcess(this, event);
         }).on('click', '.form-actions button.process-print', (event) => {
             this.onPrintWaitingNumber(event);
         }).on('click', '.form-actions button.process-queue', (event) => {
