@@ -40,7 +40,7 @@ class AppointmentFormButtonsTest extends Base
             ]
         );
         $response = $this->render([], ['selecteddate' => '2016-05-27', 'selectedTime' => '08-00'], []);
-        $this->assertContains('Termin reservieren', (string)$response->getBody());
+        $this->assertContains('Termin buchen', (string)$response->getBody());
     }
 
     public function testWithSelectedProcess()
