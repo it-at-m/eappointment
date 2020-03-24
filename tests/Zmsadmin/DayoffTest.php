@@ -27,10 +27,4 @@ class DayoffTest extends Base
         $this->assertContains('2026', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
-
-    public function testDayOffCalculation()
-    {
-        $dayOffList = (new \BO\Zmsadmin\Helper\CalculateDayOff)->calculateDayOffByYear(2024);
-        $this->assertTrue($dayOffList->hasEntityByDate('2024-03-31')); //easter sunday
-    }
 }
