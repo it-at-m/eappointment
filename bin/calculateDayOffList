@@ -1,0 +1,29 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+$usage = <<<EOS
+
+Usage: {$argv[0]} year [--verbose] --commit
+        ATTENTION! Saves dayoff data until given year from current year
+        --commit        no dry run, saves day off data until given year
+        --verbose       only shows what would be saved
+        !!!!!!!!!!!!!!!!!!!!!!!
+        !! DATA CHANGE WARNING !!
+        !!!!!!!!!!!!!!!!!!!!!!!
+EOS;
+
+$targetYear = preg_grep('#^\d+$#', $argv);
+$targetYear = array_shift($targetYear);
+$verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
+$commit = preg_grep('#^--commit$#', $argv);
+
+if ($targetYear) {
+    $job = new \BO\Zmsdb\Helper\CalculateDayOff($targetYear, $verbose);
+    $job->writeDayOffListUntilYear($commit);
+} else {
+    error_log("Missing year argument!$usage");
+}
+
+if (!$commit) {
+    error_log("Use with --commit to save dayoffs.");
+}
