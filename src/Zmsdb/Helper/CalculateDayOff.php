@@ -72,15 +72,21 @@ class CalculateDayOff
 
     public function writeDayOffListUntilYear($commit = false)
     {
+        if ($this->verbose) {
+            $verboseList = [];
+        }
         for ($loopYear = $this->dateTime->format('Y'); $loopYear <= $this->targetYear; $loopYear++) {
             $collection = $this->calculateDayOffByYear($loopYear);
             if ($this->verbose) {
-                error_log(var_export($loopYear, 1));
+                $verboseList[] = $collection;
             }
             if ($commit) {
                 $collection->testDatesInYear($loopYear);
                 $collection = (new \BO\Zmsdb\DayOff)->writeCommonDayoffsByYear($collection, $loopYear);
             }
+        }
+        if ($this->verbose) {
+            return $verboseList;
         }
     }
 }

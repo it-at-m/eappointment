@@ -4,6 +4,7 @@ namespace BO\Zmsdb\Tests;
 
 use \BO\Zmsdb\DayOff;
 use \BO\Zmsentities\Dayoff as Entity;
+use \BO\Zmsdb\Helper\CalculateDayOff as Helper;
 
 class DayOffTest extends Base
 {
@@ -21,6 +22,12 @@ class DayOffTest extends Base
         $dayOffList = (new Dayoff())->readCommonByYear(2016); //all dayoff with departmentid 0
         $dayOffList->addEntity($this->getTestEntity());
         $dayOffList = (new Dayoff())->writeCommonDayoffsByYear($dayOffList, 2016);
+        $this->assertEquals(1459461600, $dayOffList->getEntityByName('Test Feiertag')['date']);
+    }
+
+    public function testWriteCommonUntilYear()
+    {
+        $dayOffList = (new Helper(2022, true))->writeDayOffListUntilYear();
         $this->assertEquals(1459461600, $dayOffList->getEntityByName('Test Feiertag')['date']);
     }
 
