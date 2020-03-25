@@ -29,6 +29,7 @@ class ProcessReserve extends BaseController
         $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
         $slotType = Validator::param('slotType')->isString()->getValue();
         $clientKey = Validator::param('clientkey')->isString()->getValue();
+        $userId = Validator::param('userId')->isString()->getValue();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
@@ -58,9 +59,9 @@ class ProcessReserve extends BaseController
             $process = (new Process)->readSlotCount($process);
         }
 
+        
         $process = (new ProcessStatusFree)
-            ->writeEntityReserved($process, \App::$now, $slotType, $slotsRequired, $resolveReferences);
-
+            ->writeEntityReserved($process, \App::$now, $slotType, $slotsRequired, $resolveReferences, $userId);
         $message = Response\Message::create($request);
         $message->data = $process;
 
