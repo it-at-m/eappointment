@@ -13,10 +13,10 @@ class CalculateDayOff
         'E+39'   => 'Christi Himmelfahrt',
         'E+50'   => 'Pfingstmontag',
         'Y-10-03' => 'Tag der Deutschen Einheit',
-        'Y-12-24' => 'Heiligabend',
+        #'Y-12-24' => 'Heiligabend',
         'Y-12-25' => '1. Weihnachtstag',
         'Y-12-26' => '2. Weihnachtstag',
-        'Y-12-31' => 'Silvester'
+        #'Y-12-31' => 'Silvester'
     ];
 
     protected $dateEaster;
