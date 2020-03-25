@@ -9,7 +9,8 @@ class ProcessStatus extends \BO\Zmsdb\Process
         \BO\Zmsentities\Process $process,
         $status,
         \DateTimeInterface $dateTime,
-        $resolveReferences
+        $resolveReferences,
+        $userId
     ) {
         $query = new \BO\Zmsdb\Query\Process(\BO\Zmsdb\Query\Base::UPDATE);
         $query->addConditionProcessId($process['id']);
@@ -30,7 +31,8 @@ class ProcessStatus extends \BO\Zmsdb\Process
         $entity = call_user_func_array(array($this, $statusList[$status]), array($process));
         $query->addValuesUpdateProcess($entity, $dateTime);
         
-        Log::writeLogEntry("UPDATE (ProcessStatus::writeUpdatedStatus) $process ", $process->id);
+        $checksum = sha1($process->getId() . '-' . $userId);
+        Log::writeLogEntry("CREATE (ProcessStatus::writeUpdatedStatus) $checksum ", $process->id);
         
         $this->writeItem($query, 'process', $query::TABLE);
         $this->perform(\BO\Zmsdb\Query\Process::QUERY_UPDATE_FOLLOWING_PROCESS, [
