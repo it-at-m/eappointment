@@ -2,8 +2,6 @@
 
 namespace BO\Zmsmessaging\Tests;
 
-use \BO\Mellon\Validator;
-
 class ExceptionsCatchTest extends Base
 {
     public function testLogMailMissingDepartmentMail()

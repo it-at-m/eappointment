@@ -7,7 +7,6 @@
 */
 namespace BO\Zmsmessaging;
 
-use \BO\Zmsentities\Ics;
 use \BO\Zmsentities\Mimepart;
 use \PHPMailer as PHPMailer;
 use \phpmailerException as phpmailerException;
