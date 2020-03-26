@@ -191,7 +191,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $parentProcess = 0,
         $childProcessCount = 0,
         $retry = true,
-        $userId = null
+        $userAccount = null
     ) {
         $query = new Query\Process(Query\Base::INSERT);
         $process->id = $this->readNewProcessId();
@@ -205,14 +205,21 @@ class Process extends Base implements Interfaces\ResolveReferences
             if ($retry) {
                 // First try might fail if two processes are created with the same number at the same time
                 sleep(1); // Let the other process complete his transaction
-                return $this->writeNewProcess($process, $dateTime, $parentProcess, $childProcessCount, false, $userId);
+                return $this->writeNewProcess(
+                    $process, 
+                    $dateTime, 
+                    $parentProcess, 
+                    $childProcessCount, 
+                    false, 
+                    $userAccount
+                );
             }
             throw new Exception\Process\ProcessCreateFailed($exception->getMessage());
         }
         (new Slot())->writeSlotProcessMappingFor($process->id);
 
-        $checksum = sha1($process->id . '-' . $userId);
-        Log::writeLogEntry("CREATE (Process::writeNewProcess) $checksum ", $process->id);
+        $checksum = sha1($process->id . '-' . $userAccount->getId());
+        Log::writeLogEntry("CREATE (Process::writeNewProcess) $process $checksum ", $process->id);
         if (!$process->toQueue($dateTime)->withAppointment) {
             (new ExchangeWaitingscope())->writeWaitingTimeCalculated($process->scope, $dateTime);
         }
@@ -513,9 +520,10 @@ class Process extends Base implements Interfaces\ResolveReferences
         $status, 
         \DateTimeInterface $dateTime, 
         $resolveReferences = 0, 
-        $userId = null
+        $userAccount = null
     ) {
-        $process = (new ProcessStatus())->writeUpdatedStatus($process, $status, $dateTime, $resolveReferences, $userId);
+        $process = (new ProcessStatus())
+            ->writeUpdatedStatus($process, $status, $dateTime, $resolveReferences, $userAccount);
         return $process;
     }
 
