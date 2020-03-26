@@ -89,7 +89,7 @@ class ProcessStatusFree extends Process
         $slotType = "public",
         $slotsRequired = 0,
         $resolveReferences = 0,
-        $userId = null
+        $userAccount
     ) {
         $process = clone $process;
         $process->status = 'reserved';
@@ -104,9 +104,9 @@ class ProcessStatusFree extends Process
             if ($process->id > 99999) {
                 $newProcess = clone $process;
                 $newProcess->getFirstAppointment()->setTime($slot->time);
-                $this->writeNewProcess($newProcess, $now, $process->id, 0, true, $userId);
+                $this->writeNewProcess($newProcess, $now, $process->id, 0, true, $userAccount);
             } elseif ($process->id === 0) {
-                $process = $this->writeNewProcess($process, $now, 0, count($slotList) - 1, true, $userId);
+                $process = $this->writeNewProcess($process, $now, 0, count($slotList) - 1, true, $userAccount);
             } else {
                 throw new \Exception("SQL UPDATE error on inserting new $process on $slot");
             }
