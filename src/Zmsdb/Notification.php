@@ -90,7 +90,7 @@ class Notification extends Base
         ));
         $success = $this->writeItem($query);
         $queueId = $this->getWriter()->lastInsertId();
-        if ($success && in_array($process->status, ['pickup', 'queued', 'confirmed'])) {
+        if ($success && in_array($process->status, ['pickup', 'queued'])) {
             $client->notificationsSendCount += 1;
             (new Process())->updateEntity($process, $dateTime);
         }
