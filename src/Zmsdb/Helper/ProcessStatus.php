@@ -31,7 +31,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
         $entity = call_user_func_array(array($this, $statusList[$status]), array($process));
         $query->addValuesUpdateProcess($entity, $dateTime);
         
-        $checksum = sha1($process->getId() . '-' . $userAccount->getId());
+        $checksum = ($userAccount) ? sha1($process->id . '-' . $userAccount->getId()) : '';
         Log::writeLogEntry("UPDATE (ProcessStatus::writeUpdatedStatus) $process $checksum ", $process->id);
         
         $this->writeItem($query, 'process', $query::TABLE);
