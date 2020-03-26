@@ -206,11 +206,11 @@ class Process extends Base implements Interfaces\ResolveReferences
                 // First try might fail if two processes are created with the same number at the same time
                 sleep(1); // Let the other process complete his transaction
                 return $this->writeNewProcess(
-                    $process, 
-                    $dateTime, 
-                    $parentProcess, 
-                    $childProcessCount, 
-                    false, 
+                    $process,
+                    $dateTime,
+                    $parentProcess,
+                    $childProcessCount,
+                    false,
                     $userAccount
                 );
             }
@@ -516,10 +516,10 @@ class Process extends Base implements Interfaces\ResolveReferences
      * @return Resource Status
      */
     public function updateProcessStatus(
-        Entity $process, 
-        $status, 
-        \DateTimeInterface $dateTime, 
-        $resolveReferences = 0, 
+        Entity $process,
+        $status,
+        \DateTimeInterface $dateTime,
+        $resolveReferences = 0,
         $userAccount = null
     ) {
         $process = (new ProcessStatus())

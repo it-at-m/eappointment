@@ -89,7 +89,7 @@ class ProcessStatusFree extends Process
         $slotType = "public",
         $slotsRequired = 0,
         $resolveReferences = 0,
-        $userAccount
+        $userAccount = null
     ) {
         $process = clone $process;
         $process->status = 'reserved';
