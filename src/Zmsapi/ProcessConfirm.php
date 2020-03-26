@@ -28,10 +28,12 @@ class ProcessConfirm extends BaseController
         
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(3)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $userId = Validator::param('userId')->isString()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
         $entity->testValid();
         $this->testProcessData($entity);
+
+        $userAccount = (new Helper\User($request))->readWorkstation()->getUseraccount();
+        $userId = ($userAccount->hasId()) ? $userAccount->getId() : null;
 
         $process = (new Process())->readEntity($entity->id, $entity->authKey);
         if ('reserved' != $process->status) {

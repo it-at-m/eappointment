@@ -29,7 +29,6 @@ class ProcessReserve extends BaseController
         $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
         $slotType = Validator::param('slotType')->isString()->getValue();
         $clientKey = Validator::param('clientkey')->isString()->getValue();
-        $userId = Validator::param('userId')->isString()->getValue();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
@@ -40,7 +39,7 @@ class ProcessReserve extends BaseController
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
         
         if ($slotType || $slotsRequired) {
-            (new Helper\User($request))->checkRights();
+            $workstation = (new Helper\User($request))->checkRights();
         } elseif ($clientKey) {
             $apiClient = (new \BO\Zmsdb\Apiclient)->readEntity($clientKey);
             if (!$apiClient || !isset($apiClient->accesslevel) || $apiClient->accesslevel == 'blocked') {
@@ -59,7 +58,8 @@ class ProcessReserve extends BaseController
             $process = (new Process)->readSlotCount($process);
         }
 
-        
+        $userAccount = $workstation->getUseraccount();
+        $userId = ($userAccount->hasId()) ? $userAccount->getId() : null;
         $process = (new ProcessStatusFree)
             ->writeEntityReserved($process, \App::$now, $slotType, $slotsRequired, $resolveReferences, $userId);
         $message = Response\Message::create($request);
