@@ -33,13 +33,17 @@ class ProcessConfirm extends BaseController
         $this->testProcessData($entity);
 
         $userAccount = (new Helper\User($request))->readWorkstation()->getUseraccount();
-        $userId = ($userAccount->hasId()) ? $userAccount->getId() : null;
-
         $process = (new Process())->readEntity($entity->id, $entity->authKey);
         if ('reserved' != $process->status) {
             throw new Exception\Process\ProcessNotReservedAnymore();
         }
-        $process = (new Process())->updateProcessStatus($process, 'confirmed', \App::$now, $resolveReferences, $userId);
+        $process = (new Process())->updateProcessStatus(
+            $process, 
+            'confirmed', 
+            \App::$now, 
+            $resolveReferences, 
+            $userAccount
+        );
         $message = Response\Message::create($request);
         $message->data = $process;
 
