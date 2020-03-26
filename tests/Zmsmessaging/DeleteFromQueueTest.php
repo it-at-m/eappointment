@@ -2,8 +2,6 @@
 
 namespace BO\Zmsmessaging\Tests;
 
-use \BO\Mellon\Validator;
-
 class DeleteFromQueueTest extends Base
 {
     protected function getApiCalls()
