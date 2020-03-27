@@ -73,12 +73,12 @@ class CalculateDayOff
     public function writeDayOffListUntilYear($commit = false)
     {
         if ($this->verbose) {
-            $verboseList = [];
+            $verboseList = new \BO\Zmsentities\Collection\DayoffList();
         }
         for ($loopYear = $this->dateTime->format('Y'); $loopYear <= $this->targetYear; $loopYear++) {
             $collection = $this->calculateDayOffByYear($loopYear);
             if ($this->verbose) {
-                $verboseList[] = $collection;
+                $verboseList->addList($collection);
             }
             if ($commit) {
                 $collection->testDatesInYear($loopYear);
