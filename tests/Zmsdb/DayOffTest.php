@@ -28,7 +28,7 @@ class DayOffTest extends Base
     public function testWriteCommonUntilYear()
     {
         $dayOffList = (new Helper(2022, true))->writeDayOffListUntilYear();
-        $this->assertEquals(1459461600, $dayOffList->getEntityByName('Test Feiertag')['date']);
+        $this->assertEquals(1650146400, $dayOffList->getByDate('2022-04-17')->date);
     }
 
     public function testDeleteByTimeInterval()
