@@ -2,8 +2,6 @@
 // ZMS Statistic behavior
 // --------------------------------------------------------
 
-//import 'babel-polyfill';
-
 // Import base libs
 //import window from "window";
 import $ from "jquery";

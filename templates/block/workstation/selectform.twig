@@ -15,11 +15,11 @@
                     {% for department in workstation.useraccount.departments %}
                     	{% set scopeOptionsGroupOptions = [] %}
                     	{% for scope in department.scopes %}
-                            {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope.contact.name)  ~ " " ~ scope.shortName }]) %}
+                            {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope)  ~ " " ~ scope.shortName }]) %}
                         {% endfor %}
                         {% for cluster in department.clusters %}
                             {% for scope in cluster.scopes %}
-                                {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope.contact.name) ~ " " ~ scope.shortName }]) %}
+                                {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope) ~ " " ~ scope.shortName }]) %}
                             {% endfor %}
                         {% endfor %}
                         {% set scopeOptionsGroup = scopeOptionsGroup|merge([{ 'name' : department.name, 'options' : scopeOptionsGroupOptions|msort('name') }]) %}

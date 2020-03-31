@@ -1,6 +1,5 @@
 {% extends "layout/main.twig" %}
-{% use "block/header/pageheader.twig" %}
-{% use "block/navigation/navigation.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
 
 {% block pageheader %}
     {{ parent() }}
@@ -14,13 +13,13 @@
     {{ parent() }}
 {% endblock %}
 
-
+{% block headline %}
+    {{ headline1("Standort auswählen") }}
+{% endblock %}
 
 {% block content %}
 	{{ parent() }}
-    <div class="lineup--workstation">
-    	<div class="lineup_actor--full">
-            {% include "block/workstation/selectform.twig" %}
-        </div>
-    </div>
+    <!-- page workstationSelect -->
+    {% include "block/workstation/selectform.twig" %}
+    <!-- /page workstationSelect -->
 {% endblock %}

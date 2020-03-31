@@ -49,6 +49,11 @@ class Application extends \BO\Slim\Application
     const JSON_COMPRESS_LEVEL = 1;
 
     /**
+    * config preferences
+    */
+    const CONFIG_SECURE_TOKEN = 'a9b215f1-e460-490c-8a0b-6d42c274d5e4';
+
+    /**
      * HTTP url for api
      */
     const HTTP_BASE_URL = 'http://user:pass@host.tdl';

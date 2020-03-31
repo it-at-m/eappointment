@@ -21,7 +21,7 @@
 
 {% block board_header_right %}
     {% if selected or download %}
-        <a href="{{ urlGet(currentRoute().name, currentRoute().params, {'type':'xlsx'}) }}" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
+        <a href="{{ urlGet(currentRoute().name, currentRoute().params, {'type':'xlsx'}) }}" target="_blank" title="Download" class="button button--diamond"><i class="fas fa-download" aria-hidden="true"></i></a>
     {% endif %}
 {% endblock %}
 

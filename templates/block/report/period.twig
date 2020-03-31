@@ -1,59 +1,60 @@
-<div class="report-period">
-    {% block breadcrumb %}
-    <ul class="report-period--breadcrumb">
-        <li class="report-period--subject">Auswertung</li>
-    </ul>
-    {% endblock %}
 
-    {% set years = [getNow()|date('Y')] %}
-    {% for key, entry in items.data %}
-        {% if entry|first|length == 4 and entry|first not in years %}
-            {% set years = years|merge([entry|first]) %}
-        {% endif %}
-    {% endfor %}
-    {% set last3Year = years|slice(0,3) %}
-    <table class="report-period--table">
-        <tbody>
-            {% for year in years %}
-                {% set display = 'hide' %}
-                {% if year in last3Year %}{% set display = 'show' %}{% endif %}
-                <tr class="{{ display }}">
-                    <td class="report-period--year{% if (selected and year == selected|date('Y')) or year == selected %} report-period--year-active{% endif %}">
-                        {% set yearExists = 0 %}
-                        {% for entry in items.data if yearExists == 0 %}
-                            {% if entry|first|length > 4 and entry|first|date('Y') == year %}
-                                {% set yearExists = 1 %}
-                            {% endif %}
-                        {% endfor %}
-                        {% if yearExists %}
-                            <a href="{{ urlGet("Report%s"|format(source.entity), {'period': year}, {}) }}">{{ year }}</a>
-                        {% else %}
-                            {{ year }}
-                        {% endif %}
-                    </td>
-                    {% for month in 1..12 %}
-                        {% set monthExists = 0 %}
-                        {% set tmpmonth = year ~"-"~ "%02d"|format(month) %}
-                        {% for entry in items.data if monthExists == 0 %}
-                            {% if entry|first|length > 4 and entry|first|date('Y-m') == tmpmonth %}
-                                {% set monthExists = 1 %}
-                            {% endif %}
-                        {% endfor %}
-                        <td class="{% if selected and tmpmonth == selected|date('Y-m') and monthExists %}report-period--month-active{% endif %}">
-                            {% if monthExists %}
-                                <a href="{{ urlGet("Report%s"|format(source.entity), {'period': tmpmonth}, {}) }}">{{ tmpmonth|localizeddate("full","none",NULL,NULL,"MMMM") }}</a>
-                            {% else %}
-                                {{ tmpmonth|localizeddate("full","none",NULL,NULL,"MMMM") }}
-                            {% endif %}
-                        </td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% if showAll %}
-    <p class="report-period--show-all" id="report-period--show-all">
-        <a href="#">Alle Jahre anzeigen</a>
-    </p>
+{% block breadcrumb %}
+<nav class="breadcrumb">
+    <ol>
+        <li>Auswertung</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% set years = [getNow()|date('Y')] %}
+{% for key, entry in items.data %}
+    {% if entry|first|length == 4 and entry|first not in years %}
+        {% set years = years|merge([entry|first]) %}
     {% endif %}
+{% endfor %}
+{% set last3Year = years|slice(0,3) %}
+<table class="table--base">
+    <tbody>
+    {% for year in years %}
+        {% set display = 'hide' %}
+        {% if year in last3Year %}{% set display = 'show' %}{% endif %}
+        <tr class="{{ display }}">
+            <th>
+                {% set yearExists = 0 %}
+                {% for entry in items.data if yearExists == 0 %}
+                    {% if entry|first|length > 4 and entry|first|date('Y') == year %}
+                        {% set yearExists = 1 %}
+                    {% endif %}
+                {% endfor %}
+                {% if yearExists %}
+                    <a href="{{ urlGet("Report%s"|format(source.entity), {'period': year}, {}) }}">{{ year }}</a>
+                {% else %}
+                    {{ year }}
+                {% endif %}
+            </td>
+            {% for month in 1..12 %}
+                {% set monthExists = 0 %}
+                {% set tmpmonth = year ~"-"~ "%02d"|format(month) %}
+                {% for entry in items.data if monthExists == 0 %}
+                    {% if entry|first|length > 4 and entry|first|date('Y-m') == tmpmonth %}
+                        {% set monthExists = 1 %}
+                    {% endif %}
+                {% endfor %}
+                <td>
+                    {% if monthExists %}
+                        <a href="{{ urlGet("Report%s"|format(source.entity), {'period': tmpmonth}, {}) }}">{{ tmpmonth|localizeddate("full","none",NULL,NULL,"MMMM") }}</a>
+                    {% else %}
+                        {{ tmpmonth|localizeddate("full","none",NULL,NULL,"MMMM") }}
+                    {% endif %}
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% if showAll %}
+<div class="table-actions report-period--show-all" id="report-period--show-all">
+    <a href="#">Alle Jahre anzeigen</a>
 </div>
+{% endif %}

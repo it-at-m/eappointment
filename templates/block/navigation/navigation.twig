@@ -1,51 +1,50 @@
 {% block navigation %}
     {% set rights = workstation.useraccount.rights %}
 
-    <div class="navigation">
-        <ul class="nav">
-            {% if workstation %}
-            <li>
-                <h3 class="navigation__title">Statistik</h3>
-                <ul>
-                    <li>
-                            <a title="{% trans %}Wählen Sie hier den Standort für Ihre Statistikabfragen{% endtrans %}" class="nav__item{% if menuActive == 'select' %} active{% endif %}" href="{{ urlGet('workstationSelect', {}, {}) }}">Standort auswählen</a>
-                    </li>
-                </ul>
-            </li>
+    <ul class="nav__list">
+    {% if workstation %}
+        <li class="nav__block">
+            <ul class="nav__list">
+            {% if not workstation.scope.id %}
+                <li class="nav__link{{ menuActive == 'select'? ' active' }}">
+                    <a title="{% trans %}Wählen Sie hier den Standort für Ihre Statistikabfragen{% endtrans %}" href="{{ urlGet('workstationSelect', {}, {}) }}"{{ menuActive == 'select'? ' aria-current="page"' }}>Standort auswählen</a>
+                </li>
             {% endif %}
             {% if workstation.scope.id %}
-            <li>
-                <h3 class="navigation__title">Auswertungen</h3>
-                <ul>
-                        <li>
-                                <a title="{% trans %}Ausgabe der Kundenstatistik (wieviele Kunden mit wievielen Dienstleistungen in welchem Zeitraum), inkl. SMS-Auswertung{% endtrans %}" class="nav__item{% if menuActive == 'client' %} active{% endif %}" href="{{ urlGet('ReportClientIndex', {}, {}) }}">Kundenstatistik</a>
+                <li class="nav__link">
+                    <h3 class="nav__heading js-nav-heading">Auswertungen</h3>
+                    <ul class="nav__list">
+                        <li class="nav__link{{ menuActive == 'client'? ' active' }}">
+                            <a title="{% trans %}Ausgabe der Kundenstatistik (wieviele Kunden mit wievielen Dienstleistungen in welchem Zeitraum), inkl. SMS-Auswertung{% endtrans %}" href="{{ urlGet('ReportClientIndex', {}, {}) }}">Kundenstatistik</a>
                         </li>
-                        <li>
-                                <a title="{% trans %}Ausgabe der Dienstleistungsstatistik (wieviele und welche Dienstleistungen in welchem Zeitraum){% endtrans %}" class="nav__item{% if menuActive == 'request' %} active{% endif %}" href="{{ urlGet('ReportRequestIndex', {}, {}) }}">Dienstleistungsstatistik</a>
+                        <li class="nav__link{{ menuActive == 'request'? ' active' }}">
+                            <a title="{% trans %}Ausgabe der Dienstleistungsstatistik (wieviele und welche Dienstleistungen in welchem Zeitraum){% endtrans %}" href="{{ urlGet('ReportRequestIndex', {}, {}) }}">Dienstleistungsstatistik</a>
                         </li>
-                        <li>
-                                <a title="{% trans %}Ausgabe der Wartestatistik{% endtrans %}" class="nav__item{% if menuActive == 'waiting' %} active{% endif %}" href="{{ urlGet('ReportWaitingIndex', {}, {}) }}">Wartestatistik</a>
+                        <li class="nav__link{{ menuActive == 'waiting'? ' active' }}">
+                            <a title="{% trans %}Ausgabe der Wartestatistik{% endtrans %}" href="{{ urlGet('ReportWaitingIndex', {}, {}) }}">Wartestatistik</a>
                         </li>
-                </ul>
-            </li>
-            {% endif %}
-            <li>
-                <h3 class="navigation__title">Rohdaten</h3>
-                <ul>
-                        <li>
-                                <a title="{% trans %}Ausgabe der Statistik-Rohdaten nach Kategorien{% endtrans %}" class="nav__item{% if menuActive == 'warehouse' %} active{% endif %}" href="{{ urlGet('WarehouseIndex', {}, {}) }}">Kategorien</a>
-                        </li>
-                </ul>
-            </li>
-            <li>
-                <h3 class="navigation__title">Weiterführende Links</h3>
-                <ul>
-                    <li>
-                        <a title="{% trans %}Zum Sachbearbeiter / Tresenplatz{% endtrans %}" class="nav__item extern" href="{{ includeUrl() }}/../admin/" target="_blank">Tresen/Sachbearbeiter</a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    </div>
+                    </ul>
+                </li>
+                {% endif %}
+        <li>
+        <li class="nav__block">
+            <h3 class="nav__heading js-nav-heading">Rohdaten</h3>
+            <ul class="nav__list">
+                <li class="nav__link{{ menuActive == 'warehouse'? ' active' }}">
+                    <a title="{% trans %}Ausgabe der Statistik-Rohdaten nach Kategorien{% endtrans %}" href="{{ urlGet('WarehouseIndex', {}, {}) }}">Kategorien</a>
+                </li>
+            </ul>
+        </li>
+    {% else %}
+        <li class="nav__block">
+            <h3 class="nav__heading js-nav-heading">Weiterführende Links</h3>
+             <ul class="nav__list">
+                <li class="nav__link">
+                    <a class="extern" title="{% trans %}Zum Sachbearbeiter / Tresenplatz{% endtrans %}" href="{{ includeUrl() }}/../admin/" target="_blank">Tresen/Sachbearbeiter</a>
+                </li>
+            </ul>
+        </li>
+    {% endif %}
+    </ul><!-- /nav__list -->
 
 {% endblock %}
