@@ -34,7 +34,7 @@ class Index extends BaseController
         if ($loginData && !$form->hasFailed()) {
             return $this->testLogin($loginData, $response);
         }
-        $config = (! $workstation)
+        $config = (! $this->workstation)
             ? \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity()
             : null;
         return \BO\Slim\Render::withHtml(
