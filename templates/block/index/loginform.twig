@@ -1,4 +1,4 @@
-{% embed "block/scaffholding/board.twig" with {'class': 'loginform'} %}
+{% embed "block/scaffholding/board.twig" with {'class': 'loginform loginform-view'} %}
         {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield %}
 
         {% block board_title %}
@@ -7,7 +7,7 @@
 
 
         {% block board_body %}
-            <form action="./" method="POST">
+            <form action="./" method="POST" class="form--base">
                 <fieldset>
                     {{ formgroup(
                         {"label": "Nutzername:", "errors": loginfailed ? ["Das eingegebene Passwort und der Nutzername passen nicht zusammen"]  : loginData.loginName.messages},

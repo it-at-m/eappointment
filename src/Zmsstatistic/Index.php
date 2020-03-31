@@ -34,12 +34,16 @@ class Index extends BaseController
         if ($loginData && !$form->hasFailed()) {
             return $this->testLogin($loginData, $response);
         }
+        $config = (! $workstation)
+            ? \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity()
+            : null;
         return \BO\Slim\Render::withHtml(
             $response,
             'page/index.twig',
             array(
                 'title' => 'Anmeldung',
                 'loginfailed' => Validator::param('login_failed')->isBool()->getValue(),
+                'config' => $config,
                 'workstation' => $this->workstation,
                 'loginData' => $loginData
             )
