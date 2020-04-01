@@ -1,11 +1,16 @@
 {% extends "layout/main.twig" %}
-{% block title %}Status Terminvereinbarung{% endblock %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block headline %}
+    {{ headline1(title) }}
+{% endblock %}
 
 {% block content %}
     <p>
         Im folgenden findet sich ein Status der Terminvereinbarung, dem Sie entnehmen können, ob die Anwendung einwandfrei funktioniert.
     </p>
-    <table>
+    <table class="table--base">
         <tr class="status-process-confirmed">
             <th>Anzahl der gebuchten Termine</th>
             <td>{{ status.processes.confirmed }}</td>

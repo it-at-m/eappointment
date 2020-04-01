@@ -48,7 +48,7 @@ class WarehousePeriodTest extends Base
 
         $this->assertContains('Übersicht verfügbarer Zeit-Perioden', (string) $response->getBody());
         $this->assertContains('<a href="/warehouse/waitingscope/141/2016/">', (string) $response->getBody());
-        $this->assertContains('Kategorie: Wartestatistik', (string) $response->getBody());
+        $this->assertContains('<li>Wartestatistik</li>', (string) $response->getBody());
         $this->assertContains('<a href="/warehouse/waitingscope/141/2016/?type=xlsx"', (string) $response->getBody());
     }
 }

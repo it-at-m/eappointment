@@ -1,4 +1,8 @@
 {% extends exception.include ? "exception/bo/include.twig" : exceptionLayout|default("layout/main.twig") %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% block headline %}
+    {{ headline1(title) }}
+{% endblock %}
 
 {% block content %}
     {% set exceptionData = {'exceptionData': ''} %}
@@ -13,11 +17,6 @@
 
         {% block board_title %}Es ist ein Fehler aufgetreten.{% endblock %}
         {% block board_body %}
-            {% if title %}
-            <h3>
-                {{ title|trans }}
-            </h3>
-            {% endif %}
             <p>
                 {{ message|trans }}
             </p>

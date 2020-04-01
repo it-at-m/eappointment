@@ -1,15 +1,25 @@
 {% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% use "block/report/advancedInfo.twig" %}
+
+{% block headline %}
+    {{ headline1("Übersicht verfügbarer IDs") }}
+{% endblock %}
 {% block content %}
 <div class="counter-view" data-includeurl="{{ includeUrl() }}">
         <div class="report-index">
-            <h1>{% trans %}Übersicht verfügbarer IDs{% endtrans %}</h1>
-
-            {% embed "block/report/board.twig" with {'class': 'report-board', 'download':'raw'} %}
+            <nav class="breadcrumb">
+                <ol>
+                    <li><a href="{{ urlGet("WarehouseIndex") }}">{{ title|trans }}</a></li>
+                    <li>{{ categoryName }}</li>
+                </ol>
+            </nav>
+            {% embed "block/report/board.twig" with {'class': 'board--spaceless', 'download':'raw'} %}
             {% block board_title %}
-                {% trans %}Kategorie{% endtrans %}: {{ categoryName|trans }}
+                {{ categoryName|trans }}
             {% endblock %}
             {% block board_body %}
-                <table class="report-board--table">
+                <table class="table--base">
                     <thead>
                         {% for entry in dictionary %}
                             <th>{{ entry.description }}</th>

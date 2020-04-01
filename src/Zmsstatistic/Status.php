@@ -12,6 +12,8 @@ namespace BO\Zmsstatistic;
 class Status extends BaseController
 {
     protected $withAccess = false;
+
+    //protected $resolveLevel = 3;
     
     /**
      * @SuppressWarnings(UnusedFormalParameter)
@@ -28,6 +30,7 @@ class Status extends BaseController
             'page/status.twig',
             array(
                 'title' => 'Status der Terminvereinbarung',
+                //'workstation' => $this->workstation->getArrayCopy(),
                 'status' => $result->getEntity(),
             )
         );

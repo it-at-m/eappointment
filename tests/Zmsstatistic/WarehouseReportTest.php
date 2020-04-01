@@ -43,7 +43,7 @@ class WarehouseReportTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, [ ]);
         $this->assertContains('Report Rohdaten', (string) $response->getBody());
-        $this->assertContains('Kategorie: Wartestatistik', (string) $response->getBody());
+        $this->assertContains('Wartestatistik', (string) $response->getBody());
         $this->assertContains('ID of a scope', (string) $response->getBody());
         $this->assertContains('2016-03-01', (string) $response->getBody());
         $this->assertContains('2016-03-24', (string) $response->getBody());
