@@ -1,0 +1,17 @@
+{
+  "header": {
+    "placenumber": "Place",
+    "counter": "Counter",
+    "scope": "Location",
+    "logout": "Logout",
+    "profile": "My profile"
+  },
+  "languageswitch": {
+    "title": "Language",
+    "choose": "choose language",
+    "languages": {
+      "de": "German",
+      "en": "English"
+    }
+  }
+}
