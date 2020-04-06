@@ -326,6 +326,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         \BO\Zmsentities\Scope $scope,
         \DateTimeInterface $startDate = null,
         \DateTimeInterface $endDate = null,
+        \DateTimeInterface $now = null,
         $resolveReferences = 0
     ) {
         $availabilityList = (new Availability())
@@ -353,6 +354,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             $conflictList->addList($processList->withOutAvailability($availabilityList));
             $currentDate = $currentDate->modify('+1 day');
         }
+        $conflictList = $conflictList->withoutExpiredAppointmentDate($now);
         return $conflictList;
     }
 
