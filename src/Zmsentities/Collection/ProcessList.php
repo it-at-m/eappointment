@@ -256,4 +256,15 @@ class ProcessList extends Base
         }
         return $processList;
     }
+
+    public function withoutExpiredAppointmentDate(\DateTimeInterface $now)
+    {
+        $conflictList = new self();
+        foreach ($this as $process) {
+            if ($process->getFirstAppointment()->date > $now->getTimestamp()) {
+                $conflictList->addEntity($process);
+            }
+        }
+        return $conflictList;
+    }
 }
