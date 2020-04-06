@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 
 import moment from 'moment'
 
@@ -14,10 +13,6 @@ const SaveBar = (props) => {
             Öffnungszeiten gespeichert, {formatDate(props.lastSave)}
         </div>
     )
-}
-
-SaveBar.propTypes = {
-    lastSave: PropTypes.number.isRequired,
 }
 
 export default SaveBar
