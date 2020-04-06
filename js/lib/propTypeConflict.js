@@ -7,7 +7,10 @@ const propsTypeConflict = PropTypes.shape({
     appointments: PropTypes.arrayOf(
         PropTypes.shape({
             availability: propTypeAvailability,
-            date: PropTypes.string
+            date: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.number
+            ]) 
         })
     ),
     endTime: PropTypes.string
