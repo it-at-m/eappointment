@@ -40,6 +40,7 @@ class ConflictListByScope extends BaseController
             $scope,
             $startDate,
             $endDate,
+            \App::$now,
             $resolveReferences
         );
 
