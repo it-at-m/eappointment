@@ -27,6 +27,8 @@ class PickupHandheld extends BaseController
                 null;
         }
 
+        error_log($selectedProcess->getStatus());
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/pickupHandheld.twig',
@@ -34,7 +36,9 @@ class PickupHandheld extends BaseController
               'title' => 'Abholer verwalten',
               'workstation' => $workstation->getArrayCopy(),
               'menuActive' => 'pickup',
-              'selectedProcess' => ($selectedProcess) ? $selectedProcess->getId() : null
+              'selectedProcess' => ($selectedProcess && "pickup" == $selectedProcess->getStatus()) ?
+                $selectedProcess->getId() : 
+                null
             )
         );
     }
