@@ -40,7 +40,7 @@ class PickupHandheldTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/process/82252/',
-                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                    'response' => $this->readFixture("GET_process_82252_12a2_pickup.json")
                 ]
             ]
         );
@@ -60,7 +60,7 @@ class PickupHandheldTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_workstation_with_process.json")
+                    'response' => $this->readFixture("GET_workstation_with_process_pickup.json")
                 ]
             ]
         );
@@ -94,7 +94,7 @@ class PickupHandheldTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/pickup/',
-                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                    'response' => $this->readFixture("GET_process_82252_12a2_pickup.json")
                 ]
             ]
         );
