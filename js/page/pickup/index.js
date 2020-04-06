@@ -93,12 +93,14 @@ class View extends BaseView {
     }
 
     onPickupCall(event, callback, processId) {
+        let currentTarget = false;
         if (event) {
             stopEvent(event);
             processId = $(event.currentTarget).data('id')
+            currentTarget = event.currentTarget
         }
         return this.loadCall(`${this.includeUrl}/pickup/call/${processId}/`).then((response) => {
-            this.loadDialog(response, callback, null, event.currentTarget);
+            this.loadDialog(response, callback, null, currentTarget);
         }
         );
     }
