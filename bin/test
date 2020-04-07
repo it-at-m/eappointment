@@ -4,6 +4,7 @@ REALPATH=$(which realpath || which readlink)
 REALPATH=$([[ "$REALPATH" =~ 'readlink' ]] && echo "$REALPATH -e" || echo "$REALPATH")
 DIR=$(dirname $($REALPATH ${BASH_SOURCE[0]}))
 ROOT=$($REALPATH $DIR/..)
+BASE=$($REALPATH $DIR/../../../..)
 EHIGH="\033[49;1;32m"
 EERROR="\033[49;1;31m"
 EEND="\033[00m"
@@ -26,6 +27,6 @@ else
     PHPFILES="src/"
     echo "Checking $PHPFILES"
 fi
-$ROOT/vendor/bin/phpcs --standard=psr2 $PHPFILES || exit 1
-$ROOT/vendor/bin/phpmd $ROOT/src text phpmd.rules.xml || exit 1
-$ROOT/vendor/bin/phpunit || exit 1
+$BASE/vendor/bin/phpcs --standard=psr2 $PHPFILES || exit 1
+$BASE/vendor/bin/phpmd $ROOT/src text phpmd.rules.xml || exit 1
+$BASE/vendor/bin/phpunit || exit 1
