@@ -118,8 +118,12 @@ class Bootstrap
 
     public static function getTwigView()
     {
+        $template_path = \App::APP_PATH  . \App::TEMPLATE_PATH;
+        if (is_array(\App::TEMPLATE_PATH)) {
+            $template_path = \App::TEMPLATE_PATH;
+        }
         $view = new \Slim\Views\Twig(
-            \App::APP_PATH  . \App::TEMPLATE_PATH,
+            $template_path,
             [
                 'cache' => self::readCacheDir(),
                 'debug' => \App::DEBUG,
