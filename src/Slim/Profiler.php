@@ -46,7 +46,6 @@ class Profiler
     {
         $this->message = $message;
         $this->instanceMicrotime = microtime(true);
-        $opcacheStatus = opcache_get_status(false);
         $this->includedFiles = count(get_included_files());
     }
 
