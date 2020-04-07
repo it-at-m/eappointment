@@ -1,4 +1,5 @@
 /vendor/
+/vendor.zmsbase/
 tags
 /public
 .DS_*
