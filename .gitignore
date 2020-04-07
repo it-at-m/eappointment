@@ -1,5 +1,6 @@
 package-lock.json
 vendor
+vendor.zmsbase
 node_modules
 config.php
 **.swp
