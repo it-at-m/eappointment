@@ -89,7 +89,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     {
         $jsonSchema = self::readJsonSchema()->withResolvedReferences($resolveLevel);
         $data = (new Schema($this))->withoutRefs();
-        if (array_key_exists('$schema', $data)) {
+        if (\BO\Zmsentities\Helper\Property::__keyExists('$schema', $data)) {
             unset($data['$schema']);
         }
         $validator = new Validator($data->toJsonObject(true), $jsonSchema, $locale);
@@ -152,7 +152,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     {
         $class = get_called_class();
         $jsonSchema = self::readJsonSchema();
-        if (array_key_exists('example', $jsonSchema)) {
+        if ($jsonSchema->offsetExists('example')) {
             return new $class($jsonSchema['example']);
         }
         return new $class();
@@ -161,7 +161,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     protected static function readJsonSchema()
     {
         $class = get_called_class();
-        if (!array_key_exists($class, self::$schemaCache)) {
+        if (!\BO\Zmsentities\Helper\Property::__keyExists(self::$schemaCache, $class)) {
             self::$schemaCache[$class] = Loader::asArray($class::$schema);
         }
         return self::$schemaCache[$class];
@@ -257,7 +257,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public function getId()
     {
         $idName = $this::PRIMARY;
-        return (array_key_exists($idName, $this) && $this[$idName]) ? $this[$idName] : false;
+        return ($this->offsetExists($idName) && $this[$idName]) ? $this[$idName] : false;
     }
 
     /**

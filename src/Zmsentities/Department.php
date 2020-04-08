@@ -94,7 +94,7 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
     public function withOutClusterDuplicates()
     {
         $department = clone $this;
-        if (array_key_exists('scopes', $this) && $this->scopes) {
+        if ($this->offsetExists('scopes') && $this->scopes) {
             $scopeList = clone $this->scopes;
             $department->scopes = new Collection\ScopeList();
             $removeScopeList = new Collection\ScopeList();
@@ -133,7 +133,7 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
         $scopeList = new Collection\ScopeList();
         if ($this->toProperty()->clusters->isAvailable()) {
             foreach ($this->clusters as $cluster) {
-                if (array_key_exists('scopes', $cluster)) {
+                if (\BO\Zmsentities\Helper\Property::__keyExists('scopes', $cluster)) {
                     foreach ($cluster['scopes'] as $clusterScope) {
                         $scope = new Scope($clusterScope);
                         $scopeList->addEntity($scope);

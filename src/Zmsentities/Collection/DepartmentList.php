@@ -39,7 +39,7 @@ class DepartmentList extends Base implements JsonUnindexed
     {
         $clusterList = new ClusterList();
         foreach ($this as $department) {
-            if (array_key_exists('clusters', $department)) {
+            if (\BO\Zmsentities\Helper\Property::__keyExists('clusters', $department)) {
                 foreach ($department['clusters'] as $cluster) {
                     $entity = new \BO\Zmsentities\Cluster($cluster);
                     $clusterList->addEntity($entity);

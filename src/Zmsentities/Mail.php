@@ -84,10 +84,20 @@ class Mail extends Schema\Entity
     {
         $entity = new self();
         $message = '';
-        if (array_key_exists('message', $collection) && '' != $collection['message']->getValue()) {
+        if (\BO\Zmsentities\Helper\Property::__keyExists(
+            'message',
+            $collection
+        ) &&
+            '' != $collection['message']->getValue()
+        ) {
             $message = $collection['message']->getValue();
         }
-        if (array_key_exists('subject', $collection) && '' != $collection['subject']->getValue()) {
+        if (\BO\Zmsentities\Helper\Property::__keyExists(
+            'subject',
+            $collection
+        ) &&
+            '' != $collection['subject']->getValue()
+        ) {
             $entity->subject = $collection['subject']->getValue();
         }
         $entity->process = $process;

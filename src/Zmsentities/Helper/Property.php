@@ -68,13 +68,13 @@ class Property implements \ArrayAccess
 
     public function __get($property)
     {
-        if ((is_array($this->access) || $this->access instanceof \ArrayAccess) &&
-             array_key_exists($property, $this->access)) {
+        if ((is_array($this->access)) && static::__keyExists($property, $this->access)) {
             return new self($this->access[$property]);
         }
-        if (is_object($this->access) && isset($this->access->$property)) {
+        if (is_object($this->access) && static::__keyExists($property, $this->access)) {
             return new self($this->access->$property);
         }
+        
         return new self(null);
     }
 
@@ -85,5 +85,20 @@ class Property implements \ArrayAccess
             $string = print_r($string, true);
         }
         return $string;
+    }
+
+    public static function __keyExists($key, $data)
+    {
+        if (is_array($data)) {
+            return array_key_exists($key, $data);
+        }
+
+        if ($data instanceof \ArrayObject && $data->offsetExists($key)) {
+            return true;
+        }
+
+        if (is_object($data)) {
+            return property_exists($data, $key);
+        }
     }
 }

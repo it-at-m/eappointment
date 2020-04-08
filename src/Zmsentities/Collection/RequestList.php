@@ -20,7 +20,7 @@ class RequestList extends Base
     {
         $list = array();
         foreach ($this as $entity) {
-            if (! array_key_exists($entity->group, $list)) {
+            if (! \BO\Zmsentities\Helper\Property::__keyExists($entity->group, $list)) {
                 $list[$entity->group] = new self();
             }
             $list[$entity->group]->addEntity($entity)->sortByName();

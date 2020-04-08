@@ -92,7 +92,7 @@ class Appointment extends Schema\Entity
     public function getAvailability()
     {
         $data = array();
-        if (array_key_exists('availability', $this)) {
+        if (\BO\Zmsentities\Helper\Property::__keyExists('availability', $this)) {
             $data = $this['availability'];
         }
         return new Availability($data);

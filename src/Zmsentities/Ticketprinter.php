@@ -74,7 +74,7 @@ class Ticketprinter extends Schema\Entity
     {
         $type = $this->getButtonType($string);
         $value = $this->getButtonValue($string, $type);
-        if (! array_key_exists($type, $this->allowedButtonTypes) || ! $value) {
+        if (! \BO\Zmsentities\Helper\Property::__keyExists($type, $this->allowedButtonTypes) || ! $value) {
             throw new Exception\TicketprinterUnvalidButton();
         }
         return array(

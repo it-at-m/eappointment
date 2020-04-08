@@ -260,8 +260,8 @@ class ProcessFormValidation
     protected static function isMailRequired($scopePrefs)
     {
         return (
-            array_key_exists('emailRequired', $scopePrefs['client']) &&
-            array_key_exists('emailFrom', $scopePrefs['client']) &&
+            \BO\Zmsentities\Helper\Property::__keyExists('emailRequired', $scopePrefs['client']) &&
+            \BO\Zmsentities\Helper\Property::__keyExists('emailFrom', $scopePrefs['client']) &&
             $scopePrefs['client']['emailRequired'] &&
             $scopePrefs['client']['emailFrom']
         );
@@ -270,7 +270,7 @@ class ProcessFormValidation
     protected static function isPhoneRequired($scopePrefs)
     {
         return (
-            array_key_exists('telephoneRequired', $scopePrefs['client']) &&
+            \BO\Zmsentities\Helper\Property::__keyExists('telephoneRequired', $scopePrefs['client']) &&
             $scopePrefs['client']['telephoneRequired']
         );
     }
