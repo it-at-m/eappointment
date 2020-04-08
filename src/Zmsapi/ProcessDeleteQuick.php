@@ -27,14 +27,9 @@ class ProcessDeleteQuick extends ProcessDelete
         $workstation = (new Helper\User($request, 1))->checkRights('basic');
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $process = (new Process)->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 1);
-        if (!$process->hasId()) {
-            throw new Exception\Process\ProcessNotFound();
-        }
-        if ($process->getCurrentScope()->getId() != $workstation->getScope()->getId() &&
-            !$workstation->hasSuperUseraccount()
-        ) {
-            throw new Exception\Process\ProcessNoAccess();
-        }
+       
+        $this->testProcess($workstation, $process);
+
         $process->status = 'blocked';
         $this->writeMails($request, $process);
         $status = (new Process)->writeBlockedEntity($process);
@@ -47,5 +42,20 @@ class ProcessDeleteQuick extends ProcessDelete
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
+    }
+
+    protected function testProcess($workstation, $process)
+    {
+        if (!$process->hasId()) {
+            throw new Exception\Process\ProcessNotFound();
+        }
+        if ($process->getCurrentScope()->getId() != $workstation->getScope()->getId()) {
+            throw new Exception\Process\ProcessNoAccess();
+        }
+
+        if ('called' == $process->status || 'processing' == $process->status) {
+            throw new Exception\Process\ProcessAlreadyCalled();
+        }
+        $process->testValid();
     }
 }
