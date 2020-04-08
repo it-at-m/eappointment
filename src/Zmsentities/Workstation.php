@@ -24,7 +24,7 @@ class Workstation extends Schema\Entity
     public function getQueuePreference($key, $isBoolean = false)
     {
         $result = null;
-        if (isset($this['queue']) && array_key_exists($key, $this['queue'])) {
+        if (isset($this['queue']) && \BO\Zmsentities\Helper\Property::__keyExists($key, $this['queue'])) {
             if ($isBoolean) {
                 $result = ($this['queue'][$key]) ? 1 : 0;
             } else {
@@ -71,7 +71,7 @@ class Workstation extends Schema\Entity
     public function getUseraccountRights()
     {
         $rights = null;
-        if (array_key_exists('rights', $this->useraccount)) {
+        if (\BO\Zmsentities\Helper\Property::__keyExists('rights', $this->useraccount)) {
             $rights = $this->useraccount['rights'];
         }
         return $rights;

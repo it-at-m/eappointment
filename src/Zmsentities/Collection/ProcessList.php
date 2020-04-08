@@ -119,7 +119,7 @@ class ProcessList extends Base
     {
         $list = new ScopeList();
         foreach ($this as $process) {
-            if (array_key_exists('scope', $process)) {
+            if (\BO\Zmsentities\Helper\Property::__keyExists('scope', $process)) {
                 $list[] = new \BO\Zmsentities\Scope($process['scope']);
             }
         }
@@ -130,7 +130,7 @@ class ProcessList extends Base
     {
         $list = new RequestList();
         foreach ($this as $process) {
-            if (array_key_exists('requests', $process)) {
+            if (\BO\Zmsentities\Helper\Property::__keyExists('requests', $process)) {
                 $list->addList($process->getRequests());
             }
         }

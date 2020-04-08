@@ -42,7 +42,7 @@ class Factory
      */
     public function getEntityName()
     {
-        if (!array_key_exists('$schema', $this->data)) {
+        if (!\BO\Zmsentities\Helper\Property::__keyExists('$schema', $this->data)) {
             throw new \BO\Zmsentities\Exception\SchemaMissingKey('Missing $schema-key on given data.');
         }
         $schema = $this->data['$schema'];
