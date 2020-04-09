@@ -38,10 +38,10 @@ class DepartmentUseraccountList extends BaseController
     protected function getListByWorkstation($useraccountList, $workstation)
     {
         $collection = new \BO\Zmsentities\Collection\UseraccountList();
-        $workstationDepartmentList = $workstation->getDepartmentList();
+        $departmentList = $workstation->getDepartmentList();
         foreach ($useraccountList as $useraccount) {
-            $accessedDeparmentList = $workstationDepartmentList->withAccess($useraccount);
-            if ($accessedDeparmentList->count()) {
+            $accessedList = $departmentList->withAccess($useraccount);
+            if ($accessedList->count()) {
                 $collection->addEntity(clone $useraccount);
             }
         }
