@@ -8,6 +8,7 @@
 namespace BO\Zmsentities\Helper;
 
 use BO\Mellon\Validator;
+use \BO\Zmsentities\Helper\Property;
 
 /**
  *
@@ -260,8 +261,8 @@ class ProcessFormValidation
     protected static function isMailRequired($scopePrefs)
     {
         return (
-            \BO\Zmsentities\Helper\Property::__keyExists('emailRequired', $scopePrefs['client']) &&
-            \BO\Zmsentities\Helper\Property::__keyExists('emailFrom', $scopePrefs['client']) &&
+            Property::__keyExists('emailRequired', $scopePrefs['client']) &&
+            Property::__keyExists('emailFrom', $scopePrefs['client']) &&
             $scopePrefs['client']['emailRequired'] &&
             $scopePrefs['client']['emailFrom']
         );
@@ -270,7 +271,7 @@ class ProcessFormValidation
     protected static function isPhoneRequired($scopePrefs)
     {
         return (
-            \BO\Zmsentities\Helper\Property::__keyExists('telephoneRequired', $scopePrefs['client']) &&
+            Property::__keyExists('telephoneRequired', $scopePrefs['client']) &&
             $scopePrefs['client']['telephoneRequired']
         );
     }

@@ -1,6 +1,8 @@
 <?php
 namespace BO\Zmsentities\Collection;
 
+use \BO\Zmsentities\Helper\Property;
+
 class DepartmentList extends Base implements JsonUnindexed
 {
     const ENTITY_CLASS = '\BO\Zmsentities\Department';
@@ -39,7 +41,7 @@ class DepartmentList extends Base implements JsonUnindexed
     {
         $clusterList = new ClusterList();
         foreach ($this as $department) {
-            if (\BO\Zmsentities\Helper\Property::__keyExists('clusters', $department)) {
+            if (Property::__keyExists('clusters', $department)) {
                 foreach ($department['clusters'] as $cluster) {
                     $entity = new \BO\Zmsentities\Cluster($cluster);
                     $clusterList->addEntity($entity);

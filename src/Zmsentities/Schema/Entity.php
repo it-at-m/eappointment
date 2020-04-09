@@ -2,6 +2,8 @@
 
 namespace BO\Zmsentities\Schema;
 
+use \BO\Zmsentities\Helper\Property;
+
 /**
  * @SuppressWarnings(NumberOfChildren)
  * @SuppressWarnings(PublicMethod)
@@ -89,7 +91,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     {
         $jsonSchema = self::readJsonSchema()->withResolvedReferences($resolveLevel);
         $data = (new Schema($this))->withoutRefs();
-        if (\BO\Zmsentities\Helper\Property::__keyExists('$schema', $data)) {
+        if (Property::__keyExists('$schema', $data)) {
             unset($data['$schema']);
         }
         $validator = new Validator($data->toJsonObject(true), $jsonSchema, $locale);

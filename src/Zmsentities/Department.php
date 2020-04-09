@@ -2,6 +2,8 @@
 
 namespace BO\Zmsentities;
 
+use \BO\Zmsentities\Helper\Property;
+
 class Department extends Schema\Entity implements Useraccount\AccessInterface
 {
     const PRIMARY = 'id';
@@ -133,7 +135,7 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
         $scopeList = new Collection\ScopeList();
         if ($this->toProperty()->clusters->isAvailable()) {
             foreach ($this->clusters as $cluster) {
-                if (\BO\Zmsentities\Helper\Property::__keyExists('scopes', $cluster)) {
+                if (Property::__keyExists('scopes', $cluster)) {
                     foreach ($cluster['scopes'] as $clusterScope) {
                         $scope = new Scope($clusterScope);
                         $scopeList->addEntity($scope);

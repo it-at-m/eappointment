@@ -2,6 +2,8 @@
 
 namespace BO\Zmsentities;
 
+use \BO\Zmsentities\Helper\Property;
+
 /**
  * @SuppressWarnings(Complexity)
  *
@@ -24,7 +26,7 @@ class Workstation extends Schema\Entity
     public function getQueuePreference($key, $isBoolean = false)
     {
         $result = null;
-        if (isset($this['queue']) && \BO\Zmsentities\Helper\Property::__keyExists($key, $this['queue'])) {
+        if (isset($this['queue']) && Property::__keyExists($key, $this['queue'])) {
             if ($isBoolean) {
                 $result = ($this['queue'][$key]) ? 1 : 0;
             } else {
@@ -71,7 +73,7 @@ class Workstation extends Schema\Entity
     public function getUseraccountRights()
     {
         $rights = null;
-        if (\BO\Zmsentities\Helper\Property::__keyExists('rights', $this->useraccount)) {
+        if (Property::__keyExists('rights', $this->useraccount)) {
             $rights = $this->useraccount['rights'];
         }
         return $rights;
