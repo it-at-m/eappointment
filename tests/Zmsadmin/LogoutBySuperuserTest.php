@@ -25,11 +25,6 @@ class LogoutBySuperuserTest extends Base
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
-                    'function' => 'readGetResult',
-                    'url' => '/useraccount/testuser/',
-                    'response' => $this->readFixture("GET_useraccount_testuser.json")
-                ],
-                [
                     'function' => 'readDeleteResult',
                     'url' => '/workstation/login/testuser/',
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
