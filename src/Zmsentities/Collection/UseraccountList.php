@@ -15,4 +15,15 @@ class UseraccountList extends Base
         }
         return $collection;
     }
+
+    public function withoutDublicates()
+    {
+        $collection = new self();
+        foreach ($this as $useraccount) {
+            if (! $collection->hasEntity($useraccount->getId())) {
+                $collection->addEntity(clone $useraccount);
+            }
+        }
+        return $collection;
+    }
 }

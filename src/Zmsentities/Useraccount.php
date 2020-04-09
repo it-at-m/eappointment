@@ -120,21 +120,6 @@ class Useraccount extends Schema\Entity
         return true;
     }
 
-    /**
-     * @todo Remove this function, keep no contraint on old DB schema in zmsentities
-     */
-    public function hasEditAccess(Useraccount $userAccount)
-    {
-        //get required matching access rights (like superuser, organisation, department, scope) from given useraccount
-        $compareRights = Helper\RightsLevelManager::$accessRights;
-        $accessRights = array_keys(array_intersect_uassoc($userAccount->rights, $compareRights, 'strcasecmp'));
-        //check if current user has same rights to edit
-        if (! $this->hasRights($accessRights)) {
-            throw new Exception\UserAccountAccessRightsFailed();
-        }
-        return true;
-    }
-
     public function testRights(array $requiredRights)
     {
         if ($this->hasId()) {

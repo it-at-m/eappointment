@@ -59,7 +59,7 @@ class DepartmentList extends Base implements JsonUnindexed
                 if ($useraccount->rights['organisation']) {
                     return clone $this;
                 }
-                $list[] = clone $department;
+                $list->addEntity(clone $department);
             }
         }
         return $list;
