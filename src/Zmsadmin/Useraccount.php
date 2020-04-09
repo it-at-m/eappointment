@@ -25,7 +25,7 @@ class Useraccount extends BaseController
         // API call to ownerlist is already restricted to user rights
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
         if ($workstation->hasSuperUseraccount()) {
-            $useraccountList = \App::$http
+            $collection = \App::$http
                 ->readGetResult(
                     "/useraccount/",
                     [
@@ -38,12 +38,14 @@ class Useraccount extends BaseController
         } else {
             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
             $departmentList = $workstation->getUseraccount()->getDepartmentList();
-            $useraccountList = new \BO\Zmsentities\Collection\UseraccountList();
+            $collection = new \BO\Zmsentities\Collection\UseraccountList();
             foreach ($departmentList as $accountDepartment) {
                 $accountUserList = \App::$http
                     ->readGetResult("/department/$accountDepartment->id/useraccount/")
                     ->getCollection();
-                $useraccountList->addData($accountUserList);
+                if ($accountUserList) {
+                    $collection = $collection->addList($accountUserList)->withoutDublicates();
+                }
             }
         }
 
@@ -54,7 +56,7 @@ class Useraccount extends BaseController
                 'title' => 'Nutzer',
                 'menuActive' => 'useraccount',
                 'workstation' => $workstation,
-                'useraccountList' => $useraccountList,
+                'useraccountList' => $collection,
                 'ownerlist' => $ownerList,
                 'success' => $success,
             )
