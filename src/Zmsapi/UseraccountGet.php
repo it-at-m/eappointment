@@ -36,6 +36,4 @@ class UseraccountGet extends BaseController
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
     }
-
-    
 }

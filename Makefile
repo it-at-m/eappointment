@@ -17,8 +17,8 @@ live: # init live system, delete unnecessary libs
 	$(COMPOSER) install --no-dev --prefer-dist
 
 fix: # run code fixing
-	php vendor/bin/phpcbf --standard=psr2 src/
-	php vendor/bin/phpcbf --standard=psr2 tests/
+	php ../../bin/phpcbf --standard=psr2 src/
+	php ../../bin/phpcbf --standard=psr2 tests/
 
 build: # Build CSS, JS and Swagger docs on changes
 	./node_modules/.bin/gulp
