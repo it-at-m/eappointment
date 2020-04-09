@@ -1,6 +1,8 @@
 <?php
 namespace BO\Zmsentities;
 
+use \BO\Zmsentities\Helper\Property;
+
 /**
  * @SuppressWarnings(Complexity)
  * @SuppressWarnings(Coupling)
@@ -134,7 +136,7 @@ class Process extends Schema\Entity
         $this->updateRequests($scope->getSource(), $requestCsv);
         $this->addClientFromForm($requestData);
         $this->addReminderTimestamp($requestData, $dateTime);
-        $this->amendment = (\BO\Zmsentities\Helper\Property::__keyExists('amendment', $requestData)) ?
+        $this->amendment = (Property::__keyExists('amendment', $requestData)) ?
             trim($requestData['amendment']) :
             null;
         return $this;
@@ -190,7 +192,7 @@ class Process extends Schema\Entity
     public function addReminderTimestamp($input, \DateTimeInterface $dateTime)
     {
         $this->reminderTimestamp = (
-            \BO\Zmsentities\Helper\Property::__keyExists('headsUpTime', $input) &&
+            Property::__keyExists('headsUpTime', $input) &&
             $input['headsUpTime'] > 0
         ) ? $dateTime->getTimestamp() - $input['headsUpTime'] : 0;
         return $this;

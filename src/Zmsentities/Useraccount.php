@@ -2,6 +2,8 @@
 
 namespace BO\Zmsentities;
 
+use \BO\Zmsentities\Helper\Property;
+
 /**
  * @SuppressWarnings(Complexity)
  * @SuppressWarnings(PublicMethod)
@@ -94,7 +96,7 @@ class Useraccount extends Schema\Entity
     {
         $givenRights = func_get_args();
         foreach ($givenRights as $right) {
-            if (\BO\Zmsentities\Helper\Property::__keyExists($right, $this->rights)) {
+            if (Property::__keyExists($right, $this->rights)) {
                 $this->rights[$right] = true;
             }
         }
@@ -149,7 +151,7 @@ class Useraccount extends Schema\Entity
 
     public function isOveraged(\DateTimeInterface $dateTime)
     {
-        if (\BO\Zmsentities\Helper\Property::__keyExists('lastLogin', $this)) {
+        if (Property::__keyExists('lastLogin', $this)) {
             $lastLogin = (new \DateTimeImmutable())->setTimestamp($this['lastLogin'])->modify('23:59:59');
             return ($lastLogin < $dateTime);
         }

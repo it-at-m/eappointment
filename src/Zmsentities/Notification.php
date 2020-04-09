@@ -2,6 +2,8 @@
 
 namespace BO\Zmsentities;
 
+use \BO\Zmsentities\Helper\Property;
+
 class Notification extends Schema\Entity
 {
     const PRIMARY = 'id';
@@ -114,7 +116,7 @@ class Notification extends Schema\Entity
     public function toCustomMessageEntity(Process $process, $collection, Department $department)
     {
         $entity = new self();
-        if (\BO\Zmsentities\Helper\Property::__keyExists('message', $collection) &&
+        if (Property::__keyExists('message', $collection) &&
             '' != $collection['message']->getValue()
         ) {
             $entity->message = $collection['message']->getValue();
@@ -132,7 +134,7 @@ class Notification extends Schema\Entity
     {
         $requiredProperties = func_get_args();
         foreach ($requiredProperties as $property) {
-            if (!\BO\Zmsentities\Helper\Property::__keyExists($property, $this)) {
+            if (!Property::__keyExists($property, $this)) {
                 throw new Exception\NotificationMissedProperty("Missing property $property");
             }
         }

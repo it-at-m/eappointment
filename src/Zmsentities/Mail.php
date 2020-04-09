@@ -3,6 +3,7 @@
 namespace BO\Zmsentities;
 
 use \BO\Zmsentities\Helper\Messaging;
+use \BO\Zmsentities\Helper\Property;
 
 class Mail extends Schema\Entity
 {
@@ -84,7 +85,7 @@ class Mail extends Schema\Entity
     {
         $entity = new self();
         $message = '';
-        if (\BO\Zmsentities\Helper\Property::__keyExists(
+        if (Property::__keyExists(
             'message',
             $collection
         ) &&
@@ -92,7 +93,7 @@ class Mail extends Schema\Entity
         ) {
             $message = $collection['message']->getValue();
         }
-        if (\BO\Zmsentities\Helper\Property::__keyExists(
+        if (Property::__keyExists(
             'subject',
             $collection
         ) &&
