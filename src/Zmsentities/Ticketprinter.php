@@ -3,6 +3,7 @@
 namespace BO\Zmsentities;
 
 use \BO\Mellon\Validator;
+use \BO\Zmsentities\Helper\Property;
 
 class Ticketprinter extends Schema\Entity
 {
@@ -74,7 +75,7 @@ class Ticketprinter extends Schema\Entity
     {
         $type = $this->getButtonType($string);
         $value = $this->getButtonValue($string, $type);
-        if (! array_key_exists($type, $this->allowedButtonTypes) || ! $value) {
+        if (! Property::__keyExists($type, $this->allowedButtonTypes) || ! $value) {
             throw new Exception\TicketprinterUnvalidButton();
         }
         return array(

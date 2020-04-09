@@ -1,6 +1,8 @@
 <?php
 namespace BO\Zmsentities\Collection;
 
+use \BO\Zmsentities\Helper\Property;
+
 class RequestList extends Base
 {
     const ENTITY_CLASS = '\BO\Zmsentities\Request';
@@ -20,7 +22,7 @@ class RequestList extends Base
     {
         $list = array();
         foreach ($this as $entity) {
-            if (! array_key_exists($entity->group, $list)) {
+            if (! Property::__keyExists($entity->group, $list)) {
                 $list[$entity->group] = new self();
             }
             $list[$entity->group]->addEntity($entity)->sortByName();
