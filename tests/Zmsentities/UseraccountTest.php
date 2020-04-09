@@ -79,21 +79,6 @@ class UseraccountTest extends EntityCommonTests
         $this->assertFalse($entity->isSuperUser());
     }
 
-    public function testHasEditAccess()
-    {
-        $entity = $this->getExample();
-        $this->assertTrue($entity->hasEditAccess($entity));
-    }
-
-    public function testHasEditAccessFailed()
-    {
-        $this->expectException('BO\Zmsentities\Exception\UserAccountAccessRightsFailed');
-        $entity = $this->getExample();
-        $entity2 = $this->getExample();
-        unset($entity2->rights['scope']);
-        $entity2->hasEditAccess($entity);
-    }
-
     public function testIsOveraged()
     {
         $now = new \DateTimeImmutable(self::DEFAULT_TIME);
