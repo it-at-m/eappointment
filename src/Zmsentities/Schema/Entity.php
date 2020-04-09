@@ -2,6 +2,8 @@
 
 namespace BO\Zmsentities\Schema;
 
+use \BO\Zmsentities\Helper\Property;
+
 /**
  * @SuppressWarnings(NumberOfChildren)
  * @SuppressWarnings(PublicMethod)
@@ -89,7 +91,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     {
         $jsonSchema = self::readJsonSchema()->withResolvedReferences($resolveLevel);
         $data = (new Schema($this))->withoutRefs();
-        if (array_key_exists('$schema', $data)) {
+        if (Property::__keyExists('$schema', $data)) {
             unset($data['$schema']);
         }
         $validator = new Validator($data->toJsonObject(true), $jsonSchema, $locale);
@@ -152,7 +154,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     {
         $class = get_called_class();
         $jsonSchema = self::readJsonSchema();
-        if (array_key_exists('example', $jsonSchema)) {
+        if ($jsonSchema->offsetExists('example')) {
             return new $class($jsonSchema['example']);
         }
         return new $class();
@@ -257,7 +259,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public function getId()
     {
         $idName = $this::PRIMARY;
-        return (array_key_exists($idName, $this) && $this[$idName]) ? $this[$idName] : false;
+        return ($this->offsetExists($idName) && $this[$idName]) ? $this[$idName] : false;
     }
 
     /**

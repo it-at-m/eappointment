@@ -11,6 +11,8 @@ use \BO\Zmsentities\Process;
 
 use \BO\Zmsentities\Config;
 
+use \BO\Zmsentities\Helper\Property;
+
 /**
  * @SuppressWarnings(Coupling)
  *
@@ -148,8 +150,8 @@ class Messaging
     {
         $status = self::getMessagingStatus($process);
         $template = null;
-        if (array_key_exists($type, self::$templates)) {
-            if (array_key_exists($status, self::$templates[$type])) {
+        if (Property::__keyExists($type, self::$templates)) {
+            if (Property::__keyExists($status, self::$templates[$type])) {
                 $template = self::$templates[$type][$status];
             }
         }

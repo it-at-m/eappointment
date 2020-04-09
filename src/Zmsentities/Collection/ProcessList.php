@@ -3,6 +3,8 @@ namespace BO\Zmsentities\Collection;
 
 use \BO\Zmsentities\Helper\Sorter;
 
+use \BO\Zmsentities\Helper\Property;
+
 /**
  * @SuppressWarnings(Complexity)
  * @SuppressWarnings(Public)
@@ -119,7 +121,7 @@ class ProcessList extends Base
     {
         $list = new ScopeList();
         foreach ($this as $process) {
-            if (array_key_exists('scope', $process)) {
+            if (Property::__keyExists('scope', $process)) {
                 $list[] = new \BO\Zmsentities\Scope($process['scope']);
             }
         }
@@ -130,7 +132,7 @@ class ProcessList extends Base
     {
         $list = new RequestList();
         foreach ($this as $process) {
-            if (array_key_exists('requests', $process)) {
+            if (Property::__keyExists('requests', $process)) {
                 $list->addList($process->getRequests());
             }
         }

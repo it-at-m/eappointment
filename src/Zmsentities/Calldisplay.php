@@ -2,6 +2,8 @@
 
 namespace BO\Zmsentities;
 
+use \BO\Zmsentities\Helper\Property;
+
 class Calldisplay extends Schema\Entity
 {
     const PRIMARY = 'serverTime';
@@ -20,10 +22,11 @@ class Calldisplay extends Schema\Entity
 
     public function withResolvedCollections($input)
     {
-        if (array_key_exists('scopelist', $input)) {
+        $input =  (is_object($input)) ? $input->getArrayCopy() : $input;
+        if (Property::__keyExists('scopelist', $input)) {
             $this->scopes = $this->getScopeListFromCsv($input['scopelist']);
         }
-        if (array_key_exists('clusterlist', $input)) {
+        if (Property::__keyExists('clusterlist', $input)) {
             $this->clusters = $this->getClusterListFromCsv($input['clusterlist']);
         }
         return $this;
@@ -49,7 +52,7 @@ class Calldisplay extends Schema\Entity
     {
         $scopeList = $this->getScopeList();
         foreach ($this->clusters as $cluster) {
-            if (array_key_exists('scopes', $cluster)) {
+            if (Property::__keyExists('scopes', $cluster)) {
                 foreach ($cluster['scopes'] as $clusterScope) {
                     $scope = new Scope($clusterScope);
                     if (! $scopeList->hasEntity($scope['id'])) {
@@ -102,7 +105,7 @@ class Calldisplay extends Schema\Entity
         if ($calldisplay->hasClusterList() && $calldisplay->hasScopeList()) {
             $clusterScopeList = new Collection\ScopeList();
             foreach ($calldisplay->clusters as $cluster) {
-                if (array_key_exists('scopes', $cluster)) {
+                if (Property::__keyExists('scopes', $cluster)) {
                     foreach ($cluster['scopes'] as $clusterScope) {
                         $scope = new Scope($clusterScope);
                         $clusterScopeList->addEntity($scope);
