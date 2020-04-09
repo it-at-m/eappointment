@@ -18,6 +18,7 @@ class ProcessReserve extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
+     * @SuppressWarnings(Complexity)
      * @return String
      */
     public function readResponse(
