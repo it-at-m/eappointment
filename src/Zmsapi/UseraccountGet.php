@@ -21,18 +21,21 @@ class UseraccountGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('useraccount');
+        (new Helper\User($request, 2))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-        $userAccount = (new Useraccount)->readEntity($args['loginname'], $resolveReferences);
-        if (! $userAccount->hasId()) {
+        $useraccount = (new Useraccount)->readEntity($args['loginname'], $resolveReferences);
+        if (! $useraccount->hasId()) {
             throw new Exception\Useraccount\UseraccountNotFound();
         }
 
+        Helper\User::testWorkstationAccessRights($useraccount);
         $message = Response\Message::create($request);
-        $message->data = $userAccount;
+        $message->data = $useraccount;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
     }
+
+    
 }

@@ -22,13 +22,14 @@ class UseraccountDelete extends BaseController
         array $args
     ) {
         (new Helper\User($request))->checkRights('useraccount');
-        $userAccount = (new Useraccount)->readEntity($args['loginname']);
-        if (! $userAccount->hasId() || ! (new Useraccount)->deleteEntity($userAccount->id)) {
+        $useraccount = (new Useraccount)->readEntity($args['loginname']);
+        Helper\User::testWorkstationAccessRights($useraccount);
+        if (! $useraccount->hasId() || ! (new Useraccount)->deleteEntity($useraccount->getId())) {
             throw new Exception\Useraccount\UseraccountNotFound();
         }
 
         $message = Response\Message::create($request);
-        $message->data = $userAccount;
+        $message->data = $useraccount;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

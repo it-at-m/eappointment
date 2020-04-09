@@ -72,6 +72,24 @@ class User
     }
 
     /**
+     * @throws \BO\Zmsentities\Exception\UserAccountAccessRightsFailed()
+     *
+     */
+    public static function testWorkstationAccessRights($useraccount)
+    {        
+        //departmentlist of workstation must be assigned to useraccount
+        $workstationDepartmentList = static::$workstation->getDepartmentList();
+        $accessedDeparmentList = $workstationDepartmentList->withAccess($useraccount);
+        //exception if useraccount not has same department like workstation or workstation is not superuser but useraccount is
+        if (
+            ! $accessedDeparmentList->count() || 
+            ($useraccount->isSuperUser() && ! static::$workstation->getUseraccount()->isSuperUser())    
+        ) {
+            throw new \BO\Zmsentities\Exception\UserAccountAccessRightsFailed();
+        }
+    }
+
+    /**
      * @return \BO\Zmsentities\Workstation
      *
      */

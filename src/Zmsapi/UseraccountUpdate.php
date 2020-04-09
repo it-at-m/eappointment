@@ -25,7 +25,7 @@ class UseraccountUpdate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('useraccount');
+        (new Helper\User($request, 2))->checkRights('useraccount');
         if (! (new Useraccount)->readIsUserExisting($args['loginname'])) {
             throw new Exception\Useraccount\UseraccountNotFound();
         }
@@ -33,6 +33,8 @@ class UseraccountUpdate extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
 
         $entity = new \BO\Zmsentities\Useraccount($input);
+        Helper\User::testWorkstationAccessRights($entity);
+        
         $this->testEntity($entity, $input, $args);
 
         $message = Response\Message::create($request);

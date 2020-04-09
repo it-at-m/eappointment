@@ -22,10 +22,9 @@ class UseraccountList extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        (new Helper\User($request))->checkRights('useraccount');
+        $workstation = (new Helper\User($request, 2))->checkRights('useraccount');
         $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $rightRestriction = $validator->getParameter('right')->isString()->getValue();
-
         $useraccountList = (new Useraccount)->readList($resolveReferences);
         if ($rightRestriction) {
             $useraccountList = $useraccountList->withRights([$rightRestriction]);
