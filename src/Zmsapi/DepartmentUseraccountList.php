@@ -21,17 +21,30 @@ class DepartmentUseraccountList extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('useraccount');
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $workstation = (new Helper\User($request, 2))->checkRights('useraccount');
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $department = Helper\User::checkDepartment($args['id']);
-
+        
         $useraccountList = (new Useraccount)->readCollectionByDepartmentId($department->id, $resolveReferences);
-
+        $useraccountList = $this->getListByWorkstation($useraccountList, $workstation);
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
         return $response;
+    }
+
+    protected function getListByWorkstation($useraccountList, $workstation)
+    {
+        $collection = new \BO\Zmsentities\Collection\UseraccountList();
+        $workstationDepartmentList = $workstation->getDepartmentList();
+        foreach ($useraccountList as $useraccount) {
+            $accessedDeparmentList = $workstationDepartmentList->withAccess($useraccount);
+            if ($accessedDeparmentList->count()) {
+                $collection->addEntity(clone $useraccount);
+            }
+        }
+        return $collection;
     }
 }
