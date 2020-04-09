@@ -27,7 +27,6 @@ class UseraccountEdit extends BaseController
         $userAccountName = Validator::value($args['loginname'])->isString()->getValue();
         $confirmSuccess = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $userAccount = \App::$http->readGetResult('/useraccount/'. $userAccountName .'/')->getEntity();
-        $workstation->getUseraccount()->hasEditAccess($userAccount);
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
 
         $input = $request->getParsedBody();
