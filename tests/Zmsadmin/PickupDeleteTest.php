@@ -20,7 +20,7 @@ class PickupDeleteTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_Workstation_with_process_pickup.json")
+                    'response' => $this->readFixture("GET_workstation_with_process_pickup.json")
                 ],
                 [
                     'function' => 'readGetResult',
