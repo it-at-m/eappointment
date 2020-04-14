@@ -42,12 +42,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         User::$workstation = new Workstation([
             'id' => $workstationId,
             'useraccount' => new Useraccount([
-                'id' => $loginname,
-                "departments" => [
-                    [
-                        "id" => 74
-                    ]
-                ]
+                'id' => $loginname
             ]),
             'scope' => new Scope([
                 'id' => $scopeId,
