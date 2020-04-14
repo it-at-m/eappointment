@@ -43,6 +43,11 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
             'id' => $workstationId,
             'useraccount' => new Useraccount([
                 'id' => $loginname,
+                "departments" => [
+                    [
+                        "id" => 74
+                    ]
+                ]
             ]),
             'scope' => new Scope([
                 'id' => $scopeId,

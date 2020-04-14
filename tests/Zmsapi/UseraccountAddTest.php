@@ -40,8 +40,60 @@ class UseraccountAddTest extends Base
     {
         $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountAlreadyExists');
         $this->expectExceptionCode(404);
-        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setWorkstation(137, "testadmin")->getUseraccount()->setRights('useraccount');
         $this->render([], [
+            '__body' => '{
+                "rights": {
+                "availability": "0",
+                "basic": "1",
+                "cluster": "0",
+                "department": "0",
+                "organisation": "0",
+                "scope": "0",
+                "sms": "0",
+                "superuser": "0",
+                "ticketprinter": "0",
+                "useraccount": "0"
+              },
+              "departments": [
+                  {"id": 74}
+              ],
+              "id": "testuser"
+            }'
+        ], []);
+    }
+
+    public function testRightsFailed()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountAccessRightsFailed');
+        $this->expectExceptionCode(403);
+        $this->setWorkstation(137, "testadmin")->getUseraccount()->setRights('useraccount');
+        $this->render([], [
+            '__body' => '{
+                "rights": {
+                "availability": "0",
+                "basic": "1",
+                "cluster": "0",
+                "department": "0",
+                "organisation": "0",
+                "scope": "0",
+                "sms": "0",
+                "superuser": "1",
+                "ticketprinter": "0",
+                "useraccount": "0"
+              },
+              "departments": [
+                  {"id": 74}
+              ],
+              "id": "testuser"
+            }'
+        ], []);
+    }
+
+    public function testSuperuserAddRights()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $response = $this->render([], [
             '__body' => '{
                 "rights": {
                 "availability": "1",
@@ -58,9 +110,13 @@ class UseraccountAddTest extends Base
               "departments": [
                   {"id": 74}
               ],
-              "id": "testadmin"
+              "id": "unittest-superuser",
+              "email": "test@zms.de"
             }'
         ], []);
+        $this->assertContains('useraccount.json', (string)$response->getBody());
+        $this->assertContains('unittest-superuser', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testSchemaUnvalid()
