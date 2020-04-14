@@ -24,7 +24,7 @@ class PickupCall extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
-        $process = new \BO\Zmsentities\Process(['id' => $processId]);
+        $process = new \BO\Zmsentities\Process(['id' => $processId, 'status' => 'pickup']);
 
         $workstation = \App::$http->readPostResult('/workstation/process/called/', $process)->getEntity();
 
@@ -35,9 +35,7 @@ class PickupCall extends BaseController
             $response,
             'block/pickup/called.twig',
             array(
-                'workstation' => $workstation,
-                'hasProcessCalled' => ($workstation->process['id'] != $processId)
-            )
+                'workstation' => $workstation            )
         );
     }
 }
