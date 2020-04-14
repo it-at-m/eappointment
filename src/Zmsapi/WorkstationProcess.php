@@ -36,7 +36,7 @@ class WorkstationProcess extends BaseController
             $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
         } else {
             $exception = new Exception\Workstation\WorkstationHasAssignedProcess();
-            $exception->data = $process;
+            $exception->data = ['process' => $entity];
             throw $exception;
         }
 
