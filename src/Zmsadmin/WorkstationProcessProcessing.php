@@ -17,7 +17,7 @@ class WorkstationProcessProcessing extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $workstation->process->status = 'processing';
         if (! $workstation->process->hasId()) {
             throw new \BO\Zmsentities\Exception\WorkstationMissingAssignedProcess();
@@ -27,11 +27,15 @@ class WorkstationProcessProcessing extends BaseController
             $workstation->process
         )->getEntity();
 
+        $validator = $request->getAttribute('validator');
+        $error = $validator->getParameter('error')->isString()->getValue();
+
         return \BO\Slim\Render::withHtml(
             $response,
             'block/process/info.twig',
             array(
-                'workstation' => $workstation
+                'workstation' => $workstation,
+                'error' => $error
             )
         );
     }

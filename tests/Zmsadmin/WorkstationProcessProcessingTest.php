@@ -17,7 +17,7 @@ class WorkstationProcessProcessingTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_workstation_with_process.json")
                 ],
                 [
@@ -42,7 +42,7 @@ class WorkstationProcessProcessingTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_workstation_without_process.json")
                 ]
             ]

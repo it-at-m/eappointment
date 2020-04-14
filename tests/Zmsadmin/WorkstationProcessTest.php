@@ -17,7 +17,7 @@ class WorkstationProcessTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ]
             ]
@@ -34,7 +34,7 @@ class WorkstationProcessTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_workstation_with_process_called.json")
                 ]
             ]
@@ -50,7 +50,7 @@ class WorkstationProcessTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_workstation_with_process.json")
                 ]
             ]
@@ -68,7 +68,7 @@ class WorkstationProcessTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
                 ]
             ]

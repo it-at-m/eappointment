@@ -19,7 +19,7 @@ class WorkstationProcessCalledTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
@@ -42,25 +42,34 @@ class WorkstationProcessCalledTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/process/called/',
-                    'response' => $this->readFixture("GET_workstation_basic.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_with_process_called.json")
                 ]
             ]
         );
-        $response = $this->render($this->arguments, [
+        $response = $this->render(['id' => 161275], [
             'exclude' => 82252
         ], []);
-        $this->assertContains(
-            'Dieser Arbeitsplatz hat schon einen Termin aufgerufen. Dieser wird weiterhin verwendet.',
-            (string)$response->getBody()
+        $this->assertRedirect($response, '/workstation/process/processing/?error=has_called_process');
+        $this->assertEquals(302, $response->getStatusCode());
+    }
+
+    public function testRenderingAlreadyCalledPickup()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_with_process_pickup.json")
+                ]
+            ]
         );
-        $this->assertContains('message--error', (string)$response->getBody());
-        $this->assertContains('data-exclude="82252,9999999"', (string)$response->getBody());
-        $this->assertEquals(200, $response->getStatusCode());
+        $response = $this->render(['id' => 161275], [
+            'exclude' => 82252
+        ], []);
+        $this->assertRedirect($response, '/workstation/process/processing/?error=has_called_pickup');
+        $this->assertEquals(302, $response->getStatusCode());
     }
 }
