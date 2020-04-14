@@ -9,6 +9,7 @@ class UseraccountAddTest extends Base
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setDepartment(74);
         $response = $this->render([], [
             '__body' => '{
                 "rights": {
@@ -41,6 +42,7 @@ class UseraccountAddTest extends Base
         $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountAlreadyExists');
         $this->expectExceptionCode(404);
         $this->setWorkstation(137, "testadmin")->getUseraccount()->setRights('useraccount');
+        $this->setDepartment(74);
         $this->render([], [
             '__body' => '{
                 "rights": {
@@ -85,7 +87,7 @@ class UseraccountAddTest extends Base
               "departments": [
                   {"id": 74}
               ],
-              "id": "testuser"
+              "id": "unittest_rights_failed"
             }'
         ], []);
     }
@@ -93,6 +95,7 @@ class UseraccountAddTest extends Base
     public function testSuperuserAddRights()
     {
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $this->setDepartment(74);
         $response = $this->render([], [
             '__body' => '{
                 "rights": {
@@ -124,6 +127,7 @@ class UseraccountAddTest extends Base
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setDepartment(74);
         $this->render([], [
             '__body' => '{
                 "rights": {
