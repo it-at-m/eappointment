@@ -9,6 +9,7 @@ class UseraccountUpdateTest extends Base
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setDepartment(74);
         $response = $this->render(['loginname' => 'testadmin'], [
             '__body' => '{
                 "rights": {
@@ -70,6 +71,7 @@ class UseraccountUpdateTest extends Base
     public function testInvalidInput()
     {
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setDepartment(74);
         $this->expectException('BO\Zmsapi\Exception\Useraccount\UseraccountInvalidInput');
         $this->expectExceptionCode(404);
         $this->render(['loginname' => 'testadmin'], [
@@ -80,9 +82,10 @@ class UseraccountUpdateTest extends Base
     public function testAlreadyExists()
     {
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setDepartment(74);
         $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountAlreadyExists');
         $this->expectExceptionCode(404);
-        $this->render(['loginname' => 'berlinonline'], [
+        $this->render(['loginname' => 'testuser'], [
             '__body' => '{
                 "rights": {
                 "availability": "1",

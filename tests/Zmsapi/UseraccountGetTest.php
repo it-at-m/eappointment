@@ -9,7 +9,8 @@ class UseraccountGetTest extends Base
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
-        $response = $this->render(['loginname' => 'berlinonline'], [], []);
+        $this->setDepartment(74);
+        $response = $this->render(['loginname' => 'testadmin'], [], []);
         $this->assertContains('useraccount.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }

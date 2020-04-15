@@ -11,7 +11,8 @@ class UseraccountDeleteTest extends Base
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
-        $response = $this->render(['loginname' => 'berlinonline'], [], []);
+        $this->setDepartment(74);
+        $response = $this->render(['loginname' => 'testadmin'], [], []);
         $this->assertContains('useraccount.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
@@ -19,6 +20,7 @@ class UseraccountDeleteTest extends Base
     public function testNotFound()
     {
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setDepartment(74);
         $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountNotFound');
         $this->expectExceptionCode(404);
         $this->render(['loginname' => 'test'], [], []);
