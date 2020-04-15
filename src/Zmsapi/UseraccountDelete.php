@@ -23,10 +23,10 @@ class UseraccountDelete extends BaseController
     ) {
         (new Helper\User($request))->checkRights('useraccount');
         $useraccount = (new Useraccount)->readEntity($args['loginname']);
-        Helper\User::testWorkstationAccessRights($useraccount);
         if (! $useraccount->hasId() || ! (new Useraccount)->deleteEntity($useraccount->getId())) {
             throw new Exception\Useraccount\UseraccountNotFound();
         }
+        Helper\User::testWorkstationAccessRights($useraccount);
 
         $message = Response\Message::create($request);
         $message->data = $useraccount;
