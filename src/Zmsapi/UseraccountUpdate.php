@@ -33,9 +33,8 @@ class UseraccountUpdate extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
 
         $entity = new \BO\Zmsentities\Useraccount($input);
-        Helper\User::testWorkstationAccessRights($entity);
-        
         $this->testEntity($entity, $input, $args);
+        Helper\User::testWorkstationAccessRights($entity);
 
         $message = Response\Message::create($request);
         $message->data = (new Useraccount)->updateEntity($args['loginname'], $entity, $resolveReferences);
