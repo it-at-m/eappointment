@@ -20,18 +20,20 @@
         {% set display = 'hide' %}
         {% if year in last3Year %}{% set display = 'show' %}{% endif %}
         <tr class="{{ display }}">
-            <th>
+            <td>
                 {% set yearExists = 0 %}
                 {% for entry in items.data if yearExists == 0 %}
                     {% if entry|first|length > 4 and entry|first|date('Y') == year %}
                         {% set yearExists = 1 %}
                     {% endif %}
                 {% endfor %}
+                <strong>
                 {% if yearExists %}
                     <a href="{{ urlGet("Report%s"|format(source.entity), {'period': year}, {}) }}">{{ year }}</a>
                 {% else %}
                     {{ year }}
                 {% endif %}
+                </strong>
             </td>
             {% for month in 1..12 %}
                 {% set monthExists = 0 %}
