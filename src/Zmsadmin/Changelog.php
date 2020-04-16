@@ -17,12 +17,18 @@ class Changelog extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        try {
+            $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        } catch (\Exception $workstationexception) {
+            $workstation = null;
+        }
         return \BO\Slim\Render::withHtml(
             $response,
             'page/changelog.twig',
             array(
                 'title' => 'Changelog',
-                'menuActive' => 'changelog'
+                'menuActive' => 'changelog',
+                'workstation' => $workstation
             )
         );
     }
