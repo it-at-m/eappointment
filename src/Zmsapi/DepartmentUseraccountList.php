@@ -8,7 +8,8 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Useraccount;
+use \BO\Zmsdb\Useraccount as Query;
+use \BO\Zmsentities\Collection\UseraccountList as Collection;
 
 class DepartmentUseraccountList extends BaseController
 {
@@ -25,26 +26,13 @@ class DepartmentUseraccountList extends BaseController
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $department = Helper\User::checkDepartment($args['id']);
         
-        $useraccountList = (new Useraccount)->readCollectionByDepartmentId($department->id, $resolveReferences);
-        $useraccountList = $this->getListByWorkstation($useraccountList, $workstation);
+        $useraccountList = (new Query)->readCollectionByDepartmentId($department->id, $resolveReferences);
+        $useraccountList = (new Collection)->withAccessByWorkstation($workstation);
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
         return $response;
-    }
-
-    protected function getListByWorkstation($useraccountList, $workstation)
-    {
-        $collection = new \BO\Zmsentities\Collection\UseraccountList();
-        $departmentList = $workstation->getDepartmentList();
-        foreach ($useraccountList as $useraccount) {
-            $accessedList = $departmentList->withAccess($useraccount);
-            if ($accessedList->count()) {
-                $collection->addEntity(clone $useraccount);
-            }
-        }
-        return $collection;
     }
 }

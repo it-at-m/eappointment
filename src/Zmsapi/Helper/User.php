@@ -77,13 +77,7 @@ class User
      */
     public static function testWorkstationAccessRights($useraccount)
     {
-        //departmentlist of workstation must be assigned to useraccount
-        $departmentList = static::$workstation->getDepartmentList();
-        $accessedList = $departmentList->withAccess($useraccount);
-        /* trough exception if useraccount has not same assigned departments like workstation
-         * or workstation is not superuser but useraccount is
-         */
-        if (! $accessedList->count() ||
+        if (! static::$workstation->hasAccessToUseraccount($useraccount) ||
             ($useraccount->isSuperUser() && ! static::$workstation->getUseraccount()->isSuperUser())
         ) {
             throw new \BO\Zmsentities\Exception\UserAccountAccessRightsFailed();
