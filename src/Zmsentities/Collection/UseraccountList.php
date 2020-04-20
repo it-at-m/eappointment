@@ -26,4 +26,17 @@ class UseraccountList extends Base
         }
         return $collection;
     }
+
+    public function withAccessByWorkstation($workstation)
+    {
+        $collection = new self();
+        $departmentList = $workstation->getDepartmentList();
+        foreach ($this as $useraccount) {
+            $accessedList = $departmentList->withAccess($useraccount);
+            if ($accessedList->count()) {
+                $collection->addEntity(clone $useraccount);
+            }
+        }
+        return $collection;
+    }
 }
