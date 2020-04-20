@@ -201,4 +201,11 @@ class Workstation extends Schema\Entity
     {
         return $this->queue['clusterEnabled'] ? true : false;
     }
+
+    public function hasAccessToUseraccount($useraccount)
+    {
+        $departmentList = $this->getDepartmentList();
+        $accessedList = $departmentList->withAccess($useraccount);
+        return ($accessedList->count()) ? true : false;
+    }
 }
