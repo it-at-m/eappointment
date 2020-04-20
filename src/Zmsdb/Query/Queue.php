@@ -25,10 +25,10 @@ class Queue extends Process implements MappingInterface
                     THEN "missed"
                 WHEN process.Abholer != 0 AND process.AbholortID != 0 AND process.NutzerID = 0
                     THEN "pending"
-                WHEN process.aufruferfolgreich != 0
-                    THEN "processing"
                 WHEN process.AbholortID != 0 AND process.NutzerID != 0
                     THEN "pickup"
+                WHEN process.AbholortID = 0 AND process.aufruferfolgreich != 0 AND process.NutzerID != 0
+                    THEN "processing"
                 WHEN process.aufrufzeit != "00:00:00" AND process.NutzerID != 0 AND process.AbholortID = 0
                     THEN "called"
                 WHEN process.wsm_aufnahmezeit != "00:00:00"
