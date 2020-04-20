@@ -57,21 +57,11 @@ div.aufrufanzeige_anzeigebereich_zweizeilig
     text-align:center;
     padding:8px 0px;
 }
-.aufrufanzeige table.aufrufanzeige_aufruf .wartenummer div.aufrufanzeigenummer
-{
-/*    width: 330px;*/
-}
-.aufrufanzeige table.aufrufanzeige_aufruf .platznummer div
-{
-/*    width: 160px;*/
-}
 
-
-.aufrufanzeige table.aufrufanzeige_aufruf td div.newprocess
-{
-    color: #D60C22 !important;
-    font-size: 70px;
-    line-height:0;
+.aufrufanzeige table.aufrufanzeige_aufruf td div.highlight {
+    &.called span {
+        color: $red;
+    }
 }
 
 span.terminkundenanzeige
