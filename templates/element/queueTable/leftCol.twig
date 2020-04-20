@@ -1,9 +1,5 @@
 <td class="rechterRand wartenummer" data-callTime="{{ queue.callTime }}">
-	{% if queue.status == "missed" %}
-		<div class="aufrufanzeigenummer missedAppointment">
-	{% else %}
-		<div class="aufrufanzeigenummer">
-	{% endif %}
+	<div class="highlight {{ queue.status }}">
         {% if queue.withAppointment %}
 			<span class="terminkundenanzeige">Terminkunde</span><br>
 			{% if queue.number|length == 7 %}
