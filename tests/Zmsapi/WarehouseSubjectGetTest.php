@@ -14,7 +14,7 @@ class WarehouseSubjectGetTest extends Base
         $workstation->getUseraccount()->setRights('scope');
         $response = $this->render(['subject' => 'waitingscope'], [], []);
         $this->assertContains('exchange.json', (string)$response->getBody());
-        $this->assertContains('"data":[["141"', (string)$response->getBody());
+        $this->assertContains('"141","2015-01-02","2016-04-01"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -23,7 +23,7 @@ class WarehouseSubjectGetTest extends Base
         $workstation = $this->setWorkstation(138, 'berlinonline', 140);
         $workstation->getUseraccount()->setRights('scope');
         $response = $this->render(['subject' => 'waitingscope'], [], []);
-        $this->assertNotContains('"data":[["141"', (string)$response->getBody());
+        $this->assertNotContains('"141","2015-01-02","2016-04-01"', (string)$response->getBody());
     }
 
     public function testSubjectDepartment()
