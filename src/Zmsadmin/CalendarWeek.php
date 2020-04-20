@@ -24,6 +24,14 @@ class CalendarWeek extends BaseController
         // parameters
         $selectedYear = Validator::value($args['year'])->isNumber()->getValue();
         $selectedWeek = Validator::value($args['weeknr'])->isString()->getValue();
+
+        $currentYear = \App::$now->format('Y');
+        $currentWeek = \App::$now->format('W');
+
+        $selectedYear = ($selectedYear < $currentYear) ? $currentYear : $selectedYear;
+        $selectedWeek = ($selectedWeek < $currentWeek && $selectedYear <= $currentYear) ?
+            $currentWeek :
+            $selectedWeek;
         
         // HTTP requests
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
@@ -33,8 +41,6 @@ class CalendarWeek extends BaseController
         $dayList = $calendar->readWeekDayListWithProcessList($workstation->getScopeList());
         //var_dump($dayList);exit;
 
-        // data refinement
-        
         // rendering
         return \BO\Slim\Render::withHtml(
             $response,
