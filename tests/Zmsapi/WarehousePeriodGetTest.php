@@ -90,7 +90,7 @@ class WarehousePeriodGetTest extends Base
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->setRights('scope');
         $response = $this->render(
-            ['subject' => 'waitingscope', 'subjectId' => 141, 'period' => '2016-04'],
+            ['subject' => 'waitingscope', 'subjectId' => 141, 'period' => '2017-04'],
             ['groupby' => 'day'],
             []
         );
