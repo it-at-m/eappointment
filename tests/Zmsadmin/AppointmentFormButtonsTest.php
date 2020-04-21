@@ -60,10 +60,35 @@ class AppointmentFormButtonsTest extends Base
                 ]
             ]
         );
-        $response = $this->render([], ['selectedprocess' => '100044'], []);
+        $response = $this->render([], ['selectedprocess' => '100044', 'selectedTime' => '17-00', 'selecteddate' => '2016-05-27'], []);
         $this->assertContains('Speichern', (string)$response->getBody());
         $this->assertContains('Löschen', (string)$response->getBody());
         $this->assertContains('Wartenr. drucken', (string)$response->getBody());
+        $this->assertContains('Als neu hinzufügen', (string)$response->getBody());
+        $this->assertContains('Abbrechen', (string)$response->getBody());
+    }
+
+    public function testWithSelectedProcessAndNewDate()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/100044/',
+                    'response' => $this->readFixture("GET_process_100044_57c2.json")
+                ]
+            ]
+        );
+        $response = $this->render([], ['selectedprocess' => '100044', 'selectedTime' => '17-00', 'selecteddate' => '2016-05-30'], []);
+        $this->assertNotContains('Speichern', (string)$response->getBody());
+        $this->assertNotContains('Löschen', (string)$response->getBody());
+        $this->assertNotContains('Wartenr. drucken', (string)$response->getBody());
         $this->assertContains('Als neu hinzufügen', (string)$response->getBody());
         $this->assertContains('Abbrechen', (string)$response->getBody());
     }
