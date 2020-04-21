@@ -38,6 +38,21 @@ class ProcessReserve extends BaseController
             );
         }
         
+        $process = static::writeReservedProcess($input, $scope);
+        $process = static::writeConfirmedProcess($process);
+        $queryParams = ('confirmed' == $process->getStatus()) ? 
+            ['selectedprocess' => $process, 'success' => 'process_reserved'] :
+            [];
+
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'element/helper/messageHandler.twig',
+            $queryParams
+        );
+    }
+
+    public static function writeReservedProcess($input, $scope)
+    {
         $process = new \BO\Zmsentities\Process();
 
         $selectedTime = str_replace('-', ':', $input['selectedtime']);
@@ -51,20 +66,23 @@ class ProcessReserve extends BaseController
                 'slotsRequired' => (1 < $input['slotCount']) ? $input['slotCount'] : 0
             ])
             ->getEntity();
-        $process = \App::$http->readPostResult('/process/status/confirmed/', $process)->getEntity();
-        $queryParams = [];
-        if ('confirmed' == $process->status) {
-            Helper\AppointmentFormHelper::updateMailAndNotification($input, $process);
-            $queryParams = array(
-                'selectedprocess' => $process,
-                'success' => 'process_reserved'
-            );
-        }
 
-        return \BO\Slim\Render::withHtml(
-            $response,
-            'element/helper/messageHandler.twig',
-            $queryParams
-        );
+        if (isset($input['selectedprocess'])) {
+            \App::$http->readDeleteResult(
+                '/process/'. $input['selectedprocess'] .'/', 
+                ['initiator' => $input['initiator']]
+            )->getEntity();
+        }
+        return $process;
+    }
+
+    public static function writeConfirmedProcess($process)
+    {
+        $confirmedProcess = \App::$http->readPostResult('/process/status/confirmed/', $process)->getEntity();
+        if ('confirmed' == $confirmedProcess->getStatus()) {
+            Helper\AppointmentFormHelper::updateMailAndNotification($input, $process);
+            $process = $confirmedProcess;
+        }
+        return $process;
     }
 }
