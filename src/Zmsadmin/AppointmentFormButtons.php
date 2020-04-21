@@ -26,8 +26,8 @@ class AppointmentFormButtons extends BaseController
             \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() : null;
 
         $isNewAppointment = $this->isNewAppointment(
-            $selectedProcess, 
-            $selectedDate, 
+            $selectedProcess,
+            $selectedDate,
             str_replace('-', ':', $selectedTime)
         );
 

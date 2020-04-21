@@ -40,7 +40,7 @@ class ProcessReserve extends BaseController
         
         $process = static::writeReservedProcess($input, $scope);
         $process = static::writeConfirmedProcess($input, $process);
-        $queryParams = ('confirmed' == $process->getStatus()) ? 
+        $queryParams = ('confirmed' == $process->getStatus()) ?
             ['selectedprocess' => $process, 'success' => 'process_reserved'] :
             [];
 
@@ -69,7 +69,7 @@ class ProcessReserve extends BaseController
 
         if (isset($input['selectedprocess'])) {
             \App::$http->readDeleteResult(
-                '/process/'. $input['selectedprocess'] .'/', 
+                '/process/'. $input['selectedprocess'] .'/',
                 ['initiator' => $input['initiator']]
             )->getEntity();
         }
