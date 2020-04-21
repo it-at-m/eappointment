@@ -25,6 +25,12 @@ class AppointmentFormButtons extends BaseController
         $selectedProcess = ($selectedProcessId) ?
             \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() : null;
 
+        $isNewAppointment = $this->isNewAppointment(
+            $selectedProcess, 
+            $selectedDate, 
+            str_replace('-', ':', $selectedTime)
+        );
+
         return \BO\Slim\Render::withHtml(
             $response,
             'block/appointment/formButtons.twig',
@@ -33,7 +39,15 @@ class AppointmentFormButtons extends BaseController
                 'selectedProcess' => $selectedProcess,
                 'selectedTime' => $selectedTime = ($selectedTime) ? $selectedTime : '00-00',
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
+                'isNewAppointment' => $isNewAppointment
             )
         );
+    }
+
+    protected function isNewAppointment($process, $selectedDate, $selectedTime)
+    {
+        $selectedAppointment = new \BO\Zmsentities\Appointment();
+        $selectedAppointment->setTime($selectedDate.' '.$selectedTime);
+        return ($process) ? ($process->getFirstAppointment()->date != $selectedAppointment->date) : false;
     }
 }
