@@ -121,6 +121,7 @@ class BaseView extends ErrorHandler {
             returnTarget.focus();
             callback();
         });
+
         new MessageHandler(lightboxContentElement, {
             message: response,
             callback: () => {
