@@ -39,7 +39,7 @@ class ProcessReserve extends BaseController
         }
         
         $process = static::writeReservedProcess($input, $scope);
-        $process = static::writeConfirmedProcess($process);
+        $process = static::writeConfirmedProcess($input, $process);
         $queryParams = ('confirmed' == $process->getStatus()) ? 
             ['selectedprocess' => $process, 'success' => 'process_reserved'] :
             [];
@@ -76,7 +76,7 @@ class ProcessReserve extends BaseController
         return $process;
     }
 
-    public static function writeConfirmedProcess($process)
+    public static function writeConfirmedProcess($input, $process)
     {
         $confirmedProcess = \App::$http->readPostResult('/process/status/confirmed/', $process)->getEntity();
         if ('confirmed' == $confirmedProcess->getStatus()) {
