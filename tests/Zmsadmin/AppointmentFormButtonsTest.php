@@ -89,7 +89,7 @@ class AppointmentFormButtonsTest extends Base
         $this->assertNotContains('Speichern', (string)$response->getBody());
         $this->assertNotContains('Löschen', (string)$response->getBody());
         $this->assertNotContains('Wartenr. drucken', (string)$response->getBody());
-        $this->assertContains('Als neu hinzufügen', (string)$response->getBody());
+        $this->assertContains('Termin ändern', (string)$response->getBody());
         $this->assertContains('Abbrechen', (string)$response->getBody());
     }
 }
