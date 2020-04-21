@@ -217,7 +217,7 @@ class View extends BaseView {
         stopEvent(event);
         showSpinner(scope.$main);
         const sendData = scope.$main.find('form').serializeArray();
-        this.loadCall(`${this.includeUrl}/process/queue/`, 'POST', sendData, false).then((response) => {
+        this.loadCall(`${this.includeUrl}/process/queue/`, 'POST', sendData, false, scope.$main,).then((response) => {
             var validator = new ValidationHandler(scope, { response: response });
             if (validator.hasErrors()) {
                 return validator.render();
@@ -242,18 +242,22 @@ class View extends BaseView {
         showSpinner(scope.$main);
         const sendData = scope.$main.find('form').serializeArray();
         sendData.push({ name: 'initiator', value: this.initiator });
-        this.loadCall(`${this.includeUrl}/process/reserve/`, 'POST', sendData, false).then((response) => {
+        if (this.selectedProcess) {
+            sendData.push({ name: 'selectedprocess', value: this.selectedProcess });
+        }
+        this.loadCall(`${this.includeUrl}/process/reserve/`, 'POST', sendData, false, scope.$main).then((response) => {
             var validator = new ValidationHandler(scope, { response: response });
             if (validator.hasErrors()) {
                 return validator.render();
             } else {
                 this.loadMessage(response, () => {
+                    this.selectedProcess = null;
                     this.loadAppointmentForm();
                     if ('counter' == this.page)
                         this.loadQueueInfo();
                     this.loadQueueTable();
                     this.loadCalendar();
-                }, null, event.currentTarget);
+                }, scope.$main, event.currentTarget);
             }
         }).then(() => {
             hideSpinner();
@@ -268,7 +272,7 @@ class View extends BaseView {
         }
         const sendData = scope.$main.find('form').serializeArray();
         sendData.push({ name: 'initiator', value: this.initiator });
-        this.loadCall(`${this.includeUrl}/process/${this.selectedProcess}/save/`, 'POST', sendData, false).then((response) => {
+        this.loadCall(`${this.includeUrl}/process/${this.selectedProcess}/save/`, 'POST', sendData, false, scope.$main,).then((response) => {
             var validator = new ValidationHandler(scope, { response: response });
             if (validator.hasErrors()) {
                 return validator.render();
