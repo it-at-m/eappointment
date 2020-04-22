@@ -9,4 +9,4 @@ export default {
         password: process.env.TEST_PASS || ''
     },
     baseUrl: process.env.TEST_BASE || 'https://127.0.0.1:8443/terminvereinbarung/admin'
-}
+    }
