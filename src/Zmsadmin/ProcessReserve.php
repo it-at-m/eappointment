@@ -66,13 +66,6 @@ class ProcessReserve extends BaseController
                 'slotsRequired' => (1 < $input['slotCount']) ? $input['slotCount'] : 0
             ])
             ->getEntity();
-
-        if (isset($input['selectedprocess'])) {
-            \App::$http->readDeleteResult(
-                '/process/'. $input['selectedprocess'] .'/',
-                ['initiator' => $input['initiator']]
-            )->getEntity();
-        }
         return $process;
     }
 
@@ -82,6 +75,11 @@ class ProcessReserve extends BaseController
         if ('confirmed' == $confirmedProcess->getStatus()) {
             Helper\AppointmentFormHelper::updateMailAndNotification($input, $process);
             $process = $confirmedProcess;
+            if (isset($input['selectedprocess'])) {
+                \App::$http
+                ->readDeleteResult('/process/'. $input['selectedprocess'] .'/', ['initiator' => $input['initiator']])
+                ->getEntity();
+            }
         }
         return $process;
     }

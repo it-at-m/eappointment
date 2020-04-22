@@ -87,6 +87,48 @@ class ProcessReserveTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testReserveChangedProcess()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/reserved/',
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0, 'clientkey' => ''],
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/confirmed/',
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
+                    'function' => 'readDeleteResult',
+                    'url' => '/process/82252/',
+                    'parameters' => ['initiator' => 'Sachbearbeiter'],
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ]
+            ]
+        );
+        $parameters = array_merge(['selectedprocess' => 82252, 'initiator' => 'Sachbearbeiter'], $this->parameters);
+        $response = $this->render($this->arguments, $parameters, [], 'POST');
+        $this->assertContains('Termin erfolgreich eingetragen', (string)$response->getBody());
+        $this->assertContains('Die Vorgangsnummer für "H52452625" lautet: 82252', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testWithConfirmations()
     {
         $this->setApiCalls(
