@@ -317,7 +317,7 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = $this->render([], ['selecteddate' => '2016-05-27', 'selectedprocess' => 100044], []);
-        $this->assertContains('17:00 (noch 0 frei)', (string)$response->getBody());
+        $this->assertContains('17:00', (string)$response->getBody());
         $this->assertNotContains('title="Spontankunde"', (string)$response->getBody());
     }
 
@@ -366,7 +366,7 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = $this->render([], ['selecteddate' => '2016-05-27', 'selectedprocess' => 100044], []);
-        $this->assertContains('17:00 (noch 0 frei)', (string)$response->getBody());
+        $this->assertContains('17:00', (string)$response->getBody());
         $this->assertNotContains('title="Spontankunde"', (string)$response->getBody());
     }
 
@@ -411,9 +411,8 @@ class AppointmentFormTest extends Base
         );
         $response = parent::testRendering();
         $this->assertContains(
-            'Dem ausgewählten Standort sind keine Dienstleistungen zugeordnet', 
+            'Dem ausgewählten Standort sind keine Dienstleistungen zugeordnet',
             (string)$response->getBody()
         );
     }
-
 }

@@ -170,11 +170,11 @@ class ProcessQueueTest extends Base
         ], [], 'POST');
         $this->assertContains('Name eingegeben werden', (string)$response->getBody());
         $this->assertContains(
-            "Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden", 
+            "Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden",
             (string)$response->getBody()
         );
         $this->assertContains(
-            "keine Mails verschickt werden. Der Host zur Domain nach dem '@' ist nicht erreichbar.", 
+            "keine Mails verschickt werden. Der Host zur Domain nach dem '@' ist nicht erreichbar.",
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());

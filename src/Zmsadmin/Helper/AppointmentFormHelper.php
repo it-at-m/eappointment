@@ -30,12 +30,13 @@ class AppointmentFormHelper
             $slotType,
             $slotsRequired
         );
-        return static::getFreeProcessListWithSelectedProcess(
+        $freeProcessList = static::getFreeProcessListWithSelectedProcess(
             $validator,
             $scopeList,
             $freeProcessList,
             $selectedProcess
         );
+        return ($freeProcessList) ? $freeProcessList->toProcessListByTime()->sortByTimeKey() : null;
     }
 
     public static function readRequestList($request, $workstation, $selectedScope = null)
@@ -57,6 +58,7 @@ class AppointmentFormHelper
         $selectedScopeId = (isset($input['scope']))
             ? $input['scope']
             : $validator->getParameter('selectedscope')->isNumber()->getValue();
+
         $selectedScope = (! $workstation->queue['clusterEnabled'] && ! $selectedScopeId)
         ? new \BO\Zmsentities\Scope($workstation->scope)
         : null;
@@ -106,15 +108,21 @@ class AppointmentFormHelper
         $selectedProcess
     ) {
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
-        if ($freeProcessList && $selectedProcess && $selectedProcess->queue->withAppointment &&
+        if ($selectedProcess &&
+            $selectedProcess->queue->withAppointment &&
             $selectedDate == $selectedProcess->getFirstAppointment()->toDateTime()->format('Y-m-d')
-          ) {
-            $dateTime = $selectedProcess->getFirstAppointment()->toDateTime();
-            $freeProcessList->setTempAppointmentToProcess($dateTime, $scopeList->getFirst()->getId());
-        } elseif (! $freeProcessList && $selectedProcess && $selectedProcess->queue->withAppointment) {
-            $freeProcessList = (new \BO\Zmsentities\Collection\ProcessList())->addEntity($selectedProcess);
+        ) {
+            if ($freeProcessList) {
+                $freeProcessList->setTempAppointmentToProcess(
+                    $selectedProcess->getFirstAppointment()->toDateTime(),
+                    $scopeList->getFirst()->getId()
+                );
+            } elseif (! $freeProcessList) {
+                $freeProcessList = (new \BO\Zmsentities\Collection\ProcessList())->addEntity($selectedProcess);
+            }
         }
-        return ($freeProcessList) ? $freeProcessList->toProcessListByTime()->sortByTimeKey() : null;
+        
+        return ($freeProcessList) ? $freeProcessList : null;
     }
 
     protected static function setSlotType($validator)
