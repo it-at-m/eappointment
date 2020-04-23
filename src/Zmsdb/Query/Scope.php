@@ -33,7 +33,11 @@ class Scope extends Base implements MappingInterface
                 scope.`StandortID` = :scope_id AND
                 IF(
                     scope.`wartenummernkontingent` > 0,
-                    scope.`vergebenewartenummern` < scope.`wartenummernkontingent`,
+                    IF(
+                        isNull(scope.`vergebenewartenummern`), 
+                        0, 
+                        scope.`vergebenewartenummern`
+                    ) < scope.`wartenummernkontingent`,
                     scope.`StandortID`
                 )
         ';
