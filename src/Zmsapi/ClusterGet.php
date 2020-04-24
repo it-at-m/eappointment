@@ -21,10 +21,19 @@ class ClusterGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('cluster');
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $message = Response\Message::create($request);
+        
         $getScopeIsOpened = Validator::param('getIsOpened')->isNumber()->setDefault(0)->getValue();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        
+        if ((new Helper\User($request))->hasRights() || $resolveReferences > 0) {
+            $resolveReferences = ($resolveReferences > 0 ) ? $resolveReferences : 1;
+            (new Helper\User($request))->checkRights('basic');
+        } else {
+            $message->meta->reducedData = true;
+        }
 
+        
         $cluster = ($getScopeIsOpened)
             ? (new Query())->readEntityWithOpenedScopeStatus($args['id'], \App::$now, $resolveReferences)
             : (new Query())->readEntity($args['id'], $resolveReferences);
@@ -33,8 +42,6 @@ class ClusterGet extends BaseController
             throw new Exception\Cluster\ClusterNotFound();
         }
 
-
-        $message = Response\Message::create($request);
         $message->data = $cluster;
 
         $response = Render::withLastModified($response, time(), '0');
