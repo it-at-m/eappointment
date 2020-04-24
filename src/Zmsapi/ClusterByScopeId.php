@@ -21,11 +21,17 @@ class ClusterByScopeId extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('basic');
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $cluster = (new Query)->readByScopeId($args['id'], $resolveReferences);
-
         $message = Response\Message::create($request);
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+
+        if ((new Helper\User($request))->hasRights() || $resolveReferences > 0) {
+            $resolveReferences = ($resolveReferences > 0 ) ? $resolveReferences : 1;
+            (new Helper\User($request))->checkRights('basic');
+        } else {
+            $message->meta->reducedData = true;
+        }
+
+        $cluster = (new Query)->readByScopeId($args['id'], $resolveReferences);
         $message->data = ($cluster) ? $cluster : array();
 
         $response = Render::withLastModified($response, time(), '0');
