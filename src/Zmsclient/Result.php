@@ -223,6 +223,9 @@ class Result
             $data = [$data];
         }
         foreach ($data as $entityData) {
+            if (! array_key_exists('$schema', $entityData)) {
+                $entityData['$schema'] = $data[0]['$schema'];
+            }
             $this->data[] = Factory::create($entityData)->getEntity();
         }
         return $this;
