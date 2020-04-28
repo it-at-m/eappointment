@@ -143,8 +143,10 @@ class ProcessList extends Base
     {
         $appointmentList = new AppointmentList();
         foreach ($this as $process) {
-            foreach ($process["appointments"] as $appointment) {
-                $appointmentList->addEntity(new \BO\Zmsentities\Appointment($appointment));
+            if (Property::__keyExists('appointments', $process)) {
+                foreach ($process["appointments"] as $appointment) {
+                    $appointmentList->addEntity(new \BO\Zmsentities\Appointment($appointment));
+                }
             }
         }
         return $appointmentList;
