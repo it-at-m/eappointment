@@ -1,3 +1,8 @@
+## v2.23.04
+
+* #42054 Bugfix: Die Standort-ID wird jetzt bei Standortwechsel korrekt ausgelesen.
+* #35372 Bugfix: Der Parameter gql kann jetzt auch mit Listen verwendet werden.
+
 ## v2.22.00
 
 * #36425 HTTPS ist bei Cookies im Ticketprinter keine Pflicht mehr
