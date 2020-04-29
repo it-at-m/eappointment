@@ -1,3 +1,12 @@
+## v2.23.04
+
+* #36467 Für gelöschte Standorte wird jetzt die vormals zugeordnete Source-ID zur Verfügung gestellt.
+* #35663 Umstellung der Kommandozeilen-Skripte auf eine zentrale Konfiguration.
+* #35663 Skript caluclateDayOffs zur Errechnung fehlender Feiertage hinzugefügt.
+* #36896 Das Anlegen und Bearbeiten von Vorgängen wird jetzt mit einem Hash geloggt, mit welchem sich prüfen lässt, welches Nutzerkonto verwendet wurde.
+* #36966 Bugfix: Das Holen einer Liste von Konflikten für Öffnungszeiten beinhaltet keine Vorgänge aus der Vergangenheit mehr.
+
+
 ## v2.23.03
 
 * #39753 Bugfix: Das Skript zum Löschen von E-Mail-Adressen löscht nicht mehr alle Vorkommen gleichzeitig um Speicherplatz-Probleme zu umgehen.
