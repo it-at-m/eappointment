@@ -1,3 +1,11 @@
+## v2.23.04
+
+* #42198 NPM Package-Definitionen hinzugefügt um die Entity-Definitionen auch per Javascript verwenden zu können
+* #35916 Bugfix: Validierung von Telefonnummern wurde erweitert. Internationale und zu lange Nummern werden nicht mehr akzeptiert.
+* #36966 Funktion zum Aussortieren von Vorgängen in der Vergangenheit (Uhrzeit) hinzugefügt.
+* #43050 Anpassungen für PHP 7.4 bezüglich Array-Methoden.
+* #42804 Funktionen zur Prüfung von Zugriffsrechten einer Workstation auf einen Useraccount hinzugefügt
+
 ## v2.23.01
 
 * #38145 Workaround: DNS-Abfragen zu E-Mail-Domains finden jetzt in einer Kombination von MX und ANY statt.
