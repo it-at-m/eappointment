@@ -5,7 +5,8 @@
 * #35663 Skript caluclateDayOffs zur Errechnung fehlender Feiertage hinzugefügt.
 * #36896 Das Anlegen und Bearbeiten von Vorgängen wird jetzt mit einem Hash geloggt, mit welchem sich prüfen lässt, welches Nutzerkonto verwendet wurde.
 * #36966 Bugfix: Das Holen einer Liste von Konflikten für Öffnungszeiten beinhaltet keine Vorgänge aus der Vergangenheit mehr.
-
+* #42792 und #42792 Bugfix: Ein Vorgang kann jetzt nur "In Bearbeitung" (processing) sein, wenn dieser nicht einem Abholort zugeordnet ist.
+* #36988 Bugfix: Neue Standorte liefern keinen Fehler "Alle verfügbaren Wartenummern wurden leider schon vergeben" mehr.
 
 ## v2.23.03
 
