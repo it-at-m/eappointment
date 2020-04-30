@@ -1,3 +1,11 @@
+## v2.23.04
+
+* #39699 Anpassung Javascript Validierung an neue Erfordernisse durch eslint
+
+## v2.23.03
+
+* #39699 Umstellung der Generierung von Javascript und CSS auf ParcelJS
+
 ## v2.23.01
 
 * #38445 Bugfix: Anpassung auf Grund eines Updates der Bibliothek slimframework
