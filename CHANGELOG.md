@@ -1,3 +1,8 @@
+## v2.23.04
+
+* #42678 Anpassungen an das Layout für barrierefreiheit
+* #39699 Umstellung der Generierung von Javascript und CSS auf ParcelJS
+
 ## v2.23.01
 
 * #38445 Bugfix: Anpassung auf Grund eines Updates der Bibliothek slimframework
