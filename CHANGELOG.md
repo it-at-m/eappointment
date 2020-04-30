@@ -1,4 +1,32 @@
-## v2.23.01
+## v2.23.04
+
+* #39699 Überarbeitung der Javascripte bezüglich schärferer Teststandards ausgehend von eslint.
+* #42102 Umbenennung Button in der Aufrufanlagen-Konfiguration.
+* #42090 Änderung des Datumsformats in der Mandantenansicht.
+* #42072 Bugfix: Behebung von TypeError-Fehlern.
+* #42078 Zeige bei einem leeren Namen die Vorgangs-/Wartenummer.
+* #42060 Die Mouseover-Texte wurden an das ZMS1 angeglichen.
+* #42048 Titel des Wochenkalenders angepasst.
+* #36528 Zeige Auswahl "Alle Cluster-Standorte anzeigen" nicht an, wenn nur ein Standort im Cluster vorhanden ist.
+* #42198 Integration der JSON-Entities per NPM.
+* #42066 Die Option einer E-Mail-Bestätigung ist jetzt wie im ZMS1 im Standardfall angehakt.
+* #42204 Bugfix: Ein Problem bei der Validierung mit Terminen ohne Dienstleistungen wurde behoben.
+* #36529 Statt einer leeren Liste von Dienstleistungen wird jetzt eine Meldung angezeigt, dass keine Dienstleistungen auswählbar sind.
+* #35663 Bugfix: Bearbeitung von freien Tagen musste durch ein Update einer abhängigen Javascript-Bibliotheken angepasst werden.
+* #35867 Nach der Buchung eines Termins erscheint in der Bestätigung ein Button "Termin erneut bearbeiten".
+* #36927 Ein aufgerufener Kunde führt nicht mehr zu einer Fehlermeldung bei Aufruf der Tablet-Ansicht.
+* #42822 Nach dem Löschen eines Spontankunden wird jetzt die Wartenummer anstatt der Vorgangsnummer als Bestätigung angezeigt.
+* #43044 Korrektur Abholverwaltung in Bezug auf barrierefreiheit.
+* #42804 Bugfix: Man kann per URL-Manipulation keinem Nutzerkonto mehr Zugriffsrechte entfernen, auf welches man kein Zugriff hat.
+* #42792 Bugfix: Ein Aufruf eines Abholers während eines bestehenden Aufrufs wird jetzt unterbunden.
+* #42774 Bugfix: Korrektur der Navigation in der Änderungshistorie bei eingeloggtem Konto.
+* #42798 Bugfix: Man kann jetzt durch URL-Manipulation nicht mehr Ansichten in der Vergangenheit aufrufen.
+* #36676 Bugfix: Durch Bearbeiten eines Termins kann man diesen nicht mehr an einen Tag ohne freie Termine mit der selben Uhrzeit verschieben.
+* #36619 Bugfix: Bei einer Änderung eines Termins wird jetzt eine Absage-E-Mail für den alten Termin verschickt, aber erst wenn der neue bestätigt ist.
+* #34481 Anpassung des Textes für Wartende in "Wartezeit für neue Spontankunden in Stunden".
+* #42786 Nach Freigeben/Sperren des Kiosk erscheint jetzt eine Erfolgsmeldung.
+
+## v2.23.02
 
 * #39321 Überarbeitung nach Barrierefreiheitsprüfung
 
