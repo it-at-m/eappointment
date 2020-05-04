@@ -50,7 +50,7 @@ class WorkstationProcessFinished extends BaseController
             $response,
             'page/workstationProcessFinished.twig',
             array(
-                'title' => 'Sachbearbeiter',
+                'title' => 'Kundendaten',
                 'workstation' => $workstation,
                 'pickupList' => $workstation->getScopeList(),
                 'requestList' => $requestList ? $requestList->toSortedByGroup() : new RequestList(),
