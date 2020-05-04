@@ -8,7 +8,7 @@ class DepartmentUseraccountListTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->useraccount->setRights('useraccount');
+        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
         $this->setDepartment(74);
         $response = $this->render(['id' => 74], [], []);
         $this->assertContains('testuser', (string)$response->getBody());

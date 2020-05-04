@@ -27,7 +27,7 @@ class DepartmentUseraccountList extends BaseController
         $department = Helper\User::checkDepartment($args['id']);
         
         $useraccountList = (new Query)->readCollectionByDepartmentId($department->id, $resolveReferences);
-        $useraccountList = (new Collection)->withAccessByWorkstation($workstation);
+        $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
 
