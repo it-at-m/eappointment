@@ -21,8 +21,8 @@ class UseraccountAdd extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
+        (new Helper\User($request, $resolveReferences))->checkRights('useraccount');
         $input = Validator::input()->isJson()->assertValid()->getValue();
 
         $entity = new \BO\Zmsentities\Useraccount($input);

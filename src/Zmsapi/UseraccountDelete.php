@@ -21,8 +21,10 @@ class UseraccountDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('useraccount');
-        $useraccount = (new Useraccount)->readEntity($args['loginname']);
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
+
+        (new Helper\User($request, $resolveReferences))->checkRights('useraccount');
+        $useraccount = (new Useraccount)->readEntity($args['loginname'], $resolveReferences);
         if (! $useraccount->hasId() || ! (new Useraccount)->deleteEntity($useraccount->getId())) {
             throw new Exception\Useraccount\UseraccountNotFound();
         }
