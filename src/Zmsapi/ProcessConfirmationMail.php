@@ -50,7 +50,7 @@ class ProcessConfirmationMail extends BaseController
         $mail = (new \BO\Zmsentities\Mail)->toResolvedEntity($process, $config)->withDepartment($department);
         $mail->testValid();
         if ($process->getFirstClient()->hasEmail() && $process->scope->hasEmailFrom()) {
-            $mail = (new \BO\Zmsdb\Mail)->writeInQueue($mail, \App::$now);
+            $mail = (new \BO\Zmsdb\Mail)->writeInQueue($mail, \App::$now, false);
             \App::$log->debug("Send mail", [$mail]);
         }
         return $mail;
