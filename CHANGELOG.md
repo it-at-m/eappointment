@@ -1,5 +1,6 @@
 ## v2.23.04
 
+* #35874 Bugfix: Neuer Parameter $count in "writeInQueue" Methode für Mails und Notification verhindert bei false das Hochzählen des "mailSendCount" Parameters im Process.
 * #36467 Für gelöschte Standorte wird jetzt die vormals zugeordnete Source-ID zur Verfügung gestellt.
 * #35663 Umstellung der Kommandozeilen-Skripte auf eine zentrale Konfiguration.
 * #35663 Skript caluclateDayOffs zur Errechnung fehlender Feiertage hinzugefügt.
