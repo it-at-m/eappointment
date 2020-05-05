@@ -1,3 +1,7 @@
+## v2.23.04
+
+* #35874 Bugfix: Bei Bestätigungsmails und SMS wird per Parameter $count = false entschieden, dass der mailSendCount Parameter im Process nicht hochgezählt wird.
+
 ## v2.23.03
 
 * #36968 Bugfix: Dienstleistungen eines Vorgangs werden bei Wiederaufnahme in die Warteschlange nicht mehr gelöscht
