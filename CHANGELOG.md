@@ -6,7 +6,7 @@
 * #42804 Bugfix: Man kann per URL-Manipulation keinem Nutzerkonto mehr Zugriffsrechte entfernen, auf welches man kein Zugriff hat.
 * #42792 Erweiterung der Fehlermeldung bezüglich der Aufrufe von Nutzern.
 * #43517 Zugriff auf Cluster auch ohne Nutzerkonto erlauben.
-* #35874 Bugfix: Bei Bestätigungsmails und SMS wird per Parameter $count = false entschieden, dass der mailSendCount Parameter im Process nicht hochgezählt wird.
+* #35874 Bugfix: Bei Bestätigungsmails und SMS kann jetzt per Parameter entschieden werden, ob der entsprechende Zähler erhöht wird.
 
 
 ## v2.23.01
