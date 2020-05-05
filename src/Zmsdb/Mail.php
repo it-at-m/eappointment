@@ -93,7 +93,7 @@ class Mail extends Base
         return $this->readEntity($queueId);
     }
 
-    public function writeInQueue(Entity $mail, \DateTimeInterface $dateTime)
+    public function writeInQueue(Entity $mail, \DateTimeInterface $dateTime, $count = true)
     {
         $query = new Query\MailQueue(Query\Base::INSERT);
         $process = new \BO\Zmsentities\Process($mail->process);
@@ -115,7 +115,7 @@ class Mail extends Base
         );
         $success = $this->writeItem($query);
         $queueId = $this->getWriter()->lastInsertId();
-        if ($success && in_array($process->status, ['pickup', 'queued', 'confirmed'])) {
+        if ($count && $success && in_array($process->status, ['pickup', 'queued', 'confirmed'])) {
             $client->emailSendCount += 1;
             (new Process())->updateEntity($process, $dateTime);
         }

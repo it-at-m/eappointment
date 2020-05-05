@@ -66,7 +66,7 @@ class Notification extends Base
     }
 
 
-    public function writeInQueue(Entity $notification, \DateTimeInterface $dateTime)
+    public function writeInQueue(Entity $notification, \DateTimeInterface $dateTime, $count = true)
     {
         $queueId = null;
         $process = new \BO\Zmsentities\Process($notification->process);
@@ -90,7 +90,7 @@ class Notification extends Base
         ));
         $success = $this->writeItem($query);
         $queueId = $this->getWriter()->lastInsertId();
-        if ($success && in_array($process->status, ['pickup', 'queued', 'confirmed'])) {
+        if ($count && $success && in_array($process->status, ['pickup', 'queued', 'confirmed'])) {
             $client->notificationsSendCount += 1;
             (new Process())->updateEntity($process, $dateTime);
         }
