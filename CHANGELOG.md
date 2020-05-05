@@ -1,6 +1,5 @@
 ## v2.23.04
 
-* #42768 Änderung des Title-Tags beim Beenden einer Terminbearbeitung in "Kundendaten - Zeitmanagementsystem"
 * #39699 Überarbeitung der Javascripte bezüglich schärferer Teststandards ausgehend von eslint.
 * #42102 Umbenennung Button in der Aufrufanlagen-Konfiguration.
 * #42090 Änderung des Datumsformats in der Mandantenansicht.
@@ -26,6 +25,7 @@
 * #36619 Bugfix: Bei einer Änderung eines Termins wird jetzt eine Absage-E-Mail für den alten Termin verschickt, aber erst wenn der neue bestätigt ist.
 * #34481 Anpassung des Textes für Wartende in "Wartezeit für neue Spontankunden in Stunden".
 * #42786 Nach Freigeben/Sperren des Kiosk erscheint jetzt eine Erfolgsmeldung.
+* #42768 Änderung des Titels bei der Erfassung der Kundendaten
 
 ## v2.23.02
 
