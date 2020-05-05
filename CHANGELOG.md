@@ -1,5 +1,6 @@
 ## v2.23.04
 
+* #42768 Änderung des Title-Tags beim Beenden einer Terminbearbeitung in "Kundendaten - Zeitmanagementsystem"
 * #39699 Überarbeitung der Javascripte bezüglich schärferer Teststandards ausgehend von eslint.
 * #42102 Umbenennung Button in der Aufrufanlagen-Konfiguration.
 * #42090 Änderung des Datumsformats in der Mandantenansicht.
@@ -7,7 +8,7 @@
 * #42078 Zeige bei einem leeren Namen die Vorgangs-/Wartenummer.
 * #42060 Die Mouseover-Texte wurden an das ZMS1 angeglichen.
 * #42048 Titel des Wochenkalenders angepasst.
-* #36528 Zeige Auswahl "Alle Cluster-Standorte anzeigen" nicht an, wenn nur ein Standort im Cluster vorhanden ist.
+* #36528 Zeige Auswahl "Alle Cluster-Standorte anzeigen" nicht an, wenn nur ein Standort im Cluster vorhanden ist. Zeige Name des Standortes als Überschrift.
 * #42198 Integration der JSON-Entities per NPM.
 * #42066 Die Option einer E-Mail-Bestätigung ist jetzt wie im ZMS1 im Standardfall angehakt.
 * #42204 Bugfix: Ein Problem bei der Validierung mit Terminen ohne Dienstleistungen wurde behoben.
