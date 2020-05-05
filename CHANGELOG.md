@@ -1,6 +1,5 @@
 ## v2.23.04
 
-* #35874 Bugfix: Neuer Parameter $count in "writeInQueue" Methode für Mails und Notification verhindert bei false das Hochzählen des "mailSendCount" Parameters im Process.
 * #36467 Für gelöschte Standorte wird jetzt die vormals zugeordnete Source-ID zur Verfügung gestellt.
 * #35663 Umstellung der Kommandozeilen-Skripte auf eine zentrale Konfiguration.
 * #35663 Skript caluclateDayOffs zur Errechnung fehlender Feiertage hinzugefügt.
@@ -8,6 +7,7 @@
 * #36966 Bugfix: Das Holen einer Liste von Konflikten für Öffnungszeiten beinhaltet keine Vorgänge aus der Vergangenheit mehr.
 * #42792 und #42792 Bugfix: Ein Vorgang kann jetzt nur "In Bearbeitung" (processing) sein, wenn dieser nicht einem Abholort zugeordnet ist.
 * #36988 Bugfix: Neue Standorte liefern keinen Fehler "Alle verfügbaren Wartenummern wurden leider schon vergeben" mehr.
+* #35874 Bugfix: Neuer Parameter für Mails und Notification entscheidet, ob der ein Zähler im Vorgang erhöht werden soll.
 
 ## v2.23.03
 
