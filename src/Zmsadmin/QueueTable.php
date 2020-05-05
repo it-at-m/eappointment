@@ -6,8 +6,6 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Zmsentities\Scope;
-
 use \BO\Zmsentities\Collection\QueueList;
 
 class QueueTable extends BaseController
