@@ -1,15 +1,12 @@
 ## v2.23.04
 
-* #35874 Bugfix: Bei Bestätigungsmails und SMS wird per Parameter $count = false entschieden, dass der mailSendCount Parameter im Process nicht hochgezählt wird.
-
-## v2.23.03
-
 * #36968 Bugfix: Dienstleistungen eines Vorgangs werden bei Wiederaufnahme in die Warteschlange nicht mehr gelöscht
 * #36896 Das Anlegen und Bearbeiten von Vorgängen wird jetzt mit einem Hash geloggt, mit welchem sich prüfen lässt, welches Nutzerkonto verwendet wurde.
 * #42810 Bugfix: Beim Löschen eines Vorgangs, der sich im Aufruf befindet, erscheint jetzt eine Fehlermeldung.
 * #42804 Bugfix: Man kann per URL-Manipulation keinem Nutzerkonto mehr Zugriffsrechte entfernen, auf welches man kein Zugriff hat.
 * #42792 Erweiterung der Fehlermeldung bezüglich der Aufrufe von Nutzern.
 * #43517 Zugriff auf Cluster auch ohne Nutzerkonto erlauben.
+* #35874 Bugfix: Bei Bestätigungsmails und SMS wird per Parameter $count = false entschieden, dass der mailSendCount Parameter im Process nicht hochgezählt wird.
 
 
 ## v2.23.01
