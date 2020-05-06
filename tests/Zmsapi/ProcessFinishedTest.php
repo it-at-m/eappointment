@@ -21,28 +21,6 @@ class ProcessFinishedTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testWithSurveyAccepted()
-    {
-        $workstation = $this->setWorkstation(138, 'berlinonline', 141);
-        $workstation['queue']['clusterEnabled'] = 1;
-
-        $process = json_decode($this->readFixture("GetProcess_10030.json"), 1);
-        $process['status'] = 'finished';
-        $response = $this->render([], [
-            '__body' => json_encode($process)
-        ], []);
-
-        $this->assertContains('"surveyAccepted":1', (string)$response->getBody());
-        $this->assertTrue(200 == $response->getStatusCode());
-        $scopeQuery = new \BO\Zmsdb\Scope();
-        $mailQuery = new \BO\Zmsdb\Mail();
-        $mailList = $mailQuery->readList(0)->withProcess(10030);
-        $this->assertCount(1, $mailList);
-        $this->assertContains('Text E-Mail-Kundenbefragung', $mailList->getFirst()->getPlainPart());
-        $scope = $scopeQuery->readEntity($process['scope']['id']);
-        $this->assertContains($scope->getPreference('survey', 'emailContent'), $mailList->getFirst()->getPlainPart());
-    }
-
     public function testRenderingPending()
     {
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
