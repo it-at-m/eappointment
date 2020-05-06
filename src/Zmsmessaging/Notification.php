@@ -116,9 +116,8 @@ class Notification extends BaseController
         $sender = $entity->getIdentification();
         $mailer = new PHPMailer(true);
         $mailer->Encoding = 'base64';
-        $mailer->SetLanguage("de");
         // Without base64, encoding leads to additional spaces
-        $mailer->Subject = "=?ISO-8859-1?Q?".$mailer->base64EncodeWrapMB(trim(utf8_decode($entity->getMessage())))."?=";
+        $mailer->Subject = "=?UTF-8?B?".$mailer->base64EncodeWrapMB(trim($entity->getMessage()))."?=";
         $mailer->Body = '';
         $mailer->AllowEmpty = true;
         $from = $sender ? $sender : $entity['department']['email'];
