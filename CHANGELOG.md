@@ -1,5 +1,6 @@
 ## v2.23.04
 
+* #35874 Bugfix: SMS Icons werden wieder korrekt in der Warteschlange dargestellt
 * #39699 Überarbeitung der Javascripte bezüglich schärferer Teststandards ausgehend von eslint.
 * #42102 Umbenennung Button in der Aufrufanlagen-Konfiguration.
 * #42090 Änderung des Datumsformats in der Mandantenansicht.
@@ -15,7 +16,7 @@
 * #35663 Bugfix: Bearbeitung von freien Tagen musste durch ein Update einer abhängigen Javascript-Bibliotheken angepasst werden.
 * #35867 Nach der Buchung eines Termins erscheint in der Bestätigung ein Button "Termin erneut bearbeiten".
 * #36927 Ein aufgerufener Kunde führt nicht mehr zu einer Fehlermeldung bei Aufruf der Tablet-Ansicht.
-* #42822 Nach dem Löschen eines Spontankunden wird jetzt die Wartenummer anstatt der Vorgangsnummer als Bestätigung angezeigt.
+* #42822 Nach dem Löschen oder der Wiederaufnahme eines Spontankunden wird jetzt die Wartenummer anstatt der Vorgangsnummer als Bestätigung angezeigt.
 * #43044 Korrektur Abholverwaltung in Bezug auf barrierefreiheit.
 * #42804 Bugfix: Man kann per URL-Manipulation keinem Nutzerkonto mehr Zugriffsrechte entfernen, auf welches man kein Zugriff hat.
 * #42792 Bugfix: Ein Aufruf eines Abholers während eines bestehenden Aufrufs wird jetzt unterbunden.
