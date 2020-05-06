@@ -113,7 +113,7 @@ class MailTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $process = (new \BO\Zmsentities\Process())->getExample();
-        $process->status = 'finished';
+        $process->status = 'survey';
         $process->scope['preferences']['survey']['emailContent'] = 'Das ist eine Umfrage';
         $process->getFirstClient()->surveyAccepted = 1;
         $config = (new \BO\Zmsentities\Config())->getExample();
