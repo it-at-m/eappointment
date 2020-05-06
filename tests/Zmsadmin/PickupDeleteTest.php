@@ -19,7 +19,7 @@ class PickupDeleteTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_workstation_with_process_pickup.json")
                 ],
                 [
@@ -41,7 +41,7 @@ class PickupDeleteTest extends Base
         );
         $response = parent::testRendering();
         $this->assertContains(
-            'Der Abholer mit der Wartenummer 123456 wurde erfolgreich aus der Liste entfernt.',
+            'Der Abholer mit der Wartenummer 82252 wurde erfolgreich aus der Liste entfernt.',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -54,7 +54,7 @@ class PickupDeleteTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [

@@ -38,7 +38,7 @@ class DialogHandlerTest extends Base
             'parameter' => ['id' => 100044, 'name' => 'unittest']
         ], []);
         $this->assertContains(
-            'Wenn Sie den Kunden Nr. 100044 unittest löschen wollen, klicken Sie auf OK',
+            'Wenn Sie den Kunden Nr. 100044 (unittest) löschen wollen, klicken Sie auf OK',
             (string)$response->getBody()
         );
         $this->assertContains('data-action-finish data-id="100044"', (string)$response->getBody());

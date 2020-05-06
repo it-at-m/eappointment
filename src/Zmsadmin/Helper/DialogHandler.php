@@ -23,6 +23,13 @@ class DialogHandler extends \BO\Zmsadmin\BaseController
         $parameter = $validator->getParameter('parameter')->isArray()->getValue();
         $parameter = ($parameter) ? $parameter : array();
 
+        if (isset($parameter['id'])) {
+            $result = \App::$http->readGetResult('/process/'. $parameter['id'] .'/');
+            if ($result) {
+                $parameter['id'] = $result->getEntity()->queue->number;
+            }
+        }
+
         return \BO\Slim\Render::withHtml(
             $response,
             'element/helper/dialog/'. $template .'.twig',
