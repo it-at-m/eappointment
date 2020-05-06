@@ -163,7 +163,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     protected static function readJsonSchema()
     {
         $class = get_called_class();
-        if (!Property::__keyExists($class, self::$schemaCache)) {
+        if (!array_key_exists($class, self::$schemaCache)) {
             self::$schemaCache[$class] = Loader::asArray($class::$schema);
         }
         return self::$schemaCache[$class];
