@@ -44,10 +44,10 @@ class ProcessConfirm extends BaseController
             $resolveReferences,
             $userAccount
         );
-        $message = Response\Message::create($request);
-        $message->data = $process;
 
         $this->writeSurveyMail($process);
+        $message = Response\Message::create($request);
+        $message->data = $process;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
@@ -69,8 +69,7 @@ class ProcessConfirm extends BaseController
         foreach ($process->getClients() as $client) {
             if ($client->hasSurveyAccepted()) {
                 $config = (new \BO\Zmsdb\Config())->readEntity();
-                $scope = (new \BO\Zmsdb\Scope())->readEntity($process['scope']['id'], 0);
-                $process->scope = $scope;
+                $process->status = 'survey';
                 $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config);
                 (new \BO\Zmsdb\Mail())->writeInQueue($mail, \App::$now);
             }
