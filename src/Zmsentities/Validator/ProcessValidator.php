@@ -150,7 +150,7 @@ class ProcessValidator
         } elseif ($length) {
             $valid
                 ->isBiggerThan(6, "Für den Standort muss eine gültige Telefonnummer eingetragen werden")
-                ->isMatchOf("/^[\d\s]{9,14}$/", "Die Telefonnummer muss im Format 0170 1234567 eingegeben werden");
+                ->isMatchOf("/^\+?[\d\s]*$/", "Die Telefonnummer muss im Format 0170 1234567 eingegeben werden");
         }
         $this->getCollection()->validatedAction($valid, $setter);
         return $this;

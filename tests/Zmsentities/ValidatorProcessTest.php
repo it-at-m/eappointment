@@ -41,27 +41,6 @@ class ValidatorProcessTest extends Base
         $this->assertFalse($collectionStatus['telephone']['failed']);
     }
 
-    public function testPhoneNumberUnvalidFormat()
-    {
-        $parameters = [
-            'telephone' => '+49 178 7193826',
-        ];
-        $validator = new Validator($parameters);
-        $process = new Process();
-        $delegatedProcess = new \BO\Zmsentities\Helper\Delegate($process);
-        $processValidator = new ProcessValidator($process);
-
-        $processValidator->validateTelephone(
-            $validator->getParameter('telephone'),
-            $delegatedProcess->setter('telephone')
-        );
-
-        $this->assertNotEquals($process->toProperty()->telephone->get(), $parameters['telephone']);
-        $collectionStatus = $processValidator->getCollection()->getStatus();
-        $this->assertTrue($collectionStatus['telephone']['failed']);
-        $this->assertEquals($collectionStatus['telephone']['messages'][0], 'Die Telefonnummer muss im Format 0170 1234567 eingegeben werden');
-    }
-
     public function testMail()
     {
         $parameters = [
