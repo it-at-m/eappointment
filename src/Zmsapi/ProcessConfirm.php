@@ -47,6 +47,8 @@ class ProcessConfirm extends BaseController
         $message = Response\Message::create($request);
         $message->data = $process;
 
+        $this->writeSurveyMail($process);
+
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
@@ -59,6 +61,19 @@ class ProcessConfirm extends BaseController
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
+        }
+    }
+
+    protected function writeSurveyMail($process)
+    {
+        foreach ($process->getClients() as $client) {
+            if ($client->hasSurveyAccepted()) {
+                $config = (new \BO\Zmsdb\Config())->readEntity();
+                $scope = (new \BO\Zmsdb\Scope())->readEntity($process['scope']['id'], 0);
+                $process->scope = $scope;
+                $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config);
+                (new \BO\Zmsdb\Mail())->writeInQueue($mail, \App::$now);
+            }
         }
     }
 }
