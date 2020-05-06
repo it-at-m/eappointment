@@ -164,9 +164,6 @@ class Messaging
         if (('confirmed' == $status || 'queued' == $status) && $process->isWithAppointment()) {
             $status = 'appointment';
         }
-        if ('finished' == $status &&  $process->getFirstClient()->hasSurveyAccepted()) {
-            $status = 'survey';
-        }
         return $status;
     }
 
