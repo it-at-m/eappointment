@@ -56,7 +56,7 @@ class WorkstationRequests
             $this->department = $this->http->readGetResult('/scope/'. $this->scope['id'] .'/department/')
                 ->getEntity();
         }
-        return $this->cluster ? $this->cluster : new \BO\Zmsentities\Department();
+        return $this->department ? $this->department : new \BO\Zmsentities\Department();
     }
 
     public function readCluster(): \BO\Zmsentities\Cluster
