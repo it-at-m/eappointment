@@ -10,5 +10,5 @@
         '###TIME###': process.appointments|first.date|date('H:i:s'),
         '###RESERVETIME###': process.createTimestamp|date('c'),
         '###REQUESTCSV###': process.requests.getCsvForPropertyList(['source', 'id']),
-    })|raw }}
+    })|raw|nl2br }}
 {% endblock %}
