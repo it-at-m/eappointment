@@ -119,7 +119,7 @@ class Notification extends Schema\Entity
         if (Property::__keyExists('message', $collection) &&
             '' != $collection['message']->getValue()
         ) {
-            $entity->message = $collection['message']->getValue();
+            $entity->message = html_entity_decode($collection['message']->getValue());
         }
         $entity->process = $process;
         $entity->createIP = $process->createIP;
