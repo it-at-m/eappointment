@@ -150,7 +150,7 @@ class QueueTableTest extends Base
             'selecteddate' => '2016-04-01',
             'success' => 'process_reset_queued']);
         $this->assertContains(
-            'Der Termin mit der Nummer 100044 (Name: BO) wurde erfolgreich zum Aufruf zurückgesetzt.',
+            'Der Vorgang mit der Nummer 100044 (Name: BO) wurde erfolgreich zum Aufruf zurückgesetzt.',
             (string)$response->getBody()
         );
     }
