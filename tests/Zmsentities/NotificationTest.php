@@ -29,6 +29,45 @@ class NotificationTest extends EntityCommonTests
         $this->assertEquals('2015-11-19', $entity->getCreateDateTime()->format('Y-m-d'), 'Wrong date');
     }
 
+    public function testRecipientWithDefaultCountryCode()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $entity->client = $entity->getFirstClient();
+        $entity->client->telephone = '0123 456 789 10';
+        $entity->addScope((new \BO\Zmsentities\Scope())->getExample());
+        $this->assertEquals(
+            'SMS=+4912345678910@sms.verwalt-berlin.de',
+            $entity->getRecipient(),
+            'Getting recipient number failed'
+        );
+    }
+
+    public function testRecipientWithIDD()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $entity->client = $entity->getFirstClient();
+        $entity->client->telephone = '0049 0123 456 789 10';
+        $entity->addScope((new \BO\Zmsentities\Scope())->getExample());
+        $this->assertEquals(
+            'SMS=+4912345678910@sms.verwalt-berlin.de',
+            $entity->getRecipient(),
+            'Getting recipient number failed'
+        );
+    }
+
+    public function testRecipientWithPlusSign()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $entity->client = $entity->getFirstClient();
+        $entity->client->telephone = '+49 0123 456 789 10';
+        $entity->addScope((new \BO\Zmsentities\Scope())->getExample());
+        $this->assertEquals(
+            'SMS=+4912345678910@sms.verwalt-berlin.de',
+            $entity->getRecipient(),
+            'Getting recipient number failed'
+        );
+    }
+
     public function testGetRecipientFailed()
     {
         $this->expectException('\BO\Zmsentities\Exception\NotificationMissedNumber');

@@ -149,7 +149,10 @@ class ProcessValidator
                 ->isBiggerThan(10, "Für den SMS-Versand muss eine gültige Mobilfunknummer angegeben werden");
         } elseif ($length) {
             $valid
-                ->isSmallerThan(18, "Die Telefonnummer darf nicht länger als 17 Zeichen sein")
+                ->isSmallerThan(
+                    20,
+                    "Die Telefonnummer darf nicht mehr als 20 Zeichen (inklusive Leerzeichen) enthalten"
+                )
                 ->isBiggerThan(6, "Für den Standort muss eine gültige Telefonnummer eingetragen werden")
                 ->isMatchOf("/^\+?[\d\s]*$/", "Die Telefonnummer muss im Format 0170 1234567 eingegeben werden");
         }

@@ -24,7 +24,7 @@ class ValidatorProcessTest extends Base
     public function testPhoneNumberValid()
     {
         $parameters = [
-            'telephone' => '0178 7193826',
+            'telephone' => '0049 0123 456 789 10',
         ];
         $validator = new Validator($parameters);
         $process = new Process();
@@ -39,6 +39,29 @@ class ValidatorProcessTest extends Base
         $this->assertEquals($process->toProperty()->telephone->get(), $parameters['telephone']);
         $collectionStatus = $processValidator->getCollection()->getStatus();
         $this->assertFalse($collectionStatus['telephone']['failed']);
+    }
+
+    public function testPhoneNumberUnvalidLength()
+    {
+        $parameters = [
+            'telephone' => '0049 0123 456 789 101',
+        ];
+        $validator = new Validator($parameters);
+        $process = new Process();
+        $delegatedProcess = new \BO\Zmsentities\Helper\Delegate($process);
+        $processValidator = new ProcessValidator($process);
+
+        $processValidator->validateTelephone(
+            $validator->getParameter('telephone'),
+            $delegatedProcess->setter('telephone')
+        );
+
+        $collectionStatus = $processValidator->getCollection()->getStatus();
+        $this->assertEquals(
+            'Die Telefonnummer darf nicht mehr als 20 Zeichen (inklusive Leerzeichen) enthalten', 
+            $collectionStatus['telephone']['messages'][0]
+        );
+        $this->assertTrue($collectionStatus['telephone']['failed']);
     }
 
     public function testMail()
