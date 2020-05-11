@@ -170,7 +170,7 @@ class ProcessFormValidation
                 ->isMail("Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden.")
                 ->isBiggerThan(6, "Für den Standort muss eine gültige E-Mail Adresse eingetragen werden");
         }
-        if (self::hasCheckedMail() && !$length) {
+        if (self::hasCheckedMail() && !$length && $withAppointment) {
             $collection['email'] = Validator::param('email')
                 ->isString()
                 ->isBiggerThan(6, "Für den Email-Versand muss eine gültige E-Mail Adresse angegeben werden");
