@@ -6,6 +6,7 @@ class CalculateDayOff
 {
     protected $dayOffList = [
         'Y-01-01' => 'Neujahr',
+        'Y-03-08' => 'Internationaler Frauentag',
         'E-2'    => 'Karfreitag',
         'E+0'    => 'Ostersonntag',
         'E+1'    => 'Ostermontag',
