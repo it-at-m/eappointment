@@ -95,7 +95,7 @@ class Notification extends Schema\Entity
         }
         $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
         $phoneNumberObject = $phoneNumberUtil->parse($this->client['telephone'], 'DE');
-        $telephone = $phoneNumberUtil->format($phoneNumberObject, \libphonenumber\PhoneNumberFormat::E164);
+        $telephone = '+'.$phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
         $recipient = 'SMS='. $telephone .'@sms.verwalt-berlin.de';
         return $recipient;
     }
