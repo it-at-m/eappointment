@@ -63,7 +63,7 @@ class ProcessReserve extends BaseController
             ->readPostResult('/process/status/reserved/', $process, [
                 'slotType' => 'intern',
                 'clientkey' => \App::CLIENTKEY,
-                'slotsRequired' => (1 < $input['slotCount']) ? $input['slotCount'] : 0
+                'slotsRequired' => (isset($input['slotCount']) && 1 < $input['slotCount']) ? $input['slotCount'] : 0
             ])
             ->getEntity();
         return $process;
