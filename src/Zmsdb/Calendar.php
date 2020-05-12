@@ -100,14 +100,16 @@ class Calendar extends Base
     {
         $scopeReader = new Scope();
         $providerReader = new Provider();
-        foreach ($calendar['providers'] as $key => $provider) {
-            $provider = new \BO\Zmsentities\Provider($provider);
-            $calendar['providers'][$key] = $providerReader->readEntity($provider->getSource(), $provider->getId());
-            $scopeList = $scopeReader->readByProviderId($provider->getId(), 2);
-            foreach ($scopeList as $scope) {
-                $scope = new \BO\Zmsentities\Scope($scope);
-                if (! $calendar['scopes']->hasEntity($scope->getId())) {
-                    $calendar['scopes']->addEntity($scope);
+        if (isset($calendar['providers'])) {
+            foreach ($calendar['providers'] as $key => $provider) {
+                $provider = new \BO\Zmsentities\Provider($provider);
+                $calendar['providers'][$key] = $providerReader->readEntity($provider->getSource(), $provider->getId());
+                $scopeList = $scopeReader->readByProviderId($provider->getId(), 2);
+                foreach ($scopeList as $scope) {
+                    $scope = new \BO\Zmsentities\Scope($scope);
+                    if (! $calendar['scopes']->hasEntity($scope->getId())) {
+                        $calendar['scopes']->addEntity($scope);
+                    }
                 }
             }
         }
