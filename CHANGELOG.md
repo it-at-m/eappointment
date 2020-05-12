@@ -1,6 +1,5 @@
 ## v2.23.04
 
-* #42810 Beim Ändern von Terminen werden nun Absage -und Bestätigungsbenachrichtigungen versendet
 * #36968 In der Liste der nicht erschienenen Vorgänge wird die Anzahl der Dienstleistungen des Vorgangs nun auch angezeigt
 * #35874 Bugfix: SMS Icons werden wieder korrekt in der Warteschlange dargestellt
 * #39699 Überarbeitung der Javascripte bezüglich schärferer Teststandards ausgehend von eslint.
