@@ -137,9 +137,11 @@ class Calendar extends Schema\Entity
     public function getScopeList()
     {
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
-        foreach ($this->scopes as $scope) {
-            $scope = new Scope($scope);
-            $scopeList->addEntity($scope);
+        if (isset($this->scopes)) {
+            foreach ($this->scopes as $scope) {
+                $scope = new Scope($scope);
+                $scopeList->addEntity($scope);
+            }
         }
         return $scopeList;
     }
