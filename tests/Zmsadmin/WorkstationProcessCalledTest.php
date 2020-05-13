@@ -25,7 +25,7 @@ class WorkstationProcessCalledTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/process/called/',
-                    'response' => $this->readFixture("GET_workstation_with_process.json")
+                    'response' => $this->readFixture("GET_workstation_with_process_called.json")
                 ]
             ]
         );
@@ -50,8 +50,11 @@ class WorkstationProcessCalledTest extends Base
         $response = $this->render(['id' => 161275], [
             'exclude' => 82252
         ], []);
-        $this->assertRedirect($response, '/workstation/process/processing/?error=has_called_process');
-        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertContains(
+            'Dieser Arbeitsplatz hat schon einen Termin aufgerufen. Dieser wird weiterhin verwendet.',
+            (string)$response->getBody()
+        );
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testRenderingAlreadyCalledPickup()
@@ -69,7 +72,8 @@ class WorkstationProcessCalledTest extends Base
         $response = $this->render(['id' => 161275], [
             'exclude' => 82252
         ], []);
-        $this->assertRedirect($response, '/workstation/process/processing/?error=has_called_pickup');
-        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertContains('Dieser Arbeitsplatz hat schon einen Abholer aufgerufen.', (string)$response->getBody());
+        $this->assertContains('Zur Abholerverwaltung', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }
