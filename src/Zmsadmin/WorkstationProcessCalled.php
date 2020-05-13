@@ -31,16 +31,16 @@ class WorkstationProcessCalled extends BaseController
             $exclude = explode(',', $excludedIds);
         }
         $exclude[] = $workstation->process->getId();
-        if ((isset($processId) && $workstation->process->getId() != $processId)) {
-            return \BO\Slim\Render::redirect(
-                'workstationProcessProcessing',
-                array(),
-                array(
-                    'error' => ('pickup' == $workstation->process->getStatus()) ?
-                        'has_called_pickup' :
-                        'has_called_process'
-                )
-            );
+        
+        $error = $validator->getParameter('error')->isString()->getValue();
+        if (isset($processId) && $workstation->process->getId() != $processId) {
+            $error = ('pickup' == $workstation->process->getStatus()) ?
+                'has_called_pickup' :
+                'has_called_process';
+        }
+    
+        if ($workstation->process->getStatus() == 'processing') {
+            return \BO\Slim\Render::redirect('workstationProcessProcessing', [], ['error' => $error]);
         }
 
         return \BO\Slim\Render::withHtml(
@@ -50,7 +50,8 @@ class WorkstationProcessCalled extends BaseController
                 'title' => 'Sachbearbeiter',
                 'workstation' => $workstation,
                 'menuActive' => 'workstation',
-                'exclude' => join(',', $exclude)
+                'exclude' => join(',', $exclude),
+                'error' => $error
             )
         );
     }
