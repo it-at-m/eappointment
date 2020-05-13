@@ -46,7 +46,9 @@ class View extends BaseView {
 
     onCancelProcess(event) {
         this.selectedProcess = null;
-        stopEvent(event);
+        if (event) {
+            stopEvent(event);
+        }
         return this.loadCall(`${this.includeUrl}/pickup/call/cancel/`).then((response) => {
             this.loadMessage(response, () => {
                 this.loadAllPartials();
@@ -92,7 +94,7 @@ class View extends BaseView {
         return deleteFromQueue();
     }
 
-    onPickupCall(event, callback, processId) {
+    onPickupCall(event, callback, abortCallback, processId) {
         let currentTarget = false;
         if (event) {
             stopEvent(event);
@@ -100,7 +102,7 @@ class View extends BaseView {
             currentTarget = event.currentTarget
         }
         return this.loadCall(`${this.includeUrl}/pickup/call/${processId}/`).then((response) => {
-            this.loadDialog(response, callback, null, currentTarget);
+            this.loadDialog(response, callback, abortCallback, currentTarget);
         }
         );
     }
