@@ -35,9 +35,15 @@ class View extends BaseView {
     load() {
         if (this.selectedProcess) {
             this.loadCall(`${this.includeUrl}/pickup/call/${this.selectedProcess}/`).then(() => {
-                this.onPickupCall(null, () => {
-                    this.onFinishProcess(null, this.selectedProcess);
-                }, this.selectedProcess);
+                this.onPickupCall(
+                    null, 
+                    () => {
+                        this.onFinishProcess(null, this.selectedProcess);
+                    }, 
+                    () => {
+                        this.onCancelProcess(null);
+                    }, 
+                    this.selectedProcess);
             });
         } else {
             this.loadContent(`${this.includeUrl}/pickup/queue/`, 'GET');
@@ -51,7 +57,7 @@ class View extends BaseView {
         }).on('click', 'a.process-finish-list', (ev) => {
             this.onConfirm(ev, "confirm_finish_list", () => { this.onFinishProcessList(ev) });
         }).on('click', 'a.process-pickup', (ev) => {
-            this.onPickupCall(ev, () => { this.onFinishProcess(ev) });
+            this.onPickupCall(ev, () => { this.onFinishProcess(ev)}, () => { this.onCancelProcess(ev) });
         }).on('click', '.process-notification-send', (ev) => {
             this.onNotificationSent(ev);
         }).on('click', '.process-custom-notification-send', (ev) => {

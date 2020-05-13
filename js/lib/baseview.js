@@ -139,6 +139,7 @@ class BaseView extends ErrorHandler {
     }
 
     static loadDialogStatic(response, callback, abortCallback, parent, callbackAsBackgroundAction = false, returnTarget = false) {
+        console.log(callbackAsBackgroundAction, callback, abortCallback);
         var $container = null;
         var $loader = null;
         if (parent) {
@@ -147,8 +148,8 @@ class BaseView extends ErrorHandler {
         }
 
         const { lightboxContentElement, destroyLightbox } = lightbox($container, () => {
-            destroyLightbox(),
-                (callbackAsBackgroundAction) ? callback() : () => { }
+            destroyLightbox();
+            (callbackAsBackgroundAction) ? callback() : (abortCallback) ? abortCallback() : () => { }
         });
         new DialogHandler(lightboxContentElement, {
             response: response,
@@ -158,8 +159,7 @@ class BaseView extends ErrorHandler {
                 returnTarget.focus();
             },
             abortCallback: () => {
-                if (abortCallback)
-                    abortCallback();
+                (abortCallback) ? abortCallback() : () => { }
                 destroyLightbox();
                 returnTarget.focus();
             },
