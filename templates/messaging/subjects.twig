@@ -13,7 +13,7 @@
     Wartenummerbestaetigung
     {% elseif process.status == 'pickup' %}
     Ihr Dokument ({{ process.requests|first.name }}) ist fertig und liegt zur Abholung bereit.
-    {% elseif process.status == 'finished' and process.clients|first.surveyAccepted %}
+    {% elseif process.status == 'survey' and process.clients|first.surveyAccepted %}
     Kundenbefragung des Standorts {{ process.scope.contact.name }}
     {% else %}
     Terminerinnerung
