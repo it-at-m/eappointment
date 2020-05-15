@@ -139,7 +139,6 @@ class BaseView extends ErrorHandler {
     }
 
     static loadDialogStatic(response, callback, abortCallback, parent, callbackAsBackgroundAction = false, returnTarget = false) {
-        console.log(callbackAsBackgroundAction, callback, abortCallback);
         var $container = null;
         var $loader = null;
         if (parent) {
