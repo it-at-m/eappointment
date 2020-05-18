@@ -26,6 +26,8 @@ class QueueTable extends BaseController
         $success = $validator->getParameter('success')->isString()->getValue();
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $selectedDateTime = $selectedDate ? new \DateTimeImmutable($selectedDate) : \App::$now;
+        $selectedDateTime = ($selectedDateTime < \App::$now) ? \App::$now : $selectedDateTime;
+
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         
         // HTTP requests
