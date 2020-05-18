@@ -237,12 +237,12 @@ class View extends BaseView {
 
     }
 
-    onReserveProcess(scope, event) {
+    onReserveProcess(scope, event, isCopy = false) {
         stopEvent(event);
         showSpinner(scope.$main);
         const sendData = scope.$main.find('form').serializeArray();
         sendData.push({ name: 'initiator', value: this.initiator });
-        if (this.selectedProcess) {
+        if (this.selectedProcess && !isCopy) {
             sendData.push({ name: 'selectedprocess', value: this.selectedProcess });
         }
         this.loadCall(`${this.includeUrl}/process/reserve/`, 'POST', sendData, false, scope.$main).then((response) => {
@@ -303,7 +303,7 @@ class View extends BaseView {
         }
         var withAppointment = ('00-00' != selectedTime);
         if (withAppointment) {
-            this.onReserveProcess(scope, event);
+            this.onReserveProcess(scope, event, true);
         } else {
             this.onQueueProcess(scope, event);
         }
