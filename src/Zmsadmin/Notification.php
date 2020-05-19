@@ -98,6 +98,7 @@ class Notification extends BaseController
 
     protected function getReminderNotification($process, $config, $department)
     {
+        $process->status = 'reminder';
         $notification = (new Entity)->toResolvedEntity($process, $config, $department);
         return $this->writeNotification($notification, $process);
     }
