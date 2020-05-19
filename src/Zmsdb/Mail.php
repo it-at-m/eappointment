@@ -115,7 +115,7 @@ class Mail extends Base
         );
         $success = $this->writeItem($query);
         $queueId = $this->getWriter()->lastInsertId();
-        if ($count && $success && in_array($process->status, ['pickup', 'queued', 'confirmed'])) {
+        if ($count && $success && 'confirmed' != $process->getStatus()) {
             $client->emailSendCount += 1;
             (new Process())->updateEntity($process, $dateTime);
         }
