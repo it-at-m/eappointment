@@ -26,7 +26,6 @@ class Mail extends BaseController
         $success = Validator::param('success')->isString()->getValue();
         $error = Validator::param('error')->isString()->getValue();
         $dialog = Validator::param('dialog')->isNumber()->getValue();
-        $sendStatus = Validator::param('status')->isString()->isBiggerThan(2)->getValue();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $formResponse = null;
         $input = $request->getParsedBody();
@@ -34,13 +33,11 @@ class Mail extends BaseController
             \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() :
             null;
         if (array_key_exists('submit', (array)$input) && 'form' == $input['submit']) {
-            $process->status = ($sendStatus) ? $sendStatus : $process->status;
             $formResponse = $this->writeValidatedMail($process, $department);
             if ($formResponse instanceof Entity) {
                 $query = [
-                    'selectedprocess' => $process->id,
-                    'dialog' => $dialog,
-                    'status' => $sendStatus,
+                    'selectedprocess' => $process->getId(),
+                    'dialog' => $dialog
                 ];
                 $message = ($formResponse->hasId()) ? ['success' => 'mail_sent'] : ['error' => 'mail_failed'];
                 $query = array_merge($message, $query);
@@ -63,7 +60,6 @@ class Mail extends BaseController
                 'process' => $process,
                 'success' => $success,
                 'error' => $error,
-                'status' => $sendStatus,
                 'dialog' => $dialog,
                 'form' => $formResponse,
                 'redirect' => $workstation->getVariantName()

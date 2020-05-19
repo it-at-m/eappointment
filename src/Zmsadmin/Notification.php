@@ -26,22 +26,22 @@ class Notification extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-
-        $dialog = Validator::param('dialog')->isNumber()->getValue();
+        $selectedProcessId = Validator::param('selectedprocess')->isNumber()->getValue();
         $success = Validator::param('success')->isString()->getValue();
         $error = Validator::param('error')->isString()->getValue();
-        $sendStatus = Validator::param('status')->isString()->isBiggerThan(2)->getValue();
-
+        $dialog = Validator::param('dialog')->isNumber()->getValue();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
+        $formResponse = null;
         $config = \App::$http->readGetResult('/config/')->getEntity();
         $input = $request->getParsedBody();
-        $process = $this->getProcessWithStatus($sendStatus);
+        $process = ($selectedProcessId) ?
+            \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() :
+            null;
         $formResponse = $this->getValidatedResponse($input, $process, $config, $department);
         if ($formResponse instanceof Entity) {
             $query = [
-                'selectedprocess' => $process->id,
-                'dialog' => $dialog,
-                'status' => $sendStatus
+                'selectedprocess' => $process->getId(),
+                'dialog' => $dialog
             ];
             $message = ($formResponse->hasId())
                 ? ['success' => 'notification_sent']
@@ -65,24 +65,12 @@ class Notification extends BaseController
                 'process' => $process,
                 'success' => $success,
                 'error' => $error,
-                'status' => $sendStatus,
+                'status' => $input['submit'],
                 'dialog' => $dialog,
                 'form' => $formResponse,
                 'redirect' => $workstation->getVariantName()
             )
         );
-    }
-
-    protected function getProcessWithStatus($status = null)
-    {
-        $selectedProcessId = Validator::param('selectedprocess')->isNumber()->getValue();
-        $process = ($selectedProcessId) ?
-            \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() :
-            null;
-        if ($process && $status) {
-            $process->status = $status;
-        }
-        return $process;
     }
 
     protected function getValidatedResponse($input, $process, $config, $department)

@@ -68,8 +68,7 @@ class WorkstationProcessFinished extends BaseController
         }
     }
 
-    protected function getResponseWithStatisticDisabled($process, $workstation)
-    {
+    protected function getResponseWithStatisticDisabled(Entity $process, \BO\Zmsentities\Workstation $workstation) {
         \App::$http->readPostResult('/process/status/finished/', new Entity($process))->getEntity();
         return \BO\Slim\Render::redirect(
             $workstation->getVariantName(),
@@ -80,7 +79,7 @@ class WorkstationProcessFinished extends BaseController
 
     protected function getResponseWithStatisticEnabled(
         array $input,
-        \BO\Zmsentities\Process $process,
+        Entity $process,
         \BO\Zmsentities\Workstation $workstation,
         \BO\Zmsentities\Collection\RequestList $requestList
     ) {
@@ -90,7 +89,7 @@ class WorkstationProcessFinished extends BaseController
         $process->setPickupData($input);
         $process->setRequestData($input, $requestList, $workstation);
         $process->setClientsCount($input['statistic']['clientsCount']);
-        \App::$http->readPostResult('/process/status/finished/', new Entity($process))->getEntity();
+        \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
         return \BO\Slim\Render::redirect(
             $workstation->getVariantName(),
             array(),
