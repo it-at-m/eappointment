@@ -452,7 +452,7 @@ class View extends BaseView {
         const processId = $(event.currentTarget).data('process');
         const sendData = {
             'selectedprocess': processId,
-            'status': 'queued',
+            'status': 'reminder',
             'submit': 'reminder'
         }
         this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
