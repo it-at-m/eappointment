@@ -121,8 +121,7 @@ class View extends BaseView {
     onMailCustomSent(event) {
         stopEvent(event);
         const processId = $(event.currentTarget).data('process');
-        const sendStatus = $(event.currentTarget).data('status');
-        this.loadCall(`${this.includeUrl}/mail/?selectedprocess=${processId}&status=${sendStatus}&dialog=1`).then((response) => {
+        this.loadCall(`${this.includeUrl}/mail/?selectedprocess=${processId}&dialog=1`).then((response) => {
             this.loadDialog(response, (() => {
                 showSpinner(this.$main);
                 const sendData = $('.dialog form').serializeArray();
@@ -153,8 +152,7 @@ class View extends BaseView {
     onNotificationCustomSent(event) {
         stopEvent(event);
         const processId = $(event.currentTarget).data('process');
-        const sendStatus = $(event.currentTarget).data('status');
-        this.loadCall(`${this.includeUrl}/notification/?selectedprocess=${processId}&status=${sendStatus}&dialog=1`).then((response) => {
+        this.loadCall(`${this.includeUrl}/notification/?selectedprocess=${processId}&dialog=1`).then((response) => {
             this.loadDialog(response, (() => {
                 showSpinner(this.$main);
                 const sendData = $('.dialog form').serializeArray();

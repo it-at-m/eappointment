@@ -408,7 +408,7 @@ class View extends BaseView {
         stopEvent(event);
         const processId = $(event.currentTarget).data('process');
         const sendStatus = $(event.currentTarget).data('status');
-        this.loadCall(`${this.includeUrl}/mail/?selectedprocess=${processId}&status=${sendStatus}&dialog=1`).then((response) => {
+        this.loadCall(`${this.includeUrl}/mail/?selectedprocess=${processId}&dialog=1`).then((response) => {
             this.loadDialog(response, (() => {
                 showSpinner($container);
                 const sendData = $('.dialog form').serializeArray();
@@ -428,8 +428,7 @@ class View extends BaseView {
     onSendCustomNotification($container, event) {
         stopEvent(event);
         const processId = $(event.currentTarget).data('process');
-        const sendStatus = $(event.currentTarget).data('status');
-        this.loadCall(`${this.includeUrl}/notification/?selectedprocess=${processId}&status=${sendStatus}&dialog=1`).then((response) => {
+        this.loadCall(`${this.includeUrl}/notification/?selectedprocess=${processId}&dialog=1`).then((response) => {
             this.loadDialog(response, (() => {
                 showSpinner($container);
                 const sendData = $('.dialog form').serializeArray();
@@ -452,7 +451,6 @@ class View extends BaseView {
         const processId = $(event.currentTarget).data('process');
         const sendData = {
             'selectedprocess': processId,
-            'status': 'reminder',
             'submit': 'reminder'
         }
         this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
