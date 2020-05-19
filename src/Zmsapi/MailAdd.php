@@ -27,7 +27,6 @@ class MailAdd extends BaseController
         $entity = new \BO\Zmsentities\Mail($input);
         $entity->testValid();
         $mail = (new Query())->writeInQueue($entity, \App::$now);
-
         $message = Response\Message::create($request);
         $message->data = $mail;
 
