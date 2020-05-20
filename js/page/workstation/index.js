@@ -407,7 +407,6 @@ class View extends BaseView {
     onSendCustomMail($container, event) {
         stopEvent(event);
         const processId = $(event.currentTarget).data('process');
-        const sendStatus = $(event.currentTarget).data('status');
         this.loadCall(`${this.includeUrl}/mail/?selectedprocess=${processId}&dialog=1`).then((response) => {
             this.loadDialog(response, (() => {
                 showSpinner($container);
