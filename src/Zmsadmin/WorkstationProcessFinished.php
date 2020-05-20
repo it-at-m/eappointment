@@ -69,7 +69,7 @@ class WorkstationProcessFinished extends BaseController
     }
 
     protected function getResponseWithStatisticDisabled(
-        Entity $process, 
+        Entity $process,
         \BO\Zmsentities\Workstation $workstation
     ) {
         \App::$http->readPostResult('/process/status/finished/', new Entity($process))->getEntity();
