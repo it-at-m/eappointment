@@ -1,3 +1,11 @@
+## v2.23.05
+
+* #42786 Nach Freigeben/Sperren des Kiosk erscheint jetzt eine Erfolgsmeldung.
+* #43682 Bugfix: Korrektur der Buttons beim SMS-Versand Formular. Bei zu geringer Monitorauflösung ist das Formular nun scrollbar.
+* #43694 Bugfix: Labelbezeichnungen bei Eingabefelder werden wieder angezeigt
+* #43703 Fehlermeldungen ohne Formatierungen werden nun korrekt formatiert
+* #43763 Bugfix: Erinnerungs-SMS werden nun mit dem richtigen Text versendet
+
 ## v2.23.04
 
 * #36968 In der Liste der nicht erschienenen Vorgänge wird die Anzahl der Dienstleistungen des Vorgangs nun auch angezeigt
