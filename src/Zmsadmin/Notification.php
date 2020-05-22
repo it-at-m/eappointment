@@ -65,7 +65,6 @@ class Notification extends BaseController
                 'process' => $process,
                 'success' => $success,
                 'error' => $error,
-                'status' => $input['submit'],
                 'dialog' => $dialog,
                 'form' => $formResponse,
                 'redirect' => $workstation->getVariantName()
@@ -97,17 +96,11 @@ class Notification extends BaseController
         $collection['message'] = Validator::param('message')->isString()
             ->isBiggerThan(2, "Es muss eine aussagekräftige Nachricht eingegeben werden");
         $collection = Validator::collection($collection);
-        if (! $collection->hasFailed()) {
+        if (! $collection->hasFailed() && $process->scope->hasNotificationEnabled()) {
             $notification = (new Entity)->toCustomMessageEntity($process, $collection->getValues(), $department);
-            return $this->writeNotification($notification, $process);
+            $notification = \App::$http->readPostResult('/notification/', $notification)->getEntity();
+            return $notification;
         }
         return $collection->getStatus();
-    }
-
-    private function writeNotification($notification, $process)
-    {
-        return ($process->scope->hasNotificationEnabled())
-            ? \App::$http->readPostResult('/notification/', $notification)->getEntity()
-            : null;
     }
 }
