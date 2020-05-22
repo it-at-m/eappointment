@@ -23,7 +23,7 @@
 .lightbox .lightbox__content {
     overflow: auto;
     max-width: 90%;
-    display: flex;
+    display: table-column;
     .loader {
         margin: 0 !important;
         position: relative;
