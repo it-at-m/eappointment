@@ -22,11 +22,12 @@ class Mail extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
         $selectedProcessId = Validator::param('selectedprocess')->isNumber()->getValue();
         $success = Validator::param('success')->isString()->getValue();
         $error = Validator::param('error')->isString()->getValue();
         $dialog = Validator::param('dialog')->isNumber()->getValue();
-        $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
+        $department = $workstationRequest->readDepartment();
         $formResponse = null;
         $input = $request->getParsedBody();
         $process = ($selectedProcessId) ?

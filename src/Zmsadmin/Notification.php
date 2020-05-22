@@ -26,11 +26,12 @@ class Notification extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
+        $department = $workstationRequest->readDepartment();
         $selectedProcessId = Validator::param('selectedprocess')->isNumber()->getValue();
         $success = Validator::param('success')->isString()->getValue();
         $error = Validator::param('error')->isString()->getValue();
         $dialog = Validator::param('dialog')->isNumber()->getValue();
-        $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $formResponse = null;
         $config = \App::$http->readGetResult('/config/')->getEntity();
         $input = $request->getParsedBody();
@@ -88,7 +89,10 @@ class Notification extends BaseController
     {
         $process->status = 'reminder';
         $notification = (new Entity)->toResolvedEntity($process, $config, $department);
-        return $this->writeNotification($notification, $process);
+        // maybe should be $notification->department->hasNotificationReminderEnabled()
+        return ($notification->department->hasNotificationEnabled())
+            ? \App::$http->readPostResult('/notification/', $notification)->getEntity()
+            : $notification;
     }
 
     protected function getCustomNotification($process, $department)
@@ -99,15 +103,10 @@ class Notification extends BaseController
         $collection = Validator::collection($collection);
         if (! $collection->hasFailed()) {
             $notification = (new Entity)->toCustomMessageEntity($process, $collection->getValues(), $department);
-            return $this->writeNotification($notification, $process);
+            return ($notification->department->hasNotificationEnabled())
+                ? \App::$http->readPostResult('/notification/', $notification)->getEntity()
+                : $notification;
         }
         return $collection->getStatus();
-    }
-
-    private function writeNotification($notification, $process)
-    {
-        return ($process->scope->hasNotificationEnabled())
-            ? \App::$http->readPostResult('/notification/', $notification)->getEntity()
-            : $notification;
     }
 }
