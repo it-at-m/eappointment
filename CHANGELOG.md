@@ -1,3 +1,8 @@
+## v2.23.05
+
+* #37064 Das Versenden von Umfrage-Mails wurde aus der API in die entsprechenden Repos verschoben
+* #43763 Das Absagen von Vorgängen wird bei SMS und Mailbestätigungen nicht mehr hochgezählt.
+
 ## v2.23.04
 
 * #36968 Bugfix: Dienstleistungen eines Vorgangs werden bei Wiederaufnahme in die Warteschlange nicht mehr gelöscht
