@@ -1,3 +1,8 @@
+## v2.23.05
+
+* #43763 Zum Versand von Mails und SMS wird der Status eines Termins nicht mehr verwendet.
+* #43766 Bugfix: Im Cronjob zum automatischen Versand von Erinnerungs-SMS wurde ein datetime Fehler behoben.
+
 ## v2.23.04
 
 * #36467 Für gelöschte Standorte wird jetzt die vormals zugeordnete Source-ID zur Verfügung gestellt.
