@@ -14,9 +14,8 @@ class SendNotificationReminder
     {
         if (!$now) {
             $now = new \DateTimeImmutable();
-        } else {
-            $this->dateTime = $now;
         }
+        $this->dateTime = $now;
         if ($verbose) {
             error_log("INFO: Send notification reminder dependent on lead time");
             $this->verbose = true;
