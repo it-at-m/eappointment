@@ -1,3 +1,6 @@
+## v2.23.05
+* #43763 Index "reminder" im Messaging Helper hinzugefügt um Erinnerungs-SMS versenden zu können
+
 ## v2.23.04
 
 * #42198 NPM Package-Definitionen hinzugefügt um die Entity-Definitionen auch per Javascript verwenden zu können
