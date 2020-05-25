@@ -1,6 +1,5 @@
 {% block content %}
 BEGIN:VCALENDAR
-X-LOTUS-CHARSET:UTF-8
 VERSION:2.0
 PRODID:ZMS-Berlin
 BEGIN:VTIMEZONE
@@ -21,7 +20,6 @@ DTSTART:19701025T030000
 RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10
 END:STANDARD
 END:VTIMEZONE
-METHOD:PUBLISH
 BEGIN:VEVENT
 UID:{{ startTime|date("Ymd") }}-{{ process.id }}
 DTSTART;TZID=Europe/Berlin:{{ startTime|date("Ymd") }}T{{ startTime|date("His") }}
@@ -34,7 +32,7 @@ ORGANIZER;CN={{ process.scope.provider.name }}:MAILTO:{{ process.scope.preferenc
 BEGIN:VALARM
 ACTION:DISPLAY
 TRIGGER:-P1D
-DESCRIPTION:Termin-Bestätigung
+DESCRIPTION:{% trans "Berlin-Termin:" %} {{ process.id }}
 END:VALARM
 END:VEVENT
 END:VCALENDAR

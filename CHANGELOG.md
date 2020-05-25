@@ -1,4 +1,6 @@
 ## v2.23.05
+
+* #36849 ICS Kalendereintrag ist nun RFC 5545 valide
 * #43763 Index "reminder" im Messaging Helper hinzugefügt um Erinnerungs-SMS versenden zu können
 
 ## v2.23.04
