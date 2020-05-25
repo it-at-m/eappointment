@@ -223,7 +223,7 @@ class Messaging
     {
         $newLines = [];
         $lines = explode("\n", $content);
-        foreach ($lines as $index => $text) {
+        foreach ($lines as $text) {
             while (strlen($text) > 74) {
                 $line = mb_substr($text, 0, 74);
                 $llength = mb_strlen($line);
