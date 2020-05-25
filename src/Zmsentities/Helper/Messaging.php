@@ -205,7 +205,7 @@ class Messaging
             )
         );
         $result = \html_entity_decode($icsString);
-        $ics->content = $result;
+        $ics->content = self::getTextWithFoldedLines($result);
         return $ics;
     }
 
@@ -216,7 +216,25 @@ class Messaging
         $converter->getConfig()->setOption('strip_tags', true);
         $text = $converter->convert($content);
         $text = str_replace("\n", $lineBreak, $text);
-        //error_log(">>>$text<<<");
-        return trim(addslashes($text));
+        return addslashes(trim($text));
     }
+
+    public static function getTextWithFoldedLines($content){ 
+        $newLines = [];
+        $lines = explode("\n",$content);
+        foreach($lines as $index => $text)
+        {
+            while (strlen($text) > 74) {
+                $line = mb_substr($text, 0, 74);
+                $llength = mb_strlen($line);  //must use mb_strlen with mb_substr otherwise will not work things like &nbsp;
+                $newLines[] = $line.chr(32); /* CRLF and space*/
+                $text = mb_substr($text, $llength); /* set value to what's left of the string */
+            }
+            if (!empty($text)) {
+                $newLines[] = $text; /* the last line does not need a white space */
+            }
+        }
+        return implode("\n", $newLines);
+    }
+
 }
