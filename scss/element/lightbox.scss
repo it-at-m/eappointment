@@ -31,6 +31,10 @@
     }
 }
 
+.lightbox__content.calendar {
+  display:table;
+}
+
 .lightbox .lightbox__content div.table-responsive {
     max-width:600px;
 }

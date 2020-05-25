@@ -6,8 +6,7 @@
 
 // Import base libs
 import $ from "jquery";
-import moment from 'moment'
-import 'moment/locale/de';
+import moment from 'moment/min/moment-with-locales';
 
 // Import Views
 import AccessKeyView from './page/accesskeys'
