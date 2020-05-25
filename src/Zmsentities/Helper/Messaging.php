@@ -201,7 +201,7 @@ class Messaging
                 'endTime' => $appointment->getEndTime()->format('U'),
                 'process' => $process,
                 'timestamp' => (!$now) ? time() : $now,
-                'message' => trim($plainContent)
+                'message' => $plainContent
             )
         );
         $result = \html_entity_decode($icsString);
@@ -217,6 +217,6 @@ class Messaging
         $text = $converter->convert($content);
         $text = str_replace("\n", $lineBreak, $text);
         //error_log(">>>$text<<<");
-        return $text;
+        return trim(addslashes($text));
     }
 }
