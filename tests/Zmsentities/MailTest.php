@@ -65,7 +65,7 @@ class MailTest extends EntityCommonTests
             'Mimepart content is not html'
         );
         $this->assertContains(
-            'Ihre Vorgangsnummer ist die **"123456"**',
+            'Ihre Vorgangsnummer ist die **\"123456\"**',
             $resolvedEntity->getPlainPart(),
             'Mimepart content is not plain text'
         );
@@ -103,7 +103,7 @@ class MailTest extends EntityCommonTests
             'Mimepart content is not html'
         );
         $this->assertContains(
-            'Die Terminänderung wurde initiiert via "admin"',
+            'Die Terminänderung wurde initiiert via \"admin\"',
             $resolvedEntity->getPlainPart(),
             'Mimepart content is not plain text'
         );
@@ -239,7 +239,7 @@ class MailTest extends EntityCommonTests
             $entity->addMultiPart(array());
             $entity->client = null;
             $resolvedEntity = $entity->toResolvedEntity($process, $config, 'unittest');
-            $this->assertContains('initiiert via "unittest"', $resolvedEntity->getPlainPart());
+            $this->assertContains('initiiert via \"unittest\"', $resolvedEntity->getPlainPart());
         }
 
         foreach ($statusFailed as $key) {
