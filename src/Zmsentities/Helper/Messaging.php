@@ -219,11 +219,11 @@ class Messaging
         return addslashes(trim($text));
     }
 
-    public static function getTextWithFoldedLines($content){ 
+    public static function getTextWithFoldedLines($content)
+    {
         $newLines = [];
-        $lines = explode("\n",$content);
-        foreach($lines as $index => $text)
-        {
+        $lines = explode("\n", $content);
+        foreach ($lines as $index => $text) {
             while (strlen($text) > 74) {
                 $line = mb_substr($text, 0, 74);
                 $llength = mb_strlen($line);  //must use mb_strlen with mb_substr otherwise will not work things like &nbsp;
@@ -236,5 +236,4 @@ class Messaging
         }
         return implode("\n", $newLines);
     }
-
 }
