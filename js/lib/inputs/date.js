@@ -1,8 +1,7 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
 import moment from 'moment'
-import DatePicker from 'react-datepicker'
-import { registerLocale } from 'react-datepicker'
+import DatePicker, { registerLocale } from 'react-datepicker'
 import de from 'date-fns/locale/de';
 registerLocale('de', de)
 
