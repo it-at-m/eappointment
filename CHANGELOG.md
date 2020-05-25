@@ -1,5 +1,6 @@
 ## v2.23.05
 
+* #43673 Datumsformate in der Öffnungszeiten-Verwaltung werden nun im deutschen Format angezeigt
 * #42786 Nach Freigeben/Sperren des Kiosk erscheint jetzt eine Erfolgsmeldung.
 * #43682 Bugfix: Korrektur der Buttons beim SMS-Versand Formular. Bei zu geringer Monitorauflösung ist das Formular nun scrollbar.
 * #43694 Bugfix: Labelbezeichnungen bei Eingabefelder werden wieder angezeigt
