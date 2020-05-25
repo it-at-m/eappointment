@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-
-import moment from 'moment'
+import moment from 'moment/min/moment-with-locales';
+moment.locale('de')
 
 import Board from '../layouts/board'
 import TimeTableBodyLayout from '../layouts/timeTableBody'
@@ -41,11 +41,10 @@ const renderOpenings = (items, onSelect) => items
 
 const renderFooter = () => <small>Zum Bearbeiten einer Öffnungszeit, bitte auf den entsprechenden blauen oder grünen Zeitstrahl klicken.</small>
 
-
 const TimeTable = (props) => {
     const { onSelect, timestamp } = props;
     const titleTime = moment(timestamp, 'X').format('dddd, DD.MM.YYYY')
-
+    console.log(titleTime)
     const timeTableBody = <TimeTableBodyLayout
         showConflicts={props.conflicts.length > 0}
         conflicts={renderConflicts(props.conflicts)}

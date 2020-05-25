@@ -1,7 +1,10 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
-import DatePicker from 'react-datepicker'
 import moment from 'moment'
+import DatePicker from 'react-datepicker'
+import { registerLocale } from 'react-datepicker'
+import de from 'date-fns/locale/de';
+registerLocale('de', de)
 
 export const Date = ({name, value, onChange, attributes = {}}) => { 
     const onPick = (date) => {
@@ -10,7 +13,7 @@ export const Date = ({name, value, onChange, attributes = {}}) => {
 
     return (
         <div className="add-date-picker" {...attributes}>
-            <DatePicker  className="form-control form-input" dateFormat="dd.MM.yyyy" selected={moment.unix(value).toDate()} onChange={onPick} {...{ name }} />
+            <DatePicker locale="de" className="form-control form-input" dateFormat="dd.MM.yyyy" selected={moment.unix(value).toDate()} onChange={onPick} {...{ name }} />
         </div>
     )
 }
