@@ -226,13 +226,12 @@ class Messaging
         foreach ($lines as $index => $text) {
             while (strlen($text) > 74) {
                 $line = mb_substr($text, 0, 74);
-                $llength = mb_strlen($line);  //must use mb_strlen with mb_substr otherwise will not work things like &nbsp;
-                $newLines[] = $line.chr(32); /* CRLF and space*/
-                $text = mb_substr($text, $llength); /* set value to what's left of the string */
+                $llength = mb_strlen($line);
+                $newLines[] = $line.chr(32);
+                $text = mb_substr($text, $llength);
             }
             if (!empty($text)) {
-                $newLines[] = $text; /* the last line does not need a white space */
-            }
+                $newLines[] = $text;
         }
         return implode("\n", $newLines);
     }
