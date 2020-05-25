@@ -232,6 +232,7 @@ class Messaging
             }
             if (!empty($text)) {
                 $newLines[] = $text;
+            }
         }
         return implode("\n", $newLines);
     }
