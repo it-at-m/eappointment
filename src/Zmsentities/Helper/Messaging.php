@@ -204,8 +204,8 @@ class Messaging
                 'message' => $plainContent
             )
         );
-        $result = \html_entity_decode($icsString);
-        $ics->content = self::getTextWithFoldedLines($result);
+        $icsString = html_entity_decode($icsString);
+        $ics->content = self::getTextWithFoldedLines($icsString);
         return $ics;
     }
 
@@ -214,9 +214,12 @@ class Messaging
         $converter = new \League\HTMLToMarkdown\HtmlConverter();
         $converter->getConfig()->setOption('remove_nodes', 'script');
         $converter->getConfig()->setOption('strip_tags', true);
+        $converter->getConfig()->setOption('hard_break', true);
         $text = $converter->convert($content);
+        $text = str_replace(',', '\,', $text);
+        $text = str_replace(';', '\;', $text);
         $text = str_replace("\n", $lineBreak, $text);
-        return addslashes(trim($text));
+        return trim($text);
     }
 
     public static function getTextWithFoldedLines($content)
@@ -224,16 +227,23 @@ class Messaging
         $newLines = [];
         $lines = explode("\n", $content);
         foreach ($lines as $text) {
-            while (strlen($text) > 74) {
-                $line = mb_substr($text, 0, 74);
+            $subline = '';
+            while (strlen($text) > 75) {
+                $line = mb_substr($text, 0, 72);
                 $llength = mb_strlen($line);
-                $newLines[] = $line.chr(32);
+                $subline .= $line.chr(13).chr(10).chr(32);
                 $text = mb_substr($text, $llength);
             }
-            if (!empty($text)) {
+            if (!empty($text) && 0 < strlen($subline)) {
+                $subline .= $text;
+            }
+            if (0 < strlen($subline)) {
+                $newLines[] = $subline;
+            }
+            if (!empty($text) && '' == $subline) {
                 $newLines[] = $text;
             }
         }
-        return implode("\n", $newLines);
+        return implode(chr(13).chr(10), $newLines);
     }
 }

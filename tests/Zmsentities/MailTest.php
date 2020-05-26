@@ -65,14 +65,27 @@ class MailTest extends EntityCommonTests
             'Mimepart content is not html'
         );
         $this->assertContains(
-            'Ihre Vorgangsnummer ist die **\"123456\"**',
+            'Ihre Vorgangsnummer ist die **"123456"**',
             $resolvedEntity->getPlainPart(),
             'Mimepart content is not plain text'
         );
         $this->assertContains('BEGIN:VCALENDAR', $resolvedEntity->getIcsPart(), 'Mimepart content is not plain text');
         // test if appointment date formatted correct
-        $this->assertContains('Mittwoch, 18. November', $resolvedEntity->getIcsPart());
+        $this->assertContains('Mittwoch\, 18. November', $resolvedEntity->getIcsPart());
         $this->assertContains('DTSTART;TZID=Europe/Berlin:20151118T185251', $resolvedEntity->getIcsPart());
+    }
+
+    public function testICS()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $process->requests[] = (new \BO\Zmsentities\Request())->getExample();
+        $config = (new \BO\Zmsentities\Config())->getExample();
+        $entity->addMultiPart(array());
+        $entity->client = null;
+        $resolvedEntity = $entity->toResolvedEntity($process, $config);
+        $this->assertContains('DESCRIPTION: Sehr geehrte/r Frau oder Herr Max Mustermann\,\n\nhiermit b', $resolvedEntity->getIcsPart(), 'ICS content is not valid');
+        // test if appointment date formatted correct
     }
 
     public function testConfirmationWithoutDataAttribute()
@@ -103,7 +116,7 @@ class MailTest extends EntityCommonTests
             'Mimepart content is not html'
         );
         $this->assertContains(
-            'Die Terminänderung wurde initiiert via \"admin\"',
+            'Die Terminänderung wurde initiiert via "admin"',
             $resolvedEntity->getPlainPart(),
             'Mimepart content is not plain text'
         );
@@ -239,7 +252,7 @@ class MailTest extends EntityCommonTests
             $entity->addMultiPart(array());
             $entity->client = null;
             $resolvedEntity = $entity->toResolvedEntity($process, $config, 'unittest');
-            $this->assertContains('initiiert via \"unittest\"', $resolvedEntity->getPlainPart());
+            $this->assertContains('initiiert via "unittest"', $resolvedEntity->getPlainPart());
         }
 
         foreach ($statusFailed as $key) {
