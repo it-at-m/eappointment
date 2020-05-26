@@ -1,6 +1,6 @@
 ## v2.23.05
 
-* #37064 Das Versenden von Umfrage-Mails wurde aus der API in die entsprechenden Repos verschoben
+* #37064 Das Versenden von Umfrage-Mails wurde korrigiert
 * #43763 Das Absagen von Vorgängen wird bei SMS und Mailbestätigungen nicht mehr hochgezählt.
 
 ## v2.23.04
