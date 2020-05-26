@@ -92,7 +92,7 @@ class WorkstationProcessFinished extends BaseController
         $process->setPickupData($input);
         $process->setRequestData($input, $requestList, $workstation);
         $process->setClientsCount($input['statistic']['clientsCount']);
-        \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
+        \App::$http->readPostResult('/process/status/finished/', new Entity($process))->getEntity();
         return \BO\Slim\Render::redirect(
             $workstation->getVariantName(),
             array(),
