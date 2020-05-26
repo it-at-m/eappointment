@@ -95,11 +95,6 @@ class AppointmentFormHelper
             $smsConfirmation = (isset($smsConfirmation['value'])) ? $smsConfirmation['value'] : $smsConfirmation;
             self::writeNotification($smsConfirmation, $process);
         }
-        if (isset($formData['surveyAccepted'])) {
-            $surveyAccepted = $formData['surveyAccepted'];
-            $surveyAccepted = (isset($surveyAccepted['value'])) ? $surveyAccepted['value'] : $surveyAccepted;
-            self::writeSurveyMail($surveyAccepted, $process);
-        }
     }
 
     protected static function readProcessListByScopeAndDate($validator, $scopeList, $slotType, $slotsRequired)
@@ -176,20 +171,6 @@ class AppointmentFormHelper
                 '/process/'. $process->id .'/'. $process->authKey .'/confirmation/mail/',
                 $process
             );
-        }
-    }
-
-    protected static function writeSurveyMail($surveyAccepted, \BO\Zmsentities\Process $process)
-    {
-        if ($surveyAccepted) {
-            $config = \App::$http->readGetResult('/config/')->getEntity();
-            foreach ($process->getClients() as $client) {
-                if ($client->hasSurveyAccepted() && $client->hasEmail()) {
-                    $process->status = 'survey';
-                    $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config);
-                    \App::$http->readPostResult('/mails/', $mail);
-                }
-            }
         }
     }
 }
