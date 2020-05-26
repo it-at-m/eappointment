@@ -181,7 +181,10 @@ class CallDisplayConfigView extends Component {
             <form className="form--base form-group calldisplay-config">
                 {this.state.departments.map(this.renderDepartment.bind(this))}
                 <FormGroup>
-                    <Label attributes={{ "htmlFor": "visibleCalls" }}>Angezeigte Aufrufe</Label>
+                    <Label 
+                        attributes={{ "htmlFor": "visibleCalls" }} 
+                        value="Angezeigte Aufrufe">
+                    </Label>
                     <Controls>
                         <Select
                             options={[{ name: 'Alle', value: 'all' }, { name: "Nur Abholer", value: 'pickup' }, { name: "Spontan- und Terminkunden", value: 'called' }]}
@@ -191,7 +194,7 @@ class CallDisplayConfigView extends Component {
                     </Controls>
                 </FormGroup>
                 <FormGroup>
-                    <Label attributes={{ "htmlFor": "calldisplayLayout" }}>Layout</Label>
+                    <Label attributes={{ "htmlFor": "calldisplayLayout" }} value="Layout"></Label>
                     <Controls>
                         <Select
                             attributes={{ "id": "calldisplayLayout" }}
@@ -210,7 +213,7 @@ class CallDisplayConfigView extends Component {
                     </Controls>
                 </FormGroup>
                 <FormGroup>
-                    <Label attributes={{ "htmlFor": "calldisplayUrl" }}>URL</Label>
+                    <Label attributes={{ "htmlFor": "calldisplayUrl" }} value="URL"></Label>
                     <Controls>
                         <Inputs.Text
                             value={generatedUrl}
