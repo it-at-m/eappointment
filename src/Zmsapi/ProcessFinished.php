@@ -42,6 +42,8 @@ class ProcessFinished extends BaseController
             $query->writeEntityFinished($process, \App::$now);
         }
 
+        $this->writeSurveyMail($process);
+
         $message = Response\Message::create($request);
         $message->data = $process;
 
@@ -72,6 +74,20 @@ class ProcessFinished extends BaseController
             throw new Exception\Process\ProcessNotFound();
         } elseif ($processCheck->authKey != $process->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
+        }
+    }
+
+    protected function writeSurveyMail($process)
+    {
+        foreach ($process->getClients() as $client) {
+            if ($client->hasSurveyAccepted()) {
+                $config = (new \BO\Zmsdb\Config())->readEntity();
+                $scope = (new \BO\Zmsdb\Scope())->readEntity($process['scope']['id'], 0);
+                $process->scope = $scope;
+                $process->status = 'survey';
+                $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config);
+                (new \BO\Zmsdb\Mail())->writeInQueue($mail, \App::$now, false);
+            }
         }
     }
 }
