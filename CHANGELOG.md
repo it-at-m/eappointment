@@ -3,7 +3,8 @@
 * #43673 Datumsformate in der Öffnungszeiten-Verwaltung werden nun im deutschen Format angezeigt
 * #42786 Nach Freigeben/Sperren des Kiosk erscheint jetzt eine Erfolgsmeldung.
 * #43682 Bugfix: Korrektur der Buttons beim SMS-Versand Formular. Bei zu geringer Monitorauflösung ist das Formular nun scrollbar.
-* #43694 Bugfix: Labelbezeichnungen bei Eingabefelder werden wieder angezeigt
+* #43694 Bugfix: Mandanten Labelbezeichnungen werden wieder angezeigt
+* #43991 Bugfix: Calldisplay Config Labelbezeichnungen werden wieder angezeigt
 * #43703 Fehlermeldungen ohne Formatierungen werden nun korrekt formatiert
 * #43763 Bugfix: Erinnerungs-SMS werden nun mit dem richtigen Text versendet
 
