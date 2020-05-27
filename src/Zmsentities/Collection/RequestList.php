@@ -79,8 +79,8 @@ class RequestList extends Base
     {
         $list = new self();
         foreach ($this as $request) {
-            if (isset($request['data']) && $request['data']) {
-                if (is_string($request->data) && '{}' != $request->data) {
+            if (isset($request['data']) && '{}' != $request->data) {
+                if (is_string($request->data)) {
                     $request->data = json_decode($request->data);
                 } elseif (is_array($request->data)) {
                     $request->data = json_decode(json_encode($request->data, JSON_FORCE_OBJECT));
