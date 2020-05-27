@@ -31,41 +31,65 @@ class TwigExceptionHandler
         \Throwable $exception,
         $status = 500
     ) {
-        if ($exception instanceof \Slim\Exception\Stop) {
-            return true;
-        }
-        $request = Controller::prepareRequest($request);
-        if ($exception->getCode() >= 200) {
-            $status = $exception->getCode();
-        }
-        $template = self::getExceptionTemplate($exception);
-        $extendedInfo = self::getExtendedExceptionInfo($exception, $request);
-        if ($status >= 500 || $status < 200 || !$status || $template == static::DEFAULT_TEMPLATE) {
-            $logInfo = $extendedInfo;
-            unset($logInfo['responsedata']);
-            unset($logInfo['exception']);
-            ksort($logInfo);
-            \App::$log->critical(
-                "PHP Fatal Exception #{$extendedInfo['uniqueid']}: ". preg_replace('#\s+#', ' ', json_encode($logInfo))
+        try {
+            if ($exception instanceof \Slim\Exception\Stop) {
+                return true;
+            }
+            $request = Controller::prepareRequest($request);
+            if ($exception->getCode() >= 200) {
+                $status = $exception->getCode();
+            }
+            $template = self::getExceptionTemplate($exception);
+            $extendedInfo = self::getExtendedExceptionInfo($exception, $request);
+            if ($status >= 500 || $status < 200 || !$status || $template == static::DEFAULT_TEMPLATE) {
+                $logInfo = $extendedInfo;
+                unset($logInfo['responsedata']);
+                unset($logInfo['exception']);
+                //ksort($logInfo);
+                $logText = json_encode($logInfo);
+                $logText = preg_replace('#\s+#', ' ', $logText);
+                $logText = preg_replace('#"#', "", $logText);
+                $logText = preg_replace('#'.preg_quote('\\/').'#', "/", $logText);
+                $logText = preg_replace('#'.preg_quote('\\').'#', "⑊", $logText);
+                $logText = preg_replace('#⑊⑊#', "⑊", $logText);
+                $logText = preg_replace('#⑊n#', " ", $logText);
+                $logText = preg_replace('#(/[^/\s]+)+/([^/\s]+/[^/\s]+)\.php#', "$2.php", $logText);
+                $logText = preg_replace('#'.preg_quote(\APP::APP_PATH).'/?#', "", $logText);
+                \App::$log->critical("PHP-Exception #{$extendedInfo['uniqueid']}: ". $logText);
+                /*
+                \App::$log->critical(
+                    "PHP Fatal Exception #{$extendedInfo['uniqueid']}"
+                    . " in {$extendedInfo['file']} +{$extendedInfo['line']} : " .
+                    $exception->getMessage()
+                    . " || Trace: " . str_replace("\n", " ||  ", substr($exception->getTraceAsString(), 0, 1024))
+                );
+                */
+            }
+            $response = Render::withLastModified($response, time(), '0');
+            return Render::withHtml(
+                $response,
+                $template,
+                array_merge($extendedInfo, array(
+                    "title" => "Bitte entschuldigen Sie den Fehler",
+                )),
+                $status
             );
-            /*
-            \App::$log->critical(
-                "PHP Fatal Exception #{$extendedInfo['uniqueid']}"
-                . " in {$extendedInfo['file']} +{$extendedInfo['line']} : " .
-                $exception->getMessage()
-                . " || Trace: " . str_replace("\n", " ||  ", substr($exception->getTraceAsString(), 0, 1024))
+        } catch (\Throwable $subexception) {
+            error_log(
+                "Not catchable Exception: "
+                . $exception->getMessage()
+                . " "
+                . $exception->getFile()
+                . ":"
+                . $exception->getLine()
+                . " "
+                . $exception->getTraceAsString
+                ." ---- because of "
+                . $subexception->getMessage()
+                . " "
+                . $subexception->getTraceAsString()
             );
-            */
         }
-        $response = Render::withLastModified($response, time(), '0');
-        return Render::withHtml(
-            $response,
-            $template,
-            array_merge($extendedInfo, array(
-                "title" => "Bitte entschuldigen Sie den Fehler",
-            )),
-            $status
-        );
     }
 
     public static function getExceptionTemplate(\Throwable $exception)
@@ -139,23 +163,23 @@ class TwigExceptionHandler
             $templatedata = $exception->templatedata;
         }
         return array_merge(array(
+            "exceptionclass" => $exceptionclass,
+            "requesturi" => $request->getUri(),
+            "apirequesturi" => $apirequesturi,
             "_file" => $exception->getFile(),
             "_line" => $exception->getLine(),
             "_trace" => $trace,
+            "exception" => $exception,
+            "exceptioncode" => $exception->getCode(),
             "debug" => \App::DEBUG,
             "data" => $data,
             "failed" => $exception->getMessage(),
-            "exception" => $exception,
-            "exceptionclass" => $exceptionclass,
-            "exceptioncode" => $exception->getCode(),
             "basefile" => basename($exception->getFile(), '.php'),
             "servertime" => $servertime,
             "uniqueid" => $uniqueId,
             "request" => $request,
-            "requesturi" => $request->getUri(),
             "requestmethod" => $request->getMethod(),
             "apirequest" => $apirequest,
-            "apirequesturi" => $apirequesturi,
             "apirequestmethod" => $apirequestmethod,
             "response" => $response,
             "x-requestdata" => $requestdata,
