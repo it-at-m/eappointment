@@ -52,8 +52,9 @@ class SourceEdit extends BaseController
                 'title' => 'Mandanten bearbeiten',
                 'menuActive' => 'source',
                 'workstation' => $workstation,
-                'source' => ($source) ? $source : null,
-                'success' => $success
+                'source' => (isset($source)) ? $source : null,
+                'success' => $success,
+                'exception' => (isset($result)) ? $result : null
             )
         );
     }
@@ -64,7 +65,15 @@ class SourceEdit extends BaseController
         try {
             $entity = \App::$http->readPostResult('/source/', $entity)->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
-            throw $exception;
+            if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
+                $exceptionData = [
+                  'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig'
+                ];
+                $exceptionData['data'] = $exception->data;
+                return $exceptionData;
+            } else {
+                throw $exception;
+            }
         }
         return $entity;
     }

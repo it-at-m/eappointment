@@ -66,7 +66,7 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                         <Inputs.Textarea
                             name={`${formName}[data]`}
                             value={(request.data) ? JSON.stringify(request.data) : ''}
-                            placeholder="{}"
+                            placeholder='{}'
                             onChange={onChange}
                             attributes={{ "id": `requestData${index}`, "aria-describedby": `help_requestData${index}` }}
                         />
