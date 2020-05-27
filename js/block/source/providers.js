@@ -111,7 +111,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                         <Inputs.Textarea
                             name={`${formName}[data]`}
                             value={(provider.data) ? JSON.stringify(provider.data) : ''}
-                            placeholder="{}"
+                            placeholder='{}'
                             onChange={onChange}
                             attributes={{ "id": `providersData${index}`, "aria-describedby": `help_providersData${index}` }}
                         />

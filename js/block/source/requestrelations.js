@@ -82,7 +82,6 @@ class RequestRelationView extends Component {
             ev.preventDefault()
             getEntity('requestrelation').then((entity) => {
                 entity.source = this.props.source.source
-                console.log(entity)
                 this.props.addNewHandler('requestrelation', [entity])
             })
         }
