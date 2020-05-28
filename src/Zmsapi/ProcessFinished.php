@@ -40,9 +40,8 @@ class ProcessFinished extends BaseController
             (new Workstation)->writeRemovedProcess($workstation);
         } else {
             $query->writeEntityFinished($process, \App::$now);
+            $this->writeSurveyMail($process);
         }
-
-        $this->writeSurveyMail($process);
 
         $message = Response\Message::create($request);
         $message->data = $process;
