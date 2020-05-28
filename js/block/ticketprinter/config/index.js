@@ -188,7 +188,7 @@ class TicketPrinterConfigView extends Component {
                 {this.state.departments.map(this.renderDepartment.bind(this))}
                 <fieldset key="ticketprinter-fieldset">
                     <FormGroup key="ticketprinter-name">
-                        <Label attributes={{ "htmlFor": "ticketprinterName" }}>Name zur internen Identifikation (optional)</Label>
+                        <Label attributes={{ "htmlFor": "ticketprinterName" }} value="Name zur internen Identifikation (optional)"></Label>
                         <Controls>
                             <Inputs.Text
                                 attributes={{ "id": "ticketprinterName" }}
@@ -197,7 +197,7 @@ class TicketPrinterConfigView extends Component {
                         </Controls>
                     </FormGroup>
                     <FormGroup key="ticketprinter-Starturl">
-                        <Label attributes={{ "htmlFor": "ticketprinterStarturl" }}>StartUrl (optional)</Label>
+                        <Label attributes={{ "htmlFor": "ticketprinterStarturl" }} value="StartUrl (optional)"></Label>
                         <Controls>
                             <Inputs.Text
                                 attributes={{ "id": "ticketprinterStarturl", "aria-describedby": "help_ticketprinterStarturl" }}
@@ -207,7 +207,7 @@ class TicketPrinterConfigView extends Component {
                         </Controls>
                     </FormGroup>
                     <FormGroup key="ticketprinter-layout">
-                        <Label attributes={{ "htmlFor": "ticketprinterLayout" }}>Layout</Label>
+                        <Label attributes={{ "htmlFor": "ticketprinterLayout" }} value="Layout"></Label>
                         <Controls>
                             <Select
                                 attributes={{ "id": "ticketprinterLayout" }}
@@ -222,7 +222,7 @@ class TicketPrinterConfigView extends Component {
                         </Controls>
                     </FormGroup>
                     <FormGroup key="ticketprinter-url">
-                        <Label attributes={{ "htmlFor": "ticketprinterUrl" }}>URL</Label>
+                        <Label attributes={{ "htmlFor": "ticketprinterUrl" }} value="URL"></Label>
                         <Controls>
                             <Inputs.Text
                                 value={generatedUrl} attributes={{ readOnly: true, "id": "ticketprinterUrl" }} />
