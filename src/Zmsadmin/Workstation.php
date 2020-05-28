@@ -31,8 +31,6 @@ class Workstation extends BaseController
         }
 
         $validator = $request->getAttribute('validator');
-        $selectedDate = $validator->getParameter('date')->isString()->getValue();
-        $selectedDate = ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d');
         $selectedTime = $validator->getParameter('time')->isString()->getValue();
         $selectedTime = ($selectedTime) ? $selectedTime : null;
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
@@ -45,11 +43,21 @@ class Workstation extends BaseController
                 'title' => 'Sachbearbeiter',
                 'menuActive' => 'workstation',
                 'workstation' => $workstation,
-                'selectedDate' => $selectedDate,
+                'selectedDate' => $this->getSelectedDate($validator),
                 'selectedTime' => $selectedTime,
                 'selectedProcess' => $selectedProcessId,
                 'calledProcess' => $calledProcessId,
             )
         );
+    }
+
+    protected function getSelectedDate($validator)
+    {
+        $selectedDate = $validator->getParameter('date')->isString()->getValue();
+        $selectedDateTime = $selectedDate ?
+            (new \DateTimeImmutable($selectedDate))->setTime(\App::$now->format('H'), \App::$now->format('i')) :
+            \App::$now;
+        $selectedDate = ($selectedDateTime < \App::$now) ? \App::$now : $selectedDateTime;
+        return $selectedDate->format('Y-m-d');
     }
 }

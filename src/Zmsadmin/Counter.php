@@ -6,10 +6,6 @@
 
 namespace BO\Zmsadmin;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class Counter extends BaseController
 {
     /**
@@ -23,8 +19,6 @@ class Counter extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $validator = $request->getAttribute('validator');
-        $selectedDate = $validator->getParameter('date')->isString()->getValue();
-        $selectedDate = ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d');
         $selectedTime = $validator->getParameter('time')->isString()->getValue();
         $selectedTime = ($selectedTime) ? $selectedTime : null;
         $selectedprocess = $validator->getParameter('selectedprocess')->isNumber()->getValue();
@@ -44,10 +38,20 @@ class Counter extends BaseController
             array(
                 'title' => 'Tresen',
                 'menuActive' => 'counter',
-                'selectedDate' => $selectedDate,
+                'selectedDate' => $this->getSelectedDate($validator),
                 'selectedTime' => $selectedTime,
                 'selectedprocess' => $selectedprocess,
                 'workstation' => $workstation->getArrayCopy()            )
         );
+    }
+
+    protected function getSelectedDate($validator)
+    {
+        $selectedDate = $validator->getParameter('date')->isString()->getValue();
+        $selectedDateTime = $selectedDate ?
+            (new \DateTimeImmutable($selectedDate))->setTime(\App::$now->format('H'), \App::$now->format('i')) :
+            \App::$now;
+        $selectedDate = ($selectedDateTime < \App::$now) ? \App::$now : $selectedDateTime;
+        return $selectedDate->format('Y-m-d');
     }
 }
