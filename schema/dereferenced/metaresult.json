@@ -1,0 +1,53 @@
+{
+    "type": "object",
+    "description": "The meta result is used in HTTP-API-requests and has only debugging purposes.",
+    "example": {
+        "error": false,
+        "generated": "2015-11-20T18:01:04+01:00",
+        "length": 1,
+        "server": "prod-zmsapi-01"
+    },
+    "properties": {
+        "error": {
+            "type": "boolean",
+            "description": "true if request was not successful"
+        },
+        "generated": {
+            "type": "string",
+            "description": "iso8601 date time string of generation on the server",
+            "example": "2015-11-20T18:01:04+01:00"
+        },
+        "length": {
+            "type": "number",
+            "description": "number of items in the data block"
+        },
+        "message": {
+            "type": "string",
+            "description": "contains additional information if property error is true"
+        },
+        "retryAfter": {
+            "type": "string",
+            "description": "contains retry after information on status code 429"
+        },
+        "status": {
+            "type": "string",
+            "description": "current status code"
+        },
+        "route": {
+            "type": "string",
+            "description": "current route"
+        },
+        "reducedData": {
+            "type": "boolean",
+            "description": "has reduced data, do not use for saving data"
+        },
+        "server": {
+            "type": "string",
+            "description": "identifier for the responding server"
+        },
+        "exception": {
+            "type": "string",
+            "description": "name of thrown exception"
+        }
+    }
+}

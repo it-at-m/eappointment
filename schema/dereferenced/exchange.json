@@ -1,0 +1,286 @@
+{
+    "type": "object",
+    "description": "Represents an exchanged set of data usuable for statistics. It can include information how the data is changed.",
+    "example": {
+        "period": "day",
+        "firstDay": {
+            "year": 2015,
+            "month": 11,
+            "day": 12
+        },
+        "lastDay": {
+            "year": 2015,
+            "month": 11,
+            "day": 19
+        },
+        "dictionary": [
+            {
+                "position": 0,
+                "variable": "id",
+                "description": "ID for set",
+                "reference": "process.id"
+            },
+            {
+                "position": 1,
+                "variable": "name"
+            },
+            {
+                "position": 2,
+                "variable": "date"
+            }
+        ],
+        "data": [
+            [
+                "1",
+                "test",
+                "2015-11-19"
+            ],
+            [
+                "2",
+                "test2",
+                "2015-11-18"
+            ]
+        ]
+    },
+    "required": [
+        "dictionary"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "firstDay": {
+            "type": "object",
+            "description": "Representation of a day in the calendar. You might find curious values in freeAppointments. While callcenter and public values might be positive, the intern value can be negative. This is due to calculation. The public and callcenter values are calculated per slot whereas the intern value is calculated for the whole day\/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
+            "example": {
+                "year": 2015,
+                "month": 11,
+                "day": 19,
+                "freeAppointments": {
+                    "callcenter": 0,
+                    "intern": 3,
+                    "public": 0,
+                    "type": "sum"
+                },
+                "allAppointments": {
+                    "callcenter": 0,
+                    "intern": 3,
+                    "public": 3,
+                    "type": "sum"
+                },
+                "status": "bookable",
+                "firstAppointmentTimestamp": {
+                    "intern": 1447919770000,
+                    "type": "timestamp"
+                },
+                "lastAppointmentTimestamp": {
+                    "intern": 1447919788000,
+                    "type": "timestamp"
+                }
+            },
+            "required": [
+                "year",
+                "month",
+                "day"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "year": {
+                    "type": "number"
+                },
+                "month": {
+                    "type": "number"
+                },
+                "day": {
+                    "type": "number"
+                },
+                "freeAppointments": {
+                    "$ref": "slot.json"
+                },
+                "allAppointments": {
+                    "$ref": "slot.json"
+                },
+                "firstAppointmentTimestamp": {
+                    "$ref": "slot.json"
+                },
+                "lastAppointmentTimestamp": {
+                    "$ref": "slot.json"
+                },
+                "processList": {
+                    "type": "array",
+                    "description": "list of processes, only available if status is detail",
+                    "items": {
+                        "$ref": "process.json"
+                    }
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "bookable",
+                        "notBookable",
+                        "restricted",
+                        "full",
+                        "detail"
+                    ],
+                    "description": "Status of day. The following values are possible:\n  * bookable: day has free appointments\n  * notBookable: day is not bookable because of missing availabilities\n  * restricted: not bookable because of dayoff times\n  * full: not bookable because missing free appointments\n  * detail: non calculated status, every process for the day is available unter processList (very expansive in resources, use with caution)\n"
+                }
+            }
+        },
+        "lastDay": {
+            "type": "object",
+            "description": "Representation of a day in the calendar. You might find curious values in freeAppointments. While callcenter and public values might be positive, the intern value can be negative. This is due to calculation. The public and callcenter values are calculated per slot whereas the intern value is calculated for the whole day\/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
+            "example": {
+                "year": 2015,
+                "month": 11,
+                "day": 19,
+                "freeAppointments": {
+                    "callcenter": 0,
+                    "intern": 3,
+                    "public": 0,
+                    "type": "sum"
+                },
+                "allAppointments": {
+                    "callcenter": 0,
+                    "intern": 3,
+                    "public": 3,
+                    "type": "sum"
+                },
+                "status": "bookable",
+                "firstAppointmentTimestamp": {
+                    "intern": 1447919770000,
+                    "type": "timestamp"
+                },
+                "lastAppointmentTimestamp": {
+                    "intern": 1447919788000,
+                    "type": "timestamp"
+                }
+            },
+            "required": [
+                "year",
+                "month",
+                "day"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "year": {
+                    "type": "number"
+                },
+                "month": {
+                    "type": "number"
+                },
+                "day": {
+                    "type": "number"
+                },
+                "freeAppointments": {
+                    "$ref": "slot.json"
+                },
+                "allAppointments": {
+                    "$ref": "slot.json"
+                },
+                "firstAppointmentTimestamp": {
+                    "$ref": "slot.json"
+                },
+                "lastAppointmentTimestamp": {
+                    "$ref": "slot.json"
+                },
+                "processList": {
+                    "type": "array",
+                    "description": "list of processes, only available if status is detail",
+                    "items": {
+                        "$ref": "process.json"
+                    }
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "bookable",
+                        "notBookable",
+                        "restricted",
+                        "full",
+                        "detail"
+                    ],
+                    "description": "Status of day. The following values are possible:\n  * bookable: day has free appointments\n  * notBookable: day is not bookable because of missing availabilities\n  * restricted: not bookable because of dayoff times\n  * full: not bookable because missing free appointments\n  * detail: non calculated status, every process for the day is available unter processList (very expansive in resources, use with caution)\n"
+                }
+            }
+        },
+        "period": {
+            "type": "string",
+            "description": "Type of periodic granularity of data.",
+            "enum": [
+                "minute",
+                "hour",
+                "day",
+                "month",
+                "year"
+            ]
+        },
+        "dictionary": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "position": {
+                        "type": "integer",
+                        "description": "Each row of data is a list of values. The position indicated whicht element in the list is refered by this dictionary entry. Counting begins with zero.",
+                        "example": 0
+                    },
+                    "variable": {
+                        "type": "string",
+                        "description": "Name of the variable for the given position",
+                        "example": "var01"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "A detailed description explaining the variable and contraints on interpreting the variable."
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "Type of values",
+                        "enum": [
+                            "string",
+                            "number",
+                            "date"
+                        ]
+                    },
+                    "reference": {
+                        "type": "string",
+                        "description": "A reference to another entity to obtain more informations."
+                    }
+                }
+            }
+        },
+        "data": {
+            "type": "array",
+            "items": {
+                "type": "array",
+                "items": {
+                    "type": [
+                        "string",
+                        "number"
+                    ],
+                    "description": "For a description on the values, see the 'dictionary'. Non existing "
+                }
+            }
+        },
+        "title": {
+            "type": "string",
+            "description": "Title for the data, might include hints for the data"
+        },
+        "visualization": {
+            "type": "object",
+            "description": "Hints for visualization of the data",
+            "properties": {
+                "xlabel": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "ylabel": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

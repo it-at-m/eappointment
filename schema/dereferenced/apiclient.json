@@ -1,0 +1,43 @@
+{
+    "type": "object",
+    "description": "An apiclient is required on requesting an apikey.",
+    "example": {
+        "clientKey": "wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs",
+        "shortname": "example",
+        "accesslevel": "public",
+        "lastChange": 1459512840
+    },
+    "required": [
+        "clientKey"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "apiClientID": {
+            "type": "number",
+            "description": "internal ID for the API client"
+        },
+        "clientKey": {
+            "type": "string",
+            "description": "temporary random api key string"
+        },
+        "shortname": {
+            "type": "string",
+            "description": "a string describing the client"
+        },
+        "accesslevel": {
+            "type": "string",
+            "description": "access level of the api key",
+            "enum": [
+                "public",
+                "callcenter",
+                "intern",
+                "blocked"
+            ]
+        },
+        "lastChange": {
+            "type": "number",
+            "description": "unix timestamp representing the creating time of quota",
+            "example": 1459512840
+        }
+    }
+}
