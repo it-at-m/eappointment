@@ -29,8 +29,8 @@ class ScopeView extends Component {
             method: 'GET'
         }).done((success) => {
             this.changeHandler(field, success)
-            getEntity('provider').then((response) => {
-                this.changeHandler('provider', response)
+            getEntity('provider').then((entity) => {
+                this.changeHandler('provider', entity)
             })
         }).fail((err) => {
             if (err.status === 404) {
