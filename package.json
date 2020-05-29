@@ -21,6 +21,6 @@
     "url": "https://gitlab.berlinonline.net/land-intranet/zmsentities.git"
   },
   "files": [
-    "schema/*.json"
+    "schema/dereferenced/*.json"
   ]
 }

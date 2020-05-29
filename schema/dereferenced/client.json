@@ -1,0 +1,40 @@
+{
+    "type": "object",
+    "description": "A client is usually a customer in a scope who intends to get his request solved. Usually the client has an appointment, if not he got a process number from a ticket printer and his familyName is set to 'Spontankunde'.",
+    "example": {
+        "familyName": "Max Mustermann",
+        "email": "max@service.berlin.de",
+        "emailSendCount": 0,
+        "notificationsSendCount": 0,
+        "surveyAccepted": false,
+        "telephone": "030 115"
+    },
+    "additionalProperties": false,
+    "properties": {
+        "email": {
+            "type": "string",
+            "description": "mail address"
+        },
+        "emailSendCount": {
+            "type": "number",
+            "description": "number of reminder mails send"
+        },
+        "familyName": {
+            "type": "string",
+            "default": "Spontankunde",
+            "description": "name of the client"
+        },
+        "notificationsSendCount": {
+            "type": "number",
+            "description": "number of reminder sms send"
+        },
+        "surveyAccepted": {
+            "type": "boolean",
+            "description": "true if clients allows survey requests"
+        },
+        "telephone": {
+            "type": "string",
+            "description": "telephone number"
+        }
+    }
+}

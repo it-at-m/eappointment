@@ -1,0 +1,74 @@
+{
+    "description": "A contact is a collection of contact informations to find or to contact a natural person or an entity.",
+    "type": "object",
+    "example": {
+        "city": "Schönefeld",
+        "country": "Germany",
+        "lat": 52.345,
+        "lon": 13.456,
+        "name": "Flughafen Schönefeld, Landebahn",
+        "postalCode": "15831",
+        "region": "Brandenburg",
+        "street": "Zaunstraße",
+        "streetNumber": "1"
+    },
+    "additionalProperties": false,
+    "properties": {
+        "city": {
+            "default": "",
+            "type": "string"
+        },
+        "country": {
+            "default": "",
+            "description": "Name of the country or the ISO 3166-1 country code like 'de'.",
+            "type": "string"
+        },
+        "lat": {
+            "default": "",
+            "description": "Latitute of a geo coordinate as wgs84 or etrs89",
+            "type": "number"
+        },
+        "lon": {
+            "default": "",
+            "description": "Longitude of a geo coordinate as wgs84 or etrs89",
+            "type": "number"
+        },
+        "name": {
+            "default": "",
+            "type": "string"
+        },
+        "postalCode": {
+            "default": "",
+            "type": "string"
+        },
+        "region": {
+            "default": "",
+            "type": "string"
+        },
+        "street": {
+            "default": "",
+            "type": "string"
+        },
+        "streetNumber": {
+            "default": "",
+            "type": "string"
+        },
+        "email": {
+            "type": "string",
+            "default": "",
+            "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+            "x-locale": {
+                "de_DE": {
+                    "pointer": "Kontakt E-Mail",
+                    "messages": {
+                        "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
+                    }
+                }
+            }
+        },
+        "telephone": {
+            "default": "",
+            "type": "string"
+        }
+    }
+}
