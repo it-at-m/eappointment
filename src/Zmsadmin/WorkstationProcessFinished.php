@@ -24,28 +24,26 @@ class WorkstationProcessFinished extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $this->testProcess($workstation);
-        $requestList = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/request/')->getCollection();
-
+        $input = $request->getParsedBody();
         $statisticEnabled = $workstation->getScope()->getPreference('queue', 'statisticsEnabled');
         $isDefaultPickup = $workstation->getScope()->getPreference('pickup', 'isDefault');
 
-        $workstation->process['status'] = (! $statisticEnabled && $isDefaultPickup) ? 'pending' : 'finished';
-        $process = new ProcessFinishedHelper(clone $workstation->process);
-        $input = $request->getParsedBody();
-
         if (! $statisticEnabled && ! $isDefaultPickup) {
-            return $this->getResponseWithStatisticDisabled($process, $workstation);
+            $workstation->process['status'] = 'finished';
+            return $this->getFinishedResponse($workstation);
         }
 
-        if (is_array($input) && array_key_exists('id', $input['process'])) {
-            return $this->getResponseWithStatisticEnabled(
-                $input,
-                $process,
-                $workstation,
-                $requestList? $requestList : new RequestList()
-            );
-        }
+        $requestList = \App::$http
+            ->readGetResult('/scope/'. $workstation->scope['id'] .'/request/')
+            ->getCollection();
+        $requestList = $requestList ? $requestList : new RequestList();
 
+        if (is_array($input) && isset($input['process']) && array_key_exists('id', $input['process'])) {
+            $source = $workstation->getScope()->getSource();
+            $process = new ProcessFinishedHelper(clone $workstation->process, $input, $requestList, $source);
+            return $this->getFinishedResponse($workstation, $process);
+        }
+ 
         return \BO\Slim\Render::withHtml(
             $response,
             'page/workstationProcessFinished.twig',
@@ -53,7 +51,7 @@ class WorkstationProcessFinished extends BaseController
                 'title' => 'Kundendaten',
                 'workstation' => $workstation,
                 'pickupList' => $workstation->getScopeList(),
-                'requestList' => $requestList ? $requestList->toSortedByGroup() : new RequestList(),
+                'requestList' => $requestList->toSortedByGroup(),
                 'menuActive' => 'workstation',
                 'statisticEnabled' => $statisticEnabled,
                 'isDefaultPickup' => $isDefaultPickup
@@ -61,42 +59,24 @@ class WorkstationProcessFinished extends BaseController
         );
     }
 
+    protected function getFinishedResponse(
+        \BO\Zmsentities\Workstation $workstation,
+        Entity $process = null
+    ) {
+        $process = ($process) ? $process : clone $workstation->process;
+        \App::$http->readPostResult('/process/status/finished/', new Entity($process))->getEntity();
+        return \BO\Slim\Render::redirect(
+            $workstation->getVariantName(),
+            array(),
+            array()
+        );
+    }
+
+
     protected function testProcess(\BO\Zmsentities\Workstation $workstation)
     {
         if (! $workstation->process->hasId()) {
             throw new \BO\Zmsentities\Exception\WorkstationMissingAssignedProcess();
         }
-    }
-
-    protected function getResponseWithStatisticDisabled(
-        Entity $process,
-        \BO\Zmsentities\Workstation $workstation
-    ) {
-        \App::$http->readPostResult('/process/status/finished/', new Entity($process))->getEntity();
-        return \BO\Slim\Render::redirect(
-            $workstation->getVariantName(),
-            array(),
-            array()
-        );
-    }
-
-    protected function getResponseWithStatisticEnabled(
-        array $input,
-        Entity $process,
-        \BO\Zmsentities\Workstation $workstation,
-        \BO\Zmsentities\Collection\RequestList $requestList
-    ) {
-        $firstClient = $process->getFirstClient();
-        $process->addData($input['process']);
-        $process->setClientData($input, $firstClient);
-        $process->setPickupData($input);
-        $process->setRequestData($input, $requestList, $workstation);
-        $process->setClientsCount($input['statistic']['clientsCount']);
-        \App::$http->readPostResult('/process/status/finished/', new Entity($process))->getEntity();
-        return \BO\Slim\Render::redirect(
-            $workstation->getVariantName(),
-            array(),
-            array()
-        );
     }
 }

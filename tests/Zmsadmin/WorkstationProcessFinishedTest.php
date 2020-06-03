@@ -194,7 +194,9 @@ class WorkstationProcessFinishedTest extends Base
         );
         $response = $this->render($this->arguments, [], []);
         $this->assertContains('Kundendaten für Statistik', (string)$response->getBody());
+        $this->assertNotContains('Bearbeitete Dienstleistungen des Kunden', (string)$response->getBody());
         $this->assertContains('ignoreRequests', (string)$response->getBody());
+        $this->assertContains('selected="selected"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -207,11 +209,6 @@ class WorkstationProcessFinishedTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_workstation_statistic_disabled.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/request/',
-                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -239,16 +236,11 @@ class WorkstationProcessFinishedTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/request/',
                     'response' => $this->readFixture("GET_scope_141_requestlist.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/status/finished/',
-                    'response' => $this->readFixture("GET_process_82252_12a3.json")
                 ]
             ]
         );
-        $response = $this->render($this->arguments, [], [], 'POST');
-        $this->assertRedirect($response, '/workstation/');
-        $this->assertEquals(302, $response->getStatusCode());
+        $response = $this->render($this->arguments, [], []);
+        $this->assertContains('Kundendaten für Statistik', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }
