@@ -669,11 +669,13 @@ class Process extends Base implements MappingInterface
     {
         $client = $process->getFirstClient();
         if ($client->emailSendCount) {
-            $data['EMailverschickt'] = $client->emailSendCount;
+            $data['EMailverschickt'] = ('-1' == $client->emailSendCount) ? 0 : $client->emailSendCount;
         }
         if ($client->notificationsSendCount) {
-            $data['SMSverschickt'] = $client->notificationsSendCount;
+            $data['SMSverschickt'] = ('-1' == $client->notificationsSendCount) ? 0 : $client->notificationsSendCount;
         }
+        error_log('email sendcount: '. $data['EMailverschickt']);
+        error_log('sms sendcount: '. $data['SMSverschickt']);
         return $data;
     }
 
