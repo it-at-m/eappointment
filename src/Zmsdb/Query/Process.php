@@ -674,8 +674,6 @@ class Process extends Base implements MappingInterface
         if ($client->notificationsSendCount) {
             $data['SMSverschickt'] = ('-1' == $client->notificationsSendCount) ? 0 : $client->notificationsSendCount;
         }
-        error_log('email sendcount: '. $data['EMailverschickt']);
-        error_log('sms sendcount: '. $data['SMSverschickt']);
         return $data;
     }
 
