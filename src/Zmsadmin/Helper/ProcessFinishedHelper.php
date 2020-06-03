@@ -22,8 +22,8 @@ class ProcessFinishedHelper extends \BO\Zmsentities\Process
         if (array_key_exists('pickupScope', $input) && 0 != $input['pickupScope']) {
             $this->status = 'pending';
             $this->scope['id'] = $input['pickupScope'];
-            $this->clients[0]['emailSendCount'] = 0;
-            $this->clients[0]['notificationsSendCount'] = 0;
+            $this->clients[0]['emailSendCount'] = "-1";
+            $this->clients[0]['notificationsSendCount'] = "-1";
             $this->queue->callCount = 0;
         }
         return $this;
