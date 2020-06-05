@@ -1,5 +1,6 @@
 ## v2.23.05
 
+* #35916 Eine eingegebene Telefonnummer wird nach erfolgreicher Validierung für den SMS Versand korrekt konvertiert und ins Backend übergeben
 * #43673 Datumsformate in der Öffnungszeiten-Verwaltung werden nun im deutschen Format angezeigt
 * #42786 Nach Freigeben/Sperren des Kiosk erscheint jetzt eine Erfolgsmeldung.
 * #43682 Bugfix: Korrektur der Buttons beim SMS-Versand Formular. Bei zu geringer Monitorauflösung ist das Formular nun scrollbar.
