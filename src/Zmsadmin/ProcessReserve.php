@@ -8,9 +8,10 @@
  */
 namespace BO\Zmsadmin;
 
-use BO\Mellon\Validator;
+use BO\Mellon\Condition;
 use BO\Slim\Render;
-use BO\Zmsentities\Helper\ProcessFormValidation as FormValidation;
+use BO\Zmsentities\Validator\ProcessValidator;
+use BO\Zmsentities\Process as Entity;
 
 /**
  * Reserve a process
@@ -28,17 +29,18 @@ class ProcessReserve extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $scope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
         $input = $request->getParams();
-        $validatedForm = FormValidation::fromAdminParameters($scope['preferences'], true);
-        if ($validatedForm->hasFailed()) {
+        $scope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
+        $process = $this->getProcess($input, $scope);
+        $validatedForm = static::getValidatedForm($request->getAttribute('validator'), $process);
+        if ($validatedForm['failed']) {
             return \BO\Slim\Render::withJson(
                 $response,
-                $validatedForm->getStatus(null, true)
+                $validatedForm
             );
         }
         
-        $process = static::writeReservedProcess($input, $scope);
+        $process = static::writeReservedProcess($input, $process);
         $process = static::writeConfirmedProcess($input, $process);
         $queryParams = ('confirmed' == $process->getStatus()) ?
             ['selectedprocess' => $process, 'success' => 'process_reserved'] :
@@ -51,14 +53,74 @@ class ProcessReserve extends BaseController
         );
     }
 
-    public static function writeReservedProcess($input, $scope)
+    protected function getProcess($input, $scope)
     {
         $process = new \BO\Zmsentities\Process();
 
         $selectedTime = str_replace('-', ':', $input['selectedtime']);
         $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $input['selecteddate'] .' '. $selectedTime);
         
-        $process->withUpdatedData($input, $dateTime, $scope);
+        return $process->withUpdatedData($input, $dateTime, $scope);
+    }
+
+    public static function getValidatedForm($validator, $process)
+    {
+        $processValidator = new ProcessValidator($process);
+        $delegatedProcess = $processValidator->getDelegatedProcess();
+        $processValidator
+            ->validateName(
+                $validator->getParameter('familyName'),
+                $delegatedProcess->setter('clients', 0, 'familyName')
+            )
+            ->validateRequests(
+                $validator->getParameter('requests'),
+                $delegatedProcess->setter('requests')
+            )
+            ->validateMail(
+                $validator->getParameter('email'),
+                $delegatedProcess->setter('clients', 0, 'email'),
+                new Condition(
+                    $validator->getParameter('sendMailConfirmation')->isNumber()->isNotEqualTo(1),
+                    $validator->getParameter('surveyAccepted')->isString()->isDevoidOf([1])
+                )
+            )
+            ->validateTelephone(
+                $validator->getParameter('telephone'),
+                $delegatedProcess->setter('clients', 0, 'telephone'),
+                new Condition(
+                    $validator->getParameter('sendConfirmation')->isNumber()->isNotEqualTo(1),
+                    $validator->getParameter('sendReminder')->isNumber()->isNotEqualTo(1)
+                )
+            )
+            ->validateSurvey(
+                $validator->getParameter('surveyAccepted'),
+                $delegatedProcess->setter('clients', 0, 'surveyAccepted')
+            )
+            ->validateAmendment(
+                $validator->getParameter('amendment'),
+                $delegatedProcess->setter('amendment')
+            )
+            ->validateReminderTimestamp(
+                $validator->getParameter('headsUpTime'),
+                $delegatedProcess->setter('reminderTimestamp'),
+                new Condition(
+                    $validator->getParameter('sendReminder')->isNumber()->isNotEqualTo(1)
+                )
+            )
+            
+        ;
+        $processValidator->getCollection()->addValid(
+            $validator->getParameter('sendConfirmation')->isNumber(),
+            $validator->getParameter('sendReminder')->isNumber()
+        );
+
+        $form = $processValidator->getCollection()->getStatus(null, true);
+        $form['failed'] = $processValidator->getCollection()->hasFailed();
+        return $form;
+    }
+
+    public static function writeReservedProcess($input, $process)
+    {
         $process = \App::$http
             ->readPostResult('/process/status/reserved/', $process, [
                 'slotType' => 'intern',

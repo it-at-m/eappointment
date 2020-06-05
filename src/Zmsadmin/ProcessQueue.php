@@ -8,10 +8,10 @@
  */
 namespace BO\Zmsadmin;
 
-use BO\Mellon\Validator;
+use BO\Mellon\Condition;
 use BO\Slim\Render;
+use BO\Zmsentities\Validator\ProcessValidator;
 use BO\Zmsentities\Process as Entity;
-use BO\Zmsentities\Helper\ProcessFormValidation as FormValidation;
 use BO\Zmsadmin\Helper\AppointmentFormHelper;
 
 /**
@@ -30,15 +30,13 @@ class ProcessQueue extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $scope = AppointmentFormHelper::readSelectedScope($request, $workstation);
-        $validatedForm = FormValidation::fromAdminParameters($scope['preferences']);
-        if ($validatedForm->hasFailed()) {
+        $validatedForm = $this->getValidatedForm($request->getAttribute('validator'));
+        if ($validatedForm['failed']) {
             return \BO\Slim\Render::withJson(
                 $response,
-                $validatedForm->getStatus(null, true)
+                $validatedForm
             );
         }
-
         $process = $this->readSelectedProcessWithWaitingnumber($request);
         if ($process instanceof \BO\Zmsentities\Process) {
             return \BO\Slim\Render::withHtml(
@@ -60,6 +58,58 @@ class ProcessQueue extends BaseController
                 'success' => 'process_queued'
             )
         );
+    }
+
+    protected function getValidatedForm($validator)
+    {
+        $processValidator = new ProcessValidator(new Entity());
+        $delegatedProcess = $processValidator->getDelegatedProcess();
+        $processValidator
+            ->validateName(
+                $validator->getParameter('familyName'),
+                $delegatedProcess->setter('clients', 0, 'familyName')
+            )
+            ->validateMail(
+                $validator->getParameter('email'),
+                $delegatedProcess->setter('clients', 0, 'email'),
+                new Condition(
+                    $validator->getParameter('sendMailConfirmation')->isNumber()->isNotEqualTo(1),
+                    $validator->getParameter('surveyAccepted')->isString()->isDevoidOf([1])
+                )
+            )
+            ->validateTelephone(
+                $validator->getParameter('telephone'),
+                $delegatedProcess->setter('clients', 0, 'telephone'),
+                new Condition(
+                    $validator->getParameter('sendConfirmation')->isNumber()->isNotEqualTo(1),
+                    $validator->getParameter('sendReminder')->isNumber()->isNotEqualTo(1)
+                )
+            )
+            ->validateSurvey(
+                $validator->getParameter('surveyAccepted'),
+                $delegatedProcess->setter('clients', 0, 'surveyAccepted')
+            )
+            ->validateAmendment(
+                $validator->getParameter('amendment'),
+                $delegatedProcess->setter('amendment')
+            )
+            ->validateReminderTimestamp(
+                $validator->getParameter('headsUpTime'),
+                $delegatedProcess->setter('reminderTimestamp'),
+                new Condition(
+                    $validator->getParameter('sendReminder')->isNumber()->isNotEqualTo(1)
+                )
+            )
+            
+        ;
+        $processValidator->getCollection()->addValid(
+            $validator->getParameter('sendConfirmation')->isNumber(),
+            $validator->getParameter('sendReminder')->isNumber()
+        );
+
+        $form = $processValidator->getCollection()->getStatus(null, true);
+        $form['failed'] = $processValidator->getCollection()->hasFailed();
+        return $form;
     }
 
     protected function readSelectedProcessWithWaitingnumber($request)

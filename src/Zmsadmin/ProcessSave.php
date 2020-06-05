@@ -7,10 +7,10 @@
  */
 namespace BO\Zmsadmin;
 
-use BO\Mellon\Validator;
+use BO\Mellon\Condition;
 use BO\Slim\Render;
+use BO\Zmsentities\Validator\ProcessValidator;
 use BO\Zmsentities\Process as Entity;
-use BO\Zmsentities\Helper\ProcessFormValidation as FormValidation;
 use BO\Zmsadmin\Helper\AppointmentFormHelper;
 
 /**
@@ -27,22 +27,20 @@ class ProcessSave extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $validator = $request->getAttribute('validator');
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $scope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
-        $processId = Validator::value($args['id'])->isNumber()->getValue();
+        $processId = $validator->value($args['id'])->isNumber()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
         $input = $request->getParams();
-        $validatedForm = FormValidation::fromAdminParameters(
-            $scope['preferences'],
-            $process->isWithAppointment()
-        );
-        if ($validatedForm->hasFailed()) {
+        $validatedForm = ProcessReserve::getValidatedForm($validator, $process);
+        if ($validatedForm['failed']) {
             return \BO\Slim\Render::withJson(
                 $response,
-                $validatedForm->getStatus(null, true)
+                $validatedForm
             );
         }
-        $process = $this->writeSavedProcess($scope, $process, $input);
+        $process = $this->writeSavedProcess($scope, $process, $input, $validator);
         $success = ($process->isWithAppointment()) ? 'process_updated' : 'process_withoutappointment_updated';
 
         return \BO\Slim\Render::withHtml(
@@ -55,9 +53,9 @@ class ProcessSave extends BaseController
         );
     }
 
-    protected function writeSavedProcess($scope, $process, $input)
+    protected function writeSavedProcess($scope, $process, $input, $validator)
     {
-        $initiator = Validator::param('initiator')->isString()->getValue();
+        $initiator = $validator->getParameter('initiator')->isString()->getValue();
         if ($process->isWithAppointment()) {
             $dateTime = (new \DateTime())->setTimestamp($process->getFirstAppointment()->date);
             $process->withUpdatedData($input, $dateTime, $scope);
