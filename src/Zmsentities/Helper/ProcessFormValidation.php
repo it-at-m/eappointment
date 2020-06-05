@@ -13,7 +13,7 @@ use \BO\Zmsentities\Helper\Property;
 /**
  *
  * @SuppressWarnings(Complexity)
- * @todo Deprecated
+ * @todo Deprecated, only for d115 mandant in use, delete after changed to Validator\ProcessValidator
  *
  */
 class ProcessFormValidation
@@ -203,24 +203,38 @@ class ProcessFormValidation
 
     protected static function testTelephone($collection, $scopePrefs, $withAppointment)
     {
-        $length = strlen(Validator::param('telephone')->isString()->getValue());
+        $inputNumber = Validator::param('telephone')->isString()->getValue();
+        if (! $inputNumber) {
+            return $collection;
+        }
+        $length = strlen($inputNumber);
+        $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
+        $phoneNumberObject = $phoneNumberUtil->parse($inputNumber, 'DE');
+        $phoneNumber = '+'.$phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
+
         if (self::isPhoneRequired($scopePrefs) && $withAppointment) {
-            $collection['telephone'] = Validator::param('telephone')
+            $collection['telephone'] = Validator::value($phoneNumber, 'telephone')
                 ->isString()
-                ->isBiggerThan(6, "Für den Standort muss eine gültige Telefonnummer eingetragen werden");
+                ->isBiggerThan(6, "Zu kurz: für den Standort muss eine gültige Telefonnummer eingetragen werden")
+                ->isSmallerThan(15, "Zu lang: für den Standort muss eine gültige Telefonnummer eingetragen werden");
         }
 
         if (self::hasCheckedSms() && !$length) {
-            $collection['telephone'] = Validator::param('telephone')
+            $collection['telephone'] = Validator::value($phoneNumber, 'telephone')
                 ->isString()
-                ->isBiggerThan(10, "Für den SMS-Versand muss eine gültige Mobilfunknummer angegeben werden");
+                ->isBiggerThan(10, "Zu kurz: für den SMS-Versand muss eine gültige Mobilfunknummer angegeben werden")
+                ->isSmallerThan(
+                    15,
+                    "Zu lang: für den SMS-Versand muss eine gültige Mobilfunknummer angegeben werden"
+                );
         }
 
         if ($length) {
-            $collection['telephone'] = Validator::param('telephone')
+            $collection['telephone'] = Validator::value($phoneNumber, 'telephone')
                 ->isString()
-                ->isBiggerThan(6, "Für den Standort muss eine gültige Telefonnummer eingetragen werden")
-                ->isMatchOf("/^\+?[\d\s]*$/", "Die Telefonnummer muss im Format 0170 1234567 eingegeben werden");
+                ->isBiggerThan(6, "Zu kurz: für den Standort muss eine gültige Telefonnummer eingetragen werden")
+                ->isSmallerThan(15, "Zu lang: für den Standort muss eine gültige Telefonnummer eingetragen werden")
+                ->isMatchOf("/^\+?[\d\s]*$/", "Die Telefonnummer muss im Format 01701234567 eingegeben werden");
         }
         return $collection;
     }

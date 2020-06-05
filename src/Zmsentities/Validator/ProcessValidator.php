@@ -127,6 +127,14 @@ class ProcessValidator
     {
         $valid = $unvalid->isString();
         $length = strlen($valid->getValue());
+
+        if ($valid->getValue()) {
+            $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
+            $phoneNumberObject = $phoneNumberUtil->parse($valid->getValue(), 'DE');
+            $telephone = '+'.$phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
+            $valid = (new \BO\Mellon\Unvalidated($telephone, 'telephone'))->isString();
+        }
+       
         /*
         error_log(
             "Phone validate: ".$valid->getUnvalidated()
@@ -150,8 +158,8 @@ class ProcessValidator
         } elseif ($length) {
             $valid
                 ->isSmallerThan(
-                    20,
-                    "Die Telefonnummer darf nicht mehr als 20 Zeichen (inklusive Leerzeichen) enthalten"
+                    15,
+                    "Die Telefonnummer darf nicht mehr als 15 Zeichen enthalten"
                 )
                 ->isBiggerThan(6, "Für den Standort muss eine gültige Telefonnummer eingetragen werden")
                 ->isMatchOf("/^\+?[\d\s]*$/", "Die Telefonnummer muss im Format 0170 1234567 eingegeben werden");
@@ -182,6 +190,15 @@ class ProcessValidator
             $this->getCollection()->validatedAction($valid, $setter);
         } else {
             $this->getCollection()->addValid($valid);
+        }
+        return $this;
+    }
+
+    public function validateRequests(Unvalidated $unvalid, callable $setter):self
+    {
+        if ($this->getProcess()->isWithAppointment()) {
+             $valid = $unvalid->isArray("Es muss mindestens eine Dienstleistung ausgewählt werden!");
+             $this->getCollection()->validatedAction($valid, $setter);
         }
         return $this;
     }
