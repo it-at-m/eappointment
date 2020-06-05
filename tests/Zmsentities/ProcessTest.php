@@ -2,6 +2,7 @@
 
 namespace BO\Zmsentities\Tests;
 
+use \BO\Mellon\Condition;
 use \BO\Zmsentities\Appointment;
 use \BO\Zmsentities\Availability;
 use \BO\Zmsentities\Process;
@@ -226,7 +227,8 @@ class ProcessTest extends EntityCommonTests
         ]);
         $validator->makeInstance();
 
-        $formCollection = \BO\Zmsentities\Helper\ProcessFormValidation::fromAdminParameters($scope->preferences);
+        $formCollection = $this->getFormValidator($entity, $validator);
+        $this->assertFalse($formCollection['failed']);
         $input = [
             'headsUpTime' => 60,
             'slotCount' => 1,
@@ -254,36 +256,44 @@ class ProcessTest extends EntityCommonTests
             'agbgelesen' => 1
         ]);
         $validator->makeInstance();
-        $formCollection = \BO\Zmsentities\Helper\ProcessFormValidation::fromParameters($scope->preferences);
-        $entity->addClientFromForm($formCollection->getStatus());
+        $formCollection = $this->getFormValidator($entity, $validator);
+        $entity->addClientFromForm($formCollection);
         $this->assertEquals('Max Mustermann', $entity->getClients()->getFirst()->familyName);
         $this->assertEquals('zms@berlinonline.de', $entity->getClients()->getFirst()->email);
     }
 
     public function testFromManageProcess()
     {
+        $entity = $this->getExample();
         $validator = new \BO\Mellon\Validator([
-            'process' => 10029,
+            'process' => 100029,
             'authKey' => '1c56'
         ]);
         $validator->makeInstance();
-        $result = \BO\Zmsentities\Helper\ProcessFormValidation::fromManageProcess();
-        $formdata = $result->getStatus();
-        $this->assertFalse($formdata['process']['failed']);
-        $this->assertFalse($formdata['authKey']['failed']);
+        $formCollection = $this->getFormValidatorManageProcess($entity, $validator);
+        $this->assertFalse($formCollection['process']['failed']);
+        $this->assertFalse($formCollection['authKey']['failed']);
     }
 
     public function testFromManageProcessFailed()
     {
+        $entity = $this->getExample();
         $validator = new \BO\Mellon\Validator([
             'process' => 10029,
             'authKey' => ''
         ]);
         $validator->makeInstance();
-        $result = \BO\Zmsentities\Helper\ProcessFormValidation::fromManageProcess();
-        $formdata = $result->getStatus();
-        $this->assertFalse($formdata['process']['failed']);
-        $this->assertTrue($formdata['authKey']['failed']);
+        $formCollection = $this->getFormValidatorManageProcess($entity, $validator);
+        $this->assertTrue($formCollection['process']['failed']);
+        $this->assertTrue($formCollection['authKey']['failed']);
+        $this->assertEquals(
+            'Eine Vorgangsnummer besteht aus mindestens 6 Ziffern', 
+            $formCollection['process']['messages'][0]
+        );
+        $this->assertEquals(
+            'Es müssen mindestens 4 Zeichen eingegeben werden.', 
+            $formCollection['authKey']['messages'][0]
+        );
     }
 
     public function testFromParamsToProcess()
@@ -608,6 +618,86 @@ class ProcessTest extends EntityCommonTests
         $entity = $this->getExample();
         $entity = $entity->withResolveLevel(0);
         $this->assertTrue(array_key_exists('$ref', $entity->requests->getFirst()));
+    }
+
+    public function getFormValidatorManageProcess($process, $validator)
+    {
+        $processValidator = new \BO\Zmsentities\Validator\ProcessValidator($process);
+        $delegatedProcess = $processValidator->getDelegatedProcess();
+        $processValidator
+            ->validateId(
+                $validator->getParameter("process"),
+                $delegatedProcess->setter('id'),
+                function () {
+                    return true;
+                }
+            )
+            ->validateAuthKey(
+                $validator->getParameter('authKey'),
+                $delegatedProcess->setter('authKey'),
+                function () {
+                    return true;
+                }
+            );
+        $form = $processValidator->getCollection()->getStatus(null, true);
+        $form['failed'] = $processValidator->getCollection()->hasFailed();
+        return $form;
+    }
+
+    protected function getFormValidator($process, $validator)
+    {
+        $processValidator = new \BO\Zmsentities\Validator\ProcessValidator($process);
+        $delegatedProcess = $processValidator->getDelegatedProcess();
+        $processValidator
+            ->validateName(
+                $validator->getParameter('familyName'),
+                $delegatedProcess->setter('clients', 0, 'familyName')
+            )
+            ->validateRequests(
+                $validator->getParameter('requests'),
+                $delegatedProcess->setter('requests')
+            )
+            ->validateMail(
+                $validator->getParameter('email'),
+                $delegatedProcess->setter('clients', 0, 'email'),
+                new Condition(
+                    $validator->getParameter('sendMailConfirmation')->isNumber()->isNotEqualTo(1),
+                    $validator->getParameter('surveyAccepted')->isString()->isDevoidOf([1])
+                )
+            )
+            ->validateTelephone(
+                $validator->getParameter('telephone'),
+                $delegatedProcess->setter('clients', 0, 'telephone'),
+                new Condition(
+                    $validator->getParameter('sendConfirmation')->isNumber()->isNotEqualTo(1),
+                    $validator->getParameter('sendReminder')->isNumber()->isNotEqualTo(1)
+                )
+            )
+            ->validateSurvey(
+                $validator->getParameter('surveyAccepted'),
+                $delegatedProcess->setter('clients', 0, 'surveyAccepted')
+            )
+            ->validateAmendment(
+                $validator->getParameter('amendment'),
+                $delegatedProcess->setter('amendment')
+            )
+            ->validateReminderTimestamp(
+                $validator->getParameter('headsUpTime'),
+                $delegatedProcess->setter('reminderTimestamp'),
+                new Condition(
+                    $validator->getParameter('sendReminder')->isNumber()->isNotEqualTo(1)
+                )
+            )
+            
+        ;
+        $processValidator->getCollection()->addValid(
+            $validator->getParameter('sendConfirmation')->isNumber(),
+            $validator->getParameter('sendReminder')->isNumber()
+        );
+
+        $form = $processValidator->getCollection()->getStatus(null, true);
+        $form['failed'] = $processValidator->getCollection()->hasFailed();
+        return $form;
     }
 
     //check if necessary

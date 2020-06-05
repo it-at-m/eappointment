@@ -93,11 +93,17 @@ class Notification extends Schema\Entity
         ) {
             throw new Exception\NotificationMissedNumber();
         }
-        $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
-        $phoneNumberObject = $phoneNumberUtil->parse($this->client['telephone'], 'DE');
-        $telephone = '+'.$phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
+        $telephone = $this->getParsedTelephoneNumber();
         $recipient = 'SMS='. $telephone .'@sms.verwalt-berlin.de';
         return $recipient;
+    }
+
+    public function getParsedTelephoneNumber($number = null)
+    {
+        $number = ($number) ? $number : $this->client['telephone'];
+        $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
+        $phoneNumberObject = $phoneNumberUtil->parse($number, 'DE');
+        return '+'.$phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
     }
 
     public function toResolvedEntity(Process $process, Config $config, Department $department)

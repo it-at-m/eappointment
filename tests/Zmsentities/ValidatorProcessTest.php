@@ -23,6 +23,7 @@ class ValidatorProcessTest extends Base
 
     public function testPhoneNumberValid()
     {
+        $parsedNumber = '+4912345678910';
         $parameters = [
             'telephone' => '0049 0123 456 789 10',
         ];
@@ -36,15 +37,17 @@ class ValidatorProcessTest extends Base
             $delegatedProcess->setter('telephone')
         );
 
-        $this->assertEquals($process->toProperty()->telephone->get(), $parameters['telephone']);
+        $this->assertNotEquals($process->toProperty()->telephone->get(), $parameters['telephone']);
+        $this->assertEquals($process->toProperty()->telephone->get(), $parsedNumber);
         $collectionStatus = $processValidator->getCollection()->getStatus();
         $this->assertFalse($collectionStatus['telephone']['failed']);
     }
 
     public function testPhoneNumberUnvalidLength()
     {
+        $parsedNumber = '+491234567891012';
         $parameters = [
-            'telephone' => '0049 0123 456 789 101',
+            'telephone' => '0049 0123 456 789 1012',
         ];
         $validator = new Validator($parameters);
         $process = new Process();
@@ -58,7 +61,7 @@ class ValidatorProcessTest extends Base
 
         $collectionStatus = $processValidator->getCollection()->getStatus();
         $this->assertEquals(
-            'Die Telefonnummer darf nicht mehr als 20 Zeichen (inklusive Leerzeichen) enthalten', 
+            'Die Telefonnummer darf nicht mehr als 15 Zeichen enthalten', 
             $collectionStatus['telephone']['messages'][0]
         );
         $this->assertTrue($collectionStatus['telephone']['failed']);
