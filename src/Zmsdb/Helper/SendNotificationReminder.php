@@ -47,7 +47,10 @@ class SendNotificationReminder
     {
         $notification = null;
         $department = (new \BO\Zmsdb\Department)->readByScopeId($process->getScopeId(), 2);
-        if ($process->getFirstClient()->hasTelephone() && $department->hasNotificationReminderEnabled()) {
+        if (
+            $process->getFirstClient()->hasTelephone() && 
+            $department && $department->hasNotificationReminderEnabled()
+        ) {
             $config = (new \BO\Zmsdb\Config)->readEntity();
             $entity = (new \BO\Zmsentities\Notification)->toResolvedEntity($process, $config, $department);
             $notification = (new \BO\Zmsdb\Notification)->writeInQueue($entity, $this->dateTime);
