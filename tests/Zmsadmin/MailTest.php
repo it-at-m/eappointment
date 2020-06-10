@@ -69,7 +69,7 @@ class MailTest extends Base
         $response = $this->render($this->arguments, [], []);
         $this->assertContains('message-error', (string)$response->getBody());
         $this->assertContains(
-            'Für einen eMail Versand muss eine gültige eMail-Adresse eingetragen sein.',
+            'Für einen E-Mail Versand muss eine gültige E-Mail-Adresse eingetragen sein.',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
