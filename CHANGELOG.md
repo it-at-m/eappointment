@@ -1,13 +1,13 @@
 ## v2.23.05
 
-* #35916 Eine eingegebene Telefonnummer wird nach erfolgreicher Validierung für den SMS Versand korrekt konvertiert und ins Backend übergeben
-* #43673 Datumsformate in der Öffnungszeiten-Verwaltung werden nun im deutschen Format angezeigt
 * #42786 Nach Freigeben/Sperren des Kiosk erscheint jetzt eine Erfolgsmeldung.
 * #43682 Bugfix: Korrektur der Buttons beim SMS-Versand Formular. Bei zu geringer Monitorauflösung ist das Formular nun scrollbar.
 * #43694 Bugfix: Mandanten Labelbezeichnungen werden wieder angezeigt
 * #43991 Bugfix: Calldisplay Config und Ticketprinter Labelbezeichnungen werden wieder angezeigt
 * #43703 Fehlermeldungen ohne Formatierungen werden nun korrekt formatiert
 * #43763 Bugfix: Erinnerungs-SMS werden nun mit dem richtigen Text versendet
+* #43673 Bugfix: Datumsformate in der Öffnungszeiten-Verwaltung werden nun im deutschen Format angezeigt
+* #35916 Bugfix: Eine eingegebene Telefonnummer wird nach erfolgreicher Validierung für den SMS Versand korrekt konvertiert und ins Backend übergeben
 
 ## v2.23.04
 
