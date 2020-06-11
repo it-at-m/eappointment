@@ -11,7 +11,7 @@ const renderLink = (link, index, onChange, onDeleteClick) => {
     const onChangeTarget = (_, value) => onChange(index, 'target', value)
 
     return (
-        <tr className="link-item">
+        <tr className="link-item"  key={index}>
             <td className="link-item__name">
                 <Inputs.Text
                     name={`${formName}[name]`}
@@ -47,7 +47,7 @@ const renderLink = (link, index, onChange, onDeleteClick) => {
             <td className="link-item__delete">
                 <div className="form-check">
                     <label className="checkboxdeselect link__delete-button">
-                        <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} />
+                        <input type="checkbox" checked={true} onChange={() => {}} onClick={() => onDeleteClick(index)} />
                         <span className="form-check-label">Löschen</span>
                     </label>
                 </div>
@@ -116,10 +116,12 @@ class LinksView extends Component {
             <div className="department-links__list table-responsive-wrapper">
                 <table className="table--base clean">
                     <thead>
-                        <th>Bezeichnung</th>
-                        <th>Link</th>
-                        <th>Im neuen Fenster öffnen</th>
-                        <th>Löschen</th>
+                        <tr>
+                            <th>Bezeichnung</th>
+                            <th>Link</th>
+                            <th>Im neuen Fenster öffnen</th>
+                            <th>Löschen</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {this.state.links.map((link, index) => renderLink(link, index, onChange, onDeleteClick))}
