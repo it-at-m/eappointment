@@ -30,8 +30,12 @@ class ScopeGet extends BaseController
             throw new Exception\Scope\ScopeNotFound();
         }
 
-        if ((new Helper\User($request))->hasRights()) {
-            (new Helper\User($request))->checkRights('basic');
+        $userAccess = new Helper\User($request, 2);
+        if ($userAccess->hasRights()) {
+            $userAccess->checkRights(
+                'scope', 
+                new \BO\Zmsentities\Useraccount\EntityAccess($scope)
+            );
         } else {
             $scope = $scope->withLessData($keepLessData);
             $message->meta->reducedData = true;
