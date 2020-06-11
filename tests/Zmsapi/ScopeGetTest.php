@@ -23,7 +23,9 @@ class ScopeGetTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('scope');
+        $department = (new \BO\Zmsentities\Department());
+        $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
+        $this->setWorkstation()->getUseraccount()->setRights('scope')->addDepartment($department);
         $response = $this->render(['id' => self::SCOPE_ID], [], []); //Pankow
         $this->assertContains('scope.json', (string)$response->getBody());
         $this->assertNotContains('"reducedData"', (string)$response->getBody());
@@ -32,7 +34,9 @@ class ScopeGetTest extends Base
 
     public function testWithIsOpenedParamter()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('scope');
+        $department = (new \BO\Zmsentities\Department());
+        $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
+        $this->setWorkstation()->getUseraccount()->setRights('scope')->addDepartment($department);
         $response = $this->render(['id' => self::SCOPE_ID], ['getIsOpened' => 1], []); //Pankow
         $this->assertContains('isOpened', (string)$response->getBody());
         $this->assertContains('scope.json', (string)$response->getBody());

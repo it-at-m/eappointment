@@ -37,7 +37,7 @@ class DepartmentAddClusterTest extends Base
     public function testNoRights()
     {
         $this->setWorkstation()->getUseraccount()->setRights('department');
-        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingDepartment');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->expectExceptionCode(403);
         $this->render(['id' => 72], [
             '__body' => '{
