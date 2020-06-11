@@ -55,7 +55,7 @@
     {% endfor %}
     </tbody>
 </table>
-{% if showAll %}
+{% if showAll and years|length > 3 %}
 <div class="table-actions report-period--show-all" id="report-period--show-all">
     <a href="#">Alle Jahre anzeigen</a>
 </div>
