@@ -26,7 +26,7 @@ class AvailabilityListByScope extends BaseController
             throw new Exception\Scope\ScopeNotFound();
         }
         (new Helper\User($request, 2))->checkRights(
-            'availability', 
+            'availability',
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
         );
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
