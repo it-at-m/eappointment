@@ -95,6 +95,12 @@ class DepartmentTest extends Base
                   'url' => '',
                 ),
             ),
+            'dayoff' => array(
+                array(
+                  'name' => '',
+                  'date' => '01.04.2016',
+                ),
+            ),
             'save' => 'save'
         ], [], 'POST');
         $this->assertRedirect($response, '/department/74/?success=department_saved');

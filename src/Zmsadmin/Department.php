@@ -27,8 +27,9 @@ class Department extends BaseController
         $organisation = \App::$http->readGetResult('/department/' . $entityId . '/organisation/')->getEntity();
         $input = $request->getParsedBody();
 
-        if (array_key_exists('save', (array) $input)) {
-            $input = $this->cleanupLinks($input);
+        if ($request->isPost()) {
+            $input = $this->withCleanupLinks($input);
+            $input = $this->withCleanupDayoffs($input);
             $entity =  new Entity($input);
             $entity->id = $entityId;
             $entity->dayoff = $entity->getDayoffList()->withTimestampFromDateformat();
@@ -55,7 +56,7 @@ class Department extends BaseController
         );
     }
 
-    protected function cleanupLinks(array $input)
+    protected function withCleanupLinks(array $input)
     {
         $links = $input['links'];
 
@@ -66,6 +67,16 @@ class Department extends BaseController
         foreach ($input['links'] as $index => $link) {
             $input['links'][$index]['target'] = ($link['target']) ? 1 : 0;
         }
+
+        return $input;
+    }
+
+    protected function withCleanupDayoffs(array $input)
+    {
+        $dayoffs = $input['dayoff'];
+        $input['dayoff'] = array_filter($dayoffs, function ($dayoff) {
+            return !($dayoff['name'] === '');
+        });
 
         return $input;
     }

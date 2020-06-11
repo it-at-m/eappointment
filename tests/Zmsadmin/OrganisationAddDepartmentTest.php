@@ -73,6 +73,12 @@ class OrganisationAddDepartmentTest extends Base
                     'url' => 'unittest.de'
                 ]
             ),
+            'dayoff' => array(
+                array(
+                  'name' => '',
+                  'date' => '01.04.2016',
+                ),
+            ),
             'save' => 'save',
             '__file' => array(
                 'uploadCallDisplayImage' => new \Slim\Http\UploadedFile(
