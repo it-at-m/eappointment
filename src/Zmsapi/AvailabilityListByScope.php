@@ -21,6 +21,10 @@ class AvailabilityListByScope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $startDateFormatted = Validator::param('startDate')->isString()->getValue();
+        $endDateFormatted = Validator::param('endDate')->isString()->getValue();
+
         $scope = (new \BO\Zmsdb\Scope)->readEntity($args['id'], $resolveReferences - 1);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
@@ -29,11 +33,7 @@ class AvailabilityListByScope extends BaseController
             'availability',
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
         );
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $reserveEntityIds = Validator::param('reserveEntityIds')->isNumber()->setDefault(0)->getValue();
-        $startDateFormatted = Validator::param('startDate')->isString()->getValue();
-        $endDateFormatted = Validator::param('endDate')->isString()->getValue();
-
+       
         $startDate = ($startDateFormatted) ? new \BO\Zmsentities\Helper\DateTime($startDateFormatted) : null;
         $endDate = ($endDateFormatted) ? new \BO\Zmsentities\Helper\DateTime($endDateFormatted) : null;
         
