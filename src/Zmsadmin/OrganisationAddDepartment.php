@@ -23,8 +23,9 @@ class OrganisationAddDepartment extends BaseController
         $input = $request->getParsedBody();
         $organisationId = Validator::value($args['id'])->isNumber()->getValue();
         $organisation = \App::$http->readGetResult('/organisation/' . $organisationId . '/')->getEntity();
-        if (is_array($input) && array_key_exists('save', $input)) {
-            $input = $this->cleanupLinks($input);
+        if ($request->isPost()) {
+            $input = $this->withCleanupLinks($input);
+            $input = $this->withCleanupDayoffs($input);
             $entity = (new Entity($input))->withCleanedUpFormData();
             $entity->dayoff = $entity->getDayoffList()->withTimestampFromDateformat();
             $department = \App::$http->readPostResult('/organisation/'. $organisationId .'/department/', $entity)
@@ -53,12 +54,22 @@ class OrganisationAddDepartment extends BaseController
         );
     }
 
-    protected function cleanupLinks(array $input)
+    protected function withCleanupLinks(array $input)
     {
         $links = $input['links'];
 
         $input['links'] = array_filter($links, function ($link) {
             return !($link['name'] === '' && $link['url'] == '');
+        });
+
+        return $input;
+    }
+
+    protected function withCleanupDayoffs(array $input)
+    {
+        $dayoffs = $input['dayoff'];
+        $input['dayoff'] = array_filter($dayoffs, function ($dayoff) {
+            return !($dayoff['name'] === '');
         });
 
         return $input;
