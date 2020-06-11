@@ -3,6 +3,7 @@
 * #37064 Das Versenden von Umfrage-Mails wurde korrigiert
 * #43763 Das Absagen von Vorgängen wird bei SMS und Mailbestätigungen nicht mehr hochgezählt.
 * #44167 Öffnungszeiten können nur noch bearbeitet werden, wenn die notwendigen Rechte vorliegen und der Nutzer dem Standort zugeordnet ist
+* #44164 Die Bearbeitung eines Standortes ist nur noch für User mit entsprechenden Rechten möglich
 
 ## v2.23.04
 
