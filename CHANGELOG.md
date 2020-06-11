@@ -1,5 +1,6 @@
 ## v2.23.05
 
+* #44173 Bugfix: Freie Tage werden nun nur noch angelegt, wenn ein Name vergeben worden ist
 * #42786 Nach Freigeben/Sperren des Kiosk erscheint jetzt eine Erfolgsmeldung.
 * #43682 Bugfix: Korrektur der Buttons beim SMS-Versand Formular. Bei zu geringer Monitorauflösung ist das Formular nun scrollbar.
 * #43694 Bugfix: Mandanten Labelbezeichnungen werden wieder angezeigt
