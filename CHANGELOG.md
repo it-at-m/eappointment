@@ -1,3 +1,7 @@
+## v2.23.05
+
+* #44170 Der Link "alle Jahre anzeigen" wird nun nur noch angezeigt, wenn mehr als 3 Jahre auswählbar sind
+
 ## v2.23.04
 
 * #42678 Anpassungen an das Layout für barrierefreiheit
