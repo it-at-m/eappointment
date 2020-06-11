@@ -33,7 +33,7 @@ class ScopeGet extends BaseController
         $userAccess = new Helper\User($request, 2);
         if ($userAccess->hasRights()) {
             $userAccess->checkRights(
-                'scope', 
+                'scope',
                 new \BO\Zmsentities\Useraccount\EntityAccess($scope)
             );
         } else {
