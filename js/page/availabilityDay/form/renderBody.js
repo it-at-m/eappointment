@@ -14,7 +14,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
             <form className="form--base">
                 
                     <FormGroup>
-                        <Label attributes={{"htmlFor": "AvDayDescription"}}>Anmerkung</Label> 
+                        <Label attributes={{"htmlFor": "AvDayDescription"}} value="Anmerkung"></Label> 
                         <Controls>
                             <Inputs.Text 
                                 attributes={{ "id": "AvDayDescription", "aria-describedby": "help_AvDayDescription" }}
@@ -28,7 +28,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                         </Controls>
                     </FormGroup>
                     <FormGroup>
-                        <Label attributes={{"htmlFor": "AvDayType"}}>Typ</Label>
+                        <Label attributes={{"htmlFor": "AvDayType"}} value="Typ"></Label>
                         <Controls>
                             <Inputs.Select name="type"
                                 attributes={{ disabled: data.id ? 'disabled' : null, "id": "AvDayType" }}
@@ -41,7 +41,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                         </Controls>
                     </FormGroup>
                     <FormGroup>
-                        <Label attributes={{"htmlFor": "AvDaySeries"}}>Serie</Label>
+                        <Label attributes={{"htmlFor": "AvDaySeries"}} value="Serie"></Label>
                         <Controls>
                             <Inputs.Select 
                                 name="repeat"
@@ -97,11 +97,11 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                     <fieldset>
                         <legend className="label">Datum</legend>
                         <FormGroup inline={true}>
-                            <Label attributes={{"htmlFor": "AvDayStartdate", "className": "light"}}>Startdatum:</Label> 
+                            <Label attributes={{"htmlFor": "AvDayStartdate", "className": "light"}} value="Startdatum:"></Label> 
                             <Controls>
                                 <Inputs.Date attributes={{ "id": "AvDayStartdate" }} name="startDate" value={data.startDate} {...{ onChange }} />
                             </Controls>
-                            <Label attributes={{"htmlFor": "AvDayEnddate", "className": "light"}}>Enddatum:</Label> 
+                            <Label attributes={{"htmlFor": "AvDayEnddate", "className": "light"}} value="Enddatum:"></Label> 
                             <Controls>
                                 <Inputs.Date attributes={{ "id": "AvDayEnddate" }} name="endDate" value={data.endDate} {...{ onChange }} />
                             </Controls>
@@ -117,15 +117,14 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                                     width="1"
                                     attributes={{ maxLength: 3, "id": "AvDaySlottime" }}
                                     {...{ onChange }} />
-                                <Label attributes={{"htmlFor": "AvDaySlottime", "className": "light"}}>Minuten Abstand zweier aufeinander folgender Termine</Label>
+                                <Label attributes={{"htmlFor": "AvDaySlottime", "className": "light"}} value="Minuten Abstand zweier aufeinander folgender Termine"></Label>
                             </Controls>
                         </FormGroup>
                         <FormGroup inline={true} className="form-check">    
                             <Controls>
                                 <Label>
                                     <Inputs.Checkbox name="multipleSlotsAllowed"
-                                        checked={true == data.multipleSlotsAllowed} {...{ onChange }} />
-                                    Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen
+                                        checked={true == data.multipleSlotsAllowed} {...{ onChange }} value="Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen"/>
                                 </Label>
                             </Controls>
                         </FormGroup>
@@ -135,7 +134,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                         <legend className="label">Buchbar</legend>
                         <FormGroup inline={true}>
                             <Controls>
-                                <Label attributes={{"htmlFor": "AvDayOpenfrom", "className": "light"}}>von</Label> 
+                                <Label attributes={{"htmlFor": "AvDayOpenfrom", "className": "light"}} value="von"></Label> 
                                 <Inputs.Text name="open_from"
                                     width="1"
                                     value={data.open_from}
@@ -144,7 +143,8 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                                 />
                             </Controls>
                             <Controls>
-                                <Label attributes={{"htmlFor": "AvDayOpento", "className": "light"}}>bis</Label> 
+                                <Label attributes={{"htmlFor": "AvDayOpento", "className": "light"}} value="bis">
+                                </Label> 
                                     <Inputs.Text name="open_to"
                                     width="1"
                                     value={data.open_to}
@@ -163,7 +163,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                     {data.type !== 'openinghours' ?
                         <div>
                             <FormGroup>
-                                <Label attributes={{"htmlFor": "WsCountIntern"}}>Insgesamt</Label>
+                                <Label attributes={{"htmlFor": "WsCountIntern"}} value="Insgesamt"></Label>
                                 <Controls>
                                     <Inputs.Select name="workstationCount_intern"
                                         value={data.workstationCount_intern}
@@ -179,7 +179,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                             </FormGroup>
 
                             <FormGroup>
-                                <Label attributes={{"htmlFor": "WsCountCallcenter"}}>Callcenter</Label>
+                                <Label attributes={{"htmlFor": "WsCountCallcenter"}} value="Callcenter"></Label>
                                 <Controls>
                                     <Inputs.Select name="workstationCount_callcenter"
                                         value={data.workstationCount_callcenter}
@@ -196,7 +196,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                             </FormGroup>
 
                             <FormGroup>
-                                <Label attributes={{"htmlFor": "WsCountPublic"}}>Internet</Label>
+                                <Label attributes={{"htmlFor": "WsCountPublic"}} value="Internet"></Label>
                                 <Controls>
                                     <Inputs.Select name="workstationCount_public"
                                         value={data.workstationCount_public}
