@@ -25,6 +25,7 @@ class PickupSpreadSheetTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/process/pickup/',
+                    'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ],
                 [
@@ -55,6 +56,7 @@ class PickupSpreadSheetTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/process/pickup/',
+                    'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ],
                 [
