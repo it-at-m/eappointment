@@ -65,7 +65,7 @@ class ProcessReserve extends BaseController
 
     public static function getValidatedForm($validator, $process)
     {
-        $processValidator = new ProcessValidator($process);
+        $processValidator = new ProcessValidator(clone $process);
         $delegatedProcess = $processValidator->getDelegatedProcess();
         $processValidator
             ->validateName(
