@@ -8,6 +8,7 @@ use \BO\Zmsentities\Helper\Property;
 /**
  * @SuppressWarnings(Complexity)
  * @SuppressWarnings(Public)
+ * @SuppressWarnings(Coupling)
  *
  */
 class ProcessList extends Base
@@ -237,6 +238,18 @@ class ProcessList extends Base
             }
         }
         return $processList;
+    }
+
+    public function withAccess(\BO\Zmsentities\Useraccount $useraccount)
+    {
+        $list = new static();
+        foreach ($this as $process) {
+            $process = clone $process;
+            if ($process->getCurrentScope()->hasAccess($useraccount)) {
+                $list[] = $process;
+            }
+        }
+        return $list;
     }
 
     public function withScopeId($scopeId)
