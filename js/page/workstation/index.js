@@ -217,6 +217,9 @@ class View extends BaseView {
         stopEvent(event);
         showSpinner(scope.$main);
         const sendData = scope.$main.find('form').serializeArray();
+        if (this.selectedProcess) { 
+            sendData.push({ name: 'selectedprocess', value: this.selectedProcess });
+        }
         this.loadCall(`${this.includeUrl}/process/queue/`, 'POST', sendData, false, scope.$main).then((response) => {
             var validator = new ValidationHandler(scope, { response: response });
             if (validator.hasErrors()) {
