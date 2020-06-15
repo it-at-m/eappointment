@@ -21,7 +21,7 @@ class ProcessSearch extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
+        $workstation = (new Helper\User($request, 2))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $lessResolvedData = Validator::param('lessResolvedData')->isNumber()->setDefault(0)->getValue();
         $limit = Validator::param('limit')->isNumber()->setDefault(100)->getValue();
@@ -36,7 +36,7 @@ class ProcessSearch extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = $processList;
+        $message->data = $processList->withAccess($workstation->getUseraccount());
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
