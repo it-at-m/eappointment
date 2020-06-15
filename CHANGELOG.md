@@ -9,7 +9,8 @@
 * #43763 Bugfix: Erinnerungs-SMS werden nun mit dem richtigen Text versendet
 * #43673 Bugfix: Datumsformate in der Öffnungszeiten-Verwaltung werden nun im deutschen Format angezeigt
 * #35916 Bugfix: Eine eingegebene Telefonnummer wird nach erfolgreicher Validierung für den SMS Versand korrekt konvertiert und ins Backend übergeben
-* #44152 Bugfix: Ein Spontankunde kann nun in einen Terminkunden umgewandelt werden
+* #44152 Ein Spontankunde kann nun in einen Terminkunden umgewandelt werden
+* #44155 Ein Terminkunde kann nun in einen Spontankunde umgewandelt werden
 
 ## v2.23.04
 

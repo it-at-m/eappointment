@@ -51,7 +51,7 @@ class WorkstationProcessCalledTest extends Base
             'exclude' => 82252
         ], []);
         $this->assertContains(
-            'Dieser Arbeitsplatz hat schon einen Termin aufgerufen. Dieser wird weiterhin verwendet.',
+            'Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen. Dieser wird weiterhin verwendet.',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
