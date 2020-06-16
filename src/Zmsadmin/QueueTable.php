@@ -60,6 +60,7 @@ class QueueTable extends BaseController
                 'changedProcess' => $changedProcess,
                 'success' => $success,
                 'debug' => \App::DEBUG,
+                'allowClusterWideCall' => \App::$allowClusterWideCall
             )
         );
     }
