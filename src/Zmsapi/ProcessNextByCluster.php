@@ -22,17 +22,26 @@ class ProcessNextByCluster extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
+        $workstation = (new Helper\User($request, 1))->checkRights();
         $query = new Query();
         $selectedDate = Validator::param('date')->isString()->getValue();
+        $allowClusterWideCall = Validator::param('allowClusterWideCall')->isBool()->getValue();
         $dateTime = ($selectedDate) ? new DateTime($selectedDate) : \App::$now;
         $cluster = $query->readEntity($args['id']);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
         $queueList = $query->readQueueList($cluster->id, $dateTime, 1);
-        $process = $queueList->getNextProcess($dateTime);
 
+        if ($allowClusterWideCall) {
+            $queueList = $queueList
+            ->toProcessList()
+            ->withScopeId($workstation->getScope()->getId())
+            ->toQueueList($dateTime);
+        }
+        
+        $process = $queueList->getNextProcess($dateTime);
+        
         $message = Response\Message::create($request);
         $message->data = $process;
 
