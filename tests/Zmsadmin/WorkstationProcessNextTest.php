@@ -88,6 +88,7 @@ class WorkstationProcessNextTest extends Base
     public function testRenderingClusterEnabledWithExcludeIds()
     {
         \App::$now = new \DateTimeImmutable('2016-04-01 08:55:00', new \DateTimeZone('Europe/Berlin'));
+        \App::$allowClusterWideCall = false;
         $this->setApiCalls(
             [
                 [
@@ -105,7 +106,7 @@ class WorkstationProcessNextTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/cluster/109/queue/next/',
-                    'parameters' => ['exclude' => '999999'],
+                    'parameters' => ['exclude' => '999999','allowClusterWideCall' => false],
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ],
                 [

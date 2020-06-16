@@ -60,7 +60,10 @@ class ClusterHelper
         if (static::isClusterEnabled()) {
             $nextProcess =  \App::$http->readGetResult(
                 '/cluster/'. static::$cluster['id'] .'/queue/next/',
-                ['exclude' => $excludedIds]
+                [
+                    'exclude' => $excludedIds,
+                    'allowClusterWideCall' => \App::$allowClusterWideCall
+                ]
             )->getEntity();
         } else {
             $nextProcess = \App::$http->readGetResult(

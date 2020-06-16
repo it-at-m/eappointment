@@ -18,6 +18,13 @@ class Application extends \BO\Slim\Application
     const TWIG_CACHE = '/cache/';
 
     public static $includeUrl = '/terminvereinbarung/admin';
+
+    /**
+     * allow cluster wide process calls
+     */
+
+    public static $allowClusterWideCall = false;
+    
     /**
      * language preferences
      */
