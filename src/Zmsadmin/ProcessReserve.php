@@ -65,7 +65,7 @@ class ProcessReserve extends BaseController
 
     public static function getValidatedForm($validator, $process)
     {
-        $processValidator = new ProcessValidator(clone $process);
+        $processValidator = new ProcessValidator($process);
         $delegatedProcess = $processValidator->getDelegatedProcess();
         $processValidator
             ->validateName(
@@ -107,8 +107,9 @@ class ProcessReserve extends BaseController
                     $validator->getParameter('sendReminder')->isNumber()->isNotEqualTo(1)
                 )
             )
-            
         ;
+
+        error_log((string)$process);
         $processValidator->getCollection()->addValid(
             $validator->getParameter('sendConfirmation')->isNumber(),
             $validator->getParameter('sendReminder')->isNumber()
