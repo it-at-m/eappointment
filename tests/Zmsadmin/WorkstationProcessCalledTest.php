@@ -14,6 +14,7 @@ class WorkstationProcessCalledTest extends Base
 
     public function testRendering()
     {
+        \App::$allowClusterWideCall = false;
         $this->setApiCalls(
             [
                 [
@@ -25,6 +26,7 @@ class WorkstationProcessCalledTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/process/called/',
+                    'parameters' => ['allowClusterWideCall' => false],
                     'response' => $this->readFixture("GET_workstation_with_process_called.json")
                 ]
             ]
