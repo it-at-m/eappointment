@@ -109,7 +109,6 @@ class ProcessReserve extends BaseController
             )
         ;
 
-        error_log((string)$process);
         $processValidator->getCollection()->addValid(
             $validator->getParameter('sendConfirmation')->isNumber(),
             $validator->getParameter('sendReminder')->isNumber()
