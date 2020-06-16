@@ -29,11 +29,14 @@ class WorkstationProcess extends BaseController
         $workstation = (new Helper\User($request, 1))->checkRights();
         $process = $workstation->process;
         $input = Validator::input()->isJson()->assertValid()->getValue();
+        $allowClusterWideCall = Validator::param('allowClusterWideCall')->isBool()->setDefault(false)->getValue();
         $entity = new \BO\Zmsentities\Process($input);
         if (!$process || !$process->hasId() || $process->id == $entity->id) {
             $process = (new Process)->readEntity($entity['id'], new \BO\Zmsdb\Helper\NoAuth());
             $this->testProcess($process);
-            $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
+            if (! $allowClusterWideCall) {
+                $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
+            }
         } else {
             $exception = new Exception\Workstation\WorkstationHasAssignedProcess();
             $exception->data = ['process' => $entity];
