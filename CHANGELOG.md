@@ -11,6 +11,7 @@
 * #35916 Bugfix: Eine eingegebene Telefonnummer wird nach erfolgreicher Validierung für den SMS Versand korrekt konvertiert und ins Backend übergeben
 * #44152 Ein Spontankunde kann nun in einen Terminkunden umgewandelt werden
 * #44155 Ein Terminkunde kann nun in einen Spontankunde umgewandelt werden
+* #44176 Bei der Clusteransicht werden nur noch die Vorgänge aufrufbar, die zum Standort gehören, an dem der Sachbearbeiter angemeldet ist (über Config änderbar)
 
 ## v2.23.04
 
