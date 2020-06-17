@@ -40,7 +40,6 @@ class View extends BaseView {
         const data = this.data;
         let length = 30;  // set to the number of characters you want to keep
         let trimmedName = (data.name.length > length) ? data.name.substr(0, length-1) + '...' : data.name;
-        console.log(this.$main);
         this.$main.find('.header-scope-name').text(trimmedName)
         this.$main.find('.header-scope-title').attr('title', data.name)
     }
