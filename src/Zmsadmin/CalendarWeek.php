@@ -38,7 +38,7 @@ class CalendarWeek extends BaseController
         $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
         $cluster = $workstationRequest->readCluster();
         $calendar = new Helper\Calendar(null, $selectedWeek, $selectedYear);
-        $dayList = $calendar->readWeekDayListWithProcessList($workstation->getScopeList());
+        $dayList = $calendar->readWeekDayListWithProcessList($workstation->getScopeList($cluster));
         //var_dump($dayList);exit;
 
         // rendering
