@@ -12,6 +12,7 @@
 * #44152 Ein Spontankunde kann nun in einen Terminkunden umgewandelt werden
 * #44155 Ein Terminkunde kann nun in einen Spontankunde umgewandelt werden
 * #44176 Bei der Clusteransicht werden nur noch die Vorgänge aufrufbar, die zum Standort gehören, an dem der Sachbearbeiter angemeldet ist (über Config änderbar)
+* #44161 Der Standortname im Header wird nun bei Auswahl eines Cluster-Standortes geändert
 
 ## v2.23.04
 
