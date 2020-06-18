@@ -103,22 +103,36 @@ class AvailabilityPage extends Component {
         const state = stateParam ? stateParam : this.state
         const sendData = state.availabilitylist.map(availability => {
             const sendAvailability = Object.assign({}, availability)
-            if (availability.tempId) {
+            if (sendAvailability.tempId) {
                 delete sendAvailability.tempId
             }
-
+            if (sendAvailability.fromException) { 
+                const dependingAvailability = state.availabilitylist.find(item => item.__modified === true) 
+                const selectedStartDate = moment(dependingAvailability.startDate, 'X').startOf('day');
+                const selectedEndDate = moment(dependingAvailability.endDate, 'X').startOf('day');
+                if ('past' == sendAvailability.fromException) {
+                    sendAvailability.endDate = selectedStartDate.clone().subtract(1, 'days').unix();
+                    delete sendAvailability.fromException;
+                    //console.log('past', availability.startDate, availability.endDate)
+                }
+                if ('future' == sendAvailability.fromException) {
+                    sendAvailability.startDate = selectedEndDate.clone().add(1, 'days').unix();
+                    delete sendAvailability.fromException;
+                    //console.log('future', availability.startDate, availability.endDate)
+                }
+            }
+            
             return sendAvailability
         }).map(cleanupAvailabilityForSave)
 
         console.log('Saving updates', sendData)
-
         $.ajax(`${this.props.links.includeurl}/availability/`, {
             method: 'POST',
             data: JSON.stringify(sendData)
         }).done((success) => {
             console.log('save success', success)
             this.setState({
-                lastSave: new Date()
+                lastSave: new Date().getTime()
             })
             this.refreshData()
         }).fail((err) => {
@@ -175,13 +189,10 @@ class AvailabilityPage extends Component {
             this.setState({ errors: validationResult.errors })
             this.handleFocus(this.errorElement);
         }
-
         const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
-        const yesterday = selectedDay.clone().subtract(1, 'days')
-        const tomorrow = selectedDay.clone().add(1, 'days')
 
         const pastAvailability = Object.assign({}, availability, {
-            endDate: parseInt(yesterday.format('X'), 10)
+            fromException: 'past'
         })
 
         const exceptionAvailability = Object.assign({}, availability, {
@@ -189,13 +200,13 @@ class AvailabilityPage extends Component {
             endDate: parseInt(selectedDay.format('X'), 10),
             tempId: tempId(),
             id: null,
-            description: `Ausnahme für ${formatTimestampDate(this.props.timestamp)}`
+            description: `Ausnahme für ${availability.id}`
         })
 
         const futureAvailability = Object.assign({}, availability, {
-            startDate: parseInt(tomorrow.format('X'), 10),
             tempId: tempId(),
-            id: null
+            id: null,
+            fromException: 'future'
         })
 
         this.setState(Object.assign(
@@ -207,6 +218,7 @@ class AvailabilityPage extends Component {
             ]),
             { selectedAvailability: exceptionAvailability, formTitle: "Ausnahme-Öffnungszeit" }
         ))
+
     }
 
     onEditAvailabilityInFuture(availability) {

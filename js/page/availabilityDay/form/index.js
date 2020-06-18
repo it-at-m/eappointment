@@ -149,13 +149,10 @@ class AvailabilityForm extends Component {
     }
 
     render() {
-
-
         const { data, errors } = this.state
         const onChange = (name, value) => {
             this.handleChange(name, value)
         }
-
 
         const onSave = (ev) => {
             ev.preventDefault()
