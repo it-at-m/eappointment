@@ -32,9 +32,9 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                         <Controls>
                             <Inputs.Select name="type"
                                 attributes={{ disabled: data.id ? 'disabled' : null, "id": "AvDayType" }}
-                                value={data.type} {...{ onChange }}
+                                value={data.type ? data.type : 0} {...{ onChange }}
                                 options={[
-                                    { value: "", name: "--Bitte wählen--" },
+                                    { value: "0", name: "--Bitte wählen--" },
                                     { value: "openinghours", name: "Spontankunden" },
                                     { value: "appointment", name: "Terminkunden" },
                                 ]} />
