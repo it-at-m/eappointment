@@ -1,10 +1,10 @@
 ## v2.23.05
 
-* #37064 Das Versenden von Umfrage-Mails wurde korrigiert
-* #43763 Das Absagen von Vorgängen wird bei SMS und Mailbestätigungen nicht mehr hochgezählt.
-* #44167 Öffnungszeiten können nur noch bearbeitet werden, wenn die notwendigen Rechte vorliegen und der Nutzer dem Standort zugeordnet ist
-* #44164 Die Bearbeitung eines Standortes ist nur noch für User mit entsprechenden Rechten möglich
-* #44158 Suchergebnisse werden jetzt so gefiltert, dass ein Sachbearbeiter nur die Ergebnisse erhält, die der zugeordneten Behörde entsprechen
+* #37064 Das Versenden von Umfrage-Mails wurde aus der API in die entsprechenden Repos verschoben
+* #43763 Bugfix: Das Absagen von Vorgängen wird bei SMS und Mailbestätigungen nicht mehr hochgezählt.
+* #44167 Bugfix: Öffnungszeiten können nur noch bearbeitet werden, wenn die notwendigen Rechte vorliegen und der Nutzer dem Standort zugeordnet ist
+* #44164 Bugfix: Die Bearbeitung eines Standortes ist nur noch für User mit entsprechenden Rechten möglich
+* #44158 Bugfix: Suchergebnisse werden jetzt so gefiltert, dass ein Sachbearbeiter nur die Ergebnisse erhält, die der zugeordneten Behörde entsprechen
 
 ## v2.23.04
 
