@@ -1,7 +1,7 @@
 ## v2.23.05
 
-* #43763 Zum Versand von Mails und SMS wird der Status eines Termins nicht mehr verwendet.
-* #43766 Bugfix: Im Cronjob zum automatischen Versand von Erinnerungs-SMS wurde ein datetime Fehler behoben.
+* #43763 Bugfix: Für Erinnerungs-SMS wird nicht mehr der Text für Bestätigungen verwendet.
+* #43766 Bugfix: Im Cronjob zum automatischen Versand von Erinnerungs-SMS wurde ein Datumsfehler behoben.
 
 ## v2.23.04
 
