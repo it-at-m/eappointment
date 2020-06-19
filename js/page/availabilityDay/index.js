@@ -102,28 +102,8 @@ class AvailabilityPage extends Component {
 
         const state = stateParam ? stateParam : this.state
         const sendData = state.availabilitylist.map(availability => {
-            const sendAvailability = Object.assign({}, availability)
-            if (sendAvailability.tempId) {
-                delete sendAvailability.tempId
-            }
-            if (sendAvailability.fromException) { 
-                const dependingAvailability = state.availabilitylist.find(item => item.__modified === true) 
-                const selectedStartDate = moment(dependingAvailability.startDate, 'X').startOf('day');
-                const selectedEndDate = moment(dependingAvailability.endDate, 'X').startOf('day');
-                if ('past' == sendAvailability.fromException) {
-                    sendAvailability.endDate = selectedStartDate.clone().subtract(1, 'days').unix();
-                    delete sendAvailability.fromException;
-                    //console.log('past', availability.startDate, availability.endDate)
-                }
-                if ('future' == sendAvailability.fromException) {
-                    sendAvailability.startDate = selectedEndDate.clone().add(1, 'days').unix();
-                    delete sendAvailability.fromException;
-                    //console.log('future', availability.startDate, availability.endDate)
-                }
-            }
-            
-            return sendAvailability
-        }).map(cleanupAvailabilityForSave)
+            return this.withExceptionIfExist(state, availability)
+        }).map(cleanupAvailabilityForSave).filter(Boolean)
 
         console.log('Saving updates', sendData)
         $.ajax(`${this.props.links.includeurl}/availability/`, {
@@ -143,6 +123,22 @@ class AvailabilityPage extends Component {
                 console.log('save error', err)
             }
         })
+    }
+
+    withExceptionIfExist(state, availability){
+        const sendAvailability = Object.assign({}, availability)
+        if (availability.fromException) { 
+            const dependingAvailability = state.availabilitylist.find(item => item.__modified === true) 
+            const selectedStartDate = moment(dependingAvailability.startDate, 'X').startOf('day');
+            const selectedEndDate = moment(dependingAvailability.endDate, 'X').startOf('day');
+            if ('past' == sendAvailability.fromException) {
+                sendAvailability.endDate = selectedStartDate.clone().subtract(1, 'days').unix();
+            }
+            if ('future' == sendAvailability.fromException) {
+                sendAvailability.startDate = selectedEndDate.clone().add(1, 'days').unix();
+            }
+        }
+        return sendAvailability;
     }
 
 
