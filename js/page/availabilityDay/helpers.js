@@ -110,16 +110,24 @@ export const cleanupAvailabilityForSave = availability => {
     const newAvailability = Object.assign({}, availability)
 
     if (newAvailability.busySlots) {
-        delete newAvailability.busySlots
+        delete newAvailability.busySlots;
     }
 
     if (newAvailability.maxSlots) {
-        delete newAvailability.maxSlots
+        delete newAvailability.maxSlots;
     }
 
     if (newAvailability.__modified) {
-        delete newAvailability.__modified
+        delete newAvailability.__modified;
     }
 
-    return newAvailability
+    if (newAvailability.tempId) {
+        delete newAvailability.tempId;
+    }
+
+    if (newAvailability.fromException) {
+        delete newAvailability.fromException;
+    }
+
+    return newAvailability;
 }
