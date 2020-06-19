@@ -106,6 +106,10 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
     return newAvailability
 }
 
+export const filterEmptyAvailability = (availability) => {
+    return availability.startDate != null && availability.endDate != null
+}
+
 export const cleanupAvailabilityForSave = availability => {
     const newAvailability = Object.assign({}, availability)
 

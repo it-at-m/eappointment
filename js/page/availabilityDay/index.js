@@ -103,7 +103,7 @@ class AvailabilityPage extends Component {
         const state = stateParam ? stateParam : this.state
         const sendData = state.availabilitylist.map(availability => {
             return this.withExceptionIfExist(state, availability)
-        }).map(cleanupAvailabilityForSave).filter(Boolean)
+        }).map(cleanupAvailabilityForSave).filter(filterEmptyAvailability)
 
         console.log('Saving updates', sendData)
         $.ajax(`${this.props.links.includeurl}/availability/`, {
