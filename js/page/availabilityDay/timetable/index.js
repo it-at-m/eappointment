@@ -1,19 +1,17 @@
+
 import React from 'react'
-import PropTypes from 'prop-types'
-
-import moment from 'moment/min/moment-with-locales';
-moment.locale('de')
-
-import Board from '../layouts/board'
-import TimeTableBodyLayout from '../layouts/timeTableBody'
-import calendarNavigation from '../widgets/calendarNavigation'
-
 import ConflictTimeBar from '../widgets/timeBars/conflict'
 import AppointmentTimeBar from '../widgets/timeBars/appointment'
 import NumberOfAppointmentsTimeBar from '../widgets/timeBars/numberOfAppointments'
 import OpeningTimebar from '../widgets/timeBars/opening'
 
-const headerRight = (links, onNewClick) => {
+export const headerMiddle = () => {
+    return (
+        <span className="middle"></span>
+    )
+}
+
+export const headerRight = (links, onNewClick) => {
     return (
         <span className="right">
             <a href={links.monthView}>zurück zur Monatsansicht</a>
@@ -22,62 +20,21 @@ const headerRight = (links, onNewClick) => {
     )
 }
 
-const renderConflicts = conflicts => conflicts
-    .map((data, key) => <ConflictTimeBar key={key} {...{ key, data }} />)
+export const renderConflicts = (conflicts) => {return conflicts
+    .map((data, key) => <ConflictTimeBar key={key} {...{ key, data }} />)}
 
-const renderNumberOfAppointments = (items) => items
+export const renderNumberOfAppointments = (items) => {return items
     .filter(item => item.type === 'appointment')
-    .map((data, key) => <NumberOfAppointmentsTimeBar key={key} {...{ key, data }} />)
+    .map((data, key) => <NumberOfAppointmentsTimeBar key={key} {...{ key, data }} />)}
 
 
-const renderAppointments = (items, maxWorkstationCount, onSelect) => items
+export const renderAppointments = (items, maxWorkstationCount, onSelect) => {return items
     .filter(item => item.type === 'appointment')
-    .map((data, key) => <AppointmentTimeBar key={key} {...{ key, data, maxWorkstationCount, onSelect }} />)
+    .map((data, key) => <AppointmentTimeBar key={key} {...{ key, data, maxWorkstationCount, onSelect }} />)}
 
 
-const renderOpenings = (items, onSelect) => items
+export const renderOpenings = (items, onSelect) => {return items
     .filter(item => item.type === "openinghours")
-    .map((data, key) => <OpeningTimebar key={key} {...{ key, data, onSelect }} />)
+    .map((data, key) => <OpeningTimebar key={key} {...{ key, data, onSelect }} />)}
 
-const renderFooter = () => <small>Zum Bearbeiten einer Öffnungszeit, bitte auf den entsprechenden blauen oder grünen Zeitstrahl klicken.</small>
-
-const TimeTable = (props) => {
-    const { onSelect, timestamp } = props;
-    const titleTime = moment(timestamp, 'X').format('dddd, DD.MM.YYYY')
-    const timeTableBody = <TimeTableBodyLayout
-        showConflicts={props.conflicts.length > 0}
-        conflicts={renderConflicts(props.conflicts)}
-        appointments={renderAppointments(props.availabilities, props.maxWorkstationCount, onSelect)}
-        numberOfAppointments={renderNumberOfAppointments(props.availabilityListSlices)}
-        openings={renderOpenings(props.availabilities, onSelect)}
-    />
-
-    return (
-        <Board className="board--light availability-timetable"
-            title={titleTime}
-            titleAside={calendarNavigation(props.links)}
-            headerRight={headerRight(props.links, props.onNewAvailability)}
-            body={timeTableBody}
-            footer={renderFooter()} />
-    )
-}
-
-TimeTable.defaultProps = {
-    onNewAvailability: () => { },
-    availabilities: [],
-    conflicts: []
-}
-
-TimeTable.propTypes = {
-    timestamp: PropTypes.number,
-    links: PropTypes.object,
-    onNewAvailability: PropTypes.func,
-    conflicts: PropTypes.array,
-    availabilities: PropTypes.array,
-    availabilityListSlices: PropTypes.array,
-    maxWorkstationCount: PropTypes.number,
-    onSelect: PropTypes.func.isRequired
-}
-
-export default TimeTable
-
+export const renderFooter = () => {return <small>Zum Bearbeiten einer Öffnungszeit, bitte auf den entsprechenden blauen oder grünen Zeitstrahl klicken.</small>}
