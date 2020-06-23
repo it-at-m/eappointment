@@ -6,7 +6,9 @@ import $ from 'jquery'
 import moment from 'moment'
 import AvailabilityForm from './form'
 import Conflicts from './conflicts'
-import TimeTable from './timetable'
+import TabsBar from './tabsbar'
+import GraphView from './timetable/graphview.js'
+import TableView from './timetable/tableview.js'
 import UpdateBar from './updateBar'
 import SaveBar from './saveBar'
 import validate from './form/validate'
@@ -258,6 +260,10 @@ class AvailabilityPage extends Component {
         }))
     }
 
+    onTabSelect(tab) {
+        this.setState({ selectedTab: tab.component });
+    }
+
     onConflictedIdSelect(id) {
         const availability = this.state.availabilitylist.filter(availability => availability.id === id)[0]
 
@@ -281,9 +287,9 @@ class AvailabilityPage extends Component {
 
             return start.isSameOrBefore(selectedDay) && end.isSameOrAfter(selectedDay)
         })
+        const ViewComponent = this.state.selectedTab == 'graph' ? GraphView : TableView;
 
-
-        return <TimeTable
+            return <ViewComponent
             timestamp={this.props.timestamp}
             conflicts={this.state.conflicts}
             availabilities={selectedDaysAvailabilities}
@@ -334,6 +340,7 @@ class AvailabilityPage extends Component {
     render() {
         return (
             <PageLayout
+                tabs={<TabsBar selected={this.state.selectedTab} tabs={this.props.tabs} onSelect={this.onTabSelect.bind(this)} />}
                 timeTable={this.renderTimeTable()}
                 updateBar={this.renderUpdateBar()}
                 saveBar={this.renderSaveBar()}
@@ -348,7 +355,8 @@ AvailabilityPage.propTypes = {
     maxworkstationcount: PropTypes.number,
     timestamp: PropTypes.number,
     scope: PropTypes.object,
-    links: PropTypes.object
+    links: PropTypes.object,
+    tabs: PropTypes.array
 }
 
 export default AvailabilityPage

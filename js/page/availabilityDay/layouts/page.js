@@ -8,6 +8,7 @@ const PageLayout = (props) => {
         <div>
             {props.saveBar}
             {props.conflicts}
+            {props.tabs}
             {props.timeTable}
             {props.updateBar}
             {props.form}
@@ -19,6 +20,7 @@ PageLayout.propTypes = {
     timeTable: PropTypes.node,
     form: PropTypes.node,
     conflicts: PropTypes.node,
+    tabs: PropTypes.node,
     saveBar: PropTypes.node,
     updateBar: PropTypes.node
 }

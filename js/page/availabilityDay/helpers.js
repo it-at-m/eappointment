@@ -10,7 +10,7 @@ export const getStateFromProps = props => {
         }),
         availabilitylist: props.availabilitylist,
         conflicts: props.conflicts,
-        today: props.today
+        today: props.today,
     }
 }
 
@@ -58,7 +58,8 @@ export const getInitialState = (props) => Object.assign({}, {
     selectedAvailability: null,
     formTitle: null,
     lastSave: null,
-    stateChanged: false
+    stateChanged: false,
+    selectedTab: 'graph'
 }, getStateFromProps(props))
 
 export const getNewAvailability = (timestamp, tempId, scope) => {

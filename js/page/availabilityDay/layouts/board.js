@@ -1,8 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-
-
 const titleAside = (title) => {
     if (title) {
         return (<div className="left aside">{title}</div>)
@@ -15,18 +13,21 @@ const headerRight = (header) => {
     }
 }
 
+const headerMiddle = (title) => {
+    if (title) {
+        return (<div className="middle header_middle">{title}</div>)
+    }
+}
+
 const Board = (props) => {
     const className = `board ${props.className}`
 
     return (
         <section className={className}>
-            {props.title ?
-            <div className="board__header header">
-                <h2 className="board__heading title">{props.title}</h2>
-            </div> : null }
-            {props.titleAside || props.headerRight ?
+            {props.titleAside || props.headerRight || props.headerMiddle ?
             <div className="board__actions">
                 {titleAside(props.titleAside)}
+                {headerMiddle(props.title)}
                 {headerRight(props.headerRight)}
             </div> : null }
             <div className="board__body body">
@@ -45,6 +46,7 @@ Board.propTypes = {
     title: PropTypes.node.isRequired,
     titleAside: PropTypes.node,
     headerRight: PropTypes.node,
+    headerMiddle: PropTypes.node,
     body: PropTypes.node.isRequired,
     footer: PropTypes.node
 }

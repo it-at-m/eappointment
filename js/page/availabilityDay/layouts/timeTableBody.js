@@ -1,8 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-
-
 const hours = (() => {
     const hours = []
     for (let i = 0; i < 24; i = i + 1) {
@@ -35,10 +33,11 @@ const conflicts = (showConflicts, conflicts) => {
 }
 
 const refScroll = (element) => {
-    element.scrollLeft += 470
+    //element.scrollLeft += 470
 }
 
 const TimeTableBodyLayout = (props) => {
+
     return (
         <div className="grid">
             <div className="grid__item one-tenth">
