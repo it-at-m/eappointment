@@ -33,11 +33,12 @@ const conflicts = (showConflicts, conflicts) => {
 }
 
 const refScroll = (element) => {
-    //element.scrollLeft += 470
+    if (element)
+        element.scrollLeft += 470
 }
 
-const TimeTableBodyLayout = (props) => {
 
+const GraphBodyLayout = (props) => {
     return (
         <div className="grid">
             <div className="grid__item one-tenth">
@@ -63,7 +64,7 @@ const TimeTableBodyLayout = (props) => {
     )
 }
 
-TimeTableBodyLayout.propTypes = {
+GraphBodyLayout.propTypes = {
     conflicts: PropTypes.node,
     numberOfAppointments: PropTypes.node,
     appointments: PropTypes.node,
@@ -71,4 +72,4 @@ TimeTableBodyLayout.propTypes = {
     showConflicts: PropTypes.bool
 }
 
-export default TimeTableBodyLayout
+export default GraphBodyLayout

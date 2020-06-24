@@ -6,6 +6,7 @@ import Board from '../layouts/board'
 import HeaderButtons from './headerButtons'
 import validate from './validate'
 import renderBody from './renderBody'
+import { repeat } from '../helpers'
 
 const getFirstLevelValues = data => {
     const {
@@ -50,27 +51,18 @@ const getFormValuesFromData = data => {
         workstations.public = workstations.intern
     }
 
-    const repeat = (repeat => {
-        if (repeat.afterWeeks > 0) {
-            return -repeat.afterWeeks
-        } else if (repeat.weekOfMonth > 0) {
-            return repeat.weekOfMonth
-        } else {
-            return 0
-        }
-    })(data.repeat)
-
     const openFrom = data.bookable.startInDays
     const openFromDefault = data.scope.preferences.appointment.startInDaysDefault
     const openTo = data.bookable.endInDays
     const openToDefault = data.scope.preferences.appointment.endInDaysDefault
+    const repeatSeries = repeat(data.repeat);
 
     return cleanupFormData(Object.assign({}, getFirstLevelValues(data), {
         open_from: openFrom,
         open_to: openTo,
         openFromDefault,
         openToDefault,
-        repeat,
+        repeat: repeatSeries,
         workstationCount_intern: workstations.intern,
         workstationCount_callcenter: workstations.callcenter,
         workstationCount_public: workstations.public,

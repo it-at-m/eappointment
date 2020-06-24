@@ -10,8 +10,7 @@ export const getStateFromProps = props => {
         }),
         availabilitylist: props.availabilitylist,
         conflicts: props.conflicts,
-        today: props.today,
-    }
+        today: props.today    }
 }
 
 export const mergeAvailabilityListIntoState = (state, list) => list.reduce(updateAvailabilityInState, state)
@@ -105,6 +104,44 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
     }
 
     return newAvailability
+}
+
+export const availabilityTypes = [
+    { value: "0", name: "--Bitte wählen--" },
+    { value: "openinghours", name: "Spontankunden" },
+    { value: "appointment", name: "Terminkunden" },
+]
+
+export const weekDayList=[
+    { value: "monday", label: "Mo" },
+    { value: "tuesday", label: "Di" },
+    { value: "wednesday", label: "Mi" },
+    { value: "thursday", label: "Do" },
+    { value: "friday", label: "Fr" },
+    { value: "saturday", label: "Sa" },
+    { value: "sunday", label: "So" }
+]
+
+export const availabilitySeries=[
+    { value: "0", name: "einmaliger Termin" },
+    { value: "-1", name: "jede Woche" },
+    { value: "-2", name: "alle 2 Wochen" },
+    { value: "-3", name: "alle 3 Wochen" },
+    { value: "1", name: "jede 1. Woche im Monat" },
+    { value: "2", name: "jede 2. Woche im Monat" },
+    { value: "3", name: "jede 3. Woche im Monat" },
+    { value: "4", name: "jede 4. Woche im Monat" },
+    { value: "5", name: "jede letzte Woche im Monat" }
+]
+
+export const repeat = repeat => {
+    if (repeat.afterWeeks > 0) {
+        return -repeat.afterWeeks
+    } else if (repeat.weekOfMonth > 0) {
+        return repeat.weekOfMonth
+    } else {
+        return 0
+    }
 }
 
 export const filterEmptyAvailability = (availability) => {
