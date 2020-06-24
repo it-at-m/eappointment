@@ -4,8 +4,10 @@ import * as Inputs from '../../../lib/inputs'
 import Errors from './errors'
 const { Label, FormGroup, Controls, Description } = Inputs
 import { range } from '../../../lib/utils'
+import { weekDayList, availabilitySeries, availabilityTypes } from '../helpers'
 
 const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort, setErrorRef) => {
+    console.log(data)
     return (
         <div>
             <div ref={setErrorRef}>
@@ -33,11 +35,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                             <Inputs.Select name="type"
                                 attributes={{ disabled: data.id ? 'disabled' : null, "id": "AvDayType" }}
                                 value={data.type ? data.type : 0} {...{ onChange }}
-                                options={[
-                                    { value: "0", name: "--Bitte wählen--" },
-                                    { value: "openinghours", name: "Spontankunden" },
-                                    { value: "appointment", name: "Terminkunden" },
-                                ]} />
+                                options={availabilityTypes} />
                         </Controls>
                     </FormGroup>
                     <FormGroup>
@@ -47,17 +45,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                                 name="repeat"
                                 attributes={{ "id": "AvDaySeries" }} 
                                 value={data.repeat} {...{ onChange }}
-                                options={[
-                                    { value: "0", name: "einmaliger Termin" },
-                                    { value: "-1", name: "jede Woche" },
-                                    { value: "-2", name: "alle 2 Wochen" },
-                                    { value: "-3", name: "alle 3 Wochen" },
-                                    { value: "1", name: "jede 1. Woche im Monat" },
-                                    { value: "2", name: "jede 2. Woche im Monat" },
-                                    { value: "3", name: "jede 3. Woche im Monat" },
-                                    { value: "4", name: "jede 4. Woche im Monat" },
-                                    { value: "5", name: "jede letzte Woche im Monat" }
-                                ]} />
+                                options={availabilitySeries} />
                         </Controls>
                     </FormGroup>
 
@@ -69,15 +57,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                                     value={data.weekday}
                                     inline={true}
                                     {...{ onChange }}
-                                    boxes={[
-                                        { value: "monday", label: "Mo" },
-                                        { value: "tuesday", label: "Di" },
-                                        { value: "wednesday", label: "Mi" },
-                                        { value: "thursday", label: "Do" },
-                                        { value: "friday", label: "Fr" },
-                                        { value: "saturday", label: "Sa" },
-                                        { value: "sunday", label: "So" }
-                                    ]} />
+                                    boxes={weekDayList} />
                             </Controls>
                         </FormGroup>
                     </fieldset>

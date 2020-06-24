@@ -22,7 +22,8 @@ import {
     mergeAvailabilityListIntoState,
     updateAvailabilityInState,
     cleanupAvailabilityForSave,
-    deleteAvailabilityInState
+    deleteAvailabilityInState,
+    filterEmptyAvailability
 } from "./helpers"
 
 const tempId = (() => {
@@ -275,8 +276,7 @@ class AvailabilityPage extends Component {
     renderTimeTable() {
         const onSelect = data => {
             this.setState({
-                selectedAvailability: data,
-                formTitle: null
+                selectedAvailability: data
             })
         }
 
@@ -297,6 +297,7 @@ class AvailabilityPage extends Component {
             maxWorkstationCount={this.props.maxworkstationcount}
             links={this.props.links}
             onSelect={onSelect}
+            onDelete={this.onDeleteAvailability.bind(this)}
             onNewAvailability={this.onNewAvailability.bind(this)}
         />
     }
