@@ -167,9 +167,5 @@ export const cleanupAvailabilityForSave = availability => {
         delete newAvailability.tempId;
     }
 
-    if (newAvailability.fromException) {
-        delete newAvailability.fromException;
-    }
-
     return newAvailability;
 }
