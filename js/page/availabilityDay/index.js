@@ -107,8 +107,12 @@ class AvailabilityPage extends Component {
         const state = stateParam ? stateParam : this.state
         const sendData = state.availabilitylist.map(availability => {
             const sendAvailability = Object.assign({}, availability)
+            if (availability.tempId) {
+                delete sendAvailability.tempId
+            }
+
             return sendAvailability
-        }).map(cleanupAvailabilityForSave).filter(filterEmptyAvailability)
+        }).map(cleanupAvailabilityForSave)
 
         console.log('Saving updates', sendData)
 
@@ -118,7 +122,7 @@ class AvailabilityPage extends Component {
         }).done((success) => {
             console.log('save success', success)
             this.setState({
-                lastSave: new Date().getTime()
+                lastSave: new Date()
             })
             this.refreshData()
         }).fail((err) => {
