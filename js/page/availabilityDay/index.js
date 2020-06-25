@@ -107,10 +107,6 @@ class AvailabilityPage extends Component {
         const state = stateParam ? stateParam : this.state
         const sendData = state.availabilitylist.map(availability => {
             const sendAvailability = Object.assign({}, availability)
-            if (availability.tempId) {
-                delete sendAvailability.tempId
-            }
-
             return sendAvailability
         }).map(cleanupAvailabilityForSave).filter(filterEmptyAvailability)
 
@@ -338,7 +334,7 @@ class AvailabilityPage extends Component {
             <PageLayout
                 tabs={<TabsBar selected={this.state.selectedTab} tabs={this.props.tabs} onSelect={this.onTabSelect.bind(this)} />}
                 timeTable={this.renderTimeTable()}
-                updateBar={this.renderUpdateBar()}
+                //updateBar={this.renderUpdateBar()}
                 saveBar={this.renderSaveBar()}
                 form={this.renderForm()}
                 conflicts={<Conflicts conflicts={this.state.conflicts} onSelect={this.onConflictedIdSelect.bind(this)} />}

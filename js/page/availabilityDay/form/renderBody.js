@@ -24,7 +24,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                                 value={data.description} 
                                 {...{ onChange }} 
                             />
-                            <Description attributes={{ "id": "help_AvDayDescription" }}>Optionale Angabe zur Kennzeichnung des Termins.
+                            <Description attributes={{ "id": "help_AvDayDescription" }} value="Optionale Angabe zur Kennzeichnung des Termins.">
                                 {data.id ? " Die ID der Öffnungszeit ist " + data.id : " Die Öffnungszeit hat noch keine ID"}
                             </Description>
                         </Controls>
@@ -94,18 +94,16 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                             <Controls>
                                 <Inputs.Text name="slotTimeInMinutes"
                                     value={data.slotTimeInMinutes}
-                                    width="1"
+                                    width="2"
                                     attributes={{ maxLength: 3, "id": "AvDaySlottime" }}
                                     {...{ onChange }} />
-                                <Label attributes={{"htmlFor": "AvDaySlottime", "className": "light"}} value="Minuten Abstand zweier aufeinander folgender Termine"></Label>
+                                <Label attributes={{"htmlFor": "AvDaySlottime", "className": "light"}} value="&nbsp;Minuten Abstand zweier aufeinander folgender Termine"></Label>
                             </Controls>
                         </FormGroup>
                         <FormGroup inline={true} className="form-check">    
                             <Controls>
-                                <Label>
-                                    <Inputs.Checkbox name="multipleSlotsAllowed"
-                                        checked={true == data.multipleSlotsAllowed} {...{ onChange }} value="Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen"/>
-                                </Label>
+                                <Inputs.Checkbox label="Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen" name="multipleSlotsAllowed" value={true === data.multipleSlotsAllowed}
+                                checked={true === data.multipleSlotsAllowed} {...{ onChange }} />
                             </Controls>
                         </FormGroup>
                     </fieldset>
@@ -171,7 +169,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                                                 name: `${n}`
                                             }
                                         })} />
-                                    <Description attributes={{"id": "help_WsCountCallcenter"}}>Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Callcenter zur Verfügung gestellt werden.</Description>
+                                    <Description attributes={{"id": "help_WsCountCallcenter"}} value="Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Callcenter zur Verfügung gestellt werden."></Description>
                                 </Controls>
                             </FormGroup>
 
@@ -188,7 +186,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                                                 name: `${n}`
                                             }
                                         })} />
-                                    <Description attributes={{"htmlFor": "help_WsCountPublic"}}>Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Internet zur Verfügung gestellt werden.</Description>
+                                    <Description attributes={{"htmlFor": "help_WsCountPublic"}} value="Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Internet zur Verfügung gestellt werden."></Description>
                                 </Controls>
                             </FormGroup>
                         </div>

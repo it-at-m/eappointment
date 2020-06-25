@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { noOp } from '../utils'
 
-export const Checkbox = ({ name, value, checked = "false", onChange = noOp, attributes = {}, className = 'form-check-input' }) => {
+export const Checkbox = ({ name, value, label, checked = "false", onChange = noOp, attributes = {}, className = 'form-check-input' }) => {
 
     const onInput = () => {
         //ev.preventDefault()
@@ -12,7 +12,12 @@ export const Checkbox = ({ name, value, checked = "false", onChange = noOp, attr
 
     attributes.checked = (checked) ? "checked" : "";
 
-    return <input type="checkbox" value={value || ""} {...{ name }} {...attributes} onChange={onInput} className={className} />
+    return (
+        <label className="form-check-label" {...{ label }}>
+            <input type="checkbox" value={value || ""} {...{ name }} {...attributes} onChange={onInput} className={className} />
+            {label}
+        </label>
+    )
 }
 
 export const CheckboxGroup = (props) => {
@@ -32,13 +37,11 @@ export const CheckboxGroup = (props) => {
                 const className = `form-check${props.inline ? ' form-check-inline' : ''}`
                 return (
                     <div key={key} className={className}>
-                        <label className="form-check-label" {...{ key }}>
-                            <Checkbox name={`${props.name}[]`}
-                                value={box.value || ""}
-                                checked={checked || ""}
-                                onChange={() => toggle(box.value)} />
-                            {box.label}
-                        </label>
+                        <Checkbox name={`${props.name}[]`}
+                            value={box.value || ""}
+                            label={box.label}
+                            checked={checked || ""}
+                            onChange={() => toggle(box.value)} />
                     </div>
                 )
             })}
