@@ -1,4 +1,5 @@
-
+/* global window */
+/* global confirm */
 
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
@@ -55,7 +56,7 @@ class AvailabilityPage extends Component {
         window.addEventListener('beforeunload', this.unloadHandler)
     }
 
-    componentWillUnMount() {
+    componentDidUnMount() {
         window.removeEventListener('beforeunload', this.unloadHandler)
     }
 
@@ -105,10 +106,16 @@ class AvailabilityPage extends Component {
 
         const state = stateParam ? stateParam : this.state
         const sendData = state.availabilitylist.map(availability => {
-            return this.withExceptionIfExist(state, availability)
+            const sendAvailability = Object.assign({}, availability)
+            if (availability.tempId) {
+                delete sendAvailability.tempId
+            }
+
+            return sendAvailability
         }).map(cleanupAvailabilityForSave).filter(filterEmptyAvailability)
 
         console.log('Saving updates', sendData)
+
         $.ajax(`${this.props.links.includeurl}/availability/`, {
             method: 'POST',
             data: JSON.stringify(sendData)
@@ -126,22 +133,6 @@ class AvailabilityPage extends Component {
                 console.log('save error', err)
             }
         })
-    }
-
-    withExceptionIfExist(state, availability){
-        const sendAvailability = Object.assign({}, availability)
-        if (availability.fromException) { 
-            const dependingAvailability = state.availabilitylist.find(item => item.__modified === true) 
-            const selectedStartDate = moment(dependingAvailability.startDate, 'X').startOf('day');
-            const selectedEndDate = moment(dependingAvailability.endDate, 'X').startOf('day');
-            if ('past' == sendAvailability.fromException) {
-                sendAvailability.endDate = selectedStartDate.clone().subtract(1, 'days').unix();
-            }
-            if ('future' == sendAvailability.fromException) {
-                sendAvailability.startDate = selectedEndDate.clone().add(1, 'days').unix();
-            }
-        }
-        return sendAvailability;
     }
 
 
@@ -188,10 +179,13 @@ class AvailabilityPage extends Component {
             this.setState({ errors: validationResult.errors })
             this.handleFocus(this.errorElement);
         }
+
         const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
+        const yesterday = selectedDay.clone().subtract(1, 'days')
+        const tomorrow = selectedDay.clone().add(1, 'days')
 
         const pastAvailability = Object.assign({}, availability, {
-            fromException: 'past'
+            endDate: parseInt(yesterday.format('X'), 10)
         })
 
         const exceptionAvailability = Object.assign({}, availability, {
@@ -199,13 +193,13 @@ class AvailabilityPage extends Component {
             endDate: parseInt(selectedDay.format('X'), 10),
             tempId: tempId(),
             id: null,
-            description: `Ausnahme für ${availability.id}`
+            description: `Ausnahme für ${formatTimestampDate(this.props.timestamp)}`
         })
 
         const futureAvailability = Object.assign({}, availability, {
+            startDate: parseInt(tomorrow.format('X'), 10),
             tempId: tempId(),
-            id: null,
-            fromException: 'future'
+            id: null
         })
 
         this.setState(Object.assign(
@@ -217,7 +211,6 @@ class AvailabilityPage extends Component {
             ]),
             { selectedAvailability: exceptionAvailability, formTitle: "Ausnahme-Öffnungszeit" }
         ))
-
     }
 
     onEditAvailabilityInFuture(availability) {
@@ -276,7 +269,8 @@ class AvailabilityPage extends Component {
     renderTimeTable() {
         const onSelect = data => {
             this.setState({
-                selectedAvailability: data
+                selectedAvailability: data,
+                formTitle: null
             })
         }
 
@@ -287,6 +281,7 @@ class AvailabilityPage extends Component {
 
             return start.isSameOrBefore(selectedDay) && end.isSameOrAfter(selectedDay)
         })
+
         const ViewComponent = this.state.selectedTab == 'graph' ? GraphView : TableView;
 
             return <ViewComponent
@@ -353,6 +348,7 @@ class AvailabilityPage extends Component {
 }
 
 AvailabilityPage.propTypes = {
+
     maxworkstationcount: PropTypes.number,
     timestamp: PropTypes.number,
     scope: PropTypes.object,
