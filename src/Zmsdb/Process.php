@@ -713,6 +713,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addResolvedReferences($resolveReferences)
             ->addConditionProcessReminderInterval($dateTime)
             ->addConditionHasTelephone()
+            ->addConditionAssigned()
             ->addConditionIgnoreSlots()
             ->addLimit($limit);
         $statement = $this->fetchStatement($selectQuery);

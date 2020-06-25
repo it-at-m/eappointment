@@ -2,6 +2,7 @@
 
 * #43763 Bugfix: Für Erinnerungs-SMS wird nicht mehr der Text für Bestätigungen verwendet.
 * #43766 Bugfix: Im Cronjob zum automatischen Versand von Erinnerungs-SMS wurde ein Datumsfehler behoben.
+* #44008 Bugfix: Versende keine SMS-Erinnerung an bereits gelöschte Vorgänge.
 
 ## v2.23.04
 
