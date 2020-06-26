@@ -56,7 +56,6 @@ class ProcessReserve extends BaseController
     protected function getProcess($input, $scope)
     {
         $process = new \BO\Zmsentities\Process();
-
         $selectedTime = str_replace('-', ':', $input['selectedtime']);
         $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $input['selecteddate'] .' '. $selectedTime);
         
@@ -74,7 +73,13 @@ class ProcessReserve extends BaseController
             )
             ->validateRequests(
                 $validator->getParameter('requests'),
-                $delegatedProcess->setter('requests')
+                function () use ($process, $delegatedProcess) {
+                    $arrayKeys = array_keys(json_decode(json_encode($process->requests), true));
+                    foreach ($arrayKeys as $key) {
+                        $delegatedProcess->setter('requests', $key, 'id');
+                        $delegatedProcess->setter('requests', $key, 'source');
+                    }
+                }
             )
             ->validateMail(
                 $validator->getParameter('email'),
@@ -108,6 +113,7 @@ class ProcessReserve extends BaseController
                 )
             )
         ;
+
 
         $processValidator->getCollection()->addValid(
             $validator->getParameter('sendConfirmation')->isNumber(),
