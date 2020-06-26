@@ -35,6 +35,7 @@ class PickupDeleteTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/finished/',
+                    'parameters' => ['survey' => 0],
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ]
             ]
@@ -70,6 +71,7 @@ class PickupDeleteTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/finished/',
+                    'parameters' => ['survey' => 0],
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ]
             ]
