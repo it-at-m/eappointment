@@ -25,7 +25,9 @@ class PickupDelete extends BaseController
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
         $process->status = 'finished';
         \App::$http->readDeleteResult('/workstation/process/');
-        $processArchived = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
+        $processArchived = \App::$http
+            ->readPostResult('/process/status/finished/', $process, ['survey' => 0])
+            ->getEntity();
 
         return \BO\Slim\Render::withHtml(
             $response,
