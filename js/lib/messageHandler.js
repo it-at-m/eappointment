@@ -50,8 +50,8 @@ class MessageHandler {
             ev.preventDefault();
             ev.stopPropagation();
             var callback = $(ev.target).data('callback');
-            this.parent[callback](ev);
-            this.callback();
+            this.callback = this.parent[callback];
+            this.callback(ev);
             this.handleLightbox();
         }).on('keydown', (ev) => {
             var key = ev.keyCode || ev.which;
