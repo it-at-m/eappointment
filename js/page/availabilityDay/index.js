@@ -5,7 +5,6 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import $ from 'jquery'
 import moment from 'moment'
-import AvailabilityForm from './form'
 import Conflicts from './conflicts'
 import TabsBar from './tabsbar'
 import GraphView from './timetable/graphview.js'
@@ -13,7 +12,7 @@ import TableView from './timetable/tableview.js'
 import UpdateBar from './updateBar'
 import SaveBar from './saveBar'
 import validate from './form/validate'
-
+import AccordionLayout from './layouts/accordionBody'
 import PageLayout from './layouts/page'
 
 import {
@@ -69,6 +68,7 @@ class AvailabilityPage extends Component {
         } else {
             state = { selectedAvailability: null }
         }
+        console.log(this.state, state)
         this.setState(state);
         $('body').scrollTop(0);
         return state;
@@ -300,11 +300,19 @@ class AvailabilityPage extends Component {
     }
 
     renderForm() {
+        const onSelect = data => {
+            this.setState({
+                selectedAvailability: data
+            })
+        }
         if (this.state.selectedAvailability) {
-            return <AvailabilityForm data={this.state.selectedAvailability}
+            return <AccordionLayout 
+                availabilities={this.state.availabilitylist}
+                data={this.state.selectedAvailability}
                 today={this.state.today}
                 timestamp={this.props.timestamp}
                 title={this.state.formTitle}
+                onSelect={onSelect}
                 onSave={this.onUpdateAvailability.bind(this)}
                 onPublish={this.onPublishAvailability.bind(this)}
                 onDelete={this.onDeleteAvailability.bind(this)}
@@ -344,7 +352,6 @@ class AvailabilityPage extends Component {
 }
 
 AvailabilityPage.propTypes = {
-
     maxworkstationcount: PropTypes.number,
     timestamp: PropTypes.number,
     scope: PropTypes.object,

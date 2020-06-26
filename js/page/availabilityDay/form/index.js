@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import Board from '../layouts/board'
-
 import HeaderButtons from './headerButtons'
 import validate from './validate'
 import renderBody from './renderBody'
@@ -108,7 +106,7 @@ const cleanupFormData = data => {
 class AvailabilityForm extends Component {
     constructor(props) {
         super(props);
-
+        
         this.state = {
             data: getFormValuesFromData(this.props.data),
             errors: {}
@@ -193,11 +191,12 @@ class AvailabilityForm extends Component {
             this.props.onEditInFuture(getDataValuesFromForm(data, this.props.data.scope))
         }
 
-        return <Board title={this.props.title || "Öffnungszeit bearbeiten"}
-            headerRight={<HeaderButtons {...{ onCopy, onException, onEditInFuture }} />}
-            body={renderBody(data, errors, onChange, onSave, onPublish, onDelete, onAbort, this.setErrorRef)}
-            footer=""
-            className="availability-form" />
+        return (
+            <div>
+                {<HeaderButtons {...{ onCopy, onException, onEditInFuture }} />}
+                {renderBody(data, errors, onChange, onSave, onPublish, onDelete, onAbort, this.setErrorRef)}
+            </div>
+        )   
     }
 }
 
