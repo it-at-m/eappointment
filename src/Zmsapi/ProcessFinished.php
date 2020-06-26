@@ -28,6 +28,7 @@ class ProcessFinished extends BaseController
     ) {
         $workstation = (new Helper\User($request))->checkRights();
         $input = Validator::input()->isJson()->assertValid()->getValue();
+        $survey = Validator::param('survey')->isNumber()->setDefault(1)->getValue();
         $process = new \BO\Zmsentities\Process($input);
         $process->testValid();
         $this->testProcessData($process);
@@ -40,9 +41,12 @@ class ProcessFinished extends BaseController
             (new Workstation)->writeRemovedProcess($workstation);
         } else {
             $query->writeEntityFinished($process, \App::$now);
-            $this->writeSurveyMail($process);
         }
 
+        if ($survey) {
+            $this->writeSurveyMail($process);
+        }
+        
         $message = Response\Message::create($request);
         $message->data = $process;
 
