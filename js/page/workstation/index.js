@@ -403,9 +403,10 @@ class View extends BaseView {
 
     onPrintWaitingNumber(event) {
         stopEvent(event);
-        const processId = $(event.currentTarget).data('id');
+        this.selectedProcess = $(event.currentTarget).data('id');
         $(event.currentTarget).closest('.message').fadeOut().remove();
-        window.open(`${this.includeUrl}/process/queue/?print=1&selectedprocess=${processId}`)
+        window.open(`${this.includeUrl}/process/queue/?print=1&selectedprocess=${this.selectedProcess}`)
+        this.loadAppointmentForm();
     }
 
     onSendCustomMail($container, event) {
