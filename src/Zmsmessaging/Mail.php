@@ -91,13 +91,20 @@ class Mail extends BaseController
         // @codeCoverageIgnoreStart
         } catch (phpmailerException $exception) {
             $message = "Message #$messageId PHPMailer Failure: ". $exception->getMessage();
+            $code = $exception->getCode();
             \App::$log->warning($message, []);
         } catch (\Exception $exception) {
             $message = "Message #$messageId Failure: ". $exception->getMessage();
+            $code = $exception->getCode();
             \App::$log->warning($message, []);
         }
         if ($message) {
-            $this->removeEntityOlderThanOneHour($entity);
+            if (428 == $code) {
+                $this->deleteEntityFromQueue($entity);
+            } else {
+                $this->removeEntityOlderThanOneHour($entity);
+            }
+           
             $log = new Mimepart(['mime' => 'text/plain']);
             $log->content = $message;
             \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $log, ['error' => 1]);

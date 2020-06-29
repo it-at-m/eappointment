@@ -81,5 +81,8 @@ class BaseController
                 .$entity['id']
             );
         }
+        if (! $entity->message || '' == $entity->message) {
+            throw new Exception\MailWithoutContent();
+        }
     }
 }
