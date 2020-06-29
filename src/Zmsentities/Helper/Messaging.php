@@ -27,9 +27,9 @@ class Messaging
 
     public static function isIcsRequired(
         \BO\Zmsentities\Config $config,
-        \BO\Zmsentities\Process $process
+        \BO\Zmsentities\Process $process,
+        $status
     ) {
-        $status = static::getMessagingStatus($process);
         $client = $process->getFirstClient();
         $noAttachmentDomains = $config->toProperty()->notifications->noAttachmentDomains->get();
         $noAttachmentDomains = explode(',', (string)$noAttachmentDomains);
@@ -85,12 +85,12 @@ class Messaging
         return $twig;
     }
 
-    public static function getMailContent(Process $process, Config $config, $initiator = null)
+    public static function getMailContent(Process $process, Config $config, $initiator = null, $status = 'appointment')
     {
         $appointment = $process->getFirstAppointment();
-        $template = self::getTemplateByProcessStatus('mail', $process);
+        $template = self::getTemplate('mail', $status);
         if ($initiator) {
-            $template = self::getTemplateByProcessStatus('admin', $process);
+            $template = self::getTemplate('admin', $status);
         }
         if (!$template) {
             $exception = new \BO\Zmsentities\Exception\TemplateNotFound("Template for $process not found");
@@ -126,10 +126,10 @@ class Messaging
         return $message;
     }
 
-    public static function getNotificationContent(Process $process, Config $config)
+    public static function getNotificationContent(Process $process, Config $config, $status = 'appointment')
     {
         $appointment = $process->getFirstAppointment();
-        $template = self::getTemplateByProcessStatus('notification', $process);
+        $template = self::getTemplate('notification', $status);
         if (!$template) {
             $exception = new \BO\Zmsentities\Exception\TemplateNotFound("Template for $process not found");
             $exception->data = $process;
@@ -147,9 +147,8 @@ class Messaging
         return $message;
     }
 
-    protected static function getTemplateByProcessStatus($type, Process $process)
+    protected static function getTemplate($type, $status)
     {
-        $status = self::getMessagingStatus($process);
         $template = null;
         if (Property::__keyExists($type, self::$templates)) {
             if (Property::__keyExists($status, self::$templates[$type])) {
@@ -159,16 +158,7 @@ class Messaging
         return $template;
     }
 
-    public static function getMessagingStatus(Process $process)
-    {
-        $status = $process->status;
-        if (('confirmed' == $status || 'queued' == $status) && $process->isWithAppointment()) {
-            $status = 'appointment';
-        }
-        return $status;
-    }
-
-    public static function getMailSubject(Process $process, Config $config, $initiator = null)
+    public static function getMailSubject(Process $process, Config $config, $initiator = null, $status = 'appointment')
     {
         $appointment = $process->getFirstAppointment();
         $template = 'subjects.twig';
@@ -179,17 +169,18 @@ class Messaging
                 'client' => $process->getFirstClient(),
                 'process' => $process,
                 'config' => $config,
-                'initiator' => $initiator
+                'initiator' => $initiator,
+                'status' => $status
             )
         );
         $subject = trim($subject);
         return $subject;
     }
 
-    public static function getMailIcs(Process $process, Config $config, $now = false)
+    public static function getMailIcs(Process $process, Config $config, $status, $now = false)
     {
         $ics = new \BO\Zmsentities\Ics();
-        $template = self::getTemplateByProcessStatus('ics', $process);
+        $template = self::getTemplate('ics', $status);
         $message = self::getMailContent($process, $config);
         $plainContent = self::getPlainText($message, "\\n");
         $appointment = $process->getFirstAppointment();
