@@ -120,7 +120,7 @@ class NotificationTest extends EntityCommonTests
         $config = (new \BO\Zmsentities\Config())->getExample();
         $department = (new \BO\Zmsentities\Department())->getExample();
 
-        $resolvedEntity = $entity->toResolvedEntity($process, $config, $department);
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, $department, 'confirmed');
         $this->assertContains(
             'Ihre Telefonnummer wurde erfolgreich registriert',
             $resolvedEntity['message'],
@@ -137,7 +137,7 @@ class NotificationTest extends EntityCommonTests
         $config = (new \BO\Zmsentities\Config())->getExample();
         $department = (new \BO\Zmsentities\Department())->getExample();
 
-        $resolvedEntity = $entity->toResolvedEntity($process, $config, $department);
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, $department, 'appointment');
         $this->assertContains(
             'Ihr Termin: Vorgangsnr. 4567',
             $resolvedEntity['message'],

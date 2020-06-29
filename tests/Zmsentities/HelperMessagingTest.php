@@ -24,7 +24,7 @@ class HelperMessagingTest extends Base
             "status" => "confirmed"
         ]);
         $this->assertTrue(
-            Messaging::isIcsRequired($config, $process),
+            Messaging::isIcsRequired($config, $process, 'confirmed'),
             "confirmed process should contain attachments"
         );
 
@@ -35,18 +35,17 @@ class HelperMessagingTest extends Base
             "status" => "confirmed"
         ]);
         $this->assertFalse(
-            Messaging::isIcsRequired($config, $process),
+            Messaging::isIcsRequired($config, $process, 'confirmed'),
             "confirmed process with denied client domain should not contain attachments"
         );
 
         $process = new Process([
             "clients" => [new Client([
                 'email' => 'test@berlinonline.de'
-            ])],
-            "status" => "dummy"
+            ])]
         ]);
         $this->assertFalse(
-            Messaging::isIcsRequired($config, $process),
+            Messaging::isIcsRequired($config, $process, 'dummy'),
             "dummy process should not contain attachments"
         );
     }
