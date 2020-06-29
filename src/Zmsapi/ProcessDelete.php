@@ -29,9 +29,7 @@ class ProcessDelete extends BaseController
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $process = (new Process)->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 1);
         $this->testProcessData($process, $args['authKey']);
-        $originalStatus = $process->status;
-        $process->status = 'deleted';
-        if ($originalStatus == 'reserved') {
+        if ('reserved' == $process->status) {
             if (!(new Process)->writeBlockedEntity($process)) {
                 throw new Exception\Process\ProcessDeleteFailed(); // @codeCoverageIgnore
             }
@@ -61,7 +59,7 @@ class ProcessDelete extends BaseController
                 ->setDefault("$authority API-User")
                 ->getValue();
             $config = (new Config())->readEntity();
-            $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, $initiator);
+            $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, 'deleted', $initiator);
             (new Mail())->writeInQueueWithAdmin($mail, \App::$now);
         }
     }

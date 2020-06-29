@@ -48,7 +48,13 @@ class ProcessConfirmationNotification extends BaseController
     {
         $config = (new Config())->readEntity();
         $department = (new Department())->readByScopeId($process->scope['id']);
-        $notification = (new \BO\Zmsentities\Notification())->toResolvedEntity($process, $config, $department);
+        $notification = (new \BO\Zmsentities\Notification())
+            ->toResolvedEntity(
+                $process,
+                $config,
+                $department,
+                ($process->isWithAppointment()) ? 'appointment' : 'confirmed'
+            );
         $notification->testValid();
         if ($process->scope->hasNotificationEnabled() && $process->getFirstClient()->hasTelephone()) {
             $notification = (new Query())->writeInQueue($notification, \App::$now, false);

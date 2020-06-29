@@ -9,6 +9,7 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Zmsdb\Process;
 use \BO\Zmsdb\Config;
+use BO\Mellon\Validator;
 
 class ProcessIcs extends BaseController
 {
@@ -21,11 +22,12 @@ class ProcessIcs extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $status = Validator::param('status')->isNumber()->setDefault('appointment')->getValue();
         $this->testProcessData($args['id'], $args['authKey']);
         $process = (new Process)->readEntity($args['id'], $args['authKey'], 1);
 
         $config = (new Config())->readEntity();
-        $ics = \BO\Zmsentities\Helper\Messaging::getMailIcs($process, $config);
+        $ics = \BO\Zmsentities\Helper\Messaging::getMailIcs($process, $config, $status);
 
         $message = Response\Message::create($request);
         $message->data = $ics;

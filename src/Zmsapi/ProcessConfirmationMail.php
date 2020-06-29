@@ -47,7 +47,9 @@ class ProcessConfirmationMail extends BaseController
     {
         $config = (new Config)->readEntity();
         $department = (new Department())->readByScopeId($process->scope['id']);
-        $mail = (new \BO\Zmsentities\Mail)->toResolvedEntity($process, $config)->withDepartment($department);
+        $mail = (new \BO\Zmsentities\Mail)
+            ->toResolvedEntity($process, $config, ($process->isWithAppointment()) ? 'appointment' : 'confirmed')
+            ->withDepartment($department);
         $mail->testValid();
         if ($process->getFirstClient()->hasEmail() && $process->scope->hasEmailFrom()) {
             $mail = (new \BO\Zmsdb\Mail)->writeInQueue($mail, \App::$now, false);
