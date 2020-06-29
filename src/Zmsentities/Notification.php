@@ -80,6 +80,11 @@ class Notification extends Schema\Entity
         return $this->message;
     }
 
+    public function hasContent()
+    {
+        return ('' != $this->getMessage());
+    }
+
     public function getIdentification()
     {
         return $this->toProperty()->department->preferences->notifications->identification->get();
