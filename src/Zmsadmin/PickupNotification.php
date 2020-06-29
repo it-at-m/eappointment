@@ -31,13 +31,12 @@ class PickupNotification extends BaseController
         $validator = $request->getAttribute('validator');
         $processId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
-        $process->status = 'pickup';
         $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $config = \App::$http->readGetResult('/config/')->getEntity();
 
         if ($process->scope->hasNotificationEnabled()) {
-            $notification = (new Entity)->toResolvedEntity($process, $config, $department);
+            $notification = (new Entity)->toResolvedEntity($process, $config, $department, 'pickup');
             $notification = \App::$http->readPostResult('/notification/', $notification)->getEntity();
         }
     
