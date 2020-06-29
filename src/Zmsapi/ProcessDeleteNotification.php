@@ -35,7 +35,8 @@ class ProcessDeleteNotification extends BaseController
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $config = (new Config())->readEntity();
         $department = (new Department())->readByScopeId($process->scope['id']);
-        $notification = (new \BO\Zmsentities\Notification())->toResolvedEntity($process, $config, $department);
+        $notification = (new \BO\Zmsentities\Notification())
+            ->toResolvedEntity($process, $config, $department, 'deleted');
         $notification = (new Query())->writeInQueue($notification, \App::$now, false);
         \App::$log->debug("Send notification", [$notification]);
 

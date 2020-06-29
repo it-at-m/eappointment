@@ -82,14 +82,11 @@ class ProcessFinished extends BaseController
 
     protected function writeSurveyMail($process)
     {
-        $surveyProcess = clone $process;
-        foreach ($surveyProcess->getClients() as $client) {
+        foreach ($process->getClients() as $client) {
             if ($client->hasSurveyAccepted()) {
                 $config = (new \BO\Zmsdb\Config())->readEntity();
-                $scope = (new \BO\Zmsdb\Scope())->readEntity($surveyProcess['scope']['id'], 0);
-                $surveyProcess->scope = $scope;
-                $surveyProcess->status = 'survey';
-                $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($surveyProcess, $config);
+                $process->scope = (new \BO\Zmsdb\Scope())->readEntity($process['scope']['id'], 0);
+                $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, 'survey');
                 (new \BO\Zmsdb\Mail())->writeInQueue($mail, \App::$now, false);
             }
         }
