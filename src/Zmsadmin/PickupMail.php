@@ -31,7 +31,6 @@ class PickupMail extends BaseController
         $validator = $request->getAttribute('validator');
         $processId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
-        $process->status = 'pickup';
         $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
         $config = \App::$http->readGetResult('/config/')->getEntity();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
@@ -39,7 +38,7 @@ class PickupMail extends BaseController
         if (! $process->scope->hasEmailFrom()) {
             throw new \BO\Zmsadmin\Exception\MailFromMissing();
         }
-        $mail = (new Entity)->toResolvedEntity($process, $config);
+        $mail = (new Entity)->toResolvedEntity($process, $config, 'pickup');
         $mail = \App::$http->readPostResult('/mails/', $mail->withDepartment($department))->getEntity();
 
         return \BO\Slim\Render::withHtml(
