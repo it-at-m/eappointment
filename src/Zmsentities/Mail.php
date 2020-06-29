@@ -37,6 +37,16 @@ class Mail extends Schema\Entity
         return $this;
     }
 
+    public function hasContent()
+    {
+        return ($this->getHtmlPart() && $this->getPlainPart());
+    }
+
+    public function hasIcs()
+    {
+        return (null != $this->getIcsPart());
+    }
+
     public function getHtmlPart()
     {
         $multiPart = $this->toProperty()->multipart->get();
