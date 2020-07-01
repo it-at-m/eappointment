@@ -303,7 +303,7 @@ class AvailabilityPage extends Component {
         }
     }
 
-    renderForm() {
+    renderAvailabilityAccordion() {
         const onSelect = data => {
             this.setState({
                 selectedAvailability: data
@@ -346,7 +346,7 @@ class AvailabilityPage extends Component {
                 timeTable={this.renderTimeTable()}
                 //updateBar={this.renderUpdateBar()}
                 saveBar={this.renderSaveBar()}
-                form={this.renderForm()}
+                accordion={this.renderAvailabilityAccordion()}
                 conflicts={<Conflicts conflicts={this.state.conflicts} onSelect={this.onConflictedIdSelect.bind(this)} />}
             />
         )

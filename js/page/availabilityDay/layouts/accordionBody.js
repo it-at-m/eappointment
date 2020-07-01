@@ -2,7 +2,17 @@ import React from 'react'
 import moment from 'moment/min/moment-with-locales';
 import AvailabilityForm from '../form'
 import {weekDayList, availabilityTypes} from '../helpers'
+import Board from '../layouts/board'
 moment.locale('de')
+
+const Accordion = (props) => {
+    return (
+        <Board className="accordion js-accordion"
+            title=""
+            body={AccordionBody(props)}
+        />
+    )
+}
 
 const AccordionBody = (props) => {
 
@@ -53,4 +63,4 @@ const AccordionBody = (props) => {
     })
 }
 
-export default AccordionBody
+export default Accordion

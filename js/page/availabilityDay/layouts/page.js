@@ -11,14 +11,14 @@ const PageLayout = (props) => {
             {props.tabs}
             {props.timeTable}
             {props.updateBar}
-            {props.form}
+            {props.accordion}
         </div>
     )
 }
 
 PageLayout.propTypes = {
     timeTable: PropTypes.node,
-    form: PropTypes.node,
+    accordion: PropTypes.node,
     conflicts: PropTypes.node,
     tabs: PropTypes.node,
     saveBar: PropTypes.node,
