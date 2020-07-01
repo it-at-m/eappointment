@@ -15,7 +15,7 @@ class IcsTest extends Base
         $process = (new Process())->readEntity(169530, 'b3b0', 3); //process from testDB import
         $config = (new Config())->readEntity();
 
-        $ics = \BO\Zmsentities\Helper\Messaging::getMailIcs($process, $config, $testTimestamp);
+        $ics = \BO\Zmsentities\Helper\Messaging::getMailIcs($process, $config, 'confirmed', $testTimestamp);
 
         $this->assertEntity("\\BO\\Zmsentities\\Ics", $ics);
         $this->assertContains('169530', $ics->getContent());
@@ -29,7 +29,7 @@ class IcsTest extends Base
         $process = (new Process())->readEntity(169530, 'b3b0'); //process from testDB import
         $process->status = 'deleted';
         $config = (new Config())->readEntity();
-        $ics = \BO\Zmsentities\Helper\Messaging::getMailIcs($process, $config, $testTimestamp);
+        $ics = \BO\Zmsentities\Helper\Messaging::getMailIcs($process, $config, 'deleted', $testTimestamp);
         $this->assertEntity("\\BO\\Zmsentities\\Ics", $ics);
         $this->assertContains('CANCELLED', $ics->getContent());
         $this->assertContains('UID:20160408-169530', $ics->getContent());
