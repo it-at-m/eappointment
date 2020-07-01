@@ -44,11 +44,10 @@ class SendMailReminder
     protected function writeReminder(\BO\Zmsentities\Process $process)
     {
         $entity = null;
-        $process->status = "reminder";
         $department = (new \BO\Zmsdb\Department())->readByScopeId($process->getScopeId(), 0);
         if ($process->getFirstClient()->hasEmail() && $department->hasMail()) {
             $config = (new \BO\Zmsdb\Config)->readEntity();
-            $entity = (new \BO\Zmsentities\Mail)->toResolvedEntity($process, $config);
+            $entity = (new \BO\Zmsentities\Mail)->toResolvedEntity($process, $config, 'reminder');
             $entity = (new \BO\Zmsdb\Mail)->writeInQueue($entity, $this->dateTime);
         }
         return $entity;

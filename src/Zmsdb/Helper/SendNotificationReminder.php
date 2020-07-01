@@ -51,7 +51,7 @@ class SendNotificationReminder
             $department && $department->hasNotificationReminderEnabled()
         ) {
             $config = (new \BO\Zmsdb\Config)->readEntity();
-            $entity = (new \BO\Zmsentities\Notification)->toResolvedEntity($process, $config, $department);
+            $entity = (new \BO\Zmsentities\Notification)->toResolvedEntity($process, $config, $department, 'reminder');
             $notification = (new \BO\Zmsdb\Notification)->writeInQueue($entity, $this->dateTime);
         }
         return $notification;
