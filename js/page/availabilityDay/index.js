@@ -309,24 +309,22 @@ class AvailabilityPage extends Component {
                 selectedAvailability: data
             })
         }
-        if (this.state.selectedAvailability) {
-            return <AccordionLayout 
-                availabilities={this.state.availabilitylist}
-                data={this.state.selectedAvailability}
-                today={this.state.today}
-                timestamp={this.props.timestamp}
-                title={this.state.formTitle}
-                onSelect={onSelect}
-                onSave={this.onUpdateAvailability.bind(this)}
-                onPublish={this.onPublishAvailability.bind(this)}
-                onDelete={this.onDeleteAvailability.bind(this)}
-                onAbort={this.onRevertUpdates.bind(this)}
-                onCopy={this.onCopyAvailability.bind(this)}
-                onException={this.onCreateExceptionForAvailability.bind(this)}
-                onEditInFuture={this.onEditAvailabilityInFuture.bind(this)}
-                handleFocus={this.handleFocus.bind(this)}
-            />
-        }
+        return <AccordionLayout 
+            availabilities={this.state.availabilitylist}
+            data={this.state.selectedAvailability ? this.state.selectedAvailability : null}
+            today={this.state.today}
+            timestamp={this.props.timestamp}
+            title={this.state.formTitle}
+            onSelect={onSelect}
+            onSave={this.onUpdateAvailability.bind(this)}
+            onPublish={this.onPublishAvailability.bind(this)}
+            onDelete={this.onDeleteAvailability.bind(this)}
+            onAbort={this.onRevertUpdates.bind(this)}
+            onCopy={this.onCopyAvailability.bind(this)}
+            onException={this.onCreateExceptionForAvailability.bind(this)}
+            onEditInFuture={this.onEditAvailabilityInFuture.bind(this)}
+            handleFocus={this.handleFocus.bind(this)}
+        />
     }
 
     renderUpdateBar() {
