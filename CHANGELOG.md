@@ -5,6 +5,7 @@
 * #44167 Bugfix: Öffnungszeiten können nur noch bearbeitet werden, wenn die notwendigen Rechte vorliegen und der Nutzer dem Standort zugeordnet ist
 * #44164 Bugfix: Die Bearbeitung eines Standortes ist nur noch für User mit entsprechenden Rechten möglich
 * #44158 Bugfix: Suchergebnisse werden jetzt so gefiltert, dass ein Sachbearbeiter nur die Ergebnisse erhält, die der zugeordneten Behörde entsprechen
+* #44509 Beim Versenden einer Email wird nun nicht mehr der Terminstatus verwendet sondern ein Status Paramter übergeben
 
 ## v2.23.04
 
