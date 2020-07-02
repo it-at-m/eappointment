@@ -111,11 +111,11 @@ class Notification extends Schema\Entity
         return '+'.$phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
     }
 
-    public function toResolvedEntity(Process $process, Config $config, Department $department)
+    public function toResolvedEntity(Process $process, Config $config, Department $department, $status)
     {
         $entity = clone $this;
         $entity->process = $process;
-        $entity->message = Helper\Messaging::getNotificationContent($process, $config);
+        $entity->message = Helper\Messaging::getNotificationContent($process, $config, $status);
         $entity->createIP = $process->createIP;
         $entity->department = $department;
         if (! isset($entity['client'])) {
