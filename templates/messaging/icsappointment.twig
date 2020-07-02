@@ -2,25 +2,9 @@
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:ZMS-Berlin
-BEGIN:VTIMEZONE
-TZID:Europe/Berlin
-X-LIC-LOCATION:Europe/Berlin
-BEGIN:DAYLIGHT
-TZOFFSETFROM:+0100
-TZOFFSETTO:+0200
-TZNAME:CEST
-DTSTART:19700329T020000
-RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=3
-END:DAYLIGHT
-BEGIN:STANDARD
-TZOFFSETFROM:+0200
-TZOFFSETTO:+0100
-TZNAME:CET
-DTSTART:19701025T030000
-RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10
-END:STANDARD
-END:VTIMEZONE
+CALSCALE: GREGORIAN
 BEGIN:VEVENT
+METHOD:PUBLISH
 UID:{{ startTime|date("Ymd") }}-{{ process.id }}
 DTSTART;TZID=Europe/Berlin:{{ startTime|date("Ymd") }}T{{ startTime|date("His") }}
 DTEND;TZID=Europe/Berlin:{{ endTime|date("Ymd") }}T{{ endTime|date("His") }}
@@ -29,6 +13,8 @@ LOCATION:{{ process.scope.provider.name }} {{ process.scope.provider.contact.str
 SUMMARY:{% trans "Berlin-Termin:" %} {{ process.id }}
 DESCRIPTION: {{ message }}
 ORGANIZER;CN={{ process.scope.provider.name }}:MAILTO:{{ process.scope.preferences.client.emailFrom}}
+STATUS:CONFIRMED
+SEQUENCE:0
 BEGIN:VALARM
 ACTION:DISPLAY
 TRIGGER:-P1D

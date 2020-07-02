@@ -131,13 +131,13 @@ class Mail extends Schema\Entity
         return $entity;
     }
 
-    public function toResolvedEntity(Process $process, Config $config, $status, $initator = null)
+    public function toResolvedEntity(Process $process, Config $config, $status, $initiator = null)
     {
         $entity = clone $this;
         $icsRequired = Messaging::isIcsRequired($config, $process, $status);
-        $content = Messaging::getMailContent($process, $config, $initator, $status);
+        $content = Messaging::getMailContent($process, $config, $initiator, $status);
         $entity->process = $process;
-        $entity->subject = Messaging::getMailSubject($process, $config, $initator, $status);
+        $entity->subject = Messaging::getMailSubject($process, $config, $initiator, $status);
         $entity->createIP = $process->createIP;
 
         if (! isset($entity['client'])) {
@@ -157,7 +157,7 @@ class Mail extends Schema\Entity
         if ($icsRequired and $process->getAppointments()->getFirst()->hasTime()) {
             $entity->multipart[] = new Mimepart(array(
                 'mime' => 'text/calendar',
-                'content' => Messaging::getMailIcs($process, $config, $status)->getContent(),
+                'content' => Messaging::getMailIcs($process, $config, $status, $initiator)->getContent(),
                 'base64' => false
             ));
         }
