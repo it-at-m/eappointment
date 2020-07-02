@@ -27,7 +27,7 @@ class MailTest extends EntityCommonTests
         $config = (new \BO\Zmsentities\Config())->getExample();
         $entity->addMultiPart(array());
         $entity->client = null;
-        $resolvedEntity = $entity->toResolvedEntity($process, $config);
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'appointment');
         $this->assertContains(
             'Montag, 30. Dezember 2019 um 11:55 Uhr',
             $resolvedEntity->getHtmlPart(),
@@ -58,7 +58,7 @@ class MailTest extends EntityCommonTests
         $this->assertTrue(null === $entity->getHtmlPart(), 'Mimepart with mime text/html should not exist');
         $this->assertTrue(null === $entity->getPlainPart(), 'Mimepart with mime text/plain should not exist');
         $this->assertTrue(null === $entity->getIcsPart(), 'Mimepart with mime text/calendar should not exist');
-        $resolvedEntity = $entity->toResolvedEntity($process, $config);
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'appointment');
         $this->assertContains(
             'Sehr geehrte/r Frau',
             $resolvedEntity->getHtmlPart(),
@@ -83,7 +83,7 @@ class MailTest extends EntityCommonTests
         $config = (new \BO\Zmsentities\Config())->getExample();
         $entity->addMultiPart(array());
         $entity->client = null;
-        $resolvedEntity = $entity->toResolvedEntity($process, $config);
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'appointment');
         $this->assertContains('DESCRIPTION: Sehr geehrte/r Frau oder Herr Max Mustermann\,\n\nhiermit b', $resolvedEntity->getIcsPart(), 'ICS content is not valid');
         // test if appointment date formatted correct
     }
@@ -95,7 +95,7 @@ class MailTest extends EntityCommonTests
         $process->requests->getFirst()->data = null;
         $config = (new \BO\Zmsentities\Config())->getExample();
         $entity->addMultiPart(array());
-        $resolvedEntity = $entity->toResolvedEntity($process, $config);
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'appointment');
         $this->assertContains('Sehr geehrte/r Frau', $resolvedEntity->getHtmlPart());
         $this->assertNotContains('Erforderliche Unterlagen', $resolvedEntity->getHtmlPart());
         $this->assertContains('BEGIN:VCALENDAR', $resolvedEntity->getIcsPart());
@@ -105,11 +105,10 @@ class MailTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $process = (new \BO\Zmsentities\Process())->getExample();
-        $process->status = 'updated';
         $config = (new \BO\Zmsentities\Config())->getExample();
         $entity->addMultiPart(array());
         $entity->client = null;
-        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'admin');
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'updated', 'admin');
         $this->assertContains(
             'Geändert wurde der Termin von Max Mustermann',
             $resolvedEntity->getHtmlPart(),
@@ -126,13 +125,12 @@ class MailTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $process = (new \BO\Zmsentities\Process())->getExample();
-        $process->status = 'survey';
         $process->scope['preferences']['survey']['emailContent'] = 'Das ist eine Umfrage';
         $process->getFirstClient()->surveyAccepted = 1;
         $config = (new \BO\Zmsentities\Config())->getExample();
         $entity->addMultiPart(array());
         $entity->client = null;
-        $resolvedEntity = $entity->toResolvedEntity($process, $config);
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'survey');
         $this->assertContains(
             'Das ist eine Umfrage',
             $resolvedEntity->getPlainPart(),
@@ -145,10 +143,9 @@ class MailTest extends EntityCommonTests
         $this->expectException('\BO\Zmsentities\Exception\TemplateNotFound');
         $entity = (new $this->entityclass())->getExample();
         $process = (new \BO\Zmsentities\Process())->getExample();
-        $process->status = 'finished';
         $process->getFirstClient()->surveyAccepted = 0;
         $config = (new \BO\Zmsentities\Config())->getExample();
-        $resolvedEntity = $entity->toResolvedEntity($process, $config);
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'finished');
     }
 
     public function testToCustomMessageEntity()
@@ -205,7 +202,7 @@ class MailTest extends EntityCommonTests
 
     public function testMailTemplatesAll()
     {
-        $status = array(
+        $statusList = array(
             'queued',
             'appointment', 
             'reminder',
@@ -214,12 +211,12 @@ class MailTest extends EntityCommonTests
             'blocked',
             'survey'
         );
-        $statusAdmin = array(
+        $statusAdminList = array(
             'deleted',
             'blocked', 
             'updated'
         );
-        $statusFailed = array(
+        $statusFailedList = array(
             "free",
             "reserved",
             "called",
@@ -237,31 +234,28 @@ class MailTest extends EntityCommonTests
         $process->scope = (new \BO\Zmsentities\Scope())->getExample();
         $process->queue->withAppointment = false;
         
-        foreach ($status as $key) {
-            $process->status = $key;
+        foreach ($statusList as $status) {
             $config = (new \BO\Zmsentities\Config())->getExample();
             $entity->addMultiPart(array());
             $entity->client = null;
-            $resolvedEntity = $entity->toResolvedEntity($process, $config);
+            $resolvedEntity = $entity->toResolvedEntity($process, $config, $status);
             $this->assertContains('Sehr geehrte/r', $resolvedEntity->getPlainPart());
         }
 
-        foreach ($statusAdmin as $key) {
-            $process->status = $key;
+        foreach ($statusAdminList as $status) {
             $config = (new \BO\Zmsentities\Config())->getExample();
             $entity->addMultiPart(array());
             $entity->client = null;
-            $resolvedEntity = $entity->toResolvedEntity($process, $config, 'unittest');
+            $resolvedEntity = $entity->toResolvedEntity($process, $config, $status, 'unittest');
             $this->assertContains('initiiert via "unittest"', $resolvedEntity->getPlainPart());
         }
 
-        foreach ($statusFailed as $key) {
+        foreach ($statusFailedList as $status) {
             $this->expectException('BO\Zmsentities\Exception\TemplateNotFound');
-            $process->status = $key;
             $config = (new \BO\Zmsentities\Config())->getExample();
             $entity->addMultiPart(array());
             $entity->client = null;
-            $resolvedEntity = $entity->toResolvedEntity($process, $config);
+            $resolvedEntity = $entity->toResolvedEntity($process, $config, $status);
         }
     }
 }

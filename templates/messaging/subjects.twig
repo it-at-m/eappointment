@@ -1,19 +1,19 @@
 {% block german %}
-    {% if process.status == 'confirmed' %}
+    {% if status == 'confirmed' or status == 'appointment' %}
     Terminbestaetigung
-    {% elseif process.status == 'reminder' %}
+    {% elseif status == 'reminder' %}
     Terminerinnerung
-    {% elseif (process.status == 'deleted' or process.status == 'blocked') and not initiator %}
+    {% elseif (status == 'deleted' or status == 'blocked') and not initiator %}
     Terminabsage
-    {% elseif (process.status == 'deleted' or process.status == 'blocked') and initiator %}
+    {% elseif (status == 'deleted' or status == 'blocked') and initiator %}
     Information Terminabsage
-    {% elseif process.status == 'updated' and initiator %}
+    {% elseif status == 'updated' and initiator %}
     Information Terminänderung
-    {% elseif process.status == 'queued' %}
+    {% elseif status == 'queued' %}
     Wartenummerbestaetigung
-    {% elseif process.status == 'pickup' %}
+    {% elseif status == 'pickup' %}
     Ihr Dokument ({{ process.requests|first.name }}) ist fertig und liegt zur Abholung bereit.
-    {% elseif process.status == 'survey' and process.clients|first.surveyAccepted %}
+    {% elseif status == 'survey' and process.clients|first.surveyAccepted %}
     Kundenbefragung des Standorts {{ process.scope.contact.name }}
     {% else %}
     Terminerinnerung
