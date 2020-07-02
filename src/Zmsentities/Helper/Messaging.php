@@ -158,8 +158,12 @@ class Messaging
         return $template;
     }
 
-    public static function getMailSubject(Process $process, Config $config, $initiator = null, $status = 'appointment')
-    {
+    public static function getMailSubject(
+        Process $process,
+        Config $config,
+        $initiator = null,
+        $status = 'appointment'
+    ) {
         $appointment = $process->getFirstAppointment();
         $template = 'subjects.twig';
         $subject = self::twigView()->render(
@@ -177,11 +181,16 @@ class Messaging
         return $subject;
     }
 
-    public static function getMailIcs(Process $process, Config $config, $status, $now = false)
-    {
+    public static function getMailIcs(
+        Process $process,
+        Config $config,
+        $status = 'appointment',
+        $initiator = null,
+        $now = false
+    ) {
         $ics = new \BO\Zmsentities\Ics();
         $template = self::getTemplate('ics', $status);
-        $message = self::getMailContent($process, $config);
+        $message = self::getMailContent($process, $config, $initiator, $status);
         $plainContent = self::getPlainText($message, "\\n");
         $appointment = $process->getFirstAppointment();
         $icsString = self::twigView()->render(
