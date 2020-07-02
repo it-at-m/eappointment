@@ -82,6 +82,7 @@ class ProcessFinished extends BaseController
 
     protected function writeSurveyMail($process)
     {
+        $process = clone $process;
         foreach ($process->getClients() as $client) {
             if ($client->hasSurveyAccepted()) {
                 $config = (new \BO\Zmsdb\Config())->readEntity();
