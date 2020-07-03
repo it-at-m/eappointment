@@ -15,7 +15,7 @@ class IcsTest extends Base
         $process = (new Process())->readEntity(169530, 'b3b0', 3); //process from testDB import
         $config = (new Config())->readEntity();
 
-        $ics = \BO\Zmsentities\Helper\Messaging::getMailIcs($process, $config, 'confirmed', null, $testTimestamp);
+        $ics = \BO\Zmsentities\Helper\Messaging::getMailIcs($process, $config, 'appointment', null, $testTimestamp);
 
         $this->assertEntity("\\BO\\Zmsentities\\Ics", $ics);
         $this->assertContains('169530', $ics->getContent());
