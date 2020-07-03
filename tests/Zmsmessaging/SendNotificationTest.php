@@ -53,7 +53,7 @@ class SendNotificationTest extends Base
         $config = (new \BO\Zmsentities\Config())->getExample();
         $department = (new \BO\Zmsentities\Department())->getExample();
 
-        $resolvedEntity = $item->toResolvedEntity($process, $config, $department);
+        $resolvedEntity = $item->toResolvedEntity($process, $config, $department, 'apppointment');
 
 
 
