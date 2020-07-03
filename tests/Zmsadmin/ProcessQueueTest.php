@@ -160,7 +160,7 @@ class ProcessQueueTest extends Base
         );
         $response = $this->render($this->arguments, [
             'slotCount' => 1,
-            'familyName' => 'T',
+            'familyName' => '',
             'telephone' => '1234567890',
             'email' => 'zmsbo',
             'sendConfirmation' => 1,
@@ -168,7 +168,6 @@ class ProcessQueueTest extends Base
             'headsUpTime' => 3600,
             'requests' => [120703]
         ], [], 'POST');
-        $this->assertContains('Name eingegeben werden', (string)$response->getBody());
         $this->assertContains(
             "Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden",
             (string)$response->getBody()

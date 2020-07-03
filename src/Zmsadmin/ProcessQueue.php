@@ -65,10 +65,6 @@ class ProcessQueue extends BaseController
         $processValidator = new ProcessValidator(new Entity());
         $delegatedProcess = $processValidator->getDelegatedProcess();
         $processValidator
-            ->validateName(
-                $validator->getParameter('familyName'),
-                $delegatedProcess->setter('clients', 0, 'familyName')
-            )
             ->validateMail(
                 $validator->getParameter('email'),
                 $delegatedProcess->setter('clients', 0, 'email'),
