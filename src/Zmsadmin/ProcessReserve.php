@@ -66,14 +66,11 @@ class ProcessReserve extends BaseController
     {
         $processValidator = new ProcessValidator($process);
         $delegatedProcess = $processValidator->getDelegatedProcess();
-        if ($process->isWithAppointment()) {
-            $processValidator
-                ->validateName(
-                    $validator->getParameter('familyName'),
-                    $delegatedProcess->setter('clients', 0, 'familyName')
-                );
-        }
         $processValidator
+            ->validateName(
+                $validator->getParameter('familyName'),
+                $delegatedProcess->setter('clients', 0, 'familyName')
+            )
             ->validateRequests(
                 $validator->getParameter('requests'),
                 function () use ($process, $delegatedProcess) {
