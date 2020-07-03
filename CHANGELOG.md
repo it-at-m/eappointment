@@ -15,6 +15,7 @@
 * #44161 Der Standortname im Header wird nun bei Auswahl eines Cluster-Standortes geändert
 * #43682 Bei Mails aus der Warteschlange heraus werden für Termin- und Spontankunden separate Betreffzeilen eingetragen
 * #43682 Bugfix: Bei Terminzeit wird beim Mailformular für Spontankunden "spontan" angezeigt anstatt "00:00"
+* #44509 Mails und SMS werden nicht mehr über den Terminstatus erstellt sondern über explizite Paramterangaben
 
 ## v2.23.04
 
