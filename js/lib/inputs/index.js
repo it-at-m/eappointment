@@ -37,6 +37,6 @@ export const FormGroup = (props) => {
 
 export const Controls = ({ children }) => <div className="controls">{children}</div>
 
-export const Description = ({ attributes = {}, children }) => {
-    return (<small className="formgroup__help" {...attributes}>{children}</small>)
+export const Description = ({ value, attributes = {}, children }) => {
+    return (<small className="formgroup__help" {...attributes}>{value ? value : children}</small>)
 }
