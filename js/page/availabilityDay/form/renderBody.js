@@ -101,8 +101,12 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                         </FormGroup>
                         <FormGroup inline={true} className="form-check">    
                             <Controls>
-                                <Inputs.Checkbox label="Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen" name="multipleSlotsAllowed" value={true === data.multipleSlotsAllowed}
-                                checked={true === data.multipleSlotsAllowed} {...{ onChange }} />
+                                <Label>
+                                    <Inputs.Checkbox name="multipleSlotsAllowed"
+                                        checked={true == data.multipleSlotsAllowed} {...{ onChange }} 
+                                    />
+                                    Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen
+                                </Label>
                             </Controls>
                         </FormGroup>
                     </fieldset>

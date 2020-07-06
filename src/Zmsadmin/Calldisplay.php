@@ -44,7 +44,7 @@ class Calldisplay extends BaseController
             $response,
             'page/calldisplay.twig',
             array(
-                'title' => 'Anmeldung an Warteschlange',
+                'title' => 'Aufrufanzeige',
                 'config' => $config->getArrayCopy(),
                 'organisation' => $entity->getArrayCopy(),
                 'departments' => $departments->getArrayCopy(),

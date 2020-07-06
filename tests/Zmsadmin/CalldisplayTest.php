@@ -34,7 +34,10 @@ class CalldisplayTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Aufrufanlage - Standortauswahl - Berlin - Mitte', (string)$response->getBody());
+        $this->assertContains(
+            'Aufrufanzeige Standortauswahl - Berlin - Charlottenburg-Wilmersdorf',
+            (string)$response->getBody()
+        );
         $this->assertContains('Bürgeramt Heerstraße', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
