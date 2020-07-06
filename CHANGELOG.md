@@ -19,6 +19,7 @@
 * #35755 Bugfix: Beim Anlegen von Spontankunden sind Name und Dienstleistungen nicht mehr erforderlich
 * #43991 Bugfix: Labels und Beschreibungen werden wieder korrekt angezeigt und der Titel der Aufrufanzeige wurde korrigiert
 * #44149 Im Warteschlangen E-Mail Formular wird die Anrede nun gender-gerecht angezeigt und eine Leerzeile wurde danach eingefügt
+* #44224 Es werden nun alle Dienstleistungen im Abholer-Export angezeigt
 
 
 ## v2.23.04

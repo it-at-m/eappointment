@@ -55,7 +55,12 @@ class PickupSpreadSheet extends BaseController
         $rowCount = 1;
         foreach ($processList->getArrayCopy() as $processItem) {
             $client = $processItem->getFirstClient();
-            $request = $processItem->getRequests()->getFirst();
+            $requestNameList = [];
+            if (count($processItem->getRequests())) {
+                foreach ($processItem->getRequests() as $requestItem) {
+                    $requestNameList[] = $requestItem->getName();
+                }
+            }
 
             $date = new \DateTime('@' . $processItem->queue['arrivalTime']);
             $date->setTimezone(\App::$now->getTimezone());
@@ -67,7 +72,7 @@ class PickupSpreadSheet extends BaseController
                 $client['familyName'],
                 $client['telephone'],
                 $client['email'],
-                $request['name'],
+                join(', ', $requestNameList),
                 $processItem->amendment
             ];
             $rowCount ++;
