@@ -18,6 +18,7 @@
 * #44509 Mails und SMS werden nicht mehr über den Terminstatus erstellt sondern über explizite Paramterangaben
 * #35755 Bugfix: Beim Anlegen von Spontankunden sind Name und Dienstleistungen nicht mehr erforderlich
 * #43991 Bugfix: Labels und Beschreibungen werden wieder korrekt angezeigt und der Titel der Aufrufanzeige wurde korrigiert
+* #44149 Im Warteschlangen E-Mail Formular wird die Anrede nun gender-gerecht angezeigt und eine Leerzeile wurde danach eingefügt
 
 
 ## v2.23.04
