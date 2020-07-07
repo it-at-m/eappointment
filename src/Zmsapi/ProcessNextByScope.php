@@ -32,13 +32,21 @@ class ProcessNextByScope extends BaseController
             throw new Exception\Scope\ScopeNotFound();
         }
         $queueList = $query->readQueueList($scope->id, $dateTime, 1);
-        $process = $queueList->getNextProcess($dateTime, $exclude);
         
         $message = Response\Message::create($request);
-        $message->data = $process;
+        $message->data = static::getProcess($queueList, $dateTime, $exclude);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
+    }
+
+    public static function getProcess($queueList, $dateTime, $exclude = null)
+    {
+        $process = $queueList->getNextProcess($dateTime, $exclude);
+        if ('reserved' == $process->getStatus()) {
+            throw new Exception\Process\ProcessReservedNotCallable();
+        }
+        return $process;
     }
 }
