@@ -40,10 +40,8 @@ class ProcessNextByCluster extends BaseController
             ->toQueueList($dateTime);
         }
         
-        $process = $queueList->getNextProcess($dateTime);
-        
         $message = Response\Message::create($request);
-        $message->data = $process;
+        $message->data = ProcessNextByScope::getProcess($queueList, $dateTime);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

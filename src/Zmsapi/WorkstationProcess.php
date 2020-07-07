@@ -64,6 +64,9 @@ class WorkstationProcess extends BaseController
         if ('called' == $process->status || 'processing' == $process->status) {
             throw new Exception\Process\ProcessAlreadyCalled();
         }
+        if ('reserved' == $process->getStatus()) {
+            throw new Exception\Process\ProcessReservedNotCallable();
+        }
         $process->testValid();
     }
 }
