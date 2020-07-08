@@ -17,12 +17,12 @@ class QueueListHelper
 
     protected static $queueList = null;
 
-    protected static $status = ['confirmed', 'queued', 'reserved', 'deleted', 'fake'];
+    protected static $status = ['confirmed', 'queued', 'reserved', 'fake'];
 
-    public function __construct(\BO\Zmsentities\Scope $scope)
+    public function __construct(\BO\Zmsentities\Scope $scope, \BO\Zmsentities\Process $process = null)
     {
         static::$fullList = static::createFullList($scope);
-        static::$queueList = static::createQueueList();
+        static::$queueList = static::createQueueList($process);
     }
 
     public static function getList()
@@ -54,8 +54,16 @@ class QueueListHelper
         return ($fullList) ? $fullList : new QueueList();
     }
 
-    protected static function createQueueList()
+    protected static function createQueueList($process)
     {
-        return (static::$fullList->count()) ? static::$fullList->withStatus(self::$status) : new QueueList();
+        $queueList = new QueueList();
+        if (static::$fullList->count()) {
+            foreach (static::$fullList->withStatus(self::$status) as $entity) {
+                if (! $process || $entity->number != $process->queue->number) {
+                    $queueList->addEntity($entity);
+                }
+            }
+        }
+        return $queueList;
     }
 }

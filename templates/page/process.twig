@@ -16,8 +16,8 @@
 		    {{ process.queue.number }}
 		</div>
         <span>
-        	{% if queueList|length > 1 %}
-				{% if queueList|length == 2 %}
+        	{% if waitingClients >= 1 %}
+				{% if waitingClients == 1 %}
 					Es wartet 1 Kunde vor Ihnen.
 				{% else %}
 					Es warten {{ waitingClients }} Kunden vor Ihnen.
