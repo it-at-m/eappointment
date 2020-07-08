@@ -1,3 +1,7 @@
+## v2.23.05
+
+* #44659 Anzahl der wartenden Kunden bei leerer Warteschlange wurde korrigiert
+
 ## v2.23.04
 
 * #39699 Anpassung Javascript Validierung an neue Erfordernisse durch eslint
