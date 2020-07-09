@@ -47,7 +47,7 @@ class ScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 1, 'accessRights' => 'scope'],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
@@ -108,7 +108,7 @@ class ScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 1, 'accessRights' => 'scope'],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
@@ -205,7 +205,7 @@ class ScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 1, 'accessRights' => 'scope'],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
@@ -293,7 +293,7 @@ class ScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 1, 'accessRights' => 'scope'],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
@@ -381,7 +381,7 @@ class ScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 1, 'accessRights' => 'scope'],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
@@ -450,7 +450,7 @@ class ScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 1, 'accessRights' => 'scope'],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
@@ -546,7 +546,7 @@ class ScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 1, 'accessRights' => 'scope'],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
