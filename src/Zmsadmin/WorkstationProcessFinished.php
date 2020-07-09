@@ -64,6 +64,7 @@ class WorkstationProcessFinished extends BaseController
         Entity $process = null
     ) {
         $process = ($process) ? $process : clone $workstation->process;
+        $process->status = ('pending' != $process->status) ? 'finished' : $process->status;
         \App::$http->readPostResult('/process/status/finished/', new Entity($process))->getEntity();
         return \BO\Slim\Render::redirect(
             $workstation->getVariantName(),
