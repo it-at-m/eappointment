@@ -21,6 +21,7 @@
 * #44149 Im Warteschlangen E-Mail Formular wird die Anrede nun gender-gerecht angezeigt und eine Leerzeile wurde danach eingefügt
 * #44224 Es werden nun alle Dienstleistungen im Abholer-Export angezeigt
 * #44494 Reservierte Termine werden in der Warteschlange wieder ausgegraut und inaktiv dargestellt. Wird ein reservierter Termin direkt aufgerufen erscheint eine Fehlermeldung
+* #44164 Die Seite zum Bearbeiten eines Standortes wird nur noch Nutzer mit entsprechenden Rechten angezeigt
 
 
 ## v2.23.04
