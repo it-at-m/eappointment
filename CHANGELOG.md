@@ -22,6 +22,7 @@
 * #44224 Es werden nun alle Dienstleistungen im Abholer-Export angezeigt
 * #44494 Reservierte Termine werden in der Warteschlange wieder ausgegraut und inaktiv dargestellt. Wird ein reservierter Termin direkt aufgerufen erscheint eine Fehlermeldung
 * #44164 Die Seite zum Bearbeiten eines Standortes wird nur noch Nutzer mit entsprechenden Rechten angezeigt
+* #44701 Beim Abschließen eines Vorgangs werden die Kundendaten aus dem Formular korrekt mit den vorhandenen Daten zusammengeführt. Eine fehlerhafte Exception beim Abschluss des Vorgangs wurde korrigiert
 
 
 ## v2.23.04
