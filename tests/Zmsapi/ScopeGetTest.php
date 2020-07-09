@@ -25,7 +25,7 @@ class ScopeGetTest extends Base
     {
         $department = (new \BO\Zmsentities\Department());
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
-        $this->setWorkstation()->getUseraccount()->setRights('scope')->addDepartment($department);
+        $this->setWorkstation()->getUseraccount()->setRights('basic')->addDepartment($department);
         $response = $this->render(['id' => self::SCOPE_ID], [], []); //Pankow
         $this->assertContains('scope.json', (string)$response->getBody());
         $this->assertNotContains('"reducedData"', (string)$response->getBody());
@@ -42,6 +42,15 @@ class ScopeGetTest extends Base
         $this->assertContains('scope.json', (string)$response->getBody());
         $this->assertNotContains('"reducedData"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testWithMissingAccessRight()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+        $department = (new \BO\Zmsentities\Department());
+        $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
+        $this->setWorkstation()->getUseraccount()->setRights('basic')->addDepartment($department);
+        $this->render(['id' => self::SCOPE_ID], ['accessRights' => 'scope'], []);
     }
 
     public function testEmpty()

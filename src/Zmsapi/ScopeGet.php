@@ -24,6 +24,7 @@ class ScopeGet extends BaseController
         $message = Response\Message::create($request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $keepLessData = Validator::param('keepLessData')->isArray()->setDefault([])->getValue();
+        $accessRights = Validator::param('accessRights')->isString()->isBiggerThan(4)->setDefault('basic')->getValue();
         $getIsOpened = Validator::param('getIsOpened')->isNumber()->setDefault(0)->getValue();
         $scope = (new Scope)->readEntity($args['id'], $resolveReferences);
         if (! $scope) {
@@ -33,7 +34,7 @@ class ScopeGet extends BaseController
         $userAccess = new Helper\User($request, 2);
         if ($userAccess->hasRights()) {
             $userAccess->checkRights(
-                'basic',
+                $accessRights,
                 new \BO\Zmsentities\Useraccount\EntityAccess($scope)
             );
         } else {
