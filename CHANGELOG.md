@@ -4,6 +4,7 @@
 * #43763 Bugfix: Template für den Key "reminder" für Erinnerungs-SMS erstellt
 * #44509 Anpassungen der Email -und SMS-Texterstellung. Es wird nun nicht mehr der Terminstatus sondern ein expliziter Parameter zur Erstellung herangezogen
 * #44509 Die ICS Templates für Terminbestätigung und Absage wurden überarbeitet und auf die notwendigsten Inhalte beschränkt. 
+* #44716 Bugfix: Der Standardwert für das Nutzerrecht "Nur Systemnutzung" wurde korrigiert
 
 ## v2.23.04
 
