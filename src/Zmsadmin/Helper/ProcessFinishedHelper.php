@@ -11,7 +11,7 @@ class ProcessFinishedHelper extends \BO\Zmsentities\Process
     public function __construct($processData, $input, $requestList, $source)
     {
         parent::__construct($processData);
-        $this->addData($input['process']);
+        $this->getFirstClient()->addData($input['process']['clients'][0]);
         $this->setPickupData($input);
         $this->setRequestData($input, $requestList, $source);
         $this->setClientsCount($input['statistic']['clientsCount']);
