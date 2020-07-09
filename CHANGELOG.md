@@ -7,6 +7,7 @@
 * #44158 Bugfix: Suchergebnisse werden jetzt so gefiltert, dass ein Sachbearbeiter nur die Ergebnisse erhält, die der zugeordneten Behörde entsprechen
 * #44509 Beim Versenden einer Email wird nun nicht mehr der Terminstatus verwendet sondern ein Status Parameter übergebe
 * #44494 Reservierte Termine können nicht mehr als Nächstes oder aber direkt aufgerufen werden
+* #44164 Beim Aufruf eines Standortes können nun höhere Rechte angefordert werden um die Anzeige für angemeldete Basis-Nutzer zu verhindern
 
 ## v2.23.04
 
