@@ -31,7 +31,7 @@ class RightsLevelManager
 
     public static function getLevel($userRights)
     {
-        $rightsLevel = null;
+        $rightsLevel = 0;
         foreach ($userRights as $rightName => $isSelected) {
             $level = self::$possibleRights[$rightName];
             if ($isSelected && $level > $rightsLevel) {
