@@ -37,16 +37,16 @@ class ProcessNextByScope extends BaseController
         $message->data = static::getProcess($queueList, $dateTime, $exclude);
 
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        $response = Render::withJson($response, $message, 200);
         return $response;
     }
 
     public static function getProcess($queueList, $dateTime, $exclude = null)
     {
         $process = $queueList->getNextProcess($dateTime, $exclude);
-        if ('reserved' == $process->getStatus()) {
+        if ($process && 'reserved' == $process->getStatus()) {
             throw new Exception\Process\ProcessReservedNotCallable();
         }
-        return $process;
+        return ($process) ? $process : new \BO\Zmsentities\Process();
     }
 }
