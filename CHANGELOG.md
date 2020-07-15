@@ -10,6 +10,7 @@
 * #43673 Bugfix: Datumsformate in der Öffnungszeiten-Verwaltung werden nun im deutschen Format angezeigt
 * #35916 Bugfix: Eine eingegebene Telefonnummer wird nach erfolgreicher Validierung für den SMS Versand korrekt konvertiert und ins Backend übergeben
 * #44152 Ein Spontankunde kann nun in einen Terminkunden umgewandelt werden
+* #44152 Fehlerhaftes Löschen beim Kopieren eines Spontankunden wurde behoben und beim Spontankunden wird das Formular nur validiert, wenn Einträge bei Namen oder E-Mail vorhanden sind
 * #44155 Ein Terminkunde kann nun in einen Spontankunde umgewandelt werden
 * #44176 Bei der Clusteransicht werden nur noch die Vorgänge aufrufbar, die zum Standort gehören, an dem der Sachbearbeiter angemeldet ist (über Config änderbar)
 * #44161 Der Standortname im Header wird nun bei Auswahl eines Cluster-Standortes geändert
