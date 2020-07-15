@@ -13,7 +13,7 @@ class View extends BaseView {
             ev.preventDefault();
             ev.stopPropagation();
             this.$main.find('.report-period--show-all').hide();
-            this.$main.find(".report-period--table tr").removeClass('hide');
+            this.$main.find('.table--base tr').removeClass('hide');
         })
     }
 }

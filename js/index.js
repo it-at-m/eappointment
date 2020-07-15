@@ -23,7 +23,7 @@ forceHttps();
 // Say hello
 console.log("Welcome to the ZMS statistics interface...");
 
-$('.report-period').each(function () {
+$('.report-index').each(function () {
     new PeriodListView(this, getDataAttributes(this));
 })
 
