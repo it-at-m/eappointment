@@ -214,11 +214,11 @@ class View extends BaseView {
         this.onDatePick($container, event)
     }
 
-    onQueueProcess(scope, event) {
+    onQueueProcess(scope, event, isCopy = false) {
         stopEvent(event);
         showSpinner(scope.$main);
         const sendData = scope.$main.find('form').serializeArray();
-        if (this.selectedProcess) { 
+        if (this.selectedProcess && !isCopy) { 
             sendData.push({ name: 'selectedprocess', value: this.selectedProcess });
         }
         this.loadCall(`${this.includeUrl}/process/queue/`, 'POST', sendData, false, scope.$main).then((response) => {
@@ -309,7 +309,7 @@ class View extends BaseView {
         if (withAppointment) {
             this.onReserveProcess(scope, event, true);
         } else {
-            this.onQueueProcess(scope, event);
+            this.onQueueProcess(scope, event, true);
         }
     }
 
