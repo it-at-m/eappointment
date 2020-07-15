@@ -30,7 +30,7 @@ class ProcessQueue extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $validatedForm = $this->getValidatedForm($request->getAttribute('validator'));
+        $validatedForm = static::getValidatedForm($request->getAttribute('validator'));
         if ($validatedForm['failed']) {
             return \BO\Slim\Render::withJson(
                 $response,
@@ -60,26 +60,22 @@ class ProcessQueue extends BaseController
         );
     }
 
-    protected function getValidatedForm($validator)
+    public static function getValidatedForm($validator)
     {
         $processValidator = new ProcessValidator(new Entity());
         $delegatedProcess = $processValidator->getDelegatedProcess();
         $processValidator
+            ->validateName(
+                $validator->getParameter('familyName'),
+                $delegatedProcess->setter('clients', 0, 'familyName')
+            )
             ->validateMail(
                 $validator->getParameter('email'),
-                $delegatedProcess->setter('clients', 0, 'email'),
-                new Condition(
-                    $validator->getParameter('sendMailConfirmation')->isNumber()->isNotEqualTo(1),
-                    $validator->getParameter('surveyAccepted')->isString()->isDevoidOf([1])
-                )
+                $delegatedProcess->setter('clients', 0, 'email')
             )
             ->validateTelephone(
                 $validator->getParameter('telephone'),
-                $delegatedProcess->setter('clients', 0, 'telephone'),
-                new Condition(
-                    $validator->getParameter('sendConfirmation')->isNumber()->isNotEqualTo(1),
-                    $validator->getParameter('sendReminder')->isNumber()->isNotEqualTo(1)
-                )
+                $delegatedProcess->setter('clients', 0, 'telephone')
             )
             ->validateSurvey(
                 $validator->getParameter('surveyAccepted'),

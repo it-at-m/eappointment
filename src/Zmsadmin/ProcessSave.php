@@ -33,7 +33,10 @@ class ProcessSave extends BaseController
         $processId = $validator->value($args['id'])->isNumber()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
         $input = $request->getParams();
-        $validatedForm = ProcessReserve::getValidatedForm($validator, $process);
+        $validatedForm = ($process->isWithAppointment()) ?
+            ProcessReserve::getValidatedForm($validator, $process) :
+            ProcessQueue::getValidatedForm($validator, $process);
+
         if ($validatedForm['failed']) {
             return \BO\Slim\Render::withJson(
                 $response,
