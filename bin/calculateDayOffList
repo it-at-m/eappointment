@@ -19,7 +19,12 @@ $commit = preg_grep('#^--commit$#', $argv);
 
 if ($targetYear) {
     $job = new \BO\Zmsdb\Helper\CalculateDayOff($targetYear, $verbose);
-    $job->writeDayOffListUntilYear($commit);
+    $verboseList = $job->writeDayOffListUntilYear($commit);
+    if ($verbose) {
+        foreach ($verboseList as $dayOff) {
+            error_log("$dayOff");
+        }
+    }
 } else {
     error_log("Missing year argument!$usage");
 }
