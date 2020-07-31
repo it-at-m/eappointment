@@ -4,6 +4,7 @@
 * #43766 Bugfix: Im Cronjob zum automatischen Versand von Erinnerungs-SMS wurde ein Datumsfehler behoben.
 * #44008 Bugfix: Versende keine SMS-Erinnerung an bereits gelöschte Vorgänge.
 * #44509 Erinnerungs-Emails und SMS werden nun per Parameter erstellt um Fehler bei der Verwendung des Terminstatus auszuschließen
+* #44884 Migration: Index in der Tabelle mailpart für bessere Performance
 
 ## v2.23.04
 
