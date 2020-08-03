@@ -50,12 +50,12 @@ class Calendar
                     'slotsRequired' => $slotsRequired
                 ]
             )->getEntity();
-            return $calendar->getMonthList();
         } catch (\BO\Zmsclient\Exception $exception) {
             if ($exception->template != 'BO\Zmsapi\Exception\Calendar\AppointmentsMissed') {
                 throw $exception;
             }
         }
+        return $calendar->getMonthList();
     }
 
     public function readAvailableSlotsFromDayAndScopeList(
@@ -67,7 +67,7 @@ class Calendar
         $this->calendar->firstDay->setDateTime($this->dateTime);
         $this->calendar->lastDay->setDateTime($this->dateTime);
         try {
-            return \App::$http->readPostResult(
+            $slots = \App::$http->readPostResult(
                 '/process/status/free/',
                 $this->calendar,
                 [
@@ -80,6 +80,7 @@ class Calendar
                 throw $exception;
             }
         }
+        return $slots;
     }
 
     public function readWeekDayListWithProcessList(\BO\Zmsentities\Collection\ScopeList $scopeList)
