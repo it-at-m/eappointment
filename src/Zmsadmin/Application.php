@@ -23,7 +23,7 @@ class Application extends \BO\Slim\Application
      * allow cluster wide process calls
      */
 
-    public static $allowClusterWideCall = false;
+    public static $allowClusterWideCall = true;
     
     /**
      * language preferences
