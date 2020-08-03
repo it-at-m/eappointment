@@ -62,11 +62,6 @@ class QueueListHelper
         return (self::getList()->getQueuePositionByNumber($entity->number));
     }
 
-    public static function getMissedList()
-    {
-        return  static::$fullList->withStatus(self::$missedStatus);
-    }
-
     protected static function createFullList($clusterHelper, $dateTime)
     {
         $fullList = $clusterHelper->getProcessList($dateTime->format('Y-m-d'));
@@ -76,8 +71,7 @@ class QueueListHelper
     protected static function createQueueList()
     {
         return (static::$fullList->count()) ?
-            static::$fullList
-                ->withStatus(self::$status) :
+            static::$fullList->withStatus(self::$status) :
             new QueueList();
     }
 }

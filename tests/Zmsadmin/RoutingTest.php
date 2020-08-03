@@ -57,6 +57,31 @@ class RoutingTest extends Base
         $this->assertContains('Es ist ein Fehler aufgetreten', (string)$response->getBody());
     }
 
+    public function testErrorHandlerWithExceptionData()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ]
+            ]
+        );
+
+        $request = static::createBasicRequest('GET', '/workstation/');
+        $exception = new \BO\Zmsentities\Exception\ScopeMissingProvider;
+        $exception->data = ['scope' => new \BO\Zmsentities\Scope(['id' => 141])];
+
+        $container = \App::$slim->getContainer()->get('errorHandler');
+        $response = $container($request, $this->getResponse(), $exception);
+        $this->assertContains('board exception', (string)$response->getBody());
+        $this->assertContains(
+            'Dem Standort mit der Id 141 ist kein Dienstleister zugeordnet. Dieser Inhalt kann daher nicht angezeigt werden.',
+            (string)$response->getBody()
+        );
+    }
+
     public function testErrorHandlerIgnoreException()
     {
         $exception = new \BO\Zmsentities\Exception\UserAccountMissingRights();

@@ -59,6 +59,55 @@ class CounterQueueInfoTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testTodayWithAdditionalInfo()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/scope/141/ghostworkstation/',
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/workstationcount/',
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/process/2016-04-01/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141_freeProcessList.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141_workstationlist.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'ghostworkstationcount' => 2,
+            'selecteddate' => '2016-04-01'
+        ], []);
+        $this->assertContains('davon vor nächstem Spontankunden', (string)$response->getBody());
+        $this->assertContains('Wartezeit für neue Spontankunden in Stunden', (string)$response->getBody());
+        
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testWithClusterEnabled()
     {
         $this->setApiCalls(
