@@ -158,7 +158,6 @@ class ProcessQueueTest extends Base
 
     public function testSpontaneousClientNotOpened()
     {
-        $this->expectException('\BO\Zmsclient\Exception');
         $exception = new \BO\Zmsclient\Exception();
         $exception->template = 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound';
 
@@ -186,6 +185,16 @@ class ProcessQueueTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/workstation/process/waitingnumber/',
                     'response' => $this->readFixture("GET_process_queued.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/100011/8d11/confirmation/mail/',
+                    'response' => $this->readFixture("POST_mail.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/100011/8d11/confirmation/notification/',
+                    'response' => $this->readFixture("POST_notification.json")
                 ]
             ]
         );
