@@ -27,7 +27,6 @@ class ScopeAppointmentsByDayXlsExport extends ScopeAppointmentsByDay
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
         $selectedDateTime = static::readSelectedDateTime($args['date']);
-        $scope = static::readSelectedScope($workstation, $workstationRequest, $args['id']);
         $processList = static::readProcessList($workstationRequest, $selectedDateTime);
 
         $xlsSheetTitle = $selectedDateTime->format('d.m.Y');
