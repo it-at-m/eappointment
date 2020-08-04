@@ -47,7 +47,7 @@ class ProcessDelete extends BaseController
     public static function writeDeleteWithMailNotifications($process)
     {
         $initiator = Validator::param('initiator')->isString()->getValue();
-        \App::$http->readDeleteResult('/process/'. $process->getId() .'/', ['initiator' => $initiator])->getEntity();
+        \App::$http->readDeleteResult('/process/'. $process->getId() .'/', ['initiator' => $initiator]);
         if ($process->getFirstClient()->hasEmail() &&
             $process->isWithAppointment() &&
             $process->scope->hasEmailFrom()
