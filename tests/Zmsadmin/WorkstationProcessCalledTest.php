@@ -78,4 +78,28 @@ class WorkstationProcessCalledTest extends Base
         $this->assertContains('Zur Abholerverwaltung', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testWithStatusProcessing()
+    {
+        \App::$allowClusterWideCall = false;
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/process/called/',
+                    'parameters' => ['allowClusterWideCall' => false],
+                    'response' => $this->readFixture("GET_workstation_with_process_processing.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertRedirect($response, '/workstation/process/processing/?');
+        $this->assertEquals(302, $response->getStatusCode());
+    }
 }
