@@ -156,11 +156,11 @@ class ProcessQueueTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testAvailabilityException()
+    public function testSpontaneousClientNotOpened()
     {
         $this->expectException('\BO\Zmsclient\Exception');
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = '\BO\Zmsapi\Exception\Scope\ScopeNotFound';
+        $exception->template = 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound';
 
         $this->setApiCalls(
             [
@@ -174,7 +174,18 @@ class ProcessQueueTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/availability/',
+                    'parameters' => ['resolveReferences' => 0],
                     'exception' => $exception
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/process/waitingnumber/',
+                    'response' => $this->readFixture("GET_process_queued.json")
                 ]
             ]
         );
@@ -189,10 +200,7 @@ class ProcessQueueTest extends Base
             'requests' => [120703]
         ], [], 'POST');
 
-        $this->assertContains(
-            'Zu den angegebenen Daten konnte kein Standort gefunden werden.', 
-            (string)$response->getBody()
-        );
+        $this->assertContains('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
         
     }
 
