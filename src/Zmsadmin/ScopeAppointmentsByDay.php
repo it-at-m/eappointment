@@ -50,7 +50,8 @@ class ScopeAppointmentsByDay extends BaseController
          return $selectedDate ? new \DateTimeImmutable($selectedDate) : \App::$now;
     }
 
-    protected static function readSelectedScope($workstation, $workstationRequest, $scopeId){
+    protected static function readSelectedScope($workstation, $workstationRequest, $scopeId)
+    {
         if ($workstation->getScope()->id != $scopeId) {
             $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/')->getEntity();
             $workstationRequest->setDifferentScope($scope);
