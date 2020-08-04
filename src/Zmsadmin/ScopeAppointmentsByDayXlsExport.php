@@ -12,7 +12,7 @@ use \XLSXWriter;
 /**
  * Handle requests concerning services
  */
-class ScopeAppointmentsByDayXlsExport extends BaseController
+class ScopeAppointmentsByDayXlsExport extends ScopeAppointmentsByDay
 {
 
     /**
@@ -24,30 +24,13 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        //parameters
-        $scopeId = $args['id'];
-        $selectedDate = $args['date'];
-        $selectedDateTime = $selectedDate ? new \DateTimeImmutable($selectedDate) : \App::$now;
-
-        // HTTP requests
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
-        if ($workstation->getScope()->id != $scopeId) {
-            $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/')->getEntity();
-            $workstationRequest->setDifferentScope($scope);
-        }
-        $processList = $workstationRequest->readProcessListByDate($selectedDateTime);
+        $selectedDateTime = static::readSelectedDateTime($args['date']);
+        $scope = static::readSelectedScope($workstation, $workstationRequest, $args['id']);
+        $processList = static::readProcessList($workstationRequest, $selectedDateTime);
 
-        // data refinement
-        $visibleProcessList = $processList
-            ->toQueueList(\App::$now)
-            ->withStatus(['confirmed', 'queued'])
-            ->withSortedArrival()
-            ->toProcessList();
-
-        // rendering
         $xlsSheetTitle = $selectedDateTime->format('d.m.Y');
-
         $clusterColumn = $workstation->isClusterEnabled() ? 'Kürzel' : 'Lfd. Nummer';
         $xlsHeaders = [
             $clusterColumn => $workstation->isClusterEnabled() ? 'string' : 'integer',
@@ -63,7 +46,7 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
         $writer->writeSheetHeader($xlsSheetTitle, $xlsHeaders);
 
         $key = 1;
-        foreach ($visibleProcessList as $queueItem) {
+        foreach ($processList as $queueItem) {
             $client = $queueItem->getFirstClient();
             $request = count($queueItem->requests) > 0 ? $queueItem->requests[0] : [];
             $row = [

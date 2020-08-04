@@ -160,7 +160,7 @@ class ProcessQueueTest extends Base
     {
         $this->expectException('\BO\Zmsclient\Exception');
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'Zmsapi\Exception\Scope\ScopeNotFound';
+        $exception->template = '\BO\Zmsapi\Exception\Scope\ScopeNotFound';
 
         $this->setApiCalls(
             [
