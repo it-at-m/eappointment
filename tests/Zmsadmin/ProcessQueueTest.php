@@ -158,9 +158,9 @@ class ProcessQueueTest extends Base
 
     public function testAvailabilityException()
     {
-        $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
-        $this->expectExceptionMessage('Zu den angegebenen Daten konnte kein Standort gefunden werden.');
-        $exception = new \BO\Zmsapi\Exception\Scope\ScopeNotFound();
+        $this->expectException('\BO\Zmsclient\Exception');
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'Zmsapi\Exception\Scope\ScopeNotFound';
 
         $this->setApiCalls(
             [
@@ -178,7 +178,7 @@ class ProcessQueueTest extends Base
                 ]
             ]
         );
-        $this->render($this->arguments, [
+        $response = $this->render($this->arguments, [
             'slotCount' => 1,
             'familyName' => 'Test BO',
             'telephone' => '1234567890',
@@ -188,6 +188,12 @@ class ProcessQueueTest extends Base
             'headsUpTime' => 3600,
             'requests' => [120703]
         ], [], 'POST');
+
+        $this->assertContains(
+            'Zu den angegebenen Daten konnte kein Standort gefunden werden.', 
+            (string)$response->getBody()
+        );
+        
     }
 
     public function testRenderingNotOpened()
