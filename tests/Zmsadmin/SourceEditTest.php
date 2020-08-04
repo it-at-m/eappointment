@@ -109,4 +109,42 @@ class SourceEditTest extends Base
             'save' => 'save'
         ], [], 'POST');
     }
+
+    public function testAddNewValidationFailed()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\Zmsentities\Exception\SchemaValidation';
+        $exception->data['emailFrom']['messages'] = [
+            'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein'
+        ];
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture('GET_Workstation_Resolved2.json')
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/source/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+        $response = $this->render(['name' => 'add'], [
+            'source' => 'unittest',
+            'contact' => [
+                'name' => 'BerlinOnline Stadtportal GmbH',
+                'email' => 'zms@berlinonline.de'
+            ],
+            'label' => 'Unittest Source',
+            'save' => 'save'
+        ], [], 'POST');
+        $this->assertContains(
+            'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein', 
+            (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
 }
