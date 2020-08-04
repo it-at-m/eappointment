@@ -36,6 +36,37 @@ class ScopeAppointmentsByDayTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testWithDifferentScope()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/144/',
+                    'response' => $this->readFixture("GET_scope_144.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/144/process/2016-04-01/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
+                ]
+            ]
+        );
+        $response = $this->render([
+            'id' => 144,
+            'date' => '2016-04-01'
+        ], $this->parameters, []);
+        $this->assertContains('Termine für Bürgeramt Rathaus Tiergarten am 01.04.2016', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testRenderingWithClusterEnabled()
     {
         $this->setApiCalls(
