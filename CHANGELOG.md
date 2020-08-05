@@ -25,6 +25,7 @@
 * #44164 Die Seite zum Bearbeiten eines Standortes wird nur noch Nutzer mit entsprechenden Rechten angezeigt
 * #44701 Beim Abschließen eines Vorgangs werden die Kundendaten aus dem Formular korrekt mit den vorhandenen Daten zusammengeführt. Eine fehlerhafte Exception beim Abschluss des Vorgangs wurde korrigiert
 * #45088 Beim Bestätigungsdialog zum Löschen eines Vorgangs wird der Name des Terminkunden bzw. die Wartenummer des Spontankunden nun korrekt angezeigt
+* #42792 Wird ein Vorgang aufgerufen, während schon ein Abholer aufgerufen ist, wird nur noch auf den Abholer verwiesen. Wenn ein Vorgang mit Anmerkung aufgerufen wird und schon ein Vorgang aufgerufen wurde, wird der Anmerkungsdialog übersprungen und sofort der schon aufgerufene Vorgang angezeigt
 
 ## v2.23.04
 
