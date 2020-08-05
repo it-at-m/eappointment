@@ -25,6 +25,16 @@ class WorkstationProcessPreCall extends BaseController
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
 
+        $error = $validator->getParameter('error')->isString()->getValue();
+        if ($workstation->process->getId()) {
+            if ($workstation->process->getId() != $processId) {
+                $error = 'has_called_process';
+            }
+            if ('pickup' == $workstation->process->getStatus()) {
+                $error = 'has_called_pickup';
+            }
+        }
+
         $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
         if ($excludedIds) {
             $exclude = explode(',', $excludedIds);
@@ -39,7 +49,8 @@ class WorkstationProcessPreCall extends BaseController
                 'workstation' => $workstation,
                 'menuActive' => 'workstation',
                 'process' => $process,
-                'exclude' => join(',', $exclude)
+                'exclude' => join(',', $exclude),
+                'error' => $error
             )
         );
     }
