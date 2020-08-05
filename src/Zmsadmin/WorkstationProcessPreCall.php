@@ -25,6 +25,12 @@ class WorkstationProcessPreCall extends BaseController
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
 
+        $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
+        if ($excludedIds) {
+            $exclude = explode(',', $excludedIds);
+        }
+        $exclude[] = $process['id'];
+
         $error = $validator->getParameter('error')->isString()->getValue();
         if ($workstation->process->getId()) {
             if ($workstation->process->getId() != $processId) {
@@ -35,11 +41,13 @@ class WorkstationProcessPreCall extends BaseController
             }
         }
 
-        $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
-        if ($excludedIds) {
-            $exclude = explode(',', $excludedIds);
+        if ($workstation->process->getStatus() == 'called') {
+            return \BO\Slim\Render::redirect(
+                'workstationProcessCalled',
+                ['id' => $workstation->process->getId()],
+                ['error' => $error]
+            );
         }
-        $exclude[] = $process['id'];
 
         return \BO\Slim\Render::withHtml(
             $response,
