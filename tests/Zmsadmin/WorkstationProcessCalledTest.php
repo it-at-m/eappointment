@@ -76,6 +76,7 @@ class WorkstationProcessCalledTest extends Base
         ], []);
         $this->assertContains('Dieser Arbeitsplatz hat schon einen Abholer aufgerufen.', (string)$response->getBody());
         $this->assertContains('Zur Abholerverwaltung', (string)$response->getBody());
+        $this->assertNotContains('client-called_button-success', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
