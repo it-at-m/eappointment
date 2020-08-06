@@ -150,10 +150,14 @@ class Process extends Schema\Entity
             $time = explode('-', $requestData['selectedtime']);
             $dateTime->setTime($time[0], $time[1]);
         }
-        $this->addAppointment((new Appointment)
+
+        $appointment = (new Appointment)
             ->addDate($dateTime->getTimestamp())
-            ->addScope($this->scope['id'])
-            ->addSlotCount($requestData['slotCount']));
+            ->addScope($this->scope['id']);
+        if (isset($requestData['slotCount'])) {
+            $appointment->addSlotCount($requestData['slotCount']);
+        }
+        $this->addAppointment($appointment);
         return $this;
     }
 

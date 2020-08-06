@@ -169,8 +169,13 @@ class ProcessValidator
     public function validateAmendment(Unvalidated $unvalid, callable $setter): self
     {
         $valid = $unvalid->isString();
-        $valid->isSmallerThan(300, "Die Anmerkung sollte 300 Zeichen nicht überschreiten");
-        $this->getCollection()->validatedAction($valid, $setter);
+        $length = strlen($valid->getUnvalidated());
+        if ($length) {
+            $valid->isSmallerThan(300, "Die Anmerkung sollte 300 Zeichen nicht überschreiten");
+            $this->getCollection()->validatedAction($valid, $setter);
+        } else {
+            $this->getCollection()->addValid($valid);
+        }
         return $this;
     }
 
