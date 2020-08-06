@@ -63,19 +63,20 @@ class WorkstationUpdateTest extends Base
 
         $entity = (new \BO\Zmsdb\Workstation)
             ->writeEntityLoginByName(static::$loginName, static::$authKey, \App::getNow(), 2);
-        
         $entity->scope['id'] = self::SCOPEID;
         $entity->name = self::PLACE;
         (new \BO\Zmsdb\Workstation)->updateEntity($entity, 0);
 
-        User::$assignedWorkstation = $this->setWorkstation();
-        User::$assignedWorkstation->name = $entity->name;
-        User::$assignedWorkstation->id = 138;
-        User::$assignedWorkstation->scope['id'] = $entity->scope['id'];
+        $workstation = $this->setWorkstation();
+        $workstation->name = $entity->name;
+        $workstation->id = 138;
+        $workstation->scope['id'] = $entity->scope['id'];
 
+        echo(json_encode($entity,JSON_PRETTY_PRINT));
+        echo(json_encode($workstation,JSON_PRETTY_PRINT));
 
         $this->render([], [
-            '__body' => json_encode($entity)
+            '__body' => json_encode($workstation)
         ], []);
     }
 
