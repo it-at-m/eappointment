@@ -38,7 +38,6 @@ class WorkstationGetTest extends Base
 
     public function testReadWorkstationByXAuthKey()
     {
-        var_dump(base64_encode('superuser:vorschau'));
         $workstation = (new \BO\Zmsdb\Workstation)
             ->writeEntityLoginByName(static::$loginName, static::$authKey, \App::getNow(), 1);
         $logInHash = (new \BO\Zmsdb\Workstation)->readLoggedInHashByName($workstation->getUseraccount()->id);
