@@ -210,7 +210,6 @@ class ProcessQueueTest extends Base
         ], [], 'POST');
 
         $this->assertContains('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
-        
     }
 
     public function testRenderingNotOpened()
@@ -277,6 +276,18 @@ class ProcessQueueTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/availability/',
+                    'parameters' => ['resolveReferences' => 0],
+                    'response' => $this->readFixture("GET_scope_141_availability.json")
                 ]
             ]
         );

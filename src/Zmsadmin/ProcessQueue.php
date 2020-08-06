@@ -30,26 +30,36 @@ class ProcessQueue extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $validatedForm = static::getValidatedForm($request->getAttribute('validator'));
+
+        $validator = $request->getAttribute('validator');
+        $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
+        
+        if ($selectedProcessId) {
+            $process = $this->readSelectedProcessWithWaitingnumber($validator, $selectedProcessId);
+            if ($process) {
+                return \BO\Slim\Render::withHtml(
+                    $response,
+                    'page/printWaitingNumber.twig',
+                    array(
+                        'title' => 'Wartenummer drucken',
+                        'process' => $process
+                    )
+                );
+            }
+        }
+
+        $input = $request->getParams();
+        $scope = AppointmentFormHelper::readSelectedScope($request, $workstation);
+        $process = $this->getProcess($input, $scope);
+        $validatedForm = static::getValidatedForm($validator, $process);
         if ($validatedForm['failed']) {
             return \BO\Slim\Render::withJson(
                 $response,
                 $validatedForm
             );
         }
-        $process = $this->readSelectedProcessWithWaitingnumber($request);
-        if ($process instanceof \BO\Zmsentities\Process) {
-            return \BO\Slim\Render::withHtml(
-                $response,
-                'page/printWaitingNumber.twig',
-                array(
-                    'title' => 'Wartenummer drucken',
-                    'process' => $process
-                )
-            );
-        }
 
-        $process = $this->writeQueuedProcess($request, $workstation, \App::$now);
+        $process = $this->writeQueuedProcess($input, $process);
         return \BO\Slim\Render::withHtml(
             $response,
             'element/helper/messageHandler.twig',
@@ -60,9 +70,9 @@ class ProcessQueue extends BaseController
         );
     }
 
-    public static function getValidatedForm($validator)
+    public static function getValidatedForm($validator, $process)
     {
-        $processValidator = new ProcessValidator(new Entity());
+        $processValidator = new ProcessValidator($process);
         $delegatedProcess = $processValidator->getDelegatedProcess();
         $processValidator
             ->validateName(
@@ -104,11 +114,9 @@ class ProcessQueue extends BaseController
         return $form;
     }
 
-    protected function readSelectedProcessWithWaitingnumber($request)
+    protected function readSelectedProcessWithWaitingnumber($validator, $selectedProcessId)
     {
-        $validator = $request->getAttribute('validator');
         $result = null;
-        $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $isPrint = $validator->getParameter('print')->isNumber()->getValue();
         if ($selectedProcessId && $isPrint) {
             $result = \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity();
@@ -116,10 +124,29 @@ class ProcessQueue extends BaseController
         return $result;
     }
 
-    protected function writeQueuedProcess($request, $workstation, \DateTimeImmutable $dateTime)
+    protected function getProcess($input, $scope)
     {
-        $input = $request->getParsedBody();
-        $scope = AppointmentFormHelper::readSelectedScope($request, $workstation);
+        $process = new \BO\Zmsentities\Process();
+        $notice = (! $this->isOpened($scope)) ? 'Außerhalb der Öffnungszeiten gebucht! ' : '';
+        return $process->withUpdatedData($input, \App::$now, $scope, $notice);
+    }
+
+    protected function writeQueuedProcess($input, $process)
+    {
+        $process = \App::$http->readPostResult('/workstation/process/waitingnumber/', $process)->getEntity();
+        AppointmentFormHelper::updateMailAndNotification($input, $process);
+
+        if (isset($input['selectedprocess'])) {
+            $oldProcess = \App::$http->readGetResult('/process/'. $input['selectedprocess'] .'/')->getEntity();
+            $oldProcess->status = 'deleted';
+            ProcessDelete::writeDeleteWithMailNotifications($oldProcess);
+        }
+        
+        return $process;
+    }
+
+    protected function isOpened($scope)
+    {
         if ($scope->getResolveLevel() < 1) {
             $scope =  \App::$http->readGetResult('/scope/'. $scope->getId() .'/', ['resolveReferences' => 1])
                 ->getEntity();
@@ -135,21 +162,6 @@ class ProcessQueue extends BaseController
                 $isOpened = false;
             }
         }
-        $notice = (! $isOpened) ? 'Außerhalb der Öffnungszeiten gebucht! ' : '';
-        $process = (new Entity)->createFromScope($scope, $dateTime);
-        $process->updateRequests($scope->getSource(), isset($input['requests']) ? implode(',', $input['requests']) : 0);
-        $process->addClientFromForm($input);
-        $process->addReminderTimestamp($input, $dateTime);
-        $process->addAmendment($input, $notice);
-        $process = \App::$http->readPostResult('/workstation/process/waitingnumber/', $process)->getEntity();
-        AppointmentFormHelper::updateMailAndNotification($input, $process);
-
-        if (isset($input['selectedprocess'])) {
-            $oldProcess = \App::$http->readGetResult('/process/'. $input['selectedprocess'] .'/')->getEntity();
-            $oldProcess->status = 'deleted';
-            ProcessDelete::writeDeleteWithMailNotifications($oldProcess);
-        }
-        
-        return $process;
+        return $isOpened;
     }
 }
