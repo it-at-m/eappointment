@@ -69,12 +69,9 @@ class WorkstationUpdateTest extends Base
 
         $workstation = $this->setWorkstation();
         $workstation->name = $entity->name;
-        $workstation->id = 138;
+        $workstation->id = 123;
         $workstation->scope['id'] = $entity->scope['id'];
-
-        echo(json_encode($entity,JSON_PRETTY_PRINT));
-        echo(json_encode($workstation,JSON_PRETTY_PRINT));
-
+        
         $this->render([], [
             '__body' => json_encode($workstation)
         ], []);
