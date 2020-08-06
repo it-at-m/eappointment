@@ -128,7 +128,7 @@ class Process extends Schema\Entity
         return ('' != $this->toProperty()->scope->contact->email->get());
     }
 
-    public function withUpdatedData($requestData, \DateTimeInterface $dateTime, $scope = null)
+    public function withUpdatedData($requestData, \DateTimeInterface $dateTime, $scope = null, $notice = '')
     {
         $this->scope = ($scope) ? $scope : $this->scope;
         $this->addAppointmentFromRequest($requestData, $dateTime);
@@ -136,9 +136,7 @@ class Process extends Schema\Entity
         $this->updateRequests($scope->getSource(), $requestCsv);
         $this->addClientFromForm($requestData);
         $this->addReminderTimestamp($requestData, $dateTime);
-        $this->amendment = (Property::__keyExists('amendment', $requestData)) ?
-            trim($requestData['amendment']) :
-            null;
+        $this->addAmendment($requestData, $notice);
         return $this;
     }
 

@@ -129,9 +129,13 @@ class ProcessValidator
         $length = strlen($valid->getValue());
 
         if ($valid->getValue()) {
-            $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
-            $phoneNumberObject = $phoneNumberUtil->parse($valid->getValue(), 'DE');
-            $telephone = '+'.$phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
+            try {
+                $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
+                $phoneNumberObject = $phoneNumberUtil->parse($valid->getValue(), 'DE');
+                $telephone = '+'.$phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
+            } catch (\libphonenumber\NumberParseException $exception) {
+                $telephone = $valid->getValue();
+            }
             $valid = (new \BO\Mellon\Unvalidated($telephone, 'telephone'))->isString();
         }
        
@@ -151,7 +155,7 @@ class ProcessValidator
             && $this->getProcess()->isWithAppointment()
             ) {
             $valid
-                ->isBiggerThan(6, "Für den Standort muss eine gültige Telefonnummer eingetragen werden");
+                ->isBiggerThan(10, "Für den Standort muss eine gültige Telefonnummer eingetragen werden");
         } elseif (!$length && $isRequiredCallback && $isRequiredCallback()) {
             $valid
                 ->isBiggerThan(10, "Für den SMS-Versand muss eine gültige Mobilfunknummer angegeben werden");
@@ -159,9 +163,9 @@ class ProcessValidator
             $valid
                 ->isSmallerThan(
                     15,
-                    "Die Telefonnummer darf nicht mehr als 15 Zeichen enthalten"
+                    "Die Telefonnummer ist zu lang, bitte prüfen Sie Ihre Eingabe"
                 )
-                ->isBiggerThan(6, "Für den Standort muss eine gültige Telefonnummer eingetragen werden")
+                ->isBiggerThan(10, "Für den Standort muss eine gültige Telefonnummer eingetragen werden")
                 ->isMatchOf("/^\+?[\d\s]*$/", "Die Telefonnummer muss im Format 0170 1234567 eingegeben werden");
         }
         $this->getCollection()->validatedAction($valid, $setter);
