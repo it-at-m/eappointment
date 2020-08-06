@@ -23,9 +23,9 @@ class PickupCallTest extends Base
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/process/called/',
-                    'response' => $this->readFixture("GET_workstation_with_process.json")
+                    'function' => 'readGetResult',
+                    'url' => '/process/82252/',
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -52,14 +52,14 @@ class PickupCallTest extends Base
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/process/called/',
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                    'function' => 'readGetResult',
+                    'url' => '/process/82252/',
+                    'response' => $this->readFixture("GET_process_not_matching_id.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/pickup/',
-                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                    'response' => $this->readFixture("GET_process_not_matching_id.json")
                 ]
             ]
         );
@@ -80,8 +80,13 @@ class PickupCallTest extends Base
                     'response' => $this->readFixture("GET_workstation_with_process.json")
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/process/82252/',
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
                     'function' => 'readPostResult',
-                    'url' => '/workstation/process/called/',
+                    'url' => '/process/status/pickup/',
                     'exception' => $exception
                 ]
             ]
