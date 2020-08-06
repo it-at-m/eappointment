@@ -11,11 +11,19 @@ class WorkstationGetTest extends Base
 {
     protected $classname = "WorkstationGet";
 
-    public static $loginName = 'testadmin';
+    public static $loginName = 'superuser';
 
     public static $authKey = 'vorschau';
 
-    public static $basicAuth = 'dGVzdGFkbWluOnZvcnNjaGF1';
+    public static $basicAuth = 'YmVybGlub25saW5lOjFwYWxtZTE=';
+
+    public function __construct() 
+    {
+        parent::__construct();
+        static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';
+        static::$authKey = (! \App::DEBUG) ? static::$authKey : 'vorschau';
+        static::$basicAuth = (! \App::DEBUG) ? static::$basicAuth : 'dGVzdGFkbWluOnZvcnNjaGF1';
+    }
 
     public function testRendering()
     {
@@ -30,6 +38,7 @@ class WorkstationGetTest extends Base
 
     public function testReadWorkstationByXAuthKey()
     {
+        var_dump(base64_encode('superuser:vorschau'));
         $workstation = (new \BO\Zmsdb\Workstation)
             ->writeEntityLoginByName(static::$loginName, static::$authKey, \App::getNow(), 1);
         $logInHash = (new \BO\Zmsdb\Workstation)->readLoggedInHashByName($workstation->getUseraccount()->id);
