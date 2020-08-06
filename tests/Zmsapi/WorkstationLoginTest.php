@@ -30,7 +30,7 @@ class WorkstationLoginTest extends Base
             'nocommit' => 1
         ], []);
         $this->assertContains('workstation.json', (string)$response->getBody());
-        $this->assertContains('testadmin', (string)$response->getBody());
+        $this->assertContains(static::$loginName, (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
