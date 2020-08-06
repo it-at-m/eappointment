@@ -27,22 +27,15 @@ class WorkstationProcess extends BaseController
     ) {
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $workstation = (new Helper\User($request, 1))->checkRights();
-        $process = $workstation->process;
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $allowClusterWideCall = Validator::param('allowClusterWideCall')->isBool()->setDefault(false)->getValue();
-        $entity = new \BO\Zmsentities\Process($input);
-        if (!$process || !$process->hasId() || $process->id == $entity->id) {
-            $process = (new Process)->readEntity($entity['id'], new \BO\Zmsdb\Helper\NoAuth());
-            $this->testProcess($process);
-            if (! $allowClusterWideCall) {
-                $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
-            }
-        } else {
+        if ($workstation->process->hasId() && $workstation->process->getId() != $input['id']) {
             $exception = new Exception\Workstation\WorkstationHasAssignedProcess();
-            $exception->data = ['process' => $entity];
+            $exception->data = ['process' => $workstation->process];
             throw $exception;
         }
 
+        $process = $this->readTestedProcess($workstation, $input, $allowClusterWideCall);
         $process->setCallTime(\App::$now);
         $process->queue['callCount']++;
         $process->status = 'called';
@@ -56,17 +49,25 @@ class WorkstationProcess extends BaseController
         return $response;
     }
 
-    protected function testProcess($process)
+    protected function readTestedProcess($workstation, $input, $allowClusterWideCall)
     {
+        $process = (new Process)->readEntity($input['id'], new \BO\Zmsdb\Helper\NoAuth());
         if (! $process->hasId()) {
             throw new Exception\Process\ProcessNotFound();
         }
+        //add data after check for process found, because id will be set too
+        $process->addData($input);
+
         if ('called' == $process->status || 'processing' == $process->status) {
             throw new Exception\Process\ProcessAlreadyCalled();
         }
         if ('reserved' == $process->getStatus()) {
             throw new Exception\Process\ProcessReservedNotCallable();
         }
+        if (! $allowClusterWideCall) {
+            $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
+        }
         $process->testValid();
+        return $process;
     }
 }

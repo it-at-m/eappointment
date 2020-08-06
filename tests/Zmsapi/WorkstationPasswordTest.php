@@ -6,6 +6,17 @@ class WorkstationPasswordTest extends Base
 {
     protected $classname = "WorkstationPassword";
 
+    public static $loginName = 'superuser';
+
+    public static $authKey = 'vorschau';
+
+    public function __construct()
+    {
+        parent::__construct();
+        static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';
+        static::$authKey = (! \App::DEBUG) ? static::$authKey : 'vorschau';
+    }
+
     public function testRendering()
     {
         $this->setWorkstation();
@@ -23,8 +34,8 @@ class WorkstationPasswordTest extends Base
                     "ticketprinter": "0",
                     "useraccount": "1"
                 },
-                "id": "testadmin",
-                "password": "vorschau",
+                "id": "'. static::$loginName .'",
+                "password": "'. static::$authKey .'",
                 "email": "unittest@berlinonline.de",
                 "changePassword": ["testPassword","testPassword"],
                 "departments": [
@@ -43,7 +54,7 @@ class WorkstationPasswordTest extends Base
         $this->expectExceptionCode(401);
         $this->render([], [
             '__body' => '{
-                "id": "testadmin",
+                "id": "'. static::$loginName .'",
                 "password": "vorschau2",
                 "departments": [
                     {"id":1}
@@ -60,8 +71,8 @@ class WorkstationPasswordTest extends Base
         //6 chars for password required
         $this->render([], [
             '__body' => '{
-                "id": "testadmin",
-                "password": "vorschau"
+                "id": "'. static::$loginName .'",
+                "password": "vorschau2"
             }'
         ], []);
     }
@@ -93,8 +104,8 @@ class WorkstationPasswordTest extends Base
                     "ticketprinter": "0",
                     "useraccount": "1"
                 },
-                "id": "testadmin",
-                "password": "vorschau",
+                "id": "'. static::$loginName .'",
+                "password": "'. static::$authKey .'",
                 "changePassword": ["testPassword","testPassword2"]
             }'
         ], []);

@@ -11,15 +11,20 @@ class WorkstationUpdateTest extends Base
 {
     protected $classname = "WorkstationUpdate";
 
-    const SCOPE_ID = 141;
+    const PLACE = '12';
 
-    const PLACE = "12";
+    const SCOPEID = 141;
 
-    const NEWPLACE = "13";
+    public static $loginName = 'superuser';
 
-    const TESTUSER = "testuser";
+    public static $authKey = 'vorschau';
 
-    const LASTLOGIN = 1459504500; //1.4.2016 11:55
+    public function __construct()
+    {
+        parent::__construct();
+        static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';
+        static::$authKey = (! \App::DEBUG) ? static::$authKey : 'vorschau';
+    }
 
     public function testOveragedLogin()
     {
@@ -56,8 +61,9 @@ class WorkstationUpdateTest extends Base
         $this->expectException('\BO\Zmsapi\Exception\Workstation\WorkstationAlreadyAssigned');
         $this->expectExceptionCode(200);
 
-        $entity = (new \BO\Zmsdb\Workstation)->writeEntityLoginByName('testadmin', 'vorschau', \App::getNow(), 2);
-        $entity->scope['id'] = 141;
+        $entity = (new \BO\Zmsdb\Workstation)
+            ->writeEntityLoginByName(static::$loginName, static::$authKey, \App::getNow(), 2);
+        $entity->scope['id'] = self::SCOPEID;
         $entity->name = self::PLACE;
         (new \BO\Zmsdb\Workstation)->updateEntity($entity, 0);
 
@@ -78,7 +84,7 @@ class WorkstationUpdateTest extends Base
         $this->expectExceptionCode(404);
         $currentworkstation = $this->setWorkstation();
         $workstation = clone $currentworkstation;
-        $workstation->getUseraccount()->id = 'testadmin';
+        $workstation->getUseraccount()->id = static::$loginName;
         $this->render([], [
             '__body' => json_encode($workstation)
         ], []);
