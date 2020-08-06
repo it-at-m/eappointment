@@ -11,19 +11,11 @@ class WorkstationGetTest extends Base
 {
     protected $classname = "WorkstationGet";
 
-    public static $loginName = 'superuser';
+    public static $loginName = 'testadmin';
 
     public static $authKey = 'vorschau';
 
-    public static $basicAuth = 'dGVzdGFkbWluOjFwYWxtZTE=';
-
-    public function __construct()
-    {
-        parent::__construct();
-        static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';
-        static::$authKey = (! \App::DEBUG) ? static::$authKey : 'vorschau';
-        static::$basicAuth = (! \App::DEBUG) ? static::$basicAuth : 'dGVzdGFkbWluOnZvcnNjaGF1';
-    }
+    public static $basicAuth = 'dGVzdGFkbWluOnZvcnNjaGF1';
 
     public function testRendering()
     {
