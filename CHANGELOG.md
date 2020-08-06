@@ -57,6 +57,7 @@
 * #34481 Anpassung des Textes für Wartende in "Wartezeit für neue Spontankunden in Stunden".
 * #42786 Nach Freigeben/Sperren des Kiosk erscheint jetzt eine Erfolgsmeldung.
 * #42768 Änderung des Titels bei der Erfassung der Kundendaten
+* #43829 Die Eingabe einer Telefonnummer wird für Spontan- und Terminkunden einheitlich validiert und die Fehlermeldung für eine zu lange Telefonnummer wurde angepasst 
 
 ## v2.23.02
 
