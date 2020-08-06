@@ -128,28 +128,15 @@ class ProcessValidator
         $valid = $unvalid->isString();
         $length = strlen($valid->getValue());
 
-        if ($valid->getValue()) {
-            try {
-                $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
-                $phoneNumberObject = $phoneNumberUtil->parse($valid->getValue(), 'DE');
-                $telephone = '+'.$phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
-            } catch (\libphonenumber\NumberParseException $exception) {
-                $telephone = $valid->getValue();
-            }
-            $valid = (new \BO\Mellon\Unvalidated($telephone, 'telephone'))->isString();
+        try {
+            $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
+            $phoneNumberObject = $phoneNumberUtil->parse($valid->getValue(), 'DE');
+            $telephone = '+'.$phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
+        } catch (\libphonenumber\NumberParseException $exception) {
+            $telephone = $valid->getValue();
         }
-       
-        /*
-        error_log(
-            "Phone validate: ".$valid->getUnvalidated()
-            ." ($length) with scope phone required="
-            . ($this->getProcess()->getCurrentScope()->isTelephoneRequired() ? 'yes' : 'no')
-            ." with appointment="
-            . ($this->getProcess()->isWithAppointment() ? 'yes' : 'no')
-            ." with callback="
-            . ( ($isRequiredCallback && $isRequiredCallback()) ? 'yes' : 'no')
-        );
-        */
+        $valid = (new \BO\Mellon\Unvalidated($telephone, 'telephone'))->isString();
+        
         if (!$length
             && $this->getProcess()->getCurrentScope()->isTelephoneRequired()
             && $this->getProcess()->isWithAppointment()
