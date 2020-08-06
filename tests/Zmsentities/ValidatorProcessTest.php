@@ -61,7 +61,7 @@ class ValidatorProcessTest extends Base
 
         $collectionStatus = $processValidator->getCollection()->getStatus();
         $this->assertEquals(
-            'Die Telefonnummer darf nicht mehr als 15 Zeichen enthalten', 
+            'Die Telefonnummer ist zu lang, bitte prüfen Sie Ihre Eingabe', 
             $collectionStatus['telephone']['messages'][0]
         );
         $this->assertTrue($collectionStatus['telephone']['failed']);
