@@ -143,8 +143,9 @@ class SourceEditTest extends Base
             'save' => 'save'
         ], [], 'POST');
         $this->assertContains(
-            'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein', 
-            (string)$response->getBody());
+            'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein',
+            (string)$response->getBody()
+        );
         $this->assertEquals(200, $response->getStatusCode());
     }
 }
