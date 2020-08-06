@@ -10,6 +10,12 @@ class WorkstationDeleteTest extends Base
 
     public static $loginName = 'berlinonline';
 
+    public function __construct()
+    {
+        parent::__construct();
+        static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';
+    }
+
     public function testRendering()
     {
         $this->setWorkstation();

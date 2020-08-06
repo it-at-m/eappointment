@@ -29,32 +29,9 @@ class ProcessPickup extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        $cluster = (new \BO\Zmsdb\Cluster)->readByScopeId($workstation->scope['id'], 1);
 
-        if ($entity->hasProcessCredentials()) {
-            $this->testProcessData($entity);
-            $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 0);
-            $process->addData($input);
-            $process = (new Query())->updateEntity($process, \App::$now);
-        } elseif ($entity->hasQueueNumber()) {
-            // Allow waitingnumbers over 1000 with the fourth parameter
-            $process = ProcessStatusQueued::init()
-                ->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id'], 0, 100000000);
-            if (! $process->id) {
-                $workstation = (new \BO\Zmsdb\Workstation)->readResolvedReferences($workstation, 1);
-                $process = (new Query())->writeNewPickup($workstation->scope, \App::$now, $entity['queue']['number']);
-            }
-            $process->testValid();
-        } else {
-            $entity->testValid();
-            throw new Exception\Process\ProcessInvalid();
-        }
-        $workstation->testMatchingProcessScope($workstation->getScopeList($cluster), $process);
-        if ($workstation->process && $workstation->process->hasId() && $workstation->process->id != $process->id) {
-            $exception = new Exception\Workstation\WorkstationHasAssignedProcess();
-            $exception->data = $workstation->process;
-            throw $exception;
-        }
+        $process = $this->readValidProcess($workstation, $entity, $input);
+        $this->testProcessAccess($workstation, $process);
         (new \BO\Zmsdb\Workstation)->writeAssignedProcess($workstation, $process, \App::$now);
 
         $message = Response\Message::create($request);
@@ -74,5 +51,41 @@ class ProcessPickup extends BaseController
         } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         }
+    }
+
+    protected function testProcessAccess($workstation, $process)
+    {
+        $cluster = (new \BO\Zmsdb\Cluster)->readByScopeId($workstation->scope['id'], 1);
+        $workstation->testMatchingProcessScope($workstation->getScopeList($cluster), $process);
+        if ($workstation->process && $workstation->process->hasId() && $workstation->process->id != $process->id) {
+            $exception = new Exception\Workstation\WorkstationHasAssignedProcess();
+            $exception->data = [
+                'process' => $workstation->process
+            ];
+            throw $exception;
+        }
+    }
+
+    protected function readValidProcess($workstation, $entity, $input)
+    {
+        if ($entity->hasProcessCredentials()) {
+            $this->testProcessData($entity);
+            $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 0);
+            $process->addData($input);
+            $process = (new Query())->updateEntity($process, \App::$now);
+        } elseif ($entity->hasQueueNumber()) {
+            // Allow waitingnumbers over 1000 with the fourth parameter
+            $process = ProcessStatusQueued::init()
+                ->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id'], 0, 100000000);
+            if (! $process->id) {
+                $workstation = (new \BO\Zmsdb\Workstation)->readResolvedReferences($workstation, 1);
+                $process = (new Query())->writeNewPickup($workstation->scope, \App::$now, $entity['queue']['number']);
+            }
+            $process->testValid();
+        } else {
+            $entity->testValid();
+            throw new Exception\Process\ProcessInvalid();
+        }
+        return $process;
     }
 }

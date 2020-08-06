@@ -6,10 +6,27 @@ class WorkstationLoginTest extends Base
 {
     protected $classname = "WorkstationLogin";
 
+    public static $useraccount = '';
+
+    public static $loginName = 'superuser';
+
+    public static $authKey = 'vorschau';
+
+    public function __construct()
+    {
+        parent::__construct();
+        static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';
+        static::$authKey = (! \App::DEBUG) ? static::$authKey : 'vorschau';
+        static::$useraccount = json_decode($this->readFixture('GetUseraccount.json'), 1);
+        static::$useraccount['id'] = static::$loginName;
+        static::$useraccount['password'] = static::$authKey;
+        static::$useraccount = json_encode(static::$useraccount);
+    }
+
     public function testRendering()
     {
         $response = $this->render([], [
-            '__body' => $this->readFixture('GetUseraccount.json'),
+            '__body' => static::$useraccount,
             'nocommit' => 1
         ], []);
         $this->assertContains('workstation.json', (string)$response->getBody());
@@ -24,7 +41,7 @@ class WorkstationLoginTest extends Base
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->lastLogin = 1447926465;
         $this->render([], [
-            '__body' => $this->readFixture('GetUseraccount.json'),
+            '__body' => static::$useraccount,
             'nocommit' => 1
         ], []);
     }
@@ -34,11 +51,11 @@ class WorkstationLoginTest extends Base
         $this->expectException('\BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn');
         $this->expectExceptionCode(404);
         $this->render([], [
-            '__body' => $this->readFixture('GetUseraccount.json'),
+            '__body' => static::$useraccount,
             'nocommit' => 1
         ], []);
         $this->render([], [
-            '__body' => $this->readFixture('GetUseraccount.json'),
+            '__body' => static::$useraccount,
             'nocommit' => 1
         ], []);
     }

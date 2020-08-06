@@ -11,6 +11,20 @@ class WorkstationGetTest extends Base
 {
     protected $classname = "WorkstationGet";
 
+    public static $loginName = 'superuser';
+
+    public static $authKey = 'vorschau';
+
+    public static $basicAuth = 'dGVzdGFkbWluOjFwYWxtZTE=';
+
+    public function __construct()
+    {
+        parent::__construct();
+        static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';
+        static::$authKey = (! \App::DEBUG) ? static::$authKey : 'vorschau';
+        static::$basicAuth = (! \App::DEBUG) ? static::$basicAuth : 'dGVzdGFkbWluOnZvcnNjaGF1';
+    }
+
     public function testRendering()
     {
         $this->setWorkstation();
@@ -24,7 +38,8 @@ class WorkstationGetTest extends Base
 
     public function testReadWorkstationByXAuthKey()
     {
-        $workstation = (new \BO\Zmsdb\Workstation)->writeEntityLoginByName('testadmin', 'vorschau', \App::getNow(), 1);
+        $workstation = (new \BO\Zmsdb\Workstation)
+            ->writeEntityLoginByName(static::$loginName, static::$authKey, \App::getNow(), 1);
         $logInHash = (new \BO\Zmsdb\Workstation)->readLoggedInHashByName($workstation->getUseraccount()->id);
         $response = $this->render([], [
             '__header' => [
@@ -33,23 +48,23 @@ class WorkstationGetTest extends Base
             'resolveReferences' => 0
         ], []);
         $this->assertContains('workstation.json', (string)$response->getBody());
-        $this->assertContains('testadmin', (string)$response->getBody());
+        $this->assertContains(static::$loginName, (string)$response->getBody());
     }
 
     public function testReadWorkstationByBasicAuth()
     {
         $response = $this->render([], [
             '__header' => [
-                'Authorization' => 'Basic dGVzdGFkbWluOjFwYWxtZTE=',
+                'Authorization' => 'Basic '. static::$basicAuth,
             ],
             '__userinfo' => [
-                'username' => 'testadmin',
-                'password' => 'vorschau'
+                'username' => static::$loginName,
+                'password' => static::$authKey
             ],
             'resolveReferences' => 0
         ], []);
         $this->assertContains('workstation.json', (string)$response->getBody());
-        $this->assertContains('testadmin', (string)$response->getBody());
+        $this->assertContains(static::$loginName, (string)$response->getBody());
     }
 
     public function testReadWorkstationByWrongBasicAuth()

@@ -25,16 +25,33 @@ class WorkstationProcessTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testWorkstationWithProcess()
+    public function testWorkstationWithProcessAssigned()
     {
         $this->setWorkstation();
         User::$workstation->process = (new \BO\Zmsentities\Process())->getExample();
         User::$workstation->process->id = self::PROCESS_ID;
         User::$workstation->process->authKey = self::AUTHKEY;
+        User::$workstation->process->scope->id = 143;
         $this->expectException('\BO\Zmsapi\Exception\Workstation\WorkstationHasAssignedProcess');
         $response = $this->render([], [
             '__body' => '{
                 "id": 10029
+            }'
+        ], []);
+    }
+
+    public function testWorkstationWithPickupAssigned()
+    {
+        $this->setWorkstation();
+        User::$workstation->process = (new \BO\Zmsentities\Process())->getExample();
+        User::$workstation->process->id = self::PROCESS_ID;
+        User::$workstation->process->authKey = self::AUTHKEY;
+        User::$workstation->process->scope->id = 143;
+        $this->expectException('\BO\Zmsapi\Exception\Workstation\WorkstationHasAssignedProcess');
+        $response = $this->render([], [
+            '__body' => '{
+                "id": 10029,
+                "status": "pickup"
             }'
         ], []);
     }
@@ -46,8 +63,10 @@ class WorkstationProcessTest extends Base
         $this->expectExceptionCode(404);
         $this->render([], [
             '__body' => '{
-                "id": 9999999
-            }'
+                "id": '. self::PROCESS_ID .',
+                "status": "called"
+            }',
+            'allowClusterWideCall' => true
         ], []);
     }
 
