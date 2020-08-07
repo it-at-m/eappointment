@@ -28,8 +28,8 @@ class ConflictListByScope extends BaseController
 
         $startDateFormatted = Validator::param('startDate')->isString()->getValue();
         $endDateFormatted = Validator::param('endDate')->isString()->getValue();
-        $startDate = ($startDateFormatted) ? new \BO\Zmsentities\Helper\DateTime($startDateFormatted) : null;
-        $endDate = ($endDateFormatted) ? new \BO\Zmsentities\Helper\DateTime($endDateFormatted) : null;
+        $startDate = ($startDateFormatted) ? new \BO\Zmsentities\Helper\DateTime($startDateFormatted) : \App::$now;
+        $endDate = ($endDateFormatted) ? new \BO\Zmsentities\Helper\DateTime($endDateFormatted) : \App::$now;
 
         $scope = (new Scope())->readEntity($args['id'], 1);
         if (!$scope) {

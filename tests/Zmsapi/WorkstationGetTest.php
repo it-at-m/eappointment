@@ -17,7 +17,7 @@ class WorkstationGetTest extends Base
 
     public static $basicAuth = 'YmVybGlub25saW5lOjFwYWxtZTE=';
 
-    public function __construct() 
+    public function __construct()
     {
         parent::__construct();
         static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';

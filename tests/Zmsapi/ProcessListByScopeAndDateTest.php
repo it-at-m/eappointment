@@ -17,6 +17,21 @@ class ProcessListByScopeAndDateTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testWithGraphQL()
+    {
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('scope');
+        $response = $this->render(
+            ['id' => 141, 'date' => '2016-04-01'],
+            ['gql' => '{ id authKey scope{ id source shortName } }', 'resolveReferences' => 1],
+            []
+        );
+        $this->assertContains('$schema', (string)$response->getBody());
+        $this->assertContains('"id":"141","source":"dldb"', (string)$response->getBody());
+        $this->assertNotContains('"provider"', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
     public function testNotFound()
     {
         $this->setWorkstation();
