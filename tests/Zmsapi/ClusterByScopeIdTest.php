@@ -17,6 +17,14 @@ class ClusterByScopeIdTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testWithoutRights()
+    {
+        $response = $this->render(['id' => 141], [], []);
+        $this->assertContains('cluster.json', (string)$response->getBody());
+        $this->assertContains('reducedData', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
     public function testEmpty()
     {
         $this->setWorkstation()->getUseraccount()->setRights('cluster');

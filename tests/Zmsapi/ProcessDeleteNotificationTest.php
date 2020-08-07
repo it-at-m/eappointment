@@ -20,6 +20,16 @@ class ProcessDeleteNotificationTest extends Base
         return $response;
     }
 
+    public function testWithoutRequiredTelephone()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Process\TelephoneRequired');
+        $this->render([], [
+            '__body' => $this->readFixture('GetProcess_10030.json')
+        ], []);
+        $this->assertContains('notification.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
     public function testEmpty()
     {
         $this->expectException('\BO\Mellon\Failure\Exception');
