@@ -89,7 +89,7 @@ class WorkstationRequests
     }
 
 
-    public static function readNextProcess($excludedIds)
+    public function readNextProcess($excludedIds)
     {
         if ($this->workstation->isClusterEnabled()) {
             $process = $this->http
