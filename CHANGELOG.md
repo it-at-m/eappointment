@@ -27,6 +27,7 @@
 * #45088 Beim Bestätigungsdialog zum Löschen eines Vorgangs wird der Name des Terminkunden bzw. die Wartenummer des Spontankunden nun korrekt angezeigt
 * #42792 Wird ein Vorgang aufgerufen, während schon ein Abholer aufgerufen ist, wird nur noch auf den Abholer verwiesen. Wenn ein Vorgang mit Anmerkung aufgerufen wird und schon ein Vorgang aufgerufen wurde, wird der Anmerkungsdialog übersprungen und sofort der schon aufgerufene Vorgang angezeigt
 * #45139 Beim Bearbeiten eines Clusters wurde in der Standortübersicht die Überschrift der letzten Spalte zu Kundenhinweis korrigiert
+* #44176 Vorgänge andere Cluster-Standorte werden nun korrekt aufgerufen und beim Abschluss eines Vorganges kann nun jeder Abholerort ausgewählt werden, der zum Cluster gehört, insofern die Clusteransicht aktiv ist. Die Überschrift in der Abholer-Übersicht wurde dementsprechend angepasst.
 
 ## v2.23.04
 
