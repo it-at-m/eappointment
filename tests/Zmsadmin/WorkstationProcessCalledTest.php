@@ -24,6 +24,11 @@ class WorkstationProcessCalledTest extends Base
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/process/82252/',
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/workstation/process/called/',
                     'parameters' => ['allowClusterWideCall' => false],
@@ -90,6 +95,11 @@ class WorkstationProcessCalledTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/82252/',
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ],
                 [
                     'function' => 'readPostResult',

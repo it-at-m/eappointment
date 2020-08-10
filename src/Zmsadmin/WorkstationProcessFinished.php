@@ -23,6 +23,8 @@ class WorkstationProcessFinished extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $clusterHelper = new Helper\ClusterHelper($workstation);
+        $cluster = ($clusterHelper::isClusterEnabled()) ? $clusterHelper->getEntity() : null;
         $this->testProcess($workstation);
         $input = $request->getParsedBody();
         $statisticEnabled = $workstation->getScope()->getPreference('queue', 'statisticsEnabled');
@@ -50,7 +52,7 @@ class WorkstationProcessFinished extends BaseController
             array(
                 'title' => 'Kundendaten',
                 'workstation' => $workstation,
-                'pickupList' => $workstation->getScopeList(),
+                'pickupList' => $workstation->getScopeList($cluster),
                 'requestList' => $requestList->toSortedByGroup(),
                 'menuActive' => 'workstation',
                 'statisticEnabled' => $statisticEnabled,

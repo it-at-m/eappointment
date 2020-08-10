@@ -22,7 +22,7 @@ class WorkstationProcessCalled extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         if (! $workstation->process->hasId() && ! $workstation->process->queue->callTime) {
-            $process = new \BO\Zmsentities\Process(['id' => $processId]);
+            $process = \App::$http->readGetResult('/process/'. $args['id'] .'/')->getEntity();
             $workstation = \App::$http->readPostResult('/workstation/process/called/', $process, [
                 'allowClusterWideCall' => \App::$allowClusterWideCall
             ])->getEntity();
