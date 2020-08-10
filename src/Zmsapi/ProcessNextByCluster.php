@@ -25,15 +25,14 @@ class ProcessNextByCluster extends BaseController
         $workstation = (new Helper\User($request, 1))->checkRights();
         $query = new Query();
         $selectedDate = Validator::param('date')->isString()->getValue();
-        $allowClusterWideCall = Validator::param('allowClusterWideCall')->isBool()->getValue();
+        $allowClusterWideCall = Validator::param('allowClusterWideCall')->isBool()->setDefault(true)->getValue();
         $dateTime = ($selectedDate) ? new DateTime($selectedDate) : \App::$now;
         $cluster = $query->readEntity($args['id']);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
         $queueList = $query->readQueueList($cluster->id, $dateTime, 1);
-
-        if ($allowClusterWideCall) {
+        if (! $allowClusterWideCall) {
             $queueList = $queueList
             ->toProcessList()
             ->withScopeId($workstation->getScope()->getId())
