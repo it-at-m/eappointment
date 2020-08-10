@@ -132,7 +132,7 @@ class ProcessValidator
             $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
             $phoneNumberObject = $phoneNumberUtil->parse($valid->getValue(), 'DE');
             $telephone = '+'.$phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
-        } catch (\libphonenumber\NumberParseException $exception) {
+        } catch (\Exception $exception) {
             $telephone = $valid->getValue();
         }
         $valid = (new \BO\Mellon\Unvalidated($telephone, 'telephone'))->isString();
