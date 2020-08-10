@@ -28,17 +28,18 @@ class WorkstationProcess extends BaseController
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $workstation = (new Helper\User($request, 1))->checkRights();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $allowClusterWideCall = Validator::param('allowClusterWideCall')->isBool()->setDefault(false)->getValue();
-        if ($workstation->process->hasId() && $workstation->process->getId() != $input['id']) {
+        $allowClusterWideCall = Validator::param('allowClusterWideCall')->isBool()->setDefault(true)->getValue();
+        if ($workstation->process && $workstation->process->hasId() && $workstation->process->getId() != $input['id']) {
             $exception = new Exception\Workstation\WorkstationHasAssignedProcess();
             $exception->data = ['process' => $workstation->process];
             throw $exception;
         }
-
-        $process = $this->readTestedProcess($workstation, $input, $allowClusterWideCall);
+        $process = new \BO\Zmsentities\Process($input);
+        $this->testProcess($process, $workstation, $allowClusterWideCall);
         $process->setCallTime(\App::$now);
         $process->queue['callCount']++;
         $process->status = 'called';
+        
         $workstation->process = (new Workstation)->writeAssignedProcess($workstation, $process, \App::$now);
 
         $message = Response\Message::create($request);
@@ -49,15 +50,8 @@ class WorkstationProcess extends BaseController
         return $response;
     }
 
-    protected function readTestedProcess($workstation, $input, $allowClusterWideCall)
+    protected function testProcess($process, $workstation, $allowClusterWideCall)
     {
-        $process = (new Process)->readEntity($input['id'], new \BO\Zmsdb\Helper\NoAuth());
-        if (! $process->hasId()) {
-            throw new Exception\Process\ProcessNotFound();
-        }
-        //add data after check for process found, because id will be set too
-        $process->addData($input);
-
         if ('called' == $process->status || 'processing' == $process->status) {
             throw new Exception\Process\ProcessAlreadyCalled();
         }
@@ -68,6 +62,5 @@ class WorkstationProcess extends BaseController
             $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
         }
         $process->testValid();
-        return $process;
     }
 }

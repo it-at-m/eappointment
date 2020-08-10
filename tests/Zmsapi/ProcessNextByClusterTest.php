@@ -16,6 +16,14 @@ class ProcessNextByClusterTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testClusterWideCallDisabled()
+    {
+        $this->setWorkstation();
+        $response = $this->render(['id' => 109], ['allowClusterWideCall' => false], []);
+        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertTrue(404 == $response->getStatusCode());
+    }
+
     public function testEmpty()
     {
         $this->setWorkstation();

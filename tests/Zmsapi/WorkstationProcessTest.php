@@ -2,7 +2,9 @@
 
 namespace BO\Zmsapi\Tests;
 
-use BO\Zmsapi\Helper\User;
+use \BO\Zmsapi\Helper\User;
+
+use \BO\Zmsentities\Process as Entity;
 
 class WorkstationProcessTest extends Base
 {
@@ -10,15 +12,27 @@ class WorkstationProcessTest extends Base
 
     const PROCESS_ID = 11468;
 
-    const AUTHKEY = '74b1';
+    const AUTHKEY = '7b41';
+
+    const SCOPE_ID = 143;
 
     public function testRendering()
     {
         $this->setWorkstation();
         $response = $this->render([], [
-            '__body' => '{
-                "id": '. self::PROCESS_ID .'
-            }'
+            '__body' => json_encode($this->getInput())
+        ], []);
+        $this->assertContains(User::$workstation->process['id'], (string)$response->getBody());
+        $this->assertContains('workstation.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testClusterWideCallDisabled()
+    {
+        $this->setWorkstation();
+        $response = $this->render([], [
+            '__body' => json_encode($this->getInput()),
+            'allowClusterWideCall' => false
         ], []);
         $this->assertContains(User::$workstation->process['id'], (string)$response->getBody());
         $this->assertContains('workstation.json', (string)$response->getBody());
@@ -28,10 +42,7 @@ class WorkstationProcessTest extends Base
     public function testWorkstationWithProcessAssigned()
     {
         $this->setWorkstation();
-        User::$workstation->process = (new \BO\Zmsentities\Process())->getExample();
-        User::$workstation->process->id = self::PROCESS_ID;
-        User::$workstation->process->authKey = self::AUTHKEY;
-        User::$workstation->process->scope->id = 143;
+        User::$workstation->process = $this->getInput();
         $this->expectException('\BO\Zmsapi\Exception\Workstation\WorkstationHasAssignedProcess');
         $response = $this->render([], [
             '__body' => '{
@@ -43,10 +54,7 @@ class WorkstationProcessTest extends Base
     public function testWorkstationWithPickupAssigned()
     {
         $this->setWorkstation();
-        User::$workstation->process = (new \BO\Zmsentities\Process())->getExample();
-        User::$workstation->process->id = self::PROCESS_ID;
-        User::$workstation->process->authKey = self::AUTHKEY;
-        User::$workstation->process->scope->id = 143;
+        User::$workstation->process = $this->getInput();
         $this->expectException('\BO\Zmsapi\Exception\Workstation\WorkstationHasAssignedProcess');
         $response = $this->render([], [
             '__body' => '{
@@ -77,15 +85,13 @@ class WorkstationProcessTest extends Base
         $this->render(['id' => self::PROCESS_ID, 'authKey' => self::AUTHKEY], [], []);
     }
 
-    public function testProcessNotFound()
+    protected function getInput()
     {
-        $this->setWorkstation();
-        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
-        $this->expectExceptionCode(404);
-        $this->render([], [
-            '__body' => '{
-                "id": 123456
-            }'
-        ], []);
+        $input = (new Entity)->createExample();
+        $input->id = self::PROCESS_ID;
+        $input->authKey = self::AUTHKEY;
+        $input->scope['id'] = self::SCOPE_ID;
+        $input->appointments[0]->scope['id'] = self::SCOPE_ID;
+        return $input;
     }
 }
