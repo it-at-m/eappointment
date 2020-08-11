@@ -1,4 +1,3 @@
-
 import BaseView from '../../../lib/baseview'
 import $ from 'jquery'
 
