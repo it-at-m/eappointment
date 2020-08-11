@@ -11,7 +11,7 @@ const renderLink = (link, index, onChange, onDeleteClick) => {
     const onChangeTarget = (_, value) => onChange(index, 'target', value)
 
     return (
-        <tr className="link-item"  key={index}>
+        <tr className="link-item" key={index}>
             <td className="link-item__name">
                 <Inputs.Text
                     name={`${formName}[name]`}
