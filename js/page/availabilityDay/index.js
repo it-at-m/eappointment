@@ -1,6 +1,3 @@
-/* global window */
-/* global confirm */
-
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import $ from 'jquery'
