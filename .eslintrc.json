@@ -1,4 +1,4 @@
-module.exports = {
+{
     "parserOptions": {
         "ecmaVersion": 6,
         "sourceType": "module",
@@ -10,7 +10,9 @@ module.exports = {
     "env": {
         "browser": true
     },
-    "plugins": ["react"],
+    "plugins": [
+        "react"
+    ],
     "globals": {
         "console": true,
         "setTimeout": true,
@@ -35,30 +37,43 @@ module.exports = {
         "react/default-props-match-prop-types": 1,
         "react/forbid-foreign-prop-types": 1,
         "react/no-unused-prop-types": 1,
-        "react/prop-types": 1,
+        "react/prop-types": 1
     },
     "settings": {
-        "eslint.workingDirectories": ["./js"],
+        "eslint.workingDirectories": [
+            "./js"
+        ],
         "import/resolver": {
             "node": {
-                "extensions": [".js", ".json"]
+                "extensions": [
+                    ".js",
+                    ".json"
+                ]
             }
         },
         "react": {
             // default to "createReactClass"
-            "pragma": "React",  // Pragma to use, default to "React"
-            "version": "detect", // React version. "detect" automatically picks the version you have installed.
+            "pragma": "React", // Pragma to use, default to "React"
+            "version": "detect" // React version. "detect" automatically picks the version you have installed.
         },
         "propWrapperFunctions": [
             // The names of any function used to wrap propTypes, e.g. `forbidExtraProps`. If this isn't set, any propTypes wrapped in a function will be skipped.
             "forbidExtraProps",
-            { "property": "freeze", "object": "Object" },
-            { "property": "myFavoriteWrapper" }
+            {
+                "property": "freeze",
+                "object": "Object"
+            },
+            {
+                "property": "myFavoriteWrapper"
+            }
         ],
         "linkComponents": [
             // Components used as alternatives to <a> for linking, eg. <Link to={ url } />
             "Hyperlink",
-            { "name": "Link", "linkAttribute": "to" }
+            {
+                "name": "Link",
+                "linkAttribute": "to"
+            }
         ]
     }
 }
