@@ -2,8 +2,9 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment/min/moment-with-locales';
 import AvailabilityForm from '../form'
+import validate from '../form/validate'
 import FooterButtons from '../form/footerButtons'
-import {weekDayList, availabilityTypes} from '../helpers'
+import {weekDayList, availabilityTypes, getDataValuesFromForm} from '../helpers'
 import Board from './board'
 moment.locale('de')
 
@@ -16,9 +17,9 @@ class Accordion extends Component
     render() {
         const onPublish = (ev) => {
             ev.preventDefault()
-            let validationResult = validate(data, this.props)
-            if (!data.__modified || validationResult.valid) {
-                this.props.onPublish(getDataValuesFromForm(data, this.props.data.scope))
+            let validationResult = validate(this.props.data, this.props)
+            if (!this.props.data.__modified || validationResult.valid) {
+                this.props.onPublish(getDataValuesFromForm(this.props.data, this.props.data.scope))
             } else {
                 this.setState({ errors: validationResult.errors })
                 this.handleFocus(this.errorElement);
@@ -27,7 +28,7 @@ class Accordion extends Component
 
         const onDelete = ev => {
             ev.preventDefault()
-            this.props.onDelete(getDataValuesFromForm(data, this.props.data.scope))
+            this.props.onDelete(getDataValuesFromForm(this.props.data, this.props.data.scope))
         }
 
         const onAbort = (ev) => {
@@ -96,11 +97,19 @@ class Accordion extends Component
 
 Accordion.propTypes = {
     data: PropTypes.object,
+    today: PropTypes.number,
+    onSelect: PropTypes.func,
     onChange: PropTypes.func,
+    onPublish: PropTypes.func,
+    onDelete: PropTypes.func,
+    onAbort: PropTypes.func,
+    onNewAvailability: PropTypes.func,
     onCopy: PropTypes.func,
     onException: PropTypes.func,
     onEditInFuture: PropTypes.func,
-    handleFocus: PropTypes.func
+    handleFocus: PropTypes.func,
+    formTitle: PropTypes.string,
+    availabilities: PropTypes.array
 }
 
 export default Accordion

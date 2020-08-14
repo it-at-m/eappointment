@@ -169,3 +169,100 @@ export const cleanupAvailabilityForSave = availability => {
 
     return newAvailability;
 }
+
+export const getDataValuesFromForm = (form, scope) => {
+    return Object.assign({}, getFirstLevelValues(form), {
+        bookable: {
+            startInDays: form.open_from === "" ? scope.preferences.appointment.startInDaysDefault : form.open_from,
+            endInDays: form.open_to === "" ? scope.preferences.appointment.endInDaysDefault : form.open_to
+        },
+        workstationCount: {
+            intern: form.workstationCount_intern,
+            callcenter: form.workstationCount_callcenter,
+            "public": form.workstationCount_public
+        },
+        weekday: form.weekday.reduce((carry, current) => {
+            return Object.assign({}, carry, { [current]: 1 })
+        }, {}),
+        repeat: {
+            weekOfMonth: form.repeat > 0 ? form.repeat : 0,
+            afterWeeks: form.repeat < 0 ? -form.repeat : 0
+        }
+    })
+}
+
+export const cleanupFormData = data => {
+    let internCount = parseInt(data.workstationCount_intern, 10);
+    let callcenterCount = parseInt(data.workstationCount_callcenter, 10);
+    callcenterCount = (callcenterCount > internCount) ? internCount : callcenterCount;
+    let publicCount = parseInt(data.workstationCount_public, 10);
+    publicCount = (publicCount > internCount) ? internCount : publicCount;
+    return Object.assign({}, data, {
+        workstationCount_callcenter: callcenterCount,
+        workstationCount_public: publicCount,
+        open_from: (data.open_from === "0" || data.open_from === data.openFromDefault) ? "" : data.open_from,
+        open_to: (data.open_to === "0" || data.open_to === data.openToDefault) ? "" : data.open_to
+    })
+}
+
+export const getFirstLevelValues = data => {
+    const {
+        __modified,
+        scope,
+        description,
+        startTime,
+        endTime,
+        startDate,
+        endDate,
+        multipleSlotsAllowed,
+        id,
+        tempId,
+        type,
+        slotTimeInMinutes
+    } = data
+
+    return {
+        __modified,
+        scope,
+        description,
+        startTime,
+        endTime,
+        startDate,
+        endDate,
+        multipleSlotsAllowed,
+        id,
+        tempId,
+        type,
+        slotTimeInMinutes
+    }
+}
+
+export const getFormValuesFromData = data => {
+    const workstations = Object.assign({}, data.workstationCount)
+
+    if (parseInt(workstations.callcenter, 10) > parseInt(workstations.intern, 10)) {
+        workstations.callcenter = workstations.intern
+    }
+
+    if (parseInt(workstations.public, 10) > parseInt(workstations.intern, 10)) {
+        workstations.public = workstations.intern
+    }
+
+    const openFrom = data.bookable.startInDays
+    const openFromDefault = data.scope.preferences.appointment.startInDaysDefault
+    const openTo = data.bookable.endInDays
+    const openToDefault = data.scope.preferences.appointment.endInDaysDefault
+    const repeatSeries = repeat(data.repeat);
+
+    return cleanupFormData(Object.assign({}, getFirstLevelValues(data), {
+        open_from: openFrom,
+        open_to: openTo,
+        openFromDefault,
+        openToDefault,
+        repeat: repeatSeries,
+        workstationCount_intern: workstations.intern,
+        workstationCount_callcenter: workstations.callcenter,
+        workstationCount_public: workstations.public,
+        weekday: Object.keys(data.weekday).filter(key => parseInt(data.weekday[key], 10) > 0)
+    }))
+}
