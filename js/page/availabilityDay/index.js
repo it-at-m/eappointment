@@ -160,14 +160,21 @@ class AvailabilityPage extends Component {
     onCopyAvailability(availability) {
         const start = formatTimestampDate(availability.startDate)
         const end = formatTimestampDate(availability.endDate)
-        this.setState({
-            selectedAvailability: Object.assign({}, availability, {
-                tempId: tempId(),
-                id: null,
-                description: `Kopie von "${start} - ${end}"`
-            }),
-            formTitle: "Öffnungszeit kopieren"
+
+        const copyAvailability = Object.assign({}, availability, {
+            tempId: tempId(),
+            id: null,
+            description: `Kopie von "${start} - ${end}"`
         })
+        this.setState(Object.assign(
+            {},
+            mergeAvailabilityListIntoState(this.state, [
+                copyAvailability
+            ]),
+            { selectedAvailability: copyAvailability, formTitle: "Öffnungszeit kopieren" }
+        ))
+
+        console.log('copy availability', this.state.selectedAvailability)
     }
 
     onCreateExceptionForAvailability(availability) {
@@ -242,14 +249,14 @@ class AvailabilityPage extends Component {
     }
 
     onNewAvailability() {
-        console.log('new availability')
         const newAvailability = getNewAvailability(this.props.timestamp, tempId(), this.props.scope)
 
         this.setState(Object.assign({}, {
             selectedAvailability: newAvailability,
             formTitle: "Neue Öffnungszeit"
         }))
-        console.log(this.state)
+
+        console.log('new availability', this.state.selectedAvailability)
     }
 
     onTabSelect(tab) {
@@ -272,6 +279,10 @@ class AvailabilityPage extends Component {
             })
         }
 
+        const onDelete = data => {
+            this.onDeleteAvailability(data)
+        }
+
         const selectedDaysAvailabilities = this.state.availabilitylist.filter(availability => {
             const start = moment(availability.startDate, 'X')
             const end = moment(availability.endDate, 'X')
@@ -282,7 +293,7 @@ class AvailabilityPage extends Component {
 
         const ViewComponent = this.state.selectedTab == 'graph' ? GraphView : TableView;
 
-            return <ViewComponent
+        return <ViewComponent
             timestamp={this.props.timestamp}
             conflicts={this.state.conflicts}
             availabilities={selectedDaysAvailabilities}
@@ -290,6 +301,7 @@ class AvailabilityPage extends Component {
             maxWorkstationCount={this.props.maxworkstationcount}
             links={this.props.links}
             onSelect={onSelect}
+            onDelete={onDelete}
         />
     }
 
@@ -305,6 +317,34 @@ class AvailabilityPage extends Component {
                 selectedAvailability: data
             })
         }
+        const onCopy = data => {
+            this.onCopyAvailability(data)
+        }
+
+        const onException = data => {
+            this.onCreateExceptionForAvailability(data)
+        }
+
+        const onEditInFuture = data => {
+            this.props.onEditInFuture(data)
+        }
+
+        const onNewAvailability = () => {
+            this.onNewAvailability()
+        }
+
+        const onAbort = () => {
+            this.onRevertUpdates()
+        }
+
+        const onDelete = data => {
+            this.onDeleteAvailability(data)
+        }
+
+        const onPublish = () => {
+            this.onPublishAvailability()
+        }
+
         return <AccordionLayout 
             availabilities={this.state.availabilitylist}
             data={this.state.selectedAvailability ? this.state.selectedAvailability : null}
@@ -312,14 +352,13 @@ class AvailabilityPage extends Component {
             timestamp={this.props.timestamp}
             title={this.state.formTitle}
             onSelect={onSelect}
-            onSave={this.onUpdateAvailability.bind(this)}
-            onPublish={this.onPublishAvailability.bind(this)}
-            onDelete={this.onDeleteAvailability.bind(this)}
-            onNewAvailability={this.onNewAvailability.bind(this)}
-            onAbort={this.onRevertUpdates.bind(this)}
-            onCopy={this.onCopyAvailability.bind(this)}
-            onException={this.onCreateExceptionForAvailability.bind(this)}
-            onEditInFuture={this.onEditAvailabilityInFuture.bind(this)}
+            onPublish={onPublish}
+            onDelete={onDelete}
+            onNewAvailability={onNewAvailability}
+            onAbort={onAbort}
+            onCopy={onCopy}
+            onException={onException}
+            onEditInFuture={onEditInFuture}
             handleFocus={this.handleFocus.bind(this)}
         />
     }
