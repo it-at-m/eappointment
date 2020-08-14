@@ -249,6 +249,7 @@ class AvailabilityPage extends Component {
             selectedAvailability: newAvailability,
             formTitle: "Neue Öffnungszeit"
         }))
+        console.log(this.state)
     }
 
     onTabSelect(tab) {

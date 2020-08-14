@@ -24,6 +24,8 @@ const FooterButtons = (props) => {
 }
 
 FooterButtons.propTypes = {
+    data: PropTypes.object,
+    onNewClick: PropTypes.func,
     onPublish: PropTypes.func,
     onDelete: PropTypes.func,
     onAbort: PropTypes.func
