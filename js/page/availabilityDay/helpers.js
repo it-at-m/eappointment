@@ -171,6 +171,7 @@ export const cleanupAvailabilityForSave = availability => {
 }
 
 export const getDataValuesFromForm = (form, scope) => {
+    console.log(form.weekday)
     return Object.assign({}, getFirstLevelValues(form), {
         bookable: {
             startInDays: form.open_from === "" ? scope.preferences.appointment.startInDaysDefault : form.open_from,

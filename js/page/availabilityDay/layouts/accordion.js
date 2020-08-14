@@ -4,7 +4,7 @@ import moment from 'moment/min/moment-with-locales';
 import AvailabilityForm from '../form'
 import validate from '../form/validate'
 import FooterButtons from '../form/footerButtons'
-import {weekDayList, availabilityTypes, getDataValuesFromForm} from '../helpers'
+import {weekDayList, availabilityTypes} from '../helpers'
 import Board from './board'
 moment.locale('de')
 
@@ -19,7 +19,7 @@ class Accordion extends Component
             ev.preventDefault()
             let validationResult = validate(this.props.data, this.props)
             if (!this.props.data.__modified || validationResult.valid) {
-                this.props.onPublish(getDataValuesFromForm(this.props.data, this.props.data.scope))
+                this.props.onPublish(this.props.data)
             } else {
                 this.setState({ errors: validationResult.errors })
                 this.handleFocus(this.errorElement);
@@ -28,7 +28,7 @@ class Accordion extends Component
 
         const onDelete = ev => {
             ev.preventDefault()
-            this.props.onDelete(getDataValuesFromForm(this.props.data, this.props.data.scope))
+            this.props.onDelete(this.props.data)
         }
 
         const onAbort = (ev) => {
@@ -55,18 +55,33 @@ class Accordion extends Component
         
                 const isExpanded = (this.props.data) ? availability.id == this.props.data.id : false;
         
-                const onClick = ev => {
+                const onToggle = ev => {
                     ev.preventDefault()
                     this.props.onSelect(availability)
                     if (this.props.data && ev.target.attributes.eventkey.value == this.props.data.id) {
                         this.props.onSelect(null)
                     }
                 }
+
+                const onCopy = ev => {
+                    ev.preventDefault()
+                    this.props.onCopy(availability)
+                }
+
+                const onException = ev => {
+                    ev.preventDefault()
+                    this.props.onException(availability)
+                }
+
+                const onEditInFuture = ev => {
+                    ev.preventDefault()
+                    this.props.onEditInFuture(availability)
+                }
         
                 return (
                     <section key={index} className="accordion-section">
                         <h3 className="accordion__heading" role="heading" title={title}>
-                            <button eventkey={availability.id} onClick={onClick} className="accordion__trigger" aria-expanded={isExpanded}>
+                            <button eventkey={availability.id} onClick={onToggle} className="accordion__trigger" aria-expanded={isExpanded}>
                                 <span className="accordion__title">{startDate} - {endDate}, {startTime} - {endTime} ({availabilityType}, {availabilityWeekDay})</span>
                             </button>
                         </h3>
@@ -74,9 +89,9 @@ class Accordion extends Component
                             <AvailabilityForm data={availability}
                                 today={this.props.today}
                                 title={this.props.formTitle}
-                                onCopy={this.props.onCopy}
-                                onException={this.props.onException}
-                                onEditInFuture={this.props.onEditInFuture}
+                                onCopy={onCopy}
+                                onException={onException}
+                                onEditInFuture={onEditInFuture}
                                 handleFocus={this.props.handleFocus}
                             />
                         </div>

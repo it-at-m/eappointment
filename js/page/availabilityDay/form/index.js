@@ -40,24 +40,13 @@ class AvailabilityForm extends Component {
             this.handleChange(name, value)
         }
 
-        const onCopy = ev => {
-            ev.preventDefault()
-            this.props.onCopy(getDataValuesFromForm(data, this.props.data.scope))
-        }
-
-        const onException = ev => {
-            ev.preventDefault()
-            this.props.onException(getDataValuesFromForm(data, this.props.data.scope))
-        }
-
-        const onEditInFuture = ev => {
-            ev.preventDefault()
-            this.props.onEditInFuture(getDataValuesFromForm(data, this.props.data.scope))
-        }
-
         return (
             <div>
-                {<HeaderButtons {...{ onCopy, onException, onEditInFuture }} />}
+                {<HeaderButtons 
+                    onCopy={this.props.onCopy} 
+                    onException={this.props.onException}
+                    onEditInFuture={this.props.onEditInFuture} 
+                />}
                 {<FormContent {... { data, errors, onChange }} />}
             </div>
         )   
