@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-
 import HeaderButtons from './headerButtons'
-import validate from './validate'
-import renderBody from './renderBody'
+import FormContent from './content'
 import { repeat } from '../helpers'
 
 const getFirstLevelValues = data => {
@@ -111,11 +109,6 @@ class AvailabilityForm extends Component {
             data: getFormValuesFromData(this.props.data),
             errors: {}
         };
-
-        this.errorElement = null;
-        this.setErrorRef = element => {
-            this.errorElement = element
-        };
         this.handleFocus = props.handleFocus
     }
 
@@ -144,38 +137,6 @@ class AvailabilityForm extends Component {
             this.handleChange(name, value)
         }
 
-        const onSave = (ev) => {
-            ev.preventDefault()
-            let validationResult = validate(data, this.props)
-            if (!data.__modified || validationResult.valid) {
-                this.props.onSave(getDataValuesFromForm(data, this.props.data.scope))
-            } else {
-                this.setState({ errors: validationResult.errors })
-                this.handleFocus(this.errorElement);
-            }
-        }
-
-        const onPublish = (ev) => {
-            ev.preventDefault()
-            let validationResult = validate(data, this.props)
-            if (!data.__modified || validationResult.valid) {
-                this.props.onPublish(getDataValuesFromForm(data, this.props.data.scope))
-            } else {
-                this.setState({ errors: validationResult.errors })
-                this.handleFocus(this.errorElement);
-            }
-        }
-
-        const onDelete = ev => {
-            ev.preventDefault()
-            this.props.onDelete(getDataValuesFromForm(data, this.props.data.scope))
-        }
-
-        const onAbort = (ev) => {
-            ev.preventDefault()
-            this.props.onAbort()
-        }
-
         const onCopy = ev => {
             ev.preventDefault()
             this.props.onCopy(getDataValuesFromForm(data, this.props.data.scope))
@@ -194,7 +155,7 @@ class AvailabilityForm extends Component {
         return (
             <div>
                 {<HeaderButtons {...{ onCopy, onException, onEditInFuture }} />}
-                {renderBody(data, errors, onChange, onSave, onPublish, onDelete, onAbort, this.setErrorRef)}
+                {<FormContent {... { data, errors, onChange }} />}
             </div>
         )   
     }
@@ -202,10 +163,7 @@ class AvailabilityForm extends Component {
 
 AvailabilityForm.defaultProps = {
     data: {},
-    onSave: () => { },
-    onPublish: () => { },
     onChange: () => { },
-    onDelete: () => { },
     onCopy: () => { },
     onException: () => { },
     onEditInFuture: () => { }
@@ -213,11 +171,6 @@ AvailabilityForm.defaultProps = {
 
 AvailabilityForm.propTypes = {
     data: PropTypes.object,
-    title: PropTypes.string,
-    onSave: PropTypes.func,
-    onAbort: PropTypes.func,
-    onPublish: PropTypes.func,
-    onDelete: PropTypes.func,
     onChange: PropTypes.func,
     onCopy: PropTypes.func,
     onException: PropTypes.func,

@@ -9,7 +9,7 @@ import TableView from './timetable/tableview.js'
 import UpdateBar from './updateBar'
 import SaveBar from './saveBar'
 import validate from './form/validate'
-import AccordionLayout from './layouts/accordionBody'
+import AccordionLayout from './layouts/accordion'
 import PageLayout from './layouts/page'
 
 import {
@@ -289,8 +289,6 @@ class AvailabilityPage extends Component {
             maxWorkstationCount={this.props.maxworkstationcount}
             links={this.props.links}
             onSelect={onSelect}
-            onDelete={this.onDeleteAvailability.bind(this)}
-            onNewAvailability={this.onNewAvailability.bind(this)}
         />
     }
 
@@ -316,6 +314,7 @@ class AvailabilityPage extends Component {
             onSave={this.onUpdateAvailability.bind(this)}
             onPublish={this.onPublishAvailability.bind(this)}
             onDelete={this.onDeleteAvailability.bind(this)}
+            onNewAvailability={this.onNewAvailability.bind(this)}
             onAbort={this.onRevertUpdates.bind(this)}
             onCopy={this.onCopyAvailability.bind(this)}
             onException={this.onCreateExceptionForAvailability.bind(this)}
