@@ -1,8 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-
-
 const HeaderButtons = (props) => {
     const { onCopy, onException, onEditInFuture } = props
 

@@ -1,12 +1,17 @@
 import React from 'react'
-
+import PropTypes from 'prop-types'
 import * as Inputs from '../../../lib/inputs'
 import Errors from './errors'
 const { Label, FormGroup, Controls, Description } = Inputs
 import { range } from '../../../lib/utils'
 import { weekDayList, availabilitySeries, availabilityTypes } from '../helpers'
 
-const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort, setErrorRef) => {
+const FormContent = (props) => {
+    const {data, errors, onChange} = props;
+    const setErrorRef = element => {
+        return element
+    }
+
     return (
         <div>
             <div ref={setErrorRef}>
@@ -99,14 +104,12 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                                 <Label attributes={{"htmlFor": "AvDaySlottime", "className": "light"}} value="&nbsp;Minuten Abstand zweier aufeinander folgender Termine"></Label>
                             </Controls>
                         </FormGroup>
-                        <FormGroup inline={true} className="form-check">    
+                        <FormGroup inline={true}>    
                             <Controls>
-                                <Label>
-                                    <Inputs.Checkbox name="multipleSlotsAllowed"
-                                        checked={true == data.multipleSlotsAllowed} {...{ onChange }} 
-                                    />
-                                    Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen
-                                </Label>
+                                <Inputs.Checkbox name="multipleSlotsAllowed"
+                                    checked={true == data.multipleSlotsAllowed} {...{ onChange }} 
+                                />
+                                <Label value="Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen"></Label>
                             </Controls>
                         </FormGroup>
                     </fieldset>
@@ -195,29 +198,15 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                         </div>
                         : null}
                 </fieldset>
-
-                <div className="form-actions">
-                   
-                    <button className="button button--destructive button-delete" type="delete" value="delete" onClick={onDelete}>Löschen</button>
-                    <button className="button btn" type="abort" onClick={onAbort}>Abbrechen</button>
-
-                    {data.__modified ?
-                        <button className="button button-new btn--b3igicon"
-                            type="save"
-                            value="save"
-                            onClick={onSave}><i className="far fa-bookmark" aria-hidden="true"></i> merken und später aktivieren
-                        </button> : null}
-                    {data.__modified ?
-                        <button className="button button--positive button-save"
-                            type="save"
-                            value="publish"
-                            onClick={onPublish}>Alle Änderungen aktivieren
-                        </button> : null}
-                
-                </div>
             </form>
         </div>
     )
 }
 
-export default renderBody 
+FormContent.propTypes = {
+    data: PropTypes.object,
+    errors: PropTypes.object,
+    onChange: PropTypes.func,
+}
+
+export default FormContent 

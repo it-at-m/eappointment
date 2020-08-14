@@ -11,11 +11,10 @@ export const headerMiddle = () => {
     )
 }
 
-export const headerRight = (links, onNewClick) => {
+export const headerRight = (links) => {
     return (
         <span className="right">
             <a href={links.monthView}>zurück zur Monatsansicht</a>
-            <button className="button button--diamond button-new" onClick={onNewClick}>neue Öffnungszeit</button>
         </span>
     )
 }
