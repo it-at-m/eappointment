@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import HeaderButtons from './headerButtons'
+import FormButtons from './formButtons'
 import FormContent from './content'
 import { getDataValuesFromForm, cleanupFormData, getFormValuesFromData } from '../helpers'
 
@@ -30,7 +30,7 @@ class AvailabilityForm extends Component {
                 __modified: true
             }))
         }, () => {
-            this.props.onChange(getDataValuesFromForm(this.state.data, this.props.data.scope))
+            this.props.handleChange(getDataValuesFromForm(this.state.data, this.props.data.scope))
         })
     }
 
@@ -42,12 +42,13 @@ class AvailabilityForm extends Component {
 
         return (
             <div>
-                {<HeaderButtons 
+                {<FormContent {... { data, errors, onChange }} />}
+                {<FormButtons 
+                    data = {data}
                     onCopy={this.props.onCopy} 
                     onException={this.props.onException}
                     onEditInFuture={this.props.onEditInFuture} 
                 />}
-                {<FormContent {... { data, errors, onChange }} />}
             </div>
         )   
     }
@@ -55,7 +56,7 @@ class AvailabilityForm extends Component {
 
 AvailabilityForm.defaultProps = {
     data: {},
-    onChange: () => { },
+    handleChange: () => { },
     onCopy: () => { },
     onException: () => { },
     onEditInFuture: () => { }
@@ -63,7 +64,7 @@ AvailabilityForm.defaultProps = {
 
 AvailabilityForm.propTypes = {
     data: PropTypes.object,
-    onChange: PropTypes.func,
+    handleChange: PropTypes.func,
     onCopy: PropTypes.func,
     onException: PropTypes.func,
     onEditInFuture: PropTypes.func,

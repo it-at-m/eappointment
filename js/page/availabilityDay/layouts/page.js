@@ -10,7 +10,6 @@ const PageLayout = (props) => {
             {props.conflicts}
             {props.tabs}
             {props.timeTable}
-            {props.updateBar}
             {props.accordion}
         </div>
     )
@@ -21,8 +20,7 @@ PageLayout.propTypes = {
     accordion: PropTypes.node,
     conflicts: PropTypes.node,
     tabs: PropTypes.node,
-    saveBar: PropTypes.node,
-    updateBar: PropTypes.node
+    saveBar: PropTypes.node
 }
 
 export default PageLayout

@@ -24,7 +24,7 @@ const TableView = (props) => {
             headerRight={constants.headerRight(props.links, props.onNewAvailability)}
             headerMiddle={constants.headerMiddle()}
             body={TableBody}
-            footer={constants.renderFooter()}
+            footer=""
         />
     )
 }
