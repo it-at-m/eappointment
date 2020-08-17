@@ -6,7 +6,6 @@ import Conflicts from './conflicts'
 import TabsBar from './tabsbar'
 import GraphView from './timetable/graphview.js'
 import TableView from './timetable/tableview.js'
-import UpdateBar from './updateBar'
 import SaveBar from './saveBar'
 import validate from './form/validate'
 import AccordionLayout from './layouts/accordion'
@@ -65,7 +64,6 @@ class AvailabilityPage extends Component {
         } else {
             state = { selectedAvailability: null }
         }
-        console.log(this.state, state)
         this.setState(state);
         $('body').scrollTop(0);
         return state;
@@ -119,7 +117,7 @@ class AvailabilityPage extends Component {
         }).done((success) => {
             console.log('save success', success)
             this.setState({
-                lastSave: new Date()
+                lastSave: new Date().getTime()
             })
             this.refreshData()
         }).fail((err) => {
@@ -168,13 +166,9 @@ class AvailabilityPage extends Component {
         })
         this.setState(Object.assign(
             {},
-            mergeAvailabilityListIntoState(this.state, [
-                copyAvailability
-            ]),
-            { selectedAvailability: copyAvailability, formTitle: "Öffnungszeit kopieren" }
+            mergeAvailabilityListIntoState(this.state, [copyAvailability]),
+            { selectedAvailability: copyAvailability, stateChanged: true }
         ))
-
-        console.log('copy availability', this.state.selectedAvailability)
     }
 
     onCreateExceptionForAvailability(availability) {
@@ -213,7 +207,7 @@ class AvailabilityPage extends Component {
                 exceptionAvailability,
                 futureAvailability
             ]),
-            { selectedAvailability: exceptionAvailability, formTitle: "Ausnahme-Öffnungszeit" }
+            { selectedAvailability: exceptionAvailability, stateChanged: true }
         ))
     }
 
@@ -244,19 +238,20 @@ class AvailabilityPage extends Component {
                 pastAvailability,
                 futureAvailability
             ]),
-            { selectedAvailability: futureAvailability, formTitle: "Neue Öffnungszeit ab Datum" }
+            { selectedAvailability: futureAvailability, stateChanged: true }
         ))
     }
 
     onNewAvailability() {
+        let state = {};
         const newAvailability = getNewAvailability(this.props.timestamp, tempId(), this.props.scope)
-
-        this.setState(Object.assign({}, {
-            selectedAvailability: newAvailability,
-            formTitle: "Neue Öffnungszeit"
-        }))
-
-        console.log('new availability', this.state.selectedAvailability)
+        state = Object.assign(
+            state, 
+            updateAvailabilityInState(this.state, newAvailability), 
+            { selectedAvailability: newAvailability, stateChanged: true }
+        );
+        this.setState(state);
+        $('body').scrollTop(0);
     }
 
     onTabSelect(tab) {
@@ -311,6 +306,14 @@ class AvailabilityPage extends Component {
         }
     }
 
+    handleChange(data) {
+        if (data.__modified) {
+            this.setState(Object.assign({}, updateAvailabilityInState(this.state, data), {
+                selectedAvailability: data
+            }));
+        }
+    }
+
     renderAvailabilityAccordion() {
         const onSelect = data => {
             this.setState({
@@ -326,23 +329,23 @@ class AvailabilityPage extends Component {
         }
 
         const onEditInFuture = data => {
-            this.props.onEditInFuture(data)
-        }
-
-        const onNewAvailability = () => {
-            this.onNewAvailability()
-        }
-
-        const onAbort = () => {
-            this.onRevertUpdates()
+            this.onEditAvailabilityInFuture(data)
         }
 
         const onDelete = data => {
             this.onDeleteAvailability(data)
         }
 
-        const onPublish = () => {
-            this.onPublishAvailability()
+        const onPublish = data => {
+            this.onPublishAvailability(data)
+        }
+
+        const onNew = data => {
+            this.onNewAvailability(data)
+        }
+
+        const handleChange = (data) => {
+            this.handleChange(data)
         }
 
         return <AccordionLayout 
@@ -354,19 +357,15 @@ class AvailabilityPage extends Component {
             onSelect={onSelect}
             onPublish={onPublish}
             onDelete={onDelete}
-            onNewAvailability={onNewAvailability}
-            onAbort={onAbort}
+            onNew={onNew}
+            onAbort={this.onRevertUpdates.bind(this)}
             onCopy={onCopy}
             onException={onException}
             onEditInFuture={onEditInFuture}
             handleFocus={this.handleFocus.bind(this)}
+            handleChange={handleChange}
+            stateChanged={this.state.stateChanged}
         />
-    }
-
-    renderUpdateBar() {
-        if (this.state.stateChanged && !this.state.selectedAvailability) {
-            return <UpdateBar onSave={this.onSaveUpdates.bind(this)} onRevert={this.onRevertUpdates.bind(this)} />
-        }
     }
 
     renderSaveBar() {
@@ -380,7 +379,6 @@ class AvailabilityPage extends Component {
             <PageLayout
                 tabs={<TabsBar selected={this.state.selectedTab} tabs={this.props.tabs} onSelect={this.onTabSelect.bind(this)} />}
                 timeTable={this.renderTimeTable()}
-                //updateBar={this.renderUpdateBar()}
                 saveBar={this.renderSaveBar()}
                 accordion={this.renderAvailabilityAccordion()}
                 conflicts={<Conflicts conflicts={this.state.conflicts} onSelect={this.onConflictedIdSelect.bind(this)} />}

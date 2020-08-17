@@ -36,9 +36,9 @@ class Accordion extends Component
             this.props.onAbort()
         }
 
-        const onNewClick = (ev) => {
+        const onNew = (ev) => {
             ev.preventDefault()
-            this.props.onNewAvailability()
+            this.props.onNew()
         }
         
         const renderAccordionBody = () => {
@@ -47,18 +47,20 @@ class Accordion extends Component
                 const endDate = moment(availability.endDate, 'X').format('DD.MM.YYYY');
                 const startTime = moment(availability.startTime, 'h:mm:ss').format('HH:mm');
                 const endTime = moment(availability.endTime, 'h:mm:ss').format('HH:mm');
-                const availabilityType = availabilityTypes.find(element => element.value == availability.type).name
+                const availabilityType = availabilityTypes.find(element => element.value == availability.type);
                 const title = `Bearbeiten von ${availability.id} (${startDate} - ${endDate})`
                 const availabilityWeekDayList = Object.keys(availability.weekday).filter(key => parseInt(availability.weekday[key], 10) > 0)
                 const availabilityWeekDay = weekDayList.filter(element => availabilityWeekDayList.includes(element.value)
                 ).map(item => item.label).join(', ')
         
-                const isExpanded = (this.props.data) ? availability.id == this.props.data.id : false;
-        
+
+                let eventId = availability.id ? availability.id : availability.tempId;
+                const isExpanded = (this.props.data) ? (eventId == this.props.data.id || eventId == this.props.data.tempId) : false;
+
                 const onToggle = ev => {
                     ev.preventDefault()
                     this.props.onSelect(availability)
-                    if (this.props.data && ev.target.attributes.eventkey.value == this.props.data.id) {
+                    if (this.props.data && ev.target.attributes.eventkey.value == eventId) {
                         this.props.onSelect(null)
                     }
                 }
@@ -81,30 +83,36 @@ class Accordion extends Component
                 return (
                     <section key={index} className="accordion-section">
                         <h3 className="accordion__heading" role="heading" title={title}>
-                            <button eventkey={availability.id} onClick={onToggle} className="accordion__trigger" aria-expanded={isExpanded}>
-                                <span className="accordion__title">{startDate} - {endDate}, {startTime} - {endTime} ({availabilityType}, {availabilityWeekDay})</span>
+                            <button eventkey={availability.id || availability.tempId} onClick={onToggle} className="accordion__trigger" aria-expanded={isExpanded}>
+                                {availability.id ? 
+                                    <span className="accordion__title">{startDate} - {endDate}, {startTime} - {endTime} ({availabilityType.name}, {availabilityWeekDay})</span> : 
+                                    <span className="accordion__title">{availability.description}</span> 
+                                }
                             </button>
                         </h3>
                         <div className={isExpanded ? "accordion__panel opened" : "accordion__panel"} hidden={(isExpanded) ? "" : "hidden"}>
                             <AvailabilityForm data={availability}
                                 today={this.props.today}
-                                title={this.props.formTitle}
+                                handleFocus={this.props.handleFocus}
+                                handleChange={this.props.handleChange}
                                 onCopy={onCopy}
                                 onException={onException}
                                 onEditInFuture={onEditInFuture}
-                                handleFocus={this.props.handleFocus}
                             />
                         </div>
                     </section>
                 )
             })
         }
-
         return (
             <Board className="accordion js-accordion"
                 title=""
                 body={renderAccordionBody()}
-                footer={<FooterButtons data={this.props.data} {...{onNewClick, onPublish, onDelete, onAbort }} />}
+                footer={<FooterButtons 
+                    stateChanged={this.props.stateChanged} 
+                    data={this.props.data} 
+                    {...{onNew, onPublish, onDelete, onAbort }} 
+                />}
             />
         )
     }
@@ -114,17 +122,17 @@ Accordion.propTypes = {
     data: PropTypes.object,
     today: PropTypes.number,
     onSelect: PropTypes.func,
-    onChange: PropTypes.func,
+    handleChange: PropTypes.func,
     onPublish: PropTypes.func,
     onDelete: PropTypes.func,
     onAbort: PropTypes.func,
-    onNewAvailability: PropTypes.func,
+    onNew: PropTypes.func,
     onCopy: PropTypes.func,
     onException: PropTypes.func,
     onEditInFuture: PropTypes.func,
     handleFocus: PropTypes.func,
-    formTitle: PropTypes.string,
-    availabilities: PropTypes.array
+    availabilities: PropTypes.array,
+    stateChanged: PropTypes.bool
 }
 
 export default Accordion

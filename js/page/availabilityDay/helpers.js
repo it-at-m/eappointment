@@ -77,7 +77,7 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
         id: null,
         tempId,
         scope: Object.assign({}, scope),
-        description: '',
+        description: 'Neue Öffnungszeit',
         startDate: timestamp,
         endDate: timestamp,
         startTime: '00:00:00',
@@ -171,7 +171,6 @@ export const cleanupAvailabilityForSave = availability => {
 }
 
 export const getDataValuesFromForm = (form, scope) => {
-    console.log(form.weekday)
     return Object.assign({}, getFirstLevelValues(form), {
         bookable: {
             startInDays: form.open_from === "" ? scope.preferences.appointment.startInDaysDefault : form.open_from,
