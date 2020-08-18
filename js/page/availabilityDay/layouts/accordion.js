@@ -4,7 +4,7 @@ import moment from 'moment/min/moment-with-locales';
 import AvailabilityForm from '../form'
 import validate from '../form/validate'
 import FooterButtons from '../form/footerButtons'
-import {weekDayList, availabilityTypes} from '../helpers'
+import {accordionTitle} from '../helpers'
 import Board from './board'
 moment.locale('de')
 
@@ -43,17 +43,6 @@ class Accordion extends Component
         
         const renderAccordionBody = () => {
             return this.props.availabilities.map((availability, index) => {
-                const startDate = moment(availability.startDate, 'X').format('DD.MM.YYYY');
-                const endDate = moment(availability.endDate, 'X').format('DD.MM.YYYY');
-                const startTime = moment(availability.startTime, 'h:mm:ss').format('HH:mm');
-                const endTime = moment(availability.endTime, 'h:mm:ss').format('HH:mm');
-                const availabilityType = availabilityTypes.find(element => element.value == availability.type);
-                const title = `Bearbeiten von ${availability.id} (${startDate} - ${endDate})`
-                const availabilityWeekDayList = Object.keys(availability.weekday).filter(key => parseInt(availability.weekday[key], 10) > 0)
-                const availabilityWeekDay = weekDayList.filter(element => availabilityWeekDayList.includes(element.value)
-                ).map(item => item.label).join(', ')
-        
-
                 let eventId = availability.id ? availability.id : availability.tempId;
                 const isExpanded = (this.props.data) ? (eventId == this.props.data.id || eventId == this.props.data.tempId) : false;
 
@@ -70,9 +59,9 @@ class Accordion extends Component
                     this.props.onCopy(availability)
                 }
 
-                const onException = ev => {
+                const onExclusion = ev => {
                     ev.preventDefault()
-                    this.props.onException(availability)
+                    this.props.onExclusion(availability)
                 }
 
                 const onEditInFuture = ev => {
@@ -80,14 +69,12 @@ class Accordion extends Component
                     this.props.onEditInFuture(availability)
                 }
         
+                let title = accordionTitle(availability);
                 return (
                     <section key={index} className="accordion-section">
                         <h3 className="accordion__heading" role="heading" title={title}>
                             <button eventkey={availability.id || availability.tempId} onClick={onToggle} className="accordion__trigger" aria-expanded={isExpanded}>
-                                {availability.id ? 
-                                    <span className="accordion__title">{startDate} - {endDate}, {startTime} - {endTime} ({availabilityType.name}, {availabilityWeekDay})</span> : 
-                                    <span className="accordion__title">{availability.description}</span> 
-                                }
+                                <span className="accordion__title">{title}</span>
                             </button>
                         </h3>
                         <div className={isExpanded ? "accordion__panel opened" : "accordion__panel"} hidden={(isExpanded) ? "" : "hidden"}>
@@ -96,7 +83,7 @@ class Accordion extends Component
                                 handleFocus={this.props.handleFocus}
                                 handleChange={this.props.handleChange}
                                 onCopy={onCopy}
-                                onException={onException}
+                                onExclusion={onExclusion}
                                 onEditInFuture={onEditInFuture}
                             />
                         </div>
@@ -128,7 +115,7 @@ Accordion.propTypes = {
     onAbort: PropTypes.func,
     onNew: PropTypes.func,
     onCopy: PropTypes.func,
-    onException: PropTypes.func,
+    onExclusion: PropTypes.func,
     onEditInFuture: PropTypes.func,
     handleFocus: PropTypes.func,
     availabilities: PropTypes.array,

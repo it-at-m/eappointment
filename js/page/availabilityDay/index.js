@@ -10,6 +10,7 @@ import SaveBar from './saveBar'
 import validate from './form/validate'
 import AccordionLayout from './layouts/accordion'
 import PageLayout from './layouts/page'
+import { inArray } from '../../lib/utils'
 
 import {
     getInitialState,
@@ -19,7 +20,7 @@ import {
     updateAvailabilityInState,
     cleanupAvailabilityForSave,
     deleteAvailabilityInState,
-    filterEmptyAvailability
+    findAvailabilityInStateByKind
 } from "./helpers"
 
 const tempId = (() => {
@@ -57,7 +58,7 @@ class AvailabilityPage extends Component {
 
     onUpdateAvailability(availability) {
         let state = {};
-        if (availability.__modified) {
+        if (availability.__modified || this.state.stateChanged) {
             state = Object.assign(state, updateAvailabilityInState(this.state, availability), {
                 selectedAvailability: null
             })
@@ -66,6 +67,7 @@ class AvailabilityPage extends Component {
         }
         this.setState(state);
         $('body').scrollTop(0);
+        console.log(state)
         return state;
     }
 
@@ -171,74 +173,114 @@ class AvailabilityPage extends Component {
         ))
     }
 
-    onCreateExceptionForAvailability(availability) {
+    validateAvailability(availability) {
         const validationResult = validate(availability, this.props)
         if (false === validationResult.valid) {
             this.setState({ errors: validationResult.errors })
             this.handleFocus(this.errorElement);
         }
+    }
+
+    editExclusionAvailability(availability, startDate, endDate, description, kind) {
+        (startDate) ? availability.startDate = startDate : null;
+        (endDate) ? availability.endDate = endDate : null;
+        availability.__modified = true;
+        if (! availability.kind && kind != 'origin') {
+            availability.tempId = tempId()
+            availability.id = null
+            availability.description = (description) ? description : availability.description
+            availability.kind = kind
+        } else {
+            availability.kind = 'origin'
+        }
+        return availability;
+    }
+
+    onCreateExclusionForAvailability(availability) {
+        this.validateAvailability(availability);
 
         const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
         const yesterday = selectedDay.clone().subtract(1, 'days')
         const tomorrow = selectedDay.clone().add(1, 'days')
+        let endDateTimestamp = (parseInt(yesterday.format('X'), 10) < availability.startDate) ? 
+            parseInt(selectedDay.format('X'), 10) : 
+            parseInt(yesterday.format('X'), 10);
 
-        const pastAvailability = Object.assign({}, availability, {
-            endDate: parseInt(yesterday.format('X'), 10)
-        })
+        const originAvailability = this.editExclusionAvailability(
+            Object.assign({}, availability),
+            null, 
+            endDateTimestamp,
+            null,
+            'origin'
+        )
 
-        const exceptionAvailability = Object.assign({}, availability, {
-            startDate: parseInt(selectedDay.format('X'), 10),
-            endDate: parseInt(selectedDay.format('X'), 10),
-            tempId: tempId(),
-            id: null,
-            description: `Ausnahme für ${formatTimestampDate(this.props.timestamp)}`
-        })
+        const exclusionAvailability = this.editExclusionAvailability(
+            Object.assign({}, availability),
+            parseInt(selectedDay.format('X'), 10), 
+            parseInt(selectedDay.format('X'), 10),
+            `Ausnahme ${formatTimestampDate(selectedDay)} (${availability.id})`,
+            'exclusion'
+        )
+        let futureAvailability = null;
+        if (parseInt(tomorrow.format('X'), 10) < availability.endDate) {
+            futureAvailability = this.editExclusionAvailability(
+                Object.assign({}, availability),
+                parseInt(tomorrow.format('X'), 10),
+                null,
+                `Fortführung der Ausnahme ${formatTimestampDate(selectedDay)} (${availability.id})`,
+                'future'
+            )
+        }
 
-        const futureAvailability = Object.assign({}, availability, {
-            startDate: parseInt(tomorrow.format('X'), 10),
-            tempId: tempId(),
-            id: null
-        })
-
-        this.setState(Object.assign(
-            {},
+        this.setState(Object.assign({},
             mergeAvailabilityListIntoState(this.state, [
-                pastAvailability,
-                exceptionAvailability,
+                originAvailability,
+                exclusionAvailability,
                 futureAvailability
             ]),
-            { selectedAvailability: exceptionAvailability, stateChanged: true }
+            { 
+                selectedAvailability: exclusionAvailability, 
+                stateChanged: true 
+            }
         ))
     }
 
     onEditAvailabilityInFuture(availability) {
-        const validationResult = validate(availability, this.props)
-        if (false === validationResult.valid) {
-            this.setState({ errors: validationResult.errors })
-            this.handleFocus(this.errorElement);
-        }
-
+        this.validateAvailability(availability);
         const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
         const yesterday = selectedDay.clone().subtract(1, 'days')
+        let endDateTimestamp = (parseInt(yesterday.format('X'), 10) < availability.startDate) ? 
+            parseInt(selectedDay.format('X'), 10) : 
+            parseInt(yesterday.format('X'), 10);
 
-        const pastAvailability = Object.assign({}, availability, {
-            endDate: parseInt(yesterday.format('X'), 10)
-        })
+        const originAvailability = this.editExclusionAvailability(
+            Object.assign({}, availability),
+            null, 
+            endDateTimestamp,
+            null,
+            'origin'
+        )
 
-        const futureAvailability = Object.assign({}, availability, {
-            startDate: parseInt(selectedDay.format('X'), 10),
-            tempId: tempId(),
-            id: null,
-            description: `Änderung ab ${formatTimestampDate(this.props.timestamp)}`
-        })
+        let futureAvailability = null;
+        if (parseInt(selectedDay.format('X'), 10) < availability.endDate) {
+            futureAvailability = this.editExclusionAvailability(
+                Object.assign({}, availability),
+                parseInt(selectedDay.format('X'), 10),
+                null,
+                `Änderung ab ${formatTimestampDate(selectedDay)} (${availability.id})`,
+                'future'
+            )
+        }
 
-        this.setState(Object.assign(
-            {},
+        this.setState(Object.assign({},
             mergeAvailabilityListIntoState(this.state, [
-                pastAvailability,
+                originAvailability,
                 futureAvailability
             ]),
-            { selectedAvailability: futureAvailability, stateChanged: true }
+            { 
+                selectedAvailability: futureAvailability, 
+                stateChanged: true 
+            }
         ))
     }
 
@@ -308,9 +350,56 @@ class AvailabilityPage extends Component {
 
     handleChange(data) {
         if (data.__modified) {
-            this.setState(Object.assign({}, updateAvailabilityInState(this.state, data), {
-                selectedAvailability: data
-            }));
+            this.setState(
+                Object.assign(
+                    {}, updateAvailabilityInState(this.state, data), {selectedAvailability: data}
+                )
+            );
+        }
+        if (data.kind && inArray(data.kind, ["origin", "future", "exclusion"])) {
+            this.handleChangesAvailabilityExclusion(data)
+        }
+    }
+
+    handleChangesAvailabilityExclusion(data) {
+        if ('exclusion' == data.kind && data.__modified) {
+            const startDate = moment(data.endDate, 'X').startOf('day').add(1, 'days').format('X');
+            const endDate = moment(data.startDate, 'X').startOf('day').subtract(1, 'days').format('X');
+
+            const originAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'origin');
+            const futureAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'future');
+            
+            const originAvailability = Object.assign({}, originAvailabilityFromState, {
+                endDate: (endDate > originAvailabilityFromState.startDate) ? 
+                    parseInt(endDate, 10) : 
+                    originAvailabilityFromState.startDate
+            });
+        
+            const futureAvailability = Object.assign({}, futureAvailabilityFromState, {
+                startDate: (startDate < futureAvailabilityFromState.endDate) ? 
+                    parseInt(startDate, 10) :
+                    futureAvailabilityFromState.endDate
+            });
+            this.setState(Object.assign(
+                {},
+                mergeAvailabilityListIntoState(this.state, [originAvailability, futureAvailability, data])
+            ));          
+        }
+        if ('future' == data.kind && data.__modified) {
+            const endDate = moment(data.startDate, 'X').startOf('day').subtract(1, 'days').format('X');
+
+            const originAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'origin');
+            
+            const originAvailability = Object.assign({}, originAvailabilityFromState, {
+                endDate: (endDate > originAvailabilityFromState.startDate) ? 
+                    parseInt(endDate, 10) : 
+                    originAvailabilityFromState.startDate
+            });
+        
+            this.setState(Object.assign(
+                {},
+                mergeAvailabilityListIntoState(this.state, [originAvailability, data])
+            ));          
         }
     }
 
@@ -324,8 +413,8 @@ class AvailabilityPage extends Component {
             this.onCopyAvailability(data)
         }
 
-        const onException = data => {
-            this.onCreateExceptionForAvailability(data)
+        const onExclusion = data => {
+            this.onCreateExclusionForAvailability(data)
         }
 
         const onEditInFuture = data => {
@@ -360,7 +449,7 @@ class AvailabilityPage extends Component {
             onNew={onNew}
             onAbort={this.onRevertUpdates.bind(this)}
             onCopy={onCopy}
-            onException={onException}
+            onExclusion={onExclusion}
             onEditInFuture={onEditInFuture}
             handleFocus={this.handleFocus.bind(this)}
             handleChange={handleChange}

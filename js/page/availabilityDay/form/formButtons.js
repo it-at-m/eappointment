@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const FormButtons = (props) => {
-    const { data, onCopy, onException, onEditInFuture } = props
+    const { data, onCopy, onExclusion, onEditInFuture } = props
 
     return (
         <div>
@@ -11,7 +11,7 @@ const FormButtons = (props) => {
                 <a href="#" onClick={onCopy}
                     title="Öffnungszeit kopieren und bearbeiten"
                     className="button button--diamond">Kopieren</a>
-                <a href="#" onClick={onException}
+                <a href="#" onClick={onExclusion}
                     title="Ausnahme von dieser Öffnungszeit eintragen"
                     className="button button--diamond">Ausnahme</a>
                 <a href="#" onClick={onEditInFuture}
@@ -27,7 +27,7 @@ const FormButtons = (props) => {
 FormButtons.propTypes = {
     data: PropTypes.object,
     onCopy: PropTypes.func,
-    onException: PropTypes.func,
+    onExclusion: PropTypes.func,
     onEditInFuture: PropTypes.func
 }
 

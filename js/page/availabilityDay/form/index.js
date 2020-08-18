@@ -46,7 +46,7 @@ class AvailabilityForm extends Component {
                 {<FormButtons 
                     data = {data}
                     onCopy={this.props.onCopy} 
-                    onException={this.props.onException}
+                    onExclusion={this.props.onExclusion}
                     onEditInFuture={this.props.onEditInFuture} 
                 />}
             </div>
@@ -58,7 +58,7 @@ AvailabilityForm.defaultProps = {
     data: {},
     handleChange: () => { },
     onCopy: () => { },
-    onException: () => { },
+    onExclusion: () => { },
     onEditInFuture: () => { }
 }
 
@@ -66,7 +66,7 @@ AvailabilityForm.propTypes = {
     data: PropTypes.object,
     handleChange: PropTypes.func,
     onCopy: PropTypes.func,
-    onException: PropTypes.func,
+    onExclusion: PropTypes.func,
     onEditInFuture: PropTypes.func,
     handleFocus: PropTypes.func
 }

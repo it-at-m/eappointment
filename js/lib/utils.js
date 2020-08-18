@@ -85,6 +85,18 @@ export const toArray = (data) => {
     return Object.keys(data).map(key => ({ [key]: data[key] }));
 }
 
+export const inArray = (value,arr) => {
+    var status = false;
+    for(var i=0; i<arr.length; i++){
+      var name = arr[i];
+      if(name == value){
+        status = true;
+        break;
+      }
+    }
+    return status;
+  }
+
 export const getDataAttributes = (element) => {
     const attributes = attributesToArray(element.attributes)
     const dataRegex = /^data-/i
