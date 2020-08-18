@@ -59,4 +59,4 @@ const validate = (data, props) => {
     }
 }
 
-export default validate
+export default validate;

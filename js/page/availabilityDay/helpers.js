@@ -1,4 +1,5 @@
 import moment from 'moment'
+import React from 'react'
 
 export const getStateFromProps = props => {
     return {
@@ -22,16 +23,20 @@ const equalIds = (a, b) => {
     return (a.id && b.id && a.id === b.id) || (a.tempId && b.tempId && a.tempId === b.tempId)
 }
 
+export const findAvailabilityInStateByKind = (state, kind) => {
+    return state.availabilitylist.find(availabilty => availabilty.kind == kind);
+}
+
 export const updateAvailabilityInState = (state, newAvailability) => {
     let updated = false
 
     const newState = Object.assign({}, state, {
-        availabilitylist: state.availabilitylist.map(availabilty => {
-            if (equalIds(availabilty, newAvailability)) {
+        availabilitylist: state.availabilitylist.map(availability => {
+            if (equalIds(availability, newAvailability)) {
                 updated = true
                 return newAvailability
             } else {
-                return availabilty
+                return availability
             }
         })
     })
@@ -100,7 +105,8 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
             afterWeeks: 0,
             weekOfMonth: 0
         },
-        type: null
+        type: null,
+        kind: "new"
     }
 
     return newAvailability
@@ -167,6 +173,10 @@ export const cleanupAvailabilityForSave = availability => {
         delete newAvailability.tempId;
     }
 
+    if (newAvailability.kind) {
+        delete newAvailability.kind;
+    }
+
     return newAvailability;
 }
 
@@ -218,7 +228,8 @@ export const getFirstLevelValues = data => {
         id,
         tempId,
         type,
-        slotTimeInMinutes
+        slotTimeInMinutes,
+        kind
     } = data
 
     return {
@@ -233,7 +244,8 @@ export const getFirstLevelValues = data => {
         id,
         tempId,
         type,
-        slotTimeInMinutes
+        slotTimeInMinutes,
+        kind
     }
 }
 
@@ -265,4 +277,19 @@ export const getFormValuesFromData = data => {
         workstationCount_public: workstations.public,
         weekday: Object.keys(data.weekday).filter(key => parseInt(data.weekday[key], 10) > 0)
     }))
+}
+
+export const accordionTitle = (data) => {
+    const startDate = moment(data.startDate, 'X').format('DD.MM.YYYY');
+    const endDate = moment(data.endDate, 'X').format('DD.MM.YYYY');
+    const startTime = moment(data.startTime, 'h:mm:ss').format('HH:mm');
+    const endTime = moment(data.endTime, 'h:mm:ss').format('HH:mm');
+    const availabilityType = availabilityTypes.find(element => element.value == data.type);
+    const availabilityWeekDayList = Object.keys(data.weekday).filter(key => parseInt(data.weekday[key], 10) > 0)
+    const availabilityWeekDay = weekDayList.filter(element => availabilityWeekDayList.includes(element.value)
+    ).map(item => item.label).join(', ')
+    let description = (data.description) ? `, ${data.description}` : "";
+    let type = (availabilityType && availabilityWeekDay) ? `(${availabilityType.name}, ${availabilityWeekDay})` : "";
+    return `${startDate} - ${endDate}, ${startTime} - ${endTime} ${type}${description}`
+        
 }
