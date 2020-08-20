@@ -1,8 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-
-
 const renderErrors = errors => errors.map(err => {
     return (
         <div key={err.fieldName} className="message message--error">
