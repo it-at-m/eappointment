@@ -48,10 +48,13 @@ class Accordion extends Component
 
                 const onToggle = ev => {
                     ev.preventDefault()
-                    this.props.onSelect(availability)
-                    if (this.props.data && ev.target.attributes.eventkey.value == eventId) {
+                    console.log(isExpanded)
+                    if (isExpanded) {
                         this.props.onSelect(null)
+                    } else {
+                        this.props.onSelect(availability)
                     }
+                    
                 }
 
                 const onCopy = ev => {
