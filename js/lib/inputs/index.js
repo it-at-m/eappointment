@@ -16,8 +16,8 @@ export const Text = ({ name, value, onChange = noOp, placeholder = "", width = "
     return <input size={width} placeholder={placeholder} type="text" onChange={onInput} {...{ name, value }} {...attributes} {...{ className }} />
 }
 
-export const Hidden = ({ name, value }) => {
-    return <input type="hidden" {...{ name, value }} />
+export const Hidden = ({ name, value, attributes = {} }) => {
+    return <input type="hidden" {...{ name, value, attributes }} />
 }
 
 export const Textarea = ({ name, value, onChange = noOp, placeholder = "", width = "", attributes = {} }) => {

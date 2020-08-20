@@ -2,24 +2,24 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const FormButtons = (props) => {
-    const { data, onCopy, onExclusion, onEditInFuture } = props
-
+    const { data, onCopy, onExclusion, onEditInFuture, onDelete } = props
+    const disabled = (data && (! data.id || data.__modified));
     return (
         <div>
-            { data.id ? 
             <div className="form-actions" style={{"marginTop": "-45px"}}>
-                <a href="#" onClick={onCopy}
+                <button onClick={onDelete}
+                    title="Ausgewählte Öffnungszeit löschen"
+                    className="button button--destructive button-delete" disabled={disabled}>Löschen</button>
+                <button onClick={onCopy}
                     title="Öffnungszeit kopieren und bearbeiten"
-                    className="button button--diamond">Kopieren</a>
-                <a href="#" onClick={onExclusion}
+                    className="button button--diamond" disabled={disabled}>Kopieren</button>
+                <button onClick={onExclusion}
                     title="Ausnahme von dieser Öffnungszeit eintragen"
-                    className="button button--diamond">Ausnahme</a>
-                <a href="#" onClick={onEditInFuture}
+                    className="button button--diamond" disabled={disabled}>Ausnahme</button>
+                <button onClick={onEditInFuture}
                     title="Öffnungszeit ab diesem Tag ändern"
-                    className="button button--diamond">Ab diesem Tag ändern
-                </a> 
+                    className="button button--diamond" disabled={disabled}>Ab diesem Tag ändern</button> 
             </div>
-            : null }
         </div>
     )
 }

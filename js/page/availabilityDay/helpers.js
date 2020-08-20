@@ -56,8 +56,11 @@ export const deleteAvailabilityInState = (state, deleteAvailability) => {
     })
 }
 
+export const formatTimestampDate = timestamp => moment(timestamp, 'X').format('YYYY-MM-DD')
+
 export const getInitialState = (props) => Object.assign({}, {
     availabilitylist: [],
+    errorList: {},
     selectedAvailability: null,
     formTitle: null,
     lastSave: null,

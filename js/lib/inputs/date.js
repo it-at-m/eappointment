@@ -2,7 +2,7 @@
 import React from 'react'
 import moment from 'moment'
 import DatePicker, { registerLocale } from 'react-datepicker'
-import de from 'date-fns/locale/de';
+import de from 'date-fns/locale/de'
 registerLocale('de', de)
 
 export const Date = ({name, value, onChange, attributes = {}}) => { 
@@ -16,3 +16,4 @@ export const Date = ({name, value, onChange, attributes = {}}) => {
         </div>
     )
 }
+

@@ -7,7 +7,6 @@ import TabsBar from './tabsbar'
 import GraphView from './timetable/graphview.js'
 import TableView from './timetable/tableview.js'
 import SaveBar from './saveBar'
-import validate from './form/validate'
 import AccordionLayout from './layouts/accordion'
 import PageLayout from './layouts/page'
 import { inArray } from '../../lib/utils'
@@ -20,7 +19,8 @@ import {
     updateAvailabilityInState,
     cleanupAvailabilityForSave,
     deleteAvailabilityInState,
-    findAvailabilityInStateByKind
+    findAvailabilityInStateByKind,
+    formatTimestampDate
 } from "./helpers"
 
 const tempId = (() => {
@@ -31,8 +31,6 @@ const tempId = (() => {
         return `__temp__${lastId}`
     }
 })()
-
-const formatTimestampDate = timestamp => moment(timestamp, 'X').format('YYYY-MM-DD')
 
 class AvailabilityPage extends Component {
     constructor(props) {
@@ -173,14 +171,6 @@ class AvailabilityPage extends Component {
         ))
     }
 
-    validateAvailability(availability) {
-        const validationResult = validate(availability, this.props)
-        if (false === validationResult.valid) {
-            this.setState({ errors: validationResult.errors })
-            this.handleFocus(this.errorElement);
-        }
-    }
-
     editExclusionAvailability(availability, startDate, endDate, description, kind) {
         (startDate) ? availability.startDate = startDate : null;
         (endDate) ? availability.endDate = endDate : null;
@@ -197,7 +187,6 @@ class AvailabilityPage extends Component {
     }
 
     onCreateExclusionForAvailability(availability) {
-        this.validateAvailability(availability);
 
         const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
         const yesterday = selectedDay.clone().subtract(1, 'days')
@@ -246,7 +235,6 @@ class AvailabilityPage extends Component {
     }
 
     onEditAvailabilityInFuture(availability) {
-        this.validateAvailability(availability);
         const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
         const yesterday = selectedDay.clone().subtract(1, 'days')
         let endDateTimestamp = (parseInt(yesterday.format('X'), 10) < availability.startDate) ? 
@@ -308,6 +296,16 @@ class AvailabilityPage extends Component {
         }
     }
 
+    /* list already filtered by default from api
+    getAvailabilityListByDay(selectedDay) {
+        return this.state.availabilitylist.filter(availability => {
+            const start = moment(availability.startDate, 'X')
+            const end = moment(availability.endDate, 'X')
+            return start.isSameOrBefore(selectedDay) && end.isSameOrAfter(selectedDay)
+        });
+    } 
+    */
+
     renderTimeTable() {
         const onSelect = data => {
             this.setState({
@@ -320,20 +318,11 @@ class AvailabilityPage extends Component {
             this.onDeleteAvailability(data)
         }
 
-        const selectedDaysAvailabilities = this.state.availabilitylist.filter(availability => {
-            const start = moment(availability.startDate, 'X')
-            const end = moment(availability.endDate, 'X')
-            const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
-
-            return start.isSameOrBefore(selectedDay) && end.isSameOrAfter(selectedDay)
-        })
-
         const ViewComponent = this.state.selectedTab == 'graph' ? GraphView : TableView;
-
         return <ViewComponent
             timestamp={this.props.timestamp}
             conflicts={this.state.conflicts}
-            availabilities={selectedDaysAvailabilities}
+            availabilities={this.state.availabilitylist}
             availabilityListSlices={this.state.availabilitylistslices}
             maxWorkstationCount={this.props.maxworkstationcount}
             links={this.props.links}
@@ -404,6 +393,11 @@ class AvailabilityPage extends Component {
     }
 
     renderAvailabilityAccordion() {
+        const handleErrorList = list => {
+            this.setState({
+                errorList: list
+            })
+        }
         const onSelect = data => {
             this.setState({
                 selectedAvailability: data
@@ -454,6 +448,9 @@ class AvailabilityPage extends Component {
             handleFocus={this.handleFocus.bind(this)}
             handleChange={handleChange}
             stateChanged={this.state.stateChanged}
+            includeUrl={this.props.links.includeurl}
+            errorList={this.state.errorList}
+            handleErrorList={handleErrorList}
         />
     }
 

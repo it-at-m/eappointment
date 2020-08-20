@@ -1,21 +1,18 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import * as Inputs from '../../../lib/inputs'
+import AvailabilityDatePicker from './datepicker'
 import Errors from './errors'
 const { Label, FormGroup, Controls, Description } = Inputs
 import { range } from '../../../lib/utils'
 import { weekDayList, availabilitySeries, availabilityTypes } from '../helpers'
 
 const FormContent = (props) => {
-    const {data, errors, onChange} = props;
-    const setErrorRef = element => {
-        return element
-    }
-
+    const {availabilityList, data, errorList, onChange, today, selectedDay, includeUrl, setErrorRef} = props;
     return (
         <div>
             <div ref={setErrorRef}>
-                <Errors {...{ errors }} />
+                <Errors {...{ errorList }} />
             </div>
             <form className="form--base">
                 
@@ -79,15 +76,17 @@ const FormContent = (props) => {
                     </fieldset>
 
                     <fieldset>
-                        <legend className="label">Datum</legend>
+                    <legend className="label">Gültigkeitsbereich</legend>
                         <FormGroup inline={true}>
-                            <Label attributes={{"htmlFor": "AvDayStartdate", "className": "light"}} value="Startdatum:"></Label> 
                             <Controls>
-                                <Inputs.Date attributes={{ "id": "AvDayStartdate" }} name="startDate" value={data.startDate} {...{ onChange }} />
-                            </Controls>
-                            <Label attributes={{"htmlFor": "AvDayEnddate", "className": "light"}} value="Enddatum:"></Label> 
-                            <Controls>
-                                <Inputs.Date attributes={{ "id": "AvDayEnddate" }} name="endDate" value={data.endDate} {...{ onChange }} />
+                                <AvailabilityDatePicker attributes={{
+                                    "id": "AvDayStartdate", 
+                                    "availabilitylist": availabilityList,
+                                    "availability": data, 
+                                    "today": today,
+                                    "selectedday": selectedDay,
+                                    "includeurl": includeUrl
+                                }} name="date" {...{ onChange }} />
                             </Controls>
                         </FormGroup>
                     </fieldset>
@@ -204,9 +203,14 @@ const FormContent = (props) => {
 }
 
 FormContent.propTypes = {
+    availabilityList: PropTypes.array,
+    today: PropTypes.number,
+    selectedDay: PropTypes.number,
     data: PropTypes.object,
     errors: PropTypes.object,
     onChange: PropTypes.func,
+    setErrorRef: PropTypes.func,
+    includeUrl: PropTypes.string
 }
 
 export default FormContent 
