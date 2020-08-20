@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import moment from 'moment'
 import DatePicker, { registerLocale } from 'react-datepicker'
 import de from 'date-fns/locale/de';
-import {formatTimestampDate} from "../helpers"
+//import {formatTimestampDate} from "../helpers"
 registerLocale('de', de)
 
 class AvailabilityDatePicker extends Component 
@@ -95,8 +95,6 @@ class AvailabilityDatePicker extends Component
 }
 
 AvailabilityDatePicker.propTypes = {
-    name: PropTypes.string,
-    value: PropTypes.number,
     onChange: PropTypes.func,
     attributes: PropTypes.object
 }

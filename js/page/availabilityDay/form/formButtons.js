@@ -28,7 +28,8 @@ FormButtons.propTypes = {
     data: PropTypes.object,
     onCopy: PropTypes.func,
     onExclusion: PropTypes.func,
-    onEditInFuture: PropTypes.func
+    onEditInFuture: PropTypes.func,
+    onDelete: PropTypes.func
 }
 
 export default FormButtons

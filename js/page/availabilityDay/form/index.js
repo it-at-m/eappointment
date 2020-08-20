@@ -78,7 +78,8 @@ AvailabilityForm.propTypes = {
     onExclusion: PropTypes.func,
     onEditInFuture: PropTypes.func,
     setErrorRef: PropTypes.func,
-    includeUrl: PropTypes.string
+    includeUrl: PropTypes.string,
+    onDelete: PropTypes.func
 }
 
 export default AvailabilityForm
