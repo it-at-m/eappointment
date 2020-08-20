@@ -4,7 +4,7 @@ import moment from 'moment/min/moment-with-locales';
 import AvailabilityForm from '../form'
 import validate from '../form/validate'
 import FooterButtons from '../form/footerButtons'
-import {accordionTitle} from '../helpers'
+import {accordionTitle, getFormValuesFromData} from '../helpers'
 import Board from './board'
 moment.locale('de')
 
@@ -12,6 +12,11 @@ class Accordion extends Component
 {
     constructor(props) {
         super(props);
+        this.errorElement = null;
+        this.errors = {}
+        this.setErrorRef = element => {
+            this.errorElement = element
+        };
     }
     
     render() {
@@ -21,14 +26,9 @@ class Accordion extends Component
             if (!this.props.data.__modified || validationResult.valid) {
                 this.props.onPublish(this.props.data)
             } else {
-                this.setState({ errors: validationResult.errors })
-                this.handleFocus(this.errorElement);
+                this.props.handleErrorList(validationResult.errors);
+                this.props.handleFocus(this.errorElement);
             }
-        }
-
-        const onDelete = ev => {
-            ev.preventDefault()
-            this.props.onDelete(this.props.data)
         }
 
         const onAbort = (ev) => {
@@ -68,6 +68,11 @@ class Accordion extends Component
                     ev.preventDefault()
                     this.props.onEditInFuture(availability)
                 }
+
+                const onDelete = ev => {
+                    ev.preventDefault()
+                    this.props.onDelete(availability)
+                }
         
                 let title = accordionTitle(availability);
                 return (
@@ -78,13 +83,20 @@ class Accordion extends Component
                             </button>
                         </h3>
                         <div className={isExpanded ? "accordion__panel opened" : "accordion__panel"} hidden={(isExpanded) ? "" : "hidden"}>
-                            <AvailabilityForm data={availability}
+                            <AvailabilityForm 
+                                data={availability}
+                                availabilityList={this.props.availabilities}
                                 today={this.props.today}
+                                timestamp={this.props.timestamp}
                                 handleFocus={this.props.handleFocus}
                                 handleChange={this.props.handleChange}
                                 onCopy={onCopy}
                                 onExclusion={onExclusion}
                                 onEditInFuture={onEditInFuture}
+                                onDelete={onDelete}
+                                includeUrl={this.props.includeUrl}
+                                errorList={this.props.errorList}
+                                setErrorRef={this.setErrorRef}
                             />
                         </div>
                     </section>
@@ -98,7 +110,7 @@ class Accordion extends Component
                 footer={<FooterButtons 
                     stateChanged={this.props.stateChanged} 
                     data={this.props.data} 
-                    {...{onNew, onPublish, onDelete, onAbort }} 
+                    {...{onNew, onPublish, onAbort }} 
                 />}
             />
         )
@@ -107,7 +119,9 @@ class Accordion extends Component
 
 Accordion.propTypes = {
     data: PropTypes.object,
+    errorList: PropTypes.object,
     today: PropTypes.number,
+    timestamp: PropTypes.number,
     onSelect: PropTypes.func,
     handleChange: PropTypes.func,
     onPublish: PropTypes.func,
@@ -118,8 +132,11 @@ Accordion.propTypes = {
     onExclusion: PropTypes.func,
     onEditInFuture: PropTypes.func,
     handleFocus: PropTypes.func,
+    handleErrorList: PropTypes.func,
     availabilities: PropTypes.array,
-    stateChanged: PropTypes.bool
+    stateChanged: PropTypes.bool,
+    includeUrl: PropTypes.string,
+    errorElement: PropTypes.element
 }
 
 export default Accordion

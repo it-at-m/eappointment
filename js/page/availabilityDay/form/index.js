@@ -7,12 +7,9 @@ import { getDataValuesFromForm, cleanupFormData, getFormValuesFromData } from '.
 class AvailabilityForm extends Component {
     constructor(props) {
         super(props);
-        
         this.state = {
-            data: getFormValuesFromData(this.props.data),
-            errors: {}
+            data: getFormValuesFromData(this.props.data)
         };
-        this.handleFocus = props.handleFocus
     }
 
     componentDidUpdate(prevProps) {
@@ -35,19 +32,27 @@ class AvailabilityForm extends Component {
     }
 
     render() {
-        const { data, errors } = this.state
+        const { data } = this.state
         const onChange = (name, value) => {
             this.handleChange(name, value)
         }
 
         return (
             <div>
-                {<FormContent {... { data, errors, onChange }} />}
+                {<FormContent 
+                    today = {this.props.today} 
+                    selectedDay={this.props.timestamp}
+                    availabilityList={this.props.availabilityList}
+                    includeUrl={this.props.includeUrl}
+                    setErrorRef={this.props.setErrorRef}
+                    errorList={this.props.errorList}
+                    {... { data, onChange }} />}
                 {<FormButtons 
                     data = {data}
                     onCopy={this.props.onCopy} 
                     onExclusion={this.props.onExclusion}
                     onEditInFuture={this.props.onEditInFuture} 
+                    onDelete={this.props.onDelete}
                 />}
             </div>
         )   
@@ -63,12 +68,17 @@ AvailabilityForm.defaultProps = {
 }
 
 AvailabilityForm.propTypes = {
+    availabilityList: PropTypes.array,
+    errorList: PropTypes.object,
     data: PropTypes.object,
+    today: PropTypes.number,
+    timestamp: PropTypes.number,
     handleChange: PropTypes.func,
     onCopy: PropTypes.func,
     onExclusion: PropTypes.func,
     onEditInFuture: PropTypes.func,
-    handleFocus: PropTypes.func
+    setErrorRef: PropTypes.func,
+    includeUrl: PropTypes.string
 }
 
 export default AvailabilityForm

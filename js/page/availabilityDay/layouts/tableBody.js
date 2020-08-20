@@ -60,13 +60,13 @@ const renderTable = (onDelete, onSelect, availabilities) => {
 
             const availabilityRepeat = availabilitySeries.find(element => element.value == repeat(availability.repeat)).name
 
-            const availabilityType = availabilityTypes.find(element => element.value == availability.type).name
+            const availabilityType = availabilityTypes.find(element => element.value == availability.type)
 
             const availabilityWorkstationCount = Object.values(availability.workstationCount).reverse().join('/')
             
             return (
                 <tr key={key}>
-                    <td className="center">
+                    <td className="center" style={{"whiteSpace": "nowrap"}}>
                         <span style={{ marginRight: "5px" }}>
                             <a href="#" className="icon" title={titleEdit} onClick={onClickEdit}>
                                 <i className="fas fa-pencil-alt" aria-hidden="true"></i>
@@ -94,7 +94,7 @@ const renderTable = (onDelete, onSelect, availabilities) => {
                         {startTime} - {endTime}
                     </td>
                     <td>
-                        {availabilityType}
+                        {availabilityType && availabilityType.hasOwnProperty("name") ? availabilityType.name : ""}
                     </td>
                     <td>
                         {availability.slotTimeInMinutes}min

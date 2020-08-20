@@ -105,7 +105,7 @@ class ScopeAvailabilityDay extends BaseController
                     '/scope/' . $scope->getId() . '/availability/',
                     [
                         'resolveReferences' => 0,
-                        'startDate' => $dateTime->format('Y-m-d')
+                        'startDate' => $dateTime->format('Y-m-d') //for skipping old availabilities
                     ]
                 )
                 ->getCollection();
@@ -115,6 +115,6 @@ class ScopeAvailabilityDay extends BaseController
             }
             $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
         }
-        return $availabilityList->withScope($scope)->withDateTime($dateTime);
+        return $availabilityList->withScope($scope)->withDateTime($dateTime); //withDateTime to check if opened
     }
 }
