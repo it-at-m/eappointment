@@ -25,11 +25,11 @@ const Errors = (props) => {
 }
 
 Errors.defaultProps = {
-    errors: {}
+    errorList: {}
 }
 
 Errors.propTypes = {
-    errors: PropTypes.object
+    errorList: PropTypes.object
 }
 
 export default Errors

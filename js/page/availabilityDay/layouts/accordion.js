@@ -4,7 +4,7 @@ import moment from 'moment/min/moment-with-locales';
 import AvailabilityForm from '../form'
 import validate from '../form/validate'
 import FooterButtons from '../form/footerButtons'
-import {accordionTitle, getFormValuesFromData} from '../helpers'
+import {accordionTitle} from '../helpers'
 import Board from './board'
 moment.locale('de')
 

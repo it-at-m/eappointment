@@ -204,6 +204,7 @@ const FormContent = (props) => {
 
 FormContent.propTypes = {
     availabilityList: PropTypes.array,
+    errorList: PropTypes.object,
     today: PropTypes.number,
     selectedDay: PropTypes.number,
     data: PropTypes.object,

@@ -94,7 +94,7 @@ const renderTable = (onDelete, onSelect, availabilities) => {
                         {startTime} - {endTime}
                     </td>
                     <td>
-                        {availabilityType && availabilityType.hasOwnProperty("name") ? availabilityType.name : ""}
+                        {availabilityType && availabilityType.name ? availabilityType.name : ""}
                     </td>
                     <td>
                         {availability.slotTimeInMinutes}min
