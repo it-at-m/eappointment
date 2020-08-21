@@ -72,7 +72,7 @@ class AvailabilityDatePicker extends Component
             this.state.excludeDateList.map(excludedDate => {
                 if (excludedDate.getDate() === date.getDate()) {
                     className = `day__${this.props.attributes.availability.type}`
-                };
+                }
             })
             return className;
         }
