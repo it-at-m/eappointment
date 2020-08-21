@@ -18,15 +18,18 @@ class AvailabilityDatePicker extends Component
             startDate: moment(props.attributes.availability.startDate, 'X').toDate(),
             endDate: moment(props.attributes.availability.endDate, 'X').toDate(),
             minDate: moment(props.attributes.availability.startDate, 'X').toDate(),
+            excludeDateList: [moment(props.attributes.availability.startDate, 'X').toDate()]
         };
     }
 
     componentDidMount() {
-        //
+        this.getExcludeDates()
     }
 
     componentDidUpdate(prevProps) {
-        //
+        if (prevProps.attributes.availability.type != this.props.attributes.availability.type) {
+            this.getExcludeDates()
+        }
     }
 
     getExcludeDates() {
@@ -46,26 +49,8 @@ class AvailabilityDatePicker extends Component
                 dates = [...dates, endDate]
             }
         });
-        return dates;
-      }
-
-    /*
-    fetchConflicts(date) {
-        const url = `${this.props.attributes.includeurl}/scope/${this.state.availability.scope.id}/availability/day/${date}/conflicts/`
-        fetch(url)
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    this.setState({
-                        conflictList: result.conflicts
-                    });
-                },
-                (error) => {
-                    console.log(error)
-                }
-            )
+        this.setState({excludeDateList: dates});
     }
-    */
 
     render() {
         const {onChange} = this.props;
@@ -80,6 +65,16 @@ class AvailabilityDatePicker extends Component
                 onChange("startDate", start);
             if (end)
                 onChange("endDate", end);
+        }
+
+        const dayClassName = (date) => {
+            let className = undefined;
+            this.state.excludeDateList.map(excludedDate => {
+                if (excludedDate.getDate() === date.getDate()) {
+                    className = `day__${this.props.attributes.availability.type}`
+                };
+            })
+            return className;
         }
 
         const isWeekday = date => {
@@ -101,13 +96,15 @@ class AvailabilityDatePicker extends Component
                     //maxDate={endDate}
                     showDisabledMonthNavigation
                     filterDate={isWeekday}
-                    excludeDates={this.getExcludeDates()}
+                    excludeDates={this.state.excludeDateList}
                     placeholderText="Select a weekday"
                     selectsRange
                     inline
                     monthsShown={3}
+                    dayClassName={dayClassName}
                     //showWeekNumbers
                     disabledKeyboardNavigation
+                    disabled
                 />
             </div>
         )
