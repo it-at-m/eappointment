@@ -77,10 +77,11 @@ const FormContent = (props) => {
 
                     <fieldset>
                     <legend className="label">Gültigkeitsbereich</legend>
+                        {data.type ?
                         <FormGroup inline={true}>
                             <Controls>
                                 <AvailabilityDatePicker attributes={{
-                                    "id": "AvDayStartdate", 
+                                    "id": "AvDates", 
                                     "availabilitylist": availabilityList,
                                     "availability": data, 
                                     "today": today,
@@ -88,7 +89,7 @@ const FormContent = (props) => {
                                     "includeurl": includeUrl
                                 }} name="date" {...{ onChange }} />
                             </Controls>
-                        </FormGroup>
+                        </FormGroup> : null}
                     </fieldset>
 
                     <fieldset>
