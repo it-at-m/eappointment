@@ -48,7 +48,6 @@ class Accordion extends Component
 
                 const onToggle = ev => {
                     ev.preventDefault()
-                    console.log(isExpanded)
                     if (isExpanded) {
                         this.props.onSelect(null)
                     } else {
