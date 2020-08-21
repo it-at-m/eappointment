@@ -17,21 +17,39 @@ class AvailabilityDatePicker extends Component
             availabilitylist: [props.attributes.availabilitylist],
             startDate: moment(props.attributes.availability.startDate, 'X').toDate(),
             endDate: moment(props.attributes.availability.endDate, 'X').toDate(),
+            minDate: moment(props.attributes.availability.startDate, 'X').toDate(),
         };
     }
 
     componentDidMount() {
-        //this.fetchConflicts(formatTimestampDate(this.props.attributes.today));
+        //
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.attributes.availability.startDate !== prevProps.attributes.availability.startDate) {
-            this.setState({
-                startDate: this.props.attributes.availability.startDate
-            })
-        }
+        //
     }
 
+    getExcludeDates() {
+        let dates = []
+        this.props.attributes.availabilitylist.map(availability => {
+            if (
+                availability.id !== this.props.attributes.availability.id &&
+                availability.type == this.props.attributes.availability.type
+            ) {
+                let startDate = moment(availability.startDate, 'X').toDate()
+                let endDate = moment(availability.endDate, 'X').toDate()
+                const currentDate = new Date(startDate)
+                while (currentDate < endDate) {
+                    dates = [...dates, new Date(currentDate)]
+                    currentDate.setDate(currentDate.getDate() + 1)
+                }
+                dates = [...dates, endDate]
+            }
+        });
+        return dates;
+      }
+
+    /*
     fetchConflicts(date) {
         const url = `${this.props.attributes.includeurl}/scope/${this.state.availability.scope.id}/availability/day/${date}/conflicts/`
         fetch(url)
@@ -47,15 +65,16 @@ class AvailabilityDatePicker extends Component
                 }
             )
     }
+    */
 
     render() {
         const {onChange} = this.props;
-
         const onSelectRange = dates => {
             const [start, end] = dates;
             this.setState({
                 startDate: start,
-                endDate: end
+                endDate: end,
+                selectedDate: start
             });
             if (start) 
                 onChange("startDate", start);
@@ -74,20 +93,21 @@ class AvailabilityDatePicker extends Component
                     locale="de" 
                     className="form-control form-input" 
                     dateFormat="dd.MM.yyyy" 
-                    selected={moment(this.props.attributes.selectedday, "X").toDate()} 
+                    selected={this.state.startDate} 
                     startDate={this.state.startDate} 
                     endDate={this.state.endDate} 
                     onChange={onSelectRange}
-                    minDate={moment(this.props.attributes.today, "X").toDate()}
+                    minDate={this.state.minDate}
                     //maxDate={endDate}
                     showDisabledMonthNavigation
                     filterDate={isWeekday}
-                    //excludeDates={[new Date(), subDays(new Date(), 1)]}
+                    excludeDates={this.getExcludeDates()}
                     placeholderText="Select a weekday"
                     selectsRange
                     inline
                     monthsShown={3}
                     //showWeekNumbers
+                    disabledKeyboardNavigation
                 />
             </div>
         )
