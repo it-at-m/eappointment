@@ -78,7 +78,7 @@ const FormContent = (props) => {
                     <fieldset>
                     <legend className="label">Gültigkeitsbereich</legend>
                         {data.type ?
-                        <FormGroup inline={true}>
+                        <FormGroup>
                             <Controls>
                                 <AvailabilityDatePicker attributes={{
                                     "id": "AvDates", 
@@ -89,7 +89,11 @@ const FormContent = (props) => {
                                     "includeurl": includeUrl
                                 }} name="date" {...{ onChange }} />
                             </Controls>
-                        </FormGroup> : null}
+                        </FormGroup> : 
+                        <div className="message message-dialog message message--alert">
+                            Sie müssen zuerst den Typ der Öffnungszeit auswählen bevor Sie den Zeitraum angeben können.
+                        </div>
+                        }
                     </fieldset>
 
                     <fieldset>

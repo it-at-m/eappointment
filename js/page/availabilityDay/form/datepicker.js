@@ -70,7 +70,11 @@ class AvailabilityDatePicker extends Component
         const dayClassName = (date) => {
             let className = undefined;
             this.state.excludeDateList.map(excludedDate => {
-                if (excludedDate.getDate() === date.getDate()) {
+                if (
+                    excludedDate.getDate() === date.getDate() &&
+                    excludedDate.getMonth() === date.getMonth() &&
+                    excludedDate.getFullYear() === date.getFullYear()
+                ) {
                     className = `day__${this.props.attributes.availability.type}`
                 }
             })
@@ -94,7 +98,6 @@ class AvailabilityDatePicker extends Component
                     onChange={onSelectRange}
                     minDate={this.state.minDate}
                     //maxDate={endDate}
-                    showDisabledMonthNavigation
                     filterDate={isWeekday}
                     excludeDates={this.state.excludeDateList}
                     placeholderText="Select a weekday"
@@ -104,8 +107,11 @@ class AvailabilityDatePicker extends Component
                     dayClassName={dayClassName}
                     //showWeekNumbers
                     disabledKeyboardNavigation
+                    showDisabledMonthNavigation
                     disabled
                 />
+                <div className="react-datepicker__day react-datepicker__day--disabled day__appointment">x</div>Vorhandene Terminkunden-Öffnungszeit<br />
+                <div className="react-datepicker__day react-datepicker__day--disabled day__openinghours">x</div>Vorhandene Spontankunden-Öffnungszeit
             </div>
         )
     }
