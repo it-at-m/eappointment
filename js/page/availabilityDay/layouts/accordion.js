@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component} from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment/min/moment-with-locales';
 import AvailabilityForm from '../form'
@@ -17,6 +17,7 @@ class Accordion extends Component
         this.setErrorRef = element => {
             this.errorElement = element
         };
+        this.state = {isExpanded: null}
     }
     
     render() {
@@ -44,16 +45,22 @@ class Accordion extends Component
         const renderAccordionBody = () => {
             return this.props.availabilities.map((availability, index) => {
                 let eventId = availability.id ? availability.id : availability.tempId;
-                const isExpanded = (this.props.data) ? (eventId == this.props.data.id || eventId == this.props.data.tempId) : false;
-
+                if (! eventId) {
+                    //unsaved spontaneous availability
+                    eventId = `spontaneous_ID_${index}`;
+                }  
+            
                 const onToggle = ev => {
-                    ev.preventDefault()
-                    if (isExpanded) {
-                        this.props.onSelect(null)
+                    ev.preventDefault();
+                    if (eventId == ev.currentTarget.attributes.eventkey.value && eventId != this.state.isExpanded) {
+                        this.setState({isExpanded: eventId}, () => {
+                            this.props.onSelect(availability)
+                        });
                     } else {
-                        this.props.onSelect(availability)
+                        this.setState({isExpanded: null}, () => {
+                            this.props.onSelect(null)
+                        });
                     }
-                    
                 }
 
                 const onCopy = ev => {
@@ -77,14 +84,15 @@ class Accordion extends Component
                 }
         
                 let title = accordionTitle(availability);
+                
                 return (
                     <section key={index} className="accordion-section">
                         <h3 className="accordion__heading" role="heading" title={title}>
-                            <button eventkey={availability.id || availability.tempId} onClick={onToggle} className="accordion__trigger" aria-expanded={isExpanded}>
+                            <button eventkey={eventId} onClick={onToggle} className="accordion__trigger" aria-expanded={eventId == this.state.isExpanded}>
                                 <span className="accordion__title">{title}</span>
                             </button>
                         </h3>
-                        <div className={isExpanded ? "accordion__panel opened" : "accordion__panel"} hidden={(isExpanded) ? "" : "hidden"}>
+                        <div className={eventId == this.state.isExpanded ? "accordion__panel opened" : "accordion__panel"} hidden={eventId == this.state.isExpanded ? "" : "hidden"}>
                             <AvailabilityForm 
                                 data={availability}
                                 availabilityList={this.props.availabilities}
