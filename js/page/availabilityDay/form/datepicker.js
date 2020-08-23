@@ -2,6 +2,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
+import setHours from "date-fns/setHours"
+import setMinutes from "date-fns/setMinutes";
 import DatePicker, { registerLocale } from 'react-datepicker'
 import de from 'date-fns/locale/de';
 //import {formatTimestampDate} from "../helpers"
@@ -11,24 +13,33 @@ class AvailabilityDatePicker extends Component
 {
     constructor(props) {
         super(props);
+        if (props.name == 'startDate') {
+            var time = moment(props.attributes.availability.startTime, 'hh:mm');
+            var date = moment.unix(props.attributes.availability.startDate)
+                .add(time.hours(), 'h').add(time.minutes(), 'm')
+                .toDate()
+        } else {
+            var time = moment(props.attributes.availability.endTime, 'hh:mm');
+            var date = moment.unix(props.attributes.availability.endDate)
+                .add(time.hours(), 'h').add(time.minutes(), 'm')
+                .toDate()
+        }
         this.state = {
             availability: this.props.attributes.availability,
             conflictList: [],
             availabilitylist: [props.attributes.availabilitylist],
-            startDate: moment(props.attributes.availability.startDate, 'X').toDate(),
-            endDate: moment(props.attributes.availability.endDate, 'X').toDate(),
-            minDate: moment(props.attributes.availability.startDate, 'X').toDate(),
+            selectedDate: date,
             excludeDateList: [moment(props.attributes.availability.startDate, 'X').toDate()]
         };
     }
 
     componentDidMount() {
-        this.getExcludeDates()
+        this.getExcludeDates();
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.attributes.availability.type != this.props.attributes.availability.type) {
-            this.getExcludeDates()
+            this.getExcludeDates();
         }
     }
 
@@ -54,17 +65,14 @@ class AvailabilityDatePicker extends Component
 
     render() {
         const {onChange} = this.props;
-        const onSelectRange = dates => {
-            const [start, end] = dates;
+        const onPickDate = date => {
             this.setState({
-                startDate: start,
-                endDate: end,
-                selectedDate: start
+                selectedDate: date,
             });
-            if (start) 
-                onChange("startDate", start);
-            if (end)
-                onChange("endDate", end);
+            if (this.props.name == "startDate") 
+                onChange("startDate", date);
+            if (this.props.name == "endDate")
+                onChange("endDate", date);
         }
 
         const dayClassName = (date) => {
@@ -91,27 +99,28 @@ class AvailabilityDatePicker extends Component
                 <DatePicker 
                     locale="de" 
                     className="form-control form-input" 
-                    dateFormat="dd.MM.yyyy" 
-                    selected={this.state.startDate} 
-                    startDate={this.state.startDate} 
-                    endDate={this.state.endDate} 
-                    onChange={onSelectRange}
-                    minDate={this.state.minDate}
+                    
+                    dateFormat="dd.MM.yyyy HH:mm" 
+                    selected={this.state.selectedDate} 
+                    onChange={onPickDate}
+                    //minDate={this.state.minDate}
                     //maxDate={endDate}
                     filterDate={isWeekday}
                     excludeDates={this.state.excludeDateList}
-                    placeholderText="Select a weekday"
-                    selectsRange
-                    inline
-                    monthsShown={3}
+
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={5}
+                    timeCaption="Uhrzeit"
+                    minTime={setHours(setMinutes(new Date(), 0), 7)}
+                    maxTime={setHours(setMinutes(new Date(), 0), 20)}
+                   
                     dayClassName={dayClassName}
-                    //showWeekNumbers
                     disabledKeyboardNavigation
                     showDisabledMonthNavigation
-                    disabled
                 />
-                <div className="react-datepicker__day react-datepicker__day--disabled day__appointment">x</div>Vorhandene Terminkunden-Öffnungszeit<br />
-                <div className="react-datepicker__day react-datepicker__day--disabled day__openinghours">x</div>Vorhandene Spontankunden-Öffnungszeit
+                {/*<div className="react-datepicker__day react-datepicker__day--disabled day__appointment">x</div>Vorhandene Terminkunden-Öffnungszeit<br />
+                <div className="react-datepicker__day react-datepicker__day--disabled day__openinghours">x</div>Vorhandene Spontankunden-Öffnungszeit*/}
             </div>
         )
     }

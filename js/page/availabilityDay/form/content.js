@@ -64,32 +64,31 @@ const FormContent = (props) => {
                     </fieldset>
 
                     <fieldset>
-                        <legend className="label">Uhrzeit</legend>
+                    <legend className="label">gültig von - bis</legend>
+                        {data.type ?
                         <FormGroup inline={true}>
                             <Controls>
-                                <span>von</span> <Inputs.Time name="startTime" value={data.startTime} {...{ onChange }} /> Uhr
-                            </Controls>
-                            <Controls>
-                                <span>bis</span> <Inputs.Time name="endTime" value={data.endTime} {...{ onChange }} /> Uhr
-                            </Controls>
-                        </FormGroup>
-                    </fieldset>
-
-                    <fieldset>
-                    <legend className="label">Gültigkeitsbereich</legend>
-                        {data.type ?
-                        <FormGroup>
-                            <Controls>
                                 <AvailabilityDatePicker attributes={{
-                                    "id": "AvDates", 
+                                    "id": "AvDatesStart", 
                                     "availabilitylist": availabilityList,
                                     "availability": data, 
                                     "today": today,
-                                    "selectedday": selectedDay,
+                                    "selectedday": data.startDate || selectedDate,
                                     "includeurl": includeUrl
-                                }} name="date" {...{ onChange }} />
+                                }} name="startDate" {...{ onChange }} />
                             </Controls>
-                        </FormGroup> : 
+                            <Controls>
+                                <AvailabilityDatePicker attributes={{
+                                    "id": "AvDatesEnd", 
+                                    "availabilitylist": availabilityList,
+                                    "availability": data, 
+                                    "today": today,
+                                    "selectedday": data.endDate || selectedDate,
+                                    "includeurl": includeUrl
+                                }} name="endDate" {...{ onChange }} />
+                            </Controls>
+                        </FormGroup> 
+                        : 
                         <div className="message message-dialog message message--alert">
                             Sie müssen zuerst den Typ der Öffnungszeit auswählen bevor Sie den Zeitraum angeben können.
                         </div>
