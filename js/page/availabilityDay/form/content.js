@@ -73,7 +73,7 @@ const FormContent = (props) => {
                                     "availabilitylist": availabilityList,
                                     "availability": data, 
                                     "today": today,
-                                    "selectedday": data.startDate || selectedDate,
+                                    "selectedday": data.startDate || selectedDay,
                                     "includeurl": includeUrl
                                 }} name="startDate" {...{ onChange }} />
                             </Controls>
@@ -83,7 +83,7 @@ const FormContent = (props) => {
                                     "availabilitylist": availabilityList,
                                     "availability": data, 
                                     "today": today,
-                                    "selectedday": data.endDate || selectedDate,
+                                    "selectedday": data.endDate || selectedDay,
                                     "includeurl": includeUrl
                                 }} name="endDate" {...{ onChange }} />
                             </Controls>
