@@ -20,6 +20,9 @@ use \Psr\Http\Message\ResponseInterface;
  \App::$slim->delete('/availability/{id:\d{1,11}}/', \BO\Zmsadmin\AvailabilityDelete::class)
      ->setName("AvailabilityDelete");
 
+ \App::$slim->post('/availability/conflicts/', \BO\Zmsadmin\AvailabilityConflicts::class)
+     ->setName("AvailabilityConflicts");
+
  /*
   * ---------------------------------------------------------------------------
   * Calldisplay
