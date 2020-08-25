@@ -8,16 +8,16 @@ class AvailabilityForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            conflictList: [],
+            conflictList: {},
             data: getFormValuesFromData(this.props.data)
         };
     }
 
     componentDidUpdate(prevProps) {
         if (this.props.data !== prevProps.data) {
+            this.getConflictList();
             this.setState({
-                data: getFormValuesFromData(this.props.data),
-                conflictList: this.getConflictList()
+                data: getFormValuesFromData(this.props.data)
             })
         }
     }
@@ -33,8 +33,9 @@ class AvailabilityForm extends Component {
             .then(res => res.json())
             .then(
                 (result) => {
-                    console.log(result.conflictList)
-                    return result.conflictList
+                    this.setState({
+                        conflictList: Object.assign({}, result.conflictList)
+                    })
                 },
                 (error) => {
                     console.log(error)
@@ -43,11 +44,12 @@ class AvailabilityForm extends Component {
     }
 
     handleChange(name, value) {
-        this.setState((state, props) => ({
+        this.setState((state) => ({
             data: cleanupFormData(Object.assign({}, state.data, {
                 [name]: value,
                 __modified: true
-            }))
+            })),
+            
         }), () => {
             this.props.handleChange(getDataValuesFromForm(this.state.data, this.props.data.scope))
         })

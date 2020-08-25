@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import * as Inputs from '../../../lib/inputs'
 import AvailabilityDatePicker from './datepicker'
 import Errors from './errors'
+import Conflicts from './conflicts'
 const { Label, FormGroup, Controls, Description } = Inputs
 import { range } from '../../../lib/utils'
 import { weekDayList, availabilitySeries, availabilityTypes, getDataValuesFromForm } from '../helpers'
@@ -12,16 +13,19 @@ const FormContent = (props) => {
         availabilityList, 
         data, 
         errorList, 
+        conflictList,
         onChange, 
         today, 
         selectedDay, 
-        setErrorRef,
-        conflictList
+        setErrorRef
     } = props;
+
+    const calenderDisabled = data.type && data.slotTimeInMinutes ? false : true
     return (
         <div>
             <div ref={setErrorRef}>
                 <Errors {...{ errorList }} />
+                <Conflicts {...{ conflictList }} />
             </div>
             <form className="form--base">
                 
@@ -103,22 +107,20 @@ const FormContent = (props) => {
                                 <AvailabilityDatePicker attributes={{
                                     "id": "AvDatesStart", 
                                     "availabilitylist": availabilityList,
-                                    "conflictList": conflictList,
                                     "availability": getDataValuesFromForm(data, data.scope),
                                     "today": today,
                                     "selectedday": data.startDate || selectedDay,
-                                    "disabled": data.type && data.slotTimeInMinutes ? false : true
+                                    "disabled": calenderDisabled
                                 }} name="startDate" {...{ onChange }} />
                             </Controls>
                             <Controls>
                                 <AvailabilityDatePicker attributes={{
                                     "id": "AvDatesEnd", 
                                     "availabilitylist": availabilityList,
-                                    "conflictList": conflictList,
                                     "availability": getDataValuesFromForm(data, data.scope),
                                     "today": today,
                                     "selectedday": data.endDate || selectedDay,
-                                    "disabled": data.type && data.slotTimeInMinutes ? false : true
+                                    "disabled": calenderDisabled
                                 }} name="endDate" {...{ onChange }} />
                             </Controls>
                         </FormGroup> 
@@ -216,6 +218,7 @@ const FormContent = (props) => {
 FormContent.propTypes = {
     availabilityList: PropTypes.array,
     errorList: PropTypes.object,
+    conflictList: PropTypes.object,
     today: PropTypes.number,
     selectedDay: PropTypes.number,
     data: PropTypes.object,
