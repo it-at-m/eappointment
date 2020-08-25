@@ -140,10 +140,6 @@ class AvailabilityDatePicker extends Component
             return day !== 0 && day !== 6;
         };
 
-        const getDayInfo = date => {
-            console.log(date)
-        }
-
         return (
             <div className="add-date-picker" id={this.props.attributes.id}>
                 <DatePicker 
@@ -160,11 +156,10 @@ class AvailabilityDatePicker extends Component
                 
                     showTimeSelect
                     timeFormat="HH:mm"
-                    timeIntervals={this.state.availability.slotTimeInMinutes || 10}
+                    timeIntervals={this.state.availability.slotTimeInMinutes || 10}
                     timeCaption="Uhrzeit"
                     minTime={this.state.minTime}
                     maxTime={this.state.maxTime}
-                    //onDayMouseEnter={getDayInfo}
                     excludeTimes={this.state.excludeTimeList}
                     dayClassName={dayClassName}
                     //disabledKeyboardNavigation
