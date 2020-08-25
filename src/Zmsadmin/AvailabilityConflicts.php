@@ -7,6 +7,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Availability;
+
 /**
  * Check if new Availability is in conflict with existing availability
  *
