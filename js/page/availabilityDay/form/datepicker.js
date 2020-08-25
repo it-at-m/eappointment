@@ -5,7 +5,7 @@ import moment from 'moment'
 import setHours from "date-fns/setHours"
 import setMinutes from "date-fns/setMinutes";
 import DatePicker, { registerLocale } from 'react-datepicker'
-import {weekDayList} from '../helpers'
+import {weekDayList, repeat} from '../helpers'
 import de from 'date-fns/locale/de';
 //import {formatTimestampDate} from "../helpers"
 registerLocale('de', de)
@@ -26,7 +26,6 @@ class AvailabilityDatePicker extends Component
           
         this.state = {
             availability: props.attributes.availability,
-            conflictList: props.attributes.conflictList,
             selectedDate: ("startDate" == props.name) ? startDate : endDate,
             startDate: startDate,
             endDate: endDate,
@@ -144,7 +143,6 @@ class AvailabilityDatePicker extends Component
         const getDayInfo = date => {
             console.log(date)
         }
-        
 
         return (
             <div className="add-date-picker" id={this.props.attributes.id}>
@@ -155,8 +153,8 @@ class AvailabilityDatePicker extends Component
                     dateFormat="dd.MM.yyyy HH:mm" 
                     selected={this.state.selectedDate} 
                     onChange={handleChange}
-                    minDate={moment(this.state.availability.startDate, "X")}
-                    //maxDate={this.state.selectedDate}
+                    minDate={this.state.startDate}
+                    maxDate={repeat(this.state.availability.repeat) == 0 ? this.state.selectedDate : null}
                     filterDate={isWeekday}
                     //excludeDates={this.state.excludeDateList}
                 

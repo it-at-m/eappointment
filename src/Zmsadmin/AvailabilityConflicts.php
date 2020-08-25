@@ -41,7 +41,7 @@ class AvailabilityConflicts extends BaseController
         $availabilityList->addEntity($entity);
         $conflictList = $availabilityList->getConflicts($startDate, $endDate);
         return [
-            'conflictList' => $conflictList->getArrayCopy(),
+            'conflictList' => $conflictList->toConflictListByDay()
         ];
     }
 
