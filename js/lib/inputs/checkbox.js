@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { noOp } from '../utils'
 
-export const Checkbox = ({ name, value, label, checked = "false", onChange = noOp, attributes = {}, className = 'form-check-input' }) => {
+export const Checkbox = ({ name, value, label, checked = "false", disabled=false, onChange = noOp, attributes = {}, className = 'form-check-input' }) => {
 
     const onInput = () => {
         //ev.preventDefault()
@@ -11,10 +11,9 @@ export const Checkbox = ({ name, value, label, checked = "false", onChange = noO
     }
 
     attributes.checked = (checked) ? "checked" : "";
-
     return (
         <label className="form-check-label" {...{ label }}>
-            <input type="checkbox" value={value || ""} {...{ name }} {...attributes} onChange={onInput} className={className} />
+            <input type="checkbox" value={value || ""} {...{ name }} {...attributes} onChange={onInput} className={className} disabled={disabled} />
             {label}
         </label>
     )
@@ -41,6 +40,7 @@ export const CheckboxGroup = (props) => {
                             value={box.value || ""}
                             label={box.label}
                             checked={checked || ""}
+                            disabled={props.disabled}
                             onChange={() => toggle(box.value)} />
                     </div>
                 )

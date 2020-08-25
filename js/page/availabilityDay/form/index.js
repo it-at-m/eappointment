@@ -8,6 +8,7 @@ class AvailabilityForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            conflictList: [],
             data: getFormValuesFromData(this.props.data)
         };
     }
@@ -15,18 +16,39 @@ class AvailabilityForm extends Component {
     componentDidUpdate(prevProps) {
         if (this.props.data !== prevProps.data) {
             this.setState({
-                data: getFormValuesFromData(this.props.data)
+                data: getFormValuesFromData(this.props.data),
+                conflictList: this.getConflictList()
             })
         }
     }
 
+    getConflictList() {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(this.props.data)
+        };
+        const url = `${this.props.includeUrl}/availability/conflicts/`
+        fetch(url, requestOptions)
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    console.log(result.conflictList)
+                    return result.conflictList
+                },
+                (error) => {
+                    console.log(error)
+                }
+            )
+    }
+
     handleChange(name, value) {
-        this.setState({
-            data: cleanupFormData(Object.assign({}, this.state.data, {
+        this.setState((state, props) => ({
+            data: cleanupFormData(Object.assign({}, state.data, {
                 [name]: value,
                 __modified: true
             }))
-        }, () => {
+        }), () => {
             this.props.handleChange(getDataValuesFromForm(this.state.data, this.props.data.scope))
         })
     }
@@ -43,9 +65,9 @@ class AvailabilityForm extends Component {
                     today = {this.props.today} 
                     selectedDay={this.props.timestamp}
                     availabilityList={this.props.availabilityList}
-                    includeUrl={this.props.includeUrl}
                     setErrorRef={this.props.setErrorRef}
                     errorList={this.props.errorList}
+                    conflictList={this.state.conflictList}
                     {... { data, onChange }} />}
                 {<FormButtons 
                     data = {data}

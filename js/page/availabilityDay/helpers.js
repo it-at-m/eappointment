@@ -87,8 +87,8 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
         description: 'Neue Öffnungszeit',
         startDate: timestamp,
         endDate: timestamp,
-        startTime: '00:00:00',
-        endTime: '00:00:00',
+        startTime: '07:00:00',
+        endTime: '20:00:00',
         bookable: {
             startInDays: "0",
             endInDays: "0"

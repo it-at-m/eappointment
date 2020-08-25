@@ -5,10 +5,19 @@ import AvailabilityDatePicker from './datepicker'
 import Errors from './errors'
 const { Label, FormGroup, Controls, Description } = Inputs
 import { range } from '../../../lib/utils'
-import { weekDayList, availabilitySeries, availabilityTypes } from '../helpers'
+import { weekDayList, availabilitySeries, availabilityTypes, getDataValuesFromForm } from '../helpers'
 
 const FormContent = (props) => {
-    const {availabilityList, data, errorList, onChange, today, selectedDay, includeUrl, setErrorRef} = props;
+    const {
+        availabilityList, 
+        data, 
+        errorList, 
+        onChange, 
+        today, 
+        selectedDay, 
+        setErrorRef,
+        conflictList
+    } = props;
     return (
         <div>
             <div ref={setErrorRef}>
@@ -58,45 +67,15 @@ const FormContent = (props) => {
                                     value={data.weekday}
                                     inline={true}
                                     {...{ onChange }}
-                                    boxes={weekDayList} />
+                                    boxes={weekDayList}
+                                    disabled={!data.repeat ? true : false}
+                                />
                             </Controls>
                         </FormGroup>
                     </fieldset>
 
                     <fieldset>
-                    <legend className="label">gültig von - bis</legend>
-                        {data.type ?
-                        <FormGroup inline={true}>
-                            <Controls>
-                                <AvailabilityDatePicker attributes={{
-                                    "id": "AvDatesStart", 
-                                    "availabilitylist": availabilityList,
-                                    "availability": data, 
-                                    "today": today,
-                                    "selectedday": data.startDate || selectedDay,
-                                    "includeurl": includeUrl
-                                }} name="startDate" {...{ onChange }} />
-                            </Controls>
-                            <Controls>
-                                <AvailabilityDatePicker attributes={{
-                                    "id": "AvDatesEnd", 
-                                    "availabilitylist": availabilityList,
-                                    "availability": data, 
-                                    "today": today,
-                                    "selectedday": data.endDate || selectedDay,
-                                    "includeurl": includeUrl
-                                }} name="endDate" {...{ onChange }} />
-                            </Controls>
-                        </FormGroup> 
-                        : 
-                        <div className="message message-dialog message message--alert">
-                            Sie müssen zuerst den Typ der Öffnungszeit auswählen bevor Sie den Zeitraum angeben können.
-                        </div>
-                        }
-                    </fieldset>
-
-                    <fieldset>
-                        <legend className="label">Zeitschlitz</legend>
+                        <legend className="label">Terminabstand</legend>
                         <FormGroup inline={true}>    
                             <Controls>
                                 <Inputs.Text name="slotTimeInMinutes"
@@ -115,6 +94,34 @@ const FormContent = (props) => {
                                 <Label value="Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen"></Label>
                             </Controls>
                         </FormGroup>
+                    </fieldset>
+                    
+                    <fieldset>
+                    <legend className="label">Öffnungszeit</legend>
+                        <FormGroup inline={true}>
+                            <Controls>
+                                <AvailabilityDatePicker attributes={{
+                                    "id": "AvDatesStart", 
+                                    "availabilitylist": availabilityList,
+                                    "conflictList": conflictList,
+                                    "availability": getDataValuesFromForm(data, data.scope),
+                                    "today": today,
+                                    "selectedday": data.startDate || selectedDay,
+                                    "disabled": data.type && data.slotTimeInMinutes ? false : true
+                                }} name="startDate" {...{ onChange }} />
+                            </Controls>
+                            <Controls>
+                                <AvailabilityDatePicker attributes={{
+                                    "id": "AvDatesEnd", 
+                                    "availabilitylist": availabilityList,
+                                    "conflictList": conflictList,
+                                    "availability": getDataValuesFromForm(data, data.scope),
+                                    "today": today,
+                                    "selectedday": data.endDate || selectedDay,
+                                    "disabled": data.type && data.slotTimeInMinutes ? false : true
+                                }} name="endDate" {...{ onChange }} />
+                            </Controls>
+                        </FormGroup> 
                     </fieldset>
 
                     <fieldset>

@@ -26,83 +26,53 @@ class AvailabilityDatePicker extends Component
           
         this.state = {
             availability: props.attributes.availability,
-            conflictList: [],
+            conflictList: props.attributes.conflictList,
             selectedDate: ("startDate" == props.name) ? startDate : endDate,
             startDate: startDate,
             endDate: endDate,
-            excludeDateList: [moment(props.attributes.availability.startDate, 'X').toDate()],
             excludeTimeList: [],
             minTime: setHours(setMinutes(new Date(), 0), 7),
             maxTime: setHours(setMinutes(new Date(), 0), 20)
         };
     }
 
-    componentDidMount() {
-        //this.getExcludeDates();
-        this.setExcludeTimesForDay(this.state.selectedDate);
-    }
-
     componentDidUpdate(prevProps) {
-        if (prevProps.attributes.availability != this.props.attributes.availability) {
-            //this.getExcludeDates();
-            this.setState({availability: this.props.attributes.availability})
+        if (prevProps.attributes.availability !== this.props.attributes.availability) {
+            this.setState({
+                availability: this.props.attributes.availability
+            });
         }
     }
 
-    getExcludeDates() {
-        let dates = []
-        this.props.attributes.availabilitylist.map(availability => {
-            if (
-                availability.id !== this.props.attributes.availability.id &&
-                availability.type == this.props.attributes.availability.type
-            ) {
-                let startDate = moment(availability.startDate, 'X').toDate()
-                let endDate = moment(availability.endDate, 'X').toDate()
-                const currentDate = new Date(startDate)
-                while (currentDate < endDate) {
-                    dates = [...dates, new Date(currentDate)]
-                    currentDate.setDate(currentDate.getDate() + 1)
-                }
-                dates = [...dates, endDate]
-            }
-        });
-        this.setState({excludeDateList: dates});
-    }
-
-    hasFreeSlotsOnDay(date) {
-
-    }
-
     setClassNameForSelectedWeekDay(className, date) {
-        const day = date.getDay();
-        this.props.attributes.availabilitylist.map(availability => {
-            if (availability.id !== this.props.attributes.availability.id &&
-                availability.type == this.props.attributes.availability.type &&
-                this.isWeekDaySelected(availability, date)
-            ) {
-                className = `${className} day__selected__weekday__${availability.type}`; 
-            }
-        })
+        if (this.isWeekDaySelected(date) &&
+            this.isDateInAvailabilityRange(date)
+        ) {
+            className = `${className} day__selected__weekday__${this.state.availability.type}`; 
+        }
         return className
     }
 
-    setClassNameForExcludedDay(className, date) {
-        this.state.excludeDateList.map(excludedDate => {
-            if (
-                excludedDate.getDate() === date.getDate() &&
-                excludedDate.getMonth() === date.getMonth() &&
-                excludedDate.getFullYear() === date.getFullYear()
-            ) {
-                className = `day__${this.state.availability.type}`
-            }
-        })
-        return className;
+    isDateInAvailabilityRange(date) {
+        return (
+            date <= moment.unix(this.state.availability.endDate).startOf('day').toDate() && 
+            date >= moment.unix(this.state.availability.startDate).startOf('day').toDate()
+        )
     }
 
-    isWeekDaySelected(availability, date)
+    isDateEqual(date1, date2) {
+        return (
+            date1.getDate() === date2.getDate() &&
+            date1.getMonth() === date2.getMonth() &&
+            date1.getFullYear() === date2.getFullYear()
+        )
+    }
+
+    isWeekDaySelected(date, availability)
     {
+        const selectedAvailability = availability ? availability : this.state.availability
         let isSelected = false;
-        for (const [key, value] of Object.entries(availability.weekday)) {
+        for (const [key, value] of Object.entries(selectedAvailability.weekday)) {
             weekDayList.map((weekday, index) => {
                 if ((index+1) == date.getDay() && weekday.value == key && value > 0) {
                     isSelected = true; 
@@ -117,7 +87,7 @@ class AvailabilityDatePicker extends Component
         this.props.attributes.availabilitylist.map(availability => {
             if (availability.id !== this.props.attributes.availability.id &&
                 availability.type == this.props.attributes.availability.type &&
-                this.isWeekDaySelected(availability, date)
+                this.isWeekDaySelected(date, availability)
             ) {
                 const startTime = moment(availability.startTime, 'hh:mm');
                 const startOnDay = moment(date).set({"h": startTime.hours(), "m": startTime.minutes()})
@@ -138,27 +108,30 @@ class AvailabilityDatePicker extends Component
             }
         });
         this.setState({excludeTimeList: times});
-        return times;
     }
 
     render() {
         const {onChange} = this.props;
-        const onPickDate = date => {
+        const handleChange = date => {
             this.setState({
                 selectedDate: date,
             });
-            this.setExcludeTimesForDay(date);
+            this.setExcludeTimesForDay(date)
+            if (this.props.name == "startDate") {
+                onChange("startTime", moment(date).format('HH:mm'));
+            }
+            if (this.props.name == "endDate") {
+                onChange("endTime", moment(date).format('HH:mm'));
+            }
             onChange(this.props.name, moment(date).unix());
-            if (this.props.name == "startDate") 
-                onChange("startTime", moment(date).format('hh:mm'));
-            if (this.props.name == "endDate")
-                onChange("endTime", moment(date).format('hh:mm'));
+        }
+
+        const handleCalendarOpen = () => {
+            this.setExcludeTimesForDay(this.state.selectedDate);
         }
 
         const dayClassName = (date) => {
             let className = "";
-            let hasFreeSlots = this.hasFreeSlotsOnDay(date);
-            className = this.setClassNameForExcludedDay(className, date);
             className = this.setClassNameForSelectedWeekDay(className, date);
             return className;
         }
@@ -181,7 +154,7 @@ class AvailabilityDatePicker extends Component
                     
                     dateFormat="dd.MM.yyyy HH:mm" 
                     selected={this.state.selectedDate} 
-                    onChange={onPickDate}
+                    onChange={handleChange}
                     minDate={moment(this.state.availability.startDate, "X")}
                     //maxDate={this.state.selectedDate}
                     filterDate={isWeekday}
@@ -196,8 +169,10 @@ class AvailabilityDatePicker extends Component
                     //onDayMouseEnter={getDayInfo}
                     excludeTimes={this.state.excludeTimeList}
                     dayClassName={dayClassName}
-                    disabledKeyboardNavigation
+                    //disabledKeyboardNavigation
                     showDisabledMonthNavigation
+                    disabled={this.props.attributes.disabled}
+                    onCalendarOpen={handleCalendarOpen}
                 />
                 {/*<div className="react-datepicker__day react-datepicker__day--disabled day__appointment">x</div>Vorhandene Terminkunden-Öffnungszeit<br />
                 <div className="react-datepicker__day react-datepicker__day--disabled day__openinghours">x</div>Vorhandene Spontankunden-Öffnungszeit*/}
