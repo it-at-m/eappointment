@@ -225,7 +225,6 @@ FormContent.propTypes = {
     errors: PropTypes.object,
     onChange: PropTypes.func,
     setErrorRef: PropTypes.func,
-    includeUrl: PropTypes.string
 }
 
 export default FormContent 

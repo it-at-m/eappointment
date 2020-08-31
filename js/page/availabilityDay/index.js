@@ -65,7 +65,6 @@ class AvailabilityPage extends Component {
         }
         this.setState(state);
         $('body').scrollTop(0);
-        console.log(state)
         return state;
     }
 
@@ -278,7 +277,7 @@ class AvailabilityPage extends Component {
         state = Object.assign(
             state, 
             updateAvailabilityInState(this.state, newAvailability), 
-            { selectedAvailability: newAvailability, stateChanged: true }
+            { selectedAvailability: newAvailability, stateChanged: false }
         );
         this.setState(state);
         $('body').scrollTop(0);
@@ -294,6 +293,27 @@ class AvailabilityPage extends Component {
         if (availability) {
             this.setState({ selectedAvailability: availability })
         }
+    }
+
+    getConflictList() {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(this.state.selectedAvailability)
+        };
+        const url = `${this.props.links.includeurl}/availability/conflicts/`;
+        fetch(url, requestOptions)
+            .then(res => res.json())
+            .then(
+                (data) => {
+                    this.setState({
+                        conflictList: Object.assign({}, data.conflictList)
+                    })
+                },
+                (error) => {
+                    console.log(error)
+                }
+            )
     }
 
     /* list already filtered by default from api
@@ -340,9 +360,12 @@ class AvailabilityPage extends Component {
     handleChange(data) {
         if (data.__modified) {
             this.setState(
-                Object.assign(
-                    {}, updateAvailabilityInState(this.state, data), {selectedAvailability: data}
-                )
+                Object.assign({}, updateAvailabilityInState(this.state, data), {selectedAvailability: data}),
+                () => {
+                    if (data.tempId) {
+                        this.getConflictList()
+                    }
+                }
             );
         }
         if (data.kind && inArray(data.kind, ["origin", "future", "exclusion"])) {
@@ -450,6 +473,7 @@ class AvailabilityPage extends Component {
             stateChanged={this.state.stateChanged}
             includeUrl={this.props.links.includeurl}
             errorList={this.state.errorList}
+            conflictList={this.state.conflictList ? this.state.conflictList : {}}
             handleErrorList={handleErrorList}
         />
     }
