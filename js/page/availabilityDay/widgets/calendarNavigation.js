@@ -10,9 +10,10 @@ const calendarNavigation = (links) => {
             {(links.previousDay >= links.sameDay) ||  
                     <span title="Tag zurück nicht möglich" className="icon prev inactive"><i className="fas fa-caret-square-left color-text-disabled" aria-hidden="true"></i></span>
             }
-            <a href={links.sameDay} className="today">Heute</a> 
-            <a href={links.nextDay} title="Tag vor" className="icon next"><i className="fas fa-caret-square-right" aria-hidden="true"></i> <span className="aural">Tag vor</span></a> 
+            <a href={links.sameDay} className="today">Heute</a>&nbsp;
+            <a href={links.nextDay} title="Tag vor" className="icon next"><i className="fas fa-caret-square-right" aria-hidden="true"></i> <span className="aural">Tag vor</span></a>
         </div>
+        
     )
 }
 
