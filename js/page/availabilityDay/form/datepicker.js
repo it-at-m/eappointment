@@ -14,11 +14,20 @@ class AvailabilityDatePicker extends Component
 {
     constructor(props) {
         super(props);
-        this.state = {availability: this.props.attributes.availability}
+        this.state = {
+            availability: this.props.attributes.availability,
+            availabilityList: this.props.attributes.availabilitylist
+        }
     }
 
-    componentDidMount() {
-        this.updateState()
+    componentDidUpdate(prevProps) {
+        if (
+            this.state.availability && 
+            prevProps.attributes.availability !== this.props.attributes.availability
+        ) {
+            this.updateState()
+        }
+        
     }
 
     updateState(name, date) {
@@ -32,20 +41,24 @@ class AvailabilityDatePicker extends Component
             .set({"h": endTime.hours(), "m": endTime.minutes()})
             .toDate()
 
-        startDate = ("startDate" == name) ? date : startDate;
-        endDate = ("endDate" == name) ? date : endDate;
-          
-        let state = {
-            availabilityList: this.props.attributes.availabilitylist,
+        let selectedDate = ("startDate" == this.props.name) ? startDate : endDate
+
+        if (name && date) {
+            startDate = ("startDate" == name) ? date : startDate;
+            endDate = ("endDate" == name) ? date : endDate;
+            selectedDate = date
+        }
+        this.setState({
             availability: this.props.attributes.availability,
-            selectedDate: ("startDate" == this.props.name || "startDate" == name) ? startDate : endDate,
+            availabilityList: this.props.attributes.availabilitylist,
+            selectedDate: selectedDate,
             startDate: startDate,
             endDate: endDate,
-            excludeTimeList: [],
             minTime: setHours(setMinutes(new Date(), 0), 7),
             maxTime: setHours(setMinutes(new Date(), 0), 20)
-        };
-        this.setState(state)
+        }, () => {
+            this.setExcludeTimesForDay()
+        })
     }
 
     setClassNameForSelectedWeekDay(className, date) {
@@ -86,23 +99,25 @@ class AvailabilityDatePicker extends Component
         return isSelected;
     }
 
-    setExcludeTimesForDay(date) {
+    setExcludeTimesForDay() {
         var times = []
         this.state.availabilityList.map(availability => {
             if (availability.id !== this.state.availability.id &&
                 availability.type == this.state.availability.type &&
-                this.isWeekDaySelected(date, availability)
+                this.isWeekDaySelected(this.state.selectedDate, availability)
             ) {
                 const startTime = moment(availability.startTime, 'hh:mm');
-                const startOnDay = moment(date).set({"h": startTime.hours(), "m": startTime.minutes()})
+                const startOnDay = moment(this.state.selectedDate)
+                    .set({"h": startTime.hours(), "m": startTime.minutes()})
                     .toDate()
                 
                 const endTime = moment(availability.endTime, 'hh:mm');
-                const endOnDay = moment(date).set({"h": endTime.hours(), "m": endTime.minutes()})
+                const endOnDay = moment(this.state.selectedDate)
+                    .set({"h": endTime.hours(), "m": endTime.minutes()})
                     .toDate()
                
                 var currentTime = new Date(startOnDay)
-                while (currentTime < endOnDay) {
+                while (currentTime <= endOnDay) {
                     times = [...times, new Date(currentTime)]
                     currentTime = moment(currentTime)
                         .add(this.state.availability.slotTimeInMinutes, "m")
@@ -115,8 +130,6 @@ class AvailabilityDatePicker extends Component
     }
 
     handleChange(name, date) {
-        this.updateState(name, date)
-        this.setExcludeTimesForDay(date)
         if ('startDate' == name) {
             this.props.onChange("startTime", moment(date).format('HH:mm'));
         }
@@ -127,20 +140,18 @@ class AvailabilityDatePicker extends Component
     }
 
     render() {
-        const handleCalendarOpen = () => {
-            this.setExcludeTimesForDay(this.state.selectedDate);
-        }
-
         const dayClassName = (date) => {
             let className = "";
             className = this.setClassNameForSelectedWeekDay(className, date);
             return className;
         }
 
+        /*
         const isWeekday = date => {
             const day = date.getDay();
             return day !== 0 && day !== 6;
         };
+        */
 
         return (
             <div className="add-date-picker">
@@ -169,7 +180,6 @@ class AvailabilityDatePicker extends Component
                     //disabledKeyboardNavigation
                     showDisabledMonthNavigation
                     disabled={this.props.attributes.disabled}
-                    onCalendarOpen={handleCalendarOpen}
                 />
                 {/*<div className="react-datepicker__day react-datepicker__day--disabled day__appointment">x</div>Vorhandene Terminkunden-Öffnungszeit<br />
                 <div className="react-datepicker__day react-datepicker__day--disabled day__openinghours">x</div>Vorhandene Spontankunden-Öffnungszeit*/}

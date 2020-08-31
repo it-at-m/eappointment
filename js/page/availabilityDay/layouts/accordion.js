@@ -93,6 +93,7 @@ class Accordion extends Component
                 }
         
                 let title = accordionTitle(availability);
+
                 
                 return (
                     <section key={index} className="accordion-section">
@@ -113,8 +114,8 @@ class Accordion extends Component
                                 onExclusion={onExclusion}
                                 onEditInFuture={onEditInFuture}
                                 onDelete={onDelete}
-                                includeUrl={this.props.includeUrl}
                                 errorList={this.props.errorList}
+                                conflictList={this.props.conflictList}
                                 setErrorRef={this.setErrorRef}
                             />
                         </div>
@@ -127,6 +128,7 @@ class Accordion extends Component
                 title=""
                 body={renderAccordionBody()}
                 footer={<FooterButtons 
+                    hasConflicts={Object.keys(this.props.conflictList).length ? true : false}
                     stateChanged={this.props.stateChanged} 
                     data={this.props.data} 
                     {...{onNew, onPublish, onAbort }} 
@@ -139,6 +141,7 @@ class Accordion extends Component
 Accordion.propTypes = {
     data: PropTypes.object,
     errorList: PropTypes.object,
+    conflictList: PropTypes.object,
     today: PropTypes.number,
     timestamp: PropTypes.number,
     onSelect: PropTypes.func,
@@ -154,7 +157,6 @@ Accordion.propTypes = {
     handleErrorList: PropTypes.func,
     availabilities: PropTypes.array,
     stateChanged: PropTypes.bool,
-    includeUrl: PropTypes.string,
     errorElement: PropTypes.element
 }
 

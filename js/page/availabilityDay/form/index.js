@@ -8,39 +8,16 @@ class AvailabilityForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            conflictList: {},
             data: getFormValuesFromData(this.props.data)
         };
     }
 
     componentDidUpdate(prevProps) {
         if (this.props.data !== prevProps.data) {
-            this.getConflictList();
             this.setState({
                 data: getFormValuesFromData(this.props.data)
             })
         }
-    }
-
-    getConflictList() {
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(this.props.data)
-        };
-        const url = `${this.props.includeUrl}/availability/conflicts/`
-        fetch(url, requestOptions)
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    this.setState({
-                        conflictList: Object.assign({}, result.conflictList)
-                    })
-                },
-                (error) => {
-                    console.log(error)
-                }
-            )
     }
 
     handleChange(name, value) {
@@ -69,7 +46,7 @@ class AvailabilityForm extends Component {
                     availabilityList={this.props.availabilityList}
                     setErrorRef={this.props.setErrorRef}
                     errorList={this.props.errorList}
-                    conflictList={this.state.conflictList}
+                    conflictList={this.props.conflictList}
                     {... { data, onChange }} />}
                 {<FormButtons 
                     data = {data}
@@ -93,6 +70,7 @@ AvailabilityForm.defaultProps = {
 
 AvailabilityForm.propTypes = {
     availabilityList: PropTypes.array,
+    conflictList: PropTypes.object,
     errorList: PropTypes.object,
     data: PropTypes.object,
     today: PropTypes.number,
@@ -102,7 +80,6 @@ AvailabilityForm.propTypes = {
     onExclusion: PropTypes.func,
     onEditInFuture: PropTypes.func,
     setErrorRef: PropTypes.func,
-    includeUrl: PropTypes.string,
     onDelete: PropTypes.func
 }
 
