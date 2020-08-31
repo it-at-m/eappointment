@@ -18,6 +18,15 @@ class Accordion extends Component
             this.errorElement = element
         };
         this.state = {isExpanded: null}
+    } 
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.data !== this.props.data && this.props.data) {
+            let eventId = (this.props.data.id) ? this.props.data.id : this.props.data.tempId;
+            this.setState({
+                isExpanded: (eventId) ? eventId : null
+            });
+        }
     }
     
     render() {
