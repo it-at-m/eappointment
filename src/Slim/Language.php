@@ -84,7 +84,9 @@ class Language
         } elseif ('' == $locale) {
             $locale = $this->getDefault();
         }
-        \Locale::setDefault($locale);
+        if (class_exists("Locale")) {
+            \Locale::setDefault($locale);
+        }
         \setlocale(LC_ALL, $this->getLocaleList($locale));
     }
 
