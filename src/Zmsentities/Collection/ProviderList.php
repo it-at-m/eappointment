@@ -7,13 +7,14 @@ class ProviderList extends Base
 
     public function hasProvider($providerIdCsv)
     {
+        $providerFound = false;
         $providerIds = explode(',', $providerIdCsv);
         foreach ($providerIds as $providerId) {
-            if (!in_array($providerId, $this->getIds())) {
-                return false;
+            if (in_array($providerId, $this->getIds())) {
+                $providerFound = true;
             }
         }
-        return true;
+        return $providerFound;
     }
 
     public function hasRequest($requestIdCsv)
