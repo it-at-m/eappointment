@@ -15,8 +15,10 @@ class AvailabilityDatePicker extends Component
     constructor(props) {
         super(props);
         this.state = {
+            focused: this.props.attributes.id,
             availability: this.props.attributes.availability,
-            availabilityList: this.props.attributes.availabilitylist
+            availabilityList: this.props.attributes.availabilitylist,
+            minDate: moment.unix(this.props.attributes.availability.startDate).toDate()
         }
     }
 
@@ -44,8 +46,8 @@ class AvailabilityDatePicker extends Component
         let selectedDate = ("startDate" == this.props.name) ? startDate : endDate
 
         if (name && date) {
-            startDate = ("startDate" == name) ? date : startDate;
-            endDate = ("endDate" == name) ? date : endDate;
+            startDate = ("startDate" == name) ? date.startOf('day') : startDate;
+            endDate = ("endDate" == name) ? date.startOf('day') : endDate;
             selectedDate = date
         }
         this.setState({
@@ -72,8 +74,8 @@ class AvailabilityDatePicker extends Component
 
     isDateInAvailabilityRange(date) {
         return (
-            date <= moment.unix(this.state.availability.endDate).startOf('day').toDate() && 
-            date >= moment.unix(this.state.availability.startDate).startOf('day').toDate()
+            date <= moment.unix(this.state.availability.endDate).toDate() && 
+            date >= moment.unix(this.state.availability.startDate).toDate()
         )
     }
 
@@ -131,12 +133,22 @@ class AvailabilityDatePicker extends Component
 
     handleChange(name, date) {
         if ('startDate' == name) {
-            this.props.onChange("startTime", moment(date).format('HH:mm'));
+            if (this.state.availability.startDate != moment(date).startOf('day').unix()) {
+                this.props.onChange("startDate", moment(date).unix());
+            }
+            if (this.state.availability.startTime != moment(date).format('HH:mm')) {
+                this.props.onChange("startTime", moment(date).format('HH:mm'));
+            }
         }
         if ('endDate' == name) {
-            this.props.onChange("endTime", moment(date).format('HH:mm'));
+            if (this.state.availability.endDate != moment(date).startOf('day').unix()) {
+                this.props.onChange("endDate", moment(date).unix());
+            }
+            if (this.state.availability.endTime != moment(date).format('HH:mm')) {
+                this.props.onChange("endTime", moment(date).format('HH:mm'));
+            }
         } 
-        this.props.onChange(name, moment(date).unix());
+       
     }
 
     render() {
@@ -161,9 +173,9 @@ class AvailabilityDatePicker extends Component
                     id={this.props.attributes.id}
                     name={this.props.name}
                     dateFormat="dd.MM.yyyy HH:mm" 
-                    selected={this.state.selectedDate} 
+                    selected={this.state.selectedDate}
                     onChange={date => {this.handleChange(this.props.name, date)}}
-                    minDate={this.state.startDate}
+                    minDate={this.state.minDate}
                     maxDate={repeat(this.state.availability.repeat) == 0 ? this.state.selectedDate : null}
                     //filterDate={isWeekday}
                     //excludeDates={this.state.excludeDateList}
