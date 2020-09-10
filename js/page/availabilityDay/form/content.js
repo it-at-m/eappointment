@@ -109,7 +109,7 @@ const FormContent = (props) => {
                                     "availabilitylist": availabilityList,
                                     "availability": getDataValuesFromForm(data, data.scope),
                                     "today": today,
-                                    "selectedday": data.startDate || selectedDay,
+                                    "selectedday": selectedDay,
                                     "disabled": calenderDisabled
                                 }} name="startDate" {...{ onChange }} />
                             </Controls>
@@ -119,7 +119,7 @@ const FormContent = (props) => {
                                     "availabilitylist": availabilityList,
                                     "availability": getDataValuesFromForm(data, data.scope),
                                     "today": today,
-                                    "selectedday": data.endDate || selectedDay,
+                                    "selectedday": selectedDay,
                                     "disabled": calenderDisabled
                                 }} name="endDate" {...{ onChange }} />
                             </Controls>

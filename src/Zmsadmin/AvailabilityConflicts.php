@@ -40,6 +40,7 @@ class AvailabilityConflicts extends BaseController
         $endDate = $entity->getEndDateTime();
         $availabilityList = static::getAvailabilityList($scope, $startDate);
         $availabilityList->addEntity($entity);
+        $availabilityList = $availabilityList->withOutDoubles();
         $conflictList = $availabilityList->getConflicts($startDate, $endDate);
         return [
             'conflictList' => $conflictList->toConflictListByDay()
