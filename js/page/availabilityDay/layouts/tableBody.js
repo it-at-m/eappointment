@@ -61,8 +61,6 @@ const renderTable = (onDelete, onSelect, availabilities) => {
             const availabilityRepeat = availabilitySeries.find(element => element.value == repeat(availability.repeat)).name
 
             const availabilityType = availabilityTypes.find(element => element.value == availability.type)
-
-            const availabilityWorkstationCount = Object.values(availability.workstationCount).reverse().join('/')
             
             return (
                 <tr key={key}>
@@ -100,7 +98,7 @@ const renderTable = (onDelete, onSelect, availabilities) => {
                         {availability.slotTimeInMinutes}min
                     </td>
                     <td>
-                        {availabilityWorkstationCount}
+                        {availability.workstationCount.intern}/{availability.workstationCount.callcenter}/{availability.workstationCount.public}
                     </td>
                     <td>
                         {availability.bookable.startInDays}-{availability.bookable.endInDays}
