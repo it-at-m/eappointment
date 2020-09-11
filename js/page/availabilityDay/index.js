@@ -376,84 +376,92 @@ class AvailabilityPage extends Component {
 
     handleChangesAvailabilityExclusion(data) {
         if ('origin' == data.kind && data.__modified) {
-            const exclusionAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'exclusion');
-            const futureAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'future');
-            
-            const exclusionAvailability = Object.assign({}, exclusionAvailabilityFromState, {
-                startDate: moment(data.endDate, 'X').startOf('day').add(1, 'days').format('X'),
-                endDate: (exclusionAvailabilityFromState.endDate > moment(data.endDate, 'X').startOf('day').add(1, 'days').format('X')) ?
-                    exclusionAvailabilityFromState.endDate :
-                    moment(data.endDate, 'X').startOf('day').add(1, 'days').format('X')
-            });
-        
-            const futureAvailability = Object.assign({}, futureAvailabilityFromState, {
-                startDate: moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days').format('X'),
-                endDate: (
-                    futureAvailabilityFromState.endDate > moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days').format('X')) ?
-                    futureAvailabilityFromState.endDate :
-                    moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days').format('X')
-            });
-            this.setState(Object.assign(
-                {},
-                mergeAvailabilityListIntoState(this.state, [exclusionAvailability, futureAvailability, data])
-            ));          
+            this.handleOriginChanges(data)
         }
-
         if ('exclusion' == data.kind && data.__modified) {
-            const originAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'origin');
-            const futureAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'future');
-
-            const exclusionAvailability = Object.assign({}, data, {
-                endDate: (data.startDate > data.endDate) ? data.startDate : data.endDate
-            });
-
-            const originAvailability = Object.assign({}, originAvailabilityFromState, {
-                endDate: moment(exclusionAvailability.startDate, 'X').startOf('day').subtract(1, 'days').format('X')
-            });
-        
-            const futureAvailability = Object.assign({}, futureAvailabilityFromState, {
-                startDate: moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days').format('X'),
-                endDate: (
-                    futureAvailabilityFromState.endDate > moment(data.endDate, 'X').startOf('day').add(1, 'days').format('X')) ?
-                    futureAvailabilityFromState.endDate :
-                    moment(data.endDate, 'X').startOf('day').add(1, 'days').format('X')
-            });
-
-            this.setState(Object.assign(
-                {},
-                mergeAvailabilityListIntoState(this.state, [
-                    originAvailability, 
-                    futureAvailability, 
-                    exclusionAvailability
-                ])
-            ));          
+            this.handleExclusionChanges(data)        
         }
         if ('future' == data.kind && data.__modified) {
-            const startDate = moment(data.startDate, 'X').startOf('day').add(1, 'days').format('X');
-
-            const originAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'origin');
-            const exclusionAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'exclusion');
-            
-            
-
-            const exclusionAvailability = Object.assign({}, exclusionAvailabilityFromState, {
-                startDate: (startDate < exclusionAvailabilityFromState.endDate) ? 
-                    parseInt(startDate, 10) : 
-                    exclusionAvailabilityFromState.endDate,
-            });
-
-            const originEndDate = moment(exclusionAvailabilityFromState.startDate, 'X').startOf('day').subtract(1, 'days').format('X');
-            const originAvailability = Object.assign({}, originAvailabilityFromState, {
-                endDate: (originEndDate > originAvailabilityFromState.endDate) ? 
-                    parseInt(originEndDate, 10) : 
-                    exclusionAvailabilityFromState.startDate
-            });
-        
-            this.setState(Object.assign(
-                {},
-                mergeAvailabilityListIntoState(this.state, [originAvailability, exclusionAvailability, data])
-            ));          
+            this.handleFutureChanges(data)
         }
+    }
+
+    handleOriginChanges(data) {
+        const exclusionAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'exclusion');
+        const futureAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'future');
+        
+        const exclusionAvailability = Object.assign({}, exclusionAvailabilityFromState, {
+            startDate: moment(data.endDate, 'X').startOf('day').add(1, 'days').format('X'),
+            endDate: (exclusionAvailabilityFromState.endDate > moment(data.endDate, 'X').startOf('day').add(1, 'days').format('X')) ?
+                exclusionAvailabilityFromState.endDate :
+                moment(data.endDate, 'X').startOf('day').add(1, 'days').format('X')
+        });
+    
+        const futureAvailability = Object.assign({}, futureAvailabilityFromState, {
+            startDate: moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days').format('X'),
+            endDate: (
+                futureAvailabilityFromState.endDate > moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days').format('X')) ?
+                futureAvailabilityFromState.endDate :
+                moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days').format('X')
+        });
+        this.setState(Object.assign(
+            {},
+            mergeAvailabilityListIntoState(this.state, [exclusionAvailability, futureAvailability, data])
+        ));          
+    }
+
+    handleExclusionChanges(data) {
+        const originAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'origin');
+        const futureAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'future');
+
+        const exclusionAvailability = Object.assign({}, data, {
+            endDate: (data.startDate > data.endDate) ? data.startDate : data.endDate
+        });
+
+        const originAvailability = Object.assign({}, originAvailabilityFromState, {
+            endDate: moment(exclusionAvailability.startDate, 'X').startOf('day').subtract(1, 'days').format('X')
+        });
+    
+        const futureAvailability = Object.assign({}, futureAvailabilityFromState, {
+            startDate: moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days').format('X'),
+            endDate: (
+                futureAvailabilityFromState.endDate > moment(data.endDate, 'X').startOf('day').add(1, 'days').format('X')) ?
+                futureAvailabilityFromState.endDate :
+                moment(data.endDate, 'X').startOf('day').add(1, 'days').format('X')
+        });
+
+        this.setState(Object.assign(
+            {},
+            mergeAvailabilityListIntoState(this.state, [
+                originAvailability, 
+                futureAvailability, 
+                exclusionAvailability
+            ])
+        ));  
+    }
+
+    handleFutureChanges(data) {
+        const startDate = moment(data.startDate, 'X').startOf('day').add(1, 'days').format('X');
+        const originAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'origin');
+        const exclusionAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'exclusion');
+        
+        const exclusionAvailability = Object.assign({}, exclusionAvailabilityFromState, {
+            startDate: (startDate < exclusionAvailabilityFromState.endDate) ? 
+                parseInt(startDate, 10) : 
+                exclusionAvailabilityFromState.endDate,
+        });
+
+        const originEndDate = moment(exclusionAvailabilityFromState.startDate, 'X').startOf('day').subtract(1, 'days').format('X');
+        const originAvailability = Object.assign({}, originAvailabilityFromState, {
+            endDate: (originEndDate > originAvailabilityFromState.endDate) ? 
+                parseInt(originEndDate, 10) : 
+                exclusionAvailabilityFromState.startDate
+        });
+    
+        this.setState(Object.assign(
+            {},
+            mergeAvailabilityListIntoState(this.state, [originAvailability, exclusionAvailability, data])
+        ));          
     }
 
     renderAvailabilityAccordion() {
