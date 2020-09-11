@@ -106,18 +106,20 @@ class AvailabilityDatePicker extends Component
                 availability.type == this.state.availability.type &&
                 this.isWeekDaySelected(this.state.selectedDate, availability)
             ) {
-                const startTime = moment(availability.startTime, 'hh:mm');
+                const startTime = moment(availability.startTime, 'hh:mm')
+                    .add(this.state.availability.slotTimeInMinutes, "m");
                 const startOnDay = moment(this.state.selectedDate)
                     .set({"h": startTime.hours(), "m": startTime.minutes()})
                     .toDate()
                 
-                const endTime = moment(availability.endTime, 'hh:mm');
+                const endTime = moment(availability.endTime, 'hh:mm')
+                    .subtract(this.state.availability.slotTimeInMinutes, "m");
                 const endOnDay = moment(this.state.selectedDate)
                     .set({"h": endTime.hours(), "m": endTime.minutes()})
                     .toDate()
                
                 var currentTime = new Date(startOnDay)
-                while (currentTime <= endOnDay) {
+                while (currentTime < endOnDay) {
                     times = [...times, new Date(currentTime)]
                     currentTime = moment(currentTime)
                         .add(this.state.availability.slotTimeInMinutes, "m")
