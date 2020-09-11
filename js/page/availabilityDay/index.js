@@ -131,7 +131,10 @@ class AvailabilityPage extends Component {
 
 
     onRevertUpdates() {
-        this.setState(getInitialState(this.props))
+        //this.setState(getInitialState(this.props))
+        this.setState(Object.assign({}, getInitialState(this.props), {
+            selectedTab: this.state.selectedTab
+        }))
     }
 
     onDeleteAvailability(availability) {
@@ -348,6 +351,7 @@ class AvailabilityPage extends Component {
             links={this.props.links}
             onSelect={onSelect}
             onDelete={onDelete}
+            onAbort={this.onRevertUpdates.bind(this)}
         />
     }
 
