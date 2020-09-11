@@ -363,7 +363,7 @@ class AvailabilityPage extends Component {
                 Object.assign({}, updateAvailabilityInState(this.state, data), {selectedAvailability: data}),
                 () => {
                     console.log(data)
-                    if (data.tempId || data.id) {
+                    if (data.tempId || data.id) {
                         this.getConflictList()
                     }
                 }

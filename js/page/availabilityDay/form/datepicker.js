@@ -18,7 +18,9 @@ class AvailabilityDatePicker extends Component
             focused: this.props.attributes.id,
             availability: this.props.attributes.availability,
             availabilityList: this.props.attributes.availabilitylist,
-            minDate: moment.unix(this.props.attributes.availability.startDate).toDate()
+            minDate: moment.unix(this.props.attributes.availability.startDate).toDate(),
+            minTime: setHours(setMinutes(new Date(), 0), 7),
+            maxTime: setHours(setMinutes(new Date(), 0), 20)
         }
     }
 
@@ -53,11 +55,7 @@ class AvailabilityDatePicker extends Component
         this.setState({
             availability: this.props.attributes.availability,
             availabilityList: this.props.attributes.availabilitylist,
-            selectedDate: selectedDate,
-            startDate: startDate,
-            endDate: endDate,
-            minTime: setHours(setMinutes(new Date(), 0), 7),
-            maxTime: setHours(setMinutes(new Date(), 0), 20)
+            selectedDate: selectedDate
         }, () => {
             this.setExcludeTimesForDay()
         })
@@ -134,17 +132,21 @@ class AvailabilityDatePicker extends Component
     handleChange(name, date) {
         if ('startDate' == name) {
             if (this.state.availability.startDate != moment(date).startOf('day').unix()) {
+                console.log("changed startDate")
                 this.props.onChange("startDate", moment(date).unix());
             }
             if (this.state.availability.startTime != moment(date).format('HH:mm')) {
+                console.log("changed startTime")
                 this.props.onChange("startTime", moment(date).format('HH:mm'));
             }
         }
         if ('endDate' == name) {
             if (this.state.availability.endDate != moment(date).startOf('day').unix()) {
+                console.log("changed endDate")
                 this.props.onChange("endDate", moment(date).unix());
             }
             if (this.state.availability.endTime != moment(date).format('HH:mm')) {
+                console.log("changed endTime")
                 this.props.onChange("endTime", moment(date).format('HH:mm'));
             }
         } 
