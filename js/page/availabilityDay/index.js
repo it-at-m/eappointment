@@ -375,6 +375,31 @@ class AvailabilityPage extends Component {
     }
 
     handleChangesAvailabilityExclusion(data) {
+        if ('origin' == data.kind && data.__modified) {
+            const exclusionAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'exclusion');
+            const futureAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'future');
+            
+            const exclusionAvailability = Object.assign({}, exclusionAvailabilityFromState, {
+                startDate: moment(data.endDate, 'X').startOf('day').add(1, 'days').format('X'),
+                endDate: (exclusionAvailabilityFromState.endDate > moment(data.endDate, 'X').startOf('day').add(1, 'days').format('X')) ?
+                    exclusionAvailabilityFromState.endDate :
+                    moment(data.endDate, 'X').startOf('day').add(1, 'days').format('X')
+            });
+        
+            console.log(moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days'))
+            const futureAvailability = Object.assign({}, futureAvailabilityFromState, {
+                startDate: moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days').format('X'),
+                endDate: (
+                    futureAvailabilityFromState.endDate > moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days').format('X')) ?
+                    futureAvailabilityFromState.endDate :
+                    moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days').format('X')
+            });
+            this.setState(Object.assign(
+                {},
+                mergeAvailabilityListIntoState(this.state, [exclusionAvailability, futureAvailability, data])
+            ));          
+        }
+
         if ('exclusion' == data.kind && data.__modified) {
             const startDate = moment(data.endDate, 'X').startOf('day').add(1, 'days').format('X');
             const endDate = moment(data.startDate, 'X').startOf('day').subtract(1, 'days').format('X');
@@ -399,19 +424,29 @@ class AvailabilityPage extends Component {
             ));          
         }
         if ('future' == data.kind && data.__modified) {
-            const endDate = moment(data.startDate, 'X').startOf('day').subtract(1, 'days').format('X');
+            const startDate = moment(data.startDate, 'X').startOf('day').add(1, 'days').format('X');
 
             const originAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'origin');
+            const exclusionAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'exclusion');
             
+            
+
+            const exclusionAvailability = Object.assign({}, exclusionAvailabilityFromState, {
+                startDate: (startDate < exclusionAvailabilityFromState.endDate) ? 
+                    parseInt(startDate, 10) : 
+                    exclusionAvailabilityFromState.endDate,
+            });
+
+            const originEndDate = moment(exclusionAvailabilityFromState.startDate, 'X').startOf('day').subtract(1, 'days').format('X');
             const originAvailability = Object.assign({}, originAvailabilityFromState, {
-                endDate: (endDate > originAvailabilityFromState.startDate) ? 
-                    parseInt(endDate, 10) : 
-                    originAvailabilityFromState.startDate
+                endDate: (originEndDate > originAvailabilityFromState.endDate) ? 
+                    parseInt(originEndDate, 10) : 
+                    exclusionAvailabilityFromState.startDate
             });
         
             this.setState(Object.assign(
                 {},
-                mergeAvailabilityListIntoState(this.state, [originAvailability, data])
+                mergeAvailabilityListIntoState(this.state, [originAvailability, exclusionAvailability, data])
             ));          
         }
     }
