@@ -5,7 +5,7 @@ import {weekDayList, availabilitySeries, availabilityTypes, repeat} from '../hel
 moment.locale('de')
 
 const TableBodyLayout = (props) => {
-    const { onDelete, onSelect, availabilities } = props;
+    const { onDelete, onSelect, onAbort, availabilities } = props;
     return (
         <div className="table-responsive-wrapper"> 
             <table className="table--base">
@@ -25,14 +25,14 @@ const TableBodyLayout = (props) => {
                     </tr>
                 </thead>
                 <tbody>
-                {renderTable(onDelete, onSelect, availabilities)}
+                {renderTable(onDelete, onSelect, onAbort, availabilities)}
                 </tbody>
             </table>
         </div>
     )
 }
 
-const renderTable = (onDelete, onSelect, availabilities) => {
+const renderTable = (onDelete, onSelect, onAbort, availabilities) => {
     if (availabilities.length > 0) {
         return availabilities.map((availability, key) => {
 
@@ -43,6 +43,9 @@ const renderTable = (onDelete, onSelect, availabilities) => {
 
             const titleEdit = `Bearbeiten von ${availability.id} (${startDate} - ${endDate})`
             const titleDelete = `Löschen von ${availability.id} (${startDate} - ${endDate})`
+            const titleAbort = `Die aktuelle Beabeitung wird zurückgesetzt.`
+            const titleDisabled = `Diese Aktion ist während einer aktuellen Bearbeitung nicht möglich.`
+
 
             const onClickEdit = ev => {
                 ev.preventDefault()
@@ -54,6 +57,11 @@ const renderTable = (onDelete, onSelect, availabilities) => {
                 onDelete(availability)
             }
 
+            const onClickAbort = ev => {
+                ev.preventDefault()
+                onAbort()
+            }
+
             const availabilityWeekDayList = Object.keys(availability.weekday).filter(key => parseInt(availability.weekday[key], 10) > 0)
             
             const availabilityWeekDay = weekDayList.filter(element => availabilityWeekDayList.includes(element.value)).map(item => item.label).join(', ')
@@ -61,20 +69,34 @@ const renderTable = (onDelete, onSelect, availabilities) => {
             const availabilityRepeat = availabilitySeries.find(element => element.value == repeat(availability.repeat)).name
 
             const availabilityType = availabilityTypes.find(element => element.value == availability.type)
-            
+            const disabled = (availability.id && availability.__modified);
             return (
                 <tr key={key}>
                     <td className="center" style={{"whiteSpace": "nowrap"}}>
                         <span style={{ marginRight: "5px" }}>
+                            { disabled ? 
+                            <i className="fas fa-pencil-alt" aria-hidden="true" title={titleDisabled}></i> : 
                             <a href="#" className="icon" title={titleEdit} onClick={onClickEdit}>
                                 <i className="fas fa-pencil-alt" aria-hidden="true"></i>
                             </a>
+                            }
                         </span>
                         <span>
+                            { disabled ?
+                            <i className="far fa-trash-alt" aria-hidden="true" title={titleDisabled}></i> : 
                             <a href="#" className="icon" title={titleDelete} onClick={onClickDelete}>
                                 <i className="far fa-trash-alt" aria-hidden="true"></i>
                             </a>
+                            }
                         </span>
+                        { disabled ?
+                        <span style={{ marginLeft: "5px" }}>
+                            <a href="#" className="icon" title={titleAbort} onClick={onClickAbort}>
+                                <i className="fas fa-ban" aria-hidden="true"></i>
+                            </a>
+                        </span>
+                         : null
+                        }
                     </td>
                     <td>
                         {availabilityWeekDay}
