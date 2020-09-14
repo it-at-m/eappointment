@@ -9,6 +9,7 @@ namespace BO\Zmsadmin;
 use BO\Zmsentities\Availability;
 
 use BO\Zmsentities\Collection\AvailabilityList;
+
 /**
  * Check if new Availability is in conflict with existing availability
  *
@@ -27,7 +28,7 @@ class AvailabilityConflicts extends BaseController
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->assertValid()->getValue();
         $collection = new AvailabilityList();
-        foreach($input['availabilityList'] as $item) {
+        foreach ($input['availabilityList'] as $item) {
             $entity = new Availability($item);
             $collection->addEntity($entity);
         }
