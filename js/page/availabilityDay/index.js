@@ -36,7 +36,6 @@ class AvailabilityPage extends Component {
     constructor(props) {
         super(props)
         this.state = getInitialState(props)
-        console.log(this.state.conflicts)
     }
 
     componentDidMount() {

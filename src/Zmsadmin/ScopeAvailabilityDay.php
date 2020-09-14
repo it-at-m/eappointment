@@ -38,24 +38,23 @@ class ScopeAvailabilityDay extends BaseController
     protected static function getAvailabilityData($scope, $dateString)
     {
         $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
-        $dateTime = $dateTime->setTime(\App::$now->format('H'), \App::$now->format('i'));
+        $dateWithTime = $dateTime->setTime(\App::$now->format('H'), \App::$now->format('i'));
         $availabilityList = static::getAvailabilityList($scope, $dateTime);
         $processList = \App::$http
             ->readGetResult('/scope/' . $scope->getId() . '/process/' . $dateTime->format('Y-m-d') . '/')
                 ->getCollection()
-                ->toQueueList($dateTime)
+                ->toQueueList($dateWithTime)
                 ->withoutStatus(['fake'])
                 ->toProcessList();
         if (!$processList->count()) {
             $processList = new \BO\Zmsentities\Collection\ProcessList();
         }
-        /*$processConflictList = \App::$http
+        $processConflictList = \App::$http
             ->readGetResult('/scope/' . $scope->getId() . '/conflict/', [
                 'startDate' => $dateTime->format('Y-m-d'),
+                'endDate' => $dateTime->format('Y-m-d')
             ])
             ->getCollection();
-            */
-        $processConflictList = $availabilityList->getConflicts($dateTime, $dateTime);
 
         $maxSlots = self::getMaxSlotsForAvailabilities($availabilityList);
         $busySlots = self::getBusySlotsForAvailabilities($availabilityList, $processList);
@@ -65,7 +64,7 @@ class ScopeAvailabilityDay extends BaseController
             'conflicts' => ($processConflictList) ? $processConflictList->getArrayCopy() : [],
             'processList' => $processList->getArrayCopy(),
             'dateString' => $dateString,
-            'timestamp' => $dateTime->getTimestamp(),
+            'timestamp' => $dateWithTime->getTimestamp(),
             'menuActive' => 'availability',
             'maxWorkstationCount' => $availabilityList->getMaxWorkstationCount(),
             'maxSlotsForAvailabilities' => $maxSlots,
@@ -111,7 +110,7 @@ class ScopeAvailabilityDay extends BaseController
                         'startDate' => $dateTime->format('Y-m-d') //for skipping old availabilities
                     ]
                 )
-                ->getCollection();
+                ->getCollection()->sortByCustomKey('startDate');
         } catch (\BO\Zmsclient\Exception $exception) {
             if ($exception->template != 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound') {
                 throw $exception;
