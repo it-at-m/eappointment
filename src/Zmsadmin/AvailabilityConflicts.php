@@ -8,6 +8,7 @@ namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Availability;
 
+use BO\Zmsentities\Collection\AvailabilityList;
 /**
  * Check if new Availability is in conflict with existing availability
  *
@@ -25,28 +26,31 @@ class AvailabilityConflicts extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->assertValid()->getValue();
-        $entity = new Availability($input);
-        $data = ($input) ? static::getAvailabilityData($entity) : [];
+        $collection = new AvailabilityList();
+        foreach($input['availabilityList'] as $item) {
+            $entity = new Availability($item);
+            $collection->addEntity($entity);
+        }
+        $selectedEntity = new Availability($input['selectedAvailability']);
+        $data = ($input['selectedAvailability']) ? static::getAvailabilityData($collection, $selectedEntity) : [];
         return \BO\Slim\Render::withJson(
             $response,
             $data
         );
     }
 
-    protected static function getAvailabilityData($entity)
+    protected static function getAvailabilityData($collection, $selectedEntity)
     {
-        $scope = new \BO\Zmsentities\Scope($entity->scope);
-        $startDate = $entity->getStartDateTime();
-        $endDate = $entity->getEndDateTime();
-        $availabilityList = static::getAvailabilityList($scope, $startDate);
-        $availabilityList->addEntity($entity);
-        error_log($availabilityList->count());
-        $conflictList = $availabilityList->getConflicts($startDate, $endDate);
+        $scope = new \BO\Zmsentities\Scope($selectedEntity->scope);
+        $conflictList = $collection
+            ->getConflicts($selectedEntity->getStartDateTime(), $selectedEntity->getEndDateTime());
         return [
-            'conflictList' => $conflictList->toConflictListByDay()
+            'conflictList' => $conflictList->toConflictListByDay(),
+            'selectedAvailability' => $selectedEntity
         ];
     }
 
+    /*
     protected static function getAvailabilityList($scope, $dateTime)
     {
         try {
@@ -67,4 +71,5 @@ class AvailabilityConflicts extends BaseController
         }
         return $availabilityList->withScope($scope);
     }
+    */
 }
