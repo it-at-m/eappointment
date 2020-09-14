@@ -40,7 +40,8 @@ TableView.propTypes = {
     availabilities: PropTypes.array,
     onNewAvailability: PropTypes.func,
     onDelete: PropTypes.func.isRequired,
-    onSelect: PropTypes.func.isRequired
+    onSelect: PropTypes.func.isRequired,
+    onAbort: PropTypes.func.isRequired
 }
 
 export default TableView
