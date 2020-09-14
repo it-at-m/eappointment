@@ -298,7 +298,6 @@ class AvailabilityPage extends Component {
 
     onConflictedIdSelect(id) {
         const availability = this.state.availabilitylist.filter(availability => availability.id === id)[0]
-
         if (availability) {
             this.setState({ selectedAvailability: availability })
         }
@@ -308,7 +307,7 @@ class AvailabilityPage extends Component {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: this.state.selectedAvailability ? JSON.stringify(this.state.selectedAvailability) : JSON.stringify({})
+            body: JSON.stringify(Object.assign({}, {availabilityList: this.state.availabilitylist, selectedAvailability: this.state.selectedAvailability}))
         };
         const url = `${this.props.links.includeurl}/availability/conflicts/`;
         fetch(url, requestOptions)
@@ -324,16 +323,6 @@ class AvailabilityPage extends Component {
                 }
             )
     }
-
-    /* list already filtered by default from api
-    getAvailabilityListByDay(selectedDay) {
-        return this.state.availabilitylist.filter(availability => {
-            const start = moment(availability.startDate, 'X')
-            const end = moment(availability.endDate, 'X')
-            return start.isSameOrBefore(selectedDay) && end.isSameOrAfter(selectedDay)
-        });
-    } 
-    */
 
     renderTimeTable() {
         const onSelect = data => {
