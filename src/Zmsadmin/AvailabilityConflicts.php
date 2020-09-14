@@ -42,7 +42,6 @@ class AvailabilityConflicts extends BaseController
 
     protected static function getAvailabilityData($collection, $selectedEntity)
     {
-        $scope = new \BO\Zmsentities\Scope($selectedEntity->scope);
         $conflictList = $collection
             ->getConflicts($selectedEntity->getStartDateTime(), $selectedEntity->getEndDateTime());
         return [
