@@ -137,7 +137,8 @@ const renderTable = (onDelete, onSelect, onAbort, availabilities) => {
 TableBodyLayout.propTypes = {
     availabilities: PropTypes.array,
     onSelect: PropTypes.func.isRequired,
-    onDelete: PropTypes.func.isRequired
+    onDelete: PropTypes.func.isRequired,
+    onAbort: PropTypes.func.isRequired
 }
 
 export default TableBodyLayout
