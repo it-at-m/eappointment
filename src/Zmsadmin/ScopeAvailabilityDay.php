@@ -49,11 +49,14 @@ class ScopeAvailabilityDay extends BaseController
         if (!$processList->count()) {
             $processList = new \BO\Zmsentities\Collection\ProcessList();
         }
-        $processConflictList = \App::$http
+        /*$processConflictList = \App::$http
             ->readGetResult('/scope/' . $scope->getId() . '/conflict/', [
                 'startDate' => $dateTime->format('Y-m-d'),
             ])
             ->getCollection();
+            */
+        $processConflictList = $availabilityList->getConflicts($dateTime, $dateTime);
+
         $maxSlots = self::getMaxSlotsForAvailabilities($availabilityList);
         $busySlots = self::getBusySlotsForAvailabilities($availabilityList, $processList);
         return [
