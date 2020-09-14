@@ -26,7 +26,7 @@ class AvailabilityConflicts extends BaseController
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->assertValid()->getValue();
         $entity = new Availability($input);
-        $data = static::getAvailabilityData($entity);
+        $data = ($input) ? static::getAvailabilityData($entity) : [];
         return \BO\Slim\Render::withJson(
             $response,
             $data
@@ -40,6 +40,7 @@ class AvailabilityConflicts extends BaseController
         $endDate = $entity->getEndDateTime();
         $availabilityList = static::getAvailabilityList($scope, $startDate);
         $availabilityList->addEntity($entity);
+        error_log($availabilityList->count());
         $conflictList = $availabilityList->getConflicts($startDate, $endDate);
         return [
             'conflictList' => $conflictList->toConflictListByDay()
@@ -64,6 +65,6 @@ class AvailabilityConflicts extends BaseController
             }
             $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
         }
-        return $availabilityList->withScope($scope)->withDateTime($dateTime); //withDateTime to check if opened
+        return $availabilityList->withScope($scope);
     }
 }
