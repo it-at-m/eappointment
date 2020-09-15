@@ -1,6 +1,7 @@
 ## v2.23.06
 
 * #45163 Bugfix: Bei aktiviertem Cluster wird die Abholerliste nun komplett ausgegeben auch wenn der Abholort sich vom Sachbearbeiterstandort unterscheidet.
+* #42462 Bugfix: Der Kalender wird nur noch mit den Tagen zwischen der gewünschten Einschränkung zurück gegeben
 
 ## v2.23.05
 

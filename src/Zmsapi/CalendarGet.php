@@ -47,6 +47,7 @@ class CalendarGet extends BaseController
             if ($fillWithEmptyDays) {
                 $calendar = $calendar->withFilledEmptyDays();
             }
+            $calendar->days = $calendar->days->withDaysInDateRange($calendar->getFirstDay(), $calendar->getLastDay());
             $message->data = $calendar;
         }
         if (0 == count($message->data['days'])) {
