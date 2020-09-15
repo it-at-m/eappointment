@@ -1,3 +1,7 @@
+## v2.23.06
+
+* #45163 Bugfix: Bei aktiviertem Cluster wird die Abholerliste nun komplett ausgegeben auch wenn der Abholort sich vom Sachbearbeiterstandort unterscheidet.
+
 ## v2.23.05
 
 * #37064 Das Versenden von Umfrage-Mails wurde aus der API in die entsprechenden Repos verschoben
