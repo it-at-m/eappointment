@@ -30,7 +30,8 @@ class Pickup extends BaseController
         }
 
         $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($workstation->scope['id'], $resolveReferences);
-        if (1 == $workstation->queue['clusterEnabled'] && ! $cluster) {
+        $clusterEnabled = (1 == $workstation->queue['clusterEnabled']);
+        if ($clusterEnabled && ! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
         $scopeList = $workstation->getScopeList($cluster);
@@ -43,7 +44,7 @@ class Pickup extends BaseController
             }
         }
         $message = Response\Message::create($request);
-        $message->data = $processList;
+        $message->data = ($clusterEnabled) ? $processList : $processList->withScopeId($scope->getId());
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
