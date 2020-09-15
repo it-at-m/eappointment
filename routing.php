@@ -296,6 +296,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
  *                  in: query
  *                  type: integer
+ *              -   name: fillWithEmptyDays
+ *                  description: "Returns calendar daylist including not bookable days"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: get an updated calendar objects with updated days list
