@@ -1,3 +1,7 @@
+## v2.23.06
+
+* #45163 Bugfix: Beim Abruf von Abholern muss der AbholOrt nicht mehr gleich dem Standort sein. Dies fixt einen Fehler bei aktiviertem Cluster in der Abholerverwaltung
+
 ## v2.23.05
 
 * #43763 Bugfix: Für Erinnerungs-SMS wird nicht mehr der Text für Bestätigungen verwendet.
