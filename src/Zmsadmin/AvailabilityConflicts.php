@@ -41,7 +41,6 @@ class AvailabilityConflicts extends BaseController
         foreach ($input['availabilityList'] as $item) {
             $entity = new Availability($item);
             if ($item['__modified'] && ! $input['selectedAvailability']) {
-                error_log($item['__modified']);
                 $selectedEntity = $entity;
             }
             $collection->addEntity($entity);
