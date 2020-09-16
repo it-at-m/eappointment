@@ -1,5 +1,6 @@
 ## v2.23.06
 
+* #45302 -Der DLDB Import findet jetzt alle 5 Minuten statt-
 * #45163 Bugfix: Bei aktiviertem Cluster wird die Abholerliste nun komplett ausgegeben auch wenn der Abholort sich vom Sachbearbeiterstandort unterscheidet.
 * #42462 Bugfix: Der Kalender wird nur noch mit den Tagen zwischen der gewünschten Einschränkung zurück gegeben
 
