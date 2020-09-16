@@ -1,3 +1,7 @@
+## v2.23.06
+
+* #44320 Bugfix: Öffnungszeiten können nun mit Ausnahmen angelegt werden und Konflikte werden während der Bearbeitung einer Öffnungszeit angezeigt
+
 ## v2.23.05
 
 * #44173 Bugfix: Freie Tage werden nun nur noch angelegt, wenn ein Name vergeben worden ist
