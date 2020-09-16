@@ -177,6 +177,15 @@ class AvailabilityPage extends Component {
         })
     }
 
+    onSelectAvailability(availability) {
+        this.setState({
+            selectedAvailability: availability,
+            formTitle: null
+        }, () => {
+            this.getConflictList()
+        })
+    }
+
     editExclusionAvailability(availability, startDate, endDate, description, kind) {
         (startDate) ? availability.startDate = startDate : null;
         (endDate) ? availability.endDate = endDate : null;
@@ -326,10 +335,7 @@ class AvailabilityPage extends Component {
 
     renderTimeTable() {
         const onSelect = data => {
-            this.setState({
-                selectedAvailability: data,
-                formTitle: null
-            })
+            this.onSelectAvailability(data)
         }
 
         const onDelete = data => {
@@ -466,9 +472,7 @@ class AvailabilityPage extends Component {
             })
         }
         const onSelect = data => {
-            this.setState({
-                selectedAvailability: data
-            })
+            this.onSelectAvailability(data)
         }
         const onCopy = data => {
             this.onCopyAvailability(data)
