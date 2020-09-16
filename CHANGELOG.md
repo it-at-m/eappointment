@@ -1,6 +1,9 @@
 ## v2.23.06
 
+* #44320 Barrierefreies Layout für Öffnungszeiten
+* #44215 Bugfix: Fehlende Labels bei Öffnungszeiten
 * #44320 Bugfix: Öffnungszeiten können nun mit Ausnahmen angelegt werden und Konflikte werden während der Bearbeitung einer Öffnungszeit angezeigt
+* #44143 Bugfix: Beim Anlegen von Öffnungszeiten-Ausnahmen erfolgt jetzt eine Warnung bei Konflikten
 
 ## v2.23.05
 
