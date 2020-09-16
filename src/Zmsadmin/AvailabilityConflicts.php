@@ -27,23 +27,29 @@ class AvailabilityConflicts extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->assertValid()->getValue();
-        $collection = new AvailabilityList();
-        foreach ($input['availabilityList'] as $item) {
-            $entity = new Availability($item);
-            $collection->addEntity($entity);
-        }
-        $selectedEntity = new Availability($input['selectedAvailability']);
-        $data = ($input['selectedAvailability']) ? static::getAvailabilityData($collection, $selectedEntity) : [];
+        $data = static::getAvailabilityData($input);
         return \BO\Slim\Render::withJson(
             $response,
             $data
         );
     }
 
-    protected static function getAvailabilityData($collection, $selectedEntity)
+    protected static function getAvailabilityData($input)
     {
-        $conflictList = $collection
-            ->getConflicts($selectedEntity->getStartDateTime(), $selectedEntity->getEndDateTime());
+        $selectedEntity = new Availability($input['selectedAvailability']);
+        $collection = new AvailabilityList();
+        foreach ($input['availabilityList'] as $item) {
+            $entity = new Availability($item);
+            if ($item['__modified'] && ! $input['selectedAvailability']) {
+                error_log($item['__modified']);
+                $selectedEntity = $entity;
+            }
+            $collection->addEntity($entity);
+        }
+        $startTime = $selectedEntity->getStartDateTime();
+        $endTime = $selectedEntity->getEndDateTime();
+        $conflictList = $collection->getConflicts($startTime, $endTime);
+
         return [
             'conflictList' => $conflictList->toConflictListByDay(),
             'selectedAvailability' => $selectedEntity
