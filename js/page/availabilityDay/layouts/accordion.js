@@ -23,7 +23,6 @@ class Accordion extends Component
     componentDidUpdate(prevProps) {
         if (prevProps.data !== this.props.data && this.props.data) {
             let eventId = (this.props.data.id) ? this.props.data.id : this.props.data.tempId;
-            eventId = (! eventId) ? `spontaneous_ID_${index}` : eventId; 
             this.setState({
                 isExpanded: (eventId) ? eventId : null
             });
