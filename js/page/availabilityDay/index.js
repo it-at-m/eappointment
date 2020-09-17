@@ -179,8 +179,7 @@ class AvailabilityPage extends Component {
 
     onSelectAvailability(availability) {
         this.setState({
-            selectedAvailability: availability,
-            stateChanged: true
+            selectedAvailability: availability
         }, () => {
             this.getConflictList()
         })
