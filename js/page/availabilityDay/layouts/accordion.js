@@ -53,8 +53,10 @@ class Accordion extends Component
         
         const renderAccordionBody = () => {
             return this.props.availabilities.map((availability, index) => {
+                if (! availability.id && ! availability.tempId) {
+                    availability.tempId = `spontaneous_ID_${index}`
+                }
                 let eventId = availability.id ? availability.id : availability.tempId;
-                eventId = (! eventId) ? `spontaneous_ID_${index}` : eventId; 
             
                 const onToggle = ev => {
                     ev.preventDefault();
@@ -64,7 +66,7 @@ class Accordion extends Component
                         });
                     } else {
                         this.setState({isExpanded: null}, () => {
-                            this.props.onSelect(null)
+                            this.props.onSelect(availability)
                         });
                     }
                 }

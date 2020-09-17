@@ -201,7 +201,6 @@ class AvailabilityPage extends Component {
     }
 
     onCreateExclusionForAvailability(availability) {
-
         const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
         const yesterday = selectedDay.clone().subtract(1, 'days')
         const tomorrow = selectedDay.clone().add(1, 'days')
