@@ -46,6 +46,9 @@ const renderTable = (onDelete, onSelect, onAbort, availabilities) => {
             const titleAbort = `Die aktuelle Beabeitung wird zurückgesetzt.`
             const titleDisabled = `Diese Aktion ist während einer aktuellen Bearbeitung nicht möglich.`
 
+            if (! availability.id && ! availability.tempId) {
+                availability.tempId = `spontaneous_ID_${key}`
+            }
 
             const onClickEdit = ev => {
                 ev.preventDefault()

@@ -180,7 +180,7 @@ class AvailabilityPage extends Component {
     onSelectAvailability(availability) {
         this.setState({
             selectedAvailability: availability,
-            formTitle: null
+            stateChanged: true
         }, () => {
             this.getConflictList()
         })
@@ -507,7 +507,7 @@ class AvailabilityPage extends Component {
             data={this.state.selectedAvailability ? this.state.selectedAvailability : null}
             today={this.state.today}
             timestamp={this.props.timestamp}
-            title={this.state.formTitle}
+            title=""
             onSelect={onSelect}
             onPublish={onPublish}
             onDelete={onDelete}

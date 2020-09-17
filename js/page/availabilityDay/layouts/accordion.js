@@ -23,6 +23,7 @@ class Accordion extends Component
     componentDidUpdate(prevProps) {
         if (prevProps.data !== this.props.data && this.props.data) {
             let eventId = (this.props.data.id) ? this.props.data.id : this.props.data.tempId;
+            eventId = (! eventId) ? `spontaneous_ID_${index}` : eventId; 
             this.setState({
                 isExpanded: (eventId) ? eventId : null
             });
@@ -54,10 +55,7 @@ class Accordion extends Component
         const renderAccordionBody = () => {
             return this.props.availabilities.map((availability, index) => {
                 let eventId = availability.id ? availability.id : availability.tempId;
-                if (! eventId) {
-                    //unsaved spontaneous availability
-                    eventId = `spontaneous_ID_${index}`;
-                }  
+                eventId = (! eventId) ? `spontaneous_ID_${index}` : eventId; 
             
                 const onToggle = ev => {
                     ev.preventDefault();
