@@ -102,7 +102,9 @@ class ProcessList extends Base
         $oldList = clone $this;
         foreach ($oldList as $process) {
             $appointmentList = [];
-            $list[$process->getFirstAppointment()->getStartTime()->format('Y-m-d')] = [];
+            if (!isset($list[$process->getFirstAppointment()->getStartTime()->format('Y-m-d')])) {
+                $list[$process->getFirstAppointment()->getStartTime()->format('Y-m-d')] = [];
+            }
             foreach ($process->getAppointments() as $appointment) {
                 $appointmentList[] = [
                     'startTime' => $appointment->getStartTime()->format('H:i'),
