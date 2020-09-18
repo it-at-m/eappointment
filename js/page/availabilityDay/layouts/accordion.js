@@ -66,7 +66,7 @@ class Accordion extends Component
                         });
                     } else {
                         this.setState({isExpanded: null}, () => {
-                            this.props.onSelect(availability)
+                            this.props.onSelect(null)
                         });
                     }
                 }
@@ -93,9 +93,25 @@ class Accordion extends Component
         
                 let title = accordionTitle(availability);
 
+                let hasConflict = (
+                    Object.keys(this.props.conflictList.itemList).length > 0 && 
+                    this.props.conflictList.conflictedAvailabilityList.includes(eventId) 
+                )
+
+                let conflictList = []
+                Object.keys(this.props.conflictList.itemList).map(date => {
+                    (this.props.conflictList.itemList[date].map(conflict => {
+                        if (conflict.appointments[0].availability == eventId) {
+                            if (! conflictList[date]) {
+                                conflictList[date] = [];
+                            }
+                            conflictList[date].push(conflict); 
+                        }
+                    }))
+                })
                 
                 return (
-                    <section key={index} className="accordion-section">
+                    <section key={index} className="accordion-section" style={hasConflict ? { border: "1px solid #9B0000"} : null}>
                         <h3 className="accordion__heading" role="heading" title={title}>
                             <button eventkey={eventId} onClick={onToggle} className="accordion__trigger" aria-expanded={eventId == this.state.isExpanded}>
                                 <span className="accordion__title">{title}</span>
@@ -114,7 +130,7 @@ class Accordion extends Component
                                 onEditInFuture={onEditInFuture}
                                 onDelete={onDelete}
                                 errorList={this.props.errorList}
-                                conflictList={this.props.conflictList}
+                                conflictList={hasConflict ? Object.assign({}, conflictList): {}}
                                 setErrorRef={this.setErrorRef}
                             />
                         </div>
@@ -127,7 +143,7 @@ class Accordion extends Component
                 title=""
                 body={renderAccordionBody()}
                 footer={<FooterButtons 
-                    hasConflicts={Object.keys(this.props.conflictList).length ? true : false}
+                    hasConflicts={Object.keys(this.props.conflictList.itemList).length ? true : false}
                     stateChanged={this.props.stateChanged} 
                     data={this.props.data} 
                     {...{onNew, onPublish, onAbort }} 
