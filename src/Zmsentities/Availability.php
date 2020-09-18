@@ -512,7 +512,112 @@ class Availability extends Schema\Entity
      * @param Availability $availability for comparision
      *
      * @return Collection\ProcessList with processes in status "conflict"
+     *
+     *
      */
+
+    /*
+    1
+    Case 01:  |-----|
+              |-----|
+                 2
+
+                 1
+    Case 02:  |-----|
+                 |-----|
+                    2
+
+                    1
+    Case 03:     |-----|
+              |-----|
+                 2
+
+                   1
+    Case 04:  |---------|
+                |-----|
+                   2
+
+                   1
+    Case 05:    |-----|
+              |---------|
+                   2
+
+                 1
+    Case 06:  |-----|
+                      |-----|
+                         2
+
+                         1
+    Case 07:          |-----|
+              |-----|
+                 2
+
+                 1
+    Case 08:  |-----|
+                    |-----|
+                       2
+
+                       1
+    Case 09:        |-----|
+              |-----|
+                 2
+
+                 1
+    Case 10:     |
+              |-----|
+                 2
+
+                 1
+    Case 11:  |-----|
+                 |
+                 2
+
+              1
+    Case 12:  |
+              |-----|
+                 2
+
+                    1
+    Case 13:        |
+              |-----|
+                 2
+
+                 1
+    Case 14:  |-----|
+              |
+              2
+
+                 1
+    Case 15:  |-----|
+                    |
+                    2
+
+              1
+    Case 16:  |
+              |
+              2
+
+            |                         |    Operlap    |     Overlap
+      Case  |         Example         | Open Interval | Closed Interval
+    --------|-------------------------|---------------|-----------------
+    Case 01 | 09:00-11:00 09:00-11:00 |      Yes      |        Yes
+    Case 02 | 09:00-11:00 10:00-12:00 |      Yes      |        Yes
+    Case 03 | 10:00-12:00 09:00-11:00 |      Yes      |        Yes
+    Case 04 | 09:00-12:00 10:00-11:00 |      Yes      |        Yes
+    Case 05 | 10:00-11:00 09:00-12:00 |      Yes      |        Yes
+    Case 06 | 09:00-10:00 11:00-12:00 |      No       |        No
+    Case 07 | 11:00-12:00 09:00-10:00 |      No       |        No
+    Case 08 | 09:00-10:00 10:00-11:00 |      No       |        Yes
+    Case 09 | 10:00-11:00 09:00-10:00 |      No       |        Yes
+    Case 10 | 10:00-10:00 09:00-11:00 |      Yes      |        Yes
+    Case 11 | 09:00-11:00 10:00-10:00 |      Yes      |        Yes
+    Case 12 | 09:00-09:00 09:00-10:00 |      No       |        Yes
+    Case 13 | 10:00-10:00 09:00-10:00 |      No       |        Yes
+    Case 14 | 09:00-10:00 09:00-09:00 |      No       |        Yes
+    Case 15 | 09:00-10:00 10:00-10:00 |      No       |        Yes
+    Case 16 | 09:00-09:00 09:00-09:00 |      No       |        Yes
+    */
+
     public function getTimeOverlaps(Availability $availability, \DateTimeInterface $currentDate)
     {
         $processList = new Collection\ProcessList();
@@ -530,35 +635,31 @@ class Availability extends Schema\Entity
             $thisEnd = $this->getEndDateTime()->getSecondsOfDay();
             $availabilityStart = $availability->getStartDateTime()->getSecondsOfDay();
             $availabilityEnd = $availability->getEndDateTime()->getSecondsOfDay();
-            if ($availabilityStart > $thisStart
-                && $availabilityStart < $thisEnd
-            ) {
+
+            $isEqual = ($availabilityStart == $thisStart && $availabilityEnd == $thisEnd);
+                
+            if ($availabilityStart < $thisEnd && $thisStart < $availabilityEnd && ! $isEqual) {
+                $process = clone $processTemplate;
+                $process->getFirstAppointment()->date = $this
+                    ->getStartDateTime()
+                    ->modify($currentDate->format("Y-m-d"))
+                    ->getTimestamp();
+                $processList->addEntity($process);
+            } elseif ($thisEnd < $availabilityStart && $availabilityEnd < $thisStart && ! $isEqual) {
                 $process = clone $processTemplate;
                 $process->getFirstAppointment()->date = $availability
                     ->getStartDateTime()
-                    ->modify($currentDate
-                    ->format("Y-m-d"))
-                    ->getTimestamp();
-                $processList[] = $process;
-            } elseif ($availabilityEnd > $thisStart
-                && $availabilityEnd < $thisEnd
-            ) {
-                $process = clone $processTemplate;
-                $process->getFirstAppointment()->date = $availability
-                    ->getEndDateTime()
                     ->modify($currentDate->format("Y-m-d"))
                     ->getTimestamp();
-                $processList[] = $process;
-            } elseif ($availabilityStart == $thisStart
-                && $availabilityEnd == $thisEnd
-            ) {
+                $processList->addEntity($process);
+            } elseif ($isEqual) {
                 $process = clone $processTemplate;
                 $process->amendment = "Zwei Öffnungszeiten sind gleich.";
                 $process->getFirstAppointment()->date = $availability
                     ->getStartDateTime()
                     ->modify($currentDate->format("Y-m-d"))
                     ->getTimestamp();
-                $processList[] = $process;
+                $processList->addEntity($process);
             }
         }
         return $processList;

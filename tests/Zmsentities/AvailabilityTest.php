@@ -660,7 +660,7 @@ class AvailabilityTest extends EntityCommonTests
             'endTime' => '13:00:00',
         ]);
         $availabilitySlotsize = new Availability([
-            'id' => '4',
+            'id' => '3',
             'weekday' => array(
                 'monday' => '0',
                 'tuesday' => '4',
@@ -685,7 +685,7 @@ class AvailabilityTest extends EntityCommonTests
             'endTime' => '10:00:00',
         ]);
         $availabilityOverlap2 = new Availability([
-            'id' => '3',
+            'id' => '4',
             'weekday' => array(
                 'monday' => '0',
                 'tuesday' => '4',
@@ -710,7 +710,7 @@ class AvailabilityTest extends EntityCommonTests
             'endTime' => '17:00:00',
         ]);
         $availabilityEqual = new Availability([
-            'id' => '3',
+            'id' => '5',
             'weekday' => array(
                 'monday' => '0',
                 'tuesday' => '4',
@@ -742,23 +742,42 @@ class AvailabilityTest extends EntityCommonTests
             $availabilityEqual
         ]);
         $startDate = new \DateTimeImmutable('2016-04-19 09:00');
+        $endDate = new \DateTimeImmutable('2016-04-19 16:00');
         $conflicts = $availabilityList->getConflicts($startDate, $startDate);
-        //foreach ($conflicts as $conflict) { error_log("$conflict " . $conflict->amendment); }
-        $iterator = $conflicts->getIterator();
-        $this->assertEquals('conflict', $iterator->current()->status);
-        $this->assertEquals(strtotime('2016-04-19 12:00'), $iterator->current()->getFirstAppointment()->date);
-        $iterator->next();
-        $this->assertNotNull($iterator->current());
-        $this->assertEquals('conflict', $iterator->current()->status);
-        $this->assertEquals(strtotime('2016-04-19 09:00'), $iterator->current()->getFirstAppointment()->date);
-        $iterator->next();
-        $this->assertEquals('conflict', $iterator->current()->status);
-        $this->assertEquals(strtotime('2016-04-19 16:00'), $iterator->current()->getFirstAppointment()->date);
-        $iterator->next();
-        $this->assertEquals('conflict', $iterator->current()->status);
-        $this->assertEquals(strtotime('2016-04-19 12:00'), $iterator->current()->getFirstAppointment()->date);
-        $iterator->next();
-        $this->assertNull($iterator->current());
+        $list = [];
+        foreach ($conflicts as $conflict) {
+            /*error_log(
+                "\n$conflict " . 
+                $conflict->amendment . 
+                "(ID: ". $conflict->getFirstAppointment()->getAvailability()->getId() ." ". $conflict->getFirstAppointment()->getAvailability()->getStartDateTime() ." - ". $conflict->getFirstAppointment()->getAvailability()->getEndDateTime() .")" 
+            );*/
+
+            $id = $conflict->getFirstAppointment()->getAvailability()->getId();
+            if (! isset($list[$conflict->amendment])) {
+                $list[$conflict->amendment] = [];
+            }
+            if (! isset($list[$conflict->amendment][$id])) {
+                $list[$conflict->amendment][$id] = 1;
+            } else {
+                $list[$conflict->amendment][$id] += 1;
+            }
+        }
+    
+        // Availability 1, 2, 4 und 5 überschneiden sich jeweils 2 mal
+        $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][1]);
+        $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][2]);
+        $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][4]);
+        $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][5]);
+
+        // Availability 1 und 5 sind sich jeweils gleich
+        $this->assertEquals(1, $list['Zwei Öffnungszeiten sind gleich.'][1]);
+        $this->assertEquals(1, $list['Zwei Öffnungszeiten sind gleich.'][5]);
+
+        // Availability 3 hat eine falsche Slotgröße
+        $this->assertEquals(1, 
+            $list['Der eingestellte Zeitschlitz von 25 Minuten sollte in die eingestellte Uhrzeit passen.'][3]
+        );
+        
     }
 
     protected function getExampleWithTypeOpeningHours(\DateTimeImmutable $time)
