@@ -4,6 +4,7 @@
 * #44215 Bugfix: Fehlende Labels bei Öffnungszeiten
 * #44320 Bugfix: Öffnungszeiten können nun mit Ausnahmen angelegt werden und Konflikte werden während der Bearbeitung einer Öffnungszeit angezeigt
 * #44143 Bugfix: Beim Anlegen von Öffnungszeiten-Ausnahmen erfolgt jetzt eine Warnung bei Konflikten
+* #43787 : Das Drucklayout wird jetzt aus dem Projekt Admin-Layout übernommen und es wurde eine no-print Klasse eingeführt
 
 ## v2.23.05
 
