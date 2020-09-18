@@ -322,7 +322,12 @@ class AvailabilityPage extends Component {
             .then(
                 (data) => {
                     this.setState({
-                        conflictList: Object.assign({}, data.conflictList)
+                        conflictList: Object.assign({}, 
+                            {
+                                itemList: Object.assign({}, data.conflictList), 
+                                conflictedAvailabilityList: data.conflictedAvailabilityList
+                            }
+                        )
                     })
                 },
                 (error) => {
@@ -519,7 +524,10 @@ class AvailabilityPage extends Component {
             stateChanged={this.state.stateChanged}
             includeUrl={this.props.links.includeurl}
             errorList={this.state.errorList}
-            conflictList={this.state.conflictList ? this.state.conflictList : {}}
+            conflictList={this.state.conflictList ? 
+                this.state.conflictList : 
+                {itemList: {}, conflictedAvailabilityList: {}}
+            }
             handleErrorList={handleErrorList}
         />
     }
