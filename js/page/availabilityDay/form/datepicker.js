@@ -6,6 +6,8 @@ import setHours from "date-fns/setHours"
 import setMinutes from "date-fns/setMinutes";
 import DatePicker, { registerLocale } from 'react-datepicker'
 import {weekDayList, repeat} from '../helpers'
+import * as Inputs from '../../../lib/inputs'
+const { Label } = Inputs
 import de from 'date-fns/locale/de';
 //import {formatTimestampDate} from "../helpers"
 registerLocale('de', de)
@@ -171,6 +173,7 @@ class AvailabilityDatePicker extends Component
 
         return (
             <div className="add-date-picker">
+                <Label attributes={{"htmlFor": this.props.attributes.id, "className": "light"}} value={"startDate" == this.props.name ? "von" : "bis" }></Label> 
                 <DatePicker 
                     locale="de" 
                     className="form-control form-input" 
