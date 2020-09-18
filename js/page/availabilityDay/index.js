@@ -316,7 +316,8 @@ class AvailabilityPage extends Component {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(Object.assign({}, {
                 availabilityList: this.state.availabilitylist, 
-                selectedDate: formatTimestampDate(this.props.timestamp)
+                selectedDate: formatTimestampDate(this.props.timestamp),
+                selectedAvailability: this.state.selectedAvailability
             }))
         };
         const url = `${this.props.links.includeurl}/availability/conflicts/`;

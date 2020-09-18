@@ -41,12 +41,24 @@ class AvailabilityConflicts extends BaseController
         $conflictedList = [];
 
         $selectedDateTime = (new \DateTimeImmutable($input['selectedDate']));
-        $conflictList = $availabilityList
-            ->sortByCustomKey('startDate')
-            ->getConflicts($selectedDateTime, $selectedDateTime);
+        $selectedAvailability = new Availability($input['selectedAvailability']);
+        $startDateTime = ($selectedAvailability->isOpened($selectedDateTime)) ?
+            $selectedAvailability->getStartDateTime() :
+            $selectedDateTime;
+        $endDateTime = ($input['selectedAvailability']) ?
+            $selectedAvailability->getEndDateTime() :
+            $selectedDateTime;
+
+        $availabilityList = $availabilityList->sortByCustomKey('endTime');
+        $conflictList = $availabilityList->getConflicts($startDateTime, $endDateTime);
 
         foreach ($conflictList as $conflict) {
-            $conflictedList[] = $conflict->getFirstAppointment()->getAvailability()->getId();
+            $id = ($conflict->getFirstAppointment()->getAvailability()->getId()) ?
+                $conflict->getFirstAppointment()->getAvailability()->getId() :
+                $conflict->getFirstAppointment()->getAvailability()->tempId;
+            if (! in_array($id, $conflictedList)) {
+                $conflictedList[] = $id;
+            }
         }
 
         return [
