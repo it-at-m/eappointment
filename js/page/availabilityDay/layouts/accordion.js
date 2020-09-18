@@ -95,7 +95,7 @@ class Accordion extends Component
 
                 let hasConflict = (
                     Object.keys(this.props.conflictList.itemList).length > 0 && 
-                    this.props.conflictList.conflictedAvailabilityList.includes(eventId) 
+                    this.props.conflictList.conflictIdList.includes(eventId) 
                 )
 
                 let conflictList = []

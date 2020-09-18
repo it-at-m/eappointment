@@ -37,28 +37,21 @@ class AvailabilityConflicts extends BaseController
     protected static function getAvailabilityData($input)
     {
         $conflictList = new \BO\Zmsentities\Collection\ProcessList();
-        $selectedAvailability = new Availability($input['selectedAvailability']);
-        $conflictedList = new AvailabilityList();
-        foreach ($input['availabilityList'] as $item) {
-            $entity = new Availability($item);
-            if ($entity->getConflict()) {
-                $conflictedList->addEntity($entity);
-            }
+        $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);
+        $conflictedList = [];
+
+        $selectedDateTime = (new \DateTimeImmutable($input['selectedDate']));
+        $conflictList = $availabilityList
+            ->sortByCustomKey('startDate')
+            ->getConflicts($selectedDateTime, $selectedDateTime);
+
+        foreach ($conflictList as $conflict) {
+            $conflictedList[] = $conflict->getFirstAppointment()->getAvailability()->getId();
         }
-        if ($conflictedList->count()) {
-            $startTime = $conflictedList->sortByCustomKey('startDate')->getFirst()->getStartDateTime();
-            $endTime = $conflictedList->sortByCustomKey('endDate')->getLast()->getEndDateTime();
-            if (in_array($selectedAvailability->getId(), $conflictedList->getIds())) {
-                $startTime = $selectedAvailability->getStartDateTime();
-                $endTime = $selectedAvailability->getEndDateTime();
-            }
-            $conflictList = $conflictedList->getConflicts($startTime, $endTime);
-        }
-        
 
         return [
             'conflictList' => $conflictList->toConflictListByDay(),
-            'conflictedList' => $conflictedList->getIds()
+            'conflictIdList' => (count($conflictedList)) ? $conflictedList : []
         ];
     }
 

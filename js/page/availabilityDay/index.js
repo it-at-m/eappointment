@@ -314,7 +314,10 @@ class AvailabilityPage extends Component {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(Object.assign({}, {availabilityList: this.state.availabilitylist, selectedAvailability: this.state.selectedAvailability}))
+            body: JSON.stringify(Object.assign({}, {
+                availabilityList: this.state.availabilitylist, 
+                selectedDate: formatTimestampDate(this.props.timestamp)
+            }))
         };
         const url = `${this.props.links.includeurl}/availability/conflicts/`;
         fetch(url, requestOptions)
@@ -325,7 +328,7 @@ class AvailabilityPage extends Component {
                         conflictList: Object.assign({}, 
                             {
                                 itemList: Object.assign({}, data.conflictList), 
-                                conflictedAvailabilityList: data.conflictedAvailabilityList
+                                conflictIdList: data.conflictIdList
                             }
                         )
                     })
@@ -526,7 +529,7 @@ class AvailabilityPage extends Component {
             errorList={this.state.errorList}
             conflictList={this.state.conflictList ? 
                 this.state.conflictList : 
-                {itemList: {}, conflictedAvailabilityList: {}}
+                {itemList: {}, conflictIdList: {}}
             }
             handleErrorList={handleErrorList}
         />
