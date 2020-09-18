@@ -106,10 +106,13 @@ class ProcessList extends Base
                 $list[$process->getFirstAppointment()->getStartTime()->format('Y-m-d')] = [];
             }
             foreach ($process->getAppointments() as $appointment) {
+                $id = ($appointment->getAvailability()->getId()) ?
+                    $appointment->getAvailability()->getId() :
+                    $appointment->getAvailability()->tempId;
                 $appointmentList[] = [
                     'startTime' => $appointment->getStartTime()->format('H:i'),
                     'endTime' => $appointment->getEndTime()->format('H:i'),
-                    'availability' => $appointment->getAvailability()->getId()
+                    'availability' => $id
                 ];
             }
             $list[$process->getFirstAppointment()->getStartTime()->format('Y-m-d')][] = [

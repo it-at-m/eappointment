@@ -461,13 +461,19 @@ class ProcessTest extends EntityCommonTests
         $collection = new $this->collectionclass();
         $entity = $this->getExample();
         $entity2 = $this->getExample();
+        $availability = (new \BO\Zmsentities\Availability())->getExample();
+        $availability->id = "1";
+        $availability2 = (new \BO\Zmsentities\Availability())->getExample();
+        $availability2->id = "2";
+        $entity->getFirstAppointment()->availability = $availability;
+        $entity2->getFirstAppointment()->availability = $availability2;
         $collection->addEntity($entity);
         $collection->addEntity($entity2);
         $list = $collection->toConflictListByDay();
         $this->assertArrayHasKey('2015-11-18', $list);
         $this->assertEquals('Beispiel Termin', $list['2015-11-18'][0]['message']);
         $this->assertEquals('18:52', $list['2015-11-18'][0]['appointments'][0]['startTime']);
-        $this->assertEquals('19:02', $list['2015-11-18'][0]['appointments'][0]['endTime']);
+        $this->assertEquals('19:04', $list['2015-11-18'][0]['appointments'][0]['endTime']);
     }
 
     public function testToQueue()

@@ -133,7 +133,6 @@ class AvailabilityList extends Base
     public function getConflicts($startDate, $endDate)
     {
         $processList = new ProcessList();
-        $availabilityList = new AvailabilityList();
         foreach ($this as $availability) {
             $conflict = $availability->getConflict();
             $currentDate = $startDate;
@@ -145,13 +144,11 @@ class AvailabilityList extends Base
                         $appointmentTime = $conflictOnDay->getFirstAppointment()->getStartTime()->format('H:i');
                         $newDate = clone $currentDate;
                         $conflictOnDay->getFirstAppointment()->setDateTime($newDate->modify($appointmentTime));
-                        $processList[] = $conflictOnDay;
+                        $processList->addEntity($conflictOnDay);
                     }
-                    $overlap = $availabilityList->hasOverlapWith($availability, $currentDate);
-                    if ($overlap->count()) {
-                        $processList->addList($overlap);
-                    } else {
-                        $availabilityList[] = $availability; // Do not compare entities twice
+                    $overlapList = $this->hasOverlapWith($availability, $currentDate);
+                    if ($overlapList->count()) {
+                        $processList->addList($overlapList);
                     }
                 }
                 $currentDate = $currentDate->modify('+1day');
