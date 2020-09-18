@@ -8,16 +8,16 @@ const formatDate = date => {
 } 
 
 const renderConflictList = conflictList => conflictList.map((collection, index) => {
-    return <li key={index}><strong>{formatDate(collection.date)}</strong>
-        <ul>
-        {
+    return (
+        <div key={index}>
+            <div><strong>{formatDate(collection.date)}</strong></div>
+            {
             collection.conflicts.map((conflict, index) => {
-                return <li key={index}>{conflict.message} (ID: {conflict.appointments[0].availability})</li>
+                return <div key={index}>- {conflict.message}</div>
             })
-        }
-        </ul>
-        
-    </li>
+            }
+        </div>
+    )
 })
 
 const Conflicts = (props) => {
@@ -29,11 +29,9 @@ const Conflicts = (props) => {
     })
     return (
         conflicts.length ? 
-        <div className="message message--error">
+        <div className="message message--error" role="alert">
             <h3>Folgende Zeiten führen mit der aktuellen Auswahl zu Konflikten:</h3>
-            <ul>
             {renderConflictList(conflicts)}
-            </ul>
         </div> : null
     )
 }
