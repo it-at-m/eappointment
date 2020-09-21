@@ -70,7 +70,7 @@ class AvailabilityPage extends Component {
     }
     */
 
-    onPublishAvailability(availability) {
+    onPublishAvailability() {
         //const state = this.onUpdateAvailability(availability);
         this.onSaveUpdates();
     }
@@ -500,10 +500,6 @@ class AvailabilityPage extends Component {
             this.onDeleteAvailability(data)
         }
 
-        const onPublish = data => {
-            this.onPublishAvailability(data)
-        }
-
         const onNew = data => {
             this.onNewAvailability(data)
         }
@@ -519,7 +515,7 @@ class AvailabilityPage extends Component {
             timestamp={this.props.timestamp}
             title=""
             onSelect={onSelect}
-            onPublish={onPublish}
+            onPublish={this.onPublishAvailability.bind(this)}
             onDelete={onDelete}
             onNew={onNew}
             onAbort={this.onRevertUpdates.bind(this)}
