@@ -11,15 +11,15 @@ class Accordion extends Component
 {
     constructor(props) {
         super(props);
-        this.state = {isExpanded: null}
+        this.isExpanded = null
     } 
 
     componentDidUpdate(prevProps) {
-        if (prevProps.data !== this.props.data && this.props.data) {
-            let eventId = (this.props.data.id) ? this.props.data.id : this.props.data.tempId;
-            this.setState({
-                isExpanded: (eventId) ? eventId : null
-            });
+        if (prevProps.data !== this.props.data) {
+            if (this.props.data) {
+                var eventId = (this.props.data.id) ? this.props.data.id : this.props.data.tempId;
+            }
+            this.isExpanded = (eventId) ? eventId : null
         }
     }
     
@@ -48,14 +48,12 @@ class Accordion extends Component
             
                 const onToggle = ev => {
                     ev.preventDefault();
-                    if (eventId == ev.currentTarget.attributes.eventkey.value && eventId != this.state.isExpanded) {
-                        this.setState({isExpanded: eventId}, () => {
-                            this.props.onSelect(availability)
-                        });
+                    if (eventId == ev.currentTarget.attributes.eventkey.value && eventId != this.isExpanded) {
+                        this.isExpanded = eventId
+                        this.props.onSelect(availability)
                     } else {
-                        this.setState({isExpanded: null}, () => {
-                            this.props.onSelect(null)
-                        });
+                        this.isExpanded = null
+                        this.props.onSelect(null)
                     }
                 }
 
@@ -101,11 +99,11 @@ class Accordion extends Component
                 return (
                     <section key={index} className="accordion-section" style={hasConflict ? { border: "1px solid #9B0000"} : null}>
                         <h3 className="accordion__heading" role="heading" title={title}>
-                            <button eventkey={eventId} onClick={onToggle} className="accordion__trigger" aria-expanded={eventId == this.state.isExpanded}>
+                            <button eventkey={eventId} onClick={onToggle} className="accordion__trigger" aria-expanded={eventId == this.isExpanded}>
                                 <span className="accordion__title">{title}</span>
                             </button>
                         </h3>
-                        <div className={eventId == this.state.isExpanded ? "accordion__panel opened" : "accordion__panel"} hidden={eventId == this.state.isExpanded ? "" : "hidden"}>
+                        <div className={eventId == this.isExpanded ? "accordion__panel opened" : "accordion__panel"} hidden={eventId == this.isExpanded ? "" : "hidden"}>
                             <AvailabilityForm 
                                 data={availability}
                                 availabilityList={this.props.availabilities}
