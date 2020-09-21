@@ -70,8 +70,8 @@ AvailabilityForm.defaultProps = {
 
 AvailabilityForm.propTypes = {
     availabilityList: PropTypes.array,
+    errorList: PropTypes.array,
     conflictList: PropTypes.object,
-    errorList: PropTypes.object,
     data: PropTypes.object,
     today: PropTypes.number,
     timestamp: PropTypes.number,

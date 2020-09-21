@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import $ from 'jquery'
 import moment from 'moment'
+import validate from './form/validate'
 import Conflicts from './conflicts'
 import TabsBar from './tabsbar'
 import GraphView from './timetable/graphview.js'
@@ -36,6 +37,10 @@ class AvailabilityPage extends Component {
     constructor(props) {
         super(props)
         this.state = getInitialState(props)
+        this.errorElement = null;
+        this.setErrorRef = element => {
+            this.errorElement = element
+        };
     }
 
     componentDidMount() {
@@ -54,7 +59,7 @@ class AvailabilityPage extends Component {
         window.removeEventListener('beforeunload', this.unloadHandler)
     }
 
-    /* not in usde anymore
+    /* not in use anymore
     onUpdateAvailability(availability) {
         let state = {};
         if (availability.__modified || this.state.stateChanged) {
@@ -76,11 +81,15 @@ class AvailabilityPage extends Component {
     }
 
     refreshData() {
+        const scrollTop = () =>{
+            window.scrollTo({top: 0, behavior: 'smooth'});
+         };
         const currentDate = formatTimestampDate(this.props.timestamp)
         const url = `${this.props.links.includeurl}/scope/${this.props.scope.id}/availability/day/${currentDate}/conflicts/`
         $.ajax(url, {
             method: 'GET'
         }).done(data => {
+            scrollTop();
             const newProps = {
                 conflicts: data.conflicts,
                 availabilitylist: data.availabilityList,
@@ -88,7 +97,6 @@ class AvailabilityPage extends Component {
                 busyslots: data.busySlotsForAvailabilities,
                 maxslots: data.maxSlotsForAvailabilities
             }
-
             this.setState(Object.assign({}, getStateFromProps(Object.assign({}, this.props, newProps)), {
                 stateChanged: false,
                 selectedAvailability: null
@@ -98,18 +106,15 @@ class AvailabilityPage extends Component {
         })
     }
 
-    onSaveUpdates(stateParam) {
-
-        const state = stateParam ? stateParam : this.state
-        const sendData = state.availabilitylist.map(availability => {
-            const sendAvailability = Object.assign({}, availability)
-            if (availability.tempId) {
-                delete sendAvailability.tempId
-            }
-
-            return sendAvailability
+    onSaveUpdates() {
+        const sendData = this.state.availabilitylist.map(availability => {
+                const sendAvailability = Object.assign({}, availability)
+                if (availability.tempId) {
+                    delete sendAvailability.tempId
+                }
+                return sendAvailability
         }).map(cleanupAvailabilityForSave)
-
+            
         console.log('Saving updates', sendData)
 
         $.ajax(`${this.props.links.includeurl}/availability/`, {
@@ -118,9 +123,9 @@ class AvailabilityPage extends Component {
         }).done((success) => {
             console.log('save success', success)
             this.setState({
-                lastSave: new Date().getTime()
-            })
-            this.refreshData()
+                lastSave: new Date().getTime(),
+                selectedAvailability: null
+            }, () => {this.refreshData()})
         }).fail((err) => {
             if (err.status === 404) {
                 console.log('404 error, ignored')
@@ -185,6 +190,7 @@ class AvailabilityPage extends Component {
             selectedAvailability: availability
         }, () => {
             this.getConflictList()
+            this.getValidationList()
         })
     }
 
@@ -313,6 +319,28 @@ class AvailabilityPage extends Component {
         }
     }
 
+    getValidationList() {
+        var list = []
+        const validateData = data => {
+            let validationResult = validate(data, this.props)
+            if (!validationResult.valid) {
+                list.push(validationResult.errors)                
+                
+            } 
+            this.setState({
+                errorList: list
+            })
+        }
+
+        this.state.availabilitylist.map(availability => {
+            return validateData(availability)
+        })
+
+        if (this.state.errorList.length) {
+            this.errorElement.scrollIntoView()
+        }
+    }
+
     getConflictList() {
         const requestOptions = {
             method: 'POST',
@@ -336,6 +364,9 @@ class AvailabilityPage extends Component {
                             }
                         )
                     })
+                    if (data.conflictList) {
+                        this.errorElement.scrollIntoView()
+                    }
                 },
                 (error) => {
                     console.log(error)
@@ -366,12 +397,6 @@ class AvailabilityPage extends Component {
         />
     }
 
-    handleFocus(element) {
-        if (element) {
-            element.scrollIntoView()
-        }
-    }
-
     handleChange(data) {
         if (data.__modified) {
             this.setState(
@@ -379,6 +404,7 @@ class AvailabilityPage extends Component {
                 () => {
                     if (data.tempId || data.id) {
                         this.getConflictList()
+                        this.getValidationList()
                     }
                 }
             );
@@ -476,11 +502,6 @@ class AvailabilityPage extends Component {
     }
 
     renderAvailabilityAccordion() {
-        const handleErrorList = list => {
-            this.setState({
-                errorList: list
-            })
-        }
         const onSelect = data => {
             this.onSelectAvailability(data)
         }
@@ -510,7 +531,7 @@ class AvailabilityPage extends Component {
 
         return <AccordionLayout 
             availabilities={this.state.availabilitylist}
-            data={this.state.selectedAvailability ? this.state.selectedAvailability : null}
+            data={this.state.selectedAvailability}
             today={this.state.today}
             timestamp={this.props.timestamp}
             title=""
@@ -522,7 +543,6 @@ class AvailabilityPage extends Component {
             onCopy={onCopy}
             onExclusion={onExclusion}
             onEditInFuture={onEditInFuture}
-            handleFocus={this.handleFocus.bind(this)}
             handleChange={handleChange}
             stateChanged={this.state.stateChanged}
             includeUrl={this.props.links.includeurl}
@@ -531,7 +551,7 @@ class AvailabilityPage extends Component {
                 this.state.conflictList : 
                 {itemList: {}, conflictIdList: {}}
             }
-            handleErrorList={handleErrorList}
+            setErrorRef={this.setErrorRef}
         />
     }
 
