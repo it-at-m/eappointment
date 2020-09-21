@@ -19,7 +19,7 @@ const FormContent = (props) => {
         selectedDay, 
         setErrorRef
     } = props;
-
+    
     const calenderDisabled = data.type && data.slotTimeInMinutes ? false : true
     return (
         <div>
@@ -93,7 +93,8 @@ const FormContent = (props) => {
                         <FormGroup inline={true}>    
                             <Controls>
                                 <Inputs.Checkbox name="multipleSlotsAllowed"
-                                    checked={true == data.multipleSlotsAllowed} {...{ onChange }} 
+                                    checked={1 == data.multipleSlotsAllowed} {...{ onChange }} 
+                                    value="1"
                                 />
                                 <Label value="Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen"></Label>
                             </Controls>
