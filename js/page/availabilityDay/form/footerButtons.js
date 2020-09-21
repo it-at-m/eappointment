@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 
 const FooterButtons = (props) => {
     const { hasConflicts, stateChanged, data, onNew, onPublish, onAbort } = props
-    console.log(stateChanged)
     return (
         <div className="form-actions" style={{"marginTop":"0", "padding":"0.75em"}}>    
                  <button title="Neue Öffnungszeit anlegen und bearbeiten" className="button button--diamond button-new" onClick={onNew} disabled={(stateChanged || hasConflicts || data)}>neue Öffnungszeit</button> 
