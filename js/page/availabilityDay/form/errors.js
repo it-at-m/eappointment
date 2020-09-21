@@ -3,33 +3,37 @@ import PropTypes from 'prop-types'
 
 const renderErrors = errors => errors.map(err => {
     return (
-        <div key={err.fieldName} className="message message--error">
-            <p>{err.errorMessage}</p>
+        <div key={err[0].fieldName}>
+            {err[0].errorMessage}
         </div>
     )
 })
 
 const Errors = (props) => {
-    const errors = Object.keys(props.errorList).map(key => {
-        return {
-            fieldName: key,
-            errorMessage: props.errorList[key]
-        }
+    const errors = props.errorList.map(error => {
+        return Object.entries(error).map(entry => {
+            return {
+                fieldName: entry[0],
+                errorMessage: entry[1]
+            }
+        })
     })
 
     return (
-        <div>
-            {errors.length > 0 ? renderErrors(errors) : null}
-        </div>
+        errors.length > 0 ? 
+        <div className="message message--error">
+            <h3>Folgende Fehler sind bei der Prüfung Ihrer Eingaben aufgetreten:</h3>
+            {renderErrors(errors)}
+        </div> : null
     )
 }
 
 Errors.defaultProps = {
-    errorList: {}
+    errorList: []
 }
 
 Errors.propTypes = {
-    errorList: PropTypes.object
+    errorList: PropTypes.array
 }
 
 export default Errors

@@ -2,7 +2,6 @@ import React, { Component} from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment/min/moment-with-locales';
 import AvailabilityForm from '../form'
-import validate from '../form/validate'
 import FooterButtons from '../form/footerButtons'
 import {accordionTitle} from '../helpers'
 import Board from './board'
@@ -12,11 +11,6 @@ class Accordion extends Component
 {
     constructor(props) {
         super(props);
-        this.errorElement = null;
-        this.errors = {}
-        this.setErrorRef = element => {
-            this.errorElement = element
-        };
         this.state = {isExpanded: null}
     } 
 
@@ -32,13 +26,7 @@ class Accordion extends Component
     render() {
         const onPublish = (ev) => {
             ev.preventDefault()
-            let validationResult = validate(this.props.data, this.props)
-            if (!this.props.data.__modified || validationResult.valid) {
-                this.props.onPublish(this.props.data)
-            } else {
-                this.props.handleErrorList(validationResult.errors);
-                this.props.handleFocus(this.errorElement);
-            }
+            this.props.onPublish()
         }
 
         const onAbort = (ev) => {
@@ -123,7 +111,6 @@ class Accordion extends Component
                                 availabilityList={this.props.availabilities}
                                 today={this.props.today}
                                 timestamp={this.props.timestamp}
-                                handleFocus={this.props.handleFocus}
                                 handleChange={this.props.handleChange}
                                 onCopy={onCopy}
                                 onExclusion={onExclusion}
@@ -131,7 +118,7 @@ class Accordion extends Component
                                 onDelete={onDelete}
                                 errorList={this.props.errorList}
                                 conflictList={hasConflict ? Object.assign({}, conflictList): {}}
-                                setErrorRef={this.setErrorRef}
+                                setErrorRef={this.props.setErrorRef}
                             />
                         </div>
                     </section>
@@ -143,7 +130,7 @@ class Accordion extends Component
                 title=""
                 body={renderAccordionBody()}
                 footer={<FooterButtons 
-                    hasConflicts={Object.keys(this.props.conflictList.itemList).length ? true : false}
+                    hasConflicts={Object.keys(this.props.conflictList.itemList).length || this.props.errorList.length ? true : false}
                     stateChanged={this.props.stateChanged} 
                     data={this.props.data} 
                     {...{onNew, onPublish, onAbort }} 
@@ -155,7 +142,8 @@ class Accordion extends Component
 
 Accordion.propTypes = {
     data: PropTypes.object,
-    errorList: PropTypes.object,
+    availabilities: PropTypes.array,
+    errorList: PropTypes.array,
     conflictList: PropTypes.object,
     today: PropTypes.number,
     timestamp: PropTypes.number,
@@ -168,9 +156,7 @@ Accordion.propTypes = {
     onCopy: PropTypes.func,
     onExclusion: PropTypes.func,
     onEditInFuture: PropTypes.func,
-    handleFocus: PropTypes.func,
-    handleErrorList: PropTypes.func,
-    availabilities: PropTypes.array,
+    setErrorRef: PropTypes.func,
     stateChanged: PropTypes.bool,
     errorElement: PropTypes.element
 }
