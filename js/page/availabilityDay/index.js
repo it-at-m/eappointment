@@ -54,6 +54,7 @@ class AvailabilityPage extends Component {
         window.removeEventListener('beforeunload', this.unloadHandler)
     }
 
+    /* not in usde anymore
     onUpdateAvailability(availability) {
         let state = {};
         if (availability.__modified || this.state.stateChanged) {
@@ -67,10 +68,11 @@ class AvailabilityPage extends Component {
         $('body').scrollTop(0);
         return state;
     }
+    */
 
     onPublishAvailability(availability) {
-        const state = this.onUpdateAvailability(availability);
-        this.onSaveUpdates(state);
+        //const state = this.onUpdateAvailability(availability);
+        this.onSaveUpdates();
     }
 
     refreshData() {
@@ -163,10 +165,11 @@ class AvailabilityPage extends Component {
         const start = formatTimestampDate(availability.startDate)
         const end = formatTimestampDate(availability.endDate)
 
+        let copysourcetitle = (availability.description) ? availability.description : `${start} - ${end}`;
         const copyAvailability = Object.assign({}, availability, {
             tempId: tempId(),
             id: null,
-            description: `Kopie von "${start} - ${end}"`
+            description: `Kopie von ${copysourcetitle}`
         })
         this.setState(Object.assign(
             {},
