@@ -93,7 +93,7 @@ const FormContent = (props) => {
                         <FormGroup inline={true}>    
                             <Controls>
                                 <Inputs.Checkbox name="multipleSlotsAllowed"
-                                    checked={1 == data.multipleSlotsAllowed} {...{ onChange }} 
+                                    checked={data.multipleSlotsAllowed} {...{ onChange }} 
                                     value="1"
                                 />
                                 <Label value="Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen"></Label>
