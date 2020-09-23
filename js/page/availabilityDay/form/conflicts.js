@@ -7,18 +7,30 @@ const formatDate = date => {
     return `${momentDate.format('DD.MM.YYYY')}`
 } 
 
-const renderConflictList = conflictList => conflictList.map((collection, index) => {
-    return (
-        <div key={index}>
-            <div><strong>{formatDate(collection.date)}</strong></div>
-            {
-            collection.conflicts.map((conflict, index) => {
-                return <div key={index}>- {conflict.message}</div>
-            })
+const renderConflictList = (conflictList) => {
+    let conflictDatesByMessage = [];
+    conflictList.map(collection => {
+        collection.conflicts.map((conflict) => {
+            if (! conflictDatesByMessage[conflict.message]) {
+                Object.assign({}, conflictDatesByMessage[conflict.message] = []);
             }
-        </div>
+            conflictDatesByMessage[conflict.message].push(formatDate(collection.date))
+        })
+    })
+
+    return (
+        Object.keys(conflictDatesByMessage).map((key, index) => {
+            return (
+                <div key={index}>
+                    <div><strong>{ conflictDatesByMessage[key].join(", ")  }</strong></div>
+                    <div key={index}>- {key}</div>
+                </div>
+            )
+        })
     )
-})
+    
+    
+}
 
 const Conflicts = (props) => {
     const conflicts = Object.keys(props.conflictList).map(key => {
