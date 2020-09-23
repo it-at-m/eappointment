@@ -21,7 +21,6 @@ const FormContent = (props) => {
     } = props;
     
     const calenderDisabled = data.type && data.slotTimeInMinutes ? false : true
-    console.log(data.multipleSlotsAllowed)
     return (
         <div>
             <div ref={setErrorRef}>
@@ -29,7 +28,6 @@ const FormContent = (props) => {
                 <Conflicts {...{ conflictList }} />
             </div>
             <form className="form--base">
-                
                     <FormGroup>
                         <Label attributes={{"htmlFor": "AvDayDescription"}} value="Anmerkung"></Label> 
                         <Controls>

@@ -38,8 +38,12 @@ class AvailabilityPage extends Component {
         super(props)
         this.state = getInitialState(props)
         this.errorElement = null;
+        this.successElement = null;
         this.setErrorRef = element => {
             this.errorElement = element
+        };
+        this.setSuccessRef = element => {
+            this.successElement = element
         };
     }
 
@@ -81,15 +85,12 @@ class AvailabilityPage extends Component {
     }
 
     refreshData() {
-        const scrollTop = () =>{
-            window.scrollTo({top: 0, behavior: 'smooth'});
-         };
         const currentDate = formatTimestampDate(this.props.timestamp)
         const url = `${this.props.links.includeurl}/scope/${this.props.scope.id}/availability/day/${currentDate}/conflicts/`
         $.ajax(url, {
             method: 'GET'
         }).done(data => {
-            scrollTop();
+            this.successElement.scrollIntoView();
             const newProps = {
                 conflicts: data.conflicts,
                 availabilitylist: data.availabilityList,
@@ -364,7 +365,7 @@ class AvailabilityPage extends Component {
                             }
                         )
                     })
-                    if (data.conflictList) {
+                    if (data.conflictIdList.length) {
                         this.errorElement.scrollIntoView()
                     }
                 },
@@ -557,7 +558,7 @@ class AvailabilityPage extends Component {
 
     renderSaveBar() {
         if (this.state.lastSave) {
-            return <SaveBar lastSave={this.state.lastSave} />
+            return <SaveBar lastSave={this.state.lastSave} setSuccessRef={this.setSuccessRef} />
         }
     }
 

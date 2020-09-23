@@ -6,10 +6,10 @@ import PropTypes from 'prop-types'
 const PageLayout = (props) => {
     return (
         <div>
-            {props.saveBar}
             {props.conflicts}
             {props.tabs}
             {props.timeTable}
+            {props.saveBar}
             {props.accordion}
         </div>
     )

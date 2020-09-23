@@ -9,7 +9,7 @@ const formatDate = date => {
  
 const SaveBar = (props) => {
     return (
-        <div className="message message--success">
+        <div ref={props.setSuccessRef} className="message message--success">
             Öffnungszeiten gespeichert, {formatDate(props.lastSave)}
         </div>
     )
