@@ -21,8 +21,8 @@ class AvailabilityDatePicker extends Component
             availability: this.props.attributes.availability,
             availabilityList: this.props.attributes.availabilitylist,
             minDate: moment.unix(this.props.attributes.availability.startDate).toDate(),
-            minTime: setHours(setMinutes(new Date(), 0), 6),
-            maxTime: setHours(setMinutes(new Date(), 0), 21)
+            minTime: setHours(setMinutes(new Date(), 0), 0),
+            maxTime: setHours(setMinutes(new Date(), 59), 23)
         }
     }
 
