@@ -37,6 +37,7 @@ class AvailabilityPage extends Component {
     constructor(props) {
         super(props)
         this.state = getInitialState(props)
+        this.waitintervall = 1000;
         this.errorElement = null;
         this.successElement = null;
         this.setErrorRef = element => {
@@ -400,12 +401,15 @@ class AvailabilityPage extends Component {
 
     handleChange(data) {
         if (data.__modified) {
+            this.timer = null
             this.setState(
                 Object.assign({}, updateAvailabilityInState(this.state, data), {selectedAvailability: data}),
                 () => {
                     if (data.tempId || data.id) {
-                        this.getConflictList()
-                        this.getValidationList()
+                        this.timer = setTimeout(() => {
+                            this.getConflictList()
+                            this.getValidationList()
+                        }, this.waitintervall)
                     }
                 }
             );
