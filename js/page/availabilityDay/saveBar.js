@@ -18,7 +18,8 @@ const SaveBar = (props) => {
 SaveBar.propTypes = {
     lastSave: PropTypes.oneOfType([
         PropTypes.number, PropTypes.string
-    ]).isRequired
+    ]).isRequired,
+    setSuccessRef: PropTypes.func
 }
 
 export default SaveBar
