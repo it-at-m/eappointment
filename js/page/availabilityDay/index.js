@@ -82,7 +82,11 @@ class AvailabilityPage extends Component {
 
     onPublishAvailability() {
         //const state = this.onUpdateAvailability(availability);
-        this.onSaveUpdates();
+        let state = {};
+        state = { selectedAvailability: null }
+        this.setState(state, () => {
+            this.onSaveUpdates();
+        });
     }
 
     refreshData() {
@@ -103,6 +107,7 @@ class AvailabilityPage extends Component {
                 stateChanged: false,
                 selectedAvailability: null
             }))
+
         }).fail(err => {
             console.log('refreshData error', err)
         })
@@ -126,8 +131,8 @@ class AvailabilityPage extends Component {
             console.log('save success', success)
             this.setState({
                 lastSave: new Date().getTime(),
-                selectedAvailability: null
-            }, () => {this.refreshData()})
+            })
+            this.refreshData()
         }).fail((err) => {
             if (err.status === 404) {
                 console.log('404 error, ignored')

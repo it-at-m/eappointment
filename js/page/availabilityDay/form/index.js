@@ -7,20 +7,33 @@ import { getDataValuesFromForm, cleanupFormData, getFormValuesFromData } from '.
 class AvailabilityForm extends Component {
     constructor(props) {
         super(props);
-        this.data = getFormValuesFromData(this.props.data);
+        this.state = {
+            data: getFormValuesFromData(this.props.data)
+        };
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.data && this.props.data !== prevProps.data) {
+            this.setState({
+                data: getFormValuesFromData(this.props.data)
+            })
+        }
     }
 
     handleChange(name, value) {
-        clearTimeout(this.timer);
-        this.data = cleanupFormData(Object.assign({}, this.data, {
-            [name]: value,
-            __modified: true
-        }))
-        this.props.handleChange(getDataValuesFromForm(this.data, this.data.scope))
+        this.setState((state) => ({
+            data: cleanupFormData(Object.assign({}, state.data, {
+                [name]: value,
+                __modified: true
+            })),
+            
+        }), () => {
+            this.props.handleChange(getDataValuesFromForm(this.state.data, this.props.data.scope))
+        })
     }
 
     render() {
-        const data  = this.data
+        const { data } = this.state
         const onChange = (name, value) => {
             this.handleChange(name, value)
         }
