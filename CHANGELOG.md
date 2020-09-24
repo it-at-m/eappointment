@@ -6,6 +6,7 @@
 * #44143 Bugfix: Beim Anlegen von Öffnungszeiten-Ausnahmen erfolgt jetzt eine Warnung bei Konflikten
 * #43787 Das Drucklayout wird jetzt aus dem Projekt Admin-Layout übernommen und es wurde eine no-print Klasse eingeführt
 * #44176 Bugfix: Beim Aufruf des nächsten Kunden mit einer leeren Warteschlange erscheint jetzt eine verständliche Fehlermeldung.
+* #45163 Bugfix: Verschollene Abholer werden beim erneuten Aufruf der Abholer-Verwaltung angezeigt und können bearbeitet werden
 
 
 ## v2.23.05
