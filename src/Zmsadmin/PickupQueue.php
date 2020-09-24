@@ -19,6 +19,7 @@ class PickupQueue extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
+
         //$clusterHelper = new Helper\ClusterHelper($workstation);
         //$cluster = ($clusterHelper::isClusterEnabled()) ? $clusterHelper->getEntity() : null;
         $processList = \App::$http->readGetResult('/workstation/process/pickup/', ['resolveReferences' => 1])
