@@ -15,11 +15,12 @@ class Accordion extends Component
     } 
 
     componentDidUpdate(prevProps) {
+        var eventId = null
         if (prevProps.data !== this.props.data) {
             if (this.props.data) {
-                var eventId = (this.props.data.id) ? this.props.data.id : this.props.data.tempId;
+                eventId = (this.props.data.id) ? this.props.data.id : this.props.data.tempId;
             }
-            this.isExpanded = (eventId) ? eventId : null
+            this.isExpanded = eventId
         }
     }
     
@@ -100,7 +101,6 @@ class Accordion extends Component
                         }
                     }))
                 })
-                
                 return (
                     <section key={index} className="accordion-section" style={hasConflict || hasError ? { border: "1px solid #9B0000"} : null}>
                         <h3 className="accordion__heading" role="heading" title={title}>
@@ -111,6 +111,7 @@ class Accordion extends Component
                         <div className={eventId == this.isExpanded ? "accordion__panel opened" : "accordion__panel"} hidden={eventId == this.isExpanded ? "" : "hidden"}>
                             <AvailabilityForm 
                                 data={availability}
+                                selectedAvailability={this.props.data}
                                 availabilityList={this.props.availabilities}
                                 today={this.props.today}
                                 timestamp={this.props.timestamp}
@@ -119,7 +120,7 @@ class Accordion extends Component
                                 onExclusion={onExclusion}
                                 onEditInFuture={onEditInFuture}
                                 onDelete={onDelete}
-                                errorList={this.props.errorList}
+                                errorList={hasError ? this.props.errorList : []}
                                 conflictList={hasConflict ? Object.assign({}, conflictList): {}}
                                 setErrorRef={this.props.setErrorRef}
                             />

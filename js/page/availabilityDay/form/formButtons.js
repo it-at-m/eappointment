@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 const FormButtons = (props) => {
     const { data, onCopy, onExclusion, onEditInFuture, onDelete } = props
-    const disabled = (data && (! data.id || data.__modified));
+    const disabled = (data && (! data.id || data.__modified === true));
     return (
         <div>
             <div className="form-actions" style={{"marginTop": "-45px"}}>
