@@ -451,8 +451,21 @@ class ProcessTest extends EntityCommonTests
         $collection->addEntity($entity);
         $entity2 = $this->getExample();
         $entity2->scope['id'] = 141;
+        $entity2->getFirstAppointment()->getScope()->id = 141;
         $collection->addEntity($entity2);
         $this->assertEquals(1, $collection->withScopeId(123)->count());
+        $this->assertEquals(1, $collection->withOutScopeId(141)->count());
+    }
+
+    public function testWithScopeIdForPickupWithDifferentScopeId()
+    {
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $collection->addEntity($entity);
+        $entity2 = $this->getExample();
+        $entity2->scope['id'] = 141;
+        $collection->addEntity($entity2);
+        $this->assertEquals(2, $collection->withScopeId(123)->count());
         $this->assertEquals(1, $collection->withOutScopeId(141)->count());
     }
 
