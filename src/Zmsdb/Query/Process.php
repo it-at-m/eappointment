@@ -202,7 +202,7 @@ class Process extends Base implements MappingInterface
                 'IF(`process`.`wartenummer`,
                     `process`.`wartenummer`,
                     `process`.`BuergerID`
-)'
+                )'
             ),
             'queue__destination' => self::expression(
                 'IF(`process`.`AbholortID`,
@@ -428,8 +428,7 @@ class Process extends Base implements MappingInterface
             }
             if ('pending' == $status) {
                 $query
-                    ->andWith('process.AbholortID', '=', $scopeId)
-                    ->orWith('process.StandortID', '=', $scopeId)
+                    ->andWith('process.StandortID', '=', $scopeId)
                     ->andWith('process.Abholer', '!=', 0)
                     ->andWith('process.NutzerID', '=', 0);
             }
@@ -441,8 +440,7 @@ class Process extends Base implements MappingInterface
             }
             if ('pickup' == $status) {
                 $query
-                    ->andWith('process.AbholortID', '=', $scopeId)
-                    ->orWith('process.StandortID', '=', $scopeId)
+                    ->andWith('process.StandortID', '=', $scopeId)
                     ->andWith('process.NutzerID', '!=', 0);
             }
             if ('called' == $status) {
