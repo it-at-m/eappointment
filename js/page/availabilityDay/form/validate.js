@@ -40,6 +40,10 @@ const validate = (data, props) => {
         errors.endTime = 'Das Startdatum muss nach dem Enddatum sein.'
     }
 
+    if ((startHour == "00" && startMinute == "00") || (endHour == "00" && endMinute == "00")) {
+        errors.type = 'Die Uhrzeit darf nicht 00:00 sein.'
+    }
+
     if ((endTimestamp - startTimestamp) / 60 % slotTime > 0) {
         errors.type = 'Zeitschlitze müssen sich gleichmäßig in der Öffnungszeit aufteilen lassen.'
     }
@@ -53,6 +57,10 @@ const validate = (data, props) => {
     }
 
     let valid = (0 < Object.keys(errors).length) ? false : true
+
+    if (!valid) {
+        errors.id = data.id || data.tempId
+    }
     return {
         valid,
         errors

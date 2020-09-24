@@ -10,6 +10,7 @@ const renderErrors = errors => errors.map(err => {
 })
 
 const Errors = (props) => {
+
     const errors = props.errorList.map(error => {
         return Object.entries(error).map(entry => {
             return {
@@ -18,7 +19,6 @@ const Errors = (props) => {
             }
         })
     })
-
     return (
         errors.length > 0 ? 
         <div className="message message--error">
