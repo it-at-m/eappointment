@@ -60,7 +60,7 @@ class ProcessConflictTest extends Base
         $availabilityCopy->endTime = $availabilityCopy->getEndDateTime()->format('H:i');
         (new \BO\Zmsdb\Availability())->writeEntity($availabilityCopy);
         $conflictList = (new \BO\Zmsdb\Process())->readConflictListByScopeAndTime($scope, $startDate, null, $now, 0);
-        $this->assertEquals(1, $conflictList->count());
+        $this->assertEquals(2, $conflictList->count());
         $this->assertEquals('Zwei Öffnungszeiten sind gleich.', $conflictList->getFirst()->getAmendment());
         $this->assertEquals('conflict', $conflictList->getFirst()->getStatus());
     }
@@ -75,7 +75,7 @@ class ProcessConflictTest extends Base
         $availabilityCopy->endTime = $availabilityCopy->getEndDateTime()->modify('+2 hour')->format('H:i');
         (new \BO\Zmsdb\Availability())->writeEntity($availabilityCopy);
         $conflictList = (new \BO\Zmsdb\Process())->readConflictListByScopeAndTime($scope, $startDate, null, $now, 0);
-        $this->assertEquals(1, $conflictList->count());
+        $this->assertEquals(2, $conflictList->count());
         $this->assertEquals('Zwei Öffnungszeiten überschneiden sich.', $conflictList->getFirst()->getAmendment());
         $this->assertEquals('conflict', $conflictList->getFirst()->getStatus());
     }
