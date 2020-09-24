@@ -84,6 +84,11 @@ class Accordion extends Component
                     this.props.conflictList.conflictIdList.includes(eventId) 
                 )
 
+                let hasError = (
+                    Object.keys(this.props.errorList).length > 0 && 
+                    this.props.errorList.find(error => error.id == eventId)
+                )
+
                 let conflictList = []
                 Object.keys(this.props.conflictList.itemList).map(date => {
                     (this.props.conflictList.itemList[date].map(conflict => {
@@ -97,7 +102,7 @@ class Accordion extends Component
                 })
                 
                 return (
-                    <section key={index} className="accordion-section" style={hasConflict ? { border: "1px solid #9B0000"} : null}>
+                    <section key={index} className="accordion-section" style={hasConflict || hasError ? { border: "1px solid #9B0000"} : null}>
                         <h3 className="accordion__heading" role="heading" title={title}>
                             <button eventkey={eventId} onClick={onToggle} className="accordion__trigger" aria-expanded={eventId == this.isExpanded}>
                                 <span className="accordion__title">{title}</span>
