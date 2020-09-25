@@ -131,8 +131,9 @@ class AvailabilityPage extends Component {
             console.log('save success', success)
             this.setState({
                 lastSave: new Date().getTime(),
+            }, () => {
+                this.refreshData()
             })
-            this.refreshData()
         }).fail((err) => {
             if (err.status === 404) {
                 console.log('404 error, ignored')
@@ -150,6 +151,7 @@ class AvailabilityPage extends Component {
             selectedTab: this.state.selectedTab
         }), () => {
             this.getConflictList()
+            this.getValidationList()
         })
     }
 
@@ -406,7 +408,7 @@ class AvailabilityPage extends Component {
 
     handleChange(data) {
         if (data.__modified) {
-            //this.timer = null
+            this.timer = null
             this.setState(
                 Object.assign({}, updateAvailabilityInState(this.state, data), {selectedAvailability: data}),
                 () => {
