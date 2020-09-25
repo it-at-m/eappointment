@@ -2,11 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import * as Inputs from '../../../lib/inputs'
 import AvailabilityDatePicker from './datepicker'
-import Errors from './errors'
-import Conflicts from './conflicts'
 const { Label, FormGroup, Controls, Description } = Inputs
 import { range } from '../../../lib/utils'
 import { weekDayList, availabilitySeries, availabilityTypes, getDataValuesFromForm } from '../helpers'
+import ErrorBar from '../errorBar'
 
 const FormContent = (props) => {
     const {
@@ -23,10 +22,7 @@ const FormContent = (props) => {
     const calenderDisabled = data.type && data.slotTimeInMinutes ? false : true
     return (
         <div>
-            <div ref={setErrorRef}>
-                <Errors {...{ errorList }} />
-                <Conflicts {...{ conflictList }} />
-            </div>
+            <ErrorBar errorList={errorList} conflictList={conflictList} setErrorRef={setErrorRef} />
             <form className="form--base">
                     <FormGroup>
                         <Label attributes={{"htmlFor": "AvDayDescription"}} value="Anmerkung"></Label> 

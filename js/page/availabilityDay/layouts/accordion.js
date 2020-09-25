@@ -120,13 +120,13 @@ class Accordion extends Component
                                 today={this.props.today}
                                 timestamp={this.props.timestamp}
                                 handleChange={this.props.handleChange}
+                                setErrorRef={this.props.setErrorRef}
                                 onCopy={onCopy}
                                 onExclusion={onExclusion}
                                 onEditInFuture={onEditInFuture}
                                 onDelete={onDelete}
                                 errorList={hasError(eventId) ? this.props.errorList.itemList : []}
                                 conflictList={hasConflict(eventId) ? Object.assign({}, conflictList): {}}
-                                setErrorRef={this.props.setErrorRef}
                             />
                         </div>
                     </section>

@@ -558,6 +558,7 @@ class AvailabilityPage extends Component {
             handleChange={handleChange}
             stateChanged={this.state.stateChanged}
             includeUrl={this.props.links.includeurl}
+            setErrorRef={this.setErrorRef}
             errorList={this.state.errorList ? 
                 this.state.errorList : 
                 {itemList: []}
@@ -566,7 +567,6 @@ class AvailabilityPage extends Component {
                 this.state.conflictList : 
                 {itemList: {}, conflictIdList: {}}
             }
-            setErrorRef={this.setErrorRef}
         />
     }
 
