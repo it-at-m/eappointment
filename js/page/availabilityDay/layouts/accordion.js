@@ -138,7 +138,7 @@ class Accordion extends Component
                 title=""
                 body={renderAccordionBody()}
                 footer={<FooterButtons 
-                    hasConflicts={Object.keys(this.props.conflictList.itemList).length || Object.keys(this.props.errorList).length ? true : false}
+                    hasConflicts={Object.keys(this.props.conflictList.itemList).length || this.props.errorList.itemList.length ? true : false}
                     stateChanged={this.props.stateChanged} 
                     data={this.props.data} 
                     {...{onNew, onPublish, onAbort }} 
