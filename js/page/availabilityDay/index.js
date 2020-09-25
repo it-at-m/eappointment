@@ -329,25 +329,28 @@ class AvailabilityPage extends Component {
     }
 
     getValidationList() {
-        var list = {itemList: []}
+        let list = []
         const validateData = data => {
             let validationResult = validate(data, this.props)
             if (!validationResult.valid) {
-                list = validationResult.errorList              
+                return validationResult.errorList              
                 
             } 
-            this.setState({
-                errorList: list
-            })
+            return [];
         }
 
         this.state.availabilitylist.map(availability => {
-            return validateData(availability)
+            list.push(validateData(availability))
         })
+        list = list.filter(el => el.id)
 
-        if (this.state.errorList && this.state.errorList.itemList.length > 0) {
-            this.errorElement.scrollIntoView()
-        }
+        this.setState({
+            errorList: list.length ? Object.assign({}, list) : {}
+        }, () => {
+            if (list.length) {
+                this.errorElement.scrollIntoView()
+            }
+        })
     }
 
     getConflictList() {

@@ -6,7 +6,7 @@ import Conflicts from './form/conflicts'
 const ErrorBar = (props) => {
     const { errorList, conflictList } = props
     return (
-        <div ref={props.setErrorRef}>
+        <div ref={props.setErrorRef} id="errorRef">
             <Errors {...{ errorList }} />
             <Conflicts {...{ conflictList }} />
         </div>

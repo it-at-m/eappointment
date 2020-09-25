@@ -1,17 +1,19 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const renderErrors = errors => errors.map(error => {
+const renderErrors = errors => Object.keys(errors).map(key => {
     return (
-        <div key={error[0].type +'-'+ error[0].id}>
-            {error[0].message}
+        <div key={errors[key].id}>
+            {errors[key].itemList.map((item, index) => {
+                return <div key={index}>{item[0].message}</div>
+            })}   
         </div>
     )
 })
 
 const Errors = (props) => {
     return (
-        props.errorList.length > 0 ? 
+        Object.keys(props.errorList).length > 0 ? 
         <div className="message message--error">
             <h3>Folgende Fehler sind bei der Prüfung Ihrer Eingaben aufgetreten:</h3>
             {renderErrors(props.errorList)}
@@ -24,7 +26,7 @@ Errors.defaultProps = {
 }
 
 Errors.propTypes = {
-    errorList: PropTypes.array
+    errorList: PropTypes.object
 }
 
 export default Errors
