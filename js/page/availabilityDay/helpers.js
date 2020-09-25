@@ -60,7 +60,6 @@ export const formatTimestampDate = timestamp => moment(timestamp, 'X').format('Y
 
 export const getInitialState = (props) => Object.assign({}, {
     availabilitylist: [],
-    errorList: [],
     selectedAvailability: null,
     formTitle: null,
     lastSave: null,

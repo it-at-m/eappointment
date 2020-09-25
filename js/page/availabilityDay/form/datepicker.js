@@ -136,21 +136,17 @@ class AvailabilityDatePicker extends Component
     handleChange(name, date) {
         if ('startDate' == name) {
             if (this.state.availability.startDate != moment(date).startOf('day').unix()) {
-                console.log("changed startDate")
                 this.props.onChange("startDate", moment(date).unix());
             }
             if (this.state.availability.startTime != moment(date).format('HH:mm')) {
-                console.log("changed startTime")
                 this.props.onChange("startTime", moment(date).format('HH:mm'));
             }
         }
         if ('endDate' == name) {
             if (this.state.availability.endDate != moment(date).startOf('day').unix()) {
-                console.log("changed endDate")
                 this.props.onChange("endDate", moment(date).unix());
             }
             if (this.state.availability.endTime != moment(date).format('HH:mm')) {
-                console.log("changed endTime")
                 this.props.onChange("endTime", moment(date).format('HH:mm'));
             }
         } 

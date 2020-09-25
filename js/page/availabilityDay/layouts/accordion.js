@@ -39,6 +39,20 @@ class Accordion extends Component
             ev.preventDefault()
             this.props.onNew()
         }
+
+        const hasConflict = (eventId) => {
+            return (
+                Object.keys(this.props.conflictList.itemList).length > 0 && 
+                this.props.conflictList.conflictIdList.includes(eventId) 
+            )
+        }
+
+        const hasError = (eventId) => {
+            return (
+                this.props.errorList.itemList.length > 0 && 
+                Object.values(this.props.errorList).find(item => item == eventId)
+            )
+        }
         
         const renderAccordionBody = () => {
             return this.props.availabilities.map((availability, index) => {
@@ -80,16 +94,6 @@ class Accordion extends Component
         
                 let title = accordionTitle(availability);
 
-                let hasConflict = (
-                    Object.keys(this.props.conflictList.itemList).length > 0 && 
-                    this.props.conflictList.conflictIdList.includes(eventId) 
-                )
-
-                let hasError = (
-                    Object.keys(this.props.errorList).length > 0 && 
-                    this.props.errorList.find(error => error.id == eventId)
-                )
-
                 let conflictList = []
                 Object.keys(this.props.conflictList.itemList).map(date => {
                     (this.props.conflictList.itemList[date].map(conflict => {
@@ -102,7 +106,7 @@ class Accordion extends Component
                     }))
                 })
                 return (
-                    <section key={index} className="accordion-section" style={hasConflict || hasError ? { border: "1px solid #9B0000"} : null}>
+                    <section key={index} className="accordion-section" style={hasConflict(eventId) || hasError(eventId) ? { border: "1px solid #9B0000"} : null}>
                         <h3 className="accordion__heading" role="heading" title={title}>
                             <button eventkey={eventId} onClick={onToggle} className="accordion__trigger" aria-expanded={eventId == this.isExpanded}>
                                 <span className="accordion__title">{title}</span>
@@ -120,8 +124,8 @@ class Accordion extends Component
                                 onExclusion={onExclusion}
                                 onEditInFuture={onEditInFuture}
                                 onDelete={onDelete}
-                                errorList={hasError ? this.props.errorList : []}
-                                conflictList={hasConflict ? Object.assign({}, conflictList): {}}
+                                errorList={hasError(eventId) ? this.props.errorList.itemList : []}
+                                conflictList={hasConflict(eventId) ? Object.assign({}, conflictList): {}}
                                 setErrorRef={this.props.setErrorRef}
                             />
                         </div>
@@ -134,7 +138,7 @@ class Accordion extends Component
                 title=""
                 body={renderAccordionBody()}
                 footer={<FooterButtons 
-                    hasConflicts={Object.keys(this.props.conflictList.itemList).length || this.props.errorList.length ? true : false}
+                    hasConflicts={Object.keys(this.props.conflictList.itemList).length || Object.keys(this.props.errorList).length ? true : false}
                     stateChanged={this.props.stateChanged} 
                     data={this.props.data} 
                     {...{onNew, onPublish, onAbort }} 
@@ -147,7 +151,7 @@ class Accordion extends Component
 Accordion.propTypes = {
     data: PropTypes.object,
     availabilities: PropTypes.array,
-    errorList: PropTypes.array,
+    errorList: PropTypes.object,
     conflictList: PropTypes.object,
     today: PropTypes.number,
     timestamp: PropTypes.number,

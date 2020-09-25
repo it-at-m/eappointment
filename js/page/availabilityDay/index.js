@@ -327,11 +327,11 @@ class AvailabilityPage extends Component {
     }
 
     getValidationList() {
-        var list = []
+        var list = {itemList: []}
         const validateData = data => {
             let validationResult = validate(data, this.props)
             if (!validationResult.valid) {
-                list.push(validationResult.errors)                
+                list = validationResult.errorList              
                 
             } 
             this.setState({
@@ -343,7 +343,7 @@ class AvailabilityPage extends Component {
             return validateData(availability)
         })
 
-        if (this.state.errorList.length) {
+        if (this.state.errorList && this.state.errorList.itemList.length > 0) {
             this.errorElement.scrollIntoView()
         }
     }
@@ -371,7 +371,7 @@ class AvailabilityPage extends Component {
                             }
                         )
                     })
-                    if (data.conflictIdList.length) {
+                    if (data.conflictIdList.length > 0) {
                         this.errorElement.scrollIntoView()
                     }
                 },
@@ -406,7 +406,7 @@ class AvailabilityPage extends Component {
 
     handleChange(data) {
         if (data.__modified) {
-            this.timer = null
+            //this.timer = null
             this.setState(
                 Object.assign({}, updateAvailabilityInState(this.state, data), {selectedAvailability: data}),
                 () => {
@@ -556,7 +556,10 @@ class AvailabilityPage extends Component {
             handleChange={handleChange}
             stateChanged={this.state.stateChanged}
             includeUrl={this.props.links.includeurl}
-            errorList={this.state.errorList}
+            errorList={this.state.errorList ? 
+                this.state.errorList : 
+                {itemList: []}
+            }
             conflictList={this.state.conflictList ? 
                 this.state.conflictList : 
                 {itemList: {}, conflictIdList: {}}
