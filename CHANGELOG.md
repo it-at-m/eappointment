@@ -1,7 +1,6 @@
 ## v2.23.06
 
 * #45449 Bugfix: Sind mehrere Dienstleister in der Terminsuche vorhanden, wird jetzt nur noch ein Fehler ausgegeben, wenn alle übergebenen Dienstleister nicht zu den angegeben Dienstleistungen passen
-* #45163 Bugfix: Filtert man eine Process-Liste nach der StandortId, wird nun auch die StandortId in den zugeordneten Vorgangsterminen beachtet
 
 ## v2.23.05
 
