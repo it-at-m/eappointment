@@ -7,6 +7,7 @@
 * #43787 Das Drucklayout wird jetzt aus dem Projekt Admin-Layout übernommen und es wurde eine no-print Klasse eingeführt
 * #44176 Bugfix: Beim Aufruf des nächsten Kunden mit einer leeren Warteschlange erscheint jetzt eine verständliche Fehlermeldung.
 * #45163 Bugfix: Verschollene Abholer werden beim erneuten Aufruf der Abholer-Verwaltung angezeigt und können bearbeitet werden
+* #45163 Bugfix: Abholer aus anderen Standorten können nun am entsprechenden Abholer-Standort bearbeitet werden
 
 
 ## v2.23.05
