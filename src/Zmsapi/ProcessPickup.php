@@ -70,9 +70,8 @@ class ProcessPickup extends BaseController
     {
         if ($entity->hasProcessCredentials()) {
             $this->testProcessData($entity);
-            $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 0);
-            $process->addData($input);
-            $process = (new Query())->updateEntity($process, \App::$now);
+            $entity->addData($input);
+            $process = (new Query())->updateEntity($entity, \App::$now);
         } elseif ($entity->hasQueueNumber()) {
             // Allow waitingnumbers over 1000 with the fourth parameter
             $process = ProcessStatusQueued::init()
