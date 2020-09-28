@@ -26,7 +26,6 @@ class PickupCall extends BaseController
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
         $workstation->process = \App::$http->readPostResult('/process/status/pickup/', $process)->getEntity();
-        $workstation->testMatchingProcessScope($workstation->getScopeList());
 
         return \BO\Slim\Render::withHtml(
             $response,
