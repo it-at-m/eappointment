@@ -284,13 +284,9 @@ class Process extends Schema\Entity
      */
     public function getScopeId()
     {
-        if ($this->status == 'pending' || $this->status == 'pickup') {
-            $scope = $this->getFirstAppointment()->getScope();
-            $scopeId = $scope->id;
-        } else {
-            $scopeId = $this->toProperty()->scope->id->get();
-        }
-        return $scopeId;
+        //TK 2020-09-28 changed because pickup and pending processes have assigned pickup scope
+        //as current scope - see zmsdb Query/Process EntityMapping
+        return $this->toProperty()->scope->id->get();
     }
 
     public function getCurrentScope(): Scope

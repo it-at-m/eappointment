@@ -465,7 +465,7 @@ class ProcessTest extends EntityCommonTests
         $entity2 = $this->getExample();
         $entity2->scope['id'] = 141;
         $collection->addEntity($entity2);
-        $this->assertEquals(2, $collection->withScopeId(123)->count());
+        $this->assertEquals(1, $collection->withScopeId(123)->count());
         $this->assertEquals(1, $collection->withOutScopeId(141)->count());
     }
 
@@ -513,7 +513,7 @@ class ProcessTest extends EntityCommonTests
         $entity->scope['id'] = 456;
         $this->assertEquals(456, $entity->getScopeId());
         $entity->status = 'pending';
-        $this->assertEquals(123, $entity->getScopeId());
+        $this->assertEquals(456, $entity->getScopeId());
     }
 
     public function testMerge()
