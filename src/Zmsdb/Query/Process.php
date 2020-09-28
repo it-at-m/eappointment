@@ -120,7 +120,12 @@ class Process extends Base implements MappingInterface
     {
         $this->leftJoin(
             new Alias(Scope::TABLE, 'scope'),
-            'process.StandortID',
+            self::expression(
+                'IF(`process`.`AbholortID`,
+                    `process`.`AbholortID`,
+                    `process`.`StandortID`
+                )'
+            ),
             '=',
             'scope.StandortID'
         );
@@ -342,7 +347,9 @@ class Process extends Base implements MappingInterface
     public function addConditionScopeId($scopeId)
     {
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($scopeId) {
-            $query->andWith('process.StandortID', '=', $scopeId);
+            $query
+                ->andWith('process.StandortID', '=', $scopeId)
+                ->orWith('process.AbholortID', '=', $scopeId);
         });
         return $this;
     }
@@ -428,19 +435,21 @@ class Process extends Base implements MappingInterface
             }
             if ('pending' == $status) {
                 $query
-                    ->andWith('process.StandortID', '=', $scopeId)
+                    ->andWith('process.StandortID', '!=', 0)
+                    ->andWith('process.AbholortID', '=', $scopeId)
                     ->andWith('process.Abholer', '!=', 0)
                     ->andWith('process.NutzerID', '=', 0);
             }
             if ('processing' == $status) {
-                $query->andWith('process.aufruferfolgreich', '!=', 1)
+                $query
+                    ->andWith('process.aufruferfolgreich', '!=', 1)
                     ->andWith('process.NutzerID', '!=', 0)
-                    ->andWith('process.StandortID', '!=', 0)
-                    ;
+                    ->andWith('process.StandortID', '!=', 0);
             }
             if ('pickup' == $status) {
                 $query
-                    ->andWith('process.StandortID', '=', $scopeId)
+                    ->andWith('process.StandortID', '!=', 0)
+                    ->andWith('process.AbholortID', '=', $scopeId)
                     ->andWith('process.NutzerID', '!=', 0);
             }
             if ('called' == $status) {

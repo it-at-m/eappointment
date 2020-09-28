@@ -385,7 +385,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $query
             ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
-            ->addConditionScopeId($scopeId)
+            ->addConditionScopeId($scopeId) //removed because of dismatching scope and pickup scope
             ->addConditionStatus($status, $scopeId)
             ->addLimit($limit, $offset);
         $statement = $this->fetchStatement($query);
