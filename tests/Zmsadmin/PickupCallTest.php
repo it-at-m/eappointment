@@ -42,7 +42,9 @@ class PickupCallTest extends Base
 
     public function testNotAllowedToEditProcess()
     {
-        $this->expectException('\BO\Zmsentities\Exception\WorkstationProcessMatchScopeFailed');
+        $this->expectException('\BO\Zmsclient\Exception');
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = '\BO\Zmsentities\Exception\WorkstationProcessMatchScopeFailed';
         $this->setApiCalls(
             [
                 [
@@ -59,7 +61,7 @@ class PickupCallTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/pickup/',
-                    'response' => $this->readFixture("GET_process_not_matching_id.json")
+                    'response' => $exception
                 ]
             ]
         );
