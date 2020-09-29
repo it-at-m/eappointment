@@ -27,6 +27,7 @@ const validate = (data, props) => {
 
 function validateStartTime(today, tomorrow, selectedDate, data) {
     let errorList = []
+    const startTime = moment(data.startDate, 'X').startOf('day');
     const startHour = data.startTime.split(':')[0]
     const endHour = data.endTime.split(':')[0]
     const startMinute = data.startTime.split(':')[1]

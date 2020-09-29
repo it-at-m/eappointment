@@ -14,7 +14,9 @@ const ErrorBar = (props) => {
 }
 
 ErrorBar.propTypes = {
-    setErrorRef: PropTypes.func
+    setErrorRef: PropTypes.func,
+    errorList: PropTypes.object,
+    conflictList: PropTypes.object
 }
 
 export default ErrorBar
