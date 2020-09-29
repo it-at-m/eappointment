@@ -563,8 +563,7 @@ class AvailabilityPage extends Component {
             includeUrl={this.props.links.includeurl}
             setErrorRef={this.setErrorRef}
             errorList={this.state.errorList ? 
-                this.state.errorList : 
-                {itemList: []}
+                this.state.errorList : {}
             }
             conflictList={this.state.conflictList ? 
                 this.state.conflictList : 
