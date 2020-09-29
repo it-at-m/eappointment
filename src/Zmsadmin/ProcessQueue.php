@@ -41,7 +41,7 @@ class ProcessQueue extends BaseController
                     $response,
                     'page/printWaitingNumber.twig',
                     array(
-                        'title' => 'Wartenummer drucken',
+                        'title' => ($process->isWithAppointment()) ? 'Vorgangsnummer drucken' : 'Wartenummer drucken',
                         'process' => $process
                     )
                 );
