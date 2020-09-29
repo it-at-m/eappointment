@@ -3,7 +3,7 @@ import { getUrlParameters } from '../../lib/utils'
 
 export default () => {
   $(document).ready(function () {
-    const hasWaitingNumber = $('.msg_ihre_wartenummer')
+    const hasWaitingNumber = $('.print-number')
     if (hasWaitingNumber.length > 0) {
         if (getUrlParameters().print === "1") {
             setTimeout(() => {
