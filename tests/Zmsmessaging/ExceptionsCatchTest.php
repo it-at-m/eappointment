@@ -24,8 +24,8 @@ class ExceptionsCatchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/mails/',
-                    'response' => $this->readFixture("GET_mails_queue_no_mail.json"),
-                ],
+                    'response' => $this->readFixture("GET_mails_queue_no_department.json"),
+                ]
             ]
         );
 

@@ -66,4 +66,37 @@ class SendMailTest extends Base
             $this->assertContains('No mail entry found in Database', $mail['errorInfo']);
         }
     }
+
+    public function testSendMailWithoutContent()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'setUserInfo',
+                    'parameters' => [
+                        '_system_messenger',
+                        'zmsmessaging'
+                    ]
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/mails/',
+                    'response' => $this->readFixture("GET_mails_queue_no_content.json")
+                ],
+                [
+                    'function' => 'readDeleteResult',
+                    'url' => '/mails/1234/',
+                    'response' => $this->readFixture("GET_mail_no_content.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/log/process/123456/',
+                    'response' => $this->readFixture("POST_log.json"),
+                    'parameters' => ['error' => 1]
+                ]
+            ]
+        );
+        \App::$messaging = new \BO\Zmsmessaging\Mail();
+        \App::$messaging->initQueueTransmission();
+    }
 }

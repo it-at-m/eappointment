@@ -29,7 +29,7 @@
         "clients": [
           {
             "familyName": "Max Mustermann",
-            "email": "max@service.berlin.de",
+            "email": "max@example.com",
             "telephone": "0123456789"
           }
         ],
