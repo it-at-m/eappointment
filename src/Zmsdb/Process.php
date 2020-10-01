@@ -715,6 +715,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addConditionHasTelephone()
             ->addConditionAssigned()
             ->addConditionIgnoreSlots()
+            ->addConditionStatus('confirmed')
             ->addLimit($limit);
         $statement = $this->fetchStatement($selectQuery);
         return $this->readList($statement, $resolveReferences);
@@ -733,6 +734,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addConditionProcessMailReminder($dateTime, $reminderInSeconds)
             ->addConditionAssigned()
             ->addConditionIgnoreSlots()
+            ->addConditionStatus('confirmed')
             ->addLimit($limit);
         $statement = $this->fetchStatement($selectQuery);
         return $this->readList($statement, $resolveReferences);
