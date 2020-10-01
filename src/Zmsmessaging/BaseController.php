@@ -75,8 +75,10 @@ class BaseController
             throw new \Exception(
                 "No mail address for department "
                 .$entity['department']['name']
-                ." ("
+                ." (departmentID="
                 .$entity['department']['id']
+                ." Vorgang="
+                .$entity['process']['id']
                 .") "
                 .$entity['id']
             );
