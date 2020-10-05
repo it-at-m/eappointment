@@ -8,8 +8,8 @@
 namespace BO\Zmsmessaging;
 
 use \BO\Zmsentities\Mimepart;
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception as PHPMailerException;
+use \PHPMailer\PHPMailer\PHPMailer;
+use \PHPMailer\PHPMailer\Exception as PHPMailerException;
 
 class Mail extends BaseController
 {
