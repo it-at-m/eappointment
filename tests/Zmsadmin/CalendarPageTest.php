@@ -38,11 +38,11 @@ class CalendarPageTest extends Base
         );
         $response = $this->render([], $this->parameters, []);
         $this->assertContains(
-            'data-date="2016-05-27" title="Noch bis zu 2 Termine verfügbar"',
+            'data-date="2016-05-27" title="2016-05-27 - Noch bis zu 2 Termine verfügbar"',
             (string)$response->getBody()
         );
         $this->assertContains(
-            'data-date="2016-04-10" title="Noch bis zu 3 Termine verfügbar"',
+            'data-date="2016-04-10" title="2016-04-10 - Noch bis zu 3 Termine verfügbar"',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -82,7 +82,7 @@ class CalendarPageTest extends Base
             []
         );
         $this->assertContains(
-            'data-date="2016-05-27" title="Noch bis zu 2 Termine verfügbar"',
+            'data-date="2016-05-27" title="2016-05-27 - Noch bis zu 2 Termine verfügbar"',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
