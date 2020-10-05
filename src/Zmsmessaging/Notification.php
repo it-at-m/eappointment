@@ -9,8 +9,8 @@ namespace BO\Zmsmessaging;
 
 use \BO\Zmsentities\Ics;
 use \BO\Zmsentities\Mimepart;
-use \PHPMailer as PHPMailer;
-use \phpmailerException as phpmailerException;
+use \PHPMailer\PHPMailer\PHPMailer;
+use \PHPMailer\PHPMailer\Exception as PHPMailerException;
 
 class Notification extends BaseController
 {
@@ -61,7 +61,7 @@ class Notification extends BaseController
             throw new \Exception("No valid mailer");
         }
         $result = $this->sendMailer($entity, $mailer, $action);
-        if ($result instanceof \PHPMailer) {
+        if ($result instanceof PHPMailer) {
             $result = array(
                 'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
                 'recipients' => $result->getAllRecipientAddresses(),
@@ -89,7 +89,7 @@ class Notification extends BaseController
             $mailer = $this->readMailer($entity);
             $mailer->AddAddress($entity->getRecipient());
         // @codeCoverageIgnoreStart
-        } catch (phpmailerException $exception) {
+        } catch (PHPMailerException $exception) {
             $message = "Message #$messageId PHPMailer Failure: ". $exception->getMessage();
             \App::$log->warning($message, []);
         } catch (\Exception $exception) {
