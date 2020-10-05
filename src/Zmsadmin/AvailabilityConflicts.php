@@ -53,11 +53,11 @@ class AvailabilityConflicts extends BaseController
         $conflictList = $availabilityList->getConflicts($startDateTime, $endDateTime);
 
         foreach ($conflictList as $conflict) {
-            $id = ($conflict->getFirstAppointment()->getAvailability()->getId()) ?
+            $availabilityId = ($conflict->getFirstAppointment()->getAvailability()->getId()) ?
                 $conflict->getFirstAppointment()->getAvailability()->getId() :
                 $conflict->getFirstAppointment()->getAvailability()->tempId;
-            if (! in_array($id, $conflictedList)) {
-                $conflictedList[] = $id;
+            if (! in_array($availabilityId, $conflictedList)) {
+                $conflictedList[] = $availabilityId;
             }
         }
 
