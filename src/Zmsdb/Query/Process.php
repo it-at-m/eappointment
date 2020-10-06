@@ -328,7 +328,7 @@ class Process extends Base implements MappingInterface
                         'process.EMail',
                         '!=',
                         ""
-                    );;
+                    );
             });
         $this->query->orderBy('appointments__0__date', 'ASC');
         return $this;
