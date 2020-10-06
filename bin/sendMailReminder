@@ -21,7 +21,7 @@ if (class_exists('\App') && isset(\App::$now)) {
     $now = \App::$now;
 }
 if ($timeInterval) {
-    $job = new \BO\Zmsdb\Helper\SendMailReminder(array_shift($timeInterval), $verbose, $now);
+    $job = new \BO\Zmsdb\Helper\SendMailReminder($now, array_shift($timeInterval), $verbose);
     $job->startProcessing($commit);
 } else {
     error_log("Missing time interval argument!$usage");
