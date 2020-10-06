@@ -176,6 +176,18 @@ class Mail extends Base
         return $status;
     }
 
+    public function readReminderLastRun($now)
+    {
+        $lastRun = (new \BO\Zmsdb\Config)->readProperty('status__mailReminderLastRun', false);
+        $lastRunDateTime = ($lastRun) ? new \DateTimeImmutable($lastRun) : $now;
+        return $lastRunDateTime;
+    }
+
+    public function writeReminderLastRun($now)
+    {
+        (new \BO\Zmsdb\Config())->replaceProperty('status__mailReminderLastRun', $now->format('Y-m-d H:i:s'));
+    }
+
     protected function readMultiPartByQueueId($queueId)
     {
         $query = new Query\Mimepart(Query\Base::SELECT);

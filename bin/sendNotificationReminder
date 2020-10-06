@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 require_once(__DIR__."/script_bootstrap.php");
-setlocale (LC_TIME, "de_DE.UTF-8");
+setlocale (LC_ALL, "de_DE.UTF-8");
 
 $usage = <<<EOS
 

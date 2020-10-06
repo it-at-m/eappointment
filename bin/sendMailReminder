@@ -1,8 +1,7 @@
 #!/usr/bin/env php
 <?php
 require_once(__DIR__."/script_bootstrap.php");
-setlocale (LC_TIME, "de_DE.UTF-8");
-
+setlocale (LC_ALL, "de_DE.UTF-8");
 $usage = <<<EOS
 
 Usage: {$argv[0]} hours [--verbose] --commit
@@ -17,8 +16,12 @@ $timeInterval = preg_grep('#^\d+$#', $argv);
 $verbose = preg_grep('#^--?v(erbose)?$#', $argv);
 $commit = preg_grep('#^--commit$#', $argv);
 
+$now = new \DateTimeImmutable();
+if (class_exists('\App') && isset(\App::$now)) {
+    $now = \App::$now;
+}
 if ($timeInterval) {
-    $job = new \BO\Zmsdb\Helper\SendMailReminder(array_shift($timeInterval), $verbose);
+    $job = new \BO\Zmsdb\Helper\SendMailReminder(array_shift($timeInterval), $verbose, $now);
     $job->startProcessing($commit);
 } else {
     error_log("Missing time interval argument!$usage");
