@@ -323,7 +323,12 @@ class Process extends Base implements MappingInterface
                         ),
                         '<',
                         $now->modify('+ ' . $reminderInSeconds . ' Seconds')->format('Y-m-d H:i:s')
-                    );
+                    )
+                    ->andWith(
+                        'process.EMail',
+                        '!=',
+                        ""
+                    );;
             });
         $this->query->orderBy('appointments__0__date', 'ASC');
         return $this;
