@@ -81,7 +81,6 @@ class AvailabilityPage extends Component {
     */
 
     onPublishAvailability() {
-        //const state = this.onUpdateAvailability(availability);
         let state = {};
         state = { selectedAvailability: null }
         this.setState(state, () => {
@@ -95,7 +94,6 @@ class AvailabilityPage extends Component {
         $.ajax(url, {
             method: 'GET'
         }).done(data => {
-            this.successElement.scrollIntoView();
             const newProps = {
                 conflicts: data.conflicts,
                 availabilitylist: data.availabilityList,
@@ -115,11 +113,11 @@ class AvailabilityPage extends Component {
 
     onSaveUpdates() {
         const sendData = this.state.availabilitylist.map(availability => {
-                const sendAvailability = Object.assign({}, availability)
-                if (availability.tempId) {
-                    delete sendAvailability.tempId
-                }
-                return sendAvailability
+            const sendAvailability = Object.assign({}, availability)
+            if (availability.tempId) {
+                delete sendAvailability.tempId
+            }
+            return sendAvailability
         }).map(cleanupAvailabilityForSave)
             
         console.log('Saving updates', sendData)
@@ -133,6 +131,7 @@ class AvailabilityPage extends Component {
                 lastSave: new Date().getTime(),
             }, () => {
                 this.refreshData()
+                this.successElement.scrollIntoView();
             })
         }).fail((err) => {
             if (err.status === 404) {
@@ -146,12 +145,10 @@ class AvailabilityPage extends Component {
 
 
     onRevertUpdates() {
-        //this.setState(getInitialState(this.props))
         this.setState(Object.assign({}, getInitialState(this.props), {
             selectedTab: this.state.selectedTab
         }), () => {
-            this.getConflictList()
-            this.getValidationList()
+            this.refreshData()
         })
     }
 
