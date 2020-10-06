@@ -17,16 +17,14 @@ class ProcessMailReminderTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 9:55");
         $lastRun = new \DateTimeImmutable("2016-04-01 9:50");
         $processList = $query->readEmailReminderProcessListByInterval($now, $lastRun, 7200, 10, 2);
-        foreach($processList as $process) {
-            error_log($process);
-        }
+
         $this->assertEquals(10, $processList->count());
         $this->assertEquals(
-            '2016-04-01 11:55',
+            '2016-04-01 10:00',
             $processList->getFirst()->getFirstAppointment()->toDateTime()->format('Y-m-d H:i')
         );
         $this->assertEquals(
-            '2016-04-01 11:55',
+            '2016-04-01 10:00',
             $processList->getLast()->getFirstAppointment()->toDateTime()->format('Y-m-d H:i')
         );
     }
