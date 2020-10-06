@@ -10,17 +10,19 @@ class SendMailReminder
 
     protected $verbose = false;
 
-    public function __construct($hours = 2, $verbose = false)
+    public function __construct($hours = 2, $verbose = false, \DateTimeInterface $now)
     {
-        $this->dateTime = new \DateTimeImmutable();
+        $this->dateTime = $now;
         $reminderInSeconds = (60 * 60) * $hours;
+        $lastRun = (new \BO\Zmsdb\Mail)->readReminderLastRun($now);
         if ($verbose) {
-            error_log("INFO: Send email reminder dependent on lead time");
+            error_log("INFO: Send email reminder dependent on last run: ". $lastRun->format('Y-m-d H:i:s'));
             $this->verbose = true;
         }
-
+        
         $this->processList = (new \BO\Zmsdb\Process)->readEmailReminderProcessListByInterval(
-            $this->dateTime,
+            $now,
+            $lastRun,
             $reminderInSeconds,
             10000,
             2
@@ -38,6 +40,12 @@ class SendMailReminder
                     error_log("WARNING: Mail reminder for $process->id not possible - no email or not enabled");
                 }
             }
+        }
+        if ($this->verbose) {
+            error_log("INFO: Last run ". $this->dateTime->format('Y-m-d H:i:s'));
+        }
+        if ($commit) {
+            (new \BO\Zmsdb\Mail)->writeReminderLastRun($this->dateTime);
         }
     }
 

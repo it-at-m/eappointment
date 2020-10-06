@@ -295,19 +295,35 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionProcessMailReminder(\DateTimeInterface $dateTime, $reminderInSeconds)
-    {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($dateTime, $reminderInSeconds) {
-            $query->andWith(
-                'process.Datum',
-                '=',
-                $dateTime->format('Y-m-d')
-            );
-            $query->andWith(
-                'process.Uhrzeit',
-                '=',
-                $dateTime->modify('+ ' . $reminderInSeconds . ' Seconds')->format('H:i')
-            );
+    public function addConditionProcessMailReminder(
+        \DateTimeInterface $now, 
+        \DateTimeInterface $lastRun, 
+        $reminderInSeconds
+    ){
+        $this->query
+            ->where(function (\Solution10\SQL\ConditionBuilder $query) use ($now, $lastRun, $reminderInSeconds) {
+                $query
+                    ->andWith(
+                        self::expression(
+                            'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)'
+                        ),
+                        '>',
+                        $lastRun->format('Y-m-d H:i:s')
+                    )
+                    ->andWith(
+                        self::expression(
+                            'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)'
+                        ),
+                        '>',
+                        $now->format('Y-m-d H:i:s')
+                    )
+                    ->andWith(
+                        self::expression(
+                            'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)'
+                        ),
+                        '<',
+                        $now->modify('+ ' . $reminderInSeconds . ' Seconds')->format('Y-m-d H:i:s')
+                    );
         });
         $this->query->orderBy('appointments__0__date', 'ASC');
         return $this;
