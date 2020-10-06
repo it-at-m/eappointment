@@ -1,3 +1,7 @@
+## v2.23.06
+
+* #44011 Bugfix: Erinnerungsmails Datumsformate sind nun in Deutsch und die Liste der zu versendenen Mails werden ab dem neuen Configwert "status__mailReminderLastRun" berechnet, der nach der Erstellung der Liste aktualisiert wird
+
 ## v2.23.05
 
 * #43763 Bugfix: Für Erinnerungs-SMS wird nicht mehr der Text für Bestätigungen verwendet.
