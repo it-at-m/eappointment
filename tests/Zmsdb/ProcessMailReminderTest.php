@@ -15,7 +15,8 @@ class ProcessMailReminderTest extends Base
     {
         $query = new Query();
         $now = new \DateTimeImmutable("2016-04-01 9:55");
-        $processList = $query->readEmailReminderProcessListByInterval($now, 7200, 10, 2);
+        $lastRun = new \DateTimeImmutable("2016-04-01 9:50");
+        $processList = $query->readEmailReminderProcessListByInterval($now, $lastRun, 7200, 10, 2);
         $this->assertEquals(4, $processList->count());
         $this->assertEquals(
             '2016-04-01 11:55',
