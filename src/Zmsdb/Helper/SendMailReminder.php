@@ -10,7 +10,7 @@ class SendMailReminder
 
     protected $verbose = false;
 
-    public function __construct($hours = 2, $verbose = false, \DateTimeInterface $now)
+    public function __construct(\DateTimeInterface $now, $hours = 2, $verbose = false)
     {
         $this->dateTime = $now;
         $reminderInSeconds = (60 * 60) * $hours;
