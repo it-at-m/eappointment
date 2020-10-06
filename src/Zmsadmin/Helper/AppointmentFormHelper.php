@@ -33,6 +33,7 @@ class AppointmentFormHelper
             $slotType,
             $slotsRequired
         );
+        $freeProcessList = ($freeProcessList) ? $freeProcessList->withoutExpiredAppointmentDate(\App::$now) : null;
         $freeProcessList = static::getFreeProcessListWithSelectedProcess(
             $validator,
             $scopeList,
