@@ -3,6 +3,7 @@ DIR=$(dirname ${BASH_SOURCE[0]})
 BIN=$DIR/../vendor/bin
 API=$DIR/../bin/api
 EXPORT=$DIR/../data/
+LANG=de_DE.UTF-8
 set -a
 [ -z "$ZMS_ENV" ] && [ -e /etc/sysconfig/zms ] && source /etc/sysconfig/zms
 set +a
