@@ -296,10 +296,10 @@ class Process extends Base implements MappingInterface
     }
 
     public function addConditionProcessMailReminder(
-        \DateTimeInterface $now, 
-        \DateTimeInterface $lastRun, 
+        \DateTimeInterface $now,
+        \DateTimeInterface $lastRun,
         $reminderInSeconds
-    ){
+    ) {
         $this->query
             ->where(function (\Solution10\SQL\ConditionBuilder $query) use ($now, $lastRun, $reminderInSeconds) {
                 $query
@@ -324,7 +324,7 @@ class Process extends Base implements MappingInterface
                         '<',
                         $now->modify('+ ' . $reminderInSeconds . ' Seconds')->format('Y-m-d H:i:s')
                     );
-        });
+            });
         $this->query->orderBy('appointments__0__date', 'ASC');
         return $this;
     }
