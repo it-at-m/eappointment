@@ -27,9 +27,7 @@ class DateTime extends \DateTimeImmutable
 
     public function getWeekOfMonth()
     {
-        $dayOfMonth = $this->format('j');
-        $weekOfMonth = ceil($dayOfMonth / 7);
-        return $weekOfMonth;
+        return ceil(($this->format('d') - $this->format('w') - 1) / 7) + 1;
     }
 
     public function isWeekOfMonth($number)
