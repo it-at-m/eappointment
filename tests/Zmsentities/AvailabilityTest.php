@@ -633,6 +633,50 @@ class AvailabilityTest extends EntityCommonTests
         );
     }
 
+    public function testX2Week()
+    {
+        $entity = new $this->entityclass();
+        $time = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $entity['startDate'] = $time->getTimestamp();
+        $entity['startTime'] = $time->format('H:i');
+        $entity['endDate'] = $time->modify("+2month")
+            ->getTimestamp();
+        $entity['endTime'] = $time->modify("+2month 17:10:00")
+            ->format('H:i');
+        $entity['weekday']['wednesday'] = 1;
+        $entity['repeat']['afterWeeks'] = 0;
+        $entity['repeat']['weekOfMonth'] = 2;
+        $entity['scope'] = new \BO\Zmsentities\Scope([
+            'dayoff' => new \BO\Zmsentities\Collection\DayoffList(),
+        ]);
+
+        $this->assertTrue(
+            $entity->hasWeek(new \DateTimeImmutable('2016-04-04 11:55:00')),
+            'This day, Monday 4.4.2016, is in second week of month and should be valid'
+        );
+        $this->assertFalse(
+            $entity->hasWeek($time),
+            'This day, Friday 1.4.2016, is in first week of month and should be unvalid'
+        );
+        $this->assertFalse(
+            $entity->hasWeek(new \DateTimeImmutable('2016-05-02 11:55:00')),
+            'This day, Monday 2.5.2016, is in first week of month and should be unvalid'
+        );
+        $this->assertTrue(
+            $entity->hasWeek(new \DateTimeImmutable('2016-05-09 11:55:00')),
+            'This day, Monday 9.5.2016, is in second week of month and should be valid'
+        );
+        $this->assertFalse(
+            $entity->hasWeekDay($time),
+            'This day, Monday 4.4.2016, is not booked weekday'
+        );
+        $this->assertTrue(
+            $entity->hasWeekDay(new \DateTimeImmutable('2016-05-11 11:55:00')),
+            'This day, Wednesday 11.5.2016, is a valid booked weekday'
+        );
+    }
+
     public function testWithScope()
     {
         $entity = (new $this->entityclass())->getExample();
