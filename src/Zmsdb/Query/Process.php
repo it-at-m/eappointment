@@ -326,8 +326,13 @@ class Process extends Base implements MappingInterface
                     )
                     ->andWith(
                         'process.EMail',
-                        '!=',
+                        '<>',
                         ""
+                    )
+                    ->andWith(
+                        'process.EMailverschickt', 
+                        '=', 
+                        0
                     );
             });
         $this->query->orderBy('appointments__0__date', 'ASC');
