@@ -330,8 +330,8 @@ class Process extends Base implements MappingInterface
                         ""
                     )
                     ->andWith(
-                        'process.EMailverschickt', 
-                        '=', 
+                        'process.EMailverschickt',
+                        '=',
                         0
                     );
             });
