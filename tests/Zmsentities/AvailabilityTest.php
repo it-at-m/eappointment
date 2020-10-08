@@ -67,13 +67,20 @@ class AvailabilityTest extends EntityCommonTests
             'Availability should not be valid in the first week afterwards if repeating is set to every 2 weeks'
         );
         $entity['repeat']['weekOfMonth'] = 2;
+        $this->assertEquals(
+            $entity['repeat']['weekOfMonth'], 
+            \BO\Zmsentities\Helper\DateTime::create($time->modify('+1week'))->getWeekOfMonth()
+        );
+
         $this->assertTrue(
             $entity->hasDate($time->modify('+1week'), $now),
             'Availability should be valid in the second week of the month'
         );
+
+
         $this->assertFalse(
             $entity->hasDate($time->modify('+3week'), $now),
-            'Availability should be valid in the third week of the month'
+            'Availability should be not valid in the fourth week of the month'
         );
 
         $entity['startDate'] = $time->modify('+1day')
@@ -615,9 +622,9 @@ class AvailabilityTest extends EntityCommonTests
             $entity->hasWeek(new \DateTimeImmutable('2016-04-04 11:55:00')),
             'This day, Monday 4.4.2016, is in second week of month and should be unvalid'
         );
-        $this->assertTrue(
+        $this->assertFalse(
             $entity->hasWeek(new \DateTimeImmutable('2016-05-02 11:55:00')),
-            'This day, Monday 2.5.2016, is in first week of month and should be valid'
+            'This day, Monday 2.5.2016, is in second week of month and should be unvalid'
         );
         $this->assertFalse(
             $entity->hasWeek(new \DateTimeImmutable('2016-05-09 11:55:00')),
@@ -659,13 +666,13 @@ class AvailabilityTest extends EntityCommonTests
             $entity->hasWeek($time),
             'This day, Friday 1.4.2016, is in first week of month and should be unvalid'
         );
-        $this->assertFalse(
-            $entity->hasWeek(new \DateTimeImmutable('2016-05-02 11:55:00')),
-            'This day, Monday 2.5.2016, is in first week of month and should be unvalid'
-        );
         $this->assertTrue(
+            $entity->hasWeek(new \DateTimeImmutable('2016-05-02 11:55:00')),
+            'This day, Monday 2.5.2016, is in second week of month and should be valid'
+        );
+        $this->assertFalse(
             $entity->hasWeek(new \DateTimeImmutable('2016-05-09 11:55:00')),
-            'This day, Monday 9.5.2016, is in second week of month and should be valid'
+            'This day, Monday 9.5.2016, is in third week of month and should be unvalid'
         );
         $this->assertFalse(
             $entity->hasWeekDay($time),
