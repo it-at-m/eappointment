@@ -23,7 +23,10 @@ class BAllTest extends Base
             $input->addProvider('dldb', $providerId);
             $entity = (new Query())->readResolvedEntity($input, $now);
             $this->assertEquals(0, count($entity['freeProcesses']));
-            //var_dump("$entity");
+            if ($providerId == 324433) {
+                var_dump($entity->days);
+            }
+           
             $this->writeTestExport($entity, 'provider' . $providerId . '_daylist.php');
             $dayList  = include($this->getFixturePath('provider' . $providerId . '_daylist.php'));
             foreach ($entity->days as $day) {
