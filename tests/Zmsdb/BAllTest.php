@@ -27,6 +27,7 @@ class BAllTest extends Base
             $this->writeTestExport($entity, 'provider' . $providerId . '_daylist.php');
             $dayList  = include($this->getFixturePath('provider' . $providerId . '_daylist.php'));
             if ($providerId == 324433) {
+                var_dump($entity->days);
                 var_dump($dayList);
                 var_dump('BALL_EXPORT: ' . getenv("BALL_EXPORT"));
             }
