@@ -23,14 +23,18 @@ class BAllTest extends Base
             $input->addProvider('dldb', $providerId);
             $entity = (new Query())->readResolvedEntity($input, $now);
             $this->assertEquals(0, count($entity['freeProcesses']));
-            if ($providerId == 324433) {
-                var_dump($entity->days);
-            }
            
             $this->writeTestExport($entity, 'provider' . $providerId . '_daylist.php');
             $dayList  = include($this->getFixturePath('provider' . $providerId . '_daylist.php'));
+            if ($providerId == 324433) {
+                var_dump($dayList);
+                var_dump('BALL_EXPORT: ' . getenv("BALL_EXPORT"));
+            }
             foreach ($entity->days as $day) {
                 $key = $day->getDayHash();
+                if ($providerId == 324433) {
+                    var_dump($key);
+                }
                 $this->assertArrayHasKey($key, $dayList, "Day $key missing for provider=$providerId");
                 $testDay = new \BO\Zmsentities\Day($dayList[$key]);
                 $message = "Day $key has different value on provider=$providerId for ";
