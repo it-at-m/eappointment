@@ -60,8 +60,9 @@ function validateEndTime(today, yesterday, selectedDate, data) {
     const dayMinutesStart = (parseInt(startHour) * 60) + parseInt(startMinute);
     const dayMinutesEnd = (parseInt(endHour) * 60) + parseInt(endMinute);
     const startTimestamp = startTime.set({ h: startHour, m: startMinute }).unix();
-    const endDateTime = endTime.set({ h: endHour, m: endMinute });
-    const endTimestamp = endTime.set({ h: endHour, m: endMinute }).unix();
+    const endDateTime = endTime.clone().set({ h: endHour, m: endMinute });
+    const endTimestamp = endTime.clone().set({ h: endHour, m: endMinute }).unix();
+    const isOrigin = (data.kind && 'origin' == data.kind)
 
     if (dayMinutesEnd <= dayMinutesStart) {
         errorList.push({
@@ -75,15 +76,14 @@ function validateEndTime(today, yesterday, selectedDate, data) {
         })
     }
 
-    if (selectedDate.unix() > today.unix() && endTime.isBefore(selectedDate.startOf('day'), 'day')) {
+    if (! isOrigin && selectedDate.unix() > today.unix() && endTime.isBefore(selectedDate.startOf('day'), 'day')) {
         errorList.push({
             type: 'endTimeFuture',
             message: `Das Enddatum der Öffnungszeit muss nach dem ${yesterday.format('DD.MM.YYYY')} liegen.`
         })
     }
 
-    console.log(data.kind)
-    if (endTimestamp < today.unix() && data.kind && 'origin' != data.kind) {
+    if (! isOrigin && endTimestamp < today.unix()) {
         errorList.push({
             type: 'endTimePast', 
             message: 'Öffnungszeiten in der Vergangenheit lassen sich nicht bearbeiten '
