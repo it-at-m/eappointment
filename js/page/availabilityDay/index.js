@@ -259,7 +259,9 @@ class AvailabilityPage extends Component {
                 selectedAvailability: exclusionAvailability, 
                 stateChanged: true 
             }
-        ))
+        ), () => {
+            this.getConflictList()
+        })
     }
 
     onEditAvailabilityInFuture(availability) {
@@ -297,7 +299,9 @@ class AvailabilityPage extends Component {
                 selectedAvailability: futureAvailability, 
                 stateChanged: true 
             }
-        ))
+        ), () => {
+            this.getConflictList()
+        })
     }
 
     onNewAvailability() {

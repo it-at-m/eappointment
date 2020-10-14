@@ -82,7 +82,8 @@ function validateEndTime(today, yesterday, selectedDate, data) {
         })
     }
 
-    if (endTimestamp < today.unix()) {
+    console.log(data.kind)
+    if (endTimestamp < today.unix() && data.kind && 'origin' != data.kind) {
         errorList.push({
             type: 'endTimePast', 
             message: 'Öffnungszeiten in der Vergangenheit lassen sich nicht bearbeiten '
