@@ -187,7 +187,8 @@ class AvailabilityPage extends Component {
             mergeAvailabilityListIntoState(this.state, [copyAvailability]),
             { selectedAvailability: copyAvailability, stateChanged: true }
         ), () => {
-            this.getConflictList()
+            this.getConflictList(),
+            this.getValidationList()
         })
     }
 
@@ -260,7 +261,8 @@ class AvailabilityPage extends Component {
                 stateChanged: true 
             }
         ), () => {
-            this.getConflictList()
+            this.getConflictList(),
+            this.getValidationList()
         })
     }
 
@@ -300,7 +302,8 @@ class AvailabilityPage extends Component {
                 stateChanged: true 
             }
         ), () => {
-            this.getConflictList()
+            this.getConflictList(),
+            this.getValidationList()
         })
     }
 
