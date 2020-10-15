@@ -149,6 +149,8 @@ class AvailabilityPage extends Component {
             selectedTab: this.state.selectedTab
         }), () => {
             this.refreshData()
+            this.getConflictList(),
+            this.getValidationList()
         })
     }
 
@@ -220,6 +222,7 @@ class AvailabilityPage extends Component {
         const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
         const yesterday = selectedDay.clone().subtract(1, 'days')
         const tomorrow = selectedDay.clone().add(1, 'days')
+
         let endDateTimestamp = (parseInt(yesterday.unix(), 10) < availability.startDate) ? 
             parseInt(selectedDay.unix(), 10) : 
             parseInt(yesterday.unix(), 10);
@@ -232,13 +235,18 @@ class AvailabilityPage extends Component {
             'origin'
         )
 
-        const exclusionAvailability = this.editExclusionAvailability(
-            Object.assign({}, availability),
-            parseInt(selectedDay.unix(), 10), 
-            parseInt(selectedDay.unix(), 10),
-            `Ausnahme ${formatTimestampDate(selectedDay)} (${availability.id})`,
-            'exclusion'
-        )
+        let exclusionAvailability = originAvailability;
+        if (originAvailability.startDate < selectedDay.unix()) {
+            exclusionAvailability = this.editExclusionAvailability(
+                Object.assign({}, availability),
+                parseInt(selectedDay.unix(), 10), 
+                parseInt(selectedDay.unix(), 10),
+                `Ausnahme ${formatTimestampDate(selectedDay)} (${availability.id})`,
+                'exclusion'
+            )
+        }
+        
+
         let futureAvailability = null;
         if (parseInt(tomorrow.unix(), 10) < availability.endDate) {
             futureAvailability = this.editExclusionAvailability(
@@ -507,7 +515,7 @@ class AvailabilityPage extends Component {
         const exclusionAvailability = (exclusionAvailabilityFromState) ? Object.assign({}, exclusionAvailabilityFromState, {
             startDate: (startDate < exclusionAvailabilityFromState.endDate) ? 
                 parseInt(startDate, 10) : 
-                exclusionAvailabilityFromState.endDate,
+                exclusionAvailabilityFromState.endDate
         }) : data;
 
         const originAvailability = Object.assign({}, originAvailabilityFromState, {

@@ -32,8 +32,9 @@ function validateStartTime(today, tomorrow, selectedDate, data) {
     const endHour = data.endTime.split(':')[0]
     const startMinute = data.startTime.split(':')[1]
     const endMinute = data.endTime.split(':')[1]
+    const isFuture = (data.kind && 'future' == data.kind)
 
-    if (selectedDate.unix() > today.unix() && startTime.isAfter(selectedDate.startOf('day'), 'day')) {
+    if (! isFuture && selectedDate.unix() > today.unix() && startTime.isAfter(selectedDate.startOf('day'), 'day')) {
         errorList.push({
             type: 'startTimeFuture', 
             message: `Das Startdatum der Öffnungszeit muss vor dem ${tomorrow.format('DD.MM.YYYY')} liegen.`
