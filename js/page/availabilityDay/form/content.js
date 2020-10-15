@@ -15,7 +15,6 @@ const FormContent = (props) => {
         conflictList,
         onChange, 
         today, 
-        selectedDay, 
         setErrorRef
     } = props;
     
@@ -105,7 +104,6 @@ const FormContent = (props) => {
                                     "availabilitylist": availabilityList,
                                     "availability": getDataValuesFromForm(data, data.scope),
                                     "today": today,
-                                    "selectedday": selectedDay,
                                     "disabled": calenderDisabled
                                 }} name="startDate" {...{ onChange }} />
                             </Controls>
@@ -115,7 +113,6 @@ const FormContent = (props) => {
                                     "availabilitylist": availabilityList,
                                     "availability": getDataValuesFromForm(data, data.scope),
                                     "today": today,
-                                    "selectedday": selectedDay,
                                     "disabled": calenderDisabled
                                 }} name="endDate" {...{ onChange }} />
                             </Controls>
@@ -216,7 +213,6 @@ FormContent.propTypes = {
     errorList: PropTypes.object,
     conflictList: PropTypes.object,
     today: PropTypes.number,
-    selectedDay: PropTypes.number,
     data: PropTypes.object,
     errors: PropTypes.object,
     onChange: PropTypes.func,

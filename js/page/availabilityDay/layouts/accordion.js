@@ -118,7 +118,7 @@ class Accordion extends Component
                                 selectedAvailability={this.props.data}
                                 availabilityList={this.props.availabilities}
                                 today={this.props.today}
-                                timestamp={this.props.timestamp}
+                                selectedDate={moment(this.props.timestamp, 'X').startOf('day').unix()}
                                 handleChange={this.props.handleChange}
                                 setErrorRef={this.props.setErrorRef}
                                 onCopy={onCopy}

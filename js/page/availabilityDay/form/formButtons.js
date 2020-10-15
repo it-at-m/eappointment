@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const FormButtons = (props) => {
-    const { data, onCopy, onExclusion, onEditInFuture, onDelete } = props
+    const { data, onCopy, onExclusion, onEditInFuture, onDelete, selectedDate } = props
     const disabled = (data && (! data.id || data.__modified === true));
     return (
         <div>
@@ -18,7 +18,7 @@ const FormButtons = (props) => {
                     className="button button--diamond" disabled={disabled}>Ausnahme</button>
                 <button onClick={onEditInFuture}
                     title="Öffnungszeit ab diesem Tag ändern"
-                    className="button button--diamond" disabled={disabled}>Ab diesem Tag ändern</button> 
+                    className="button button--diamond" disabled={disabled || data.startDate == selectedDate}>Ab diesem Tag ändern</button> 
             </div>
         </div>
     )
@@ -29,7 +29,8 @@ FormButtons.propTypes = {
     onCopy: PropTypes.func,
     onExclusion: PropTypes.func,
     onEditInFuture: PropTypes.func,
-    onDelete: PropTypes.func
+    onDelete: PropTypes.func,
+    selectedDate: PropTypes.number
 }
 
 export default FormButtons

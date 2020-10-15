@@ -42,7 +42,6 @@ class AvailabilityForm extends Component {
             <div>
                 {<FormContent 
                     today = {this.props.today} 
-                    selectedDay={this.props.timestamp}
                     availabilityList={this.props.availabilityList}
                     setErrorRef={this.props.setErrorRef}
                     errorList={this.props.errorList}
@@ -54,6 +53,7 @@ class AvailabilityForm extends Component {
                     onExclusion={this.props.onExclusion}
                     onEditInFuture={this.props.onEditInFuture} 
                     onDelete={this.props.onDelete}
+                    selectedDate={this.props.selectedDate}
                 />}
             </div>
         )   
@@ -74,7 +74,7 @@ AvailabilityForm.propTypes = {
     conflictList: PropTypes.object,
     data: PropTypes.object,
     today: PropTypes.number,
-    timestamp: PropTypes.number,
+    selectedDate: PropTypes.number,
     handleChange: PropTypes.func,
     onCopy: PropTypes.func,
     onExclusion: PropTypes.func,
