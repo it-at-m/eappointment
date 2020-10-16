@@ -32,6 +32,7 @@ const TableBodyLayout = (props) => {
     )
 }
 
+/* eslint-disable complexity */
 const renderTable = (onDelete, onSelect, onAbort, availabilities, data) => {
     if (availabilities.length > 0) {
         return availabilities.map((availability, key) => {
@@ -65,20 +66,25 @@ const renderTable = (onDelete, onSelect, onAbort, availabilities, data) => {
                 onAbort()
             }
 
-            const availabilityWeekDayList = Object.keys(availability.weekday).filter(key => parseInt(availability.weekday[key], 10) > 0)
+            const availabilityWeekDayList = Object.keys(availability.weekday).
+                filter(key => parseInt(availability.weekday[key], 10) > 0)
             
-            const availabilityWeekDay = weekDayList.filter(element => availabilityWeekDayList.includes(element.value)).map(item => item.label).join(', ')
+            const availabilityWeekDay = weekDayList.
+                filter(element => availabilityWeekDayList.includes(element.value)).map(item => item.label).join(', ')
 
-            const availabilityRepeat = availabilitySeries.find(element => element.value == repeat(availability.repeat)).name
+            const availabilityRepeat = availabilitySeries.
+                find(element => element.value == repeat(availability.repeat)).name
 
-            const availabilityType = availabilityTypes.find(element => element.value == availability.type)
-            const disabled = ((availability.id && availability.__modified) || availability.tempId);
-            const isSelected = (
-                data && (
-                    (data.id && availability.id == data.id) || 
-                    (data.tempId && availability.tempId == data.tempId)
-                )
-            )
+            const availabilityType = availabilityTypes.
+                find(element => element.value == availability.type)
+
+            const disabled = ((availability.id && availability.__modified) || availability.tempId);
+
+            const isSelected = (data && (
+                (data.id && availability.id == data.id) || 
+                (data.tempId && availability.tempId == data.tempId))
+            );
+
             return (
                 <tr key={key} style={isSelected ? {backgroundColor: '#f9f9f9'} : null}>
                     <td className="center" style={{"whiteSpace": "nowrap"}}>
@@ -142,6 +148,7 @@ const renderTable = (onDelete, onSelect, onAbort, availabilities, data) => {
 
 TableBodyLayout.propTypes = {
     availabilities: PropTypes.array,
+    data: PropTypes.object,
     onSelect: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     onAbort: PropTypes.func.isRequired
