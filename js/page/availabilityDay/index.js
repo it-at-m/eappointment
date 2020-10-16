@@ -165,8 +165,9 @@ class AvailabilityPage extends Component {
                 this.setState(Object.assign({}, deleteAvailabilityInState(this.state, availability), {
                     selectedAvailability: null
                 }), () => {
-                    //after removing the deleted entry, sav the updated list again.
-                    this.onSaveUpdates()
+                    this.refreshData()
+                    this.getConflictList(),
+                    this.getValidationList()
                 })
             }).fail(err => {
                 console.log('delete error', err)
