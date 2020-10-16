@@ -27,9 +27,16 @@ class DateTime extends \DateTimeImmutable
 
     public function getWeekOfMonth()
     {
+        // Todo: This is correct way of calculating week of month by date, but zms1 has 1-7 = 1, 8-14 = 2,...
+        /*
         $week = $this->format('W');
         $firstWeekOfMonth = $this->modify('first day of this month')->format('W');
         return 1 + ($week < $firstWeekOfMonth ? $week : $week - $firstWeekOfMonth);
+        */
+
+        $dayOfMonth = $this->format('j');
+        $weekOfMonth = ceil($dayOfMonth / 7);
+        return $weekOfMonth;
     }
 
     public function isWeekOfMonth($number)
