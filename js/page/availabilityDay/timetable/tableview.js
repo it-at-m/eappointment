@@ -38,6 +38,7 @@ TableView.defaultProps = {
 TableView.propTypes = {
     timestamp: PropTypes.number,
     links: PropTypes.object,
+    data: PropTypes.object,
     availabilities: PropTypes.array,
     onNewAvailability: PropTypes.func,
     onDelete: PropTypes.func.isRequired,
