@@ -5,7 +5,7 @@ import {weekDayList, availabilitySeries, availabilityTypes, repeat} from '../hel
 moment.locale('de')
 
 const TableBodyLayout = (props) => {
-    const { onDelete, onSelect, onAbort, availabilities } = props;
+    const { onDelete, onSelect, onAbort, availabilities, data } = props;
     return (
         <div className="table-responsive-wrapper"> 
             <table className="table--base">
@@ -25,14 +25,14 @@ const TableBodyLayout = (props) => {
                     </tr>
                 </thead>
                 <tbody>
-                {renderTable(onDelete, onSelect, onAbort, availabilities)}
+                {renderTable(onDelete, onSelect, onAbort, availabilities, data)}
                 </tbody>
             </table>
         </div>
     )
 }
 
-const renderTable = (onDelete, onSelect, onAbort, availabilities) => {
+const renderTable = (onDelete, onSelect, onAbort, availabilities, data) => {
     if (availabilities.length > 0) {
         return availabilities.map((availability, key) => {
 
@@ -72,17 +72,20 @@ const renderTable = (onDelete, onSelect, onAbort, availabilities) => {
             const availabilityRepeat = availabilitySeries.find(element => element.value == repeat(availability.repeat)).name
 
             const availabilityType = availabilityTypes.find(element => element.value == availability.type)
-            const disabled = (availability.id && availability.__modified);
+            const disabled = ((availability.id && availability.__modified) || availability.tempId);
+            const isSelected = (
+                data && (
+                    (data.id && availability.id == data.id) || 
+                    (data.tempId && availability.tempId == data.tempId)
+                )
+            )
             return (
-                <tr key={key}>
+                <tr key={key} style={isSelected ? {backgroundColor: '#f9f9f9'} : null}>
                     <td className="center" style={{"whiteSpace": "nowrap"}}>
                         <span style={{ marginRight: "5px" }}>
-                            { disabled ? 
-                            <i className="fas fa-pencil-alt" aria-hidden="true" title={titleDisabled}></i> : 
                             <a href="#" className="icon" title={titleEdit} onClick={onClickEdit}>
                                 <i className="fas fa-pencil-alt" aria-hidden="true"></i>
                             </a>
-                            }
                         </span>
                         <span>
                             { disabled ?

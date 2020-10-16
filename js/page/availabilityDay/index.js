@@ -127,10 +127,10 @@ class AvailabilityPage extends Component {
             data: JSON.stringify(sendData)
         }).done((success) => {
             console.log('save success', success)
+            this.refreshData()
             this.setState({
                 lastSave: new Date().getTime(),
             }, () => {
-                this.refreshData()
                 this.successElement.scrollIntoView();
             })
         }).fail((err) => {
@@ -412,6 +412,7 @@ class AvailabilityPage extends Component {
             timestamp={this.props.timestamp}
             conflicts={this.state.conflicts}
             availabilities={this.state.availabilitylist}
+            data={this.state.selectedAvailability}
             availabilityListSlices={this.state.availabilitylistslices}
             maxWorkstationCount={this.props.maxworkstationcount}
             links={this.props.links}
