@@ -15,7 +15,7 @@ class ClusterHelper
 
     public function __construct(\BO\Zmsentities\Workstation $workstation)
     {
-        self::$workstation = $workstation;
+        static::$workstation = $workstation;
         static::$cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
     }
 
