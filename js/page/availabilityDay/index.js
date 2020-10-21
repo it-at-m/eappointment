@@ -248,7 +248,7 @@ class AvailabilityPage extends Component {
         }
         
 
-        let futureAvailability = null;
+        let futureAvailability = originAvailability;
         if (parseInt(tomorrow.unix(), 10) < availability.endDate) {
             futureAvailability = this.editExclusionAvailability(
                 Object.assign({}, availability),
@@ -290,8 +290,8 @@ class AvailabilityPage extends Component {
             'origin'
         )
 
-        let futureAvailability = null;
-        if (parseInt(selectedDay.unix(), 10) < availability.endDate) {
+        let futureAvailability = originAvailability;
+        if (parseInt(selectedDay.unix(), 10) <= availability.endDate) {
             futureAvailability = this.editExclusionAvailability(
                 Object.assign({}, availability),
                 parseInt(selectedDay.unix(), 10),
