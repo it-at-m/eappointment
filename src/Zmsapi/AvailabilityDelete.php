@@ -22,8 +22,12 @@ class AvailabilityDelete extends BaseController
     ) {
         (new Helper\User($request))->checkRights();
         $query = new Query();
-        $entity = $query->readEntity($args['id']);
-        $query->deleteEntity($args['id']);
+        $entity = $query->readEntity($args['id'], 2);
+        if ($entity->hasId() && $query->deleteEntity($entity->getId())) {
+            (new \BO\Zmsdb\Slot)->writeByAvailability($entity, \App::$now);
+            (new \BO\Zmsdb\Helper\CalculateSlots(\App::DEBUG))->writePostProcessingByScope($entity->scope, \App::$now);
+            \BO\Zmsdb\Connection\Select::writeCommit();
+        }
 
         $message = Response\Message::create($request);
         $message->data = $entity;

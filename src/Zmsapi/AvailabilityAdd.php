@@ -53,6 +53,7 @@ class AvailabilityAdd extends BaseController
             (new \BO\Zmsdb\Slot)->writeByAvailability($newEntity, \App::$now);
             (new \BO\Zmsdb\Helper\CalculateSlots(\App::DEBUG))
                 ->writePostProcessingByScope($newEntity->scope, \App::$now);
+            \BO\Zmsdb\Connection\Select::writeCommit();
             $collection[] = $newEntity;
         }
 
