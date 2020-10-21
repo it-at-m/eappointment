@@ -2,16 +2,22 @@
 
 namespace BO\Zmsapi\Tests;
 
+use \BO\Zmsentities\Availability as Entity;
+
+use \BO\Zmsdb\Availability as Query;
+
 class AvailabilityUpdateTest extends Base
 {
     protected $classname = "AvailabilityUpdate";
 
     public function testRendering()
     {
+        $input = (new Entity)->createExample();
+        $entity = (new Query())->writeEntity($input);
         $this->setWorkstation();
-        $response = $this->render(["id"=> 21202], [
+        $response = $this->render(["id"=> $entity->getId()], [
             '__body' => '{
-                  "id": 21202,
+                  "id": '. $entity->getId() .',
                   "description": "",
                   "scope": {
                       "id": 312

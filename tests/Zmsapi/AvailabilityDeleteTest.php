@@ -2,14 +2,20 @@
 
 namespace BO\Zmsapi\Tests;
 
+use \BO\Zmsentities\Availability as Entity;
+
+use \BO\Zmsdb\Availability as Query;
+
 class AvailabilityDeleteTest extends Base
 {
     protected $classname = "AvailabilityDelete";
 
     public function testRendering()
     {
+        $input = (new Entity)->createExample();
+        $entity = (new Query())->writeEntity($input);
         $this->setWorkstation();
-        $response = $this->render(['id' => 21202], [], []); //Test Availability
+        $response = $this->render(['id' => $entity->getId()], [], []); //Test Availability
         $this->assertContains('startDate', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
