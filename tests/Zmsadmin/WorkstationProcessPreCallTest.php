@@ -99,4 +99,50 @@ class WorkstationProcessPreCallTest extends Base
         $this->assertNotContains('client-precall_button-success', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testRenderingAlreadyCalledProcess()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_with_process.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/100044/',
+                    'response' => $this->readFixture("GET_process_100044_57c2.json")
+                ]
+            ]
+        );
+        $response = $this->render(['id' => 100044], [], []);
+        $this->assertContains('Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen.', (string)$response->getBody());
+        $this->assertContains('Kundeninformationen', (string)$response->getBody());
+        $this->assertContains('client-precall_button-success', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testRenderingAlreadyCalledProcessRedirect()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_with_process_called.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/100044/',
+                    'response' => $this->readFixture("GET_process_100044_57c2.json")
+                ]
+            ]
+        );
+        $response = $this->render(['id' => 100044], [], []);
+        $this->assertRedirect($response, '/workstation/process/82252/called/?error=has_called_process');
+        $this->assertEquals(302, $response->getStatusCode());
+    }
 }
