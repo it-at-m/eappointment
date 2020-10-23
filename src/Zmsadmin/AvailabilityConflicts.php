@@ -40,16 +40,14 @@ class AvailabilityConflicts extends BaseController
         $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);
         $conflictedList = [];
 
-        $selectedDateTime = (new \DateTimeImmutable($input['selectedDate']));
+        $selectedDateTime = (new \DateTimeImmutable($input['selectedDate']))->modify(\App::$now->format('H:i:s'));
         $selectedAvailability = new Availability($input['selectedAvailability']);
-        $startDateTime = ($selectedAvailability->isOpened($selectedDateTime)) ?
-            $selectedAvailability->getStartDateTime() :
-            $selectedDateTime;
+        $startDateTime = ($selectedAvailability->getStartDateTime() >= \App::$now) ?
+            $selectedAvailability->getStartDateTime() : $selectedDateTime;
         $endDateTime = ($input['selectedAvailability']) ?
-            $selectedAvailability->getEndDateTime() :
-            $selectedDateTime;
+            $selectedAvailability->getEndDateTime() : $selectedDateTime;
 
-        $availabilityList = $availabilityList->sortByCustomKey('endTime');
+        $availabilityList = $availabilityList->sortByCustomStringKey('endTime');
         $conflictList = $availabilityList->getConflicts($startDateTime, $endDateTime);
 
         foreach ($conflictList as $conflict) {
