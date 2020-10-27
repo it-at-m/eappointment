@@ -14,6 +14,7 @@ class RequestRelation extends Base
             ->setResolveLevel(0)
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
+            ->addConditionBookable()
             ->addConditionProviderId($providerId)
             ->addConditionRequestId($requestId);
         return $this->fetchOne($query, new Entity());
@@ -26,6 +27,7 @@ class RequestRelation extends Base
             ->setResolveLevel(0)
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
+            ->addConditionBookable()
             ->addConditionSource($source);
         $statement = $this->fetchStatement($query);
         return $this->readList($statement);
@@ -39,6 +41,7 @@ class RequestRelation extends Base
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionRequestId($requestId)
+            ->addConditionBookable()
             ->addConditionSource($source);
         $statement = $this->fetchStatement($query);
         return $this->readList($statement);
@@ -52,6 +55,7 @@ class RequestRelation extends Base
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionProviderId($providerId)
+            ->addConditionBookable()
             ->addConditionSource($source);
         $statement = $this->fetchStatement($query);
         return $this->readList($statement);
@@ -99,16 +103,15 @@ class RequestRelation extends Base
             // Do not import locations without address
             if ($provider['address']['postal_code']) {
                 foreach ($provider['services'] as $reference) {
-                    if ($reference['appointment']['allowed']) {
-                        $query = new Query\RequestRelation(Query\Base::REPLACE);
-                        $query->addValues([
-                            'source' => $source,
-                            'provider__id' => $provider['id'],
-                            'request__id' => $reference['service'],
-                            'slots' => $reference['appointment']['slots']
-                        ]);
-                        $this->writeItem($query);
-                    }
+                    $query = new Query\RequestRelation(Query\Base::REPLACE);
+                    $query->addValues([
+                        'source' => $source,
+                        'provider__id' => $provider['id'],
+                        'request__id' => $reference['service'],
+                        'slots' => $reference['appointment']['slots'],
+                        'bookable' => ($reference['appointment']['allowed'] ? 1 : 0)
+                    ]);
+                    $this->writeItem($query);
                 }
             }
         }

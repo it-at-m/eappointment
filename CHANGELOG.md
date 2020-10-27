@@ -1,6 +1,7 @@
 ## v2.23.06
 
 * #44011, #45908 Bugfix: Erinnerungsmails Datumsformate sind nun in Deutsch und die Liste der zu versendenen Mails werden ab dem neuen Configwert "status__mailReminderLastRun" berechnet, der nach der Erstellung der Liste aktualisiert wird
+* #45305 In der Tabelle "request_provider" wird ein Feld "bookable" hinzugefügt, der DLDB-Import und die DB-Abfragen wurden angepasst
 
 ## v2.23.05
 
