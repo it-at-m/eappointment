@@ -4,6 +4,7 @@ namespace BO\Zmsdb\Cli;
 
 /**
  * @codeCoverageIgnore
+ * @SuppressWarnings(Short)
  */
 class Db
 {
