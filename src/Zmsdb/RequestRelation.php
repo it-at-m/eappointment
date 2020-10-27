@@ -96,6 +96,7 @@ class RequestRelation extends Base
     public function writeImportList($providerList, $source = 'dldb')
     {
         foreach ($providerList as $provider) {
+            // Do not import locations without address
             if ($provider['address']['postal_code']) {
                 foreach ($provider['services'] as $reference) {
                     if ($reference['appointment']['allowed']) {
