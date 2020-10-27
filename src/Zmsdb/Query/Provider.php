@@ -55,7 +55,10 @@ class Provider extends Base
         return $this;
     }
 
-    public function addConditionRequestCsv($requestIdCsv)
+    /**
+     * @todo find calls and implement "sourceName"-parameter to remove default value
+     */
+    public function addConditionRequestCsv($requestIdCsv, $sourceName = 'dldb')
     {
         $requestIdList = explode(',', $requestIdCsv);
         $this->leftJoin(
@@ -64,7 +67,11 @@ class Provider extends Base
             '=',
             'xprovider.provider__id'
         );
-        $this->query->where('xprovider.request__id', 'IN', $requestIdList);
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($requestIdList, $sourceName) {
+            $query->andWith('xprovider.request__id', 'IN', $requestIdList);
+            $query->andWith('xprovider.bookable', '=', 1);
+            $query->andWith('xprovider.source', '=', $sourceName);
+        });
     }
 
     public function postProcess($data)

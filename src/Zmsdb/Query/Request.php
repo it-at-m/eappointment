@@ -73,6 +73,7 @@ class Request extends Base
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($providerId, $source) {
             $query->andWith('xrequest.provider__id', '=', $providerId);
             $query->andWith('xrequest.source', '=', $source);
+            $query->andWith('xrequest.bookable', '=', 1);
         });
         return $this;
     }

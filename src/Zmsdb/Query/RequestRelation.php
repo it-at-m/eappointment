@@ -42,6 +42,12 @@ class RequestRelation extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionBookable()
+    {
+        $this->query->where(self::TABLE .'.bookable', '=', 1);
+        return $this;
+    }
+
     public function addConditionSource($sourceName)
     {
         $this->query->where(self::TABLE .'.source', '=', $sourceName);
