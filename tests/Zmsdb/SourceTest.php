@@ -43,7 +43,7 @@ class SourceTest extends Base
         $entity = (new Query())->readEntity('dldb', 1);
         $this->assertEquals(2531, $entity->getRequestRelationList()->count());
         $this->assertEquals(652, $entity->getRequestList()->count());
-        $this->assertEquals(308, $entity->getRequestRelationList()->getRequestList()->count());
+        $this->assertEquals(307, $entity->getRequestRelationList()->getRequestList()->count());
         $this->assertEquals(114, $entity->getRequestRelationList()->getProviderList()->count());
         $this->assertArrayHasKey('$ref', $entity->getRequestRelationList()->getFirst()->request);
     }
