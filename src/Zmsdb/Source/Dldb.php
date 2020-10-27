@@ -37,6 +37,7 @@ class Dldb extends \BO\Zmsdb\Base
     {
         $startTime = microtime(true);
         $requestQuery = (new \BO\Zmsdb\Request());
+        $requestQuery->writeDeleteListBySource('dldb');
         foreach (self::$repository->fromService()->fetchList() as $request) {
             $topic = self::$repository->fromTopic()->fetchId($request['relation']['root_topic']);
             $request['group'] = $topic['name'];
@@ -51,6 +52,7 @@ class Dldb extends \BO\Zmsdb\Base
     protected function writeProviderList()
     {
         $startTime = microtime(true);
+        (new \BO\Zmsdb\Provider())->writeDeleteListBySource('dldb');
         (new \BO\Zmsdb\Provider())->writeImportList(self::$repository->fromLocation()->fetchList());
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
@@ -61,6 +63,7 @@ class Dldb extends \BO\Zmsdb\Base
     protected function writeRequestRelationList()
     {
         $startTime = microtime(true);
+        (new \BO\Zmsdb\RequestRelation())->writeDeleteListBySource('dldb');
         (new \BO\Zmsdb\RequestRelation())->writeImportList(self::$repository->fromLocation()->fetchList());
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
