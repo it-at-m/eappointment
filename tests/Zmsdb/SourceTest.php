@@ -41,7 +41,7 @@ class SourceTest extends Base
     public function testWithRequestRelations()
     {
         $entity = (new Query())->readEntity('dldb', 1);
-        $this->assertEquals(2532, $entity->getRequestRelationList()->count());
+        $this->assertEquals(2531, $entity->getRequestRelationList()->count());
         $this->assertEquals(652, $entity->getRequestList()->count());
         $this->assertEquals(308, $entity->getRequestRelationList()->getRequestList()->count());
         $this->assertEquals(114, $entity->getRequestRelationList()->getProviderList()->count());
