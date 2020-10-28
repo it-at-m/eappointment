@@ -41,7 +41,7 @@ class WorkstationProcessPreCall extends BaseController
             }
         }
 
-        if ($workstation->process->getStatus() == 'called') {
+        if ('called' == $workstation->process->getStatus()) {
             return \BO\Slim\Render::redirect(
                 'workstationProcessCalled',
                 ['id' => $workstation->process->getId()],
