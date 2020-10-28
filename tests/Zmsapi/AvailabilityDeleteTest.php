@@ -23,7 +23,7 @@ class AvailabilityDeleteTest extends Base
     public function testHasProcessList()
     {
         $this->expectException('BO\Zmsapi\Exception\Availability\AvailabilityHasProcess');
-        $entity = (new Query())->readEntity(249661, 2);
+        $entity = (new Query())->readEntity(68997, 2);
         $this->setWorkstation();
         $this->render(['id' => $entity->getId()], [], []);
     }
