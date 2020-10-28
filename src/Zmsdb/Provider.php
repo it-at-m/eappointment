@@ -48,7 +48,7 @@ class Provider extends Base
             $query->addConditionIsAssigned($isAssigned);
         }
         if (null !== $requestIdCsv) {
-            $query->addConditionRequestCsv($requestIdCsv);
+            $query->addConditionRequestCsv($requestIdCsv, $source);
         }
         $providerList = $this->readCollection($query);
         return ($providerList->count()) ? $providerList->sortByCustomKey('id') : $providerList;
