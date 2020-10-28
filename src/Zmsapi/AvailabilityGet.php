@@ -22,7 +22,7 @@ class AvailabilityGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        //(new Helper\User($request))->checkRights();
+        (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $availability = (new Query())->readEntity($args['id'], $resolveReferences);
         if (! $availability->hasId()) {
