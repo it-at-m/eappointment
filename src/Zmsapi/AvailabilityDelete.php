@@ -30,7 +30,8 @@ class AvailabilityDelete extends BaseController
                 throw new Exception\Availability\AvailabilityHasProcess();
             }
             if ($query->deleteEntity($entity->getId())) {
-                (new \BO\Zmsdb\Helper\CalculateSlots(\App::DEBUG))->writePostProcessingByScope($entity->scope, \App::$now);
+                (new \BO\Zmsdb\Helper\CalculateSlots(\App::DEBUG))
+                    ->writePostProcessingByScope($entity->scope, \App::$now);
             }
         }
 
