@@ -6,5 +6,5 @@ class AvailabilityHasProcess extends \Exception
 {
     protected $code = 412;
 
-    protected $message = 'Diese Öffnungszeit kann nicht gelöscht werden, da dieser noch Vorgänge zugeordnet sind. Dies können gebuchte Termine oder Reservierungen sein.';
+    protected $message = 'Dieser Öffnungszeit sind noch Termine oder Reservierungen zugeordnet.';
 }
