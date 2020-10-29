@@ -170,23 +170,7 @@ class AvailabilityPage extends Component {
                     this.getValidationList()
                 })
             }).fail(err => {
-                if (err.status === 412) {
-                    const list = []
-                    let errorList = {
-                        id: id,
-                        itemList: []
-                    }
-                    errorList.itemList.push([{type: 'exception', message: err.responseJSON.meta.message}]) 
-                    list.push(errorList)
-                    this.setState({
-                        selectedAvailability: availability,
-                        stateChanged: false
-                    }, () => {
-                        this.getValidationList(list)
-                    })
-                } else {
-                    console.log('delete error', err)
-                }
+                console.log('delete error', err)
             })
         }
     }
