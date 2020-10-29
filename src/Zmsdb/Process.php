@@ -368,36 +368,6 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $conflictList;
     }
 
-    /**
-     * Read processlist with availability
-     *
-     * @param
-     * availability
-     *
-     * @return Collection processList
-     */
-    public function readListFromAvailability(
-        \BO\Zmsentities\Availability $availability
-    ) {
-        $currentDate = $availability->getStartDateTime();
-        $list = new \BO\Zmsentities\Collection\ProcessList();
-        while ($currentDate <= $availability->getEndDateTime()) {
-            $query = new Query\Process(Query\Base::SELECT);
-            $query
-                ->addEntityMapping()
-                ->addConditionScopeId($availability->scope->getId())
-                ->addConditionAssigned()
-                ->addConditionIgnoreSlots();
-            $query->addConditionTime($currentDate);
-            $statement = $this->fetchStatement($query);
-            $processList = $this->readList($statement, 0);
-            $processList = $processList->toQueueList($currentDate)->withoutStatus(['queued'])->toProcessList();
-            $list->addList($processList->withAvailability($availability));
-            $currentDate = $currentDate->modify('+1 day');
-        }
-        return $list;
-    }
-
 
     /**
      * Read processList by scopeId and status
