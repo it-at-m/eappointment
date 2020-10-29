@@ -20,14 +20,6 @@ class AvailabilityDeleteTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testHasProcessList()
-    {
-        $this->expectException('BO\Zmsapi\Exception\Availability\AvailabilityHasProcess');
-        $entity = (new Query())->readEntity(68997, 2);
-        $this->setWorkstation();
-        $this->render(['id' => $entity->getId()], [], []);
-    }
-
     public function testNotFound()
     {
         $this->setWorkstation();
