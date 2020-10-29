@@ -24,15 +24,8 @@ class AvailabilityDelete extends BaseController
         $query = new Query();
         $entity = $query->readEntity($args['id'], 2);
 
-        if ($entity->hasId()) {
-            $processList = (new \BO\Zmsdb\Process())->readListFromAvailability($entity);
-            if ($processList->count()) {
-                throw new Exception\Availability\AvailabilityHasProcess();
-            }
-            if ($query->deleteEntity($entity->getId())) {
-                (new \BO\Zmsdb\Helper\CalculateSlots(\App::DEBUG))
-                    ->writePostProcessingByScope($entity->scope, \App::$now);
-            }
+        if ($entity->hasId() && $query->deleteEntity($entity->getId())) {
+            (new \BO\Zmsdb\Helper\CalculateSlots(\App::DEBUG))->writePostProcessingByScope($entity->scope, \App::$now);
         }
 
         $message = Response\Message::create($request);
