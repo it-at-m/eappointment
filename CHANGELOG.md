@@ -1,3 +1,7 @@
+## v2.23.07
+
+* #44146 Bestätigungs- und Erinnerungs-Emails haben nun den zusätzlichen Hinweis, dass es sich um eine automatisch generierte Email handelt. Zudem wurden Textteile wie Anrede und Grußzeile ausgelagert um von allen Mail Templates gleichermaßen genutzt zu werden.
+
 ## v2.23.06
 
 * #45449 Bugfix: Sind mehrere Dienstleister in der Terminsuche vorhanden, wird jetzt nur noch ein Fehler ausgegeben, wenn alle übergebenen Dienstleister nicht zu den angegeben Dienstleistungen passen
