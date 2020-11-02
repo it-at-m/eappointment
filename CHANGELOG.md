@@ -1,3 +1,7 @@
+## v2.23.07
+
+* #42060 - In der Navigation und den Metalinks sind nun Mouseover Texte zu sehen
+
 ## v2.23.06
 
 * #44320 Barrierefreies Layout für Öffnungszeiten
