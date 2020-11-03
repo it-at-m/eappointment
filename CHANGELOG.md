@@ -1,3 +1,7 @@
+## v2.23.07
+
+* #44182 Bugfix: Eine Behörde kann einem Nutzer auch zugeordnet werden, wenn noch kein Standort zu dieser Behörde gehört.
+
 ## v2.23.06
 
 * #44011, #45908 Bugfix: Erinnerungsmails Datumsformate sind nun in Deutsch und die Liste der zu versendenen Mails werden ab dem neuen Configwert "status__mailReminderLastRun" berechnet, der nach der Erstellung der Liste aktualisiert wird
