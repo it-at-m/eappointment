@@ -86,7 +86,7 @@ class Useraccount extends Base
         $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
         foreach ($departmentIds as $item) {
             $department = (new \BO\Zmsdb\Department())->readEntity($item['id'], $resolveReferences);
-            if ($department instanceof \BO\Zmsentities\Department && 0 < $department->getScopeList()->count()) {
+            if ($department instanceof \BO\Zmsentities\Department) {
                 $department->name = $item['organisation__name'] .' -> '. $department->name;
                 $departmentList->addEntity($department);
             }
