@@ -77,6 +77,7 @@ class Messaging
         $templateDldbPath = \BO\Dldb\Helper\TemplateFinder::getTemplatePath();
         $loader = new \Twig_Loader_Filesystem($templatePath);
         $loader->addPath($templateDldbPath, 'dldb');
+        $loader->addPath($templatePath, 'zmsentities');
         $twig = new \Twig_Environment($loader, array(
             //'cache' => '/cache/',
         ));
