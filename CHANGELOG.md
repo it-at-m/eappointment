@@ -1,7 +1,3 @@
-## v2.23.07
-
-* #46081 - Beim Löschen einer Öffnungszeit wird nun geprüft ob noch Termine für dieses Öffnungszeit existieren
-
 ## v2.23.06
 
 * #45302 -Der DLDB Import findet jetzt alle 5 Minuten statt-
