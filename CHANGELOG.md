@@ -1,6 +1,6 @@
 ## v2.23.07
 
-* #42060 - In der Navigation und den Metalinks sind nun Mouseover Texte zu sehen
+* #42060 - In der Navigation und den Metalinks sind nun Mouseover Texte zu sehen und die Mouseover Texte in der Kalenderansicht sind jetzt aussagekräftiger mit formatierter Datumsausgabe
 * Bugfix - In der Configübersicht sind nun die Mailings und die dazugehörigen Betreffzeilen korrekt dargestellt und um die Terminerinnerung ergänzt
 
 ## v2.23.06
