@@ -2,6 +2,7 @@
 
 * #42060 - In der Navigation und den Metalinks sind nun Mouseover Texte zu sehen und die Mouseover Texte in der Kalenderansicht sind jetzt aussagekräftiger mit formatierter Datumsausgabe
 * Bugfix - In der Configübersicht sind nun die Mailings und die dazugehörigen Betreffzeilen korrekt dargestellt und um die Terminerinnerung ergänzt
+* #44182 - Einem Nutzer dem die ausgewählte Behörde nicht zugewiesen ist, darf keinen Standort oder ein Cluster für diese Behörde anlegen. Die Buttons sind deaktiviert und mit einem Mouseover-Text versehen
 
 ## v2.23.06
 
