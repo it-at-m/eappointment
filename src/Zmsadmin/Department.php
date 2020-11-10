@@ -20,7 +20,7 @@ class Department extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/department/'. $entityId .'/', ['resolveReferences' => 1])->getEntity();
@@ -50,6 +50,7 @@ class Department extends BaseController
                 'workstation' => $workstation,
                 'organisation' => $organisation,
                 'department' => (new Schema($entity))->toSanitizedArray(),
+                'hasAccess' => $entity->hasAccess($workstation->getUseraccount()),
                 'menuActive' => 'owner',
                 'success' => $success,
             )
