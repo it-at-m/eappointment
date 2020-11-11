@@ -87,7 +87,7 @@ class View extends BaseView {
             });
         }
 
-        $('#appointmentForm_slotCount').val(slotCount).trigger('change');
+        $('#appointmentForm_slotCount').val(Math.ceil(slotCount)).trigger('change');
     }
 }
 
