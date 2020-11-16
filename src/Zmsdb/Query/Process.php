@@ -619,10 +619,10 @@ class Process extends Base implements MappingInterface
     }
 
     public function addValuesUpdateProcess(
-        \BO\Zmsentities\Process $process, 
-        \DateTimeInterface $dateTime, 
+        \BO\Zmsentities\Process $process,
+        \DateTimeInterface $dateTime,
         $parentProcess = 0
-    ){
+    ) {
         $data = array();
         $data['Name'] = '(Folgetermin)';
         $data['StandortID'] = $process->getScopeId();
