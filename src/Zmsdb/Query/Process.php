@@ -618,21 +618,27 @@ class Process extends Base implements MappingInterface
         $this->addValues($values);
     }
 
-    public function addValuesUpdateProcess(\BO\Zmsentities\Process $process, \DateTimeInterface $dateTime)
-    {
+    public function addValuesUpdateProcess(
+        \BO\Zmsentities\Process $process, 
+        \DateTimeInterface $dateTime, 
+        $parentProcess = 0
+    ){
         $data = array();
-        $data['Anmerkung'] = $process->getAmendment();
+        $data['Name'] = '(Folgetermin)';
         $data['StandortID'] = $process->getScopeId();
         $data['IPAdresse'] = $process['createIP'];
-        $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
         $data['AnzahlPersonen'] = $process->getClients()->count();
-        $data['AnzahlAufrufe'] = $process->queue['callCount'];
         $data = $this->readAppointmentData($data, $process);
-        $data = $this->readClientData($data, $process);
-        $data = $this->readProcessTimeValuesData($data, $process);
-        $data = $this->readWaitingTime($data, $process);
-        $data = $this->readSendCount($data, $process);
         $data = $this->readStatusData($data, $process, $dateTime);
+        if (0 == $parentProcess) {
+            $data['Anmerkung'] = $process->getAmendment();
+            $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
+            $data['AnzahlAufrufe'] = $process->queue['callCount'];
+            $data = $this->readClientData($data, $process);
+            $data = $this->readProcessTimeValuesData($data, $process);
+            $data = $this->readWaitingTime($data, $process);
+            $data = $this->readSendCount($data, $process);
+        }
         $data = $this->readFilteredData($data);
         $this->addValues($data);
     }
