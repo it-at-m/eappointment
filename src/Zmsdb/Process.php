@@ -198,7 +198,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $process->setRandomAuthKey();
         $process->createTimestamp = $dateTime->getTimestamp();
         $query->addValuesNewProcess($process, $parentProcess, $childProcessCount);
-        $query->addValuesUpdateProcess($process, $dateTime);
+        $query->addValuesUpdateProcess($process, $dateTime, $parentProcess);
         try {
             $this->writeItem($query);
         } catch (Exception\Pdo\PDOFailed $exception) {
