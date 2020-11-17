@@ -86,7 +86,7 @@ class MailTest extends EntityCommonTests
         $resolvedEntity = $entity->toResolvedEntity($process, $config, 'appointment');
 
         $this->assertContains('Achtung! Dies ist eine automatisch erstellte E-Mail', $resolvedEntity->getIcsPart(), 'ICS content is not valid');
-        $this->assertContains('Sehr geehrte/r Frau', $resolvedEntity->getIcsPart(), 'ICS content is not valid');
+        $this->assertContains('Sehr geehrte/r', $resolvedEntity->getIcsPart(), 'ICS content is not valid');
         // test if appointment date formatted correct
     }
 
