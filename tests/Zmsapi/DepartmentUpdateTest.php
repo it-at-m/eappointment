@@ -49,8 +49,8 @@ class DepartmentUpdateTest extends Base
 
     public function testNoRights()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department');
-        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingDepartment');
+        $this->setWorkstation()->getUseraccount()->addDepartment(['id' => 999]);
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->expectExceptionCode(403);
         $this->render(["id"=> 999], [
             '__body' => '{
