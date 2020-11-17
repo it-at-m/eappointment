@@ -8,7 +8,7 @@ class OrganisationAddDepartmentTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('organisation')
+        $this->setWorkstation()->getUseraccount()->setRights('department')
             ->addDepartment([
                 'id' => 74
             ]);
@@ -24,7 +24,7 @@ class OrganisationAddDepartmentTest extends Base
 
     public function testUnvalidDepartment()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('organisation')
+        $this->setWorkstation()->getUseraccount()->setRights('department')
             ->addDepartment([
                 'id' => 74
             ]);
