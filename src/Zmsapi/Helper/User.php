@@ -108,12 +108,12 @@ class User
         if (! $userAccount->hasId()) {
             throw new \BO\Zmsentities\Exception\UseraccountMissingLogin();
         }
-        if ($userAccount->rights['organisation']) {
-            $department = self::testReadDepartmentByOrganisation($departmentId, $userAccount);
-        } elseif (! $userAccount->isSuperUser()) {
-            $department = $userAccount->testDepartmentById($departmentId);
-        } else {
+        if ($userAccount->isSuperUser()) {
             $department = (new \BO\Zmsdb\Department())->readEntity($departmentId);
+        } elseif ($userAccount->rights['department']) {
+            $department = self::testReadDepartmentByOrganisation($departmentId, $userAccount);
+        } else {
+            $department = $userAccount->testDepartmentById($departmentId);
         }
         if (! $department) {
             throw new \BO\Zmsentities\Exception\UserAccountMissingDepartment(
@@ -141,7 +141,10 @@ class User
     protected static function testReadDepartmentByOrganisation($departmentId, $userAccount)
     {
         $organisation = (new \BO\Zmsdb\Organisation())->readByDepartmentId($departmentId, 1);
-        $organisation->departments = $organisation->getDepartmentList()->withAccess($userAccount);
+        $organisation->departments = ($userAccount->hasRights(['department'])) ?
+            $organisation->getDepartmentList() :
+            $organisation->getDepartmentList()->withAccess($userAccount);
+        
         $department = $organisation->departments->getEntity($departmentId);
         return $department;
     }
