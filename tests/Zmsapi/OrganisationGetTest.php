@@ -8,7 +8,7 @@ class OrganisationGetTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('organisation');
+        $this->setWorkstation()->getUseraccount()->setRights('department');
         $response = $this->render(['id' => 54], ['resolveReferences' => 1], []);
         $this->assertContains('organisation.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
