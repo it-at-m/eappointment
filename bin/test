@@ -4,6 +4,7 @@ REALPATH=$(which realpath || which readlink)
 REALPATH=$([[ "$REALPATH" =~ 'readlink' ]] && echo "$REALPATH -e" || echo "$REALPATH")
 DIR=$(dirname $($REALPATH ${BASH_SOURCE[0]}))
 ROOT=$($REALPATH $DIR/..)
+BASE=$($REALPATH $DIR/../../../..)
 LOG=$ROOT/schemavalidation.log
 
 echo "Testing json schemas"
@@ -17,8 +18,8 @@ rm $LOG
 cd $ROOT
 
 echo "Testing coding standards"
-$ROOT/vendor/bin/phpcs --standard=psr2 src/ || exit 1
+$BASE/vendor/bin/phpcs --standard=psr2 src/ || exit 1
 echo "Testing code quality"
-$ROOT/vendor/bin/phpmd src/ text phpmd.rules.xml || exit 1
+$BASE/vendor/bin/phpmd src/ text phpmd.rules.xml || exit 1
 echo "Testing units"
-$ROOT/vendor/bin/phpunit || exit 1
+$BASE/vendor/bin/phpunit || exit 1

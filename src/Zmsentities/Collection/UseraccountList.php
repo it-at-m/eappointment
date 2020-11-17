@@ -33,6 +33,13 @@ class UseraccountList extends Base
         $departmentList = $workstation->getDepartmentList();
         foreach ($this as $useraccount) {
             $accessedList = $departmentList->withAccess($useraccount);
+
+            if ($useraccount->hasRights(['department'])) {
+                $accessedList = $departmentList;
+            } else {
+                $accessedList = $departmentList->withAccess($useraccount);
+            }
+
             if ($accessedList->count()) {
                 $collection->addEntity(clone $useraccount);
             }

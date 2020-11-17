@@ -22,7 +22,11 @@ class OrganisationList extends Base
         $list = new static();
         foreach ($this as $organisation) {
             $organisation = clone $organisation;
-            $organisation->departments = $organisation->getDepartmentList()->withAccess($useraccount);
+            if ($useraccount->hasRights(['department'])) {
+                $organisation->departments = $organisation->getDepartmentList();
+            } else {
+                $organisation->departments = $organisation->getDepartmentList()->withAccess($useraccount);
+            }
             if ($organisation->hasAccess($useraccount)) {
                 $list[] = $organisation;
             }
