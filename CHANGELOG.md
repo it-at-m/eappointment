@@ -1,3 +1,7 @@
+## v2.23.08
+
+* #46608 Öffnungszeiten können nun auch mit reduzierten Daten abgerufen werden
+
 ## v2.23.07
 
 * #44146 Bestätigungs- und Erinnerungs-Emails haben nun den zusätzlichen Hinweis, dass es sich um eine automatisch generierte Email handelt. Zudem wurden Textteile wie Anrede und Grußzeile ausgelagert um von allen Mail Templates gleichermaßen genutzt zu werden.
