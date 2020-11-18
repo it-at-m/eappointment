@@ -747,4 +747,39 @@ class Availability extends Schema\Entity
     {
         return ($dateTime->getTimestamp() < $this->lastChange);
     }
+
+    /**
+     * Reduce data of dereferenced entities to a required minimum
+     *
+     */
+    public function withLessData(array $keepArray = [])
+    {
+        $entity = clone $this;
+        if (! in_array('repeat', $keepArray)) {
+            unset($entity['repeat']);
+        }
+        if (! in_array('id', $keepArray)) {
+            unset($entity['id']);
+        }
+        if (! in_array('bookable', $keepArray)) {
+            unset($entity['bookable']);
+        }
+        if (! in_array('workstationCount', $keepArray)) {
+            unset($entity['workstationCount']);
+        }
+        if (! in_array('multipleSlotsAllowed', $keepArray)) {
+            unset($entity['multipleSlotsAllowed']);
+        }
+        if (! in_array('lastChange', $keepArray)) {
+            unset($entity['lastChange']);
+        }
+        if (! in_array('slotTimeInMinutes', $keepArray)) {
+            unset($entity['slotTimeInMinutes']);
+        }
+        if (! in_array('description', $keepArray)) {
+            unset($entity['description']);
+        }
+
+        return $entity;
+    }
 }
