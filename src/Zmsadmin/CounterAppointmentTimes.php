@@ -20,13 +20,15 @@ class CounterAppointmentTimes extends BaseController
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
 
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $dateTime = new \BO\Zmsentities\Helper\DateTime($selectedDate);
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
         $availabilityList = \App::$http
-            ->readGetResult('/scope/'. $workstation->scope['id'] . '/availability/', ['resolveReferences' => 0])
-            ->getCollection()
-            ->withScope(new \BO\Zmsentities\Scope($workstation->scope))
-            ->withDateTime($dateTime);
+            ->readGetResult('/scope/'. $workstation->scope['id'] . '/availability/', [
+                'resolveReferences' => 0,
+                'startDate' => $selectedDate,
+                'endDate' => $selectedDate,
+                'getOpeningTimes' => 1
+            ])
+            ->getCollection();
 
         return \BO\Slim\Render::withHtml(
             $response,

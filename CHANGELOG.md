@@ -1,3 +1,7 @@
+## v2.23.08
+
+* #46608 Bugfix: In der Tresen Infobox werden nun die Terminzeiten auch für Nutzer mit Basisrechten angezeigt
+
 ## v2.23.07
 
 * #42060 - In der Navigation und den Metalinks sind nun Mouseover Texte zu sehen und die Mouseover Texte in der Kalenderansicht sind jetzt aussagekräftiger mit formatierter Datumsausgabe
