@@ -1,3 +1,8 @@
+## v2.23.08
+
+* *#46608 - Öffnungszeiten können für einen Standort nun auch mit Basisrechten abgerufen werden, wenn die Terminzeiten vom Tresen benötigt werden. Nutzer mit Basisrechten können Öffnungszeiten weiterhin nicht bearbeiten
+
+
 ## v2.23.06
 
 * #45302 -Der DLDB Import findet jetzt alle 5 Minuten statt-
