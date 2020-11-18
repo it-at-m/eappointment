@@ -1,6 +1,7 @@
 ## v2.23.08
 
 * #46608 Öffnungszeiten können nun auch mit reduzierten Daten abgerufen werden
+* #46531 Bugfix: Wenn ein Nutzer Rechte zum Bearbeiten von Behörden hat, kann er dies nun tun ohne dieser Behörde zugeordnet zu sein
 
 ## v2.23.07
 
