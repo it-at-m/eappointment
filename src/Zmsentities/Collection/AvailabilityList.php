@@ -74,6 +74,21 @@ class AvailabilityList extends Base
         return $list;
     }
 
+    public function withDateTimeInRange(\DateTimeInterface $startDateTime, \DateTimeInterface $endDateTime)
+    {
+        $list = new self();
+        $currentDateTime = clone $startDateTime;
+        while ($currentDateTime <= $endDateTime) {
+            foreach ($this as $availability) {
+                if ($availability->isOpenedOnDate($currentDateTime)) {
+                    $list->addEntity($availability);
+                }
+            }
+            $currentDateTime = $currentDateTime->modify('+1 day');
+        }
+        return $list->withOutDoubles();
+    }
+
     public function getAvailableSecondsOnDateTime(\DateTimeInterface $dateTime, $type = "intern")
     {
         $seconds = 0;
@@ -174,6 +189,15 @@ class AvailabilityList extends Base
         $list = clone $this;
         foreach ($list as $key => $availability) {
             $list[$key] = $availability->withScope($scope);
+        }
+        return $list;
+    }
+
+    public function withLessData(array $keepArray = [])
+    {
+        $list = new self();
+        foreach ($this as $availability) {
+            $list->addEntity(clone $availability->withLessData($keepArray));
         }
         return $list;
     }
