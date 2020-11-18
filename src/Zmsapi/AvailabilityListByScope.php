@@ -33,7 +33,7 @@ class AvailabilityListByScope extends BaseController
         $endDate = ($endDateFormatted) ? new \BO\Zmsentities\Helper\DateTime($endDateFormatted) : null;
         $accessRight = ($getOpeningTimes) ? 'basic' : 'availability';
 
-        $scope = (new \BO\Zmsdb\Scope)->readEntity($args['id'], $resolveReferences - 1);
+        $scope = (new \BO\Zmsdb\Scope)->readEntity($args['id'], ('basic' == $accessRight) ? 1 : $resolveReferences - 1);
         $this->testScope($scope);
 
         (new Helper\User($request, 2))->checkRights(
@@ -43,14 +43,14 @@ class AvailabilityListByScope extends BaseController
     
         $message = Response\Message::create($request);
         $message->meta->reducedData = ('basic' == $accessRight) ? true : false;
-        $message->data = $this->getAvailabilityList($scope, $startDate, $endDate, $accessRight);
+        $message->data = $this->getAvailabilityList($scope, $startDate, $endDate, $accessRight, $resolveReferences);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), 200);
         return $response;
     }
 
-    protected function getAvailabilityList($scope, $startDate, $endDate, $accessRight)
+    protected function getAvailabilityList($scope, $startDate, $endDate, $accessRight, $resolveReferences)
     {
         $availabilityList = (new Query())->readList($scope->getId(), 0, $startDate, $endDate);
         $this->testAvailabilityList($availabilityList);
@@ -59,10 +59,6 @@ class AvailabilityListByScope extends BaseController
             $availabilityList = $availabilityList->withScope($scope);
         }
         if ('basic' == $accessRight) {
-            $scope = (new \BO\Zmsdb\Scope)->readEntity(
-                $scope->getId(),
-                ($resolveReferences > 1) ? $resolveReferences : 1
-            );
             $availabilityList = $availabilityList
                 ->withScope($scope->withLessData(['dayoff']))
                 ->withDateTimeInRange($startDate ? $startDate : \App::$now, $endDate ? $endDate : \App::$now)
