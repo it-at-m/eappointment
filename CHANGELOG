@@ -1,6 +1,7 @@
 ## v2.4.4
 
 * #46558 Bugfix: Wenn ESI Includes deaktiviert sind werden die Inhalte nun mit einem User-Agent im Request abgefragt wodurch die Requests nicht mehr blockiert werden
+* #46686 Bugfix: Doppelte max-age und expires cache Einträge wurden korrigiert
 
 ## v2.4.3
 

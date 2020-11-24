@@ -294,7 +294,9 @@ class SessionHeadersHandler
      */
     protected function cacheLimiterPrivate(Response $response)
     {
-        $response = $response->withAddedHeader('Expires', self::EXPIRED);
+        if (0 == count($response->getHeader('Expires'))) {
+            $response = $response->withAddedHeader('Expires', self::EXPIRED);
+        }
         return $this->cacheLimiterPrivateNoExpire($response);
     }
 
@@ -311,8 +313,10 @@ class SessionHeadersHandler
      */
     protected function cacheLimiterNocache(Response $response)
     {
+        if (0 == count($response->getHeader('Expires'))) {
+            $response = $response->withAddedHeader('Expires', self::EXPIRED);
+        }
         return $response
-            ->withAddedHeader('Expires', self::EXPIRED)
             ->withAddedHeader(
                 'Cache-Control',
                 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
