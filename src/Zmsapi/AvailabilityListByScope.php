@@ -70,7 +70,7 @@ class AvailabilityListByScope extends BaseController
     {
         try {
             (new Helper\User($request, 2))->checkRights(
-                'availability', 
+                'availability',
                 new \BO\Zmsentities\Useraccount\EntityAccess($scope)
             );
         } catch (\Exception $exception) {
