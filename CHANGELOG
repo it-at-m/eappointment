@@ -1,8 +1,14 @@
-## Upcoming
+## v2.4.4
 
+* #46558 Bugfix: Wenn ESI Includes deaktiviert sind werden die Inhalte nun mit einem User-Agent im Request abgefragt wodurch die Requests nicht mehr blockiert werden
+
+## v2.4.3
+
+* #36048 - Kompatibilität zu altem d115mandant Repo korrigiert
+
+## v2.4.2
+
+* #38421 - Nutze git HEAD als hash wenn kein benannter ref vorhanden ist
 * Der Name des Systemnutzers wurde zum Twig Cache-Pfad hinzugefügt, um Rechte-Probleme zu vermeiden
 * #36523 Erlaube mehr Reloads bevor ein Captcha angezeigt wird
-
-## v2.19.05
-
 * #35794 Bugfix: Beim Sessionhandling wird zum Ändern von gruppierten Sessiondaten geprüft ob Daten vorhanden sind
