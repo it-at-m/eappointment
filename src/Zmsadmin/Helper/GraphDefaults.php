@@ -1,0 +1,243 @@
+<?php
+
+namespace BO\Zmsadmin\Helper;
+
+class GraphDefaults
+{
+    protected static function defaultFormat($string)
+    {
+        return preg_replace('#\s+#m', ' ', trim($string));
+    }
+
+    /**
+     * workstation reduced response data
+     */
+    public static function getWorkstation()
+    {
+        $default =<<< EOS
+{ 
+    id
+}
+EOS;
+        return static::defaultFormat($default);
+    }
+
+    /**
+     * availability reduced response data
+     */
+    public static function getAvailability()
+    {
+        $default =<<< EOS
+{ 
+    id,
+    weekday,
+    repeat
+    startDate,
+    endDate,
+    startTime,
+    endTime,
+    type,
+    bookable,
+    workstationCount,
+    lastChange,
+    multipleSlotsAllowed,
+    slotTimeInMinutes,
+    description,
+    scope {
+        id, 
+        source,
+        dayoff {
+            date
+        },
+        preferences {
+            appointment
+        }
+    }
+}
+EOS;
+        return static::defaultFormat($default);
+    }
+
+    /**
+     * availability reduced response data
+     */
+    public static function getAvailabilityTimes()
+    {
+        $default =<<< EOS
+{ 
+    weekday,
+    repeat
+    startDate,
+    endDate,
+    startTime,
+    endTime,
+    type,
+    scope {
+        dayoff {
+            date
+        }
+    }
+}
+EOS;
+        return static::defaultFormat($default);
+    }
+
+    /**
+     * scope reduced response data
+     */
+    public static function getScope()
+    {
+        $default =<<< EOS
+{ 
+    id 
+    source
+    contact
+    shortName
+    dayoff {
+        date
+    }
+    preferences {
+        appointment
+    }
+}
+EOS;
+        return static::defaultFormat($default);
+    }
+
+    /**
+     * requests reduced response data
+     */
+    public static function getRequest()
+    {
+        $default =<<< EOS
+{ 
+    id 
+    name 
+    link 
+    data { 
+        locations { 
+            appointment 
+        } 
+    } 
+}
+EOS;
+        return static::defaultFormat($default);
+    }
+    
+    /**
+     * free process list reduced response data
+     */
+    public static function getFreeProcessList()
+    {
+        $default =<<< EOS
+{ 
+    scope { 
+        id
+        source 
+        contact 
+        provider { 
+            contact 
+            name 
+            data { 
+                payment 
+            }
+        } 
+        preferences { 
+            appointment
+        }
+    } 
+    appointments {
+        date
+    }
+}
+EOS;
+        return static::defaultFormat($default);
+    }
+
+    /**
+     * calendar output for day select page
+     */
+    public static function getCalendar()
+    {
+        $default =<<< EOS
+{ 
+    firstDay 
+    lastDay 
+    days 
+    freeProcesses 
+    requests {
+        id 
+        name 
+        link
+    } 
+    scopes { 
+        id 
+        source 
+        provider {
+            contact 
+            name 
+            data { 
+                payment
+            }
+        } 
+        preferences { 
+            appointment
+        }
+    } 
+}
+EOS;
+        return static::defaultFormat($default);
+    }
+
+    /**
+     *  reduced process response data
+     */
+    public static function getProcess()
+    {
+        $default =<<< EOS
+{
+    amendment
+    authKey
+    id
+    status
+    appointments{
+        date
+        slotCount
+    }
+    clients{
+        familyName
+        email
+        surveyAccepted
+        telephone
+    }
+    queue{
+        arrivalTime
+    }
+    requests{
+        id
+        link
+        name
+        source
+    }
+    scope{
+        id
+        source
+        contact
+        provider{
+            contact 
+            name 
+            data { 
+                payment 
+            }
+        }
+        preferences{
+            client
+            appointment
+            survey
+        }
+    }
+}
+EOS;
+        return static::defaultFormat($default);
+    }
+}

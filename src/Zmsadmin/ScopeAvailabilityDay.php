@@ -20,12 +20,7 @@ class ScopeAvailabilityDay extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $scope = \App::$http->readGetResult('/scope/' . intval($args['id']) . '/', ['resolveReferences' => 1])
-            ->getEntity();
-        $data = static::getAvailabilityData($scope, $args['date']);
-        $data['workstation'] = $workstation;
-        $data['scope'] = $scope;
+        $data = static::getAvailabilityData(intval($args['id']), $args['date']);
         $data['title'] = 'Behörden und Standorte - Öffnungszeiten';
         $data['menuActive'] = 'owner';
         return \BO\Slim\Render::withHtml(
@@ -35,13 +30,22 @@ class ScopeAvailabilityDay extends BaseController
         );
     }
 
-    protected static function getAvailabilityData($scope, $dateString)
+    protected static function getScope($scopeId)
     {
+        return \App::$http->readGetResult('/scope/' . $scopeId . '/', [
+            'resolveReferences' => 1,
+            'gql' => Helper\GraphDefaults::getScope()
+        ])->getEntity();
+    }
+
+    protected static function getAvailabilityData($scopeId, $dateString)
+    {
+        $scope = static::getScope($scopeId);
         $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
         $dateWithTime = $dateTime->setTime(\App::$now->format('H'), \App::$now->format('i'));
-        $availabilityList = static::getAvailabilityList($scope, $dateTime);
+        $availabilityList = static::getAvailabilityList($scopeId, $dateTime);
         $processList = \App::$http
-            ->readGetResult('/scope/' . $scope->getId() . '/process/' . $dateTime->format('Y-m-d') . '/')
+            ->readGetResult('/scope/' . $scopeId . '/process/' . $dateTime->format('Y-m-d') . '/')
                 ->getCollection()
                 ->toQueueList($dateWithTime)
                 ->withoutStatus(['fake'])
@@ -50,7 +54,7 @@ class ScopeAvailabilityDay extends BaseController
             $processList = new \BO\Zmsentities\Collection\ProcessList();
         }
         $processConflictList = \App::$http
-            ->readGetResult('/scope/' . $scope->getId() . '/conflict/', [
+            ->readGetResult('/scope/' . $scopeId . '/conflict/', [
                 'startDate' => $dateTime->format('Y-m-d'),
                 'endDate' => $dateTime->format('Y-m-d')
             ])
@@ -59,6 +63,7 @@ class ScopeAvailabilityDay extends BaseController
         $maxSlots = self::getMaxSlotsForAvailabilities($availabilityList);
         $busySlots = self::getBusySlotsForAvailabilities($availabilityList, $processList);
         return [
+            'scope' => $scope->getArrayCopy(),
             'availabilityList' => $availabilityList->getArrayCopy(),
             'availabilityListSlices' => $availabilityList->withCalculatedSlots()->getArrayCopy(),
             'conflicts' => ($processConflictList) ? $processConflictList->getArrayCopy() : [],
@@ -99,15 +104,16 @@ class ScopeAvailabilityDay extends BaseController
         }, []);
     }
 
-    protected static function getAvailabilityList($scope, $dateTime)
+    protected static function getAvailabilityList($scopeId, $dateTime)
     {
         try {
             $availabilityList = \App::$http
                 ->readGetResult(
-                    '/scope/' . $scope->getId() . '/availability/',
+                    '/scope/' . $scopeId . '/availability/',
                     [
-                        'resolveReferences' => 0,
-                        'startDate' => $dateTime->format('Y-m-d') //for skipping old availabilities
+                        'resolveReferences' => 2,
+                        'startDate' => $dateTime->format('Y-m-d'), //for skipping old availabilities
+                        'gql' => Helper\GraphDefaults::getAvailability()
                     ]
                 )
                 ->getCollection()->sortByCustomKey('startDate');
@@ -117,6 +123,6 @@ class ScopeAvailabilityDay extends BaseController
             }
             $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
         }
-        return $availabilityList->withScope($scope)->withDateTime($dateTime); //withDateTime to check if opened
+        return $availabilityList->withDateTime($dateTime); //withDateTime to check if opened
     }
 }

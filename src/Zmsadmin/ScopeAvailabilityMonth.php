@@ -31,7 +31,10 @@ class ScopeAvailabilityMonth extends BaseController
         $endDate = $dateTime->modify('last day of this month');
 
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
-        $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/', ['resolveReferences' => 1])->getEntity();
+        $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/', [
+            'resolveReferences' => 1,
+            'gql' => Helper\GraphDefaults::getScope()
+        ])->getEntity();
         $calendar = $this->getCalendar($scope, $startDate, $endDate);
 
         $availabilityList = $this->getAvailabilityList($scope, $startDate, $endDate);
@@ -75,9 +78,10 @@ class ScopeAvailabilityMonth extends BaseController
                 ->readGetResult(
                     '/scope/' . $scope->getId() . '/availability/',
                     [
-                        'resolveReferences' => 0,
+                        'resolveReferences' => 2,
                         'startDate' => $startDate->format('Y-m-d'),
                         'endDate' => $endDate->format('Y-m-d'),
+                        'gql' => Helper\GraphDefaults::getAvailability()
                     ]
                 )
                 ->getCollection();
@@ -87,7 +91,7 @@ class ScopeAvailabilityMonth extends BaseController
             }
             $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
         }
-        return $availabilityList->withScope($scope);
+        return $availabilityList;
     }
 
     protected function getCalendar($scope, $startDate, $endDate)
