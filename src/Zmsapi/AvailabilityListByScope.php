@@ -25,46 +25,31 @@ class AvailabilityListByScope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $startDateFormatted = Validator::param('startDate')->isString()->getValue();
         $endDateFormatted = Validator::param('endDate')->isString()->getValue();
-        $getOpeningTimes = Validator::param('getOpeningTimes')->isNumber()->setDefault(0)->getValue();
+        $graphQl = Validator::param('gql')->isString()->getValue();
         $startDate = ($startDateFormatted) ? new \BO\Zmsentities\Helper\DateTime($startDateFormatted) : null;
         $endDate = ($endDateFormatted) ? new \BO\Zmsentities\Helper\DateTime($endDateFormatted) : null;
-        $accessRight = ($getOpeningTimes) ? 'basic' : 'availability';
 
-        $scope = (new \BO\Zmsdb\Scope)->readEntity($args['id'], ('basic' == $accessRight) ? 1 : $resolveReferences - 1);
+        $scope = (new \BO\Zmsdb\Scope)->readEntity($args['id'], $resolveReferences);
         $this->testScope($scope);
-
-        (new Helper\User($request, 2))->checkRights(
-            $accessRight,
-            new \BO\Zmsentities\Useraccount\EntityAccess($scope)
-        );
-    
+        $this->testAccessRights($request, $scope);
+        
         $message = Response\Message::create($request);
-        $message->meta->reducedData = ('basic' == $accessRight) ? true : false;
-        $message->data = $this->getAvailabilityList($scope, $startDate, $endDate, $accessRight, $resolveReferences);
+        $message->meta->reducedData = $graphQl ? true : false;
+        $message->data = $this->getAvailabilityList($scope, $startDate, $endDate);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), 200);
         return $response;
     }
 
-    protected function getAvailabilityList($scope, $startDate, $endDate, $accessRight, $resolveReferences)
+    protected function getAvailabilityList($scope, $startDate, $endDate)
     {
         $availabilityList = (new Query())->readList($scope->getId(), 0, $startDate, $endDate);
         $this->testAvailabilityList($availabilityList);
-
-        if ($resolveReferences > 0) {
-            $availabilityList = $availabilityList->withScope($scope);
-        }
-        if ('basic' == $accessRight) {
-            $availabilityList = $availabilityList
-                ->withScope($scope->withLessData(['dayoff']))
-                ->withDateTimeInRange($startDate ? $startDate : \App::$now, $endDate ? $endDate : \App::$now)
-                ->withLessData();
-        }
-        return $availabilityList;
+        return $availabilityList->withScope($scope);
     }
 
     protected function testScope($scope)
@@ -78,6 +63,21 @@ class AvailabilityListByScope extends BaseController
     {
         if (! $availabilityList->count()) {
             throw new Exception\Availability\AvailabilityNotFound();
+        }
+    }
+
+    protected function testAccessRights($request, $scope)
+    {
+        try {
+            (new Helper\User($request, 2))->checkRights(
+                'availability', 
+                new \BO\Zmsentities\Useraccount\EntityAccess($scope)
+            );
+        } catch (\Exception $exception) {
+            $token = $request->getHeader('X-Token');
+            if (\App::SECURE_TOKEN != current($token)) {
+                throw $exception;
+            }
         }
     }
 }
