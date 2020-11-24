@@ -1,5 +1,6 @@
 ## v2.23.08
 
+* #46608 Öffnungszeiten-Seiten werden durch optimierte API-Abfragen schneller geladen
 * #46608 Bugfix: In der Tresen Infobox werden nun die Terminzeiten auch für Nutzer mit Basisrechten angezeigt
 * #46531 Bugfix: Ein Nutzer mit Rechten zum Bearbeiten von Behörden kann nun einen Bezirk öffnen um den Button zum Anlegen einer neuen Behörde bedienen zu können. Andere Informationen oder Aktionen sind ausgeblendet.
 

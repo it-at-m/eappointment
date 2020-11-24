@@ -23,15 +23,18 @@ class ScopeAvailabilityDayConflictsTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                    ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
                     'parameters' => [
-                        'resolveReferences' => 0,
-                        'startDate' => $startDate->format('Y-m-d')
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getAvailability()
                     ],
                     'response' => $this->readFixture("GET_scope_141_availability.json")
                 ],

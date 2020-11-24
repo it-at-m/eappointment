@@ -21,22 +21,19 @@ class ScopeAvailabilityDayTest extends Base
             [
                 [
                     'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                    ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
                     'parameters' => [
-                        'resolveReferences' => 0,
-                        'startDate' => $startDate->format('Y-m-d')
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getAvailability()
                     ],
                     'response' => $this->readFixture("GET_scope_141_availability.json")
                 ],
@@ -73,22 +70,19 @@ class ScopeAvailabilityDayTest extends Base
             [
                 [
                     'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                    ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
                     'parameters' => [
-                        'resolveReferences' => 0,
-                        'startDate' => $startDate->format('Y-m-d')
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getAvailability()
                     ],
                     'exception' => $exception
                 ],
@@ -121,22 +115,19 @@ class ScopeAvailabilityDayTest extends Base
             [
                 [
                     'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                    ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
                     'parameters' => [
-                        'resolveReferences' => 0,
-                        'startDate' => $startDate->format('Y-m-d')
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getAvailability()
                     ],
                     'response' => $this->readFixture("GET_scope_141_availability.json")
                 ],
@@ -174,22 +165,19 @@ class ScopeAvailabilityDayTest extends Base
             [
                 [
                     'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                    ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
                     'parameters' => [
-                        'resolveReferences' => 0,
-                        'startDate' => $startDate->format('Y-m-d')
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getAvailability()
                     ],
                     'exception' => $exception
                 ]
