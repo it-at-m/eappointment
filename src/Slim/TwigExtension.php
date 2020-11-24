@@ -203,7 +203,17 @@ class TwigExtension extends \Twig_Extension
             }
             return $prepend . '<esi:include src="' . $uri . '" />' . $append;
         } else {
-            return $prepend . file_get_contents($uri) . $append;
+            // Create a stream
+            $options = array(
+                'http'=>array(
+                  'method'=>"GET",
+                  'header'=>"Accept-language: de\r\n" .
+                            "Cookie: zms=development\r\n" .  // check function.stream-context-create on php.net
+                            "user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36\r\n" // i.e. An iPad 
+                )
+              );
+            $context = stream_context_create($options);
+            return $prepend . file_get_contents($uri, false, $context) . $append;
         }
     }
 
