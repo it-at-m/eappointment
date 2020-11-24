@@ -78,7 +78,6 @@ class ScopeAvailabilityMonth extends BaseController
                 ->readGetResult(
                     '/scope/' . $scope->getId() . '/availability/',
                     [
-                        'resolveReferences' => 2,
                         'startDate' => $startDate->format('Y-m-d'),
                         'endDate' => $endDate->format('Y-m-d'),
                         'gql' => Helper\GraphDefaults::getAvailability()

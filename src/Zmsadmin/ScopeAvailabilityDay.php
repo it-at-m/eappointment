@@ -63,7 +63,7 @@ class ScopeAvailabilityDay extends BaseController
         $maxSlots = self::getMaxSlotsForAvailabilities($availabilityList);
         $busySlots = self::getBusySlotsForAvailabilities($availabilityList, $processList);
         return [
-            'scope' => $scope->getArrayCopy(),
+            'scope' => $scope,
             'availabilityList' => $availabilityList->getArrayCopy(),
             'availabilityListSlices' => $availabilityList->withCalculatedSlots()->getArrayCopy(),
             'conflicts' => ($processConflictList) ? $processConflictList->getArrayCopy() : [],
@@ -111,7 +111,6 @@ class ScopeAvailabilityDay extends BaseController
                 ->readGetResult(
                     '/scope/' . $scopeId . '/availability/',
                     [
-                        'resolveReferences' => 2,
                         'startDate' => $dateTime->format('Y-m-d'), //for skipping old availabilities
                         'gql' => Helper\GraphDefaults::getAvailability()
                     ]

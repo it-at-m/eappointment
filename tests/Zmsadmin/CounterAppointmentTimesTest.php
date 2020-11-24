@@ -26,11 +26,11 @@ class CounterAppointmentTimesTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
                     'parameters' => [
-                        'resolveReferences' => 0,
                         'startDate' => '2016-04-01',
                         'endDate' => '2016-04-01',
-                        'getOpeningTimes' => 1
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getAvailabilityTimes()
                     ],
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
                     'response' => $this->readFixture("GET_scope_141_availability.json")
                 ]
             ]
