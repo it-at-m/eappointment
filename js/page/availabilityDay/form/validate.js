@@ -13,6 +13,7 @@ const validate = (data, props) => {
 
     errorList.itemList.push(validateStartTime(today, tomorrow, selectedDate, data))
     errorList.itemList.push(validateEndTime(today, yesterday, selectedDate, data))
+    errorList.itemList.push(validateOriginEndTime(today, yesterday, selectedDate, data))
     errorList.itemList.push(validateType(data))
     errorList.itemList.push(validateSlotTime(data))
     
@@ -72,9 +73,7 @@ function validateEndTime(today, yesterday, selectedDate, data) {
     const dayMinutesStart = (parseInt(startHour) * 60) + parseInt(startMinute);
     const dayMinutesEnd = (parseInt(endHour) * 60) + parseInt(endMinute);
     const startTimestamp = startTime.set({ h: startHour, m: startMinute }).unix();
-    const endDateTime = endTime.clone().set({ h: endHour, m: endMinute });
     const endTimestamp = endTime.clone().set({ h: endHour, m: endMinute }).unix();
-    const isOrigin = (data.kind && 'origin' == data.kind)
 
     if (dayMinutesEnd <= dayMinutesStart) {
         errorList.push({
@@ -87,6 +86,17 @@ function validateEndTime(today, yesterday, selectedDate, data) {
             message: 'Das Startdatum muss nach dem Enddatum sein.'
         })
     }
+    return errorList;
+}
+
+function validateOriginEndTime(today, yesterday, selectedDate, data) {
+    var errorList = []
+    const endTime = moment(data.endDate, 'X').startOf('day');
+    const endHour = data.endTime.split(':')[0]
+    const endMinute = data.endTime.split(':')[1]
+    const endDateTime = endTime.clone().set({ h: endHour, m: endMinute });
+    const endTimestamp = endTime.clone().set({ h: endHour, m: endMinute }).unix();
+    const isOrigin = (data.kind && 'origin' == data.kind)
 
     if (! isOrigin && selectedDate.unix() > today.unix() && endTime.isBefore(selectedDate.startOf('day'), 'day')) {
         errorList.push({
