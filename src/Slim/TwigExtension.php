@@ -203,12 +203,13 @@ class TwigExtension extends \Twig_Extension
             }
             return $prepend . '<esi:include src="' . $uri . '" />' . $append;
         } else {
+            $useragent = 'Client-' . (defined("\App::IDENTIFIER") ? constant("\App::IDENTIFIER") : 'ZMS');
             $options = array(
                 'http'=>array(
                   'method'=>"GET",
                   'header'=>"Accept-language: de\r\n" .
                             "Cookie: zms=development\r\n" .
-                            "user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36\r\n" // i.e. Macbook Chrome Browser 
+                            "user-agent: $useragent \r\n" 
                 )
               );
             $context = stream_context_create($options);
