@@ -28,11 +28,13 @@ const validate = (data, props) => {
 function validateStartTime(today, tomorrow, selectedDate, data) {
     let errorList = []
     const startTime = moment(data.startDate, 'X').startOf('day');
-    const startHour = data.startTime.split(':')[0]
-    const endHour = data.endTime.split(':')[0]
-    const startMinute = data.startTime.split(':')[1]
-    const endMinute = data.endTime.split(':')[1]
-    const isFuture = (data.kind && 'future' == data.kind)
+    const startHour = data.startTime.split(':')[0];
+    const endHour = data.endTime.split(':')[0];
+    const startMinute = data.startTime.split(':')[1];
+    const endMinute = data.endTime.split(':')[1];
+    //const startDateTime = startTime.clone().set({ h: startHour, m: startMinute });
+    const isFuture = (data.kind && 'future' == data.kind);
+    //const isOrigin = (data.kind && 'origin' == data.kind);
 
     if (! isFuture && selectedDate.unix() > today.unix() && startTime.isAfter(selectedDate.startOf('day'), 'day')) {
         errorList.push({
@@ -40,6 +42,15 @@ function validateStartTime(today, tomorrow, selectedDate, data) {
             message: `Das Startdatum der Öffnungszeit muss vor dem ${tomorrow.format('DD.MM.YYYY')} liegen.`
         })
     }
+/*
+    if (isOrigin && startTime.isBefore(today.startOf('day'), 'day') && data.__modified) {
+        errorList.push({
+            type: 'startTimeOrigin', 
+            message: 'Öffnungszeiten in der Vergangenheit lassen sich nicht bearbeiten '
+            + '(Der Terminanfang am "'+startDateTime.format('DD.MM.YYYY')+' liegt vor dem heutigen Tag").'
+        })
+    }
+*/
 
     if ((startHour == "00" && startMinute == "00") || (endHour == "00" && endMinute == "00")) {
         errorList.push({
@@ -84,7 +95,10 @@ function validateEndTime(today, yesterday, selectedDate, data) {
         })
     }
 
-    if (! isOrigin && endTimestamp < today.unix()) {
+    if (
+        (! isOrigin && endTimestamp < today.unix()) ||
+        (isOrigin && endTimestamp < today.unix() && data.__modified)
+    ) {
         errorList.push({
             type: 'endTimePast', 
             message: 'Öffnungszeiten in der Vergangenheit lassen sich nicht bearbeiten '

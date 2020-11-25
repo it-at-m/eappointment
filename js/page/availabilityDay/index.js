@@ -207,7 +207,6 @@ class AvailabilityPage extends Component {
     editExclusionAvailability(availability, startDate, endDate, description, kind) {
         (startDate) ? availability.startDate = startDate : null;
         (endDate) ? availability.endDate = endDate : null;
-        availability.__modified = true;
         if (! availability.kind && kind != 'origin') {
             availability.tempId = tempId()
             availability.id = null
