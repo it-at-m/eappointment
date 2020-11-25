@@ -25,8 +25,7 @@ class AvailabilityForm extends Component {
             data: cleanupFormData(Object.assign({}, state.data, {
                 [name]: value,
                 __modified: true
-            })),
-            
+            }))
         }), () => {
             this.props.handleChange(getDataValuesFromForm(this.state.data, this.props.data.scope))
         })
