@@ -424,7 +424,7 @@ class AvailabilityPage extends Component {
 
     handleChange(data) {
         if (data.__modified) {
-            this.timer = null
+            clearTimeout(this.timer)
             this.setState(
                 Object.assign({}, updateAvailabilityInState(this.state, data), {selectedAvailability: data}),
                 () => {

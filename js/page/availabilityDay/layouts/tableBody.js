@@ -78,7 +78,10 @@ const renderTable = (onDelete, onSelect, onAbort, availabilities, data) => {
             const availabilityType = availabilityTypes.
                 find(element => element.value == availability.type)
 
-            const disabled = ((availability.id && availability.__modified) || availability.tempId);
+            const disabled = (
+                (availability.id && availability.__modified) || 
+                (availability.tempId && availability.__modified)
+            ); 
 
             const isSelected = (data && (
                 (data.id && availability.id == data.id) || 
