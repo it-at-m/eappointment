@@ -40,6 +40,7 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('isValueInArray', array($this, 'isValueInArray')),
             new \Twig_SimpleFunction('remoteInclude', array($this, 'remoteInclude'), $safe),
             new \Twig_SimpleFunction('includeUrl', array($this, 'includeUrl')),
+            new \Twig_SimpleFunction('getEsiFromPath', array($this, 'getEsiFromPath')),
             new \Twig_SimpleFunction('baseUrl', array($this, 'baseUrl')),
             new \Twig_SimpleFunction('currentLang', array($this, 'currentLang')),
             new \Twig_SimpleFunction('currentRoute', array($this, 'currentRoute')),
@@ -235,6 +236,11 @@ class TwigExtension extends \Twig_Extension
     public function baseUrl()
     {
         return $this->includeUrl(false);
+    }
+
+    public function getEsiFromPath($path)
+    {
+        return \App::$esiBaseUrl . \App::$$path;
     }
 
     public function getClientHost()
