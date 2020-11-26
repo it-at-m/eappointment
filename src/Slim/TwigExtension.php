@@ -209,7 +209,7 @@ class TwigExtension extends \Twig_Extension
                   'method'=>"GET",
                   'header'=>"Accept-language: de\r\n" .
                             "Cookie: zms=development\r\n" .
-                            "user-agent: $useragent \r\n" 
+                            "user-agent: $useragent \r\n"
                 )
               );
             $context = stream_context_create($options);
