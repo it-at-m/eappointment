@@ -12,6 +12,7 @@ namespace BO\Slim;
   *  @SuppressWarnings(PublicMethod)
   *  @SuppressWarnings(TooManyMethods)
   *  @SuppressWarnings(Coupling)
+  *  @SuppressWarnings(Complexity)
   */
 class TwigExtension extends \Twig_Extension
 {
