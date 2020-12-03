@@ -25,8 +25,7 @@ class CounterAppointmentTimes extends BaseController
         $availabilityList = \App::$http
             ->readGetResult('/scope/'. $workstation->scope['id'] . '/availability/', [
                 'startDate' => $selectedDate,
-                'endDate' => $selectedDate,
-                'gql' => Helper\GraphDefaults::getAvailabilityTimes()
+                'endDate' => $selectedDate
             ], \App::CONFIG_SECURE_TOKEN)
             ->getCollection()
             ->withDateTime($dateTime);

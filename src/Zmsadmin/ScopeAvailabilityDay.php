@@ -20,9 +20,11 @@ class ScopeAvailabilityDay extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $data = static::getAvailabilityData(intval($args['id']), $args['date']);
         $data['title'] = 'Behörden und Standorte - Öffnungszeiten';
         $data['menuActive'] = 'owner';
+        $data['workstation'] = $workstation;
         return \BO\Slim\Render::withHtml(
             $response,
             'page/availabilityday.twig',
@@ -32,10 +34,7 @@ class ScopeAvailabilityDay extends BaseController
 
     protected static function getScope($scopeId)
     {
-        return \App::$http->readGetResult('/scope/' . $scopeId . '/', [
-            'resolveReferences' => 1,
-            'gql' => Helper\GraphDefaults::getScope()
-        ])->getEntity();
+        return \App::$http->readGetResult('/scope/' . $scopeId . '/', ['resolveReferences' => 1])->getEntity();
     }
 
     protected static function getAvailabilityData($scopeId, $dateString)
@@ -112,7 +111,6 @@ class ScopeAvailabilityDay extends BaseController
                     '/scope/' . $scopeId . '/availability/',
                     [
                         'startDate' => $dateTime->format('Y-m-d'), //for skipping old availabilities
-                        'gql' => Helper\GraphDefaults::getAvailability()
                     ]
                 )
                 ->getCollection()->sortByCustomKey('startDate');
