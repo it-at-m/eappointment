@@ -21,6 +21,12 @@ class ScopeAvailabilityDayTest extends Base
             [
                 [
                     'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
                         'resolveReferences' => 1
@@ -68,6 +74,12 @@ class ScopeAvailabilityDayTest extends Base
             [
                 [
                     'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
                         'resolveReferences' => 1
@@ -109,6 +121,12 @@ class ScopeAvailabilityDayTest extends Base
 
         $this->setApiCalls(
             [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
@@ -157,6 +175,12 @@ class ScopeAvailabilityDayTest extends Base
 
         $this->setApiCalls(
             [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
