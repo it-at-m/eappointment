@@ -67,6 +67,7 @@ class Notification extends BaseController
                 'recipients' => $result->getAllRecipientAddresses(),
                 'mime' => $result->getMailMIME(),
                 'customHeaders' => $result->getCustomHeaders(),
+                'subject' => $result->Subject
             );
             if ($action) {
                 $this->deleteEntityFromQueue($entity);
@@ -118,7 +119,7 @@ class Notification extends BaseController
         $mailer->Encoding = 'base64';
         $mailer->SetLanguage("de");
         // Without base64, encoding leads to additional spaces
-        $mailer->Subject = "=?UTF-8?B?".$mailer->base64EncodeWrapMB(trim($entity->getMessage()))."?=";
+        $mailer->Subject = $mailer->base64EncodeWrapMB(trim($entity->getMessage()));
         $mailer->Body = '';
         $mailer->AllowEmpty = true;
         $from = $sender ? $sender : $entity['department']['email'];

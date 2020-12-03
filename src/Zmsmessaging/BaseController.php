@@ -19,7 +19,7 @@ class BaseController
 
     public function __construct($maxRunTime = 50)
     {
-        \App::$http->setUserInfo('_system_messenger', 'zmsmessaging');
+        \App::$http->setUserInfo(\App::$httpUser, \App::$httpPassword);
         $this->startTime = microtime(true);
         $this->maxRunTime = $maxRunTime;
     }
