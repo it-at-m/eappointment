@@ -30,8 +30,7 @@ class ScopeAvailabilityMonthTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                        'resolveReferences' => 1
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
@@ -40,8 +39,7 @@ class ScopeAvailabilityMonthTest extends Base
                     'url' => '/scope/141/availability/',
                     'parameters' => [
                         'startDate' => $startDate->format('Y-m-d'),
-                        'endDate' => $endDate->format('Y-m-d'),
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getAvailability()
+                        'endDate' => $endDate->format('Y-m-d')
                     ],
                     'response' => $this->readFixture("GET_scope_141_availability.json")
                 ],
@@ -88,8 +86,7 @@ class ScopeAvailabilityMonthTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                        'resolveReferences' => 1
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
@@ -123,8 +120,7 @@ class ScopeAvailabilityMonthTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                        'resolveReferences' => 1
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
@@ -139,8 +135,7 @@ class ScopeAvailabilityMonthTest extends Base
                     'url' => '/scope/141/availability/',
                     'parameters' => [
                         'startDate' => $startDate->format('Y-m-d'),
-                        'endDate' => $endDate->format('Y-m-d'),
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getAvailability()
+                        'endDate' => $endDate->format('Y-m-d')
                     ],
                     'exception' => $exception
                 ]
@@ -169,8 +164,7 @@ class ScopeAvailabilityMonthTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                        'resolveReferences' => 1
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
@@ -179,8 +173,7 @@ class ScopeAvailabilityMonthTest extends Base
                     'url' => '/scope/141/availability/',
                     'parameters' => [
                         'startDate' => $startDate->format('Y-m-d'),
-                        'endDate' => $endDate->format('Y-m-d'),
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getAvailability()
+                        'endDate' => $endDate->format('Y-m-d')
                     ],
                     'exception' => $exception
                 ],
@@ -227,8 +220,7 @@ class ScopeAvailabilityMonthTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                        'resolveReferences' => 1
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
@@ -243,8 +235,7 @@ class ScopeAvailabilityMonthTest extends Base
                     'url' => '/scope/141/availability/',
                     'parameters' => [
                         'startDate' => $startDate->format('Y-m-d'),
-                        'endDate' => $endDate->format('Y-m-d'),
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getAvailability()
+                        'endDate' => $endDate->format('Y-m-d')
                     ],
                     'exception' => $exception
                 ]
