@@ -116,8 +116,7 @@ class Notification extends BaseController
         $message = $entity->getMessage();
         $sender = $entity->getIdentification();
         $from = $sender ? $sender : $entity['department']['email'];
-        
-        $mailer = new PHPMailer();
+        $mailer = new PHPMailer(true);
         $mailer->CharSet = 'UTF-8';
         $mailer->Encoding = 'base64';
         $mailer->SetLanguage('de');
