@@ -67,7 +67,7 @@ class Notification extends BaseController
                 'recipients' => $result->getAllRecipientAddresses(),
                 'mime' => $result->getMailMIME(),
                 'customHeaders' => $result->getCustomHeaders(),
-                'subject' => $result->Subject
+                'subject' => mb_decode_mimeheader($result->Subject)
             );
             if ($action) {
                 $this->deleteEntityFromQueue($entity);
@@ -88,7 +88,6 @@ class Notification extends BaseController
         $messageId = $entity['id'];
         try {
             $mailer = $this->readMailer($entity);
-            $mailer->AddAddress($entity->getRecipient());
         // @codeCoverageIgnoreStart
         } catch (PHPMailerException $exception) {
             $message = "Message #$messageId PHPMailer Failure: ". $exception->getMessage();
@@ -114,19 +113,50 @@ class Notification extends BaseController
     protected function readMailer(\BO\Zmsentities\Notification $entity)
     {
         $this->testEntity($entity);
+        $message = $entity->getMessage();
         $sender = $entity->getIdentification();
-        $mailer = new PHPMailer(true);
+        $from = $sender ? $sender : $entity['department']['email'];
+        
+        $mailer = new PHPMailer();
+        $mailer->CharSet = 'UTF-8';
         $mailer->Encoding = 'base64';
-        $mailer->SetLanguage("de");
-        // Without base64, encoding leads to additional spaces
-        $mailer->Subject = "=?UTF-8?B?".$mailer->base64EncodeWrapMB(trim($entity->getMessage()))."?=";
+        $mailer->SetLanguage('de');
+        $mailer->SetFrom($from);
+        $mailer->AddAddress($entity->getRecipient());
+        
+        $mailer->Subject = $message;
         $mailer->Body = '';
         $mailer->AllowEmpty = true;
-        $from = $sender ? $sender : $entity['department']['email'];
-        $mailer->SetFrom($from);
+        
         $mailer->FromName = $sender;
-        $mailer->CharSet = 'UTF-8';
         $mailer->XMailer = \App::IDENTIFIER;
+
+        #to test via gmail
+        /*
+        $mailer->IsSMTP();
+        $mailer->SMTPDebug  = 1;
+        $mailer->SMTPAuth   = true;
+        $mailer->SMTPSecure = "tls";
+        $mailer->Port       = 587;
+        $mailer->Host       = "smtp.gmail.com";
+        $mailer->Username   = "";
+        $mailer->Password   = "";
+        $mailer->AddAddress("", "");
+        $mailer->FromName   = "";
+        */
+        /*
+        #to test via kasserver
+        $mailer->IsSMTP();
+        $mailer->SMTPDebug  = 1;
+        $mailer->SMTPAuth   = true;
+        $mailer->SMTPSecure = "tls";
+        $mailer->Port       = 587;
+        $mailer->Host       = "w00b3688.kasserver.com";
+        $mailer->Username   = "";
+        $mailer->Password   = "";
+        $mailer->AddAddress("", "");
+        $mailer->FromName   = "";
+        */
         return $mailer;
     }
 }
