@@ -66,8 +66,8 @@ class Notification extends BaseController
                 'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
                 'recipients' => $result->getAllRecipientAddresses(),
                 'mime' => $result->getMailMIME(),
-                'customHeaders' => $result->getCustomHeaders(),
-                'subject' => mb_decode_mimeheader($result->Subject)
+                'identification' => $result->FromName,
+                'subject' => $result->Subject
             );
             if ($action) {
                 $this->deleteEntityFromQueue($entity);
@@ -113,10 +113,10 @@ class Notification extends BaseController
     protected function readMailer(\BO\Zmsentities\Notification $entity)
     {
         $this->testEntity($entity);
-        $message = $entity->getMessage();
         $sender = $entity->getIdentification();
         $from = $sender ? $sender : $entity['department']['email'];
         $mailer = new PHPMailer(true);
+        $message = trim($entity->getMessage());
         $mailer->CharSet = 'UTF-8';
         $mailer->Encoding = 'base64';
         $mailer->SetLanguage('de');
