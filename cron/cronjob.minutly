@@ -6,6 +6,6 @@ set -a
 set +a
 
 if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
-    php -d mail.add_x_header=0 "$ZMS_PHP_CLI_OPT" $BIN/mail_queue.php --send "$@"
-    php -d mail.add_x_header=0 "$ZMS_PHP_CLI_OPT" $BIN/notification_queue.php --send "$@"
+    php -d mail.add_x_header=0 $BIN/mail_queue.php --send "$@"
+    php -d mail.add_x_header=0 $BIN/notification_queue.php --send "$@"
 fi
