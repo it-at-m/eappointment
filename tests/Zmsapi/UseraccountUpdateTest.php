@@ -159,4 +159,33 @@ class UseraccountUpdateTest extends Base
             }'
         ], []);
     }
+
+    public function testMissingAssignedRights()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectExceptionCode(403);
+        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setDepartment(74);
+        $response = $this->render(['loginname' => 'testadmin'], [
+            '__body' => '{
+                "rights": {
+                "availability": "0",
+                "basic": "0",
+                "cluster": "0",
+                "department": "0",
+                "organisation": "1",
+                "scope": "0",
+                "sms": "0",
+                "superuser": "0",
+                "ticketprinter": "0",
+                "useraccount": "1"
+              },
+              "departments": [
+                  {"id": 74}
+              ],
+              "email": "unittest@berlinonline.de",
+              "id": "unittest"
+            }'
+        ], []);
+    }
 }
