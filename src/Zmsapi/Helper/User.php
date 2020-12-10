@@ -95,8 +95,8 @@ class User
             ->getUseraccount()
             ->testRights(
                 array_keys(
-                    array_filter($useraccount->rights, function($right) { 
-                        return (1 == $right); 
+                    array_filter($useraccount->rights, function ($right) {
+                        return (1 == $right);
                     })
                 )
             );
