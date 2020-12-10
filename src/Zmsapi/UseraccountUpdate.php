@@ -67,6 +67,5 @@ class UseraccountUpdate extends BaseController
 
         Helper\User::testWorkstationAccessRights($entity);
         Helper\User::testWorkstationAssignedRights($entity);
-        
     }
 }
