@@ -1,3 +1,7 @@
+## v2.23.09
+
+* #46531 Der Sachbearbeiter kann einem Nutzer nur noch Rechte zuordnen, die ihm selbst gewährt sind.
+
 ## v2.23.08
 
 * #46608 Öffnungszeiten-Seiten werden durch optimierte API-Abfragen schneller geladen
