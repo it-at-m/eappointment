@@ -1,3 +1,7 @@
+## v2.23.09
+
+* #46531 Bugfix: Ein Nutzer kann einem anderen Nutzer oder sich selbst nicht mehr Rechte geben als ihm zugeordnet sind.
+
 ## v2.23.08
 
 * #46608 - Öffnungszeiten können für einen Standort nun auch mit Basisrechten abgerufen werden, wenn die Terminzeiten vom Tresen benötigt werden. Nutzer mit Basisrechten können Öffnungszeiten weiterhin nicht bearbeiten
