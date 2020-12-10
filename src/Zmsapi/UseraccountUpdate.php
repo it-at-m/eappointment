@@ -34,7 +34,6 @@ class UseraccountUpdate extends BaseController
 
         $entity = new \BO\Zmsentities\Useraccount($input);
         $this->testEntity($entity, $input, $args);
-        Helper\User::testWorkstationAccessRights($entity);
 
         $message = Response\Message::create($request);
         $message->data = (new Useraccount)->updateEntity($args['loginname'], $entity, $resolveReferences);
@@ -65,5 +64,9 @@ class UseraccountUpdate extends BaseController
         if ($args['loginname'] != $entity->id && (new Useraccount)->readIsUserExisting($entity->id)) {
             throw new Exception\Useraccount\UseraccountAlreadyExists();
         }
+
+        Helper\User::testWorkstationAccessRights($entity);
+        Helper\User::testWorkstationAssignedRights($entity);
+        
     }
 }
