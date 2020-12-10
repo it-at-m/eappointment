@@ -1,3 +1,7 @@
+## v2.23.09
+
+* #46920 Eine Liste von Vorgängen kann nun nach dem Namen des Standortes sortiert werden
+
 ## v2.23.08
 
 * #46608 Öffnungszeiten können nun auch mit reduzierten Daten abgerufen werden
