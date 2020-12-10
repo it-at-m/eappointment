@@ -29,8 +29,8 @@ class UseraccountEdit extends BaseController
         $userAccount = \App::$http->readGetResult('/useraccount/'. $userAccountName .'/')->getEntity();
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
 
-        $input = $request->getParsedBody();
-        if (is_array($input) && array_key_exists('id', $input)) {
+        if ($request->isPost()) {
+            $input = $request->getParsedBody();
             $result = $this->writeUpdatedEntity($input, $userAccountName);
             if ($result instanceof Entity) {
                 return \BO\Slim\Render::redirect(
