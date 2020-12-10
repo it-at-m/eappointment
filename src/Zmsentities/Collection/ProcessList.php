@@ -40,6 +40,17 @@ class ProcessList extends Base
         return $list;
     }
 
+    public function sortByScopeName()
+    {
+        $this->uasort(function ($a, $b) {
+            return strcmp(
+                Sorter::toSortableString(ucfirst($a->scope->contact['name'])),
+                Sorter::toSortableString(ucfirst($b->scope->contact['name']))
+            );
+        });
+        return $this;
+    }
+
     public function sortByAppointmentDate()
     {
         $this->uasort(function ($a, $b) {
