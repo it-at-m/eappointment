@@ -20,6 +20,8 @@ class Process extends Base implements MappingInterface
         SET
             process.Anmerkung = ?,
             process.StandortID = 0,
+            process.AbholortID = 0,
+            process.Abholer = 0,
             process.Name = 'dereferenced',
             process.IPadresse = '',
             process.IPTimeStamp = 0,
