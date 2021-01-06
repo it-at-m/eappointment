@@ -57,9 +57,9 @@ class ProcessFinished extends BaseController
 
     protected function testProcessInWorkstation($process, $workstation)
     {
-        $cluster = (new \BO\Zmsdb\Cluster)->readByScopeId($workstation->scope['id'], 1);
+        $department = (new \BO\Zmsdb\Department)->readByScopeId($workstation->scope['id'], 1);
         $workstation->process = $process;
-        $workstation->testMatchingProcessScope($workstation->getScopeList($cluster));
+        $workstation->testMatchingProcessScope($department->getScopeList());
     }
 
     protected function testProcessData($process)
