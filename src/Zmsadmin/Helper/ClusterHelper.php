@@ -11,7 +11,7 @@ class ClusterHelper
 {
     protected static $cluster = null;
 
-    private static $workstation = null;
+    protected static $workstation = null;
 
     public function __construct(\BO\Zmsentities\Workstation $workstation)
     {
