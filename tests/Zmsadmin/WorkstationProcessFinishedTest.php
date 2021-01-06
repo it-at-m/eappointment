@@ -22,8 +22,9 @@ class WorkstationProcessFinishedTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
+                    'url' => '/scope/141/department/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -51,8 +52,9 @@ class WorkstationProcessFinishedTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
+                    'url' => '/scope/141/department/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_department_74.json")
                 ]
             ]
         );
@@ -76,8 +78,9 @@ class WorkstationProcessFinishedTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
+                    'url' => '/scope/141/department/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -123,8 +126,9 @@ class WorkstationProcessFinishedTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
+                    'url' => '/scope/141/department/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -170,8 +174,9 @@ class WorkstationProcessFinishedTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
+                    'url' => '/scope/141/department/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -217,8 +222,9 @@ class WorkstationProcessFinishedTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
+                    'url' => '/scope/141/department/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_department_74.json")
                 ]
             ]
         );
@@ -247,8 +253,9 @@ class WorkstationProcessFinishedTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
+                    'url' => '/scope/141/department/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_department_74.json")
                 ]
             ]
         );
@@ -274,8 +281,9 @@ class WorkstationProcessFinishedTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
+                    'url' => '/scope/141/department/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_department_74.json")
                 ]
             ]
         );
