@@ -16,7 +16,7 @@ class ProcessReserveTest extends Base
             '__body' => json_encode($process)
         ], []);
 
-        $this->assertContains('reserved', (string)$response->getBody());
+        $this->assertContains('"status":"reserved"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

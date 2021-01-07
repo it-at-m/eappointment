@@ -14,9 +14,13 @@ class ProcessDeleteTest extends Base
 
     public function testRendering()
     {
+        $entity = (new \BO\Zmsdb\Process)->readEntity(10029, new \BO\Zmsdb\Helper\NoAuth);
+        $this->assertEquals('confirmed', $entity->status);
+
         $response = $this->render(['id' => 10029, 'authKey' => '1c56'], [], []);
         $this->assertContains('Abgesagter Termin', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+        
         $entity = (new \BO\Zmsdb\Process)->readEntity(10029, new \BO\Zmsdb\Helper\NoAuth);
         $this->assertEquals('deleted', $entity->status);
     }

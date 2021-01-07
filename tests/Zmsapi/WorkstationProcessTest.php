@@ -25,6 +25,9 @@ class WorkstationProcessTest extends Base
         $this->assertContains(User::$workstation->process['id'], (string)$response->getBody());
         $this->assertContains('workstation.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+
+        $entity = (new \BO\Zmsdb\Process)->readEntity(User::$workstation->process['id'], new \BO\Zmsdb\Helper\NoAuth);
+        $this->assertEquals('called', $entity->status);
     }
 
     public function testClusterWideCallDisabled()

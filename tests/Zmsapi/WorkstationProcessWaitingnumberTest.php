@@ -19,14 +19,16 @@ class WorkstationProcessWaitingnumberTest extends Base
         $workstation->scope['id'] = 146; //ghostworkstation count 3
         $response = $this->render([], [
             '__body' => '{
-                "id": '. self::PROCESS_ID .',
-                "authKey": "'. self::AUTHKEY .'",
                 "scope": {"id": 146, "preferences":{"queue":{"processingTimeAverage":10}}}
             }'
         ], []);
         $this->assertContains('process.json', (string)$response->getBody());
         $this->assertContains('"status":"queued"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+
+        $process = new \BO\Zmsentities\Process(json_decode($response->getBody(), true)['data']);
+        $entity = (new \BO\Zmsdb\Process)->readEntity($process->id, new \BO\Zmsdb\Helper\NoAuth);
+        $this->assertEquals('queued', $entity->status);
     }
 
     public function testEmpty()
