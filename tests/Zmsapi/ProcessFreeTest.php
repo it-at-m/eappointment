@@ -31,6 +31,7 @@ class ProcessFreeTest extends Base
             }'
         ], []);
         $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertContains('"status":"free"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

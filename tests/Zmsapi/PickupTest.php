@@ -13,7 +13,13 @@ class PickupTest extends Base
         $this->setWorkstation();
         User::$workstation->queue['clusterEnabled'] = 1;
         User::$workstation->scope['id'] = 141;
-        (new ProcessFinishedTest)->testRenderingPending();
+        
+        $entity = (new \BO\Zmsdb\Process)->readEntity(10030, new \BO\Zmsdb\Helper\NoAuth);
+        $entity->status = 'pending';
+        $response = (new ProcessFinishedTest())->render([], [
+            '__body' => json_encode($entity)
+        ], []);
+
         $response = $this->render([], [], []);
         $this->assertContains('process.json', (string)$response->getBody());
         $this->assertContains('"status":"pending"', (string)$response->getBody());

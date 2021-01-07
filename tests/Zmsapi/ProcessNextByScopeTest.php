@@ -14,6 +14,9 @@ class ProcessNextByScopeTest extends Base
         $response = $this->render(['id' => 141], [], []);
         $this->assertContains('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+
+        $entity = (new \BO\Zmsdb\Process)->readEntity(156285, new \BO\Zmsdb\Helper\NoAuth);
+        $this->assertEquals('confirmed', $entity->status);
     }
 
     public function testEmpty()

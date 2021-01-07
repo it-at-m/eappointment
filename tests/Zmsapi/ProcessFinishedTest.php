@@ -11,14 +11,20 @@ class ProcessFinishedTest extends Base
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
         $workstation['queue']['clusterEnabled'] = 1;
 
+        $entity = (new \BO\Zmsdb\Process)->readEntity(10030, new \BO\Zmsdb\Helper\NoAuth);
+        $this->assertEquals('confirmed', $entity->status);
+
         $process = json_decode($this->readFixture("GetProcess_10030.json"));
         $process->status = 'finished';
         $response = $this->render([], [
             '__body' => json_encode($process)
         ], []);
 
-        $this->assertContains('finished', (string)$response->getBody());
+        $this->assertContains('"status":"finished"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+
+        $entity = (new \BO\Zmsdb\Process)->readEntity($process->id, new \BO\Zmsdb\Helper\NoAuth);
+        $this->assertEquals('blocked', $entity->status);
     }
 
     public function testRenderingPending()
@@ -26,14 +32,22 @@ class ProcessFinishedTest extends Base
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
         $workstation['queue']['clusterEnabled'] = 1;
 
-        $process = json_decode($this->readFixture("GetProcess_10030.json"));
-        $process->status = 'pending';
+        $entity = (new \BO\Zmsdb\Process)->readEntity(10030, new \BO\Zmsdb\Helper\NoAuth);
+        $entity->status = 'pending';
         $response = $this->render([], [
-            '__body' => json_encode($process)
+            '__body' => json_encode($entity)
         ], []);
 
-        $this->assertContains('pending', (string)$response->getBody());
+        $this->assertContains('"status":"pending"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+
+        $entity->status = 'finished';
+        $response = $this->render([], [
+            '__body' => json_encode($entity)
+        ], []);
+
+        $entityAfter = (new \BO\Zmsdb\Process)->readEntity($entity->id, new \BO\Zmsdb\Helper\NoAuth);
+        $this->assertEquals('blocked', $entityAfter->status);
     }
 
     public function testUnvalidCredentials()
