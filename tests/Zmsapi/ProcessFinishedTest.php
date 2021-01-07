@@ -40,14 +40,16 @@ class ProcessFinishedTest extends Base
 
         $this->assertContains('"status":"pending"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+        $entity = (new \BO\Zmsdb\Process)->readEntity($entity->id, new \BO\Zmsdb\Helper\NoAuth);
+        $this->assertEquals('pending', $entity->status);
 
         $entity->status = 'finished';
         $response = $this->render([], [
             '__body' => json_encode($entity)
         ], []);
 
-        $entityAfter = (new \BO\Zmsdb\Process)->readEntity($entity->id, new \BO\Zmsdb\Helper\NoAuth);
-        $this->assertEquals('blocked', $entityAfter->status);
+        $entity = (new \BO\Zmsdb\Process)->readEntity($entity->id, new \BO\Zmsdb\Helper\NoAuth);
+        $this->assertEquals('blocked', $entity->status);
     }
 
     public function testUnvalidCredentials()
