@@ -1,6 +1,8 @@
 ## v2.23.09
 
 * #46920 Eine Liste von Vorgängen kann nun nach dem Namen des Standortes sortiert werden
+* #42066 Wurden für Spontankunden keine Dienstleistungen ausgewählt, wird das in der Bestätigungs-Email nun vermerkt
+* #42066 Bugfix: Wurde nur eine Dienstleistung ausgewählt wird in der Überschrift nun die Einzahl Dienstleistung verwendet
 
 ## v2.23.08
 

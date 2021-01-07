@@ -140,6 +140,41 @@ class MailTest extends EntityCommonTests
         );
     }
 
+    public function testQueuedMailWithOneRequests()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $config = (new \BO\Zmsentities\Config())->getExample();
+        $entity->addMultiPart(array());
+        $entity->client = null;
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'queued');
+        $this->assertContains('Sie haben folgende Dienstleistung ausgewählt:', $resolvedEntity->getPlainPart());
+    }
+
+    public function testQueuedMailWithMultipleRequests()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $process->requests[] = (new \BO\Zmsentities\Request())->getExample();
+        $config = (new \BO\Zmsentities\Config())->getExample();
+        $entity->addMultiPart(array());
+        $entity->client = null;
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'queued');
+        $this->assertContains('Sie haben folgende Dienstleistungen ausgewählt:', $resolvedEntity->getPlainPart());
+    }
+
+    public function testQueuedMailWithoutRequests()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $process->requests = [];
+        $config = (new \BO\Zmsentities\Config())->getExample();
+        $entity->addMultiPart(array());
+        $entity->client = null;
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'queued');
+        $this->assertContains('Sie haben keine Dienstleistungen ausgewählt.', $resolvedEntity->getPlainPart());
+    }
+
     public function testTemplateNotFound()
     {
         $this->expectException('\BO\Zmsentities\Exception\TemplateNotFound');
