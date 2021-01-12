@@ -1,3 +1,8 @@
+## v2.23.09
+
+* #36531 Bei der Abfrage der Linkliste wird zusätzlich nach Links gesucht, die der gesamten Organisation zugeordnet sind
+
+
 ## v2.23.07
 
 * #44182 Bugfix: Eine Behörde kann einem Nutzer auch zugeordnet werden, wenn noch kein Standort zu dieser Behörde gehört.
