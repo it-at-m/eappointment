@@ -43,7 +43,8 @@ class Workstation extends Base
                     new ScopeEntity($workstation->scope),
                     $resolveReferences - 1
                 );
-                $workstation->linkList = (new Link)->readByScopeId($workstation->scope['id']);
+                $department = (new Department())->readByScopeId($workstation->scope['id']);
+                $workstation->linkList = (new Link())->readByDepartmentId($department->getId());
             }
             $workstation->process = (new Process)->readByWorkstation($workstation, $resolveReferences - 1);
             $config = (new Config)->readEntity();
