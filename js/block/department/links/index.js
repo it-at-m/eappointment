@@ -3,13 +3,18 @@ import PropTypes from 'prop-types'
 import { getEntity } from '../../../lib/schema'
 import * as Inputs from '../../../lib/inputs'
 
-const renderLink = (link, index, onChange, onDeleteClick) => {
+const renderLink = (organisationId, link, index, onChange, onDeleteClick) => {
     const formName = `links[${index}]`
 
     const onChangeName = (_, value) => onChange(index, 'name', value)
     const onChangeUrl = (_, value) => onChange(index, 'url', value)
     const onChangeTarget = (_, value) => onChange(index, 'target', value)
     const onChangePublic = (_, value) => onChange(index, 'public', value)
+    const onChangeOrganisation = (_, value) => onChange(index, 'organisation', value)
+    const onDelete = ev => {
+        ev.preventDefault()
+        onDeleteClick(index)
+    };
 
     return (
         <tr className="link-item" key={index}>
@@ -31,36 +36,49 @@ const renderLink = (link, index, onChange, onDeleteClick) => {
                     attributes={{"aria-label":"URL"}}
                 />
             </td>
-            <td className="link-item__target">
+            <td className="link-item__settings">
                 <div className="form-check">
                 <Inputs.Checkbox
                     name={`${formName}[target]`}
                     key="In neuem Fenster öffnen"
-                    label="Im neuen Fenster öffnen"
+                    label="in neuem Fenster"
                     onChange={onChangeTarget}
                     value={link.target}
                     checked={1 == link.target}
                 />
                 </div>
             </td>
-            <td className="link-item__public">
+            <td className="link-item__settings">
                 <div className="form-check">
                 <Inputs.Checkbox
                     name={`${formName}[public]`}
                     key="Externer Link"
-                    label="Externer Link"
+                    title="Link hat eine öffentliche URL"
+                    label="öffentliche URL"
                     onChange={onChangePublic}
                     value={link.public}
                     checked={1 == link.public}
                 />
                 </div>
             </td>
-            <td className="link-item__delete">
+            <td className="link-item__settings">
                 <div className="form-check">
-                    <label className="form-check-label link__delete-button">
-                        <input className="form-check-input" type="checkbox" checked={true} onChange={() => {}} onClick={() => onDeleteClick(index)} />
-                        Löschen
-                    </label>
+                    <Inputs.Checkbox
+                        name={`${formName}[organisation]`}
+                        key="Für gesamte Organisation"
+                        title="Für gesamte Organisation aktivieren"
+                        label="Organisation"
+                        onChange={onChangeOrganisation}
+                        value={organisationId}
+                        checked={0 < link.organisation}
+                    />
+                </div>
+            </td>
+            <td className="link-item__settings">
+                <div className="form-check">
+                    <a href="#" className="icon" title="Link entfernen" onClick={onDelete}>
+                        <i className="far fa-trash-alt" aria-hidden="true"></i>
+                    </a>
                 </div>
             </td>
         </tr>
@@ -70,7 +88,10 @@ const renderLink = (link, index, onChange, onDeleteClick) => {
 class LinksView extends Component {
     constructor(props) {
         super(props)
-        this.state = { links: [] }
+        this.state = { 
+            links: [],
+            organisation: this.props.organisation
+        }
     }
 
     componentDidMount() {
@@ -115,7 +136,7 @@ class LinksView extends Component {
             this.addNewItem()
         }
 
-        const onDeleteClick = index => {
+        const onDeleteClick = (index) => {
             this.deleteItem(index)
         }
 
@@ -130,13 +151,11 @@ class LinksView extends Component {
                         <tr>
                             <th>Bezeichnung</th>
                             <th>Link</th>
-                            <th>Im neuen Fenster öffnen</th>
-                            <th>Im Intranet</th>
-                            <th>Löschen</th>
+                            <th colSpan="4">Linkeinstellungen</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.links.map((link, index) => renderLink(link, index, onChange, onDeleteClick))}
+                        {this.state.links.map((link, index) => renderLink(this.state.organisation, link, index, onChange, onDeleteClick))}
                     </tbody>
                 </table>
                 <div className="table-actions">
