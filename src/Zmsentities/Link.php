@@ -13,7 +13,9 @@ class Link extends Schema\Entity
         return [
             'name' => '',
             'url' => '',
-            'target' => true
+            'target' => true,
+            'public' => false,
+            'organisation' => 0
         ];
     }
 
