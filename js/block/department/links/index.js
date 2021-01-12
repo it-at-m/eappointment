@@ -32,23 +32,21 @@ const renderLink = (link, index, onChange, onDeleteClick) => {
             </td>
             <td className="link-item__target">
                 <div className="form-check">
-                    <label className="checkbox-label">
-                        <Inputs.Checkbox
-                            name={`${formName}[target]`}
-                            key="In neuem Fenster öffnen"
-                            onChange={onChangeTarget}
-                            value={link.target}
-                            checked={1 == link.target}
-                        />
-                        <span className="form-check-label">Im neuen Fenster öffnen</span>
-                    </label>
+                <Inputs.Checkbox
+                    name={`${formName}[target]`}
+                    key="In neuem Fenster öffnen"
+                    label="Im neuen Fenster öffnen"
+                    onChange={onChangeTarget}
+                    value={link.target}
+                    checked={1 == link.target}
+                />
                 </div>
             </td>
             <td className="link-item__delete">
                 <div className="form-check">
-                    <label className="checkboxdeselect link__delete-button">
-                        <input type="checkbox" checked={true} onChange={() => {}} onClick={() => onDeleteClick(index)} />
-                        <span className="form-check-label">Löschen</span>
+                    <label className="form-check-label link__delete-button">
+                        <input className="form-check-input" type="checkbox" checked={true} onChange={() => {}} onClick={() => onDeleteClick(index)} />
+                        Löschen
                     </label>
                 </div>
             </td>
