@@ -30,9 +30,9 @@ const renderDay = (day, index, onChange, onDeleteClick) => {
             </td>
             <td className="daysoff-item__delete">
                 <div className="form-check">
-                    <label className="checkboxdeselect daysoff__delete-button form-check-label">
-                        <input type="checkbox" checked={true} onChange={() => {}} onClick={() => onDeleteClick(index)} />
-                        <span className="form-check-label">Löschen</span>
+                    <label className="daysoff__delete-button form-check-label">
+                        <input className="form-check-input" type="checkbox" checked={true} onChange={() => {}} onClick={() => onDeleteClick(index)} />
+                        Löschen
                     </label>
                 </div>
             </td>
