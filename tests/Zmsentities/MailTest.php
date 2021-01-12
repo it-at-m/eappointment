@@ -140,7 +140,7 @@ class MailTest extends EntityCommonTests
         );
     }
 
-    public function testQueuedMailWithOneRequests()
+    public function testQueuedMailWithOneRequest()
     {
         $entity = (new $this->entityclass())->getExample();
         $process = (new \BO\Zmsentities\Process())->getExample();
@@ -172,6 +172,41 @@ class MailTest extends EntityCommonTests
         $entity->addMultiPart(array());
         $entity->client = null;
         $resolvedEntity = $entity->toResolvedEntity($process, $config, 'queued');
+        $this->assertContains('Sie haben keine Dienstleistungen ausgewählt.', $resolvedEntity->getPlainPart());
+    }
+
+    public function testMailWithOneRequest()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $config = (new \BO\Zmsentities\Config())->getExample();
+        $entity->addMultiPart(array());
+        $entity->client = null;
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'appointment');
+        $this->assertContains('Sie haben folgende Dienstleistung ausgewählt:', $resolvedEntity->getPlainPart());
+    }
+
+    public function testMailWithMultipleRequests()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $process->requests[] = (new \BO\Zmsentities\Request())->getExample();
+        $config = (new \BO\Zmsentities\Config())->getExample();
+        $entity->addMultiPart(array());
+        $entity->client = null;
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'appointment');
+        $this->assertContains('Sie haben folgende Dienstleistungen ausgewählt:', $resolvedEntity->getPlainPart());
+    }
+
+    public function testMailWithoutRequests()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $process->requests = [];
+        $config = (new \BO\Zmsentities\Config())->getExample();
+        $entity->addMultiPart(array());
+        $entity->client = null;
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'appointment');
         $this->assertContains('Sie haben keine Dienstleistungen ausgewählt.', $resolvedEntity->getPlainPart());
     }
 
