@@ -13,34 +13,33 @@ Ihre Vorgangsnummer ist die <strong>"{{ process.id }}"</strong><br />
 Ihr Code zur Terminabsage oder -änderung lautet <strong>"{{ process.authKey }}"</strong><br />
 <br />
 {% if process.scope.provider.source == "dldb" and process.scope.provider.data.payment %}
-Zahlungshinweis: {{ process.scope.provider.data.payment }}<br />
-<br />
+Zahlungshinweis: {{ process.scope.provider.data.payment }}<br /><br />
 {% endif %}
-
-{% if process.request|length > 0 %}
+{% if process.requests|length > 1 %}
 {% set requestalias = "Dienstleistungen" %}
 {% else %}
 {% set requestalias = "Dienstleistung" %}
 {% endif %}
-Sie haben folgende {{ requestalias }} ausgewählt:<br />
-<br />
-{% for request in process.requests %}
-<strong>{{ request.name }}</strong><br/>
-{% if request.source == "dldb" %}
-<div style="border-left: 1em solid #ffffff; background: #ffffff;">
-<br />
-{% if request.data %}
-{% include "@dldb/detail/service_detail_prerequisites.twig" with {"service":request.data, "headerlevel":"h4"} %}
+{% if process.requests|length == 0 %}
+Sie haben keine Dienstleistungen ausgewählt.
+{% else %}
+Sie haben folgende {{ requestalias }} ausgewählt:
+<br/><br />
+    {% for request in process.requests %}
+    <strong>{{ request.name }}</strong><br/>
+    {% if request.source == "dldb" and request.data %}
+    <div style="border-left: 1em solid #ffffff; background: #ffffff;">
+    {% include "@dldb/detail/service_detail_prerequisites.twig" with {"service":request.data, "headerlevel":"h4"} %}
 
-{% include "@dldb/detail/service_detail_requirements.twig" with {"service":request.data, "headerlevel":"h4"} %}
+    {% include "@dldb/detail/service_detail_requirements.twig" with {"service":request.data, "headerlevel":"h4"} %}
 
-{% include "@dldb/detail/service_detail_fees.twig" with {"service":request.data, "headerlevel":"h4"} %}
-<br />
+    {% include "@dldb/detail/service_detail_fees.twig" with {"service":request.data, "headerlevel":"h4"} %}
+    </div>
+    {% endif %}
+    {% endfor %}
 {% endif %}
-</div>
-{% endif %}
-{% endfor %}
-<br />
+
+<br /><br />
 Sollten Sie den Termin nicht wahrnehmen können, sagen Sie ihn bitte ab.<br />
 <br />
 Dies können Sie über unsere Internetbuchungsseite <a href="{{ config.appointments.urlChange }}">{{ config.appointments.urlChange }}</a> unter Angabe Ihrer Vorgangsnummer "{{ process.id }}" und Ihres persönlichen Absage-Codes "{{ process.authKey }}" erledigen.<br />
