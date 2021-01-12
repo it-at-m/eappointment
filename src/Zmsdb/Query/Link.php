@@ -20,7 +20,9 @@ class Link extends Base
             'id' => 'link.linkid',
             'name' => 'link.beschreibung',
             'url' => 'link.link',
-            'target' => 'link.neuerFrame'
+            'target' => 'link.neuerFrame',
+            'public' => 'link.oeffentlich',
+            'organisation' => 'link.organisationsid'
         ];
     }
 
@@ -32,29 +34,26 @@ class Link extends Base
 
     public function addConditionDepartmentId($departmentId)
     {
-        $this->query->where('link.behoerdenid', '=', $departmentId);
-        return $this;
-    }
-
-    public function addConditionScopeId($scopeId)
-    {
         $this->leftJoin(
-            new Alias('standort', 'link_scope'),
-            'link_scope.BehoerdenID',
+            new Alias('behoerde', 'link_department'),
+            'link_department.OrganisationsID',
             '=',
-            'link.behoerdenid'
+            'link.organisationsid'
         );
-        $this->query->where('link_scope.StandortID', '=', $scopeId);
+        $this->query->where('link_department.BehoerdenID', '=', $departmentId);
+        $this->query->orWhere('link.behoerdenid', '=', $departmentId);
         return $this;
     }
-
+    
     public function reverseEntityMapping(\BO\Zmsentities\Link $entity, $departmentId)
     {
         $data = array();
-        $data['behoerdenid'] = $departmentId;
+        $data['behoerdenid'] = ($entity->organisation) ? 0 : $departmentId;
+        $data['organisationsid'] = $entity->organisation;
         $data['beschreibung'] = $entity->name;
         $data['link'] = $entity->url;
         $data['neuerFrame'] = ($entity->target)  ? 1 : 0;
+        $data['oeffentlich'] = ($entity->public)  ? 1 : 0;
 
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);

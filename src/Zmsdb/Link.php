@@ -31,29 +31,6 @@ class Link extends Base
     }
 
     /**
-     * Fetch status from db
-     *
-     * @return \BO\Zmsentities\Collection\LinkList
-     */
-    public function readByScopeId($scopeId)
-    {
-        $linkList = new Collection();
-        $query = new Query\Link(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
-            ->addConditionScopeId($scopeId);
-        $result = $this->fetchList($query, new Entity());
-        if (count($result)) {
-            foreach ($result as $entity) {
-                if ($entity instanceof Entity) {
-                    $linkList->addEntity($entity);
-                }
-            }
-        }
-        return $linkList;
-    }
-
-    /**
      * write a link
      *
      * @param
