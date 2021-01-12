@@ -9,6 +9,7 @@ const renderLink = (link, index, onChange, onDeleteClick) => {
     const onChangeName = (_, value) => onChange(index, 'name', value)
     const onChangeUrl = (_, value) => onChange(index, 'url', value)
     const onChangeTarget = (_, value) => onChange(index, 'target', value)
+    const onChangePublic = (_, value) => onChange(index, 'public', value)
 
     return (
         <tr className="link-item" key={index}>
@@ -39,6 +40,18 @@ const renderLink = (link, index, onChange, onDeleteClick) => {
                     onChange={onChangeTarget}
                     value={link.target}
                     checked={1 == link.target}
+                />
+                </div>
+            </td>
+            <td className="link-item__public">
+                <div className="form-check">
+                <Inputs.Checkbox
+                    name={`${formName}[public]`}
+                    key="Externer Link"
+                    label="Externer Link"
+                    onChange={onChangePublic}
+                    value={link.public}
+                    checked={1 == link.public}
                 />
                 </div>
             </td>
@@ -118,6 +131,7 @@ class LinksView extends Component {
                             <th>Bezeichnung</th>
                             <th>Link</th>
                             <th>Im neuen Fenster öffnen</th>
+                            <th>Im Intranet</th>
                             <th>Löschen</th>
                         </tr>
                     </thead>
