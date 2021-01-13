@@ -85,11 +85,11 @@ class CallDisplayConfigView extends Component {
         return `${baseUrl}?${parameters.join('&')}`
     }
 
-    renderCheckbox(enabled, onShowChange) {
+    renderCheckbox(enabled, onShowChange, label) {
         const onChange = () => onShowChange(!enabled)
 
         return (
-            <Inputs.Checkbox checked={enabled} {...{ onChange }} />
+            <Inputs.Checkbox checked={enabled} {...{ onChange, label }} />
         )
     }
 
@@ -122,10 +122,7 @@ class CallDisplayConfigView extends Component {
         }, false)
         return (
             <div key={item.id} className="form-check ticketprinter-config__item">
-                <label className="form-check-label">
-                    {this.renderCheckbox(itemEnabled, onChange)}
-                    {prefix}{text}
-                </label>
+                {this.renderCheckbox(itemEnabled, onChange, prefix + text)}
             </div>
         )
     }

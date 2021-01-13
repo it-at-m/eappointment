@@ -169,7 +169,8 @@ class LinksView extends Component {
 }
 
 LinksView.propTypes = {
-    links: PropTypes.array
+    links: PropTypes.array,
+    organisation: PropTypes.number
 }
 
 export default LinksView
