@@ -8,7 +8,11 @@ const renderDay = (day, index, onChange, onDeleteClick) => {
 
     const onChangeName = (_, value) => onChange(index, 'name', value)
     const onChangeDate = (_, value) => onChange(index, 'date', value)
-
+    const onDelete = ev => {
+        ev.preventDefault()
+        onDeleteClick(index)
+    };
+    
     return (
         <tr className="daysoff-item" key={index}>
             <td className="daysoff-item__name">
@@ -30,10 +34,9 @@ const renderDay = (day, index, onChange, onDeleteClick) => {
             </td>
             <td className="daysoff-item__delete">
                 <div className="form-check">
-                    <label className="daysoff__delete-button form-check-label">
-                        <input className="form-check-input" type="checkbox" checked={true} onChange={() => {}} onClick={() => onDeleteClick(index)} />
-                        Löschen
-                    </label>
+                    <a href="#" className="icon" title="Tag entfernen" onClick={onDelete}>
+                        <i className="far fa-trash-alt" aria-hidden="true"></i>
+                    </a>
                 </div>
             </td>
         </tr>
