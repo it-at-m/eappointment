@@ -1,6 +1,7 @@
 ## v2.23.09
 
 * #46531 Der Sachbearbeiter kann einem Nutzer nur noch Rechte zuordnen, die ihm selbst gewährt sind.
+* #36713 Abholerlisten werden nun nach Namen sortiert
 
 ## v2.23.08
 
