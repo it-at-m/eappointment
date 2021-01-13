@@ -9,6 +9,7 @@
 			{% endif %}
 			<span class="terminkundennummer{{ addClass }}" data-appointment="{{ queue.number }}">{{ queue.number }}</span>
 		{% else %}
+			<span class="terminkundenanzeige">Spontankunde</span><br>
 		    <span class="wartenummer" data-appointment="{{ queue.number }}">{{ queue.number }}</span>
 		{% endif %}
 	</div>
