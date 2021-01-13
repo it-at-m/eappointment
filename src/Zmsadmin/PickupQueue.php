@@ -35,7 +35,7 @@ class PickupQueue extends BaseController
             array(
               'workstation' => $workstation,
               'department' => $department,
-              'processList' => ($processList) ? $processList->sortByAppointmentDate() : $processList,
+              'processList' => ($processList) ? $processList->sortByName() : $processList,
               //'cluster' => $cluster
             )
         );
