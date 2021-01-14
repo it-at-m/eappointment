@@ -29,6 +29,7 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('csvProperty', array($this, 'csvProperty')),
             new \Twig_SimpleFunction('csvAppointmentLocations', array($this, 'csvAppointmentLocations')),
             new \Twig_SimpleFunction('getAppointmentForService', array($this, 'getAppointmentForService')),
+            new \Twig_SimpleFunction('getLocationHintByServiceId', array($this, 'getLocationHintByServiceId')),
             new \Twig_SimpleFunction('isAppointmentBookable', array($this, 'isAppointmentBookable')),
             new \Twig_SimpleFunction('kindOfPayment', array($this, 'kindOfPayment')),
             new \Twig_SimpleFunction('formatDateTime', array($this, 'formatDateTime')),
@@ -183,6 +184,15 @@ class TwigExtension extends \Twig_Extension
             }
         }
         return false;
+    }
+
+    public function getLocationHintByServiceId($location, $service_id)
+    {
+        $servicecompare = explode(',', $service_id);
+        $service = array_filter($location['services'], function($item) use ($service_id) {
+            return ($item['service'] == $service_id);
+        });
+        return array_values($service)[0]['hint'];
     }
 
     public function dayIsBookable($dateList, $day)
