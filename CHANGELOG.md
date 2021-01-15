@@ -2,6 +2,7 @@
 
 * #46531 Der Sachbearbeiter kann einem Nutzer nur noch Rechte zuordnen, die ihm selbst gewährt sind.
 * #36713 Abholerlisten werden nun nach Namen sortiert
+* #42762 Bei der Statistikerfassung zum Abschluss eines Vorgangs, können nun nicht mehr mehrere Checkboxen und Dienstleistungsauswahl gemeinsam ausgewählt werden
 
 ## v2.23.08
 
