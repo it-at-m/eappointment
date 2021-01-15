@@ -10,21 +10,41 @@ class View extends BaseView {
         this.includeUrl = options.includeurl;
         this.bindPublicMethods('bindEvents','checkCheckboxes','checkInputCounter','toggleButtons');
         //console.log('Page: Statistic', this, options);
-        this.$.ready(this.toggleButtons);
+        $.ready(this.toggleButtons);
         this.bindEvents();
     }
 
     bindEvents() {
         this.$main.off('click')
-        .on('change', 'input[type="checkbox"]', () => {
+        .on('change', 'input[type="checkbox"]', (ev) => {
+            this.checkboxDeselect(ev)
             this.toggleButtons();
         }).on('click', '.form-input-counter', (ev) => {
             this.changeInputCounterFromButton(ev);
+            this.checkboxDeselect()
             this.toggleButtons();
         }).on('change', 'input[role="spinbutton"]', (ev) => {
             this.changeInputCounterFromInput(ev);
+            this.checkboxDeselect()
             this.toggleButtons();
         })
+    }
+
+    checkboxDeselect(ev) {
+        $('input[type="checkbox"]').each((index, item) => {
+            $(item).prop('checked', false);
+        });
+        if (ev) {
+            $('.form-input-counter').each((index, item) => {
+                $(item).trigger('change');
+            });  
+            
+            $('input[role="spinbutton"]').each((index, item) => {
+                $(item).val(0);
+                $(item).trigger('change');
+            });  
+            ev.currentTarget.checked = true;
+        }
     }
 
     changeInputCounterFromInput (ev) {
@@ -99,7 +119,6 @@ class View extends BaseView {
                 $(button).prop('disabled', true);
             })
         }
-
     }
 }
 
