@@ -56,6 +56,17 @@ class DayoffList extends Base
         return true;
     }
 
+    public function withNew(DayoffList $dayoffList)
+    {
+        $list = new self();
+        foreach ($dayoffList as $entity) {
+            if (! $this->hasEntityByDate($entity->getDateTime())) {
+                $list->addEntity($entity);
+            }
+        }
+        return $list;
+    }
+
     /**
      * Check if dayoff is newer than given time
      *
