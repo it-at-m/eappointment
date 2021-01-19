@@ -4,7 +4,7 @@
 * #42066 Wurden für Spontankunden keine Dienstleistungen ausgewählt, wird das in der Bestätigungs-Email nun vermerkt
 * #42066 Bugfix: Wurde nur eine Dienstleistung ausgewählt wird in der Überschrift nun die Einzahl Dienstleistung verwendet
 * #36531 Links haben nun die erweiterten Eigenschaften public und organisation
-
+* #35663 Eine Feiertagsliste können nun neue Tage hinzugefügt werden, wenn diese in der Liste noch nicht enthalten sind
 ## v2.23.08
 
 * #46608 Öffnungszeiten können nun auch mit reduzierten Daten abgerufen werden

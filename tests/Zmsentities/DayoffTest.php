@@ -39,6 +39,22 @@ class DayoffTest extends EntityCommonTests
         $this->assertTrue('Karfreitag' == $collection->getIterator()->current()->name, 'Dayoff list sort by time failed');
     }
 
+    public function testWithNew()
+    {
+        $collection = $this->getDayOffExampleList();
+        $this->assertEquals(6, $collection->count());
+        $entity = new $this->entityclass([
+            "date" => "08.03.2016",
+            "name" => "Internationaler Frauentag"
+        ]);
+        $collection2 = clone $collection;
+        $collection2 = $collection2->addEntity($entity);
+        $collection2 = $collection2->withTimestampFromDateformat();
+        $collection = $collection->withNew($collection2);
+        $this->assertEquals(1, $collection->count());
+        $this->assertEquals(1457395200, $collection->getFirst()->date);
+    }
+
     public function testHasDatesInYear()
     {
         $collection = $this->getDayOffExampleList();
