@@ -30,7 +30,7 @@ class CalculateDayOff
 
     public function __construct($targetYear, $verbose = false)
     {
-        $this->dateTime = (\App::$now) ? \App::$now : new \DateTime('now', new \DateTimeZone('Europe/Berlin'));
+        $this->dateTime = new \DateTime('now', new \DateTimeZone('Europe/Berlin'));
         $this->targetYear = $targetYear;
         $this->verbose = $verbose;
     }
