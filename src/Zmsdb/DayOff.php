@@ -122,19 +122,21 @@ class DayOff extends Base
      *
      * @param
      *            dayoffList,
-     *            year
+     *            year,
+     *            drop
      *
      * @return Collection dayoffList
      */
-    public function writeCommonDayoffsByYear($dayoffList, $year)
+    public function writeCommonDayoffsByYear($dayoffList, $year = null, $drop = true)
     {
-        static::$commonList = null;
-        $deleteQuery = new Query\DayOff(Query\Base::DELETE);
-        $deleteQuery
-            ->addConditionYear($year)
-            ->addConditionCommon();
-        $this->deleteItem($deleteQuery);
-
+        if ($drop && $year) {
+            static::$commonList = null;
+            $deleteQuery = new Query\DayOff(Query\Base::DELETE);
+            $deleteQuery
+                ->addConditionYear($year)
+                ->addConditionCommon();
+            $this->deleteItem($deleteQuery);
+        }
         $query = new Query\DayOff(Query\Base::INSERT);
         foreach ($dayoffList as $dayoff) {
             $query->addValues(
@@ -146,7 +148,7 @@ class DayOff extends Base
             );
             $this->writeItem($query);
         }
-        return $this->readCommonByYear($year);
+        return ($year) ? $this->readCommonByYear($year) : $dayoffList;
     }
 
     /**
