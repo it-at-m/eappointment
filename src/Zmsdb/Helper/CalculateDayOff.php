@@ -30,7 +30,7 @@ class CalculateDayOff
 
     public function __construct($targetYear, $verbose = false)
     {
-        $this->dateTime = new \DateTime('now', new \DateTimeZone('Europe/Berlin'));
+        $this->dateTime = (\App::$now) ? \App::$now : new \DateTime('now', new \DateTimeZone('Europe/Berlin'));
         $this->targetYear = $targetYear;
         $this->verbose = $verbose;
     }
@@ -71,23 +71,30 @@ class CalculateDayOff
         return $date->setTimestamp($easterDate);
     }
 
-    public function writeDayOffListUntilYear($commit = false)
+    public function writeDayOffListUntilYear($commit = false, $fromnow = false)
     {
-        if ($this->verbose) {
-            $verboseList = new \BO\Zmsentities\Collection\DayoffList();
-        }
-        for ($loopYear = $this->dateTime->format('Y'); $loopYear <= $this->targetYear; $loopYear++) {
-            $collection = $this->calculateDayOffByYear($loopYear);
-            if ($this->verbose) {
-                $verboseList->addList($collection);
-            }
-            if ($commit) {
-                $collection->testDatesInYear($loopYear);
-                $collection = (new \BO\Zmsdb\DayOff)->writeCommonDayoffsByYear($collection, $loopYear);
+        $query = new \BO\Zmsdb\DayOff();
+        $list = $this->readDayoffList($query, $this->targetYear);
+
+        if ($fromnow) {
+            for ($loopYear = $this->dateTime->format('Y'); $loopYear < $this->targetYear; $loopYear++) {
+                $collection = $this->readDayoffList($query, $loopYear);
+                $list->addList($collection);
             }
         }
-        if ($this->verbose) {
-            return $verboseList;
+        if ($commit) {
+            $query->writeCommonDayoffsByYear($list, null, false);
         }
+        if ($this->verbose) {
+            return $list->sortByCustomKey('date');
+        }
+    }
+    
+    protected function readDayoffList($query, $year)
+    {
+        $collection = $query->readCommonByYear($year);
+        $newDayOffList = $this->calculateDayOffByYear($year);
+        $collection = $collection->withNew($newDayOffList);
+        return $collection;
     }
 }

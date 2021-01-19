@@ -1,6 +1,7 @@
 ## v2.23.09
 
 * #36531 Bei der Abfrage der Linkliste wird zusätzlich nach Links gesucht, die der gesamten Organisation zugeordnet sind
+* #35663 Der Helper zum Hinzufügen allgemeiner Feiertage fügt nun nur noch Feiertage hinzu, die noch nicht in der Liste enthalten sind
 
 
 ## v2.23.07
