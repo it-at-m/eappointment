@@ -17,10 +17,12 @@ class View extends BaseView {
     setOptions(options) {
         this.includeUrl = options.includeUrl || "";
         this.selectedProcess = options.selectedProcess;
+        this.selectedScope = options.selectedScope;
     }
 
     setCallbacks(options) {
         this.onConfirm = options.onConfirm;
+        this.onReloadQueue = options.onReloadQueue;
         this.onPickupCall = options.onPickupCall;
         this.onFinishProcess = options.onFinishProcess;
         this.onCancelProcess = options.onCancelProcess;
@@ -30,6 +32,7 @@ class View extends BaseView {
         this.onMailSent = options.onMailSent;
         this.onMailCustomSent = options.onMailCustomSent;
         this.onProcessNotFound = options.onProcessNotFound;
+        this.onChangeScope = options.onChangeScope;
     }
 
     load() {
@@ -46,7 +49,7 @@ class View extends BaseView {
                     this.selectedProcess);
             });
         } else {
-            this.loadContent(`${this.includeUrl}/pickup/queue/`, 'GET');
+            this.loadContent(`${this.includeUrl}/pickup/queue/?selectedscope=${this.selectedScope}`, 'GET');
         }
 
     }
@@ -54,6 +57,8 @@ class View extends BaseView {
     bindEvents() {
         this.$main.off('click').on('click', 'a.process-finish', (ev) => {
             this.onConfirm(ev, "confirm_finish", () => { this.onFinishProcess(ev) });
+        }).on('click', '.pickup-table a.queue-reload', (ev) => {
+            this.onReloadQueue(ev);
         }).on('click', 'a.process-finish-list', (ev) => {
             this.onConfirm(ev, "confirm_finish_list", () => { this.onFinishProcessList(ev) });
         }).on('click', 'a.process-pickup', (ev) => {
@@ -66,6 +71,12 @@ class View extends BaseView {
             this.onMailSent(ev);
         }).on('click', '.process-custom-mail-send', (ev) => {
             this.onMailCustomSent(ev);
+        }).on('focus', '.pickup-table .change-scope select', (ev) => {
+            this.selectedScope = ev.target.value;
+        }).on('change', '.pickup-table .change-scope select', (ev) => {
+            this.onChangeScope(ev, () => {
+                this.$main.find('.pickup-table .switchcluster select').val(this.selectedScope);
+            });
         });
     }
 }

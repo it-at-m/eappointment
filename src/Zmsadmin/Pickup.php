@@ -29,6 +29,7 @@ class Pickup extends BaseController
               'workstation' => $workstation,
               'menuActive' => 'pickup',
               'source' => 'pickup',
+              'selectedScope' => $workstation->scope['id'],
               'selectedProcess' => ($workstation->process->hasId()) ? $workstation->process->getId() : $selectedProcess
             )
         );

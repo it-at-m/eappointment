@@ -25,13 +25,19 @@ class PickupSpreadSheetTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/process/pickup/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 1, 'selectedScope' => 141],
                     'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/department/',
                     'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
                 ]
             ]
         );
@@ -56,13 +62,19 @@ class PickupSpreadSheetTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/process/pickup/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 1, 'selectedScope' => 141],
                     'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/department/',
                     'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
                 ]
             ]
         );

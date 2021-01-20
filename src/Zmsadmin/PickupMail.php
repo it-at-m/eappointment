@@ -30,8 +30,10 @@ class PickupMail extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $validator = $request->getAttribute('validator');
         $processId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
-        $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
-        $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
+        $process = \App::$http->readGetResult('/process/'. $processId .'/', ['resolveReferences' => 1])->getEntity();
+        // disabled 2021-01-20 by TK because in ZMS1 it is allowed to send pickup mailings
+        // to processes from another scope in department
+        //$workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
         $config = \App::$http->readGetResult('/config/')->getEntity();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
 

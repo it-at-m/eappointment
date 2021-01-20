@@ -31,7 +31,9 @@ class PickupNotification extends BaseController
         $validator = $request->getAttribute('validator');
         $processId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
-        $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
+        // disabled 2021-01-20 by TK because in ZMS1 it is allowed to send pickup notifications
+        // to processes from another scope in department
+        //$workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $config = \App::$http->readGetResult('/config/')->getEntity();
 
