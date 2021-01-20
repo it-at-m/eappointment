@@ -23,28 +23,17 @@ class Pickup extends BaseController
     ) {
         $workstation = (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-
-        $scope = (new \BO\Zmsdb\Scope)->readEntity($workstation->scope['id'], 0);
+        $selectedScope = Validator::param('selectedScope')->isNumber()->getValue();
+        $scopeId = ($selectedScope) ? $selectedScope : $workstation->scope['id'];
+        $scope = (new \BO\Zmsdb\Scope)->readEntity($scopeId, 0);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
 
-        $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($workstation->scope['id'], $resolveReferences);
-        $clusterEnabled = (1 == $workstation->queue['clusterEnabled']);
-        if ($clusterEnabled && ! $cluster) {
-            throw new Exception\Cluster\ClusterNotFound();
-        }
-        $scopeList = $workstation->getScopeList($cluster);
+        $processList = (new Process)->readProcessListByScopeAndStatus($scope['id'], 'pending', $resolveReferences);
 
-        $processList = new \BO\Zmsentities\Collection\ProcessList();
-        foreach ($scopeList as $scope) {
-            $list = (new Process)->readProcessListByScopeAndStatus($scope['id'], 'pending', $resolveReferences);
-            if ($list->count()) {
-                $processList->addList($list);
-            }
-        }
         $message = Response\Message::create($request);
-        $message->data = ($clusterEnabled) ? $processList : $processList->withScopeId($scope->getId());
+        $message->data = $processList;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
