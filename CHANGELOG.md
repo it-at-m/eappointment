@@ -1,6 +1,7 @@
 ## v2.23.09
 
 * #46531 Bugfix: Ein Nutzer kann einem anderen Nutzer oder sich selbst nicht mehr Rechte geben als ihm zugeordnet sind.
+* #47465 Abholer werden nun abhängig vom ausgewählten Standort abgerufen. Ist dieser nicht angegeben wird der angemeldete Standort genutzt.
 
 ## v2.23.08
 
