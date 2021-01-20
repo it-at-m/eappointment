@@ -7,7 +7,7 @@ class View extends BaseView {
         super(element);
         this.element = $(element);
         this.bindPublicMethods('bindEvents');
-        this.$.ready(this.bindEvents);
+        $(this.bindEvents);
         console.log('Component: Week Calendar', this, options);
     }
 

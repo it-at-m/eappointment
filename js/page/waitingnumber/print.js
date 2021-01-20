@@ -2,7 +2,7 @@ import $ from 'jquery'
 import { getUrlParameters } from '../../lib/utils'
 
 export default () => {
-  $(document).ready(function () {
+  $(function () {
     const hasWaitingNumber = $('.print-number')
     if (hasWaitingNumber.length > 0) {
         if (getUrlParameters().print === "1") {

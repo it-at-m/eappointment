@@ -10,7 +10,7 @@ class View extends BaseView {
         this.includeUrl = options.includeurl;
         this.bindPublicMethods('bindEvents','checkCheckboxes','checkInputCounter','toggleButtons');
         //console.log('Page: Statistic', this, options);
-        $.ready(this.toggleButtons);
+        $(this.toggleButtons);
         this.bindEvents();
     }
 
