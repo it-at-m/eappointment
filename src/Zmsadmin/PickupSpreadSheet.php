@@ -19,14 +19,18 @@ class PickupSpreadSheet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $validator = $request->getAttribute('validator');
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $selectedScope = $validator->getParameter('selectedscope')->isNumber()->getValue();
+        $scopeId = ($selectedScope) ? $selectedScope : $workstation->scope['id'];
+        $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/', ['resolveReferences' => 1])->getEntity();
         $processList = \App::$http
-            ->readGetResult('/workstation/process/pickup/', ['resolveReferences' => 1])
+            ->readGetResult('/workstation/process/pickup/', ['resolveReferences' => 1, 'selectedScope' => $scopeId])
             ->getCollection();
         $processList = ($processList) ? $processList : new \BO\Zmsentities\Collection\ProcessList();
-        $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
+        $department = \App::$http->readGetResult('/scope/'. $scopeId .'/department/')->getEntity();
 
-        $providerName = $workstation->scope['provider']['name'];
+        $providerName = $scope['provider']['name'];
 
         $xlsSheetTitle = 'abholer_'. str_replace(' ', '_', $providerName);
 

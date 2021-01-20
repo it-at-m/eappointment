@@ -10,6 +10,7 @@ class View extends BaseView {
         super(element);
         this.$main = $(element);
         this.selectedProcess = options['selected-process'];
+        this.selectedScope = options['selected-scope'];
         this.includeUrl = options.includeurl;
         this.bindPublicMethods(
             'bindEvents',
@@ -23,7 +24,9 @@ class View extends BaseView {
             'onMailSent',
             'onMailCustomSent',
             'onCancelProcess',
-            'onProcessNotFound'
+            'onProcessNotFound',
+            'onReloadQueue',
+            'onChangeScope'
         );
         this.loadAllPartials().then(() => this.bindEvents());
     }
@@ -174,6 +177,18 @@ class View extends BaseView {
         this.loadAllPartials();
     }
 
+    onReloadQueue(event) {
+        stopEvent(event);
+        this.selectedProcess = null;
+        this.loadAllPartials();
+    }
+
+    onChangeScope(event) {
+        stopEvent(event);
+        this.selectedScope = $(event.currentTarget).val();
+        this.loadPickupTable();
+    }
+
     loadAllPartials() {
         let promise = Promise.all([
             this.loadPickupTable()
@@ -187,7 +202,9 @@ class View extends BaseView {
             source: 'pickup',
             includeUrl: this.includeUrl,
             selectedProcess: this.selectedProcess,
+            selectedScope: this.selectedScope,
             onConfirm: this.onConfirm,
+            onReloadQueue: this.onReloadQueue,
             onFinishProcess: this.onFinishProcess,
             onFinishProcessList: this.onFinishProcessList,
             onPickupCall: this.onPickupCall,
@@ -196,7 +213,8 @@ class View extends BaseView {
             onMailSent: this.onMailSent,
             onMailCustomSent: this.onMailCustomSent,
             onCancelProcess: this.onCancelProcess,
-            onProcessNotFound: this.onProcessNotFound
+            onProcessNotFound: this.onProcessNotFound,
+            onChangeScope: this.onChangeScope
         })
     }
 

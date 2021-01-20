@@ -25,6 +25,7 @@ class PickupMailTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/process/82252/',
+                    'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ],
                 [
@@ -67,6 +68,7 @@ class PickupMailTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/process/82252/',
+                    'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_process_without_emailfrom.json")
                 ],
                 [

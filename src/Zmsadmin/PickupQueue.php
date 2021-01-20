@@ -17,13 +17,20 @@ class PickupQueue extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $validator = $request->getAttribute('validator');
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
+        $selectedScope = $validator->getParameter('selectedscope')->isNumber()->getValue();
+        $scopeId = ($selectedScope) ? $selectedScope : $workstation->scope['id'];
+        $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/')->getEntity();
+        $department = \App::$http->readGetResult(
+            '/scope/'. $scopeId .'/department/',
+            ['resolveReferences' => 2]
+        )->getEntity();
 
-        //$clusterHelper = new Helper\ClusterHelper($workstation);
-        //$cluster = ($clusterHelper::isClusterEnabled()) ? $clusterHelper->getEntity() : null;
-        $processList = \App::$http->readGetResult('/workstation/process/pickup/', ['resolveReferences' => 1])
-            ->getCollection();
+        $processList = \App::$http->readGetResult('/workstation/process/pickup/', [
+            'resolveReferences' => 1,
+            'selectedScope' => $scopeId
+        ])->getCollection();
 
         $validator = $request->getAttribute('validator');
         $handheld = $validator->getParameter('handheld')->isNumber()->setDefault(0)->getValue();
@@ -34,9 +41,10 @@ class PickupQueue extends BaseController
             'block/pickup/'. $template .'.twig',
             array(
               'workstation' => $workstation,
+              'pickupList' => $department->getScopeList(),
               'department' => $department,
+              'scope' => $scope,
               'processList' => ($processList) ? $processList->sortByName() : $processList,
-              //'cluster' => $cluster
             )
         );
     }
