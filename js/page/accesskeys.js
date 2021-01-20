@@ -5,7 +5,7 @@ class View extends BaseView {
 
     constructor (element, options) {
         super(element, options);
-        this.$.ready(() => {
+        $(() => {
             //this.bindKeyEvents(); // -> deaktiviert weil nicht barrierefrei !
         });
     }

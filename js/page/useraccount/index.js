@@ -9,9 +9,7 @@ class View extends BaseView {
         this.element = $(element).focus();
         this.includeUrl = options.includeurl;
         this.bindPublicMethods();
-        this.$.ready(() => {
-            this.bindEvents();
-        });
+        $(this.bindEvents());
     }
 
     bindEvents() {

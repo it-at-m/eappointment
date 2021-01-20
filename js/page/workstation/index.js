@@ -57,7 +57,7 @@ class View extends BaseView {
             'onChangeSlotCount',
             'onGhostWorkstationChange'
         );
-        this.$.ready(() => {
+        $(() => {
             this.setLastReload();
             this.setReloadTimer();
         });
@@ -104,7 +104,6 @@ class View extends BaseView {
     setLastReload() {
         setTimeout(() => {
             this.lastReload++;
-            //console.log(this.lastReload);
             this.setLastReload();
         }, 1000);
     }
