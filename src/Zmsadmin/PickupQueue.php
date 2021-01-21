@@ -27,11 +27,6 @@ class PickupQueue extends BaseController
             ['resolveReferences' => 2]
         )->getEntity();
 
-        $processList = \App::$http->readGetResult('/workstation/process/pickup/', [
-            'resolveReferences' => 1,
-            'selectedScope' => $scopeId
-        ])->getCollection();
-
         $validator = $request->getAttribute('validator');
         $handheld = $validator->getParameter('handheld')->isNumber()->setDefault(0)->getValue();
         $template = ($handheld) ? 'table-handheld' : 'table';
@@ -44,8 +39,17 @@ class PickupQueue extends BaseController
               'pickupList' => $department->getScopeList(),
               'department' => $department,
               'scope' => $scope,
-              'processList' => ($processList) ? $processList->sortByName() : $processList,
+              'processList' => static::getProcessList($scopeId)
             )
         );
+    }
+
+    public static function getProcessList($scopeId) 
+    {
+        $processList = \App::$http->readGetResult('/workstation/process/pickup/', [
+            'resolveReferences' => 1,
+            'selectedScope' => $scopeId
+        ])->getCollection();
+        return ($processList) ? $processList->sortByName() : $processList;
     }
 }

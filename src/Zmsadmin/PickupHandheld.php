@@ -6,7 +6,7 @@
 
 namespace BO\Zmsadmin;
 
-class PickupHandheld extends BaseController
+class PickupHandheld extends PickupQueue
 {
     /**
      * @SuppressWarnings(Param)
@@ -18,13 +18,13 @@ class PickupHandheld extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $input = $request->getParsedBody();
+        $selectedProcess = null;
+        if ($request->isPost()) {
+            $input = $request->getParsedBody();
+            $selectedProcess = $input['inputNumber'];
+        }
         if ($workstation->process && $workstation->process->hasId()) {
-            $selectedProcess = $workstation->process;
-        } else {
-            $selectedProcess = (is_array($input) && array_key_exists('selectedprocess', $input)) ?
-                $this->readPickupProcess($input['selectedprocess']) :
-                null;
+            $selectedProcess = $workstation->process['id'];
         }
 
         return \BO\Slim\Render::withHtml(
@@ -34,27 +34,8 @@ class PickupHandheld extends BaseController
               'title' => 'Abholer verwalten',
               'workstation' => $workstation->getArrayCopy(),
               'menuActive' => 'pickup',
-              'selectedProcess' => ($selectedProcess && "pickup" == $selectedProcess->getStatus()) ?
-                $selectedProcess->getId() :
-                null
+              'selectedProcess' => $selectedProcess
             )
         );
-    }
-
-    protected function readPickupProcess($selectedProcess)
-    {
-        try {
-            $process = \App::$http->readGetResult('/process/'. $selectedProcess .'/')->getEntity();
-        } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template == 'BO\Zmsapi\Exception\Process\ProcessNotFound') {
-                $process = new \BO\Zmsentities\Process([
-                    'queue' => [
-                        'number' => $selectedProcess
-                    ]
-                ]);
-                $process = \App::$http->readPostResult('/process/status/pickup/', $process)->getEntity();
-            }
-        }
-        return $process;
     }
 }
