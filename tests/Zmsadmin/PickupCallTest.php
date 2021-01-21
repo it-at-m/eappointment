@@ -36,7 +36,7 @@ class PickupCallTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertContains('Aufruf eines Abholers', (string)$response->getBody());
-        $this->assertContains('H52452625 (Wartenr. 82252)', (string)$response->getBody());
+        $this->assertContains('H52452625 (Wartenummer 82252)', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -64,7 +64,38 @@ class PickupCallTest extends Base
         );
         $response = $this->render(['id' => 6], $this->parameters, []);
         $this->assertContains('Aufruf eines Abholers', (string)$response->getBody());
-        $this->assertContains('(Wartenr. 6)', (string)$response->getBody());
+        $this->assertContains('(Wartenummer 6)', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testWithoutName()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/queue/6/',
+                    'response' => $this->readFixture("GET_process_spontankunde_empty_name.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/pickup/',
+                    'response' => $this->readFixture("GET_process_spontankunde_empty_name.json")
+                ]
+            ]
+        );
+        $response = $this->render(['id' => 6], $this->parameters, []);
+        $this->assertContains('Aufruf eines Abholers', (string)$response->getBody());
+        $this->assertContains(
+            'Ist der Abholer mit der Wartenummer <strong>1</strong> gekommen?', 
+            (string)$response->getBody()
+        );
         $this->assertEquals(200, $response->getStatusCode());
     }
 
