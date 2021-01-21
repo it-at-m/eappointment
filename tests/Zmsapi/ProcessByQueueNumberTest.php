@@ -24,7 +24,7 @@ class ProcessByQueueNumberTest extends Base
 
     public function testProcessNotFound()
     {
-        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
+        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessByQueueNumberNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 141, 'number' => 999], [], []);
     }
