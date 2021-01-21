@@ -1,5 +1,4 @@
 import Pickup from '../pickup'
-import $ from 'jquery'
 import { hideSpinner } from '../../lib/utils'
 import PickupHandheldView from '../../block/pickup/handheld'
 
