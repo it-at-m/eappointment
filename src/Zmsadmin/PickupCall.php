@@ -37,30 +37,27 @@ class PickupCall extends BaseController
 
     protected function readSelectedProcess($workstation, $inputNumber)
     {
-        $isWithAppointment = (5 <= strlen((string)$inputNumber));
         try {
-            if ($isWithAppointment) {
+            if (4 <= strlen((string)$inputNumber)) {
                 $process = \App::$http
                     ->readGetResult('/process/'. $inputNumber .'/')
                     ->getEntity();
+                $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
             } else {
                 $process = \App::$http
                     ->readGetResult('/scope/'. $workstation->scope['id'] .'/queue/'. $inputNumber .'/')
                     ->getEntity();
             }
-            $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
         } catch (\BO\Zmsclient\Exception $exception) {
-            /*
-            if ($exception->template == 'BO\Zmsapi\Exception\Process\ProcessNotFound') {
-                $process = new \BO\Zmsentities\Process([
-                    'queue' => [
-                        'number' => $processId
-                    ]
-                ]);
+            if ($exception->template == 'BO\Zmsapi\Exception\Process\ProcessByQueueNumberNotFound') {
+                $process = new \BO\Zmsentities\Process();
+                $process->scope['id'] = $workstation->scope['id'];
+                $process->queue['number'] = $inputNumber;
+                $process->amendment = 'Über die direkte Nummerneingabe angelegter Abholer.';
                 $process = \App::$http->readPostResult('/process/status/pickup/', $process)->getEntity();
+            } else {
+                throw $exception;
             }
-            */
-            throw $exception;
         }
         return $process;
     }
