@@ -25,12 +25,12 @@ class PickupCallTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/process/82252/',
-                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                    'response' => $this->readFixture("GET_process_82252_12a2_pending.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/pickup/',
-                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                    'response' => $this->readFixture("GET_process_82252_12a2_pickup.json")
                 ]
             ]
         );
@@ -53,12 +53,12 @@ class PickupCallTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/queue/6/',
-                    'response' => $this->readFixture("GET_process_spontankunde.json")
+                    'response' => $this->readFixture("GET_process_spontankunde_pending.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/pickup/',
-                    'response' => $this->readFixture("GET_process_spontankunde.json")
+                    'response' => $this->readFixture("GET_process_spontankunde_pickup.json")
                 ]
             ]
         );
@@ -160,7 +160,7 @@ class PickupCallTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/process/82252/',
-                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                    'response' => $this->readFixture("GET_process_82252_12a2_pending.json")
                 ],
                 [
                     'function' => 'readPostResult',
