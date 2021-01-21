@@ -44,7 +44,7 @@ class PickupQueue extends BaseController
         );
     }
 
-    public static function getProcessList($scopeId) 
+    public static function getProcessList($scopeId)
     {
         $processList = \App::$http->readGetResult('/workstation/process/pickup/', [
             'resolveReferences' => 1,
