@@ -11,7 +11,7 @@ class View extends BaseView {
         this.bindPublicMethods('load');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
-        this.load();
+        $(this.load());
     }
 
     setOptions(options) {
@@ -26,23 +26,28 @@ class View extends BaseView {
         this.onProcessNotFound = options.onProcessNotFound;
     }
 
-    load() {
-        if (this.selectedProcess) {
-            this.loadCall(`${this.includeUrl}/pickup/call/${this.selectedProcess}/`).then(() => {
-                this.onPickupCall(null, () => {
-                    this.onFinishProcess(null, this.selectedProcess);
-                }, this.selectedProcess);
-            });
-        } else {
-            this.loadContent(`${this.includeUrl}/pickup/queue/?handheld=1`, 'GET');
-        }
-
-    }
-
     bindEvents() {
         this.$main.off('click').on('click', 'a.process-pickup', (ev) => {
             this.onPickupCall(ev, () => { this.onFinishProcess(ev) });
         });
+    }
+
+    load() {
+        if (this.selectedProcess) {
+            this.loadContent(`${this.includeUrl}/pickup/queue/?handheld=1`, 'GET').then(() => {
+                this.onPickupCall(
+                    null, 
+                    () => {
+                        this.onFinishProcess(null, this.selectedProcess);
+                    }, 
+                    () => {
+                        this.onCancelProcess(null);
+                    }, 
+                    this.selectedProcess);
+                });
+        } else {
+            this.loadContent(`${this.includeUrl}/pickup/queue/?handheld=1`, 'GET');
+        }
     }
 }
 

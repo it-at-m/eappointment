@@ -4,12 +4,11 @@ import { hideSpinner } from '../../lib/utils'
 import PickupHandheldView from '../../block/pickup/handheld'
 
 class View extends Pickup {
-    constructor (element, options) {
-        super(element, options);
-        this.$main = $(element);
-    }
 
-    bindEvents() {}
+    constructor(element, options) {
+        super(element, options);
+        this.bindPublicMethods();
+    }
 
     loadAllPartials() {
         let promise = Promise.all([

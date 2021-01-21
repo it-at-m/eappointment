@@ -2,15 +2,14 @@ import BaseView from '../../lib/baseview';
 import $ from "jquery";
 
 class View extends BaseView {
-
-
     constructor (element) {
         super(element);
         this.$main = $(element);
-        this.minNumberLength = 5;
+        this.minNumberLength = 1;
         this.bindPublicMethods('appendNumber', 'deleteNumber', 'clearNumbers', 'checkNumber');
         this.bindEvents();
         this.$numberInput = this.$.find('#Nummer');
+        $(this.checkNumber());
     }
 
     bindEvents() {
@@ -47,13 +46,10 @@ class View extends BaseView {
         var number = this.$numberInput.val();
         number = number.replace(/^0+/, '');
         number = number.replace(/[^\d]/g, '');
-        var $button = this.$.find('.process-pickup');
+        const button = this.$.find('.process-pickup');
+        button.prop('disabled', true);
         if (number.length >= this.minNumberLength) {
-            $button.removeClass('disabled').attr('disabled', false);
-        } else {
-            if (!$button.hasClass('disabled')) {
-                $button.addClass('disabled').attr('disabled', true);
-            }
+            button.prop('disabled', false);
         }
         this.$numberInput.val(number);
     }
