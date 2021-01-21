@@ -4,7 +4,7 @@
 * #36713 Abholerlisten werden nun nach Namen sortiert
 * #42762 Bei der Statistikerfassung zum Abschluss eines Vorgangs, können nun nicht mehr mehrere Checkboxen und Dienstleistungsauswahl gemeinsam ausgewählt werden
 * #47465 In der Abholerverwaltung können nun Standorte der ganzen Behörde ausgewählt werden
-
+* #33898 Verbesserte Fehlerbehandlung von Abholern über die direkte Nummerneingabe in der Abholer-Tabletansicht
 ## v2.23.08
 
 * #46608 Öffnungszeiten-Seiten werden durch optimierte API-Abfragen schneller geladen
