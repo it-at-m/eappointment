@@ -25,6 +25,9 @@ class PickupCall extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $inputNumber = Validator::value($args['id'])->isNumber()->getValue();
         $process = $this->readSelectedProcess($workstation, $inputNumber);
+        if ('pending' != $process->getStatus()) {
+            throw new Exception\Process\ProcessNotPending();
+        }
         $workstation->process = \App::$http->readPostResult('/process/status/pickup/', $process)->getEntity();
 
         return \BO\Slim\Render::withHtml(
