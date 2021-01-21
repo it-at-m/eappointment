@@ -37,18 +37,18 @@ class PickupCall extends BaseController
 
     protected function readSelectedProcess($workstation, $inputNumber)
     {
-        $isWithAppointment = (5 < strlen((string)$inputNumber));
+        $isWithAppointment = (5 <= strlen((string)$inputNumber));
         try {
             if ($isWithAppointment) {
                 $process = \App::$http
                     ->readGetResult('/process/'. $inputNumber .'/')
                     ->getEntity();
-                $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
             } else {
                 $process = \App::$http
                     ->readGetResult('/scope/'. $workstation->scope['id'] .'/queue/'. $inputNumber .'/')
                     ->getEntity();
             }
+            $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
         } catch (\BO\Zmsclient\Exception $exception) {
             /*
             if ($exception->template == 'BO\Zmsapi\Exception\Process\ProcessNotFound') {
