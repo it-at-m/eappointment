@@ -54,7 +54,7 @@ const renderLink = (organisationId, link, index, onChange, onDeleteClick) => {
                     name={`${formName}[public]`}
                     key="Externer Link"
                     title="Link hat eine öffentliche URL"
-                    label="öffentliche URL"
+                    label="öffentliche URL (kursiv)"
                     onChange={onChangePublic}
                     value={link.public}
                     checked={1 == link.public}
