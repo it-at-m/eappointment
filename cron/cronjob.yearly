@@ -1,0 +1,19 @@
+#!/bin/bash
+DIR=$(dirname ${BASH_SOURCE[0]})
+BIN=$DIR/../vendor/bin
+API=$DIR/../bin/api
+EXPORT=$DIR/../data/
+set -a
+[ -z "$ZMS_ENV" ] && [ -e /etc/sysconfig/zms ] && source /etc/sysconfig/zms
+set +a
+
+CURRENTYEAR=`date +'%Y'`
+
+if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
+    if [[ $ZMS_ENV =~ ^prod|dev|stage$ ]]; then
+        $API config cron calculateDayOffList|grep -q "$ZMS_ENV" && $BIN/calculateDayOffList $CURRENTYEAR --commit
+    fi
+fi
+if [[ $ZMS_ENV =~ ^prod|stage$ ]]; then
+    sudo cat /var/log/httpd/error_log|cut -d "]" -f 4- |grep -v '^$'|perl -pe 's#(/session/[^/]+/)[^/]+/#$1#g' |perl -pe 's#\[client.*?\]##g' |perl -pe 's#,? ?referer.*$##g' |perl -pe 's#20\d\d-\d\d-\d\d \d\d:\d\d:\d\d\.?\d*#20xx-xx-xx xx:xx:xx#g' |perl -pe 's#AH01071: Got error .PHP message: (\{\"message\"\:\"PHP Fatal )?##g' |grep -vP "AH(00094|00489|01757|01909)"|grep -vP "\[Human "|sort -n|uniq -c|sort -nr|head -n 2000|mail -s "[ZMS] Logreport $(hostname)" server@service.berlinonline.de
+fi
