@@ -50,6 +50,6 @@ class PickupQueue extends BaseController
             'resolveReferences' => 1,
             'selectedScope' => $scopeId
         ])->getCollection();
-        return ($processList) ? $processList->sortByName() : $processList;
+        return ($processList) ? $processList->sortPickupQueue() : $processList;
     }
 }
