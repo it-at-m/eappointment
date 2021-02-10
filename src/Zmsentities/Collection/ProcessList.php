@@ -86,6 +86,21 @@ class ProcessList extends Base
         return $this;
     }
 
+    public function sortPickupQueue()
+    {
+        $this->uasort(function ($a, $b) {
+            if ($a->queue['arrivalTime'] == $b->queue['arrivalTime']) {
+                error_log('equal arrival Time for :'. $a->id);
+                return strcmp(
+                    Sorter::toSortableString($a->getFirstClient()['familyName']),
+                    Sorter::toSortableString($b->getFirstClient()['familyName'])
+                );
+            }
+            return ($a->queue['arrivalTime'] - $b->queue['arrivalTime']);
+        });
+        return $this;
+    }
+
     public function sortByTimeKey()
     {
         $this->uksort(function ($a, $b) {
