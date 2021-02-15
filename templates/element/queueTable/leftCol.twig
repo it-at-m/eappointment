@@ -7,10 +7,10 @@
 			{% elseif queue.number|length == 8 %}
 				{% set addClass = " smallerFont8Chars" %}
 			{% endif %}
-			<span class="terminkundennummer{{ addClass }}" data-appointment="{{ queue.number }}">{{ queue.number }}</span>
+			<span class="terminkundennummer{{ addClass }}" data-appointment="{{ queue.number }}" data-status="{{ queue.status }}">{{ queue.number }}</span>
 		{% else %}
 			<span class="terminkundenanzeige">Spontankunde</span><br>
-		    <span class="wartenummer" data-appointment="{{ queue.number }}">{{ queue.number }}</span>
+		    <span class="wartenummer" data-appointment="{{ queue.number }}" data-status="{{ queue.status }}">{{ queue.number }}</span>
 		{% endif %}
 	</div>
 </td>

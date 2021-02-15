@@ -23,7 +23,6 @@ class View extends BaseView {
             .done(data => {
                 this.hideMessages(0);
                 $('#queueImport').html(data);
-                //this.setColorForNewCall();
                 this.setWaitingClients(data);
                 this.setWaitingTime(data);
                 var audioCheck = new RingAudio();
@@ -57,17 +56,6 @@ class View extends BaseView {
         var waitingTime = $(data).filter("div#waitingTime").text();
         $("#wartezeit").html(waitingTime);
     }
-
-    /*
-    setColorForNewCall() {
-        let isNewTime = window.bo.zmscalldisplay.serverTime;
-        $('#queueImport td.wartenummer[data-callTime]').each(function () {
-            if (parseInt($(this).attr('data-callTime')) + window.bo.zmscalldisplay.queue.timeUntilOld > isNewTime) {
-                $("div.aufrufanzeigenummer", this).addClass('newprocess');
-            }
-        });
-    }
-    */
 
     getDestinationToNumber() {
         if (window.bo.zmscalldisplay.queue.showOnlyNumeric) {
