@@ -25,8 +25,11 @@ class View extends BaseView {
 
     getCalledQueueIds() {
         let queueIds = [];
-        $('#queueImport td.wartenummer span[data-appointment]').each(function () {
-            queueIds.push($(this).attr('data-appointment'));
+        $('#queueImport td.wartenummer span[data-status]').each(function () {
+            if ('called' == $(this).attr('data-status')) {
+                queueIds.push($(this).attr('data-appointment'));
+            }
+            
         });
         queueIds.sort((a, b) => { return a - b; }).join(',');
         return queueIds;
