@@ -1,3 +1,7 @@
+## v2.23.10
+
+#42756 Bugfix: Ring-Ton wird nur noch initiiert, wenn ein Vorgang aufgerufen wird
+
 ## v2.23.04
 
 * #42756 Die Hervorhebung der Vorgangs- und Wartennummern erfolgt jetzt anhand des Status
