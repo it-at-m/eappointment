@@ -187,6 +187,8 @@ class View extends RequestView {
         }).loadButtons().then(() => {
             this.bindEvents();
         });
+
+        this.$.find('input[name=sendMailConfirmation]').prop('checked', hasFreeAppointments)
     }
 }
 
