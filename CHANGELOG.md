@@ -1,3 +1,7 @@
+## v2.23.10
+
+* #47195 Die Checkbox zur E-Mail Bestätigung im Terminformular wird bei Auswahl einer Terminzeit standardmäßig aktiviert und für einen Spontankunden deaktiviert
+
 ## v2.23.09
 
 * #46531 Der Sachbearbeiter kann einem Nutzer nur noch Rechte zuordnen, die ihm selbst gewährt sind.
