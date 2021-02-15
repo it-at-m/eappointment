@@ -1,3 +1,7 @@
+## v2.23.10
+
+* #44146 Der Text, dass es sich um automatisch generierte Emails handelt befindet sich nun in allen Kunden Mailings vor dem Anrede-Block.
+
 ## v2.23.09
 
 * #46920 Eine Liste von Vorgängen kann nun nach dem Namen des Standortes sortiert werden
