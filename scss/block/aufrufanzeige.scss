@@ -17,9 +17,9 @@
 ---------------------------------------------- */
 #main-header .adressangabe
 {
-    color:#fff;
+    color: $white;
     font-size:2.2em;
-    font-family: Arial, sans-serif;
+    font-family: $base-font-family;
     font-weight:bold;
     left:38px;
     position: absolute;
@@ -48,7 +48,7 @@
     width:275px;
 }
 .aufrufanzeige .wartende_text {
-	background:#ffffff;
+	background:$white;
 	padding:5px 0px;
 }
 .aufrufanzeige .wartende_aktuell #wartende
@@ -57,7 +57,7 @@
     font-family: Arial, sans-serif;
     font-weight:bold;
     margin-top:3px;
-    background:#E0E9F2;
+    background:$white;
 }
 
 .aufrufanzeige .wartezeit_aktuell
@@ -69,7 +69,7 @@
     width:275px;
 }
 .aufrufanzeige .wartezeit_text {
-	background:#ffffff;
+	background:$white;
 	padding:5px 0px;
 }
 .aufrufanzeige .wartezeit_aktuell #wartezeit
@@ -78,7 +78,7 @@
     font-family: Arial, sans-serif;
     font-weight:bold;
     margin-top:3px;
-    background:#E0E9F2;
+    background:$backgroundLight;
 }
 
 /* ----------------------------------------------
