@@ -4,6 +4,7 @@ node_modules
 config.php
 **.swp
 .sass-cache
+.parcel-cache
 .DS_Store
 bower_components
 cache/
