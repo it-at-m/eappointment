@@ -14,3 +14,4 @@ vendor.old
 vendor.update
 #composer.*.lock
 .cache
+.parcel-cache
