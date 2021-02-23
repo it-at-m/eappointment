@@ -105,11 +105,10 @@ class Notification extends Base
             return false;
         }
         $client = $notification->getClient();
-        $telephone = substr(preg_replace('/\s+/', '', $client->telephone), 0, 10);
         $query = Query\Notification::QUERY_WRITE_IN_CALCULATION;
         return $this->perform($query, array(
             $scopeId,
-            $telephone,
+            $client->telephone,
             $notification->getCreateDateTime()->format('Y-m-d'),
             $amount
         ));
