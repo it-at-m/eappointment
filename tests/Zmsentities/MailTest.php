@@ -305,7 +305,18 @@ class MailTest extends EntityCommonTests
         $process = (new \BO\Zmsentities\Process())->getExample();
         $process->scope = (new \BO\Zmsentities\Scope())->getExample();
         $process->queue->withAppointment = false;
+
+        //survey mail with and without clientname
+        $config = (new \BO\Zmsentities\Config())->getExample();
+        $entity->addMultiPart(array());
+        $entity->client = null;
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'survey');
+        $this->assertContains('Sehr geehrte/r Herr/Frau Max Mustermann', $resolvedEntity->getPlainPart());
+        $process->getFirstClient()->familyName = null;
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'survey');
+        $this->assertContains('Sehr geehrte/r Bürgerin/Bürger', $resolvedEntity->getPlainPart());
         
+        //all others by status
         foreach ($statusList as $status) {
             $config = (new \BO\Zmsentities\Config())->getExample();
             $entity->addMultiPart(array());
