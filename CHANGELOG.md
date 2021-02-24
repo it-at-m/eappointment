@@ -1,6 +1,8 @@
 ## v2.23.10
 
 * #44146 Der Text, dass es sich um automatisch generierte Emails handelt befindet sich nun in allen Kunden Mailings vor dem Anrede-Block.
+* #48015 Die Email-Templates zur Absage und Änderungen von Vorgängen für Admins wurden korrigiert.
+* #48018 Das Umfrage-Email-Template hat nun eine verbessertes Anrede-Handling, wenn kein Kundenname angegeben ist
 
 ## v2.23.09
 
