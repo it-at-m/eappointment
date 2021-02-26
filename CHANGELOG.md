@@ -1,6 +1,8 @@
 ## v2.23.10
 
 * #47195 Die Checkbox zur E-Mail Bestätigung im Terminformular wird bei Auswahl einer Terminzeit standardmäßig aktiviert und für einen Spontankunden deaktiviert
+* #35754 Das Kopieren von Spontankunden funkioniert nun korrekt
+* #48009 Das Verschieben von Spontankunden als Termin an einem anderen Tag funktioniert nun korrekt
 
 ## v2.23.09
 
