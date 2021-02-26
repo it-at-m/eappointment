@@ -312,9 +312,10 @@ class MailTest extends EntityCommonTests
         $entity->client = null;
         $resolvedEntity = $entity->toResolvedEntity($process, $config, 'survey');
         $this->assertContains('Sehr geehrte/r Herr/Frau Max Mustermann', $resolvedEntity->getPlainPart());
-        $process->getFirstClient()->familyName = null;
-        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'survey');
-        $this->assertContains('Sehr geehrte/r Bürgerin/Bürger', $resolvedEntity->getPlainPart());
+        $processSurvey = clone $process;
+        $processSurvey->getFirstClient()->familyName = null;
+        $resolvedEntity = $entity->toResolvedEntity($processSurvey, $config, 'survey');
+        $this->assertContains('Guten Tag', $resolvedEntity->getPlainPart());
         
         //all others by status
         foreach ($statusList as $status) {
