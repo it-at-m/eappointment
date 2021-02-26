@@ -12,6 +12,10 @@ hiermit bestätigen wir Ihnen Ihren gebuchten Termin am <strong> {{ (date|defaul
 Ihre Vorgangsnummer ist die <strong>"{{ process.id }}"</strong><br />
 Ihr Code zur Terminabsage oder -änderung lautet <strong>"{{ process.authKey }}"</strong><br />
 <br />
+Sollten Sie den Termin nicht wahrnehmen können, sagen Sie ihn bitte <strong>unbedingt</strong> ab, damit wir den Termin neu vergeben können.<br />
+<br />
+Dies können Sie über unsere Internetbuchungsseite <a href="{{ config.appointments.urlChange }}">{{ config.appointments.urlChange }}</a> unter Angabe Ihrer Vorgangsnummer "{{ process.id }}" und Ihres persönlichen Absage-Codes "{{ process.authKey }}" erledigen.<br />
+<br />
 {% if process.scope.provider.source == "dldb" and process.scope.provider.data.payment %}
 Zahlungshinweis: {{ process.scope.provider.data.payment }}<br /><br />
 {% endif %}
@@ -36,11 +40,6 @@ Sie haben folgende {{ requestalias }} ausgewählt:
     {% endif %}
     {% endfor %}
 {% endif %}
-
-<br /><br />
-Sollten Sie den Termin nicht wahrnehmen können, sagen Sie ihn bitte ab.<br />
-<br />
-Dies können Sie über unsere Internetbuchungsseite <a href="{{ config.appointments.urlChange }}">{{ config.appointments.urlChange }}</a> unter Angabe Ihrer Vorgangsnummer "{{ process.id }}" und Ihres persönlichen Absage-Codes "{{ process.authKey }}" erledigen.<br />
 <br />
 {% if config.appointments.sms.telephone %}
 Oder schicken Sie eine SMS mit dem Inhalt "{{ config.appointments.sms.textCancel }}\{{ process.id }}" an die Rufnummer {{ config.appointments.sms.telephone }}.
