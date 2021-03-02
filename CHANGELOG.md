@@ -1,3 +1,7 @@
+## v2.23.10
+
+* #38901 Unit-Tests erweitert
+
 ## v2.23.09
 
 * #46531 Bugfix: Ein Nutzer kann einem anderen Nutzer oder sich selbst nicht mehr Rechte geben als ihm zugeordnet sind.
