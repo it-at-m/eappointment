@@ -52,6 +52,24 @@ class ProcessReserveTest extends Base
         ], []);
     }
 
+    public function testWithSlotTypePublic()
+    {
+        $this->setWorkstation();
+        $processList = new \BO\Zmsentities\Collection\ProcessList(
+            json_decode($this->readFixture("GetFreeProcessList.json"))
+        );
+        $process = $processList->getFirst();
+        $response = $this->render([], [
+            '__body' => json_encode($process),
+            'clientkey' => 'default',
+            'slotsRequired' => 1,
+            'slotType' => 'public'
+        ], []);
+
+        $this->assertContains('reserved', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
     public function testMultipleSlots()
     {
         $process = new \BO\Zmsentities\Process(

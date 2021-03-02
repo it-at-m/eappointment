@@ -20,6 +20,14 @@ class ProcessDeleteQuickTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testIsCalled()
+    {
+        $this->setWorkstation(123, 'testuser', 141);
+        $this->expectException('BO\Zmsapi\Exception\Process\ProcessAlreadyCalled');
+        $this->expectExceptionCode(404);
+        $this->render(['id' => '9999999'], [], []);
+    }
+
     public function testRenderingWithInitiator()
     {
         $this->setWorkstation(123, 'testuser', 451);

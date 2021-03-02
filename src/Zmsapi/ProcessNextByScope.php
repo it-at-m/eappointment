@@ -44,6 +44,7 @@ class ProcessNextByScope extends BaseController
     public static function getProcess($queueList, $dateTime, $exclude = null)
     {
         $process = $queueList->getNextProcess($dateTime, $exclude);
+        // may not possible because getNextProcess method calls only queued and confirmed status
         if ($process && 'reserved' == $process->getStatus()) {
             throw new Exception\Process\ProcessReservedNotCallable();
         }
