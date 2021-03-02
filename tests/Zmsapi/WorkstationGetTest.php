@@ -20,9 +20,9 @@ class WorkstationGetTest extends Base
     public function __construct()
     {
         parent::__construct();
-        //static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';
-        //static::$authKey = (! \App::DEBUG) ? static::$authKey : 'vorschau';
-        //static::$basicAuth = (! \App::DEBUG) ? static::$basicAuth : 'dGVzdGFkbWluOnZvcnNjaGF1';
+        static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';
+        static::$authKey = (! \App::DEBUG) ? static::$authKey : 'vorschau';
+        static::$basicAuth = (! \App::DEBUG) ? static::$basicAuth : 'dGVzdGFkbWluOnZvcnNjaGF1';
     }
 
     public function testRendering()

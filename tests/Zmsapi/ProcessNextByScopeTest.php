@@ -14,9 +14,19 @@ class ProcessNextByScopeTest extends Base
         $response = $this->render(['id' => 141], [], []);
         $this->assertContains('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+        $this->assertContains('82252', (string)$response->getBody());
+        $this->assertContains('confirmed', (string)$response->getBody());
+    }
 
-        $entity = (new \BO\Zmsdb\Process)->readEntity(156285, new \BO\Zmsdb\Helper\NoAuth);
-        $this->assertEquals('confirmed', $entity->status);
+    public function testIsReserved()
+    {
+        $this->setWorkstation();
+        $entity = (new \BO\Zmsdb\Process)->readEntity(82252, new \BO\Zmsdb\Helper\NoAuth);
+        $entity->status = 'reserved';
+        $now = \App::getNow();
+        (new \BO\Zmsdb\Process)->updateEntity($entity, $now);
+        $response = $this->render(['id' => 141], [], []);
+        $this->assertContains('156285', (string)$response->getBody());
     }
 
     public function testEmpty()
