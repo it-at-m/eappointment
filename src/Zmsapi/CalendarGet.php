@@ -42,8 +42,7 @@ class CalendarGet extends BaseController
             throw new Exception\Calendar\InvalidFirstDay('First and last day are required');
         } else {
             $calendar = $query
-              ->readResolvedEntity($calendar, \App::getNow(), null, $slotType, $slotsRequired)
-              ->withLessData();
+              ->readResolvedEntity($calendar, \App::getNow(), null, $slotType, $slotsRequired);
             if ($fillWithEmptyDays) {
                 $calendar = $calendar->withFilledEmptyDays();
             }
