@@ -24,6 +24,7 @@ class ScopeGet extends BaseController
         $message = Response\Message::create($request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $keepLessData = Validator::param('keepLessData')->isArray()->setDefault([])->getValue();
+        $hasGQL = Validator::param('gql')->isString()->getValue();
         $accessRights = Validator::param('accessRights')->isString()->isBiggerThan(4)->setDefault('basic')->getValue();
         $getIsOpened = Validator::param('getIsOpened')->isNumber()->setDefault(0)->getValue();
         $scope = (new Scope)->readEntity($args['id'], $resolveReferences);
@@ -38,7 +39,7 @@ class ScopeGet extends BaseController
                 new \BO\Zmsentities\Useraccount\EntityAccess($scope)
             );
         } else {
-            $scope = $scope->withLessData($keepLessData);
+            $scope = ($hasGQL) ? $scope : $scope->withLessData($keepLessData);
             $message->meta->reducedData = true;
         }
 

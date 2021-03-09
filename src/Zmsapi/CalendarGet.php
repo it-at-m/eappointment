@@ -22,6 +22,7 @@ class CalendarGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $hasGQL = Validator::param('gql')->isString()->getValue();
         $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
         $slotType = Validator::param('slotType')->isString()->getValue();
         if ($slotType || $slotsRequired) {
@@ -43,6 +44,7 @@ class CalendarGet extends BaseController
         } else {
             $calendar = $query
               ->readResolvedEntity($calendar, \App::getNow(), null, $slotType, $slotsRequired);
+              $calendar = ($hasGQL) ? $calendar : $calendar->withLessData();
             if ($fillWithEmptyDays) {
                 $calendar = $calendar->withFilledEmptyDays();
             }
