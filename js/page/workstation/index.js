@@ -20,6 +20,7 @@ class View extends BaseView {
         this.selectedTime = options['selected-time'];
         this.selectedDate = options['selected-date'];
         this.selectedProcess = options['selected-process'];
+        this.clusterEnabled = options['cluster-enabled'] || false;
         this.selectedScope = options['selected-scope'] || 0;
         this.calledProcess = options['called-process'];
         this.slotType = 'intern';
@@ -185,11 +186,15 @@ class View extends BaseView {
         this.loadCalendar();
     }
 
-    onChangeScope(event) {
+    onChangeScope(event, calendarOnly = false) {
         stopEvent(event);
         this.selectedScope = $(event.currentTarget).val();
-        this.loadCalendar();
-        this.loadAppointmentForm();
+        if (calendarOnly) {
+            this.loadCalendar();
+        } else {
+            this.loadCalendar();
+            this.loadAppointmentForm();
+        }   
     }
 
     onChangeTableView(event, changeScope = false) {
@@ -373,7 +378,9 @@ class View extends BaseView {
 
     onEditProcess(event) {
         this.selectedProcess = $(event.currentTarget).data('id');
+        this.selectedScope = $(event.currentTarget).data('scope-id');
         this.loadAppointmentForm();
+        this.loadCalendar();
     }
 
     onNextProcess() {
@@ -533,6 +540,7 @@ class View extends BaseView {
             selectedTime: this.selectedTime,
             selectedProcess: this.selectedProcess,
             selectedScope: this.selectedScope,
+            clusterEnabled: this.clusterEnabled,
             includeUrl: this.includeUrl,
             slotsRequired: this.slotsRequired || 1,
             slotType: this.slotType,

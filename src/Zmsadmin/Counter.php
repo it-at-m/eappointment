@@ -21,7 +21,8 @@ class Counter extends BaseController
         $validator = $request->getAttribute('validator');
         $selectedTime = $validator->getParameter('time')->isString()->getValue();
         $selectedTime = ($selectedTime) ? $selectedTime : null;
-        $selectedprocess = $validator->getParameter('selectedprocess')->isNumber()->getValue();
+        $selectedProcess = $validator->getParameter('selectedprocess')->isNumber()->getValue();
+        $selectedScope = $validator->getParameter('selectedscope')->isNumber()->getValue();
 
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect(
@@ -40,7 +41,8 @@ class Counter extends BaseController
                 'menuActive' => 'counter',
                 'selectedDate' => $this->getSelectedDate($validator),
                 'selectedTime' => $selectedTime,
-                'selectedprocess' => $selectedprocess,
+                'selectedProcess' => $selectedProcess,
+                'selectedScope' => $selectedScope,
                 'workstation' => $workstation->getArrayCopy()            )
         );
     }

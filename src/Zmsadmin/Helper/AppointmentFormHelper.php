@@ -17,13 +17,13 @@ class AppointmentFormHelper
     public static function readFreeProcessList($request, $workstation)
     {
         $validator = $request->getAttribute('validator');
-        $scope = static::readSelectedScope($request, $workstation);
-        $scopeList = ($scope) ? (new ScopeList)->addEntity($scope) : (new ClusterHelper($workstation))->getScopeList();
-  
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $selectedProcess = ($selectedProcessId)
             ? \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity()
             : null;
+
+        $scope = static::readSelectedScope($request, $workstation, $selectedProcess);
+        $scopeList = ($scope) ? (new ScopeList)->addEntity($scope) : (new ClusterHelper($workstation))->getScopeList();
         
         $slotType = static::setSlotType($validator);
         $slotsRequired = static::setSlotsRequired($validator, $scope, $selectedProcess);
@@ -55,7 +55,7 @@ class AppointmentFormHelper
         return ($requestList) ? $requestList->sortByName() : new \BO\Zmsentities\Collection\RequestList;
     }
 
-    public static function readSelectedScope($request, $workstation)
+    public static function readSelectedScope($request, $workstation, $selectedProcess = null)
     {
         $validator = $request->getAttribute('validator');
         $input = $request->getParsedBody();
@@ -63,14 +63,19 @@ class AppointmentFormHelper
             ? $input['scope']
             : $validator->getParameter('selectedscope')->isNumber()->getValue();
 
-        $selectedScope = (! $workstation->queue['clusterEnabled'] && ! $selectedScopeId)
-        ? new \BO\Zmsentities\Scope($workstation->scope)
-        : null;
-
+        if ($workstation->queue['clusterEnabled'] && ! $selectedScopeId) {
+            $selectedScope = null;
+        }
+        if (! $workstation->queue['clusterEnabled'] && ! $selectedScopeId) {
+            $selectedScope = new \BO\Zmsentities\Scope($workstation->scope);
+        }
         if ($selectedScopeId) {
             $selectedScope = \App::$http
               ->readGetResult('/scope/'. $selectedScopeId .'/', ['resolveReferences' => 1])
               ->getEntity();
+        }
+        if (! $workstation->queue['clusterEnabled'] && $selectedProcess && $selectedProcess->hasId()) {
+            $selectedScope = $selectedProcess->getCurrentScope();
         }
         return $selectedScope;
     }

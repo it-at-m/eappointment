@@ -33,6 +33,7 @@ class View extends RequestView {
         this.showLoader = this.options.showLoader || false;
         this.selectedProcess = this.options.selectedProcess;
         this.selectedScope = this.options.selectedScope;
+        this.clusterEnabled = this.options.clusterEnabled || false;
         this.slotsRequired = this.options.slotsRequired;
         this.slotType = this.options.slotType;
         this.constructOnly = this.options.constructOnly;
@@ -40,7 +41,7 @@ class View extends RequestView {
 
     setCallbacks() {
         this.onConfirm = this.options.onConfirm;
-        this.onChangeScope = this.options.onChangeScope;
+        this.onChangeScopeCallback = this.options.onChangeScope;
         this.onAbortProcess = this.options.onAbortProcess;
         this.onCancelForm = this.options.onCancelAppointmentForm;
         this.onDeleteProcess = this.options.onDeleteProcess;
@@ -76,9 +77,11 @@ class View extends RequestView {
             this.bindEvents();
             this.$main.find('select#process_time').trigger('change');
         }).then(() => {
-            this.loadFreeProcessList().loadList().then(() => {
-                this.bindEvents();
-            });
+            if (this.selectedScope) {
+                this.loadFreeProcessList().loadList().then(() => {
+                    this.bindEvents();
+                });
+            }
         });
     }
 
@@ -172,6 +175,18 @@ class View extends RequestView {
             this.bindEvents();
         });
         this.onChangeSlotCountCallback(event);
+    }
+
+    onChangeScope(event) {
+        this.selectedScope = $(event.currentTarget).val();
+        if (this.clusterEnabled && this.selectedScope && ! this.selectedProcess) {
+            this.onChangeScopeCallback(event);
+        } else {
+            this.loadFreeProcessList().loadList().then(() => {
+                this.bindEvents();
+            });
+            this.onChangeScopeCallback(event, true);
+        }
     }
 
     onChangeProcessTime(event) {
