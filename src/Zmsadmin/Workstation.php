@@ -35,6 +35,7 @@ class Workstation extends BaseController
         $selectedTime = ($selectedTime) ? $selectedTime : null;
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $calledProcessId = $validator->getParameter('calledprocess')->isNumber()->getValue();
+        $selectedScope = $validator->getParameter('selectedscope')->isNumber()->getValue();
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -46,6 +47,7 @@ class Workstation extends BaseController
                 'selectedDate' => $this->getSelectedDate($validator),
                 'selectedTime' => $selectedTime,
                 'selectedProcess' => $selectedProcessId,
+                'selectedScope' => $selectedScope,
                 'calledProcess' => $calledProcessId,
             )
         );
