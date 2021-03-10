@@ -5,6 +5,7 @@
 * #48009 Das Verschieben von Spontankunden als Termin an einem anderen Tag funktioniert nun korrekt
 * #36713 Bugfix: Die Sortierung der Abholerlisten erfolgt nun zuerst nach Ankunftszeit gefolgt von einer Namenssortierung
 * #37117 Bugfix: Terminslots lassen sich nun gleichmäßig auf einen Tag aufteilen in den Öffnungszeiten
+* #35754 Bugfix: TypeError Exceptions bei fehlendem übergebenene Standort wurden behoben, die Auswahl von Standorten bei aktivierter Clusteransicht und das Ausählen und bearbeiten von Vorgängen im Cluster wurde verbessert
 
 ## v2.23.09
 
