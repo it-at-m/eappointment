@@ -39,7 +39,7 @@ class ScopeEmergencyTest extends Base
                 ]
             ]
         );
-        $response = $this->render($this->arguments, $this->parameters, [], 'DELETE');
+        $response = $this->render($this->arguments, $this->parameters, [], 'GET');
         $this->assertContains('"activated": "0"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
