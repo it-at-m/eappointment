@@ -66,7 +66,7 @@ class View extends BaseView {
             processId = $(event.currentTarget).data('id')
         }
         showSpinner(this.$main);
-        this.loadCall(`${this.includeUrl}/pickup/delete/${processId}/`, 'DELETE').then((response) => {
+        this.loadCall(`${this.includeUrl}/pickup/delete/${processId}/`, 'GET').then((response) => {
             this.loadMessage(response, () => {
                 this.loadAllPartials();
             }, null, event.currentTarget);
@@ -85,13 +85,13 @@ class View extends BaseView {
                 let url = `${this.includeUrl}/pickup/delete/${processId}/`;
                 if (idList.length == 0) {
                     url = url + "?list=1";
-                    return this.loadCall(url, 'DELETE').then((response) => {
+                    return this.loadCall(url, 'GET').then((response) => {
                         this.loadMessage(response, () => {
                             this.loadAllPartials();
                         }, null, event.currentTarget);
                     });
                 }
-                return this.loadCall(url, 'DELETE').then(deleteFromQueue);
+                return this.loadCall(url, 'GET').then(deleteFromQueue);
             }
         }
         return deleteFromQueue();

@@ -26,7 +26,7 @@ class ScopeEmergency extends BaseController
             case 'POST':
                 $result = \App::$http->readPostResult($url, new \BO\Zmsentities\Scope());
                 break;
-            case 'DELETE':
+            case 'GET':
                 $result = \App::$http->readDeleteResult($url);
                 break;
         }
