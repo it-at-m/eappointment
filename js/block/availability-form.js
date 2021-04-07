@@ -27,8 +27,8 @@ class View extends BaseView {
         const ok = confirm('Soll diese Öffnungszeit wirklich gelöscht werden?')
 
         if (ok) {
-            $.ajax(`/availability/delete/${id}/`, {
-                method: 'GET'
+            $.ajax(`/availability/${id}`, {
+                method: 'DELETE'
             }).done(() => {
                 this.options.removeAvailability(id)
                 this.$.hide();

@@ -159,8 +159,8 @@ class AvailabilityPage extends Component {
         const ok = confirm('Soll diese Öffnungszeit wirklich gelöscht werden?')
         const id = availability.id
         if (ok) {
-            $.ajax(`${this.props.links.includeurl}/availability/delete/${id}/`, {
-                method: 'GET'
+            $.ajax(`${this.props.links.includeurl}/availability/${id}`, {
+                method: 'DELETE'
             }).done(() => {
                 this.setState(Object.assign({}, deleteAvailabilityInState(this.state, availability), {
                     selectedAvailability: null

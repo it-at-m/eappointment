@@ -17,7 +17,7 @@ use \Psr\Http\Message\ResponseInterface;
  \App::$slim->post('/availability/', \BO\Zmsadmin\AvailabilityUpdate::class)
      ->setName("AvailabilityUpdate");
 
- \App::$slim->get('/availability/delete/{id:\d{1,11}}/', \BO\Zmsadmin\AvailabilityDelete::class)
+ \App::$slim->delete('/availability/{id:\d{1,11}}/', \BO\Zmsadmin\AvailabilityDelete::class)
      ->setName("AvailabilityDelete");
 
  \App::$slim->post('/availability/conflicts/', \BO\Zmsadmin\AvailabilityConflicts::class)
@@ -187,7 +187,7 @@ use \Psr\Http\Message\ResponseInterface;
  \App::$slim->get('/pickup/queue/', \BO\Zmsadmin\PickupQueue::class)
      ->setName("pickup_queue");
 
- \App::$slim->get('/pickup/delete/{id:\d+}/', \BO\Zmsadmin\PickupDelete::class)
+ \App::$slim->delete('/pickup/delete/{id:\d+}/', \BO\Zmsadmin\PickupDelete::class)
      ->setName("pickup_delete");
 
  \App::$slim->map(['GET','POST'], '/pickup/handheld/', \BO\Zmsadmin\PickupHandheld::class)
@@ -268,7 +268,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/scope/{id:\d+}/availability/month/[{date:\d\d\d\d-\d\d}/]', \BO\Zmsadmin\ScopeAvailabilityMonth::class)
     ->setName("scopeAvailabilityMonth");
 
-\App::$slim->map(['GET','POST'], '/scope/{id:\d+}/emergency/', \BO\Zmsadmin\ScopeEmergency::class)
+\App::$slim->map(['DELETE','POST'], '/scope/{id:\d+}/emergency/', \BO\Zmsadmin\ScopeEmergency::class)
     ->setName("scope_emergency");
 
 \App::$slim->post('/scope/{id:\d+}/emergency/respond/', \BO\Zmsadmin\ScopeEmergencyResponse::class)
