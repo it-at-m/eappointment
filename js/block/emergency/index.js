@@ -130,7 +130,7 @@ class View extends BaseView {
 
         return new Promise((resolve, reject) => {
             $.ajax(url, {
-                method: 'DELETE'
+                method: 'GET'
             }).done(() => {
                 resolve()
             }).fail(err => {
