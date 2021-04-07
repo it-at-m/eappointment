@@ -1,6 +1,6 @@
 ## v2.23.11
 
-* #36114 Notifications erhalten nur noch aufgelöste Standorte, wenn diese nicht zwischenzeitlich dereferenziert wurden - somit ist das Schreiben in die Abrechnungstabelle mit korrektem Standort sichergestellt
+* #48174 Bugfix: Abholer und Öffnungszeiten können nun wieder gelöscht werden. 
 
 ## v2.23.10
 
