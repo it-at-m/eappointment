@@ -56,7 +56,8 @@ class Notification extends Base
                     new Helper\NoAuth(),
                     $resolveReferences - 1
                 );
-            if ($process) {
+            // only overwrite process with resolved version if not dereferenced
+            if ($process && $notification->getScopeId() == $process->getScopeId()) {
                 $notification->process = $process;
             }
             $notification->department = (new \BO\Zmsdb\Department())
