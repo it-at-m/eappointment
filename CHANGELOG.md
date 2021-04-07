@@ -1,3 +1,7 @@
+## v2.23.11
+
+* #36114 Notifications erhalten nur noch aufgelöste Standorte, wenn diese nicht zwischenzeitlich dereferenziert wurden - somit ist das Schreiben in die Abrechnungstabelle mit korrektem Standort sichergestellt
+
 ## v2.23.09
 
 * #36531 Bei der Abfrage der Linkliste wird zusätzlich nach Links gesucht, die der gesamten Organisation zugeordnet sind
