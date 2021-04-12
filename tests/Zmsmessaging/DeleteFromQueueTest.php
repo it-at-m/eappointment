@@ -6,6 +6,7 @@ class DeleteFromQueueTest extends Base
 {
     protected function getApiCalls()
     {
+        var_dump(\App::$mails_per_minute);
         return [
             [
                 'function' => 'setUserInfo',
@@ -17,6 +18,10 @@ class DeleteFromQueueTest extends Base
             [
                 'function' => 'readGetResult',
                 'url' => '/mails/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                    'limit' => 300
+                ],
                 'response' => $this->readFixture("GET_mails_queue.json"),
             ],
             [

@@ -18,7 +18,10 @@ class Mail extends BaseController
     public function __construct($maxRunTime = 50)
     {
         parent::__construct($maxRunTime);
-        $queueList = \App::$http->readGetResult('/mails/')->getCollection();
+        $queueList = \App::$http->readGetResult('/mails/', [
+            'resolveReferences' => 2,
+            'limit' => \App::$mails_per_minute
+        ])->getCollection();
         if (null !== $queueList) {
             $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
         }

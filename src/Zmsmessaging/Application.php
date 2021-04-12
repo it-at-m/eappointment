@@ -48,4 +48,10 @@ class Application
      * Logging PSR3 compatible
      */
     public static $log = null;
+
+    /*
+     * -----------------------------------------------------------------------
+     * Mail settings
+     */
+    public static $mails_per_minute = 300;
 }
