@@ -23,7 +23,8 @@ class MailList extends BaseController
     ) {
         (new Helper\User($request))->checkRights('superuser');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-        $mailList = (new Query())->readList($resolveReferences);
+        $limit = Validator::param('limit')->isNumber()->setDefault(300)->getValue();
+        $mailList = (new Query())->readList($resolveReferences, $limit);
 
         $message = Response\Message::create($request);
         $message->data = $mailList;
