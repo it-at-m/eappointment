@@ -1,3 +1,7 @@
+## v2.23.11
+
+* #49020 - env variable ZMS_MAILS_PER_MINUTE verfügbar gemacht um Anzahl zu versendener Mails konfigurierbar zu machen
+
 ## v2.23.06
 
 * #44026 Bugfix: Eine Mail ohne Inhalt wird aus der Datenbank entfernt und in die Log Tabelle wird ein entsprechender Eintrag geschrieben.
