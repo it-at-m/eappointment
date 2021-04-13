@@ -48,13 +48,12 @@ class Matching
         return $result;
     }
 
-    public static function testCurrentScopeHasRequest($process) 
+    public static function testCurrentScopeHasRequest($process)
     {
         $testProcess = clone $process;
-        $scope = (new \BO\Zmsdb\Scope)->readEntity($testProcess->getScopeId(),2);
+        $scope = (new \BO\Zmsdb\Scope)->readEntity($testProcess->getScopeId(), 2);
         $testProcess->scope = $scope;
-        if (
-            0 < count($testProcess->getRequestIds()) && 
+        if (0 < count($testProcess->getRequestIds()) &&
             !$testProcess->getCurrentScope()->getRequestList()->hasRequests($testProcess->getRequestCSV())
         ) {
             throw new \BO\Zmsapi\Exception\Matching\RequestNotFound();
