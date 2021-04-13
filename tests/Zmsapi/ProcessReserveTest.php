@@ -52,6 +52,21 @@ class ProcessReserveTest extends Base
         ], []);
     }
 
+    public function testScopeHasRequests()
+    {
+        $this->expectException('BO\Zmsapi\Exception\Matching\RequestNotFound');
+        $this->setWorkstation();
+        $processList = new \BO\Zmsentities\Collection\ProcessList(
+            json_decode($this->readFixture("GetFreeProcessList.json"))
+        );
+        $process = $processList->getLast();
+        $response = $this->render([], [
+            '__body' => json_encode($process),
+            'slotsRequired' => 2,
+            'slotType' => 'intern'
+        ], []);
+    }
+
     public function testMultipleSlots()
     {
         $process = new \BO\Zmsentities\Process(
