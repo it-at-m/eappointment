@@ -40,6 +40,7 @@ class ProcessReserve extends BaseController
         
         if ($slotType || $slotsRequired) {
             $workstation = (new Helper\User($request))->checkRights();
+            Helper\Matching::testCurrentScopeHasRequest($process);
         } elseif ($clientKey) {
             $apiClient = (new \BO\Zmsdb\Apiclient)->readEntity($clientKey);
             if (!$apiClient || !isset($apiClient->accesslevel) || $apiClient->accesslevel == 'blocked') {

@@ -53,5 +53,6 @@ class ProcessQueued extends BaseController
         } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         }
+        Helper\Matching::testCurrentScopeHasRequest($entity);
     }
 }

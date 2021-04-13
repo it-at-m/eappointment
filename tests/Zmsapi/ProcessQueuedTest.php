@@ -20,6 +20,19 @@ class ProcessQueuedTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testScopeHasRequests()
+    {
+        $this->expectException('BO\Zmsapi\Exception\Matching\RequestNotFound');
+        $this->setWorkstation();
+        $process = json_decode($this->readFixture("GetProcess_10030.json"));
+        $process->requests[0]->id = 9999999;
+        $response = $this->render([], [
+            '__body' => json_encode($process),
+            'slotsRequired' => 2,
+            'slotType' => 'intern'
+        ], []);
+    }
+
     public function testNoAccess()
     {
         $this->expectException('\BO\Zmsentities\Exception\WorkstationProcessMatchScopeFailed');
