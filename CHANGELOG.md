@@ -1,3 +1,7 @@
+## v2.23.11
+
+* #49020 Die Maillist Route hat nun einen limit Parameter über den bestimmt wird wie viele Mails aus der Datenbank gelesen werden.
+
 ## v2.23.10
 
 * #38901 Unit-Tests erweitert

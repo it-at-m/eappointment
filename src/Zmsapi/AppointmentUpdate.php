@@ -27,6 +27,7 @@ class AppointmentUpdate extends BaseController
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
         $slotType = Validator::param('slotType')->isString()->getValue();
+        $clientKey = Validator::param('clientkey')->isString()->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $appointment = new \BO\Zmsentities\Appointment($input);
         $appointment->testValid();
@@ -38,6 +39,19 @@ class AppointmentUpdate extends BaseController
         }
         if ($slotType || $slotsRequired) {
             (new Helper\User($request))->checkRights();
+            Helper\Matching::testCurrentScopeHasRequest($process);
+        } elseif ($clientKey) {
+            $apiClient = (new \BO\Zmsdb\Apiclient)->readEntity($clientKey);
+            if (!$apiClient || !isset($apiClient->accesslevel) || $apiClient->accesslevel == 'blocked') {
+                throw new Exception\Process\ApiclientInvalid();
+            }
+            $slotType = $apiClient->accesslevel;
+            if ($apiClient->accesslevel != 'intern') {
+                $slotsRequired = 0;
+                $slotType = $apiClient->accesslevel;
+                $process = (new Process)->readSlotCount($process);
+            }
+            $process->apiclient = $apiClient;
         } else {
             $slotsRequired = 0;
             $slotType = 'public';
