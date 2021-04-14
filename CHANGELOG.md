@@ -1,7 +1,7 @@
 ## v2.23.11
 
 * #48174 Bugfix: Abholer und Öffnungszeiten können nun wieder gelöscht werden. 
-
+* #49077 Änderung einer Terminzeit oder Datum wird nun ohne Änderung der ID durchgeführt
 ## v2.23.10
 
 * #47195 Die Checkbox zur E-Mail Bestätigung im Terminformular wird bei Auswahl einer Terminzeit standardmäßig aktiviert und für einen Spontankunden deaktiviert
