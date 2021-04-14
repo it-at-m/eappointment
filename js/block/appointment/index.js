@@ -46,6 +46,7 @@ class View extends RequestView {
         this.onCancelForm = this.options.onCancelAppointmentForm;
         this.onDeleteProcess = this.options.onDeleteProcess;
         this.onSaveProcess = this.options.onSaveProcess;
+        this.onChangeProcess = this.options.onChangeProcess;
         this.onReserveProcess = this.options.onReserveProcess;
         this.onEditProcess = this.options.onEditProcess;
         this.onCopyProcess = this.options.onCopyProcess;
@@ -131,6 +132,8 @@ class View extends RequestView {
             this.onChangeProcessTime(event);
         }).on('click', '.form-actions button.process-reserve', (event) => {
             this.onReserveProcess(this, event);
+        }).on('click', '.form-actions button.process-change', (event) => {
+            this.onChangeProcess(this, event);
         }).on('click', '.form-actions button.process-save', (event) => {
             this.onSaveProcess(this, event);
         }).on('click', '.form-actions button.process-edit', (event) => {

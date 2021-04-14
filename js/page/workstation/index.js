@@ -46,6 +46,7 @@ class View extends BaseView {
             'onConfirm',
             'onEditProcess',
             'onSaveProcess',
+            'onChangeProcess',
             'onReserveProcess',
             'onCopyProcess',
             'onQueueProcess',
@@ -254,6 +255,33 @@ class View extends BaseView {
             sendData.push({ name: 'selectedprocess', value: this.selectedProcess });
         }
         this.loadCall(`${this.includeUrl}/process/reserve/`, 'POST', sendData, false, scope.$main).then((response) => {
+            var validator = new ValidationHandler(scope, { response: response });
+            if (validator.hasErrors()) {
+                return validator.render();
+            } else {
+                this.loadMessage(response, () => {
+                    this.selectedProcess = null;
+                    this.loadAppointmentForm();
+                    if ('counter' == this.page)
+                        this.loadQueueInfo();
+                    this.loadQueueTable();
+                    this.loadCalendar();
+                }, scope.$main, event.currentTarget);
+            }
+        }).then(() => {
+            hideSpinner();
+        });
+    }
+
+    onChangeProcess(scope, event) {
+        stopEvent(event);
+        showSpinner(scope.$main);
+        const sendData = scope.$main.find('form').serializeArray();
+        sendData.push({ name: 'initiator', value: this.initiator });
+        if (this.selectedProcess) {
+            sendData.push({ name: 'selectedprocess', value: this.selectedProcess });
+        }
+        this.loadCall(`${this.includeUrl}/process/change/`, 'POST', sendData, false, scope.$main).then((response) => {
             var validator = new ValidationHandler(scope, { response: response });
             if (validator.hasErrors()) {
                 return validator.render();
@@ -550,6 +578,7 @@ class View extends BaseView {
             onEditProcess: this.onEditProcess,
             onQueueProcess: this.onQueueProcess,
             onSaveProcess: this.onSaveProcess,
+            onChangeProcess: this.onChangeProcess,
             onReserveProcess: this.onReserveProcess,
             onCopyProcess: this.onCopyProcess,
             onChangeScope: this.onChangeScope,
