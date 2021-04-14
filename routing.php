@@ -220,6 +220,9 @@ use \Psr\Http\Message\ResponseInterface;
  \App::$slim->post('/process/reserve/', \BO\Zmsadmin\ProcessReserve::class)
      ->setName("processReserve");
 
+\App::$slim->post('/process/change/', \BO\Zmsadmin\ProcessChange::class)
+     ->setName("processChange");
+
  \App::$slim->map(['GET','POST'], '/process/queue/', \BO\Zmsadmin\ProcessQueue::class)
      ->setName("processQueue");
 
