@@ -129,9 +129,6 @@ class ProcessChange extends BaseController
         $oldAppointment = $oldProcess->getFirstAppointment();
         $newAppointment = $newProcess->getFirstAppointment();
 
-        error_log('matching Appointment: ' . $oldAppointment->isMatching($newAppointment));
-        error_log('old appointment: ' . $oldAppointment);
-        error_log('new appointment: ' . $newAppointment);
         if (! $oldAppointment->isMatching($newAppointment)) {
             $newProcess = \App::$http->readPostResult(
                 '/process/'. $oldProcess->id .'/'. $oldProcess->authKey .'/appointment/',
