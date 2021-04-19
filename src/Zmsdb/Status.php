@@ -94,7 +94,7 @@ class Status extends Base
     {
         $stats = $this->getReader()->fetchOne(
             'SELECT
-                SUM(intern) cnt
+                COUNT(intern) cnt
             FROM slot s
             WHERE s.status = "free"
             '
@@ -128,7 +128,7 @@ class Status extends Base
     {
         $stats = $this->getReader()->fetchOne(
             'SELECT
-                SUM(id) as queueCount,
+                COUNT(id) as queueCount,
                 UNIX_TIMESTAMP() - MIN(createTimestamp) as oldestSeconds,
                 UNIX_TIMESTAMP() - MAX(createTimestamp) as newestSeconds
             FROM mailqueue
@@ -146,7 +146,7 @@ class Status extends Base
     {
         $stats = $this->getReader()->fetchOne(
             'SELECT
-                SUM(id) as queueCount,
+                COUNT(id) as queueCount,
                 UNIX_TIMESTAMP() - MIN(createTimestamp) as oldestSeconds,
                 UNIX_TIMESTAMP() - MAX(createTimestamp) as newestSeconds
             FROM notificationqueue
