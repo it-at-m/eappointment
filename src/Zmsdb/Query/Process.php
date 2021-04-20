@@ -66,6 +66,12 @@ class Process extends Base implements MappingInterface
         WHERE BuergerID = :processId
     ";
 
+    const QUERY_REASSIGN_PROCESS_REQUESTS = "UPDATE `buergeranliegen` requests
+        SET 
+            requests.BuergerID = :newProcessId
+        WHERE BuergerID = :processId
+    ";
+
     const QUERY_REASSIGN_FOLLWING_PROCESS = "UPDATE `buerger` process
         SET process.istFolgeterminvon = :newProcessId
         WHERE istFolgeterminvon = :processId

@@ -116,46 +116,32 @@ class Process extends Base implements Interfaces\ResolveReferences
         $processNew->id = 0;
         $processNew->queue['arrivalTime'] = 0;
         $processNew->appointments = (new \BO\Zmsentities\Collection\AppointmentList())->addEntity($appointment);
+        //delete old process with following processes
+        $this->writeDeletedEntity($process->getId());
+        //reserve new appointment
         $processNew = ProcessStatusFree::init()
             ->writeEntityReserved($processNew, $now, $slotType, $slotsRequired);
         $processTempNewId = $processNew->getId();
-
-        //save old process in temp process and delete old process with following processes
-        $this->writeDeletedEntity($process->getId());
-
-        //reserve a new process with temp process data to block process slots
-        $processTemp = new \BO\Zmsentities\Process($process);
-        try {
-            $processTemp->id = 0;
-            $processTemp->queue['arrivalTime'] = 0;
-            $processTemp = ProcessStatusFree::init()->writeEntityReserved(
-                $processTemp,
-                $now,
-                $slotType,
-                $processTemp->getFirstAppointment()->getSlotCount()
-            );
-        } catch (\Exception $exception) {
-            // ignore if not bookable
-        }
 
         // reassign credentials of new process with credentials of old process
         $processNew->withReassignedCredentials($process);
         $processNew->setStatus('confirmed');
 
-        // update new process with new credentials and status, also following slots with ids from old process
-        $processNew = $this
-            ->updateWithFollowingProcesses($processTempNewId, $processNew, $now, $resolveReferences);
-        
-        //delete slot mapping for new process id
+        // update new process with old credentials, also assigned requests and following slots
+        $this->updateFollowingProcesses($processTempNewId, $processNew, $now, $resolveReferences);
+        $this->updateReassignedRequests($processTempNewId, $processNew->getId());
+
+        //delete slot mapping for temp process id
         (new Slot())->deleteSlotProcessMappingFor($processTempNewId);
         Log::writeLogEntry("UPDATE (Process::writeEntityWithNewAppointment) $process ", $processNew->getId());
-        return $processNew;
+        
+        return $this->updateEntity($processNew, $now, $resolveReferences);
     }
 
     /**
      * update following process with new credentials (also change process id if necessary)
      */
-    public function updateWithFollowingProcesses(
+    public function updateFollowingProcesses(
         $processId,
         \BO\Zmsentities\Process $processData,
         \DateTimeInterface $now,
@@ -178,7 +164,19 @@ class Process extends Base implements Interfaces\ResolveReferences
                 }
             }
         }
-        return $this->updateEntity($processData, $now, $resolveReferences);
+    }
+
+    /**
+     * update process requests with new credentials
+     */
+    public function updateReassignedRequests(
+        $processId,
+        $newProcessId
+    ) {
+        $this->perform(Query\Process::QUERY_REASSIGN_PROCESS_REQUESTS, [
+            'newProcessId' => $newProcessId,
+            'processId' => $processId
+        ]);
     }
 
     /**
