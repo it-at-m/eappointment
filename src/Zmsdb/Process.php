@@ -128,7 +128,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $processNew->setStatus('confirmed');
 
         // update new process with old credentials, also assigned requests and following slots
-        $this->updateFollowingProcesses($processTempNewId, $processNew, $now, $resolveReferences);
+        $this->updateFollowingProcesses($processTempNewId, $processNew);
         $this->updateReassignedRequests($processTempNewId, $processNew->getId());
 
         //delete slot mapping for temp process id
@@ -143,9 +143,7 @@ class Process extends Base implements Interfaces\ResolveReferences
      */
     public function updateFollowingProcesses(
         $processId,
-        \BO\Zmsentities\Process $processData,
-        \DateTimeInterface $now,
-        $resolveReferences = 0
+        \BO\Zmsentities\Process $processData
     ) {
         $this->perform(Query\Process::QUERY_REASSIGN_PROCESS_CREDENTIALS, [
             'newProcessId' => $processData->getId(),
