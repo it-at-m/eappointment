@@ -15,7 +15,7 @@ class View extends BaseView {
     }
 
     loadButtons() {
-        const url = `${this.includeUrl}/appointmentForm/buttons/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}&selectedTime=${this.selectedTime}`
+        const url = `${this.includeUrl}/appointmentForm/buttons/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}&selectedtime=${this.selectedTime}`
         return this.loadContent(url, 'GET', null, null, false)
             .then(() => { })
             .catch(err => this.loadErrorCallback(err.source, err.url)
