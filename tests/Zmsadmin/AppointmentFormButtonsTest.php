@@ -39,7 +39,7 @@ class AppointmentFormButtonsTest extends Base
                 ]
             ]
         );
-        $response = $this->render([], ['selecteddate' => '2016-05-27', 'selectedTime' => '08-00'], []);
+        $response = $this->render([], ['selecteddate' => '2016-05-27', 'selectedtime' => '08-00'], []);
         $this->assertContains('Termin buchen', (string)$response->getBody());
     }
 
@@ -60,7 +60,11 @@ class AppointmentFormButtonsTest extends Base
                 ]
             ]
         );
-        $response = $this->render([], ['selectedprocess' => '100044', 'selectedTime' => '17-00', 'selecteddate' => '2016-05-27'], []);
+        $response = $this->render([], [
+            'selectedprocess' => '100044',
+            'selectedtime' => '17-00',
+            'selecteddate' => '2016-05-27'
+        ], []);
         $this->assertContains('Speichern', (string)$response->getBody());
         $this->assertContains('Löschen', (string)$response->getBody());
         $this->assertContains('Wartenr. drucken', (string)$response->getBody());
@@ -85,7 +89,12 @@ class AppointmentFormButtonsTest extends Base
                 ]
             ]
         );
-        $response = $this->render([], ['selectedprocess' => '100044', 'selectedTime' => '17-00', 'selecteddate' => '2016-05-30'], []);
+        $response = $this->render([], [
+            'selectedprocess' => '100044',
+            'selectedtime' => '17-00',
+            'selecteddate' =>
+            '2016-05-30'
+        ], []);
         $this->assertNotContains('Speichern', (string)$response->getBody());
         $this->assertNotContains('Löschen', (string)$response->getBody());
         $this->assertNotContains('Wartenr. drucken', (string)$response->getBody());
