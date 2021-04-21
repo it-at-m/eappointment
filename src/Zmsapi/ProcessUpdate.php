@@ -66,7 +66,7 @@ class ProcessUpdate extends BaseController
         } else {
             $slotsRequired = 0;
             $slotType = 'public';
-            $process = (new Process)->readSlotCount($process);
+            $process = (new Process)->readSlotCount($entity);
             $process = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
         }
        
