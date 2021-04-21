@@ -160,13 +160,13 @@ class View extends RequestView {
     onAddRequest(event) {
         this.addServiceToList($(event.currentTarget), 'serviceListSelected');
         this.removeServiceFromList($(event.currentTarget), 'serviceList');
-        this.updateLists();
+        this.updateLists(true);
     }
 
     onRemoveRequest(event) {
         this.removeServiceFromList($(event.currentTarget), 'serviceListSelected');
         this.addServiceToList($(event.currentTarget), 'serviceList');
-        this.updateLists();
+        this.updateLists(true);
     }
 
     onChangeSlotCount(event) {

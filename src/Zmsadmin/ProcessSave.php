@@ -75,7 +75,12 @@ class ProcessSave extends BaseController
         $process = \App::$http->readPostResult(
             '/process/'. $process->id .'/'. $process->authKey .'/',
             $process,
-            ['initiator' => $initiator]
+            [
+                'initiator' => $initiator,
+                'slotType' => 'intern',
+                'clientkey' => \App::CLIENTKEY,
+                'slotsRequired' => (isset($input['slotCount']) && 1 < $input['slotCount']) ? $input['slotCount'] : 0
+            ]
         )->getEntity();
         AppointmentFormHelper::updateMailAndNotification($input, $process);
         return $process;
