@@ -75,7 +75,6 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @param \BO\Zmsentities\Process $process
      * @param \DateTimeInterface $now
-     * @param String $slotType
      * @param Int $slotsRequired we cannot use process.appointments.0.slotCount, because setting slotsRequired is
      *        a priviliged operation. Just using the input would be a security flaw to get a wider selection of times
      *        If slotsRequired = 0, readFreeProcesses() uses the slotsRequired based on request-provider relation
@@ -83,11 +82,14 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function updateEntityWithSlots(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now,
-        $slotType = "public",
+        $slotType = "intern",
         $slotsRequired = 0,
         $resolveReferences = 0,
         $userAccount = null
     ) {
+        if ('intern' != $slotType) {
+            return $this->updateEntity($process, $now, $resolveReferences);
+        }
         $process = clone $process;
         $appointment = $process->getAppointments()->getFirst();
         $slotList = (new Slot)->readByAppointment($appointment, $slotsRequired);
@@ -98,7 +100,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             }
         }
     
-        foreach ($slotList as $key => $slot) {
+        foreach ($slotList as $slot) {
             $newProcess = clone $process;
             $newProcess->getFirstAppointment()->setTime($slot->time);
             if (! $newProcess->getFirstAppointment()->isMatching($process->getFirstAppointment())) {
