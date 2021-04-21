@@ -27,6 +27,10 @@ class ProcessUpdate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
+        $slotType = Validator::param('slotType')->isString()->getValue();
+        $clientKey = Validator::param('clientkey')->isString()->getValue();
+        $initiator = Validator::param('initiator')->isString()->getValue();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
@@ -35,8 +39,36 @@ class ProcessUpdate extends BaseController
 
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
 
-        $process = (new Process)->readEntity($args['id'], $args['authKey'], 1);
-        $initiator = Validator::param('initiator')->isString()->getValue();
+        if ($slotType || $slotsRequired) {
+            $workstation = (new Helper\User($request))->checkRights();
+            $process = Process::init()->updateEntityWithSlots(
+                $entity,
+                \App::$now,
+                $slotType,
+                $slotsRequired,
+                $resolveReferences,
+                $workstation->getUseraccount()
+            );
+        } elseif ($clientKey) {
+            $apiClient = (new \BO\Zmsdb\Apiclient)->readEntity($clientKey);
+            if (!$apiClient || !isset($apiClient->accesslevel) || $apiClient->accesslevel == 'blocked') {
+                throw new Exception\Process\ApiclientInvalid();
+            }
+            $slotType = $apiClient->accesslevel;
+            if ($apiClient->accesslevel != 'intern') {
+                $slotsRequired = 0;
+                $slotType = $apiClient->accesslevel;
+                $process = (new Process)->readSlotCount($entity);
+            }
+            $process->apiclient = $apiClient;
+            $process = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
+        } else {
+            $slotsRequired = 0;
+            $slotType = 'public';
+            $process = (new Process)->readSlotCount($process);
+            $process = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
+        }
+       
         if ($initiator && $process->hasScopeAdmin()) {
             $config = (new Config())->readEntity();
             $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, 'updated', $initiator);
@@ -44,7 +76,7 @@ class ProcessUpdate extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
+        $message->data = $process;
         
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
