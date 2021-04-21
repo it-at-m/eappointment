@@ -55,18 +55,9 @@ class ProcessUpdate extends BaseController
             if (!$apiClient || !isset($apiClient->accesslevel) || $apiClient->accesslevel == 'blocked') {
                 throw new Exception\Process\ApiclientInvalid();
             }
-            $slotType = $apiClient->accesslevel;
-            if ($apiClient->accesslevel != 'intern') {
-                $slotsRequired = 0;
-                $slotType = $apiClient->accesslevel;
-                $process = (new Process)->readSlotCount($entity);
-            }
             $process->apiclient = $apiClient;
             $process = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
         } else {
-            $slotsRequired = 0;
-            $slotType = 'public';
-            $process = (new Process)->readSlotCount($entity);
             $process = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
         }
        
