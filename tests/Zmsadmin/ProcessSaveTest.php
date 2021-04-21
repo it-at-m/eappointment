@@ -42,7 +42,12 @@ class ProcessSaveTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/82252/12a2/',
-                    'parameters' => ['initiator' => null],
+                    'parameters' => [
+                        'initiator' => null,
+                        'slotType' => 'intern',
+                        'slotsRequired' => 0,
+                        'clientkey' => ''
+                    ],
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ]
             ]
@@ -79,7 +84,12 @@ class ProcessSaveTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/100011/8d11/',
-                    'parameters' => ['initiator' => null],
+                    'parameters' => [
+                        'initiator' => null,
+                        'slotType' => 'intern',
+                        'slotsRequired' => 0,
+                        'clientkey' => ''
+                    ],
                     'response' => $this->readFixture("GET_process_queued.json")
                 ]
             ]
