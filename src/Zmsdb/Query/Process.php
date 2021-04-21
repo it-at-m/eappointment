@@ -636,7 +636,8 @@ class Process extends Base implements MappingInterface
         $data['StandortID'] = $process->getScopeId();
         $data['IPAdresse'] = $process['createIP'];
         $data['AnzahlPersonen'] = $process->getClients()->count();
-        $data['hatFolgetermine'] = $process->getFirstAppointment()->getSlotCount();
+        // - 1 vor following processes count
+        $data['hatFolgetermine'] = $process->getFirstAppointment()->getSlotCount() - 1;
         $data = $this->readAppointmentData($data, $process);
         $data = $this->readStatusData($data, $process, $dateTime);
         if (0 == $parentProcess) {

@@ -108,7 +108,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             }
         }
 
-        $appointment->addSlotCount($slotList->count() - 1);
+        $appointment->addSlotCount($slotList->count());
         return $this->updateEntity($process, $now, $resolveReferences);
     }
 
