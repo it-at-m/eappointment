@@ -20,6 +20,7 @@ class ProcessUpdate extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
+     * @SuppressWarnings(Complexity)
      * @return String
      */
     public function readResponse(
