@@ -24,7 +24,7 @@ class View extends BaseView {
     /**
      * update events after replacing list
      */
-    updateLists() {
+    updateLists(triggered = false) {
         this.$main.find('.checkboxdeselect input:checkbox').each((index, element) => {
             $(element).prop("checked", false);
             $(element).closest('label').hide();
@@ -41,7 +41,9 @@ class View extends BaseView {
                 $(element).closest('label').show();
             }
         });
-        this.calculateSlotCount();
+        if (triggered) {
+            this.calculateSlotCount();
+        }
     }
 
     readList() {
@@ -72,7 +74,7 @@ class View extends BaseView {
             return $(this).val();
         }).toArray();
         this.serviceListSelected = [];
-        this.updateLists();
+        this.updateLists(true);
     }
 
     calculateSlotCount() {
