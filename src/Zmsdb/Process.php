@@ -109,6 +109,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
 
         $appointment->addSlotCount($slotList->count());
+        Log::writeLogEntry("CREATE (Process::updateEntityWithSlots) $process ", $process->id);
         return $this->updateEntity($process, $now, $resolveReferences);
     }
 
@@ -399,10 +400,11 @@ class Process extends Base implements Interfaces\ResolveReferences
             $statement = $this->fetchStatement($query);
             $processList = $this->readList($statement, $resolveReferences);
             $processList = $processList->toQueueList($currentDate)->withoutStatus(['queued'])->toProcessList();
-            $conflictList->addList($processList->withOutAvailability($availabilityList));
+            //$conflictList->addList($processList->withOverbookedSlots($availabilityList));
+            $conflictList->addList($processList->withoutAvailability($availabilityList));
             $currentDate = $currentDate->modify('+1 day');
         }
-        $conflictList = $conflictList->withoutExpiredAppointmentDate($now);
+        //$conflictList = $conflictList->withoutExpiredAppointmentDate($now);
         return $conflictList;
     }
 
