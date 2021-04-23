@@ -50,28 +50,27 @@ class ProcessSave extends BaseController
                 $validatedForm
             );
         }
-        $process = $this->writeSavedProcess($process, $input, $validator);
+
+        $freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation);
+        $process = $this->writeUpdatedProcess($input, $process, $validator);
         $success = ($process->isWithAppointment()) ? 'process_updated' : 'process_withoutappointment_updated';
 
+        
+        $error = (! $freeProcessList && 1 < $input['slotCount']) ? 'is_overbooked' : null;
         return \BO\Slim\Render::withHtml(
             $response,
             'element/helper/messageHandler.twig',
             array(
                 'selectedprocess' => $process,
-                'success' => $success
+                'success' => $success,
+                'error' => $error
             )
         );
     }
 
-    protected function writeSavedProcess($process, $input, $validator)
+    protected function writeUpdatedProcess($input, Entity $process, $validator)
     {
         $initiator = $validator->getParameter('initiator')->isString()->getValue();
-        $process = $this->writeUpdatedProcess($input, $process, $initiator);
-        return $process;
-    }
-
-    protected function writeUpdatedProcess($input, Entity $process, $initiator)
-    {
         $process = \App::$http->readPostResult(
             '/process/'. $process->id .'/'. $process->authKey .'/',
             $process,

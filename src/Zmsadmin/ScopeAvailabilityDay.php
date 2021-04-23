@@ -42,7 +42,7 @@ class ScopeAvailabilityDay extends BaseController
         $scope = static::getScope($scopeId);
         $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
         $dateWithTime = $dateTime->setTime(\App::$now->format('H'), \App::$now->format('i'));
-        $availabilityList = static::getAvailabilityList($scopeId, $dateTime);
+        $availabilityList = static::readAvailabilityList($scopeId, $dateTime);
         $processList = \App::$http
             ->readGetResult('/scope/' . $scopeId . '/process/' . $dateTime->format('Y-m-d') . '/')
                 ->getCollection()
@@ -59,8 +59,9 @@ class ScopeAvailabilityDay extends BaseController
             ])
             ->getCollection();
 
-        $maxSlots = self::getMaxSlotsForAvailabilities($availabilityList);
-        $busySlots = self::getBusySlotsForAvailabilities($availabilityList, $processList);
+        $maxSlots = $availabilityList->getSummerizedSlotCount();
+        $busySlots = $availabilityList->getCalculatedSlotCount($processList);
+
         return [
             'scope' => $scope,
             'availabilityList' => $availabilityList->getArrayCopy(),
@@ -77,33 +78,7 @@ class ScopeAvailabilityDay extends BaseController
         ];
     }
 
-    /**
-     * @return integer
-     */
-    protected static function getMaxSlotsForAvailabilities($availabilityList)
-    {
-        return array_reduce($availabilityList->getArrayCopy(), function ($carry, $item) {
-            $itemId = $item->id;
-            $maxSlots = (int) $item->getSlotList()->getSummerizedSlot()->intern;
-            $carry[$itemId] = $maxSlots;
-            return $carry;
-        }, []);
-    }
-
-    /**
-     * @return integer
-     */
-    protected static function getBusySlotsForAvailabilities($availabilityList, $processList)
-    {
-        return array_reduce($availabilityList->getArrayCopy(), function ($carry, $item) use ($processList) {
-            $itemId = $item->id;
-            $busySlots = $processList->withAvailability($item)->getAppointmentList()->getCalculatedSlotCount();
-            $carry[$itemId] = $busySlots;
-            return $carry;
-        }, []);
-    }
-
-    protected static function getAvailabilityList($scopeId, $dateTime)
+    protected static function readAvailabilityList($scopeId, $dateTime)
     {
         try {
             $availabilityList = \App::$http
