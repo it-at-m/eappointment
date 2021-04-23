@@ -252,6 +252,23 @@ class ProcessList extends Base
         return $processList;
     }
 
+    public function withOverbookedSlots(\BO\Zmsentities\Collection\AvailabilityList $availabilityList)
+    {
+        $processList = new static();
+        foreach ($this->toProcessListByTime('Y-m-d') as $processListByDate) {
+            $dateTime = $processListByDate[0]->getFirstAppointment()->toDateTime();
+            $slotList = $availabilityList->withType('appointment')->withDateTime($dateTime)->getSlotList();
+            foreach ($processListByDate as $process) {
+                error_log(var_export($process->getFirstAppointment()->getAvailability(),1));
+                if (1 < $slotList->withSlotsForAppointment($process->getFirstAppointment())->count()) {
+                    $processList[] = clone $process;
+                }
+            }
+        }
+        
+        return $processList;
+    }
+
     public function withUniqueScope($oncePerHour = false)
     {
         $processList = new static();

@@ -184,6 +184,33 @@ class AvailabilityList extends Base
         return $processList;
     }
 
+    /**
+     * @return integer
+     */
+    public function getSummerizedSlotCount()
+    {
+        return array_reduce($this->getArrayCopy(), function ($carry, $item) {
+            $itemId = $item->id;
+            $maxSlots = (int) $item->getSlotList()->getSummerizedSlot()->intern;
+            $carry[$itemId] = $maxSlots;
+            return $carry;
+        }, []);
+    }
+
+    /**
+     * @return integer
+     */
+    public function getCalculatedSlotCount(\BO\Zmsentities\Collection\ProcessList $processList)
+    {
+        return array_reduce($this->getArrayCopy(), function ($carry, $item) use ($processList) {
+            $itemId = $item->id;
+            $busySlots = $processList->withAvailability($item)->getAppointmentList()->getCalculatedSlotCount();
+            $carry[$itemId] = $busySlots;
+            return $carry;
+        }, []);
+    }
+
+
     public function withScope(\BO\Zmsentities\Scope $scope)
     {
         $list = clone $this;
