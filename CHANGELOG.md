@@ -1,6 +1,7 @@
 ## v2.23.11
 
 * #49020 - env variable ZMS_MAILS_PER_MINUTE verfügbar gemacht um Anzahl zu versendener Mails konfigurierbar zu machen
+* #44509 - Timezone in ICS Templates für Terminbestätigung und Terminabsagen eingefügt
 
 ## v2.23.06
 
