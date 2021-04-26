@@ -404,7 +404,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             $conflictList->addList($processList->withoutAvailability($availabilityList));
             $currentDate = $currentDate->modify('+1 day');
         }
-        //$conflictList = $conflictList->withoutExpiredAppointmentDate($now);
+        $conflictList = $conflictList->withoutExpiredAppointmentDate($now);
         return $conflictList;
     }
 
