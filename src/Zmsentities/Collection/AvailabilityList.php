@@ -7,6 +7,9 @@ namespace BO\Zmsentities\Collection;
 
 use \BO\Zmsentities\Availability;
 
+/**
+ * @SuppressWarnings(Complexity)
+ */
 class AvailabilityList extends Base
 {
     const ENTITY_CLASS = '\BO\Zmsentities\Availability';
