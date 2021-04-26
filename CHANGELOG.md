@@ -1,3 +1,7 @@
+## v2.23.11
+
+* #44509 - Timezone in ICS Templates für Terminbestätigung und Terminabsagen eingefügt
+
 ## v2.23.10
 
 * #44146 Der Text, dass es sich um automatisch generierte Emails handelt befindet sich nun in allen Kunden Mailings vor dem Anrede-Block.
