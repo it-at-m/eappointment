@@ -3,6 +3,7 @@
 * #48174 Bugfix: Abholer und Öffnungszeiten können nun wieder gelöscht werden. 
 * #49077 Änderung einer Terminzeit oder Datum wird nun ohne Änderung der ID durchgeführt
 * #49149 Bugfix: Die Terminzeiten und Buttons im Terminvereinbarungsformular werden wieder korrekt geladen
+* #36078 Bugfix: Bei der Änderungen der Terminslots im Terminvereinbarungsdialog werden die Slots nun als Folgetermine gespeichert. Bei einer Überbuchung erhält der Sachbearbeiter eine Meldung, die Buchung wird dennoch durchgeführt.
 
 ## v2.23.10
 
