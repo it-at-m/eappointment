@@ -259,7 +259,7 @@ class ProcessList extends Base
             $dateTime = $processListByDate[0]->getFirstAppointment()->toDateTime();
             $slotList = $availabilityList->withType('appointment')->withDateTime($dateTime)->getSlotList();
             foreach ($processListByDate as $process) {
-                error_log(var_export($process->getFirstAppointment()->getAvailability(),1));
+                error_log(var_export($process->getFirstAppointment()->getAvailability(), 1));
                 if (1 < $slotList->withSlotsForAppointment($process->getFirstAppointment())->count()) {
                     $processList[] = clone $process;
                 }
