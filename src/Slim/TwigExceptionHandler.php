@@ -46,13 +46,16 @@ class TwigExceptionHandler
                 unset($logInfo['responsedata']);
                 unset($logInfo['exception']);
                 //ksort($logInfo);
+                // Some error-reporting is limited to a defined amount of chars
+                // Remove unnecessary chars, for ordering see self::getExtendedExceptionInfo()
                 $logText = json_encode($logInfo);
-                $logText = preg_replace('#\s+#', ' ', $logText);
-                $logText = preg_replace('#"#', "", $logText);
                 $logText = preg_replace('#'.preg_quote('\\/').'#', "/", $logText);
-                $logText = preg_replace('#'.preg_quote('\\').'#', "⑊", $logText);
-                $logText = preg_replace('#⑊⑊#', "⑊", $logText);
-                $logText = preg_replace('#⑊n#', " ", $logText);
+                $logText = preg_replace('#'.preg_quote('\\"').'#', "", $logText);
+                $logText = preg_replace('#'.preg_quote('\\n').'#', " ", $logText);
+                $logText = preg_replace('#'.preg_quote('\\').'#', ".", $logText);
+                $logText = preg_replace('#"#', "", $logText);
+                $logText = preg_replace('#\s+#', ' ', $logText);
+                $logText = preg_replace('#\.\.#', ".", $logText);
                 $logText = preg_replace('#(/[^/\s]+)+/([^/\s]+/[^/\s]+)\.php#', "$2.php", $logText);
                 $logText = preg_replace('#'.preg_quote(\APP::APP_PATH).'/?#', "", $logText);
                 \App::$log->critical("PHP-Exception #{$extendedInfo['uniqueid']}: ". $logText);
@@ -142,6 +145,13 @@ class TwigExceptionHandler
             $apirequesturi = $apirequest->getUri();
             $apirequestmethod = $apirequest->getMethod();
         }
+        $route = $request->getAttribute('route');
+        $routename = '';
+        if ($route && $route instanceof \Slim\Route) {
+            $routename = $route->getName();
+        }
+
+        // Do not log username or password
         $request = $request->withUri($request->getUri()->withUserInfo(''));
         if (isset($exception->response)) {
             $response = $exception->response;
@@ -162,28 +172,31 @@ class TwigExceptionHandler
         if (isset($exception->templatedata)) {
             $templatedata = $exception->templatedata;
         }
+        
+        // Due to shortened error logs in some reportings, important informations first!
         return array_merge(array(
             "exceptionclass" => $exceptionclass,
-            "requesturi" => $request->getUri(),
-            "apirequesturi" => $apirequesturi,
+            "requesturi" => (string)$request->getUri()->getPath(),
+            "apirequesturi" => (string)$apirequesturi,
+            "route" => $routename,
             "_file" => $exception->getFile(),
             "_line" => $exception->getLine(),
-            "_trace" => $trace,
+            "failed" => $exception->getMessage(),
+            "requestmethod" => $request->getMethod(),
+            "data" => $data,
+            "x-requestdata" => $requestdata,
+            "servertime" => $servertime,
             "exception" => $exception,
             "exceptioncode" => $exception->getCode(),
-            "debug" => \App::DEBUG,
-            "data" => $data,
-            "failed" => $exception->getMessage(),
             "basefile" => basename($exception->getFile(), '.php'),
-            "servertime" => $servertime,
+            "x-requestdata_api" => $apirequestdata,
+            "_trace" => $trace,
+            "debug" => \App::DEBUG,
             "uniqueid" => $uniqueId,
             "request" => $request,
-            "requestmethod" => $request->getMethod(),
             "apirequest" => $apirequest,
             "apirequestmethod" => $apirequestmethod,
             "response" => $response,
-            "x-requestdata" => $requestdata,
-            "x-requestdata_api" => $apirequestdata,
             "x-responsedata" => $responsedata,
         ), $templatedata);
     }
