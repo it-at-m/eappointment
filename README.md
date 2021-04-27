@@ -278,7 +278,29 @@ Services
             "keywords" : "Unterhaltsvorschuss, Kind, alleinerziehend, Sozialleistung"
          },
          "relation": {
-            "root_topic": "12345" // ID des Themas in der Navigation
+            "root_topic": "12345", // ID des Themas in der Navigation
+            "topic": {
+               "id": "1", //OZG Themenfeld ID
+               "name": "Familie & Kind"
+            }
+            "live_event": { // english, see https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32018R1724&from=EN#d1e32-36-1
+               "name": "Trennung mit Kind", // OZG -Lage
+               "id": "6", // OZG Lage ID
+            },
+            "leika": {
+               "group": "107",
+               "service": "021",
+               "execution_id": "000",
+               "execution_detail": "000"
+            },
+            "common_service": {
+               "id": "10035", //OZG Leistung ID
+               "name": "Unterhaltsvorschuss"
+            },
+            "responsibility": {
+               "id": "2" // OZG Typisierung
+            }
+
          },
          "description" : "Der Unterhaltsvorschuss soll übergangsweise eine besondere Hilfe für alleinerziehende Eltern sein. Der ausfallende Unterhalt soll zumindest zum Teil ausgeglichen werden, ohne den unterhaltspflichtigen Elternteil aus der Verantwortung zu entlassen.\r\nSie können Unterhaltsvorschussleistungen beantragen, wenn Sie alleinerziehend sind und für Ihr noch nicht zwölf Jahre altes Kind keinen Unterhalt vom anderen Elternteil und keine Waisenbezüge mindestens in Höhe der Unterhaltsvorschussleistungen erhalten.\r\nUnterhaltsvorschussleistungen werden für längstens 72 Monate erbracht. Die Vorschussleistung ist grundsätzlich vom anderen Elternteil zu erstatten.\r\n" // Beschreibung der Dienstleistung
       }
