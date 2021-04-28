@@ -135,13 +135,6 @@ class ProcessQueue extends BaseController
     {
         $process = \App::$http->readPostResult('/workstation/process/waitingnumber/', $process)->getEntity();
         AppointmentFormHelper::updateMailAndNotification($input, $process);
-
-        if (isset($input['selectedprocess'])) {
-            $oldProcess = \App::$http->readGetResult('/process/'. $input['selectedprocess'] .'/')->getEntity();
-            $oldProcess->status = 'deleted';
-            ProcessDelete::writeDeleteWithMailNotifications($oldProcess);
-        }
-        
         return $process;
     }
 

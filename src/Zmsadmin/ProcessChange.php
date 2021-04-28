@@ -31,7 +31,8 @@ class ProcessChange extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $input = $request->getParams();
         $scope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
-        $oldProcess = \App::$http->readGetResult('/process/'. $input['selectedprocess'] .'/')->getEntity();
+        $oldProcess = \App::$http
+            ->readGetResult('/process/'. $input['selectedprocess'] .'/')->getEntity();
         $newProcess = $this->getNewProcess($input, $oldProcess, $scope);
         $validatedForm = static::getValidatedForm($request->getAttribute('validator'), $newProcess);
         if ($validatedForm['failed']) {
@@ -41,7 +42,7 @@ class ProcessChange extends BaseController
             );
         }
         
-        $process = static::writeChangedProcess($oldProcess, $newProcess);
+        $process = static::writeChangedProcess($input, $oldProcess, $newProcess);
         $queryParams = ('confirmed' == $process->getStatus()) ?
             ['selectedprocess' => $process, 'success' => 'process_changed'] :
             [];
@@ -61,7 +62,7 @@ class ProcessChange extends BaseController
         return $newProcess->withUpdatedData($input, $dateTime, $scope);
     }
 
-    public static function getValidatedForm($validator, $process)
+    protected static function getValidatedForm($validator, $process)
     {
         $processValidator = new ProcessValidator($process);
         $delegatedProcess = $processValidator->getDelegatedProcess();
@@ -124,7 +125,7 @@ class ProcessChange extends BaseController
         return $form;
     }
 
-    public static function writeChangedProcess($oldProcess, $newProcess)
+    protected static function writeChangedProcess($input, $oldProcess, $newProcess)
     {
         $oldAppointment = $oldProcess->getFirstAppointment();
         $newAppointment = $newProcess->getFirstAppointment();
@@ -134,21 +135,28 @@ class ProcessChange extends BaseController
                 '/process/'. $oldProcess->id .'/'. $oldProcess->authKey .'/appointment/',
                 $newAppointment,
                 [
+                    'resolveReferences' => 1,
                     'slotType' => 'intern',
                     'clientkey' => \App::CLIENTKEY,
                     'slotsRequired' => (isset($input['slotCount']) && 1 < $input['slotCount']) ? $input['slotCount'] : 0
                 ]
             )->getEntity();
         }
-        $newProcess = static::writeConfirmedMailAndNotification($input, $newProcess);
+        static::writeDeletedMailAndNotification($oldProcess);
+        static::writeConfirmedMailAndNotification($input, $newProcess);
         return $newProcess;
     }
 
-    public static function writeConfirmedMailAndNotification($input, $process)
+    protected static function writeDeletedMailAndNotification($oldProcess)
     {
-        if ('confirmed' == $process->getStatus()) {
-            Helper\AppointmentFormHelper::updateMailAndNotification($input, $process);
+            $oldProcess->status = 'deleted';
+            ProcessDelete::writeDeleteMailNotifications($oldProcess);
+    }
+
+    protected static function writeConfirmedMailAndNotification($input, $newProcess)
+    {
+        if ('confirmed' == $newProcess->getStatus()) {
+            Helper\AppointmentFormHelper::updateMailAndNotification($input, $newProcess);
         }
-        return $process;
     }
 }
