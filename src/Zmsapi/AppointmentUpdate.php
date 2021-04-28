@@ -28,6 +28,7 @@ class AppointmentUpdate extends BaseController
         $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
         $slotType = Validator::param('slotType')->isString()->getValue();
         $clientKey = Validator::param('clientkey')->isString()->getValue();
+        $keepReserved = Validator::param('keepReserved')->isNumber()->setDefault(0)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $appointment = new \BO\Zmsentities\Appointment($input);
         $appointment->testValid();
@@ -64,7 +65,8 @@ class AppointmentUpdate extends BaseController
             \App::$now,
             $slotType,
             $slotsRequired,
-            $resolveReferences
+            $resolveReferences,
+            ($keepReserved == 1)
         );
 
         $message = Response\Message::create($request);
