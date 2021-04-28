@@ -152,12 +152,14 @@ class Process extends Base implements Interfaces\ResolveReferences
         \DateTimeInterface $now,
         $slotType = 'public',
         $slotsRequired = 0,
-        $resolveReferences = 0
+        $resolveReferences = 0,
+        $keepReserved = false
     ) {
         // clone to new process with id = 0 and new appointment to reserve
         $processNew = clone $process;
         $processNew->id = 0;
         $processNew->queue['arrivalTime'] = 0;
+        $processNew->queue['number'] = 0;
         $processNew->appointments = (new \BO\Zmsentities\Collection\AppointmentList())->addEntity($appointment);
         //delete old process with following processes
         $this->writeDeletedEntity($process->getId());
@@ -168,7 +170,7 @@ class Process extends Base implements Interfaces\ResolveReferences
 
         // reassign credentials of new process with credentials of old process
         $processNew->withReassignedCredentials($process);
-        $processNew->setStatus('confirmed');
+        ($keepReserved) ? $processNew->setStatus('reserved') : $processNew->setStatus('confirmed');
 
         // update new process with old credentials, also assigned requests and following slots
         $this->updateFollowingProcesses($processTempNewId, $processNew);
@@ -396,15 +398,15 @@ class Process extends Base implements Interfaces\ResolveReferences
                 ->addConditionScopeId($scope->getId())
                 ->addConditionAssigned()
                 ->addConditionIgnoreSlots();
+                //ignore slots was the reason why overbooked slots not has been displayed as conflicts
             $query->addConditionTime($currentDate);
             $statement = $this->fetchStatement($query);
             $processList = $this->readList($statement, $resolveReferences);
             $processList = $processList->toQueueList($currentDate)->withoutStatus(['queued'])->toProcessList();
-            //$conflictList->addList($processList->withOverbookedSlots($availabilityList));
             $conflictList->addList($processList->withoutAvailability($availabilityList));
             $currentDate = $currentDate->modify('+1 day');
         }
-        $conflictList = $conflictList->withoutExpiredAppointmentDate($now);
+        //$conflictList = $conflictList->withoutExpiredAppointmentDate($now);
         return $conflictList;
     }
 
