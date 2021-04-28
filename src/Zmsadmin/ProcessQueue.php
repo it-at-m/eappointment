@@ -35,8 +35,8 @@ class ProcessQueue extends BaseController
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         
         if ($selectedProcessId) {
-            $process = $this->readSelectedProcessWithWaitingnumber($validator, $selectedProcessId);
-            if ($process) {
+            $process = $this->readSelectedProcessWithWaitingnumber($selectedProcessId);
+            if ($process && $validator->getParameter('print')->isNumber()->getValue()) {
                 return \BO\Slim\Render::withHtml(
                     $response,
                     'page/printWaitingNumber.twig',
@@ -114,11 +114,10 @@ class ProcessQueue extends BaseController
         return $form;
     }
 
-    protected function readSelectedProcessWithWaitingnumber($validator, $selectedProcessId)
+    protected function readSelectedProcessWithWaitingnumber($selectedProcessId)
     {
         $result = null;
-        $isPrint = $validator->getParameter('print')->isNumber()->getValue();
-        if ($selectedProcessId && $isPrint) {
+        if ($selectedProcessId) {
             $result = \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity();
         }
         return $result;
