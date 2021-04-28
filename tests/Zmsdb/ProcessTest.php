@@ -168,7 +168,7 @@ class ProcessTest extends Base
             "slotCount"=>"4"
         ]);
 
-        // get old process and clone to new process with id = 0 and new appointment to reserve
+        // get old process and clone to new process with id = 0 and new appointment
         $process = $queryProcess->readEntity(25892, '7bfe');
         $processNew = $queryProcess->writeEntityWithNewAppointment(
             $process,
@@ -186,6 +186,45 @@ class ProcessTest extends Base
         $this->assertEntity("\\BO\\Zmsentities\\Process", $processNew);
         $this->assertEquals(25892, $processNew->getId());
         $this->assertEquals('confirmed', $processNew->getStatus());
+        $this->assertEquals('2016-05-27 08:00:00', $oldStartTime);
+        $this->assertEquals('2016-05-30 08:00:00', $newStartTime);
+        $this->assertEquals(4, $processNewEntityList->count());
+        $this->assertEquals('2016-05-30 08:30', $newEndTime);
+    }
+
+    public function testWriteEntityWithNewAppointmentReserved()
+    {
+        $query = new ProcessStatusFree();
+        $queryProcess = new Query();
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $appointment = new \BO\Zmsentities\Appointment([
+            "date"=>"1464588000", // 2016-05-30 08:00:00
+            "scope"=>[
+                "id"=>"141"
+            ],
+            "slotCount"=>"4"
+        ]);
+
+        // get old process and clone to new process with id = 0 and new appointment to reserve
+        $process = $queryProcess->readEntity(25892, '7bfe');
+        $processNew = $queryProcess->writeEntityWithNewAppointment(
+            $process,
+            $appointment,
+            $now,
+            'public',
+            $appointment->getSlotCount(),
+            0,
+            true
+        );
+        
+        $oldStartTime = $process->getFirstAppointment()->getStartTime()->format("Y-m-d H:i:s");
+        $newStartTime = $processNew->getFirstAppointment()->getStartTime()->format("Y-m-d H:i:s");
+        $processNewEntityList = $queryProcess->readEntityList($processNew->getId());
+        $newEndTime = $processNewEntityList->getLast()->getFirstAppointment()->getStartTime()->format('Y-m-d H:i');
+
+        $this->assertEntity("\\BO\\Zmsentities\\Process", $processNew);
+        $this->assertEquals(25892, $processNew->getId());
+        $this->assertEquals('reserved', $processNew->getStatus());
         $this->assertEquals('2016-05-27 08:00:00', $oldStartTime);
         $this->assertEquals('2016-05-30 08:00:00', $newStartTime);
         $this->assertEquals(4, $processNewEntityList->count());

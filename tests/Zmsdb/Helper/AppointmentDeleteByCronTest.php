@@ -49,7 +49,7 @@ class AppointmentDeleteByCronTest extends Base
         $query = new Query();
 
         $appointmentDelete->startProcessing(false, false);
-        $this->assertEquals(1, count($query->readProcessListByScopeAndStatus(0, 'blocked', 0, $limit, $offset)));        
+        $this->assertEquals(1, count($query->readProcessListByScopeAndStatus(0, 'blocked', 0, $limit, $offset)));
      
         /*
         $appointmentDelete->startProcessing(true, false);
