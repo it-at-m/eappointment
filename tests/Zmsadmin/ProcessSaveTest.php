@@ -41,12 +41,6 @@ class ProcessSaveTest extends Base
                 ],
                 [
                     'function' => 'readPostResult',
-                    'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
-                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
-                ],
-                [
-                    'function' => 'readPostResult',
                     'url' => '/process/82252/12a2/',
                     'parameters' => [
                         'initiator' => null,
@@ -86,12 +80,6 @@ class ProcessSaveTest extends Base
                     'url' => '/scope/141/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
-                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ],
                 [
                     'function' => 'readPostResult',

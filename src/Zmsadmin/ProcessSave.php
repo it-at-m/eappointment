@@ -51,20 +51,19 @@ class ProcessSave extends BaseController
             );
         }
 
-        $freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation);
+        //$freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation);
         $process = $this->writeUpdatedProcess($input, $process, $validator);
         $success = ($process->isWithAppointment()) ? 'process_updated' : 'process_withoutappointment_updated';
 
         
-        $error = (! $freeProcessList->count() && 1 < $input['slotCount']) ? 'is_overbooked' : null;
-        error_log($freeProcessList->count() . ' | ' . $input['slotCount']);
+        //$error = (! $freeProcessList && 1 < $input['slotCount']) ? 'is_overbooked' : null;
         return \BO\Slim\Render::withHtml(
             $response,
             'element/helper/messageHandler.twig',
             array(
                 'selectedprocess' => $process,
-                'success' => $success,
-                'error' => $error
+                'success' => $success
+                //'error' => $error
             )
         );
     }

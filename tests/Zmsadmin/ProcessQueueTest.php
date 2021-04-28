@@ -132,12 +132,6 @@ class ProcessQueueTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/process/100632/',
                     'response' => $this->readFixture("GET_process_spontankunde.json")
-                ],
-                [
-                    'function' => 'readDeleteResult',
-                    'url' => '/process/100632/',
-                    'parameters' => ['initiator' => null],
-                    'response' => null
                 ]
             ]
         );
