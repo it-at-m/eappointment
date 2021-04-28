@@ -143,11 +143,6 @@ class ProcessReserve extends BaseController
         if ('confirmed' == $confirmedProcess->getStatus()) {
             $process = $confirmedProcess;
             Helper\AppointmentFormHelper::updateMailAndNotification($input, $process);
-            if (isset($input['selectedprocess'])) {
-                $oldProcess = \App::$http->readGetResult('/process/'. $input['selectedprocess'] .'/')->getEntity();
-                $oldProcess->status = 'deleted';
-                ProcessDelete::writeDeleteWithMailNotifications($oldProcess);
-            }
         }
         return $process;
     }

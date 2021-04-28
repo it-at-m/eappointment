@@ -28,11 +28,13 @@ class ProcessDelete extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
+        $initiator = Validator::param('initiator')->isString()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
         $process->status = 'deleted';
         $workstation->testMatchingProcessScope((new Helper\ClusterHelper($workstation))->getScopeList(), $process);
 
-        static::writeDeleteWithMailNotifications($process);
+        \App::$http->readDeleteResult('/process/'. $process->getId() .'/', ['initiator' => $initiator]);
+        static::writeDeleteMailNotifications($process);
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -44,10 +46,8 @@ class ProcessDelete extends BaseController
         );
     }
 
-    public static function writeDeleteWithMailNotifications($process)
+    public static function writeDeleteMailNotifications($process)
     {
-        $initiator = Validator::param('initiator')->isString()->getValue();
-        \App::$http->readDeleteResult('/process/'. $process->getId() .'/', ['initiator' => $initiator]);
         if ($process->getFirstClient()->hasEmail() &&
             $process->isWithAppointment() &&
             $process->scope->hasEmailFrom()

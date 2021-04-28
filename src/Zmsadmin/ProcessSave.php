@@ -56,7 +56,8 @@ class ProcessSave extends BaseController
         $success = ($process->isWithAppointment()) ? 'process_updated' : 'process_withoutappointment_updated';
 
         
-        $error = (! $freeProcessList && 1 < $input['slotCount']) ? 'is_overbooked' : null;
+        $error = (! $freeProcessList->count() && 1 < $input['slotCount']) ? 'is_overbooked' : null;
+        error_log($freeProcessList->count() . ' | ' . $input['slotCount']);
         return \BO\Slim\Render::withHtml(
             $response,
             'element/helper/messageHandler.twig',
