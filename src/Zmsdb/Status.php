@@ -94,7 +94,7 @@ class Status extends Base
     {
         $stats = $this->getReader()->fetchOne(
             'SELECT
-                COUNT(intern) cnt
+                SUM(intern) cnt
             FROM slot s
             WHERE s.status = "free"
             '
