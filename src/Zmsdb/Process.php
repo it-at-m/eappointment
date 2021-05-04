@@ -398,7 +398,6 @@ class Process extends Base implements Interfaces\ResolveReferences
                 ->addConditionScopeId($scope->getId())
                 ->addConditionAssigned()
                 ->addConditionIgnoreSlots();
-                //ignore slots was the reason why overbooked slots not has been displayed as conflicts
             $query->addConditionTime($currentDate);
             $statement = $this->fetchStatement($query);
             $processList = $this->readList($statement, $resolveReferences);
