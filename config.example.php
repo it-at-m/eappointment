@@ -31,10 +31,13 @@ if (getenv('MYSQL_PORT')) {
 }
 // MYSQL_PORT_RO for readonly access of type "tcp://127.0.0.1:3306"
 if (getenv('MYSQL_PORT_RO')) {
+    // Allow simple load balancing with multiple values
+    $myqlPortList = explode(',', getenv('MYSQL_PORT_RO'));
+    $mysqlPortRO = trim($mysqlPortList[array_rand($mysqlPortList)]);
     $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=";
-    $dsn .= parse_url(getenv('MYSQL_PORT_RO'), PHP_URL_HOST);
+    $dsn .= parse_url($mysqlPortRO, PHP_URL_HOST);
     $dsn .= ';port=';
-    $dsn .= parse_url(getenv('MYSQL_PORT_RO'), PHP_URL_PORT);
+    $dsn .= parse_url($mysqlPortRO, PHP_URL_PORT);
     if (!defined('DSN_RO')) {
         define('DSN_RO', $dsn);
     }
