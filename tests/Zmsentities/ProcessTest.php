@@ -589,7 +589,7 @@ class ProcessTest extends EntityCommonTests
                 'id' => '1',
                 'appointments' => [
                     new Appointment([
-                        'date' => strtotime('2016-04-19 12:15'),
+                        'date' => strtotime('2016-04-19 11:15'),
                         'slotCount' => 1,
                     ])
                 ],
@@ -599,7 +599,7 @@ class ProcessTest extends EntityCommonTests
                 'id' => '2',
                 'appointments' => [
                     new Appointment([
-                        'date' => strtotime('2016-04-19 11:15'),
+                        'date' => strtotime('2016-04-19 12:15'),
                         'slotCount' => 1,
                     ])
                 ],
@@ -610,7 +610,7 @@ class ProcessTest extends EntityCommonTests
                 'appointments' => [
                     new Appointment([
                         'date' => strtotime('2016-04-19 12:15'),
-                        'slotCount' => 1,
+                        'slotCount' => 3,
                     ])
                 ],
                 'status' => 'confirmed',
