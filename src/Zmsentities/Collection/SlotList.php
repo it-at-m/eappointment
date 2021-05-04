@@ -74,10 +74,10 @@ class SlotList extends Base
         foreach ($this as $slot) {
             if ($takeFollowingSlot > 0) {
                 $takeFollowingSlot--;
-                $slotList[] = $slot;
+                $slotList[] = clone $slot;
             }
             if ($slot->hasTime() && $slot->time == $startTime) {
-                $slotList[] = $slot;
+                $slotList[] = clone $slot;
                 $takeFollowingSlot = $appointment['slotCount'] - 1;
             }
         }
@@ -96,12 +96,22 @@ class SlotList extends Base
      */
     public function removeAppointment(\BO\Zmsentities\Appointment $appointment)
     {
-        $slot = $this->getByDateTime($appointment->toDateTime());
-        if ($slot && $slot->intern > 0) {
-            $slot->removeAppointment();
-            return true;
+        $takeFollowingSlot = 0;
+        $startTime = $appointment->toDateTime()->format('H:i');
+        $hasRemoved = false;
+        foreach ($this as $slot) {
+            if ($slot && 0 < $slot['intern']) {
+                if ($takeFollowingSlot > 1) {
+                    $takeFollowingSlot--;
+                    $hasRemoved = $slot->removeAppointment();
+                }
+                if ($slot->hasTime() && $slot->time == $startTime) {
+                    $hasRemoved = $slot->removeAppointment();
+                    $takeFollowingSlot = $appointment['slotCount'] - 1;
+                }
+            }
         }
-        return false;
+        return $hasRemoved;
     }
 
     public function getSlot($index)
