@@ -91,6 +91,10 @@ class SlotList extends Base
 
     /**
      * Reduce free appointments on slot matching appointment
+     * 
+     * -----------|----------------|------------
+     * first loop | intern slots 2 | slotCount 3
+     * 
      *
      * @return bool true on success and false if no matching slot is found or no appointments are free
      */
@@ -98,20 +102,31 @@ class SlotList extends Base
     {
         $takeFollowingSlot = 0;
         $startTime = $appointment->toDateTime()->format('H:i');
-        $hasRemoved = false;
+        $containsAppointment = false;
+        //error_log('check: ' . $appointment);
         foreach ($this as $slot) {
-            if ($slot && 0 < $slot['intern']) {
-                if ($takeFollowingSlot > 1) {
-                    $takeFollowingSlot--;
-                    $hasRemoved = $slot->removeAppointment();
-                }
-                if ($slot->hasTime() && $slot->time == $startTime) {
-                    $hasRemoved = $slot->removeAppointment();
-                    $takeFollowingSlot = $appointment['slotCount'] - 1;
+            if ($takeFollowingSlot > 0) {
+                if (0 == $slot['intern']) {
+                    error_log('false 2: ' . $slot);
+                    return false;
+                } 
+                $slot->removeAppointment();
+                $takeFollowingSlot--;
+                //error_log('intern 2: ' . $slot . ' | following: ' . $takeFollowingSlot);
+            }
+            if ($slot->hasTime() && $slot->time == $startTime) {
+                $takeFollowingSlot = $appointment['slotCount'] - 1;
+                //error_log('intern: ' . $slot . ' | following: ' . $takeFollowingSlot);
+                if (0 < $slot['intern']) {
+                    $containsAppointment = true;
+                    $slot->removeAppointment();
+                } else {
+                    //error_log('false: ' . $slot);
+                    return false;
                 }
             }
         }
-        return $hasRemoved;
+        return $containsAppointment;
     }
 
     public function getSlot($index)
