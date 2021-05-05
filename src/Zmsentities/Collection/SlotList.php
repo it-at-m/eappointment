@@ -91,10 +91,10 @@ class SlotList extends Base
 
     /**
      * Reduce free appointments on slot matching appointment
-     * 
+     *
      * -----------|----------------|------------
      * first loop | intern slots 2 | slotCount 3
-     * 
+     *
      *
      * @return bool true on success and false if no matching slot is found or no appointments are free
      */
@@ -109,7 +109,7 @@ class SlotList extends Base
                 if (0 == $slot['intern']) {
                     error_log('false 2: ' . $slot);
                     return false;
-                } 
+                }
                 $slot->removeAppointment();
                 $takeFollowingSlot--;
                 //error_log('intern 2: ' . $slot . ' | following: ' . $takeFollowingSlot);
