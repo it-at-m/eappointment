@@ -388,7 +388,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             $availabilityList = $availabilityList->withDateTime($startDate);
             $endDate = $startDate;
         }
-        $currentDate = $startDate;
+        $currentDate = ($startDate) ? $startDate : $now;
         $conflictList = $availabilityList->getConflicts($startDate, $endDate);
         while ($currentDate <= $endDate) {
             $query = new Query\Process(Query\Base::SELECT);
