@@ -20,6 +20,9 @@ class ProcessSaveTest extends Base
 
     public function testRendering()
     {
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  new \DateTimeImmutable('2016-04-01');
+
         $this->setApiCalls(
             [
                 [
@@ -49,6 +52,15 @@ class ProcessSaveTest extends Base
                         'clientkey' => ''
                     ],
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/conflict/',
+                    'parameters' => [
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d')
+                    ],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
             ]
         );
@@ -62,6 +74,9 @@ class ProcessSaveTest extends Base
 
     public function testWithQueuedProcess()
     {
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  new \DateTimeImmutable('2016-04-01');
+        
         $this->setApiCalls(
             [
                 [
@@ -91,6 +106,15 @@ class ProcessSaveTest extends Base
                         'clientkey' => ''
                     ],
                     'response' => $this->readFixture("GET_process_queued.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/conflict/',
+                    'parameters' => [
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d')
+                    ],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
             ]
         );

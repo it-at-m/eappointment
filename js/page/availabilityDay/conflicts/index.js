@@ -38,7 +38,7 @@ const renderConflicts = (conflicts, onSelect) => {
                 <div className="message message--error message-keep" role="alert" key={key}>
                     {renderLink(conflict, onClick)}
                     {conflict.queue.withAppointment
-                     ? <p>Termin außerhalb der Öffnungszeiten oder überbucht</p>
+                     ? <p>Termin außerhalb der Öffnungszeiten oder Zeitslots für eine Uhrzeit überbucht</p>
                      : <p>{conflict.amendment}</p>
                     }
                 </div>

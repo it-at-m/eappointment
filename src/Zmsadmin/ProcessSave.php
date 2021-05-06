@@ -51,21 +51,35 @@ class ProcessSave extends BaseController
             );
         }
 
-        //$freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation);
         $process = $this->writeUpdatedProcess($input, $process, $validator);
-        $success = ($process->isWithAppointment()) ? 'process_updated' : 'process_withoutappointment_updated';
 
-        
-        //$error = (! $freeProcessList && 1 < $input['slotCount']) ? 'is_overbooked' : null;
         return \BO\Slim\Render::withHtml(
             $response,
             'element/helper/messageHandler.twig',
             array(
                 'selectedprocess' => $process,
-                'success' => $success
-                //'error' => $error
+                'success' => $this->getSuccessMessage($process),
+                'conflictlist' => $this->getConflictList($scope->getId(), $dateTime)
             )
         );
+    }
+
+    protected function getSuccessMessage(Entity $process)
+    {
+        return ($process->isWithAppointment()) ? 'process_updated' : 'process_withoutappointment_updated';
+    }
+
+    protected function getConflictList($scopeId, $dateTime)
+    {
+        $conflictList = \App::$http
+            ->readGetResult('/scope/' . $scopeId . '/conflict/', [
+                'startDate' => $dateTime->format('Y-m-d'),
+                'endDate' => $dateTime->format('Y-m-d')
+            ])
+            ->getCollection();
+        return ($conflictList && $conflictList->count()) ?
+            $conflictList->toConflictListByDay()[$dateTime->format('Y-m-d')] :
+            null;
     }
 
     protected function writeUpdatedProcess($input, Entity $process, $validator)
