@@ -78,7 +78,7 @@ class ScopeAvailabilityDay extends BaseController
         ];
     }
 
-    protected static function readAvailabilityList($scopeId, $dateTime)
+    public static function readAvailabilityList($scopeId, $dateTime)
     {
         try {
             $availabilityList = \App::$http
