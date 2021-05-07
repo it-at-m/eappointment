@@ -6,7 +6,6 @@ class DeleteFromQueueTest extends Base
 {
     protected function getApiCalls()
     {
-        var_dump(\App::$mails_per_minute);
         return [
             [
                 'function' => 'setUserInfo',

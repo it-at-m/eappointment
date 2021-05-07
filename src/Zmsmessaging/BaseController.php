@@ -17,11 +17,24 @@ class BaseController
     protected $startTime;
     protected $maxRunTime = 50;
 
-    public function __construct($maxRunTime = 50)
+    public function __construct($verbose = false, $maxRunTime = 50)
     {
+        $this->verbose = $verbose;
         \App::$http->setUserInfo(\App::$httpUser, \App::$httpPassword);
         $this->startTime = microtime(true);
         $this->maxRunTime = $maxRunTime;
+    }
+
+    public function log($message)
+    {
+        $time = $this->getSpendTime();
+        $memory = memory_get_usage()/(1024*1024);
+        $text = sprintf("[Init Messaging log %07.3fs %07.1fmb] %s", "$time", $memory, $message);
+        $this->logList[] = $text;
+        if ($this->verbose) {
+            error_log($text);
+        }
+        return $this;
     }
 
     protected function getSpendTime()
@@ -34,23 +47,31 @@ class BaseController
     {
         // @codeCoverageIgnoreStart
         if (false !== $action && null !== $mailer && ! $mailer->Send()) {
+            $this->log("Exception: SendingFailed  - ". \App::$now->format('c'));
             throw new Exception\SendingFailed();
         }
         // @codeCoverageIgnoreEnd
+        $this->log("Send Mailer: sending succeeded - ". \App::$now->format('c'));
         $log = new Mimepart(['mime' => 'text/plain']);
         $log->content = ($entity instanceof Mail) ? $entity->subject : $entity->message;
+        $this->log("Send Mailer: log readPostResult start - ". \App::$now->format('c'));
         \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $log);
+        $this->log("Send Mailer: log readPostResult finished - ". \App::$now->format('c'));
         return $mailer;
     }
 
     protected function removeEntityOlderThanOneHour($entity)
     {
         if (3600 < \App::$now->getTimestamp() - $entity->createTimestamp) {
+            $this->log("Delete Entity: removeEntityOlderThanOneHour start - ". \App::$now->format('c'));
             $this->deleteEntityFromQueue($entity);
+            $this->log("Delete Entity: removeEntityOlderThanOneHour finished - ". \App::$now->format('c'));
             $log = new Mimepart(['mime' => 'text/plain']);
             $log->content = 'Zmsmessaging Failure: Queue entry older than 1 hour has been removed';
+            $this->log("Delete Entity: log readPostResult start - ". \App::$now->format('c'));
             \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $log, ['error' => 1]);
             \App::$log->warning($log->content);
+            $this->log("Delete Entity: log readPostResult finished - ". \App::$now->format('c'));
             return false;
         }
     }
@@ -59,7 +80,9 @@ class BaseController
     {
         $type = ($entity instanceof \BO\Zmsentities\Mail) ? 'mails' : 'notification';
         try {
+            $this->log("Delete Entity: readDeleteResult start - ". \App::$now->format('c'));
             $entity = \App::$http->readDeleteResult('/'. $type .'/'. $entity->id .'/')->getEntity();
+            $this->log("Delete Entity: readDeleteResult finished - ". \App::$now->format('c'));
         } catch (\BO\Zmsclient\Exception $exception) {
             throw $exception;
         }

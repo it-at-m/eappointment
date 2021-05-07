@@ -15,15 +15,17 @@ class Mail extends BaseController
 {
     protected $messagesQueue = null;
 
-    public function __construct($maxRunTime = 50)
+    public function __construct($verbose = false, $maxRunTime = 50)
     {
-        parent::__construct($maxRunTime);
+        parent::__construct($verbose, $maxRunTime);
+        $this->log("Read Mail QueueList start with limit ". \App::$mails_per_minute ." - ". \App::$now->format('c'));
         $queueList = \App::$http->readGetResult('/mails/', [
             'resolveReferences' => 2,
             'limit' => \App::$mails_per_minute
         ])->getCollection();
         if (null !== $queueList) {
             $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
+            $this->log("QueueList sorted by createTimestamp - ". \App::$now->format('c'));
         }
     }
 
@@ -33,6 +35,7 @@ class Mail extends BaseController
         if ($this->messagesQueue && count($this->messagesQueue)) {
             foreach ($this->messagesQueue as $item) {
                 if ($this->maxRunTime < $this->getSpendTime()) {
+                    $this->log("Max Runtime exceeded - ". \App::$now->format('c'));
                     break;
                 }
                 try {
@@ -41,9 +44,12 @@ class Mail extends BaseController
                     $log = new Mimepart(['mime' => 'text/plain']);
                     $log->content = $exception->getMessage();
                     if (isset($item['process']) && isset($item['process']['id'])) {
+                        $this->log("Init Queue Exception message: ". $log->content .' - '. \App::$now->format('c'));
+                        $this->log("Init Queue Exception log readPostResult start - ". \App::$now->format('c'));
                         \App::$http->readPostResult('/log/process/'. $item['process']['id'] .'/', $log, ['error' => 1]);
+                        $this->log("Init Queue Exception log readPostResult finished - ". \App::$now->format('c'));
                     }
-                    \App::$log->error($log->content);
+                    //\App::$log->error($log->content);
                 }
             }
         } else {
@@ -90,7 +96,6 @@ class Mail extends BaseController
         $messageId = $entity['id'];
         try {
             $mailer = $this->readMailer($entity);
-            $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
         // @codeCoverageIgnoreStart
         } catch (PHPMailerException $exception) {
             $message = "Message #$messageId PHPMailer Failure: ". $exception->getMessage();
@@ -103,14 +108,21 @@ class Mail extends BaseController
         }
         if ($message) {
             if (428 == $code) {
+                $this->log("Build Mailer Failure ". $code .": deleteEntityFromQueue() - ". \App::$now->format('c'));
                 $this->deleteEntityFromQueue($entity);
             } else {
+                $this->log(
+                    "Build Mailer Failure ". $code .": removeEntityOlderThanOneHour() - ". \App::$now->format('c')
+                );
                 $this->removeEntityOlderThanOneHour($entity);
             }
            
             $log = new Mimepart(['mime' => 'text/plain']);
             $log->content = $message;
+            $this->log("Build Mailer Exception log message: ". $message);
+            $this->log("Build Mailer Exception log readPostResult start - ". \App::$now->format('c'));
             \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $log, ['error' => 1]);
+            $this->log("Build Mailer Exception log readPostResult finished - ". \App::$now->format('c'));
             return false;
         }
 
@@ -120,6 +132,7 @@ class Mail extends BaseController
 
     protected function readMailer(\BO\Zmsentities\Mail $entity)
     {
+        $this->log("Build Mailer: testEntity() - ". \App::$now->format('c'));
         $this->testEntity($entity);
         $encoding = 'base64';
         foreach ($entity->multipart as $part) {
@@ -135,10 +148,12 @@ class Mail extends BaseController
             }
         }
 
+        $this->log("Build Mailer: new PHPMailer() - ". \App::$now->format('c'));
         $mailer = new PHPMailer(true);
         $mailer->CharSet = 'UTF-8';
         $mailer->SetLanguage("de");
         $mailer->Encoding = $encoding;
+        $this->log("Build Mailer: addCustomHeader() - ". \App::$now->format('c'));
         $mailer->addCustomHeader('Content-Transfer-Encoding', $encoding);
         $mailer->IsHTML(true);
         $mailer->XMailer = \App::IDENTIFIER;
@@ -146,7 +161,11 @@ class Mail extends BaseController
         $mailer->AltBody = (isset($textPart)) ? $textPart : '';
         $mailer->Body = (isset($htmlPart)) ? $htmlPart : '';
         $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
+        $this->log("Build Mailer: addAddress() - ". \App::$now->format('c'));
+        $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
+            
         if (null !== $entity->getIcsPart()) {
+            $this->log("Build Mailer: AddStringAttachment() - ". \App::$now->format('c'));
             $mailer->AddStringAttachment(
                 $icsPart,
                 "Termin.ics",
