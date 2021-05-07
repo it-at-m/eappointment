@@ -4,14 +4,30 @@
 // initialize the static \App singleton
 include(realpath(__DIR__) .'/../bootstrap.php');
 
-\App::$messaging = new \BO\Zmsmessaging\Mail();
+$usage = <<<EOS
 
-$isValid = false;
-if (preg_grep('#--?s(end)?#', $argv)) {
-    $isValid = true;
+Usage: {$argv[0]} [--verbose] --send
+        ATTENTION! Sends emails from queue. USE WITH CAUTION!
+        --send          no dry run, delete processes
+        --verbose       only shows what would be deleted
+
+EOS;
+
+$send = preg_grep('#--?s(end)?#', $argv);
+$verbose = preg_grep('#^--?v(erbose)?$#', $argv);
+
+\App::$messaging = new \BO\Zmsmessaging\Mail($verbose);
+
+$now = new \DateTimeImmutable();
+if (class_exists('\App') && isset(\App::$now)) {
+    $now = \App::$now;
 }
-$resultList = \App::$messaging->initQueueTransmission($isValid);
-if (preg_grep('#--?v(erbose)?#', $argv)) {
+$resultList = \App::$messaging->initQueueTransmission($send, $verbose);
+if (! $send) {
+    error_log("Use with --send to send emails.");
+}
+
+if ($verbose) {
     foreach ($resultList as $mail) {
         if (isset($mail['errorInfo'])) {
             echo "\033[01;31mERROR OCCURED: ". $mail['errorInfo'] ."\033[0m \n";
@@ -24,8 +40,4 @@ if (preg_grep('#--?v(erbose)?#', $argv)) {
             //echo "\033[01;31mDELETE NOTICE: Items will not be deleted in verbose mode \033[0m \n\n";
         }
     }
-}
-
-if (!preg_grep('#--?v(erbose)?#', $argv) && !preg_grep('#--?s(end)?#', $argv)) {
-    echo "\nUsage:\n mail_queue.php [--send, --verbose] \n";
 }

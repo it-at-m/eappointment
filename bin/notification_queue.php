@@ -4,14 +4,30 @@
 // initialize the static \App singleton
 include(realpath(__DIR__) .'/../bootstrap.php');
 
-\App::$messaging = new \BO\Zmsmessaging\Notification();
+$usage = <<<EOS
 
-$isValid = false;
-if (preg_grep('#--?s(end)?#', $argv)) {
-    $isValid = true;
+Usage: {$argv[0]} [--verbose] --send
+        ATTENTION! Sends emails from queue. USE WITH CAUTION!
+        --send          no dry run, delete processes
+        --verbose       only shows what would be deleted
+
+EOS;
+
+$send = preg_grep('#--?s(end)?#', $argv);
+$verbose = preg_grep('#^--?v(erbose)?$#', $argv);
+
+\App::$messaging = new \BO\Zmsmessaging\Notification($verbose);
+
+$now = new \DateTimeImmutable();
+if (class_exists('\App') && isset(\App::$now)) {
+    $now = \App::$now;
 }
-$resultList = \App::$messaging->initQueueTransmission($isValid);
-if (preg_grep('#--?v(erbose)?#', $argv)) {
+$resultList = \App::$messaging->initQueueTransmission($send, $verbose);
+if (! $send) {
+    error_log("Use with --send to send notifications.");
+}
+
+if ($verbose) {
     foreach ($resultList as $notification) {
         if (isset($notification['errorInfo'])) {
             echo "\033[01;31mERROR OCCURED: ". $notification['errorInfo'] . "\033[0m \n";
@@ -37,8 +53,4 @@ if (preg_grep('#--?v(erbose)?#', $argv)) {
             //echo $url ."\n\n";
         }
     }
-}
-
-if (!preg_grep('#--?v(erbose)?#', $argv) && !preg_grep('#--?s(end)?#', $argv)) {
-    echo "\nUsage:\n notification_queue.php [--send, --verbose] \n";
 }
