@@ -46,7 +46,8 @@ class BaseController
     protected function sendMailer(\BO\Zmsentities\Schema\Entity $entity, $mailer = null, $action = false)
     {
         // @codeCoverageIgnoreStart
-        if (false !== $action && null !== $mailer && ! $mailer->Send()) {
+        $hasSendSuccess = ($action) ? $mailer->Send() : $action;
+        if (false !== $action && null !== $mailer && ! $hasSendSuccess) {
             $this->log("Exception: SendingFailed  - ". \App::$now->format('c'));
             throw new Exception\SendingFailed();
         }
