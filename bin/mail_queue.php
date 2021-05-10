@@ -22,7 +22,7 @@ $now = new \DateTimeImmutable();
 if (class_exists('\App') && isset(\App::$now)) {
     $now = \App::$now;
 }
-$resultList = \App::$messaging->initQueueTransmission($send, $verbose);
+$resultList = \App::$messaging->initQueueTransmission($send);
 if (! $send) {
     error_log("Use with --send to send emails.");
 }
