@@ -44,15 +44,15 @@ class ProcessValidator
 
     public function validateId(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
     {
-        $valid = $unvalid->isNumber("Eine Vorgangsnnummer besteht nur aus den Ziffern 0-9");
+        $valid = $unvalid->isNumber(
+            "Eine gültige Vorgangsnummer ist in der Regel eine sechsstellig Nummer wie '123456'"
+        );
         $length = strlen((string)$valid->getValue());
         if ($length) {
-            $valid
-                ->isGreaterThan(100000, "Eine Vorgangsnummer besteht aus mindestens 6 Ziffern")
-                ;
+            $valid->isGreaterThan(100000, "Eine Vorgangsnummer besteht aus mindestens 6 Ziffern");
+            $valid->isLowerEqualThan(99999999999, "Eine Vorgangsnummer besteht aus maximal 11 Ziffern");
         } elseif (!$length && $isRequiredCallback && $isRequiredCallback()) {
-            $valid
-                ->isRequired("Eine Vorgangsnummer wird benötigt.");
+            $valid->isRequired("Eine Vorgangsnummer wird benötigt.");
         }
         $this->getCollection()->validatedAction($valid, $setter);
         return $this;
