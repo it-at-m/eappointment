@@ -2,3 +2,4 @@ vendor
 tags
 composer.*.lock
 .DS_Store
+.*
