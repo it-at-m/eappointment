@@ -11,9 +11,7 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="true"
-         syntaxCheck="false"
          bootstrap="tests/bootstrap.php"
-         strict="true"
 >
     <testsuites>
         <testsuite name="Slim Test Suite">
@@ -21,4 +19,3 @@
         </testsuite>
     </testsuites>
 </phpunit>
-
