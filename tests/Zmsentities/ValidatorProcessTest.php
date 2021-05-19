@@ -21,6 +21,156 @@ class ValidatorProcessTest extends Base
         $this->assertInstanceof(Delegate::class, $processValidator->getDelegatedProcess());
     }
 
+    public function testProcessCredentials()
+    {
+        $parameters = [
+            'id' => '123456',
+            'authKey' => '1234'
+        ];
+        $validator = new Validator($parameters);
+        $process = new Process();
+        $delegatedProcess = new \BO\Zmsentities\Helper\Delegate($process);
+        $processValidator = new ProcessValidator($process);
+
+        $processValidator->validateId(
+            $validator->getParameter('id'),
+            $delegatedProcess->setter('id')
+        );
+
+        $processValidator->validateAuthKey(
+            $validator->getParameter('authKey'),
+            $delegatedProcess->setter('authKey')
+        );
+
+        $this->assertEquals($process->getId(), $parameters['id']);
+        $this->assertEquals($process->getAuthKey(), $parameters['authKey']);
+        $collectionStatus = $processValidator->getCollection()->getStatus();
+        $this->assertFalse($collectionStatus['id']['failed']);
+        $this->assertFalse($collectionStatus['authKey']['failed']);
+    }
+
+    public function testProcessCredentialsFailed()
+    {
+        $parameters = [
+            'id' => '12345',
+            'authKey' => '123'
+        ];
+        $validator = new Validator($parameters);
+        $process = new Process();
+        $delegatedProcess = new \BO\Zmsentities\Helper\Delegate($process);
+        $processValidator = new ProcessValidator($process);
+
+        $processValidator->validateId(
+            $validator->getParameter('id'),
+            $delegatedProcess->setter('id')
+        );
+
+        $processValidator->validateAuthKey(
+            $validator->getParameter('authKey'),
+            $delegatedProcess->setter('authKey')
+        );
+
+        $this->assertNotEquals($process->getId(), $parameters['id']);
+        $this->assertNotEquals($process->getAuthKey(), $parameters['authKey']);
+        $collectionStatus = $processValidator->getCollection()->getStatus();
+        $this->assertTrue($collectionStatus['id']['failed']);
+        $this->assertTrue($collectionStatus['authKey']['failed']);
+    }
+
+    public function testProcessIdDigitsOnly()
+    {
+        $parameters = [
+            'id' => '1234a'
+        ];
+        $validator = new Validator($parameters);
+        $process = new Process();
+        $delegatedProcess = new \BO\Zmsentities\Helper\Delegate($process);
+        $processValidator = new ProcessValidator($process);
+
+        $processValidator->validateId(
+            $validator->getParameter('id'),
+            $delegatedProcess->setter('id')
+        );
+
+        $this->assertNotEquals($process->getId(), $parameters['id']);
+        $collectionStatus = $processValidator->getCollection()->getStatus();
+        $this->assertEquals(
+            "Eine gültige Vorgangsnummer ist in der Regel eine sechsstellig Nummer wie '123456'", 
+            $collectionStatus['id']['messages'][0]->message
+        );
+    }
+
+    public function testProcessIdGreaterThan()
+    {
+        $parameters = [
+            'id' => '99999'
+        ];
+        $validator = new Validator($parameters);
+        $process = new Process();
+        $delegatedProcess = new \BO\Zmsentities\Helper\Delegate($process);
+        $processValidator = new ProcessValidator($process);
+
+        $processValidator->validateId(
+            $validator->getParameter('id'),
+            $delegatedProcess->setter('id')
+        );
+
+        $this->assertNotEquals($process->getId(), $parameters['id']);
+        $collectionStatus = $processValidator->getCollection()->getStatus();
+        $this->assertEquals(
+            "Eine Vorgangsnummer besteht aus mindestens 6 Ziffern", 
+            $collectionStatus['id']['messages'][0]->message
+        );
+    }
+
+    public function testProcessIdLowerEqualThan()
+    {
+        $parameters = [
+            'id' => '100000000001'
+        ];
+        $validator = new Validator($parameters);
+        $process = new Process();
+        $delegatedProcess = new \BO\Zmsentities\Helper\Delegate($process);
+        $processValidator = new ProcessValidator($process);
+
+        $processValidator->validateId(
+            $validator->getParameter('id'),
+            $delegatedProcess->setter('id')
+        );
+
+        $this->assertNotEquals($process->getId(), $parameters['id']);
+        $collectionStatus = $processValidator->getCollection()->getStatus();
+        $this->assertEquals(
+            "Eine Vorgangsnummer besteht aus maximal 11 Ziffern", 
+            $collectionStatus['id']['messages'][0]->message
+        );
+    }
+
+    public function testProcessIdMissing()
+    {
+        $parameters = [
+            'id' => null
+        ];
+        $validator = new Validator($parameters);
+        $process = new Process();
+        $delegatedProcess = new \BO\Zmsentities\Helper\Delegate($process);
+        $processValidator = new ProcessValidator($process);
+
+        $processValidator->validateId(
+            $validator->getParameter('id'),
+            $delegatedProcess->setter('id'),
+            function () {
+                return true;
+            }
+        );
+
+        $collectionStatus = $processValidator->getCollection()->getStatus();
+        $this->assertEquals(
+            "Eine Vorgangsnummer wird benötigt.", 
+            $collectionStatus['id']['messages'][0]->message
+        );
+    }
+
     public function testPhoneNumberValid()
     {
         $parsedNumber = '+4912345678910';
