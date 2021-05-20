@@ -13,7 +13,7 @@ class DayTest extends EntityCommonTests
     public function testBasic()
     {
         $entity = $this->getExample();
-        $this->assertContains('Day bookable@2015-11-19 with', $entity->__toString(), 'day to string failed');
+        $this->assertStringContainsString('Day bookable@2015-11-19 with', $entity->__toString(), 'day to string failed');
     }
 
     public function testCollection()

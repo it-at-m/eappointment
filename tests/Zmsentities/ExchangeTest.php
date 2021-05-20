@@ -181,7 +181,7 @@ class ExchangeTest extends EntityCommonTests
     public function testWithLessData()
     {
         $entity = (new $this->entityclass())->getExample();
-        $this->assertNotContains('firstDay', $entity->withLessData());
+        $this->assertStringNotContainsString('firstDay', $entity->withLessData());
     }
 
     public function testSchemaIntegerAsString()

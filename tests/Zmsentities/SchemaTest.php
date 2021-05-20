@@ -30,7 +30,7 @@ class SchemaTest extends Base
 
         $this->assertTrue('Berlin' == $entity->contact['city'], 'Schema Helper exchangeArray  failed');
         $this->assertTrue($entity->testValid(), 'Schema Helper testValid failed');
-        $this->assertContains('$schema', $entity->__toString(), 'Schema Helper __toString failed ($schema not found)');
+        $this->assertStringContainsString('$schema', $entity->__toString(), 'Schema Helper __toString failed ($schema not found)');
         $this->assertEquals(5, $entity->getResolveLevel());
     }
 

@@ -17,8 +17,8 @@ class NotificationTest extends EntityCommonTests
         $this->assertTrue(123456 == $entity->getProcess()->id, 'Getting process id failed');
         $this->assertTrue(74 == $entity->getDepartmentId(), 'Getting department id failed');
         $this->assertTrue('abcd' == $entity->getProcessAuthKey(), 'Getting authKey failed');
-        $this->assertContains('Denken Sie an ihren Termin', $entity->getMessage(), 'Getting message failed');
-        $this->assertContains('terminvereinbarung@', $entity->getIdentification(), 'Getting message failed');
+        $this->assertStringContainsString('Denken Sie an ihren Termin', $entity->getMessage(), 'Getting message failed');
+        $this->assertStringContainsString('terminvereinbarung@', $entity->getIdentification(), 'Getting message failed');
         $this->assertEquals('Max Mustermann', $entity->getFirstClient()->familyName, 'Getting first client failed');
         $this->assertEquals('030 115', $entity->getClient()->telephone, 'Wrong telephone number');
         $this->assertEquals(
@@ -121,7 +121,7 @@ class NotificationTest extends EntityCommonTests
         $department = (new \BO\Zmsentities\Department())->getExample();
 
         $resolvedEntity = $entity->toResolvedEntity($process, $config, $department, 'confirmed');
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Ihre Telefonnummer wurde erfolgreich registriert',
             $resolvedEntity['message'],
             'resolving entity failed'
@@ -138,7 +138,7 @@ class NotificationTest extends EntityCommonTests
         $department = (new \BO\Zmsentities\Department())->getExample();
 
         $resolvedEntity = $entity->toResolvedEntity($process, $config, $department, 'appointment');
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Ihr Termin: Vorgangsnr. 4567',
             $resolvedEntity['message'],
             'resolving entity failed'

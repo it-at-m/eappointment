@@ -520,7 +520,7 @@ class AvailabilityTest extends EntityCommonTests
         $entity['endDate'] = $time->modify("+2month")->getTimestamp();
         $entity['repeat']['afterWeeks'] = 1;
         $entity['repeat']['weekOfMonth'] = 1;
-        $this->assertContains('Availability.appointment #1234', $entity->__toString());
+        $this->assertStringContainsString('Availability.appointment #1234', $entity->__toString());
     }
 
     public function testCollection()

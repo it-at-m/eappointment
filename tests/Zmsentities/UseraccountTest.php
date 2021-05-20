@@ -134,7 +134,7 @@ class UseraccountTest extends EntityCommonTests
             new \BO\Zmsentities\Useraccount\EntityAccess($department),
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
         ]), "User rights should validate");
-        $this->assertContains(
+        $this->assertStringContainsString(
             "EntityAccess(department#123)",
             (string)(new \BO\Zmsentities\Useraccount\EntityAccess($department))
         );

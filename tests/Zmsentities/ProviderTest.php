@@ -35,7 +35,7 @@ class ProviderTest extends EntityCommonTests
         $this->assertFalse($collection->hasProvider("213343"), 'Failed to get provider with id 21334 from list');
         $this->assertTrue($collection->hasProvider("21334,213343"), 'Success to get provider with id 21334 from list');
         $this->assertFalse($collection->hasRequest(1234), 'Provider list should not have a request with id 1234');
-        $this->assertContains('21334', $collection->getIdsCsv(), 'Failed to get csv from ids in provider list');
+        $this->assertStringContainsString('21334', $collection->getIdsCsv(), 'Failed to get csv from ids in provider list');
 
         $entity['data']['services'] = array(array('service' => '1234'));
         $collection->addEntity($entity);

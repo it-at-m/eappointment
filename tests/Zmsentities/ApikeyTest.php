@@ -10,13 +10,13 @@ class ApikeyTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $this->assertEntity($this->entityclass, $entity);
-        $this->assertContains('"key":"wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs"', (string)$entity);
+        $this->assertStringContainsString('"key":"wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs"', (string)$entity);
     }
 
     public function testCaptcha()
     {
         $entity = (new $this->entityclass())->getExample()->withCaptchaData('base64UnitTest');
-        $this->assertContains('"mime":"image\/jpeg;base64"', (string)$entity);
+        $this->assertStringContainsString('"mime":"image\/jpeg;base64"', (string)$entity);
         $this->assertTrue('base64UnitTest' === $entity->captcha->content);
         $hash = $entity->getHashFromCaptcha('a2c4e6');
         $this->assertTrue($entity->isCaptchaFromHash('a2c4e6', $hash));

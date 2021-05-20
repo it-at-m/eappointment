@@ -30,7 +30,7 @@ class ProcessTest extends EntityCommonTests
         $this->assertTrue($entity->hasQueueNumber());
 
         $entity->addRequests('dldb', '122305');
-        $this->assertContains('122305', $entity->getRequestCSV(), 'requests are not accessible');
+        $this->assertStringContainsString('122305', $entity->getRequestCSV(), 'requests are not accessible');
         $entity->addAmendment(array('amendment' => 'Das ist ein Zusatztext'));
         $entity->addScope('141');
         $this->assertTrue('141' == $entity->getScopeId(), 'scope id is not accessible');
@@ -44,10 +44,10 @@ class ProcessTest extends EntityCommonTests
 
         $this->assertTrue(1447931730 == $entity->getReminderTimestamp(), 'reminder timestamp is not set');
 
-        $this->assertContains('122305', (string)$entity, 'requests are not accessible');
+        $this->assertStringContainsString('122305', (string)$entity, 'requests are not accessible');
 
         $this->assertTrue(2 == count($entity->getRequestIds()), 'requests are not accessible');
-        $this->assertContains('122305', $entity->getRequestCsv(), 'requests are not accessible');
+        $this->assertStringContainsString('122305', $entity->getRequestCsv(), 'requests are not accessible');
 
         $this->assertFalse($entity->hasScopeAdmin());
     }
@@ -186,7 +186,7 @@ class ProcessTest extends EntityCommonTests
     {
         $entity = $this->getExample();
         $amendment = $entity->toDerefencedAmendment();
-        $this->assertContains("LastChange' => '2015-11-19T12:13:16+01:00'", $amendment);
+        $this->assertStringContainsString("LastChange' => '2015-11-19T12:13:16+01:00'", $amendment);
     }
 
     public function testGetRequests()
