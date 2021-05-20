@@ -30,7 +30,7 @@ class RequestTest extends EntityCommonTests
         );
 
         $this->assertFalse($collection->hasRequests(1234), 'Provider list should not have a request with id 1234');
-        $this->assertContains('120335', $collection->getIdsCsv(), 'Failed to get csv from ids in request list');
+        $this->assertStringContainsString('120335', $collection->getIdsCsv(), 'Failed to get csv from ids in request list');
         $this->assertEquals('120335', $collection->getIds()[0], 'Failed to get csv from ids in request list');
 
         $entity->id = 1234;

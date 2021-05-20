@@ -15,14 +15,14 @@ class ScopeTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $this->assertTrue(is_array($entity->getNotificationPreferences()), 'Notification preferences not available');
-        $this->assertContains('erfolgreich', $entity->getConfirmationContent(), 'Confirmation content not available');
-        $this->assertContains('Warteraum', $entity->getHeadsUpContent(), 'Confirmation HeadsUpContent not available');
+        $this->assertStringContainsString('erfolgreich', $entity->getConfirmationContent(), 'Confirmation content not available');
+        $this->assertStringContainsString('Warteraum', $entity->getHeadsUpContent(), 'Confirmation HeadsUpContent not available');
         $this->assertTrue('23' == $entity->getStatus('queue', 'givenNumberCount'), 'Status is not accessible');
         $this->assertTrue(null === $entity->getContactEmail(), 'Contact eMail should not be available');
-        $this->assertContains('Flughafen', $entity->getName(), 'Contact name not available');
+        $this->assertStringContainsString('Flughafen', $entity->getName(), 'Contact name not available');
         $this->assertEquals('Bürgeramt', $entity->getScopeInfo(), 'Scope Info is not available');
         $this->assertEquals('dritte Tür rechts', $entity->getScopeHint(), 'Scope hint (from hint) is not available');
-        $this->assertContains('Flughafen', (string)$entity, 'Contact name not available');
+        $this->assertStringContainsString('Flughafen', (string)$entity, 'Contact name not available');
         $this->assertFalse($entity->hasEmailFrom());
         $this->assertTrue($entity->hasNotificationEnabled());
     }

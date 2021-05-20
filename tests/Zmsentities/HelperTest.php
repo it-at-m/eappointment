@@ -12,14 +12,14 @@ class HelperTest extends EntityCommonTests
         $entity = $collection->getIterator()->current();
 
         $this->assertTrue($entity->toProperty()->offsetExists('date'), 'Property offset date not exists');
-        $this->assertContains('Karfreitag', $entity->toProperty()->__toString(), 'Property __toString failed');
+        $this->assertStringContainsString('Karfreitag', $entity->toProperty()->__toString(), 'Property __toString failed');
 
         try {
             $entity->toProperty()->offsetSet('date', '1458856801');
             $this->fail("Expected exception PropertyOffsetReadOnly not thrown");
         } catch (\BO\Zmsentities\Exception\PropertyOffsetReadOnly $exception) {
             $this->assertEquals(500, $exception->getCode());
-            $this->assertContains('is readonly', $exception->getMessage());
+            $this->assertStringContainsString('is readonly', $exception->getMessage());
         }
 
         try {
@@ -27,7 +27,7 @@ class HelperTest extends EntityCommonTests
             $this->fail("Expected exception PropertyOffsetReadOnly not thrown");
         } catch (\BO\Zmsentities\Exception\PropertyOffsetReadOnly $exception) {
             $this->assertEquals(500, $exception->getCode());
-            $this->assertContains('is readonly', $exception->getMessage());
+            $this->assertStringContainsString('is readonly', $exception->getMessage());
         }
     }
 
@@ -53,7 +53,7 @@ class HelperTest extends EntityCommonTests
         );
 
         $this->assertTrue($time->isLastWeekOfMonth(), 'Helper DateTime is not last week of month');
-        $this->assertContains('2016-01-31T12:50:00+01:00', $time->__toString(), 'Helper DateTime to string failed');
+        $this->assertStringContainsString('2016-01-31T12:50:00+01:00', $time->__toString(), 'Helper DateTime to string failed');
     }
 
     protected function getExampleList()

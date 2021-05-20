@@ -52,7 +52,7 @@ class SlotTest extends EntityCommonTests
         $time = new \DateTimeImmutable(self::DEFAULT_TIME);
         $this->assertTrue(2 == count($collection->withTimeGreaterThan($time)));
 
-        $this->assertContains('slotlist#', (string)$collection);
+        $this->assertStringContainsString('slotlist#', (string)$collection);
     }
 
     public function testReducedSlots()

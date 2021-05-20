@@ -13,6 +13,6 @@ class LinkTest extends EntityCommonTests
     public function testBasic()
     {
         $entity = $this->getExample();
-        $this->assertContains('Link Zuständigkeitsverzeichnis', $entity->__toString(), 'link to string failed');
+        $this->assertStringContainsString('Link Zuständigkeitsverzeichnis', $entity->__toString(), 'link to string failed');
     }
 }
