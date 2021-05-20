@@ -11,9 +11,9 @@ class Client implements ClientInterface
     /**
      * @var Array $curlopt List of curl options like [CURLOPT_TIMEOUT => 10]
      */
-    static public $curlopt = [];
+    public static $curlopt = [];
 
-    static protected $curlClient = null;
+    protected static $curlClient = null;
 
     /**
      * @param \Psr\Http\Message\RequestInterface $request
