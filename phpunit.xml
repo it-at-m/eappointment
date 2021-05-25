@@ -11,8 +11,8 @@
   convertWarningsToExceptions="true" 
   forceCoversAnnotation="false" 
   stopOnFailure="true" 
-  verbose="true"
-  processIsolation="false"
+  verbose="false"
+  processIsolation="true"
 >
     <testsuites>
         <testsuite name="Zmsdb Test Suite">

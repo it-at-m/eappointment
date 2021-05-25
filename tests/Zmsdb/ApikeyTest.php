@@ -12,13 +12,13 @@ class ApikeyTest extends Base
     {
         $input = $this->getTestEntity();
         $query = new Query();
+        $query->deleteEntity('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs');
         $entity = $query->writeEntity($input);
         $this->assertEntity("\\BO\\Zmsentities\\Apikey", $entity);
 
         $entity->updateQuota(0);
         $entity = $query->updateEntity('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs', $entity);
         $this->assertEquals(100, $entity->quota[0]['requests']);
-
         $query->deleteEntity('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs');
         $this->assertFalse($query->readEntity('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs')->hasId());
     }
