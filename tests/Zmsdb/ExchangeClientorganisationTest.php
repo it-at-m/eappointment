@@ -27,7 +27,7 @@ class ExchangeClientorganisationTest extends Base
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
         $this->assertEquals(1, count($entity->data));
         $this->assertEquals(71, $entity->data[0][0]); // department id
-        $this->assertContains('Charlottenburg-Wilmersdorf', $entity->data[0][3]); //department name
+        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', $entity->data[0][3]); //department name
     }
 
     public function testPeriodList()

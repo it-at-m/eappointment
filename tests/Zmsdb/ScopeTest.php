@@ -172,7 +172,7 @@ class ScopeTest extends Base
         $writeImage = $query->writeImageData($scope->id, $mimepart);
         $readImage = $query->readImageData($scope->id);
         $this->assertEquals($writeImage->content, $readImage->content);
-        $this->assertContains('data:image/image/jpeg;base64', $readImage->content);
+        $this->assertStringContainsString('data:image/image/jpeg;base64', $readImage->content);
 
         $query->deleteImage($scope->id);
         $readImage = $query->readImageData($scope->id);

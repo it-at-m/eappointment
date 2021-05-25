@@ -31,8 +31,8 @@ class ExchangeWaitingdepartmentTest extends Base
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
         $this->assertEquals(1, count($entity->data));
         $this->assertEquals(74, $entity->data[0][0]);
-        $this->assertContains('Charlottenburg-Wilmersdorf', $entity->data[0][3]); //department name
-        $this->assertContains('Bürgeramt', $entity->data[0][4]); //department name
+        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', $entity->data[0][3]); //department name
+        $this->assertStringContainsString('Bürgeramt', $entity->data[0][4]); //department name
     }
 
     public function testPeriod()

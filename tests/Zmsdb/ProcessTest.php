@@ -103,7 +103,7 @@ class ProcessTest extends Base
             $query->writeEntityReserved($input, $now);
             $this->fail("Expected exception not thrown");
         } catch (\Exception $exception) {
-            $this->assertContains('SQL UPDATE error on inserting new process', $exception->getMessage());
+            $this->assertStringContainsString('SQL UPDATE error on inserting new process', $exception->getMessage());
         }
     }
 

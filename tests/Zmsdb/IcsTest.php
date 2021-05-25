@@ -18,9 +18,9 @@ class IcsTest extends Base
         $ics = \BO\Zmsentities\Helper\Messaging::getMailIcs($process, $config, 'appointment', null, $testTimestamp);
 
         $this->assertEntity("\\BO\\Zmsentities\\Ics", $ics);
-        $this->assertContains('169530', $ics->getContent());
-        $this->assertContains('b3b0', $ics->getContent());
-        $this->assertContains('UID:20160408-169530', $ics->getContent());
+        $this->assertStringContainsString('169530', $ics->getContent());
+        $this->assertStringContainsString('b3b0', $ics->getContent());
+        $this->assertStringContainsString('UID:20160408-169530', $ics->getContent());
     }
 
     public function testDeleteIcs()
@@ -31,7 +31,7 @@ class IcsTest extends Base
         $config = (new Config())->readEntity();
         $ics = \BO\Zmsentities\Helper\Messaging::getMailIcs($process, $config, 'deleted', null, $testTimestamp);
         $this->assertEntity("\\BO\\Zmsentities\\Ics", $ics);
-        $this->assertContains('CANCELLED', $ics->getContent());
-        $this->assertContains('UID:20160408-169530', $ics->getContent());
+        $this->assertStringContainsString('CANCELLED', $ics->getContent());
+        $this->assertStringContainsString('UID:20160408-169530', $ics->getContent());
     }
 }

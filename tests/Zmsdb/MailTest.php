@@ -50,7 +50,7 @@ class MailTest extends Base
             ]
         );
         $entity = (new Query)->writeInQueueWithAdmin($input);
-        $this->assertContains('Die Terminänderung wurde initiiert via', $entity->getPlainPart());
+        $this->assertStringContainsString('Die Terminänderung wurde initiiert via', $entity->getPlainPart());
     }
 
     public function testWriteInQueueWithDailyProcessList()
@@ -62,9 +62,9 @@ class MailTest extends Base
         $mail = (new \BO\Zmsentities\Mail())->toScopeAdminProcessList($processList, $scope, $now);
 
         $entity = (new Query)->writeInQueueWithDailyProcessList($scope, $mail);
-        $this->assertContains('Termine am 2016-04-01 (1 gesamt)', $entity->getHtmlPart());
-        $this->assertContains('Max Mustermann', $entity->getHtmlPart());
-        $this->assertContains('18:52', $entity->getHtmlPart());
+        $this->assertStringContainsString('Termine am 2016-04-01 (1 gesamt)', $entity->getHtmlPart());
+        $this->assertStringContainsString('Max Mustermann', $entity->getHtmlPart());
+        $this->assertStringContainsString('18:52', $entity->getHtmlPart());
     }
 
     public function testWriteInQueueWithPickupStatus()
