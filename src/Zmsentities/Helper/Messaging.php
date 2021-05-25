@@ -13,6 +13,14 @@ use \BO\Zmsentities\Config;
 
 use \BO\Zmsentities\Helper\Property;
 
+use Twig\Loader\FilesystemLoader;
+
+use Twig\Environment;
+
+use Twig\Extensions\I18nExtension;
+
+use Twig\Extensions\IntlExtension;
+
 /**
  * @SuppressWarnings(Coupling)
  *
@@ -75,14 +83,14 @@ class Messaging
     {
         $templatePath = TemplateFinder::getTemplatePath();
         $templateDldbPath = \BO\Dldb\Helper\TemplateFinder::getTemplatePath();
-        $loader = new \Twig_Loader_Filesystem($templatePath);
+        $loader = new FilesystemLoader($templatePath);
         $loader->addPath($templateDldbPath, 'dldb');
         $loader->addPath($templatePath, 'zmsentities');
-        $twig = new \Twig_Environment($loader, array(
+        $twig = new Environment($loader, array(
             //'cache' => '/cache/',
         ));
-        $twig->addExtension(new \Twig_Extensions_Extension_I18n());
-        $twig->addExtension(new \Twig_Extensions_Extension_Intl());
+        $twig->addExtension(new I18nExtension());
+        $twig->addExtension(new IntlExtension());
         return $twig;
     }
 
