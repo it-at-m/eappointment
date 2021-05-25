@@ -23,7 +23,7 @@ class WorkstationStatusTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('workstation.json', (string)$response->getBody());
+        $this->assertStringContainsString('workstation.json', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

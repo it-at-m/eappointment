@@ -42,7 +42,7 @@ class PickupSpreadSheetTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains(
+        $this->assertStringContainsString(
             'download; filename="abholer_Bürgeramt_Heerstraße.xlsx',
             $response->getHeader('Content-Disposition')[0]
         );
@@ -79,7 +79,7 @@ class PickupSpreadSheetTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains(
+        $this->assertStringContainsString(
             'download; filename="abholer_Bürgeramt_Heerstraße.xlsx',
             $response->getHeader('Content-Disposition')[0]
         );

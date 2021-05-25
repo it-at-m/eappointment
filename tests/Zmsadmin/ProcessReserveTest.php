@@ -47,8 +47,8 @@ class ProcessReserveTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertContains('Termin erfolgreich eingetragen', (string)$response->getBody());
-        $this->assertContains('Die Vorgangsnummer für "Test BO" lautet: 100005', (string)$response->getBody());
+        $this->assertStringContainsString('Termin erfolgreich eingetragen', (string)$response->getBody());
+        $this->assertStringContainsString('Die Vorgangsnummer für "Test BO" lautet: 100005', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -82,8 +82,8 @@ class ProcessReserveTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertContains('Termin erfolgreich eingetragen', (string)$response->getBody());
-        $this->assertContains('Die Vorgangsnummer für "H52452625" lautet: 82252', (string)$response->getBody());
+        $this->assertStringContainsString('Termin erfolgreich eingetragen', (string)$response->getBody());
+        $this->assertStringContainsString('Die Vorgangsnummer für "H52452625" lautet: 82252', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -131,8 +131,8 @@ class ProcessReserveTest extends Base
             array('sendConfirmation' => 1, 'sendMailConfirmation' => 1)
         );
         $response = $this->render($this->arguments, $parameters, [], 'POST');
-        $this->assertContains('Termin erfolgreich eingetragen', (string)$response->getBody());
-        $this->assertContains('Die Vorgangsnummer für "S4524" lautet: 194104', (string)$response->getBody());
+        $this->assertStringContainsString('Termin erfolgreich eingetragen', (string)$response->getBody());
+        $this->assertStringContainsString('Die Vorgangsnummer für "S4524" lautet: 194104', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -167,8 +167,8 @@ class ProcessReserveTest extends Base
         );
         $parameters = array_merge($this->parameters, ['slotCount' => 3]);
         $response = $this->render($this->arguments, $parameters, [], 'POST');
-        $this->assertContains('Termin erfolgreich eingetragen', (string)$response->getBody());
-        $this->assertContains('Die Vorgangsnummer für "Test BO" lautet: 100005', (string)$response->getBody());
+        $this->assertStringContainsString('Termin erfolgreich eingetragen', (string)$response->getBody());
+        $this->assertStringContainsString('Die Vorgangsnummer für "Test BO" lautet: 100005', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -199,8 +199,8 @@ class ProcessReserveTest extends Base
             'familyName' => 'Unittest',
             'reserve' => 1
         ], [], 'POST');
-        $this->assertContains('den Standort muss eine', (string)$response->getBody());
-        $this->assertContains('E-Mail Adresse eingetragen werden', (string)$response->getBody());
+        $this->assertStringContainsString('den Standort muss eine', (string)$response->getBody());
+        $this->assertStringContainsString('E-Mail Adresse eingetragen werden', (string)$response->getBody());
     }
 
     public function testValidationFailed()
@@ -242,8 +242,8 @@ class ProcessReserveTest extends Base
             'selecteddate' => '2016-04-01',
             'selectedtime' => '11-55'
         ], [], 'POST');
-        $this->assertContains('Name eingegeben werden', (string)$response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('Name eingegeben werden', (string)$response->getBody());
+        $this->assertStringContainsString(
             'Es muss mindestens eine Dienstleistung ausgew\u00e4hlt werden!',
             (string)$response->getBody()
         );

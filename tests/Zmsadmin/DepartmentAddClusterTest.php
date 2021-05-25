@@ -37,7 +37,7 @@ class DepartmentAddClusterTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Cluster: Einrichtung und Administration', (string)$response->getBody());
+        $this->assertStringContainsString('Cluster: Einrichtung und Administration', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

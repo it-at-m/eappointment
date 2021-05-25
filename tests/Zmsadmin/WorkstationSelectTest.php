@@ -23,8 +23,8 @@ class WorkstationSelectTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Standort und Arbeitsplatz auswählen', (string)$response->getBody());
-        $this->assertContains('Bürgeramt Heerstraße', (string)$response->getBody());
+        $this->assertStringContainsString('Standort und Arbeitsplatz auswählen', (string)$response->getBody());
+        $this->assertStringContainsString('Bürgeramt Heerstraße', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -118,8 +118,8 @@ class WorkstationSelectTest extends Base
             'hint' => 'Test Aufrufzusatz',
             'workstation_select_form_validate' => 1
         ], [], 'POST');
-        $this->assertContains('has-error', (string)$response->getBody());
-        $this->assertContains('Bitte wählen Sie einen Standort aus', (string)$response->getBody());
+        $this->assertStringContainsString('has-error', (string)$response->getBody());
+        $this->assertStringContainsString('Bitte wählen Sie einen Standort aus', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

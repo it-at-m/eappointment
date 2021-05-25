@@ -58,8 +58,8 @@ class ScopeAvailabilityDayTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Öffnungszeiten für den Standort Bürgeramt Heerstraße', (string)$response->getBody());
-        $this->assertContains('data-busyslots="{&quot;68997&quot;:105}"', (string)$response->getBody());
+        $this->assertStringContainsString('Öffnungszeiten für den Standort Bürgeramt Heerstraße', (string)$response->getBody());
+        $this->assertStringContainsString('data-busyslots="{&quot;68997&quot;:105}"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -111,8 +111,8 @@ class ScopeAvailabilityDayTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Öffnungszeiten für den Standort Bürgeramt Heerstraße', (string)$response->getBody());
-        $this->assertContains('data-busyslots="[]"', (string)$response->getBody());
+        $this->assertStringContainsString('Öffnungszeiten für den Standort Bürgeramt Heerstraße', (string)$response->getBody());
+        $this->assertStringContainsString('data-busyslots="[]"', (string)$response->getBody());
     }
 
     public function testEmptyProcessList()
@@ -160,8 +160,8 @@ class ScopeAvailabilityDayTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Öffnungszeiten für den Standort Bürgeramt Heerstraße', (string)$response->getBody());
-        $this->assertNotContains('data-busyslots="{&quot;68997&quot;:105}"', (string)$response->getBody());
+        $this->assertStringContainsString('Öffnungszeiten für den Standort Bürgeramt Heerstraße', (string)$response->getBody());
+        $this->assertStringNotContainsString('data-busyslots="{&quot;68997&quot;:105}"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

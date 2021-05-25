@@ -68,7 +68,7 @@ class ScopeTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Bürgeramt Heerstraße', (string)$response->getBody());
+        $this->assertStringContainsString('Bürgeramt Heerstraße', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -402,7 +402,7 @@ class ScopeTest extends Base
             ]
         );
         $response = $this->render($this->arguments, ['success' => 'scope_saved'], []);
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Der Standort wurde am 01.04.2016 um 11:55 Uhr erfolgreich aktualisiert.',
             (string)$response->getBody()
         );
@@ -501,7 +501,7 @@ class ScopeTest extends Base
             ]
 
         ], [], 'POST');
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein',
             (string)$response->getBody()
         );

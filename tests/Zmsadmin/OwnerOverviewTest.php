@@ -31,7 +31,7 @@ class OwnerOverviewTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Behörden und Standorte', (string)$response->getBody());
+        $this->assertStringContainsString('Behörden und Standorte', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

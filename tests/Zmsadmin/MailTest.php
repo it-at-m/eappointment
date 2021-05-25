@@ -67,8 +67,8 @@ class MailTest extends Base
             ]
         );
         $response = $this->render($this->arguments, [], []);
-        $this->assertContains('message-error', (string)$response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('message-error', (string)$response->getBody());
+        $this->assertStringContainsString(
             'Für einen E-Mail Versand muss eine gültige E-Mail-Adresse eingetragen sein.',
             (string)$response->getBody()
         );
@@ -165,8 +165,8 @@ class MailTest extends Base
             'message' => '',
             'submit' => 'form'
         ], [], 'POST');
-        $this->assertContains('has-error', (string)$response->getBody());
-        $this->assertContains('Es muss eine aussagekräftige Nachricht eingegeben werden', (string)$response->getBody());
+        $this->assertStringContainsString('has-error', (string)$response->getBody());
+        $this->assertStringContainsString('Es muss eine aussagekräftige Nachricht eingegeben werden', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

@@ -30,7 +30,7 @@ class OrganisationAddDepartmentTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Neue Behörde hinzufügen', (string)$response->getBody());
+        $this->assertStringContainsString('Neue Behörde hinzufügen', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

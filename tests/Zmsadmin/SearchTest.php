@@ -34,7 +34,7 @@ class SearchTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Suchergebnisse für "Test%20BO"', (string)$response->getBody());
+        $this->assertStringContainsString('Suchergebnisse für "Test%20BO"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -67,7 +67,7 @@ class SearchTest extends Base
         $response = $this->render($this->arguments, [
             'query' => '100005'
         ], []);
-        $this->assertContains('Log-Ergebnisse', (string)$response->getBody());
+        $this->assertStringContainsString('Log-Ergebnisse', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -93,8 +93,8 @@ class SearchTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('data-processList-count="5"', (string)$response->getBody());
-        $this->assertContains('data-processListOther-count="1"', (string)$response->getBody());
+        $this->assertStringContainsString('data-processList-count="5"', (string)$response->getBody());
+        $this->assertStringContainsString('data-processListOther-count="1"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

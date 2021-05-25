@@ -53,8 +53,8 @@ class CounterQueueInfoTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Arbeitsplätze besetzt', (string)$response->getBody());
-        $this->assertContains('2 (1)', (string)$response->getBody());
+        $this->assertStringContainsString('Arbeitsplätze besetzt', (string)$response->getBody());
+        $this->assertStringContainsString('2 (1)', (string)$response->getBody());
         
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -102,8 +102,8 @@ class CounterQueueInfoTest extends Base
             'ghostworkstationcount' => 2,
             'selecteddate' => '2016-04-01'
         ], []);
-        $this->assertContains('davon vor nächstem Spontankunden', (string)$response->getBody());
-        $this->assertContains('Wartezeit für neue Spontankunden in Stunden', (string)$response->getBody());
+        $this->assertStringContainsString('davon vor nächstem Spontankunden', (string)$response->getBody());
+        $this->assertStringContainsString('Wartezeit für neue Spontankunden in Stunden', (string)$response->getBody());
         
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -148,7 +148,7 @@ class CounterQueueInfoTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Fiktive Arbeitsplätze sind in der Clusteransicht nicht möglich',
             (string)$response->getBody()
         );

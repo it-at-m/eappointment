@@ -53,7 +53,7 @@ class DepartmentAddScopeTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Neuen Standort hinzufügen', (string)$response->getBody());
+        $this->assertStringContainsString('Neuen Standort hinzufügen', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -204,7 +204,7 @@ class DepartmentAddScopeTest extends Base
             'save' => 'save'
 
         ], [], 'POST');
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein',
             (string)$response->getBody()
         );

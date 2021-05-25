@@ -1868,15 +1868,15 @@ class AvailabilityConflictsTest extends Base
                 }
             }'
         ], [], 'POST');
-        $this->assertContains('Zwei \u00d6ffnungszeiten sind gleich', (string)$response->getBody());
-        $this->assertContains('2016-04-04', (string)$response->getBody());
-        $this->assertContains('2016-04-11', (string)$response->getBody());
-        $this->assertContains('2016-04-18', (string)$response->getBody());
-        $this->assertContains('2016-04-25', (string)$response->getBody());
-        $this->assertContains('2016-05-02', (string)$response->getBody());
-        $this->assertContains('2016-05-09', (string)$response->getBody());
-        $this->assertNotContains('2016-05-16', (string)$response->getBody());
-        $this->assertContains('"conflictIdList":["81871","__temp__0"]', (string)$response->getBody());
+        $this->assertStringContainsString('Zwei \u00d6ffnungszeiten sind gleich', (string)$response->getBody());
+        $this->assertStringContainsString('2016-04-04', (string)$response->getBody());
+        $this->assertStringContainsString('2016-04-11', (string)$response->getBody());
+        $this->assertStringContainsString('2016-04-18', (string)$response->getBody());
+        $this->assertStringContainsString('2016-04-25', (string)$response->getBody());
+        $this->assertStringContainsString('2016-05-02', (string)$response->getBody());
+        $this->assertStringContainsString('2016-05-09', (string)$response->getBody());
+        $this->assertStringNotContainsString('2016-05-16', (string)$response->getBody());
+        $this->assertStringContainsString('"conflictIdList":["81871","__temp__0"]', (string)$response->getBody());
         
         $this->assertEquals(200, $response->getStatusCode());
     }

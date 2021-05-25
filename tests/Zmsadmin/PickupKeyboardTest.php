@@ -28,7 +28,7 @@ class PickupKeyboardTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('pickup-keyboard-handheld', (string)$response->getBody());
+        $this->assertStringContainsString('pickup-keyboard-handheld', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

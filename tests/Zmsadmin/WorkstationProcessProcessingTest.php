@@ -28,8 +28,8 @@ class WorkstationProcessProcessingTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('H52452625', (string)$response->getBody());
-        $this->assertContains('Wartenr. 82252', (string)$response->getBody());
+        $this->assertStringContainsString('H52452625', (string)$response->getBody());
+        $this->assertStringContainsString('Wartenr. 82252', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

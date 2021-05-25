@@ -22,7 +22,7 @@ class AvailabilityDeleteTest extends Base
             ]
         );
         $response = parent::testRendering();
-        $this->assertContains('"id": "68985"', (string)$response->getBody());
+        $this->assertStringContainsString('"id": "68985"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -38,7 +38,7 @@ class AvailabilityDeleteTest extends Base
             ]
         );
         $response = $this->render(['id' => 999999], []);
-        $this->assertContains('"message": "Not found"', (string)$response->getBody());
+        $this->assertStringContainsString('"message": "Not found"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

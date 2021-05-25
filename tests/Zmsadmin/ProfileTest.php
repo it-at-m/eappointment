@@ -23,9 +23,9 @@ class ProfileTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Nutzerinformation', (string)$response->getBody());
-        $this->assertContains('testadmin', (string)$response->getBody());
-        $this->assertContains('value="0"', (string)$response->getBody());
+        $this->assertStringContainsString('Nutzerinformation', (string)$response->getBody());
+        $this->assertStringContainsString('testadmin', (string)$response->getBody());
+        $this->assertStringContainsString('value="0"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -58,7 +58,7 @@ class ProfileTest extends Base
             'changePassword' => ['myPassword', 'myPassword'],
             'save' => 'save'
         ], [], 'POST');
-        $this->assertContains('Nutzername oder das Passwort wurden falsch eingegeben', (string)$response->getBody());
+        $this->assertStringContainsString('Nutzername oder das Passwort wurden falsch eingegeben', (string)$response->getBody());
     }
 
     public function testUnknownException()

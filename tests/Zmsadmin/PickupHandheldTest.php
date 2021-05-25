@@ -23,7 +23,7 @@ class PickupHandheldTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('pickup-handheld-view', (string)$response->getBody());
+        $this->assertStringContainsString('pickup-handheld-view', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -42,8 +42,8 @@ class PickupHandheldTest extends Base
         $response = $this->render($this->arguments, [
             'inputNumber' => 82252
         ], [], 'POST');
-        $this->assertContains('pickup-handheld-view', (string)$response->getBody());
-        $this->assertContains('data-selected-process="82252"', (string)$response->getBody());
+        $this->assertStringContainsString('pickup-handheld-view', (string)$response->getBody());
+        $this->assertStringContainsString('data-selected-process="82252"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -62,8 +62,8 @@ class PickupHandheldTest extends Base
         $response = $this->render($this->arguments, [
             'inputNumber' => 82252
         ], [], 'POST');
-        $this->assertContains('pickup-handheld-view', (string)$response->getBody());
-        $this->assertContains('data-selected-process="82252"', (string)$response->getBody());
+        $this->assertStringContainsString('pickup-handheld-view', (string)$response->getBody());
+        $this->assertStringContainsString('data-selected-process="82252"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

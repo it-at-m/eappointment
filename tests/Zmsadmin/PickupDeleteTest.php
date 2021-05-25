@@ -41,7 +41,7 @@ class PickupDeleteTest extends Base
             ]
         );
         $response = parent::testRendering();
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Der Abholer mit der Wartenummer 82252 wurde erfolgreich aus der Liste entfernt.',
             (string)$response->getBody()
         );
@@ -77,7 +77,7 @@ class PickupDeleteTest extends Base
             ]
         );
         $response = $this->render($this->arguments, ['list' => 1], []);
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Alle Termine wurden erfolgreich aus der Liste entfernt.',
             (string)$response->getBody()
         );

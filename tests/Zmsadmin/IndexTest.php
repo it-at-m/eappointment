@@ -33,7 +33,7 @@ class IndexTest extends Base
             ]
         );
         $response = $this->render($this->arguments, [], []);
-        $this->assertContains('Anmeldung', (string)$response->getBody());
+        $this->assertStringContainsString('Anmeldung', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -70,7 +70,7 @@ class IndexTest extends Base
             ]
         );
         $response = $this->render($this->arguments, [], []);
-        $this->assertContains('Willkommen zurück', (string)$response->getBody());
+        $this->assertStringContainsString('Willkommen zurück', (string)$response->getBody());
     }
 
     public function testUnknownException()
@@ -145,11 +145,11 @@ class IndexTest extends Base
             'password' => 'test',
             'login_form_validate' => 1
         ], [], 'POST');
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Das eingegebene Passwort und der Nutzername passen nicht zusammen',
             (string)$response->getBody()
         );
-        $this->assertContains('form-group has-error', (string)$response->getBody());
+        $this->assertStringContainsString('form-group has-error', (string)$response->getBody());
     }
 
     public function testLoginFailed()
@@ -175,10 +175,10 @@ class IndexTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Das eingegebene Passwort und der Nutzername passen nicht zusammen',
             (string)$response->getBody()
         );
-        $this->assertContains('form-group has-error', (string)$response->getBody());
+        $this->assertStringContainsString('form-group has-error', (string)$response->getBody());
     }
 }

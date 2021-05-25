@@ -52,11 +52,11 @@ class CalendarWeekTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Standort: Bürgeramt Heerstraße, 13. Kalenderwoche',
             (string)$response->getBody()
         );
-        $this->assertContains('<span class="pid">184432</span>', (string)$response->getBody());
+        $this->assertStringContainsString('<span class="pid">184432</span>', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -99,11 +99,11 @@ class CalendarWeekTest extends Base
             ]
         );
         $response = $this->render(['year' => 2016, 'weeknr' => 12], $this->parameters, []);
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Standort: Bürgeramt Heerstraße, 13. Kalenderwoche',
             (string)$response->getBody()
         );
-        $this->assertContains('<span class="pid">184432</span>', (string)$response->getBody());
+        $this->assertStringContainsString('<span class="pid">184432</span>', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -146,8 +146,8 @@ class CalendarWeekTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('timeslot--free', (string)$response->getBody());
-        $this->assertContains('Jetzt einen Termin um 15:20 buchen', (string)$response->getBody());
+        $this->assertStringContainsString('timeslot--free', (string)$response->getBody());
+        $this->assertStringContainsString('Jetzt einen Termin um 15:20 buchen', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -207,8 +207,8 @@ class CalendarWeekTest extends Base
             ]
         );
         $response = $this->render(['year' => 2016, 'weeknr' => 52], $this->parameters, []);
-        $this->assertContains('/2017/1/', (string)$response->getBody());
-        $this->assertContains('/2016/51/', (string)$response->getBody());
+        $this->assertStringContainsString('/2017/1/', (string)$response->getBody());
+        $this->assertStringContainsString('/2016/51/', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

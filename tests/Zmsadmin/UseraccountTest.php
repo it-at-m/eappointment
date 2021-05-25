@@ -35,8 +35,8 @@ class UseraccountTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Systemweite Nutzer', (string)$response->getBody());
-        $this->assertContains('/useraccount/berlinonline', (string)$response->getBody());
+        $this->assertStringContainsString('Systemweite Nutzer', (string)$response->getBody());
+        $this->assertStringContainsString('/useraccount/berlinonline', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -70,8 +70,8 @@ class UseraccountTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Charlottenburg-Wilmersdorf', (string)$response->getBody());
-        $this->assertNotContains('/useraccount/berlinonline', (string)$response->getBody());
+        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string)$response->getBody());
+        $this->assertStringNotContainsString('/useraccount/berlinonline', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

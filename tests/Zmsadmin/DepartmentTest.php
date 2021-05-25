@@ -36,7 +36,7 @@ class DepartmentTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Bürgeramt - Behörde: Einrichtung und Administration', (string)$response->getBody());
+        $this->assertStringContainsString('Bürgeramt - Behörde: Einrichtung und Administration', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

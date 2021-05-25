@@ -30,8 +30,8 @@ class WorkstationProcessPreCallTest extends Base
             ]
         );
         $response = $this->render($this->arguments, ['exclude' => '999999'], []);
-        $this->assertContains('Für ihn ist die folgende Notiz hinterlegt', (string)$response->getBody());
-        $this->assertContains('data-exclude="999999,82252"', (string)$response->getBody());
+        $this->assertStringContainsString('Für ihn ist die folgende Notiz hinterlegt', (string)$response->getBody());
+        $this->assertStringContainsString('data-exclude="999999,82252"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -53,8 +53,8 @@ class WorkstationProcessPreCallTest extends Base
             ]
         );
         $response = $this->render($this->arguments, [], []);
-        $this->assertContains('1', (string)$response->getBody());
-        $this->assertContains('Außerhalb der Öffnungszeiten gebucht!', (string)$response->getBody());
+        $this->assertStringContainsString('1', (string)$response->getBody());
+        $this->assertStringContainsString('Außerhalb der Öffnungszeiten gebucht!', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -94,9 +94,9 @@ class WorkstationProcessPreCallTest extends Base
         $response = $this->render($this->arguments, [
             'exclude' => 999999
         ], []);
-        $this->assertContains('Dieser Arbeitsplatz hat schon einen Abholer aufgerufen.', (string)$response->getBody());
-        $this->assertContains('Zur Abholerverwaltung', (string)$response->getBody());
-        $this->assertNotContains('client-precall_button-success', (string)$response->getBody());
+        $this->assertStringContainsString('Dieser Arbeitsplatz hat schon einen Abholer aufgerufen.', (string)$response->getBody());
+        $this->assertStringContainsString('Zur Abholerverwaltung', (string)$response->getBody());
+        $this->assertStringNotContainsString('client-precall_button-success', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -118,9 +118,9 @@ class WorkstationProcessPreCallTest extends Base
             ]
         );
         $response = $this->render(['id' => 100044], [], []);
-        $this->assertContains('Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen.', (string)$response->getBody());
-        $this->assertContains('Kundeninformationen', (string)$response->getBody());
-        $this->assertContains('client-precall_button-success', (string)$response->getBody());
+        $this->assertStringContainsString('Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen.', (string)$response->getBody());
+        $this->assertStringContainsString('Kundeninformationen', (string)$response->getBody());
+        $this->assertStringContainsString('client-precall_button-success', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

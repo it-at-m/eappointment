@@ -41,7 +41,7 @@ class QueueTableTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('queue-table', (string)$response->getBody());
+        $this->assertStringContainsString('queue-table', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -74,9 +74,9 @@ class QueueTableTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('queue-table', (string)$response->getBody());
-        $this->assertContains('Kürzel', (string)$response->getBody());
-        $this->assertNotContains('Alle Clusterstandorte anzeigen', (string)$response->getBody());
+        $this->assertStringContainsString('queue-table', (string)$response->getBody());
+        $this->assertStringContainsString('Kürzel', (string)$response->getBody());
+        $this->assertStringNotContainsString('Alle Clusterstandorte anzeigen', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -109,7 +109,7 @@ class QueueTableTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Alle Clusterstandorte anzeigen', (string)$response->getBody());
+        $this->assertStringContainsString('Alle Clusterstandorte anzeigen', (string)$response->getBody());
     }
 
     public function testWithResetedProcess()
@@ -149,7 +149,7 @@ class QueueTableTest extends Base
             'selectedprocess' => 100044,
             'selecteddate' => '2016-04-01',
             'success' => 'process_reset_queued']);
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Der Vorgang mit der Nummer 100044 (Name: BO) wurde erfolgreich zum Aufruf zurückgesetzt.',
             (string)$response->getBody()
         );

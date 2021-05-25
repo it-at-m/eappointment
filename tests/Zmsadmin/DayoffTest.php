@@ -23,8 +23,8 @@ class DayoffTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Allgemein gültige Feiertage - Jahresauswahl', (string)$response->getBody());
-        $this->assertContains('2026', (string)$response->getBody());
+        $this->assertStringContainsString('Allgemein gültige Feiertage - Jahresauswahl', (string)$response->getBody());
+        $this->assertStringContainsString('2026', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

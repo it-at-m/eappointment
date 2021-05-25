@@ -24,7 +24,7 @@ class AppointmentFormButtonsTest extends Base
             ]
         );
         $response = $this->render([], ['selecteddate' => '2016-04-01'], []);
-        $this->assertContains('Spontankunden hinzufügen', (string)$response->getBody());
+        $this->assertStringContainsString('Spontankunden hinzufügen', (string)$response->getBody());
     }
 
     public function testWithSelectedDateWithTime()
@@ -40,7 +40,7 @@ class AppointmentFormButtonsTest extends Base
             ]
         );
         $response = $this->render([], ['selecteddate' => '2016-05-27', 'selectedtime' => '08-00'], []);
-        $this->assertContains('Termin buchen', (string)$response->getBody());
+        $this->assertStringContainsString('Termin buchen', (string)$response->getBody());
     }
 
     public function testWithSelectedProcess()
@@ -65,11 +65,11 @@ class AppointmentFormButtonsTest extends Base
             'selectedtime' => '17-00',
             'selecteddate' => '2016-05-27'
         ], []);
-        $this->assertContains('Speichern', (string)$response->getBody());
-        $this->assertContains('Löschen', (string)$response->getBody());
-        $this->assertContains('Wartenr. drucken', (string)$response->getBody());
-        $this->assertContains('Als neu hinzufügen', (string)$response->getBody());
-        $this->assertContains('Abbrechen', (string)$response->getBody());
+        $this->assertStringContainsString('Speichern', (string)$response->getBody());
+        $this->assertStringContainsString('Löschen', (string)$response->getBody());
+        $this->assertStringContainsString('Wartenr. drucken', (string)$response->getBody());
+        $this->assertStringContainsString('Als neu hinzufügen', (string)$response->getBody());
+        $this->assertStringContainsString('Abbrechen', (string)$response->getBody());
     }
 
     public function testWithSelectedProcessAndNewDate()
@@ -95,10 +95,10 @@ class AppointmentFormButtonsTest extends Base
             'selecteddate' =>
             '2016-05-30'
         ], []);
-        $this->assertNotContains('Speichern', (string)$response->getBody());
-        $this->assertNotContains('Löschen', (string)$response->getBody());
-        $this->assertNotContains('Wartenr. drucken', (string)$response->getBody());
-        $this->assertContains('Termin ändern', (string)$response->getBody());
-        $this->assertContains('Abbrechen', (string)$response->getBody());
+        $this->assertStringNotContainsString('Speichern', (string)$response->getBody());
+        $this->assertStringNotContainsString('Löschen', (string)$response->getBody());
+        $this->assertStringNotContainsString('Wartenr. drucken', (string)$response->getBody());
+        $this->assertStringContainsString('Termin ändern', (string)$response->getBody());
+        $this->assertStringContainsString('Abbrechen', (string)$response->getBody());
     }
 }

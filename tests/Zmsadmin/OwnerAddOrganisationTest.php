@@ -25,7 +25,7 @@ class OwnerAddOrganisationTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Bezirk: Einrichtung und Administration', (string)$response->getBody());
+        $this->assertStringContainsString('Bezirk: Einrichtung und Administration', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
