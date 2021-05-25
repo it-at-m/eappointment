@@ -108,7 +108,7 @@ class Bootstrap
         self::addTwigExtension(new \BO\Slim\TwigExtensionsAndFilter(
             $container
         ));
-        self::addTwigExtension(new \Twig_Extension_Debug());
+        self::addTwigExtension(new \Twig\Extension\DebugExtension());
 
         //self::addTwigTemplateDirectory('default', \App::APP_PATH . \App::TEMPLATE_PATH);
         \App::$slim->get('__noroute', function () {
