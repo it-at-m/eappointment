@@ -75,7 +75,7 @@ class ProcessArchiveTest extends Base
         $queryArchived->writeEntityFinished($entity, $now);
         $archiveList = $queryArchived->readListByDate($now, 0);
         $this->assertEquals(0, $archiveList->getFirst()->getResolveLevel());
-        $this->assertContains('finished', $archiveList->getFirst()->queue['status']);
+        $this->assertStringContainsString('finished', $archiveList->getFirst()->queue['status']);
     }
 
     public function testReadListMissed()
@@ -87,7 +87,7 @@ class ProcessArchiveTest extends Base
         $queryArchived->writeEntityFinished($entity, $now);
         $archiveList = $queryArchived->readListIsMissed(1);
         $this->assertEquals(0, $archiveList->getFirst()->getResolveLevel());
-        $this->assertContains('missed', $archiveList->getFirst()->queue['status']);
+        $this->assertStringContainsString('missed', $archiveList->getFirst()->queue['status']);
     }
 
     public function testReadListMissedFinished()
@@ -99,7 +99,7 @@ class ProcessArchiveTest extends Base
         $queryArchived->writeEntityFinished($entity2, $now);
         $archiveList = $queryArchived->readListIsMissed(0);
         $this->assertEquals(0, $archiveList->getFirst()->getResolveLevel());
-        $this->assertContains('finished', $archiveList->getFirst()->queue['status']);
+        $this->assertStringContainsString('finished', $archiveList->getFirst()->queue['status']);
     }
 
     public function testReadWithAppointment()

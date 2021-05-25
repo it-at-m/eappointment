@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 abstract class Base extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         \BO\Zmsdb\Connection\Select::setTransaction();
         \BO\Zmsdb\Connection\Select::setProfiling();
@@ -15,7 +15,7 @@ abstract class Base extends TestCase
         \BO\Zmsdb\Connection\Select::setTransaction(false);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         //error_log("Memory usage " . round(memory_get_peak_usage() / 1024, 0) . "kb");
         \BO\Zmsdb\Scope::$cache = [];

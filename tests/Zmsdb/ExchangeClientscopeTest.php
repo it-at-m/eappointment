@@ -27,7 +27,7 @@ class ExchangeClientscopeTest extends Base
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
         $this->assertEquals(2, count($entity->data));
         $this->assertEquals(140, $entity->data[0][0]); // scope id
-        $this->assertContains('Hohenzollerndamm', $entity->data[0][3]); //scope name
+        $this->assertStringContainsString('Hohenzollerndamm', $entity->data[0][3]); //scope name
     }
 
     public function testPeriodList()

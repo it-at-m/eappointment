@@ -116,7 +116,7 @@ class OrganisationTest extends Base
     public function testDeleteWithoutChildren()
     {
         $query = new Query();
-        $this->assertContains('Test Organisation', $query->deleteEntity(80)); //Test Organisation
+        $this->assertStringContainsString('Test Organisation', $query->deleteEntity(80)); //Test Organisation
     }
 
     protected function getTestEntity()
