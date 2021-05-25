@@ -7,6 +7,8 @@
  */
 namespace BO\Zmsadmin\Tests;
 
+use \Prophecy\Argument;
+
 abstract class Base extends \BO\Zmsclient\PhpUnit\Base
 {
     protected $namespace = '\\BO\\Zmsadmin\\';
