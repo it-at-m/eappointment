@@ -22,8 +22,8 @@ class WorkstationProcessWaitingnumberTest extends Base
                 "scope": {"id": 146, "preferences":{"queue":{"processingTimeAverage":10}}}
             }'
         ], []);
-        $this->assertContains('process.json', (string)$response->getBody());
-        $this->assertContains('"status":"queued"', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('"status":"queued"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
 
         $process = new \BO\Zmsentities\Process(json_decode($response->getBody(), true)['data']);

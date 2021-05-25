@@ -12,16 +12,16 @@ class ClusterByScopeIdTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setRights('cluster');
         $response = $this->render(['id' => 141], [], []);
-        $this->assertContains('cluster.json', (string)$response->getBody());
-        $this->assertContains('109', (string)$response->getBody());
+        $this->assertStringContainsString('cluster.json', (string)$response->getBody());
+        $this->assertStringContainsString('109', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testWithoutRights()
     {
         $response = $this->render(['id' => 141], [], []);
-        $this->assertContains('cluster.json', (string)$response->getBody());
-        $this->assertContains('reducedData', (string)$response->getBody());
+        $this->assertStringContainsString('cluster.json', (string)$response->getBody());
+        $this->assertStringContainsString('reducedData', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

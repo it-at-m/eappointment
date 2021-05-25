@@ -9,23 +9,23 @@ class OrganisationHashTest extends Base
     public function testRendering()
     {
         $response = $this->render(['id' => 54], [], []); //Pankow
-        $this->assertContains('ticketprinter.json', (string)$response->getBody());
-        $this->assertContains('"hash":"54', (string)$response->getBody());
+        $this->assertStringContainsString('ticketprinter.json', (string)$response->getBody());
+        $this->assertStringContainsString('"hash":"54', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testWithName()
     {
         $response = $this->render(['id' => 54], ['name' => 'unittest'], []); //Pankow
-        $this->assertContains('"name":"unittest"', (string)$response->getBody());
+        $this->assertStringContainsString('"name":"unittest"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testTicketprinterDisabled()
     {
         $response = $this->render(['id' => 65], [], []); //Friedrichshain-Kreuzberg mit kioskpasswortschutz
-        $this->assertContains('ticketprinter.json', (string)$response->getBody());
-        $this->assertContains('"enabled":false', (string)$response->getBody());
+        $this->assertStringContainsString('ticketprinter.json', (string)$response->getBody());
+        $this->assertStringContainsString('"enabled":false', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

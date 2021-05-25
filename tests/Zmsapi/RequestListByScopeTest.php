@@ -9,7 +9,7 @@ class RequestListByScopeTest extends Base
     public function testRendering()
     {
         $response = $this->render(['id' => 141], [], []);
-        $this->assertContains('request.json', (string)$response->getBody());
+        $this->assertStringContainsString('request.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

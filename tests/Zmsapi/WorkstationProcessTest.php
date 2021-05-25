@@ -22,8 +22,8 @@ class WorkstationProcessTest extends Base
         $response = $this->render([], [
             '__body' => json_encode($this->getInput())
         ], []);
-        $this->assertContains(User::$workstation->process['id'], (string)$response->getBody());
-        $this->assertContains('workstation.json', (string)$response->getBody());
+        $this->assertStringContainsString(User::$workstation->process['id'], (string)$response->getBody());
+        $this->assertStringContainsString('workstation.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
 
         $entity = (new \BO\Zmsdb\Process)->readEntity(User::$workstation->process['id'], new \BO\Zmsdb\Helper\NoAuth);
@@ -37,8 +37,8 @@ class WorkstationProcessTest extends Base
             '__body' => json_encode($this->getInput()),
             'allowClusterWideCall' => false
         ], []);
-        $this->assertContains(User::$workstation->process['id'], (string)$response->getBody());
-        $this->assertContains('workstation.json', (string)$response->getBody());
+        $this->assertStringContainsString(User::$workstation->process['id'], (string)$response->getBody());
+        $this->assertStringContainsString('workstation.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

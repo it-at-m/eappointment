@@ -14,7 +14,7 @@ class SessionUpdateTest extends Base
                 "name": "unittest"
             }',
         ], []);
-        $this->assertContains('session.json', (string)$response->getBody());
+        $this->assertStringContainsString('session.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -35,7 +35,7 @@ class SessionUpdateTest extends Base
                 }
             }',
         ], []);
-        $this->assertContains('session.json', (string)$response->getBody());
+        $this->assertStringContainsString('session.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -119,7 +119,7 @@ class SessionUpdateTest extends Base
                 }
         }',
         ], []);
-        $this->assertContains('session.json', (string)$response->getBody());
+        $this->assertStringContainsString('session.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 }

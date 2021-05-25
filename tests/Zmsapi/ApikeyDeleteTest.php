@@ -15,7 +15,7 @@ class ApikeyDeleteTest extends Base
         $input = (new Entity)->createExample();
         $entity = (new Query())->writeEntity($input);
         $response = $this->render(['key' => 'wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs'], [], []);
-        $this->assertContains('apikey.json', (string)$response->getBody());
+        $this->assertStringContainsString('apikey.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 }

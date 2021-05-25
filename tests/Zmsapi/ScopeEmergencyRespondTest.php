@@ -30,8 +30,8 @@ class ScopeEmergencyRespondTest extends Base
             '__body' => '{
             }'
         ], []);
-        $this->assertContains('scope.json', (string)$response->getBody());
-        $this->assertContains('"acceptedByWorkstation":"24"', (string)$response->getBody());
+        $this->assertStringContainsString('scope.json', (string)$response->getBody());
+        $this->assertStringContainsString('"acceptedByWorkstation":"24"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

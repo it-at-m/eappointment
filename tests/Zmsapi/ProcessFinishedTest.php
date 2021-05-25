@@ -20,7 +20,7 @@ class ProcessFinishedTest extends Base
             '__body' => json_encode($process)
         ], []);
 
-        $this->assertContains('"status":"finished"', (string)$response->getBody());
+        $this->assertStringContainsString('"status":"finished"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
 
         $entity = (new \BO\Zmsdb\Process)->readEntity($process->id, new \BO\Zmsdb\Helper\NoAuth);
@@ -38,7 +38,7 @@ class ProcessFinishedTest extends Base
             '__body' => json_encode($process)
         ], []);
 
-        $this->assertContains('"status":"pending"', (string)$response->getBody());
+        $this->assertStringContainsString('"status":"pending"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
         
         $entity = (new \BO\Zmsdb\Process)->readEntity($process->id, new \BO\Zmsdb\Helper\NoAuth);

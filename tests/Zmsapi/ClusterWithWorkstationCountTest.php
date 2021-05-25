@@ -13,7 +13,7 @@ class ClusterWithWorkstationCountTest extends Base
         $this->setWorkstation();
         User::$workstation->useraccount->setRights('cluster');
         $response = $this->render(['id' => 109], [], []);
-        $this->assertContains('cluster.json', (string)$response->getBody());
+        $this->assertStringContainsString('cluster.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

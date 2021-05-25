@@ -13,7 +13,7 @@ class SourceListTest extends Base
     public function testRendering()
     {
         $response = $this->render([], [], []);
-        $this->assertContains('source.json', (string)$response->getBody());
+        $this->assertStringContainsString('source.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 }

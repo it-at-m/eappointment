@@ -12,8 +12,8 @@ class ProcessListByScopeAndStatusTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render(['id' => 141, 'status' => 'confirmed'], [], []);
-        $this->assertContains('process.json', (string)$response->getBody());
-        $this->assertContains('"status":"confirmed"', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('"status":"confirmed"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -21,8 +21,8 @@ class ProcessListByScopeAndStatusTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render(['id' => 106, 'status' => 'missed'], [], []);
-        $this->assertContains('process.json', (string)$response->getBody());
-        $this->assertContains('"status":"missed"', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('"status":"missed"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

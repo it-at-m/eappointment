@@ -16,8 +16,8 @@ class ScopeGetTest extends Base
     public function testReducedDataAccess()
     {
         $response = $this->render(['id' => self::SCOPE_ID], [], []); //Pankow
-        $this->assertContains('scope.json', (string)$response->getBody());
-        $this->assertContains('"reducedData":true', (string)$response->getBody());
+        $this->assertStringContainsString('scope.json', (string)$response->getBody());
+        $this->assertStringContainsString('"reducedData":true', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -27,8 +27,8 @@ class ScopeGetTest extends Base
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
         $this->setWorkstation()->getUseraccount()->setRights('basic')->addDepartment($department);
         $response = $this->render(['id' => self::SCOPE_ID], [], []); //Pankow
-        $this->assertContains('scope.json', (string)$response->getBody());
-        $this->assertNotContains('"reducedData"', (string)$response->getBody());
+        $this->assertStringContainsString('scope.json', (string)$response->getBody());
+        $this->assertStringNotContainsString('"reducedData"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -38,9 +38,9 @@ class ScopeGetTest extends Base
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
         $this->setWorkstation()->getUseraccount()->setRights('scope')->addDepartment($department);
         $response = $this->render(['id' => self::SCOPE_ID], ['getIsOpened' => 1], []); //Pankow
-        $this->assertContains('isOpened', (string)$response->getBody());
-        $this->assertContains('scope.json', (string)$response->getBody());
-        $this->assertNotContains('"reducedData"', (string)$response->getBody());
+        $this->assertStringContainsString('isOpened', (string)$response->getBody());
+        $this->assertStringContainsString('scope.json', (string)$response->getBody());
+        $this->assertStringNotContainsString('"reducedData"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

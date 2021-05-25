@@ -29,8 +29,8 @@ class WorkstationLoginTest extends Base
             '__body' => static::$useraccount,
             'nocommit' => 1
         ], []);
-        $this->assertContains('workstation.json', (string)$response->getBody());
-        $this->assertContains(static::$loginName, (string)$response->getBody());
+        $this->assertStringContainsString('workstation.json', (string)$response->getBody());
+        $this->assertStringContainsString(static::$loginName, (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

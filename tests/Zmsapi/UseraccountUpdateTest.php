@@ -31,8 +31,8 @@ class UseraccountUpdateTest extends Base
               "id": "unittest"
             }'
         ], []);
-        $this->assertContains('useraccount.json', (string)$response->getBody());
-        $this->assertContains('unittest', (string)$response->getBody());
+        $this->assertStringContainsString('useraccount.json', (string)$response->getBody());
+        $this->assertStringContainsString('unittest', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

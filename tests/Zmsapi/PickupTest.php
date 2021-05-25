@@ -20,8 +20,8 @@ class PickupTest extends Base
         ], []);
 
         $response = $this->render([], [], []);
-        $this->assertContains('process.json', (string)$response->getBody());
-        $this->assertContains('"status":"pending"', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('"status":"pending"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -37,8 +37,8 @@ class PickupTest extends Base
         ], []);
 
         $response = $this->render([], ['selectedScope' => 141], []);
-        $this->assertContains('141', (string)$response->getBody());
-        $this->assertContains('10030', (string)$response->getBody());
+        $this->assertStringContainsString('141', (string)$response->getBody());
+        $this->assertStringContainsString('10030', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

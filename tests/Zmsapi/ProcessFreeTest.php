@@ -30,8 +30,8 @@ class ProcessFreeTest extends Base
                 ]
             }'
         ], []);
-        $this->assertContains('process.json', (string)$response->getBody());
-        $this->assertContains('"status":"free"', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('"status":"free"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -60,9 +60,9 @@ class ProcessFreeTest extends Base
                 ]
             }'
         ], []);
-        $this->assertContains('process.json', (string)$response->getBody());
-        $this->assertContains('"date":"1464340800"', (string)$response->getBody());
-        $this->assertContains('"date":"1464342000"', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('"date":"1464340800"', (string)$response->getBody());
+        $this->assertStringContainsString('"date":"1464342000"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -91,9 +91,9 @@ class ProcessFreeTest extends Base
                 ]
             }'
         ], []);
-        $this->assertContains('process.json', (string)$response->getBody());
-        $this->assertContains('"date":"1464340800"', (string)$response->getBody());
-        $this->assertNotContains('"date":"1464342000"', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('"date":"1464340800"', (string)$response->getBody());
+        $this->assertStringNotContainsString('"date":"1464342000"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -124,7 +124,7 @@ class ProcessFreeTest extends Base
                 ]
             }'
         ], []);
-        $this->assertContains('"data":[]', (string)$response->getBody());
+        $this->assertStringContainsString('"data":[]', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -154,6 +154,6 @@ class ProcessFreeTest extends Base
                 ]
             }'
         ], []);
-        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
     }
 }

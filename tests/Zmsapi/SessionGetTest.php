@@ -14,7 +14,7 @@ class SessionGetTest extends Base
     {
         (new SessionUpdateTest)->testRendering();
         $response = $this->render(['name' => self::SESSION_NAME, 'id' => self::SESSION_ID], ['sync' => 1], []);
-        $this->assertContains('session.json', (string)$response->getBody());
+        $this->assertStringContainsString('session.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

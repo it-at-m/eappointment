@@ -29,7 +29,7 @@ class CalldisplayGetTest extends Base
                 }
             }'
         ], []);
-        $this->assertContains('calldisplay.json', (string)$response->getBody());
+        $this->assertStringContainsString('calldisplay.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -53,7 +53,7 @@ class CalldisplayGetTest extends Base
                 ]
             }'
         ], []);
-        $this->assertContains('queue.json', (string)$response->getBody());
+        $this->assertStringContainsString('queue.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

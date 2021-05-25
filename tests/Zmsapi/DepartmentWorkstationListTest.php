@@ -11,7 +11,7 @@ class DepartmentWorkstationListTest extends Base
         $this->setWorkstation()->useraccount->setRights('useraccount');
         $this->setDepartment(74);
         $response = $this->render(['id' => 74], [], []);
-        $this->assertContains('testuser', (string)$response->getBody());
+        $this->assertStringContainsString('testuser', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

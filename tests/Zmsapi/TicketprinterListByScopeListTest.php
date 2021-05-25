@@ -10,8 +10,8 @@ class TicketprinterListByScopeListTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render(['ids' => '141,169'], [], []);
-        $this->assertContains('"buttonlist":"s141"', (string)$response->getBody());
-        $this->assertContains('"buttonlist":"s169"', (string)$response->getBody());
+        $this->assertStringContainsString('"buttonlist":"s141"', (string)$response->getBody());
+        $this->assertStringContainsString('"buttonlist":"s169"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 }

@@ -13,18 +13,18 @@ class SourceGetTest extends Base
     public function testRendering()
     {
         $response = $this->render(['source' => self::SOURCE], [], []);
-        $this->assertContains('source.json', (string)$response->getBody());
-        $this->assertNotContains('providers', (string)$response->getBody());
-        $this->assertNotContains('requests', (string)$response->getBody());
+        $this->assertStringContainsString('source.json', (string)$response->getBody());
+        $this->assertStringNotContainsString('providers', (string)$response->getBody());
+        $this->assertStringNotContainsString('requests', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testWithResolvedReferences()
     {
         $response = $this->render(['source' => self::SOURCE], ['resolveReferences' => 1], []);
-        $this->assertContains('source.json', (string)$response->getBody());
-        $this->assertContains('providers', (string)$response->getBody());
-        $this->assertContains('requests', (string)$response->getBody());
+        $this->assertStringContainsString('source.json', (string)$response->getBody());
+        $this->assertStringContainsString('providers', (string)$response->getBody());
+        $this->assertStringContainsString('requests', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

@@ -13,7 +13,7 @@ class DayoffListTest extends Base
         $this->setWorkstation();
         User::$workstation->useraccount->setRights('superuser');
         $response = $this->render(['year' => 2016], [], []);
-        $this->assertContains('dayoff.json', (string)$response->getBody());
+        $this->assertStringContainsString('dayoff.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

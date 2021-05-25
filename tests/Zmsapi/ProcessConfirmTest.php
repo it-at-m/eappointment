@@ -16,7 +16,7 @@ class ProcessConfirmTest extends Base
             '__body' => json_encode($process)
         ], []);
 
-        $this->assertContains('"status":"confirmed"', (string)$response->getBody());
+        $this->assertStringContainsString('"status":"confirmed"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
 
         $entity = (new \BO\Zmsdb\Process)->readEntity($process->id, new \BO\Zmsdb\Helper\NoAuth);

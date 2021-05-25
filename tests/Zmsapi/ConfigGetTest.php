@@ -15,7 +15,7 @@ class ConfigGetTest extends Base
                 'X-Token' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4'
             )
         ], []);
-        $this->assertContains('config.json', (string)$response->getBody());
+        $this->assertStringContainsString('config.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -23,7 +23,7 @@ class ConfigGetTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render([], [], []);
-        $this->assertContains('config.json', (string)$response->getBody());
+        $this->assertStringContainsString('config.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

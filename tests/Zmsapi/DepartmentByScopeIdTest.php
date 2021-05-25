@@ -12,15 +12,15 @@ class DepartmentByScopeIdTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setRights('department');
         $response = $this->render(['id' => 141], [], []);
-        $this->assertContains('department.json', (string)$response->getBody());
+        $this->assertStringContainsString('department.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testReducedDataAccess()
     {
         $response = $this->render(['id' => 141], [], []);
-        $this->assertContains('department.json', (string)$response->getBody());
-        $this->assertContains('"reducedData":true', (string)$response->getBody());
+        $this->assertStringContainsString('department.json', (string)$response->getBody());
+        $this->assertStringContainsString('"reducedData":true', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

@@ -10,7 +10,7 @@ class ScopeListByProviderTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render(['source' => 'dldb', 'id' => 122217], [], []); //Bürgeramt Heerstraße
-        $this->assertContains('scope.json', (string)$response->getBody());
+        $this->assertStringContainsString('scope.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

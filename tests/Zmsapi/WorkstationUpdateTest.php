@@ -95,7 +95,7 @@ class WorkstationUpdateTest extends Base
         $response = $this->render([], [
             '__body' => json_encode($workstation)
         ], []);
-        $this->assertContains('workstation.json', (string)$response->getBody());
+        $this->assertStringContainsString('workstation.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 }

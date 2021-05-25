@@ -19,8 +19,8 @@ class ProcessUpdateTest extends Base
                 "amendment": "Beispiel Termin"
             }'
         ], []);
-        $this->assertContains('Beispiel Termin', (string)$response->getBody());
-        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('Beispiel Termin', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -34,7 +34,7 @@ class ProcessUpdateTest extends Base
             }',
             'initiator' => 1
         ], []);
-        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -76,7 +76,7 @@ class ProcessUpdateTest extends Base
         $response = $this->render(['id' => self::PROCESS_ID, 'authKey' => self::AUTHKEY], [
             '__body' => $this->readFixture('PostProcessAppointment.json'),
         ], []);
-        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 }

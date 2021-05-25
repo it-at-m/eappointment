@@ -46,7 +46,7 @@ class TicketprinterTest extends Base
                 ]
             }'
         ], []);
-        $this->assertContains('ticketprinter.json', (string)$response->getBody());
+        $this->assertStringContainsString('ticketprinter.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -62,7 +62,7 @@ class TicketprinterTest extends Base
                 "name": "Eingangsbereich links"
             }'
         ], []);
-        $this->assertContains('ticketprinter.json', (string)$response->getBody());
+        $this->assertStringContainsString('ticketprinter.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -110,7 +110,7 @@ class TicketprinterTest extends Base
                 "name": "Eingangsbereich links"
             }'
         ], []);
-        $this->assertContains('"enabled":true', (string)$response->getBody());
+        $this->assertStringContainsString('"enabled":true', (string)$response->getBody());
     }
 
     public function testUnvalidInput()

@@ -17,8 +17,8 @@ class OrganisationAddDepartmentTest extends Base
                   "name": "Test Department"
               }'
         ], []);
-        $this->assertContains('department.json', (string)$response->getBody());
-        $this->assertContains('"name":"Test Department"', (string)$response->getBody());
+        $this->assertStringContainsString('department.json', (string)$response->getBody());
+        $this->assertStringContainsString('"name":"Test Department"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

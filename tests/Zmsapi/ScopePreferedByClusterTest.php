@@ -23,7 +23,7 @@ class ScopePreferedByClusterTest extends Base
         ]);
         $this->setWorkstation()->getUserAccount()->setRights('scope')->addDepartment($department);
         $response = $this->render(['id' => self::CLUSTER_ID], [], []);
-        $this->assertContains('scope.json', (string)$response->getBody());
+        $this->assertStringContainsString('scope.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

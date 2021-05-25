@@ -9,7 +9,7 @@ class ProcessGetTest extends Base
     public function testRendering()
     {
         $response = $this->render(['id' => 10030, 'authKey' => '1c56'], [], []);
-        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -20,8 +20,8 @@ class ProcessGetTest extends Base
             ['gql' => '{ id authKey scope{ id source shortName } }'],
             []
         );
-        $this->assertContains('"id":"141","source":"dldb","shortName":""', (string)$response->getBody());
-        $this->assertNotContains('"provider":{"id":"122208","source":"dldb"}', (string)$response->getBody());
+        $this->assertStringContainsString('"id":"141","source":"dldb","shortName":""', (string)$response->getBody());
+        $this->assertStringNotContainsString('"provider":{"id":"122208","source":"dldb"}', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

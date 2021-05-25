@@ -14,8 +14,8 @@ class OwnerAddOrganisationTest extends Base
                   "name": "Test Organisation"
               }'
         ], []);
-        $this->assertContains('organisation.json', (string)$response->getBody());
-        $this->assertContains('"name":"Test Organisation"', (string)$response->getBody());
+        $this->assertStringContainsString('organisation.json', (string)$response->getBody());
+        $this->assertStringContainsString('"name":"Test Organisation"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

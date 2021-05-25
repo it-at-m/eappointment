@@ -13,7 +13,7 @@ class WarehouseSubjectListGetTest extends Base
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->setRights('scope');
         $response = $this->render([], [], []);
-        $this->assertContains('exchange.json', (string)$response->getBody());
+        $this->assertStringContainsString('exchange.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

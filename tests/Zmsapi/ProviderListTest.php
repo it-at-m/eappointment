@@ -9,18 +9,18 @@ class ProviderListTest extends Base
     public function testRendering()
     {
         $response = $this->render(['source' => 'unittest'], ['isAssigned' => true], []);
-        $this->assertContains('provider.json', (string)$response->getBody());
-        $this->assertContains('9999999', (string)$response->getBody());
-        $this->assertNotContains('9999998', (string)$response->getBody());
+        $this->assertStringContainsString('provider.json', (string)$response->getBody());
+        $this->assertStringContainsString('9999999', (string)$response->getBody());
+        $this->assertStringNotContainsString('9999998', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testIsAssignedFalse()
     {
         $response = $this->render(['source' => 'unittest'], ['isAssigned' => false], []);
-        $this->assertContains('provider.json', (string)$response->getBody());
-        $this->assertContains('9999998', (string)$response->getBody());
-        $this->assertNotContains('9999999', (string)$response->getBody());
+        $this->assertStringContainsString('provider.json', (string)$response->getBody());
+        $this->assertStringContainsString('9999998', (string)$response->getBody());
+        $this->assertStringNotContainsString('9999999', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -31,9 +31,9 @@ class ProviderListTest extends Base
             ['requestList' => '9999998,9999999'],
             []
         );
-        $this->assertContains('provider.json', (string)$response->getBody());
-        $this->assertContains('9999999', (string)$response->getBody());
-        $this->assertContains('9999998', (string)$response->getBody());
+        $this->assertStringContainsString('provider.json', (string)$response->getBody());
+        $this->assertStringContainsString('9999999', (string)$response->getBody());
+        $this->assertStringContainsString('9999998', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

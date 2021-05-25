@@ -10,7 +10,7 @@ class ScopeListByClusterTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render(['id' => 109], [], []);
-        $this->assertContains('scope.json', (string)$response->getBody());
+        $this->assertStringContainsString('scope.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

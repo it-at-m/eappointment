@@ -16,8 +16,8 @@ class AppointmentUpdateTest extends Base
         $response = $this->render(['id' => self::PROCESS_ID, 'authKey' => self::AUTHKEY], [
             '__body' => $this->readFixture('PostAppointment.json'),
         ], []);
-        $this->assertContains('"date":1464588000', (string)$response->getBody()); // 2016-05-30 08:00
-        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('"date":1464588000', (string)$response->getBody()); // 2016-05-30 08:00
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -31,8 +31,8 @@ class AppointmentUpdateTest extends Base
             'slotType' => 'intern'
         ], []);
 
-        $this->assertContains('"date":1464588000', (string)$response->getBody()); // 2016-05-30 08:00
-        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('"date":1464588000', (string)$response->getBody()); // 2016-05-30 08:00
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
     }
 
     public function testWithSlotsRequiredExceeded()
@@ -46,8 +46,8 @@ class AppointmentUpdateTest extends Base
             'slotType' => 'intern'
         ], []);
 
-        $this->assertContains('"date":1464588000', (string)$response->getBody()); // 2016-05-30 08:00
-        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('"date":1464588000', (string)$response->getBody()); // 2016-05-30 08:00
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
     }
 
     public function testEmpty()

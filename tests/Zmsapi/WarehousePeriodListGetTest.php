@@ -13,8 +13,8 @@ class WarehousePeriodListGetTest extends Base
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->setRights('scope');
         $response = $this->render(['subject' => 'waitingscope', 'subjectId' => 141], [], []);
-        $this->assertContains('exchange.json', (string)$response->getBody());
-        $this->assertContains('"period":"month"', (string)$response->getBody());
+        $this->assertStringContainsString('exchange.json', (string)$response->getBody());
+        $this->assertStringContainsString('"period":"month"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -23,8 +23,8 @@ class WarehousePeriodListGetTest extends Base
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->setRights('scope', 'department');
         $response = $this->render(['subject' => 'waitingdepartment', 'subjectId' => 74], ['period' => 'month'], []);
-        $this->assertContains('exchange.json', (string)$response->getBody());
-        $this->assertContains('"period":"month"', (string)$response->getBody());
+        $this->assertStringContainsString('exchange.json', (string)$response->getBody());
+        $this->assertStringContainsString('"period":"month"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -33,8 +33,8 @@ class WarehousePeriodListGetTest extends Base
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->setRights('scope', 'department', 'organisation');
         $response = $this->render(['subject' => 'waitingorganisation', 'subjectId' => 71], ['period' => 'year'], []);
-        $this->assertContains('exchange.json', (string)$response->getBody());
-        $this->assertContains('"period":"year"', (string)$response->getBody());
+        $this->assertStringContainsString('exchange.json', (string)$response->getBody());
+        $this->assertStringContainsString('"period":"year"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

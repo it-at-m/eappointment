@@ -25,8 +25,8 @@ class CounterGhostWorkstationTest extends Base
                 }
             }'
         ], []);
-        $this->assertContains('scope.json', (string)$response->getBody());
-        $this->assertContains('"ghostWorkstationCount":4', (string)$response->getBody());
+        $this->assertStringContainsString('scope.json', (string)$response->getBody());
+        $this->assertStringContainsString('"ghostWorkstationCount":4', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

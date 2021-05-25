@@ -19,7 +19,7 @@ class OwnerUpdateTest extends Base
         $response = $this->render(['id' => 99], [
             '__body' => $this->readFixture("GetOwner.json")
         ], []);
-        $this->assertContains('owner.json', (string)$response->getBody());
+        $this->assertStringContainsString('owner.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

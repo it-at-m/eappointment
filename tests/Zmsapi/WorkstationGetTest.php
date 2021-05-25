@@ -31,8 +31,8 @@ class WorkstationGetTest extends Base
         $response = $this->render([], [
             'resolveReferences' => 3
         ], []);
-        $this->assertContains('workstation.json', (string)$response->getBody());
-        $this->assertNotContains('"reducedData"', (string)$response->getBody());
+        $this->assertStringContainsString('workstation.json', (string)$response->getBody());
+        $this->assertStringNotContainsString('"reducedData"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -47,8 +47,8 @@ class WorkstationGetTest extends Base
             ],
             'resolveReferences' => 0
         ], []);
-        $this->assertContains('workstation.json', (string)$response->getBody());
-        $this->assertContains(static::$loginName, (string)$response->getBody());
+        $this->assertStringContainsString('workstation.json', (string)$response->getBody());
+        $this->assertStringContainsString(static::$loginName, (string)$response->getBody());
     }
 
     public function testReadWorkstationByBasicAuth()
@@ -63,8 +63,8 @@ class WorkstationGetTest extends Base
             ],
             'resolveReferences' => 0
         ], []);
-        $this->assertContains('workstation.json', (string)$response->getBody());
-        $this->assertContains(static::$loginName, (string)$response->getBody());
+        $this->assertStringContainsString('workstation.json', (string)$response->getBody());
+        $this->assertStringContainsString(static::$loginName, (string)$response->getBody());
     }
 
     public function testReadWorkstationByWrongBasicAuth()

@@ -15,7 +15,7 @@ class DepartmentDeleteTest extends Base
                 'id' => 999
             ]);
         $response = $this->render(['id' => 999], [], []); //Test Department
-        $this->assertContains('department.json', (string)$response->getBody());
+        $this->assertStringContainsString('department.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

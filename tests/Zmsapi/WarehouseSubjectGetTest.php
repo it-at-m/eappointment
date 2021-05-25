@@ -13,8 +13,8 @@ class WarehouseSubjectGetTest extends Base
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
         $workstation->getUseraccount()->setRights('scope');
         $response = $this->render(['subject' => 'waitingscope'], [], []);
-        $this->assertContains('exchange.json', (string)$response->getBody());
-        $this->assertContains('"141","2015-01-02"', (string)$response->getBody());
+        $this->assertStringContainsString('exchange.json', (string)$response->getBody());
+        $this->assertStringContainsString('"141","2015-01-02"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -23,7 +23,7 @@ class WarehouseSubjectGetTest extends Base
         $workstation = $this->setWorkstation(138, 'berlinonline', 140);
         $workstation->getUseraccount()->setRights('scope');
         $response = $this->render(['subject' => 'waitingscope'], [], []);
-        $this->assertNotContains('"141","2015-01-02"', (string)$response->getBody());
+        $this->assertStringNotContainsString('"141","2015-01-02"', (string)$response->getBody());
     }
 
     public function testSubjectDepartment()
@@ -32,7 +32,7 @@ class WarehouseSubjectGetTest extends Base
         $workstation->getUseraccount()->setRights('scope', 'department');
         $this->setDepartment(74);
         $response = $this->render(['subject' => 'waitingdepartment'], [], []);
-        $this->assertContains('"data":[["74"', (string)$response->getBody());
+        $this->assertStringContainsString('"data":[["74"', (string)$response->getBody());
     }
 
     public function testFilteredByDepartment()
@@ -41,7 +41,7 @@ class WarehouseSubjectGetTest extends Base
         $workstation->getUseraccount()->setRights('scope', 'department');
         $this->setDepartment(75);
         $response = $this->render(['subject' => 'waitingdepartment'], [], []);
-        $this->assertNotContains('"data":[["74"', (string)$response->getBody());
+        $this->assertStringNotContainsString('"data":[["74"', (string)$response->getBody());
     }
 
     public function testSubjectOrganisation()
@@ -49,7 +49,7 @@ class WarehouseSubjectGetTest extends Base
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
         $workstation->getUseraccount()->setRights('scope', 'department');
         $response = $this->render(['subject' => 'waitingorganisation'], [], []);
-        $this->assertContains('"data":[["71"', (string)$response->getBody());
+        $this->assertStringContainsString('"data":[["71"', (string)$response->getBody());
     }
 
     public function testFilteredByOrganisation()
@@ -58,7 +58,7 @@ class WarehouseSubjectGetTest extends Base
         $workstation = $this->setWorkstation(137, 'berlinonline', 143); //organisation 72
         $workstation->getUseraccount()->setRights('scope', 'department', 'organisation');
         $response = $this->render(['subject' => 'waitingorganisation'], [], []);
-        $this->assertNotContains('"data":[["72"', (string)$response->getBody());
+        $this->assertStringNotContainsString('"data":[["72"', (string)$response->getBody());
     }
 
     public function testNoRights()

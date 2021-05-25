@@ -13,7 +13,7 @@ class DepartmentGetTest extends Base
         $this->setWorkstation();
         User::$workstation->useraccount->setRights('department');
         $response = $this->render(['id' => 74], [], []);
-        $this->assertContains('department.json', (string)$response->getBody());
+        $this->assertStringContainsString('department.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

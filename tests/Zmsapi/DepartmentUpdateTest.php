@@ -20,8 +20,8 @@ class DepartmentUpdateTest extends Base
                   "name": "Test Department Update"
               }'
         ], []);
-        $this->assertContains('Test Department Update', (string)$response->getBody());
-        $this->assertContains('department.json', (string)$response->getBody());
+        $this->assertStringContainsString('Test Department Update', (string)$response->getBody());
+        $this->assertStringContainsString('department.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

@@ -13,7 +13,7 @@ class ClusterQueueTest extends Base
         $this->setWorkstation();
         User::$workstation->useraccount->setRights('cluster');
         $response = $this->render(['id' => 109], [], []);
-        $this->assertContains('queue.json', (string)$response->getBody());
+        $this->assertStringContainsString('queue.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

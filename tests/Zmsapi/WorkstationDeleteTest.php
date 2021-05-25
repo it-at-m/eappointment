@@ -20,7 +20,7 @@ class WorkstationDeleteTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render(['loginname' => static::$loginName], [], []);
-        $this->assertContains('workstation.json', (string)$response->getBody());
+        $this->assertStringContainsString('workstation.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

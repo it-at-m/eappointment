@@ -37,7 +37,7 @@ class CalldisplayQueueTest extends Base
                 }
             }'
         ], []);
-        $this->assertContains('queue.json', (string)$response->getBody());
+        $this->assertStringContainsString('queue.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
         //$this->dumpProfiler();
     }

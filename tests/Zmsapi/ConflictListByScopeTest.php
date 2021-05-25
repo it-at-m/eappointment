@@ -15,7 +15,7 @@ class ConflictListByScopeTest extends Base
             'startDate' => '2016-05-01',
             'endDate' => '2016-05-06'
         ], []);
-        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

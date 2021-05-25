@@ -43,7 +43,7 @@ class WorkstationPasswordTest extends Base
                 ]
             }'
         ], []);
-        $this->assertContains('useraccount.json', (string)$response->getBody());
+        $this->assertStringContainsString('useraccount.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

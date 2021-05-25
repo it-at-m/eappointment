@@ -16,7 +16,7 @@ class ProcessDeleteQuickTest extends Base
     {
         $this->setWorkstation(123, 'testuser', 167);
         $response = $this->render(['id' => 10029], [], []);
-        $this->assertContains('blocked', (string)$response->getBody());
+        $this->assertStringContainsString('blocked', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -32,7 +32,7 @@ class ProcessDeleteQuickTest extends Base
     {
         $this->setWorkstation(123, 'testuser', 451);
         $response = $this->render(['id' => 27147], ['initiator' => 1], []);
-        $this->assertContains('blocked', (string)$response->getBody());
+        $this->assertStringContainsString('blocked', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
