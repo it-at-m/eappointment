@@ -7,6 +7,8 @@
  */
 namespace BO\Zmsclient\PhpUnit;
 
+use Prophecy\PhpUnit\ProphecyTrait;
+
 use \Prophecy\Argument;
 
 /**
@@ -24,9 +26,12 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
      * ],
      * ]
      */
+
+    use ProphecyTrait;
+    
     protected $apiCalls = array();
 
-    public function setUp()
+    public function setUp(): void
     {
         \App::$http = $this->getApiMockup();
         $this->sessionClass = new \BO\Zmsentities\Session();
@@ -35,7 +40,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         }
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
     }
 
