@@ -7,9 +7,7 @@
  */
 namespace BO\Zmsclient\PhpUnit;
 
-use Prophecy\PhpUnit\ProphecyTrait;
-
-use \Prophecy\Argument;
+use \Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * @codeCoverageIgnore
