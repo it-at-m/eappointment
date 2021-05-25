@@ -25,6 +25,6 @@ class HealthcheckTest extends Base
     public function testRendering()
     {
         $response = parent::testRendering();
-        $this->assertContains('DB connection without replication log detected', (string)$response->getBody());
+        $this->assertStringContainsString('DB connection without replication log detected', (string)$response->getBody());
     }
 }

@@ -23,8 +23,8 @@ class WorkstationTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('workstation-view', (string)$response->getBody());
-        $this->assertContains('data-selected-date="2016-04-01"', (string)$response->getBody());
+        $this->assertStringContainsString('workstation-view', (string)$response->getBody());
+        $this->assertStringContainsString('data-selected-date="2016-04-01"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -41,8 +41,8 @@ class WorkstationTest extends Base
             ]
         );
         $response = $this->render($this->arguments, ['date' => '2016-04-04'], []);
-        $this->assertContains('workstation-view', (string)$response->getBody());
-        $this->assertContains('data-selected-date="2016-04-04"', (string)$response->getBody());
+        $this->assertStringContainsString('workstation-view', (string)$response->getBody());
+        $this->assertStringContainsString('data-selected-date="2016-04-04"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

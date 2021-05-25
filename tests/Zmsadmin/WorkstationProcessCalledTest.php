@@ -37,8 +37,8 @@ class WorkstationProcessCalledTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Kundeninformationen', (string)$response->getBody());
-        $this->assertContains('H52452625 (Wartenr. 82252)', (string)$response->getBody());
+        $this->assertStringContainsString('Kundeninformationen', (string)$response->getBody());
+        $this->assertStringContainsString('H52452625 (Wartenr. 82252)', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -57,7 +57,7 @@ class WorkstationProcessCalledTest extends Base
         $response = $this->render(['id' => 161275], [
             'exclude' => 82252
         ], []);
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen. Dieser wird weiterhin verwendet.',
             (string)$response->getBody()
         );
@@ -79,9 +79,9 @@ class WorkstationProcessCalledTest extends Base
         $response = $this->render(['id' => 161275], [
             'exclude' => 82252
         ], []);
-        $this->assertContains('Dieser Arbeitsplatz hat schon einen Abholer aufgerufen.', (string)$response->getBody());
-        $this->assertContains('Zur Abholerverwaltung', (string)$response->getBody());
-        $this->assertNotContains('client-called_button-success', (string)$response->getBody());
+        $this->assertStringContainsString('Dieser Arbeitsplatz hat schon einen Abholer aufgerufen.', (string)$response->getBody());
+        $this->assertStringContainsString('Zur Abholerverwaltung', (string)$response->getBody());
+        $this->assertStringNotContainsString('client-called_button-success', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

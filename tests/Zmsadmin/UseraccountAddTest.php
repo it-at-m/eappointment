@@ -46,8 +46,8 @@ class UseraccountAddTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Nutzer: Einrichtung und Administration', (string)$response->getBody());
-        $this->assertContains('Nutzer anlegen', (string)$response->getBody());
+        $this->assertStringContainsString('Nutzer: Einrichtung und Administration', (string)$response->getBody());
+        $this->assertStringContainsString('Nutzer anlegen', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -109,7 +109,7 @@ class UseraccountAddTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertContains('Das Passwort muss mindestens 6 Zeichen lang sein.', (string)$response->getBody());
+        $this->assertStringContainsString('Das Passwort muss mindestens 6 Zeichen lang sein.', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

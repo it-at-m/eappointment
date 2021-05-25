@@ -23,7 +23,7 @@ class CounterTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('counter-view', (string)$response->getBody());
+        $this->assertStringContainsString('counter-view', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -40,7 +40,7 @@ class CounterTest extends Base
             ]
         );
         $response = $this->render($this->arguments, ['date' => '2016-04-04'], []);
-        $this->assertContains('2016-04-04', (string)$response->getBody());
+        $this->assertStringContainsString('2016-04-04', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

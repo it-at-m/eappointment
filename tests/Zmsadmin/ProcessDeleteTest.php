@@ -53,7 +53,7 @@ class ProcessDeleteTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains(
+        $this->assertStringContainsString(
             '82252',
             (string)$response->getBody()
         );
@@ -89,7 +89,7 @@ class ProcessDeleteTest extends Base
             ]
         );
         $response = $this->render(['id' => '100632'], $this->parameters, []);
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Der Vorgang mit der Nummer 6 wurde erfolgreich entfernt.',
             (string)$response->getBody()
         );

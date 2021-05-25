@@ -36,8 +36,8 @@ class UseraccountEditTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('value="testuser"', (string)$response->getBody());
-        $this->assertContains('Nutzer: Einrichtung und Administration', (string)$response->getBody());
+        $this->assertStringContainsString('value="testuser"', (string)$response->getBody());
+        $this->assertStringContainsString('Nutzer: Einrichtung und Administration', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -145,8 +145,8 @@ class UseraccountEditTest extends Base
             'save' => 'save'
         ], [], 'POST');
 
-        $this->assertContains('board exception', (string)$response->getBody());
-        $this->assertContains('Passworts muss mindestens 6 Zeichen betragen', (string)$response->getBody());
+        $this->assertStringContainsString('board exception', (string)$response->getBody());
+        $this->assertStringContainsString('Passworts muss mindestens 6 Zeichen betragen', (string)$response->getBody());
     }
 
     // no department selected
@@ -200,8 +200,8 @@ class UseraccountEditTest extends Base
             'save' => 'save'
         ], [], 'POST');
 
-        $this->assertContains('board exception', (string)$response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('board exception', (string)$response->getBody());
+        $this->assertStringContainsString(
             'Es muss mindestens eine Behörde oder systemübergreifend ausgewählt werden',
             (string)$response->getBody()
         );

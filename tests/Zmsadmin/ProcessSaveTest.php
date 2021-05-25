@@ -65,7 +65,7 @@ class ProcessSaveTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertContains(
+        $this->assertStringContainsString(
             '82252',
             (string)$response->getBody()
         );
@@ -119,7 +119,7 @@ class ProcessSaveTest extends Base
             ]
         );
         $response = $this->render(['id' => 100011], $this->parameters, [], 'POST');
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Der Spontankunde mit der Wartenummer 5 wurde erfolgreich aktualisiert.',
             (string)$response->getBody()
         );
@@ -158,8 +158,8 @@ class ProcessSaveTest extends Base
             'selecteddate' => '2016-04-01',
             'selectedtime' => '11-55'
         ], [], 'POST');
-        $this->assertContains('Name eingegeben werden', (string)$response->getBody());
-        $this->assertContains('Es muss mindestens eine Dienstleistung', (string)$response->getBody());
+        $this->assertStringContainsString('Name eingegeben werden', (string)$response->getBody());
+        $this->assertStringContainsString('Es muss mindestens eine Dienstleistung', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

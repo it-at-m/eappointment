@@ -44,9 +44,9 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = parent::testRendering();
-        $this->assertContains('Terminvereinbarung Neu', (string)$response->getBody());
-        $this->assertContains('title="Spontankunde"', (string)$response->getBody());
-        $this->assertContains('Liste leeren', (string)$response->getBody());
+        $this->assertStringContainsString('Terminvereinbarung Neu', (string)$response->getBody());
+        $this->assertStringContainsString('title="Spontankunde"', (string)$response->getBody());
+        $this->assertStringContainsString('Liste leeren', (string)$response->getBody());
     }
 
     public function testNotSuperUser()
@@ -98,7 +98,7 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = $this->render([], []);
-        $this->assertContains('Bürgeramt Heerstraße', (string)$response->getBody());
+        $this->assertStringContainsString('Bürgeramt Heerstraße', (string)$response->getBody());
     }
 
     public function testClusterEnabledWithSelectedScope()
@@ -141,7 +141,7 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = $this->render([], ['selectedscope' => 141]);
-        $this->assertContains('Bürgeramt Heerstraße', (string)$response->getBody());
+        $this->assertStringContainsString('Bürgeramt Heerstraße', (string)$response->getBody());
     }
 
     public function testSelectedProcess()
@@ -183,7 +183,7 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = $this->render([], ['selectedprocess' => 100044]);
-        $this->assertContains('Terminvereinbarung Aktualisieren', (string)$response->getBody());
+        $this->assertStringContainsString('Terminvereinbarung Aktualisieren', (string)$response->getBody());
     }
 
     public function testSelectedDate()
@@ -220,9 +220,9 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = $this->render([], ['selecteddate' => '2016-05-27']);
-        $this->assertContains('Terminvereinbarung Neu', (string)$response->getBody());
-        $this->assertContains('27.05.2016', (string)$response->getBody());
-        $this->assertNotContains('slotCount', (string)$response->getBody());
+        $this->assertStringContainsString('Terminvereinbarung Neu', (string)$response->getBody());
+        $this->assertStringContainsString('27.05.2016', (string)$response->getBody());
+        $this->assertStringNotContainsString('slotCount', (string)$response->getBody());
     }
 
     public function testWithSlotsRequired()
@@ -269,7 +269,7 @@ class AppointmentFormTest extends Base
             'selectedscope' => 141,
             'slotsRequired' => 3
         ], []);
-        $this->assertContains('slotCount', (string)$response->getBody());
+        $this->assertStringContainsString('slotCount', (string)$response->getBody());
     }
 
     /**
@@ -317,8 +317,8 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = $this->render([], ['selecteddate' => '2016-05-27', 'selectedprocess' => 100044], []);
-        $this->assertContains('17:00', (string)$response->getBody());
-        $this->assertNotContains('title="Spontankunde"', (string)$response->getBody());
+        $this->assertStringContainsString('17:00', (string)$response->getBody());
+        $this->assertStringNotContainsString('title="Spontankunde"', (string)$response->getBody());
     }
 
     /**
@@ -366,8 +366,8 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = $this->render([], ['selecteddate' => '2016-05-27', 'selectedprocess' => 100044], []);
-        $this->assertContains('17:00', (string)$response->getBody());
-        $this->assertNotContains('title="Spontankunde"', (string)$response->getBody());
+        $this->assertStringContainsString('17:00', (string)$response->getBody());
+        $this->assertStringNotContainsString('title="Spontankunde"', (string)$response->getBody());
     }
 
     /**
@@ -410,7 +410,7 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = parent::testRendering();
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Dem ausgewählten Standort sind keine Dienstleistungen zugeordnet',
             (string)$response->getBody()
         );

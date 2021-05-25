@@ -34,11 +34,11 @@ class TicketprinterStatusByScopeTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Wartenummernausgabe am Kiosk - Bürgeramt Heerstraße',
             (string)$response->getBody()
         );
-        $this->assertContains('freigeben', (string)$response->getBody());
+        $this->assertStringContainsString('freigeben', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

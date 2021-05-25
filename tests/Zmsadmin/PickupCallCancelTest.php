@@ -28,7 +28,7 @@ class PickupCallCancelTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Der Abholer wurde erfolgreich aus der Bearbeitung entfernt und kann erneut aufgerufen werden.',
             (string)$response->getBody()
         );

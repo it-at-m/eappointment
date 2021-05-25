@@ -29,9 +29,9 @@ class ProviderHandlerTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('provider.json', (string)$response->getBody());
-        $this->assertContains('assigned', (string)$response->getBody());
-        $this->assertContains('notAssigned', (string)$response->getBody());
+        $this->assertStringContainsString('provider.json', (string)$response->getBody());
+        $this->assertStringContainsString('assigned', (string)$response->getBody());
+        $this->assertStringContainsString('notAssigned', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

@@ -34,7 +34,7 @@ class WorkstationProcessFinishedTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Kundendaten für Statistik', (string)$response->getBody());
+        $this->assertStringContainsString('Kundendaten für Statistik', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -229,10 +229,10 @@ class WorkstationProcessFinishedTest extends Base
             ]
         );
         $response = $this->render($this->arguments, [], []);
-        $this->assertContains('Kundendaten für Statistik', (string)$response->getBody());
-        $this->assertNotContains('Bearbeitete Dienstleistungen des Kunden', (string)$response->getBody());
-        $this->assertContains('ignoreRequests', (string)$response->getBody());
-        $this->assertContains('selected="selected"', (string)$response->getBody());
+        $this->assertStringContainsString('Kundendaten für Statistik', (string)$response->getBody());
+        $this->assertStringNotContainsString('Bearbeitete Dienstleistungen des Kunden', (string)$response->getBody());
+        $this->assertStringContainsString('ignoreRequests', (string)$response->getBody());
+        $this->assertStringContainsString('selected="selected"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -288,7 +288,7 @@ class WorkstationProcessFinishedTest extends Base
             ]
         );
         $response = $this->render($this->arguments, [], []);
-        $this->assertContains('Kundendaten für Statistik', (string)$response->getBody());
+        $this->assertStringContainsString('Kundendaten für Statistik', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

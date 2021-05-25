@@ -28,8 +28,8 @@ class DayoffByYearTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Allgemein gültige Feiertage 2016', (string)$response->getBody());
-        $this->assertContains('Tag der Deutschen Einheit', (string)$response->getBody());
+        $this->assertStringContainsString('Allgemein gültige Feiertage 2016', (string)$response->getBody());
+        $this->assertStringContainsString('Tag der Deutschen Einheit', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

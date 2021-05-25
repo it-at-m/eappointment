@@ -44,6 +44,6 @@ class AppointmentFormMultipleSlotsTest extends Base
             ]
         );
         $response = parent::testRendering();
-        $this->assertContains('Anmeldung einer Wohnung (0)', (string)$response->getBody());
+        $this->assertStringContainsString('Anmeldung einer Wohnung (0)', (string)$response->getBody());
     }
 }

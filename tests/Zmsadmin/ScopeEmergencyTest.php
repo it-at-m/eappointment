@@ -24,7 +24,7 @@ class ScopeEmergencyTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertContains('"activated": "1"', (string)$response->getBody());
+        $this->assertStringContainsString('"activated": "1"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -40,7 +40,7 @@ class ScopeEmergencyTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'GET');
-        $this->assertContains('"activated": "0"', (string)$response->getBody());
+        $this->assertStringContainsString('"activated": "0"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

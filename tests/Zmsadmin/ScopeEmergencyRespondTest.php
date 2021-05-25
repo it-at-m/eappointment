@@ -24,7 +24,7 @@ class ScopeEmergencyRespondTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertContains('"acceptedByWorkstation": "14"', (string)$response->getBody());
+        $this->assertStringContainsString('"acceptedByWorkstation": "14"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

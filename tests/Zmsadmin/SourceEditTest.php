@@ -29,7 +29,7 @@ class SourceEditTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('https:\/\/schema.berlin.de\/queuemanagement\/source.json', (string)$response->getBody());
+        $this->assertStringContainsString('https:\/\/schema.berlin.de\/queuemanagement\/source.json', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -142,7 +142,7 @@ class SourceEditTest extends Base
             'label' => 'Unittest Source',
             'save' => 'save'
         ], [], 'POST');
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein',
             (string)$response->getBody()
         );

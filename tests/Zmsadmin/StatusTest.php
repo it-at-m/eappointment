@@ -25,9 +25,9 @@ class StatusTest extends Base
             ]
         );
         $response = parent::testRendering();
-        $this->assertContains('API Version', (string)$response->getBody());
+        $this->assertStringContainsString('API Version', (string)$response->getBody());
         //check processes.confirmed:
-        $this->assertContains('86861', (string)$response->getBody());
+        $this->assertStringContainsString('86861', (string)$response->getBody());
     }
 
     public function testWithoutWorkstation()
@@ -49,6 +49,6 @@ class StatusTest extends Base
             ]
         );
         $response = parent::testRendering();
-        $this->assertNotContains('(Nur für Superuser sichtbar)', (string)$response->getBody());
+        $this->assertStringNotContainsString('(Nur für Superuser sichtbar)', (string)$response->getBody());
     }
 }

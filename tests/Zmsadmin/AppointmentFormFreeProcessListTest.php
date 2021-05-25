@@ -30,7 +30,7 @@ class AppointmentFormFreeProcessListTest extends Base
             ]
         );
         $response = $this->render([], ['selecteddate' => '2016-04-01'], []);
-        $this->assertContains('Spontankunde', (string)$response->getBody());
+        $this->assertStringContainsString('Spontankunde', (string)$response->getBody());
     }
 
     public function testWithoutExpired()
@@ -53,8 +53,8 @@ class AppointmentFormFreeProcessListTest extends Base
             ]
         );
         $response = $this->render([], ['selecteddate' => '2016-05-27'], []);
-        $this->assertNotContains('11:20 (noch 1 frei)', (string)$response->getBody());
-        $this->assertContains('11:40 (noch 1 frei)', (string)$response->getBody());
+        $this->assertStringNotContainsString('11:20 (noch 1 frei)', (string)$response->getBody());
+        $this->assertStringContainsString('11:40 (noch 1 frei)', (string)$response->getBody());
     }
 
     // time select field has to be disabled if no slot is existing
@@ -92,7 +92,7 @@ class AppointmentFormFreeProcessListTest extends Base
             'selectedprocess' => 100044,
             'selectedscope' => 141
         ], []);
-        $this->assertContains('disabled="disabled"', (string)$response->getBody());
+        $this->assertStringContainsString('disabled="disabled"', (string)$response->getBody());
     }
 
     public function testWithSelectedProcess()
@@ -130,9 +130,9 @@ class AppointmentFormFreeProcessListTest extends Base
             'selectedprocess' => 100044,
             'selectedscope' => 141
         ], []);
-        $this->assertContains('11:40 (noch 1 frei)', (string)$response->getBody());
-        $this->assertContains('17:00 (noch 0 frei)', (string)$response->getBody());
-        $this->assertNotContains('Spontankunde', (string)$response->getBody());
+        $this->assertStringContainsString('11:40 (noch 1 frei)', (string)$response->getBody());
+        $this->assertStringContainsString('17:00 (noch 0 frei)', (string)$response->getBody());
+        $this->assertStringNotContainsString('Spontankunde', (string)$response->getBody());
     }
 
     public function testEmpty()

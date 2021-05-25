@@ -30,8 +30,8 @@ class RoutingTest extends Base
 
         $container = \App::$slim->getContainer()->get('errorHandler');
         $response = $container($request, $this->getResponse(), $exception);
-        $this->assertContains('board exception', (string)$response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('board exception', (string)$response->getBody());
+        $this->assertStringContainsString(
             'Um diese Seite aufzurufen fehlen Ihnen die notwendigen Rechte',
             (string)$response->getBody()
         );
@@ -54,7 +54,7 @@ class RoutingTest extends Base
         $request = static::createBasicRequest('GET', '/workstation/');
         $container = \App::$slim->getContainer()->get('errorHandler');
         $response = $container($request, $this->getResponse(), $exception, 404);
-        $this->assertContains('Es ist ein Fehler aufgetreten', (string)$response->getBody());
+        $this->assertStringContainsString('Es ist ein Fehler aufgetreten', (string)$response->getBody());
     }
 
     public function testErrorHandlerWithExceptionData()
@@ -75,8 +75,8 @@ class RoutingTest extends Base
 
         $container = \App::$slim->getContainer()->get('errorHandler');
         $response = $container($request, $this->getResponse(), $exception);
-        $this->assertContains('board exception', (string)$response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('board exception', (string)$response->getBody());
+        $this->assertStringContainsString(
             'Dem Standort mit der Id 141 ist kein Dienstleister zugeordnet. Dieser Inhalt kann daher nicht angezeigt werden.',
             (string)$response->getBody()
         );
@@ -98,8 +98,8 @@ class RoutingTest extends Base
         $request = static::createBasicRequest('GET', '/workstation/');
         $container = \App::$slim->getContainer()->get('errorHandler');
         $response = $container($request, $this->getResponse(), $exception);
-        $this->assertContains('board exception', (string)$response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('board exception', (string)$response->getBody());
+        $this->assertStringContainsString(
             'Um diese Seite aufzurufen fehlen Ihnen die notwendigen Rechte',
             (string)$response->getBody()
         );

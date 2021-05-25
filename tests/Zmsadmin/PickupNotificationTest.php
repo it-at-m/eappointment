@@ -45,7 +45,7 @@ class PickupNotificationTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains(
+        $this->assertStringContainsString(
             '
             Der Termin mit der Nummer 82252 wurde zur Abholung per SMS informiert',
             (string)$response->getBody()

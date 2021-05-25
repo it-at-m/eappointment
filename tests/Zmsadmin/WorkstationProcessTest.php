@@ -23,7 +23,7 @@ class WorkstationProcessTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Aufruf nächster Kunde', (string)$response->getBody());
+        $this->assertStringContainsString('Aufruf nächster Kunde', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -56,8 +56,8 @@ class WorkstationProcessTest extends Base
             ]
         );
         $response = $this->render($this->arguments, [$this->parameters], []);
-        $this->assertContains('Kundeninformationen', (string)$response->getBody());
-        $this->assertContains('Personalausweis beantragen', (string)$response->getBody());
+        $this->assertStringContainsString('Kundeninformationen', (string)$response->getBody());
+        $this->assertStringContainsString('Personalausweis beantragen', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -74,7 +74,7 @@ class WorkstationProcessTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Aufruf nächster Kunde', (string)$response->getBody());
+        $this->assertStringContainsString('Aufruf nächster Kunde', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

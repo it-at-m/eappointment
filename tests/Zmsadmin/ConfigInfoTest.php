@@ -28,14 +28,14 @@ class ConfigInfoTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Konfiguration System', (string)$response->getBody());
-        $this->assertContains("Sie sind in Kürze an der Reihe.", (string)$response->getBody());
+        $this->assertStringContainsString('Konfiguration System', (string)$response->getBody());
+        $this->assertStringContainsString("Sie sind in Kürze an der Reihe.", (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testTemplatePath()
     {
         $path = \BO\Zmsadmin\Helper\TemplateFinder::getTemplatePath();
-        $this->assertContains('src/Zmsadmin/Helper/../../../templates', $path);
+        $this->assertStringContainsString('src/Zmsadmin/Helper/../../../templates', $path);
     }
 }

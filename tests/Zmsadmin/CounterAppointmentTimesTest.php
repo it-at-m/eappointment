@@ -35,7 +35,7 @@ class CounterAppointmentTimesTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Terminzeiten', (string)$response->getBody());
+        $this->assertStringContainsString('Terminzeiten', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

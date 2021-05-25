@@ -61,10 +61,10 @@ class ScopeAvailabilityMonthTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Öffnungszeiten für den Standort Bürgeramt Heerstraße', (string)$response->getBody());
-        $this->assertContains('availability-monthtable_calendar', (string)$response->getBody());
-        $this->assertContains('data-availability-count="24"', (string)$response->getBody());
-        $this->assertContains('daystatus--ticketprinter', (string)$response->getBody());
+        $this->assertStringContainsString('Öffnungszeiten für den Standort Bürgeramt Heerstraße', (string)$response->getBody());
+        $this->assertStringContainsString('availability-monthtable_calendar', (string)$response->getBody());
+        $this->assertStringContainsString('data-availability-count="24"', (string)$response->getBody());
+        $this->assertStringContainsString('daystatus--ticketprinter', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -195,9 +195,9 @@ class ScopeAvailabilityMonthTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Öffnungszeiten für den Standort Bürgeramt Heerstraße', (string)$response->getBody());
-        $this->assertContains('availability-monthtable_calendar', (string)$response->getBody());
-        $this->assertContains('data-availability-count="0"', (string)$response->getBody());
+        $this->assertStringContainsString('Öffnungszeiten für den Standort Bürgeramt Heerstraße', (string)$response->getBody());
+        $this->assertStringContainsString('availability-monthtable_calendar', (string)$response->getBody());
+        $this->assertStringContainsString('data-availability-count="0"', (string)$response->getBody());
     }
 
     public function testAvailabilityListUnknownException()

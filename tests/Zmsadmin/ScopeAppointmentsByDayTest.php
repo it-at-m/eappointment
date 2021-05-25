@@ -32,7 +32,7 @@ class ScopeAppointmentsByDayTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Termine für Bürgeramt Heerstraße am 01.04.2016', (string)$response->getBody());
+        $this->assertStringContainsString('Termine für Bürgeramt Heerstraße am 01.04.2016', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -63,7 +63,7 @@ class ScopeAppointmentsByDayTest extends Base
             'id' => 144,
             'date' => '2016-04-01'
         ], $this->parameters, []);
-        $this->assertContains('Termine für Bürgeramt Rathaus Tiergarten am 01.04.2016', (string)$response->getBody());
+        $this->assertStringContainsString('Termine für Bürgeramt Rathaus Tiergarten am 01.04.2016', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -91,7 +91,7 @@ class ScopeAppointmentsByDayTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Termine für Bürgeramt Heerstraße am 01.04.2016', (string)$response->getBody());
+        $this->assertStringContainsString('Termine für Bürgeramt Heerstraße am 01.04.2016', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

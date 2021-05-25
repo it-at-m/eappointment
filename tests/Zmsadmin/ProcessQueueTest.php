@@ -33,8 +33,8 @@ class ProcessQueueTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Ihr Termin ist am', (string)$response->getBody());
-        $this->assertContains('Fr. 01.04.2016 um', (string)$response->getBody());
+        $this->assertStringContainsString('Ihr Termin ist am', (string)$response->getBody());
+        $this->assertStringContainsString('Fr. 01.04.2016 um', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -87,7 +87,7 @@ class ProcessQueueTest extends Base
             'headsUpTime' => 3600,
             'requests' => [120703]
         ], [], 'POST');
-        $this->assertContains('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
+        $this->assertStringContainsString('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -146,7 +146,7 @@ class ProcessQueueTest extends Base
             'requests' => [120703],
             'selectedprocess' => 100632
         ], [], 'POST');
-        $this->assertContains('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
+        $this->assertStringContainsString('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -203,7 +203,7 @@ class ProcessQueueTest extends Base
             'requests' => [120703]
         ], [], 'POST');
 
-        $this->assertContains('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
+        $this->assertStringContainsString('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
     }
 
     public function testRenderingNotOpened()
@@ -256,7 +256,7 @@ class ProcessQueueTest extends Base
             'headsUpTime' => 3600,
             'requests' => [120703]
         ], [], 'POST');
-        $this->assertContains('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
+        $this->assertStringContainsString('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -295,11 +295,11 @@ class ProcessQueueTest extends Base
             'headsUpTime' => 3600,
             'requests' => [120703]
         ], [], 'POST');
-        $this->assertContains(
+        $this->assertStringContainsString(
             "Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden",
             (string)$response->getBody()
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             "keine Mails verschickt werden. Der Host zur Domain nach dem '@' ist nicht erreichbar.",
             (string)$response->getBody()
         );

@@ -40,12 +40,12 @@ class PickupQueueTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('pickup-table', (string)$response->getBody());
-        $this->assertContains('change-scope', (string)$response->getBody());
-        $this->assertContains('value="141"', (string)$response->getBody());
-        $this->assertContains('value="140"', (string)$response->getBody());
-        $this->assertContains('value="142"', (string)$response->getBody());
-        $this->assertContains('value="380"', (string)$response->getBody());
+        $this->assertStringContainsString('pickup-table', (string)$response->getBody());
+        $this->assertStringContainsString('change-scope', (string)$response->getBody());
+        $this->assertStringContainsString('value="141"', (string)$response->getBody());
+        $this->assertStringContainsString('value="140"', (string)$response->getBody());
+        $this->assertStringContainsString('value="142"', (string)$response->getBody());
+        $this->assertStringContainsString('value="380"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

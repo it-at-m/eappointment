@@ -32,7 +32,7 @@ class ScopeAppointmentsByDayXlsExportTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains(
+        $this->assertStringContainsString(
             'download; filename="tagesuebersicht_01.04.2016.xlsx',
             $response->getHeader('Content-Disposition')[0]
         );

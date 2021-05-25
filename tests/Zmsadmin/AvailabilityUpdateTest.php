@@ -59,7 +59,7 @@ class AvailabilityUpdateTest extends Base
             ]
         );
         $response = $this->render([], $this->parameters, [], 'POST');
-        $this->assertContains('"id": "68985"', (string)$response->getBody());
+        $this->assertStringContainsString('"id": "68985"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

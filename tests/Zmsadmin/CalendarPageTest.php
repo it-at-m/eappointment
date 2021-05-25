@@ -37,11 +37,11 @@ class CalendarPageTest extends Base
             ]
         );
         $response = $this->render([], $this->parameters, []);
-        $this->assertContains(
+        $this->assertStringContainsString(
             'data-date="2016-05-27" title="Fr. 27. Mai 2016 - noch bis zu 2 Termine frei"',
             (string)$response->getBody()
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             'data-date="2016-04-10" title="So. 10. April 2016 - noch bis zu 3 Termine frei"',
             (string)$response->getBody()
         );
@@ -81,7 +81,7 @@ class CalendarPageTest extends Base
             ],
             []
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             'data-date="2016-05-27" title="Fr. 27. Mai 2016 - noch bis zu 2 Termine frei"',
             (string)$response->getBody()
         );

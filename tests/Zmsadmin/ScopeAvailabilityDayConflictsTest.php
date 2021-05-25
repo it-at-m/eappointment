@@ -53,8 +53,8 @@ class ScopeAvailabilityDayConflictsTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('availability.json', (string)$response->getBody());
-        $this->assertContains('conflicts', (string)$response->getBody());
+        $this->assertStringContainsString('availability.json', (string)$response->getBody());
+        $this->assertStringContainsString('conflicts', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }
