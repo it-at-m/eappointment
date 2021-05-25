@@ -26,7 +26,7 @@ class CoordinatesTest extends \PHPUnit_Framework_TestCase
 
     public function testFail()
     {
-        $this->setExpectedException("\Exception");
+        $this->expectException("\Exception");
         new Coordinates("/dummy/notexists.json");
     }
 }
