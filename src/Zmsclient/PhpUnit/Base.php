@@ -9,6 +9,8 @@ namespace BO\Zmsclient\PhpUnit;
 
 use \Prophecy\PhpUnit\ProphecyTrait;
 
+use \Prophecy\Argument;
+
 /**
  * @codeCoverageIgnore
  */
