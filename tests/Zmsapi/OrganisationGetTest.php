@@ -10,14 +10,14 @@ class OrganisationGetTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setRights('department');
         $response = $this->render(['id' => 54], ['resolveReferences' => 1], []);
-        $this->assertContains('organisation.json', (string)$response->getBody());
+        $this->assertStringContainsString('organisation.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testReducedData()
     {
         $response = $this->render(['id' => 54], ['resolveReferences' => 1], []);
-        $this->assertContains('reducedData', (string)$response->getBody());
+        $this->assertStringContainsString('reducedData', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

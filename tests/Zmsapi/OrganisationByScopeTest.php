@@ -12,15 +12,15 @@ class OrganisationByScopeTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render(['id' => 141], [], []);
-        $this->assertContains('organisation.json', (string)$response->getBody());
+        $this->assertStringContainsString('organisation.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testReducedDataAccess()
     {
         $response = $this->render(['id' => 141], [], []);
-        $this->assertContains('organisation.json', (string)$response->getBody());
-        $this->assertContains('"reducedData":true', (string)$response->getBody());
+        $this->assertStringContainsString('organisation.json', (string)$response->getBody());
+        $this->assertStringContainsString('"reducedData":true', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

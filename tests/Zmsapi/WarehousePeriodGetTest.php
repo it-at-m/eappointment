@@ -17,9 +17,9 @@ class WarehousePeriodGetTest extends Base
             ['groupby' => 'day'],
             []
         );
-        $this->assertContains('exchange.json', (string)$response->getBody());
-        $this->assertContains('"firstDay":{"year":"2016","month":"03","day":"01"', (string)$response->getBody());
-        $this->assertContains('"lastDay":{"year":"2016","month":"03","day":"01"', (string)$response->getBody());
+        $this->assertStringContainsString('exchange.json', (string)$response->getBody());
+        $this->assertStringContainsString('"firstDay":{"year":"2016","month":"03","day":"01"', (string)$response->getBody());
+        $this->assertStringContainsString('"lastDay":{"year":"2016","month":"03","day":"01"', (string)$response->getBody());
 
         $this->assertTrue(200 == $response->getStatusCode());
     }
@@ -34,10 +34,10 @@ class WarehousePeriodGetTest extends Base
             []
         );
         $entity = (new \BO\Zmsclient\Result($response))->getEntity();
-        $this->assertContains('exchange.json', (string)$response->getBody());
+        $this->assertStringContainsString('exchange.json', (string)$response->getBody());
         $this->assertEquals($entity->period, 'day');
-        $this->assertContains('"firstDay":{"year":"2016","month":"03","day":"01"', (string)$response->getBody());
-        $this->assertContains('"lastDay":{"year":"2016","month":"03","day":"31"', (string)$response->getBody());
+        $this->assertStringContainsString('"firstDay":{"year":"2016","month":"03","day":"01"', (string)$response->getBody());
+        $this->assertStringContainsString('"lastDay":{"year":"2016","month":"03","day":"31"', (string)$response->getBody());
 
         $this->assertTrue(200 == $response->getStatusCode());
     }
@@ -51,9 +51,9 @@ class WarehousePeriodGetTest extends Base
             [],
             []
         );
-        $this->assertContains('exchange.json', (string)$response->getBody());
-        $this->assertContains('"firstDay":{"year":"2016","month":"01","day":"01"', (string)$response->getBody());
-        $this->assertContains('"lastDay":{"year":"2016","month":"12","day":"31"', (string)$response->getBody());
+        $this->assertStringContainsString('exchange.json', (string)$response->getBody());
+        $this->assertStringContainsString('"firstDay":{"year":"2016","month":"01","day":"01"', (string)$response->getBody());
+        $this->assertStringContainsString('"lastDay":{"year":"2016","month":"12","day":"31"', (string)$response->getBody());
 
         $this->assertTrue(200 == $response->getStatusCode());
     }
@@ -67,8 +67,8 @@ class WarehousePeriodGetTest extends Base
             [],
             []
         );
-        $this->assertContains('exchange.json', (string)$response->getBody());
-        $this->assertContains('"period":"hour"', (string)$response->getBody());
+        $this->assertStringContainsString('exchange.json', (string)$response->getBody());
+        $this->assertStringContainsString('"period":"hour"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

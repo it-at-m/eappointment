@@ -10,7 +10,7 @@ class WorkstationListByScopeTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render(['id' => 141], [], []);
-        $this->assertContains('"error":false', (string)$response->getBody());
+        $this->assertStringContainsString('"error":false', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

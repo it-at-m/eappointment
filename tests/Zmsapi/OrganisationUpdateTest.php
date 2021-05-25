@@ -22,7 +22,7 @@ class OrganisationUpdateTest extends Base
         $response = $this->render(['id' => 54], [
             '__body' => $this->readFixture("GetOrganisation.json")
         ], []);
-        $this->assertContains('organisation.json', (string)$response->getBody());
+        $this->assertStringContainsString('organisation.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

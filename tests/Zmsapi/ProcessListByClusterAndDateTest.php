@@ -13,7 +13,7 @@ class ProcessListByClusterAndDateTest extends Base
         $this->setWorkstation();
         User::$workstation->useraccount->setRights('cluster');
         $response = $this->render(['id' => 109, 'date' => '2016-04-01'], [], []);
-        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

@@ -12,7 +12,7 @@ class MailAddTest extends Base
         $response = $this->render([], [
             '__body' => $this->readFixture('GetMail.json')
         ], []);
-        $this->assertContains('mail.json', (string)$response->getBody());
+        $this->assertStringContainsString('mail.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
         return $response;
     }

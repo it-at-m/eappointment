@@ -9,7 +9,7 @@ class StatusGetTest extends Base
     public function testRendering()
     {
         $response = $this->render();
-        $this->assertContains('status.json', (string)$response->getBody());
+        $this->assertStringContainsString('status.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 }

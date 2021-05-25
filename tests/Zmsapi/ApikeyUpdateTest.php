@@ -16,8 +16,8 @@ class ApikeyUpdateTest extends Base
         $response = $this->render([], [
             '__body' => $input
         ], []);
-        $this->assertContains('apikey.json', (string)$response->getBody());
-        $this->assertContains('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs', (string)$response->getBody());
+        $this->assertStringContainsString('apikey.json', (string)$response->getBody());
+        $this->assertStringContainsString('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -29,8 +29,8 @@ class ApikeyUpdateTest extends Base
         $response = $this->render([], [
             '__body' => $entity
         ], []);
-        $this->assertContains('apikey.json', (string)$response->getBody());
-        $this->assertContains('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs', (string)$response->getBody());
+        $this->assertStringContainsString('apikey.json', (string)$response->getBody());
+        $this->assertStringContainsString('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -41,8 +41,8 @@ class ApikeyUpdateTest extends Base
             '__body' => $input,
             'clientkey' => 'default',
         ], []);
-        $this->assertContains('apikey.json', (string)$response->getBody());
-        $this->assertContains('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs', (string)$response->getBody());
+        $this->assertStringContainsString('apikey.json', (string)$response->getBody());
+        $this->assertStringContainsString('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

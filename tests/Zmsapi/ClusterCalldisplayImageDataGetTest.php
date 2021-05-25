@@ -17,7 +17,7 @@ class ClusterCalldisplayImageDataGetTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setRights('cluster');
         $response = $this->render(['id' => self::CLUSTER_ID], [], []);
-        $this->assertContains('mimepart.json', (string)$response->getBody());
+        $this->assertStringContainsString('mimepart.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

@@ -11,7 +11,7 @@ class ProcessByQueueNumberTest extends Base
     public function testRendering()
     {
         $response = $this->render(['id' => 141, 'number' => 92940], [], []);
-        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

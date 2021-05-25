@@ -29,8 +29,8 @@ class ScopeEmergencyTest extends Base
             '__body' => '{
             }'
         ], []);
-        $this->assertContains('scope.json', (string)$response->getBody());
-        $this->assertContains('"activated":"1"', (string)$response->getBody());
+        $this->assertStringContainsString('scope.json', (string)$response->getBody());
+        $this->assertStringContainsString('"activated":"1"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

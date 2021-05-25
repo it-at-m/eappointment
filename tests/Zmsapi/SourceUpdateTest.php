@@ -14,10 +14,10 @@ class SourceUpdateTest extends Base
             'resolveReferences' => 2
         ], []);
         $entity = (new \BO\Zmsclient\Result($response))->getEntity();
-        $this->assertContains('source.json', (string)$response->getBody());
-        $this->assertContains('"source":"unittest"', (string)$response->getBody());
-        $this->assertContains('providers', (string)$response->getBody());
-        $this->assertContains('requests', (string)$response->getBody());
+        $this->assertStringContainsString('source.json', (string)$response->getBody());
+        $this->assertStringContainsString('"source":"unittest"', (string)$response->getBody());
+        $this->assertStringContainsString('providers', (string)$response->getBody());
+        $this->assertStringContainsString('requests', (string)$response->getBody());
         $this->assertEquals(1, $entity['requestrelation'][0]['slots']);
         $this->assertTrue(200 == $response->getStatusCode());
     }

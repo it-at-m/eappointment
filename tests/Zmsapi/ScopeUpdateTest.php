@@ -14,7 +14,7 @@ class ScopeUpdateTest extends Base
         $response = $this->render(['id' => 141], [
             '__body' => $this->readFixture('GetScope_lessData.json')
         ], []);
-        $this->assertContains('scope.json', (string)$response->getBody());
+        $this->assertStringContainsString('scope.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

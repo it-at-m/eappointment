@@ -13,7 +13,7 @@ class NotificationDeleteTest extends Base
         $entity = new \BO\Zmsentities\Notification($entity);
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
         $response = $this->render(['id' => $entity->id], [], []);
-        $this->assertContains('notification.json', (string)$response->getBody());
+        $this->assertStringContainsString('notification.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

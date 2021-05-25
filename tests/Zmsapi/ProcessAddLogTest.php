@@ -16,7 +16,7 @@ class ProcessAddLogTest extends Base
         $response = $this->render(['id' => self::PROCESS_ID], [
             '__body' => $this->readFixture('GetMimepart.json')
         ], []);
-        $this->assertContains("mimepart.json", (string)$response->getBody());
+        $this->assertStringContainsString("mimepart.json", (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -27,7 +27,7 @@ class ProcessAddLogTest extends Base
             '__body' => $this->readFixture('GetMimepart.json'),
             'error' => 1
         ], []);
-        $this->assertContains("mimepart.json", (string)$response->getBody());
+        $this->assertStringContainsString("mimepart.json", (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

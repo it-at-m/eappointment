@@ -17,7 +17,7 @@ class ClusterCalldisplayImageDataDeleteTest extends Base
     {
         $this->setWorkstation()->getUserAccount()->setRights('cluster');
         $response = $this->render(['id' => self::CLUSTER_ID], [], []);
-        $this->assertContains('"data":true', (string)$response->getBody());
+        $this->assertStringContainsString('"data":true', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

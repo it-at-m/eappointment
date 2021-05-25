@@ -12,7 +12,7 @@ class MailListTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
         $response = $this->render([], [], []);
-        $this->assertContains('"error":false', (string)$response->getBody());
+        $this->assertStringContainsString('"error":false', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 }

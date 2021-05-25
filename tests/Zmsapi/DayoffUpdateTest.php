@@ -33,7 +33,7 @@ class DayoffUpdateTest extends Base
         $response = $this->render(['year' => self::YEAR], [
             '__body' => json_encode($dayoffList)
         ], []);
-        $this->assertContains('dayoff.json', (string)$response->getBody());
+        $this->assertStringContainsString('dayoff.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

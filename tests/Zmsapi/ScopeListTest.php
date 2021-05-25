@@ -15,16 +15,16 @@ class ScopeListTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setRights('scope');
         $response = $this->render([], [], []);
-        $this->assertContains('scope.json', (string)$response->getBody());
-        $this->assertNotContains('"reducedData"', (string)$response->getBody());
+        $this->assertStringContainsString('scope.json', (string)$response->getBody());
+        $this->assertStringNotContainsString('"reducedData"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testReducedDataAccess()
     {
         $response = $this->render([], [], []);
-        $this->assertContains('scope.json', (string)$response->getBody());
-        $this->assertContains('"reducedData":true', (string)$response->getBody());
+        $this->assertStringContainsString('scope.json', (string)$response->getBody());
+        $this->assertStringContainsString('"reducedData":true', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 }

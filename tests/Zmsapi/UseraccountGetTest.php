@@ -11,7 +11,7 @@ class UseraccountGetTest extends Base
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
         $this->setDepartment(74);
         $response = $this->render(['loginname' => 'testadmin'], [], []);
-        $this->assertContains('useraccount.json', (string)$response->getBody());
+        $this->assertStringContainsString('useraccount.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

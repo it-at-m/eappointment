@@ -21,8 +21,8 @@ class DepartmentAddScopeTest extends Base
                   }
               }'
         ], []);
-        $this->assertContains('scope.json', (string)$response->getBody());
-        $this->assertContains('"shortName":"Test Scope"', (string)$response->getBody());
+        $this->assertStringContainsString('scope.json', (string)$response->getBody());
+        $this->assertStringContainsString('"shortName":"Test Scope"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

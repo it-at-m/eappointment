@@ -12,7 +12,7 @@ class ScopeDeleteTest extends Base
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => 615]);
         $this->setWorkstation()->getUserAccount()->setRights('scope')->addDepartment($department);
         $response = $this->render(['id' => 615], [], []); //Ordnungsamt Charlottenburg
-        $this->assertContains('Ordnungsamt Charlottenburg-Wilmersdorf ', (string)$response->getBody());
+        $this->assertStringContainsString('Ordnungsamt Charlottenburg-Wilmersdorf ', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

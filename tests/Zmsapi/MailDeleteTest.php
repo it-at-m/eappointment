@@ -13,7 +13,7 @@ class MailDeleteTest extends Base
         $entity = new \BO\Zmsentities\Mail($message['data']);
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
         $response = $this->render(['id' => $entity->id], [], []);
-        $this->assertContains('mail.json', (string)$response->getBody());
+        $this->assertStringContainsString('mail.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

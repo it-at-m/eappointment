@@ -16,7 +16,7 @@ class ProcessReserveTest extends Base
             '__body' => json_encode($process)
         ], []);
 
-        $this->assertContains('"status":"reserved"', (string)$response->getBody());
+        $this->assertStringContainsString('"status":"reserved"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -33,7 +33,7 @@ class ProcessReserveTest extends Base
             'slotType' => 'intern'
         ], []);
 
-        $this->assertContains('reserved', (string)$response->getBody());
+        $this->assertStringContainsString('reserved', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -113,7 +113,7 @@ class ProcessReserveTest extends Base
            'clientkey' => 'default'
         ], []);
 
-        $this->assertContains('"slotCount":"1"', (string)$response->getBody());
+        $this->assertStringContainsString('"slotCount":"1"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

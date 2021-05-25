@@ -9,7 +9,7 @@ class RequestListByClusterTest extends Base
     public function testRendering()
     {
         $response = $this->render(['id' => 110], [], []);
-        $this->assertContains('request.json', (string)$response->getBody());
+        $this->assertStringContainsString('request.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

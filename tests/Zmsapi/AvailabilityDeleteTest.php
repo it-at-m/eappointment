@@ -16,7 +16,7 @@ class AvailabilityDeleteTest extends Base
         $entity = (new Query())->writeEntity($input);
         $this->setWorkstation();
         $response = $this->render(['id' => $entity->getId()], [], []); //Test Availability
-        $this->assertContains('startDate', (string)$response->getBody());
+        $this->assertStringContainsString('startDate', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -24,7 +24,7 @@ class AvailabilityDeleteTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render(['id' => 1], [], []);
-        $this->assertContains('Not found', (string)$response->getBody());
+        $this->assertStringContainsString('Not found', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 }

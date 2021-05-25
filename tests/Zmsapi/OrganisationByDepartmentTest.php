@@ -11,7 +11,7 @@ class OrganisationByDepartmentTest extends Base
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
         $this->setDepartment(72);
         $response = $this->render(['id' => 72], [], []); //BA Egon-Erwin-Kisch-Str.
-        $this->assertContains('Lichtenberg', (string)$response->getBody());
+        $this->assertStringContainsString('Lichtenberg', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

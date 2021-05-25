@@ -9,7 +9,7 @@ class RequestListByProviderTest extends Base
     public function testRendering()
     {
         $response = $this->render(['source' => 'dldb', 'id' => 122217], [], []);
-        $this->assertContains('request.json', (string)$response->getBody());
+        $this->assertStringContainsString('request.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

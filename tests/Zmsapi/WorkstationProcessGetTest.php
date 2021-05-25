@@ -10,7 +10,7 @@ class WorkstationProcessGetTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render(['id' => 100032], [], []);
-        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

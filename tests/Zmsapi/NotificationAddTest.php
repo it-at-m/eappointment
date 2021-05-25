@@ -12,7 +12,7 @@ class NotificationAddTest extends Base
         $response = $this->render([], [
             '__body' => $this->readFixture('GetNotification.json')
         ], []);
-        $this->assertContains('notification.json', (string)$response->getBody());
+        $this->assertStringContainsString('notification.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
         return $response;
     }

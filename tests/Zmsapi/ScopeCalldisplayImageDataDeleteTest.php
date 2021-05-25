@@ -19,7 +19,7 @@ class ScopeCalldisplayImageDataDeleteTest extends Base
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
         $this->setWorkstation()->getUserAccount()->setRights('scope')->addDepartment($department);
         $response = $this->render(['id' => self::SCOPE_ID], [], []);
-        $this->assertContains('"data":true', (string)$response->getBody());
+        $this->assertStringContainsString('"data":true', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

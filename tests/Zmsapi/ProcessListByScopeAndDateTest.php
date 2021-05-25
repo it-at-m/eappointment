@@ -13,7 +13,7 @@ class ProcessListByScopeAndDateTest extends Base
         $this->setWorkstation();
         User::$workstation->useraccount->setRights('scope');
         $response = $this->render(['id' => 141, 'date' => '2016-04-01'], [], []);
-        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -26,9 +26,9 @@ class ProcessListByScopeAndDateTest extends Base
             ['gql' => '{ id authKey scope{ id source shortName } }', 'resolveReferences' => 1],
             []
         );
-        $this->assertContains('$schema', (string)$response->getBody());
-        $this->assertContains('"id":"141","source":"dldb"', (string)$response->getBody());
-        $this->assertNotContains('"provider"', (string)$response->getBody());
+        $this->assertStringContainsString('$schema', (string)$response->getBody());
+        $this->assertStringContainsString('"id":"141","source":"dldb"', (string)$response->getBody());
+        $this->assertStringNotContainsString('"provider"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -46,7 +46,7 @@ class ProcessListByScopeAndDateTest extends Base
         $this->setWorkstation();
         User::$workstation->useraccount->setRights('scope');
         $response = $this->render(['id' => 141, 'date' => '2016-04-01'], [], ['resolveReferences' => 0]);
-        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 }

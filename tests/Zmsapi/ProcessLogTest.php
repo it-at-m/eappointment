@@ -17,7 +17,7 @@ class ProcessLogTest extends Base
         (new ProcessUpdateTest)->testRendering();
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
         $response = $this->render(['id' => self::PROCESS_ID], [], []);
-        $this->assertContains('log.json', (string)$response->getBody());
+        $this->assertStringContainsString('log.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -25,7 +25,7 @@ class ProcessLogTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
         $response = $this->render(['id' => 123], [], []);
-        $this->assertContains('"data":[]', (string)$response->getBody());
+        $this->assertStringContainsString('"data":[]', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 }

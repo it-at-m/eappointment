@@ -10,7 +10,7 @@ class OrganisationDeleteTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
         $response = $this->render(['id' => 80], [], []); //Test Organisation
-        $this->assertContains('organisation.json', (string)$response->getBody());
+        $this->assertStringContainsString('organisation.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

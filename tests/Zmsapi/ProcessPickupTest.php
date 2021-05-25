@@ -45,7 +45,7 @@ class ProcessPickupTest extends Base
                 "status": "pickup"
             }'
         ], []);
-        $this->assertContains('pickup', (string)$response->getBody());
+        $this->assertStringContainsString('pickup', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -107,7 +107,7 @@ class ProcessPickupTest extends Base
                 }
             }'
         ], []);
-        $this->assertContains('pickup', (string)$response->getBody());
+        $this->assertStringContainsString('pickup', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

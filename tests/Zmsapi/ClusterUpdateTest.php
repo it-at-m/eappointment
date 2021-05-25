@@ -21,7 +21,7 @@ class ClusterUpdateTest extends Base
                   "callDisplayText": ""
               }'
         ], []);
-        $this->assertContains('cluster.json', (string)$response->getBody());
+        $this->assertStringContainsString('cluster.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

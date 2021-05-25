@@ -12,7 +12,7 @@ class ProcessReservedListTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render([], [], []);
-        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 }

@@ -13,15 +13,15 @@ class ScopeQueueTest extends Base
         $this->setWorkstation();
         User::$workstation->useraccount->setRights('scope');
         $response = $this->render(['id' => 141], [], []);
-        $this->assertContains('queue.json', (string)$response->getBody());
+        $this->assertStringContainsString('queue.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testReducedDataAccess()
     {
         $response = $this->render(['id' => 141], [], []);
-        $this->assertContains('queue.json', (string)$response->getBody());
-        $this->assertContains('"reducedData":true', (string)$response->getBody());
+        $this->assertStringContainsString('queue.json', (string)$response->getBody());
+        $this->assertStringContainsString('"reducedData":true', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

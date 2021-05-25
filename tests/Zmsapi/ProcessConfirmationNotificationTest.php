@@ -39,7 +39,7 @@ class ProcessConfirmationNotificationTest extends Base
                 "status": "confirmed"
             }'
         ], []);
-        $this->assertContains('notification.json', (string)$response->getBody());
+        $this->assertStringContainsString('notification.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
         return $response;
     }
@@ -50,7 +50,7 @@ class ProcessConfirmationNotificationTest extends Base
         $response = $this->render([], [
             '__body' => $this->readFixture('GetProcess_10029.json')
         ], []);
-        $this->assertContains('"data":null', (string)$response->getBody());
+        $this->assertStringContainsString('"data":null', (string)$response->getBody());
         return $response;
     }
 

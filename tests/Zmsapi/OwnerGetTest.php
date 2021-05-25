@@ -10,14 +10,14 @@ class OwnerGetTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
         $response = $this->render(['id' => 99], ['resolveReferences' => 1], []);
-        $this->assertContains('owner.json', (string)$response->getBody());
+        $this->assertStringContainsString('owner.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testReducedData()
     {
         $response = $this->render(['id' => 99], ['resolveReferences' => 1], []);
-        $this->assertContains('reducedData', (string)$response->getBody());
+        $this->assertStringContainsString('reducedData', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

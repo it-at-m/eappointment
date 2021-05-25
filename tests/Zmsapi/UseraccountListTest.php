@@ -10,7 +10,7 @@ class UseraccountListTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
         $response = $this->render([], [], []);
-        $this->assertContains('useraccount.json', (string)$response->getBody());
+        $this->assertStringContainsString('useraccount.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -18,9 +18,9 @@ class UseraccountListTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
         $response = $this->render([], ['right' => 'superuser'], []);
-        $this->assertContains('useraccount.json', (string)$response->getBody());
-        $this->assertNotContains('"superuser":"0"', (string)$response->getBody());
-        $this->assertContains('"superuser":"1"', (string)$response->getBody());
+        $this->assertStringContainsString('useraccount.json', (string)$response->getBody());
+        $this->assertStringNotContainsString('"superuser":"0"', (string)$response->getBody());
+        $this->assertStringContainsString('"superuser":"1"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

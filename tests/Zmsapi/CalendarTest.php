@@ -40,7 +40,7 @@ class CalendarTest extends Base
                 ]
             }'
         ], []);
-        $this->assertContains('calendar.json', (string)$response->getBody());
+        $this->assertStringContainsString('calendar.json', (string)$response->getBody());
     }
 
     public function testEmpty()
@@ -109,7 +109,7 @@ class CalendarTest extends Base
                 ]
             }'
         ], []);
-        $this->assertContains('calendar.json', (string)$response->getBody());
+        $this->assertStringContainsString('calendar.json', (string)$response->getBody());
     }
 
     public function testEmptyDays()
@@ -164,6 +164,6 @@ class CalendarTest extends Base
                 }
             }'
         ], []);
-        $this->assertContains('calendar.json', (string)$response->getBody());
+        $this->assertStringContainsString('calendar.json', (string)$response->getBody());
     }
 }

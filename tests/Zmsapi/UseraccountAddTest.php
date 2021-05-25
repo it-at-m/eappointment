@@ -32,8 +32,8 @@ class UseraccountAddTest extends Base
               "lastLogin": 1459461600
             }'
         ], []);
-        $this->assertContains('useraccount.json', (string)$response->getBody());
-        $this->assertContains('unittest', (string)$response->getBody());
+        $this->assertStringContainsString('useraccount.json', (string)$response->getBody());
+        $this->assertStringContainsString('unittest', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -117,8 +117,8 @@ class UseraccountAddTest extends Base
               "email": "test@zms.de"
             }'
         ], []);
-        $this->assertContains('useraccount.json', (string)$response->getBody());
-        $this->assertContains('unittest-superuser', (string)$response->getBody());
+        $this->assertStringContainsString('useraccount.json', (string)$response->getBody());
+        $this->assertStringContainsString('unittest-superuser', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

@@ -16,7 +16,7 @@ class AvailabilityGetTest extends Base
         $entity = (new Query())->writeEntity($input);
         $this->setWorkstation();
         $response = $this->render(['id' => $entity->getId()], [], []);
-        $this->assertContains('availability.json', (string)$response->getBody());
+        $this->assertStringContainsString('availability.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

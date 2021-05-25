@@ -21,8 +21,8 @@ class ScopeCalldisplayImageDataUpdateTest extends Base
         $response = $this->render(['id' => self::SCOPE_ID], [
             '__body' => $this->readFixture("GetBase64Image.json")
         ], []);
-        $this->assertContains('mimepart.json', (string)$response->getBody());
-        $this->assertContains('"base64":true', (string)$response->getBody());
+        $this->assertStringContainsString('mimepart.json', (string)$response->getBody());
+        $this->assertStringContainsString('"base64":true', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

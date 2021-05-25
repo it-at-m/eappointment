@@ -15,7 +15,7 @@ class ProcessDeleteNotificationTest extends Base
         $response = $this->render([], [
             '__body' => $this->readFixture('GetProcess_10029.json')
         ], []);
-        $this->assertContains('notification.json', (string)$response->getBody());
+        $this->assertStringContainsString('notification.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
         return $response;
     }
@@ -26,7 +26,7 @@ class ProcessDeleteNotificationTest extends Base
         $this->render([], [
             '__body' => $this->readFixture('GetProcess_10030.json')
         ], []);
-        $this->assertContains('notification.json', (string)$response->getBody());
+        $this->assertStringContainsString('notification.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

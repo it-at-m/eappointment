@@ -14,13 +14,13 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
 {
     protected $namespace = '\\BO\\Zmsapi\\';
 
-    public function setUp()
+    public function setUp(): void
     {
         \BO\Zmsdb\Connection\Select::setTransaction();
         \BO\Zmsdb\Connection\Select::setProfiling();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         \BO\Zmsapi\Helper\User::$workstation = null;
         \BO\Zmsdb\Connection\Select::writeRollback();

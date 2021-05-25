@@ -12,7 +12,7 @@ class ProcessNextByClusterTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render(['id' => 109], [], []);
-        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -20,8 +20,8 @@ class ProcessNextByClusterTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render(['id' => 109], ['allowClusterWideCall' => false], []);
-        $this->assertContains('process.json', (string)$response->getBody());
-        $this->assertContains('"id":0', (string)$response->getBody());
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
+        $this->assertStringContainsString('"id":0', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

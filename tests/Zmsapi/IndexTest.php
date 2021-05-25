@@ -9,7 +9,7 @@ class IndexTest extends Base
     public function testRendering()
     {
         $response = $this->render([ ], [ ], [ ]);
-        $this->assertContains('swagger.json', (string) $response->getBody());
+        $this->assertStringContainsString('swagger.json', (string) $response->getBody());
     }
 
     public function testNow()
