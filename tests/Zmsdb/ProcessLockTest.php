@@ -14,7 +14,7 @@ class ProcessLockTest extends Base
     protected $pdo = null;
     protected static $pdoList = [];
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->pdo = static::createPDO();
@@ -39,7 +39,7 @@ class ProcessLockTest extends Base
         return $pdo;
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         foreach (static::$pdoList as $pdo) {
             $pdo->rollBack();
