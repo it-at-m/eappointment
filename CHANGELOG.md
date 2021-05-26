@@ -1,5 +1,6 @@
-## v2.23.11
+## v2.24.00
 
+* #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
 * #48174 Bugfix: Abholer und Öffnungszeiten können nun wieder gelöscht werden. 
 * #49077 Änderung einer Terminzeit oder Datum wird nun ohne Änderung der ID durchgeführt
 * #49149 Bugfix: Die Terminzeiten und Buttons im Terminvereinbarungsformular werden wieder korrekt geladen
