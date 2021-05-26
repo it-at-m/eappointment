@@ -6,7 +6,6 @@ use Psr\Http\Message\RequestInterface;
 
 // Symfony Translation Classes
 use Symfony\Component\Translation\Loader\JsonFileLoader;
-use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Translation\Translator;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 
@@ -127,7 +126,7 @@ class Language
         $default = $this->getCurrentLocale($this->getDefault());
         $current = $this->getCurrentLanguage();
         // First param is the "default language" to use.
-        $translator = new IdentityTranslator($this->getCurrentLocale($current), new MessageSelector());
+        $translator = new Translator($this->getCurrentLocale($current));
         // Set a fallback language incase you don't have a translation in the default language
         $translator->setFallbackLocales([$default]);
         // Add a loader that will get the php files we are going to store our translations in
