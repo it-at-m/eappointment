@@ -29,6 +29,6 @@ class IndexTest extends Base
                 'clusterlist' => '110'
             ]
         ], [ ]);
-        $this->assertContains('Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
     }
 }

@@ -36,9 +36,9 @@ class QueueDestinationTest extends Base
                 ]
             ]
         ], [ ]);
-        $this->assertContains('31316', (string) $response->getBody());
-        $this->assertContains('52230', (string) $response->getBody());
-        $this->assertContains('data="10"', (string) $response->getBody());
-        $this->assertContains('data="12"', (string) $response->getBody());
+        $this->assertStringContainsString('31316', (string) $response->getBody());
+        $this->assertStringContainsString('52230', (string) $response->getBody());
+        $this->assertStringContainsString('data="10"', (string) $response->getBody());
+        $this->assertStringContainsString('data="12"', (string) $response->getBody());
     }
 }
