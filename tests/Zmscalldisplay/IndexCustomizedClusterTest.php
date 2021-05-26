@@ -2,8 +2,9 @@
 
 namespace BO\Zmscalldisplay\Tests;
 
-class IndexCustomizedDepartmentTest extends Base
+class IndexCustomizedClusterTest extends Base
 {
+
     protected $classname = "Index";
 
     protected $arguments = [ ];
@@ -16,7 +17,7 @@ class IndexCustomizedDepartmentTest extends Base
             [
                 'function' => 'readPostResult',
                 'url' => '/calldisplay/',
-                'response' => $this->readFixture("GET_calldisplay_department_76.json")
+                'response' => $this->readFixture("GET_calldisplay_cluster_118.json")
             ]
         ];
     }
@@ -25,23 +26,10 @@ class IndexCustomizedDepartmentTest extends Base
     {
         $response = $this->render([ ], [
             'collections' => [
-                'scopelist' => '146'
+                'clusterlist' => '118'
             ]
         ], [ ]);
-        $this->assertStringContainsString('Tempelhof-Schöneberg', (string) $response->getBody());
         $this->assertStringContainsString('tableLayout.multiColumns="2"', (string) $response->getBody());
         $this->assertStringContainsString('tableLayout.maxResults=10', (string) $response->getBody());
-    }
-
-    public function testTemplateNotFound()
-    {
-        $this->expectException('\BO\Zmscalldisplay\Exception\TemplateNotFound');
-        $this->expectExceptionCode(404);
-        $this->render([], [
-            'collections' => [
-                'scopelist' => '146'
-            ],
-            'template' => 'notfound'
-        ], [ ]);
     }
 }
