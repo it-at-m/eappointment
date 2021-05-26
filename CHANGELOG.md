@@ -1,5 +1,6 @@
-## v2.23.11
+## v2.24.00
 
+* #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
 * #49020 Die Maillist Route hat nun einen limit Parameter über den bestimmt wird wie viele Mails aus der Datenbank gelesen werden.
 * #49077 Aktualisierung eines Termins ohne Änderung der ID ist nun auch per clientkey möglich und es wird geprüft ob die gewählten Dienstleistungen vom Standort angeboten werden
 
