@@ -7,17 +7,17 @@
  */
 namespace BO\Zmsmessaging\PhpUnit;
 
-use \Prophecy\Argument;
-
 use PHPUnit\Framework\TestCase;
+
+use \Prophecy\PhpUnit\ProphecyTrait;
+
+use \Prophecy\Argument;
 
 /**
  * @codeCoverageIgnore
  */
 abstract class Base extends TestCase
 {
-    use \PhoenixRVD\PHPUnitLogAssertions\LogAssertions;
-
     /**
      * An array of API-Calls, e.g.:
      * [
@@ -28,15 +28,17 @@ abstract class Base extends TestCase
      * ],
      * ]
      */
+
+    use ProphecyTrait;
+
     protected $apiCalls = array();
 
-    public function setUp()
+    public function setUp(): void
     {
         \App::$http = $this->getApiMockup();
-        self::attachLogger(\App::$log);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
     }
 
