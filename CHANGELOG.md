@@ -1,3 +1,7 @@
+## v2.24.00
+
+* #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
+
 ## v2.23.11
 
 * #49020 - env variable ZMS_MAILS_PER_MINUTE verfügbar gemacht um Anzahl zu versendener Mails konfigurierbar zu machen
