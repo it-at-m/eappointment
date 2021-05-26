@@ -15,4 +15,5 @@ vendor.update
 composer.*.lock
 .cache
 .parcel-cache
+.phpunit.result.cache
 

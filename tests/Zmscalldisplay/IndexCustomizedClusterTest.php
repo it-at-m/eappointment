@@ -28,9 +28,9 @@ class IndexCustomizedDepartmentTest extends Base
                 'scopelist' => '146'
             ]
         ], [ ]);
-        $this->assertContains('Tempelhof-Schöneberg', (string) $response->getBody());
-        $this->assertContains('tableLayout.multiColumns="2"', (string) $response->getBody());
-        $this->assertContains('tableLayout.maxResults=10', (string) $response->getBody());
+        $this->assertStringContainsString('Tempelhof-Schöneberg', (string) $response->getBody());
+        $this->assertStringContainsString('tableLayout.multiColumns="2"', (string) $response->getBody());
+        $this->assertStringContainsString('tableLayout.maxResults=10', (string) $response->getBody());
     }
 
     public function testTemplateNotFound()

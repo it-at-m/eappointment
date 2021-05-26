@@ -41,7 +41,7 @@ class QueueTest extends Base
                 ]
             ]
         ], [ ]);
-        $this->assertContains('Terminkunde', (string) $response->getBody());
-        $this->assertContains('31316', (string) $response->getBody());
+        $this->assertStringContainsString('Terminkunde', (string) $response->getBody());
+        $this->assertStringContainsString('31316', (string) $response->getBody());
     }
 }
