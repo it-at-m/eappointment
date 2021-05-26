@@ -33,8 +33,8 @@ class SendNotificationTest extends Base
             if (isset($notification['errorInfo'])) {
                 echo "ERROR OCCURED: ". $notification['errorInfo'] ."\n";
             } else {
-                $this->assertContains('Content-Transfer-Encoding: base64', trim($notification['mime']));
-                $this->assertContains(
+                $this->assertStringContainsString('Content-Transfer-Encoding: base64', trim($notification['mime']));
+                $this->assertStringContainsString(
                     'sms=0123456789@example.com',
                     json_encode($notification['recipients'])
                 );
@@ -64,6 +64,6 @@ class SendNotificationTest extends Base
             '&recipient=' .
             urlencode($resolvedEntity->client['telephone'])
         ;
-        $this->assertContains('Bürgeramt', utf8_decode(urldecode($url)));
+        $this->assertStringContainsString('Bürgeramt', utf8_decode(urldecode($url)));
     }
 }

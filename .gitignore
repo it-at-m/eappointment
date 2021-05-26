@@ -7,3 +7,4 @@ config.php
 vendor.old
 vendor.updatecomposer.*.lock
 composer.*.lock
+.phpunit.result.cache

@@ -36,7 +36,15 @@ class ExceptionsCatchTest extends Base
         \App::$messaging = new \BO\Zmsmessaging\Mail();
         $resultList = \App::$messaging->initQueueTransmission();
         $this->assertTrue(0 == count($resultList));
-        $this->assertLogHasWarningThatContains('PHPMailer Failure: Die Adresse ist ungültig:  (From)');
+        foreach (\BO\Zmsmessaging\BaseController::getLogList() as $key => $value) {
+            if (strpos($value, 'PHPMailer Failure') !== false) {
+                $this->assertStringContainsString('Die Adresse ist ungültig:  (From)', $value);
+            } elseif (strpos($value, 'Zmsmessaging.ERROR') !== false) {
+                $this->assertStringContainsString('No valid mailer', $value);
+            } else {
+                $this->assertFalse(strpos($value, 'PHPMailer Failure') !== false);
+            }
+        }
     }
 
     public function testLogNotificationMissingDepartmentMail()
@@ -67,7 +75,13 @@ class ExceptionsCatchTest extends Base
         \App::$messaging = new \BO\Zmsmessaging\Notification();
         $resultList = \App::$messaging->initQueueTransmission();
         $this->assertTrue(0 == count($resultList));
-        $this->assertLogHasWarningThatContains('PHPMailer Failure: Die Adresse ist ungültig:  (From)');
+        foreach (\BO\Zmsmessaging\BaseController::getLogList() as $key => $value) {
+            if (strpos($value, 'PHPMailer Failure') !== false) {
+                $this->assertStringContainsString('PHPMailer Failure: Die Adresse ist ungültig:  (From)', $value);
+            } else {
+                $this->assertFalse(strpos($value, 'PHPMailer Failure') !== false);
+            }
+        }
     }
 
     public function testLogMailOlderThanOneHour()
@@ -107,7 +121,13 @@ class ExceptionsCatchTest extends Base
         \App::$messaging = new \BO\Zmsmessaging\Mail();
         $resultList = \App::$messaging->initQueueTransmission();
         $this->assertTrue(0 == count($resultList));
-        $this->assertLogHasWarningThatContains('Queue entry older than 1 hour has been removed');
+        foreach (\BO\Zmsmessaging\BaseController::getLogList() as $key => $value) {
+            if (strpos($value, 'Zmsmessaging Failure') !== false) {
+                $this->assertStringContainsString('Queue entry older than 1 hour has been removed', $value);
+            } else {
+                $this->assertFalse(strpos($value, 'Zmsmessaging Failure') !== false);
+            }
+        }
     }
 
     public function testLogNotificationOlderThanOneHour()
@@ -142,6 +162,12 @@ class ExceptionsCatchTest extends Base
         \App::$messaging = new \BO\Zmsmessaging\Notification();
         $resultList = \App::$messaging->initQueueTransmission();
         $this->assertTrue(0 == count($resultList));
-        $this->assertLogHasWarningThatContains('Queue entry older than 1 hour has been removed');
+        foreach (\BO\Zmsmessaging\BaseController::getLogList() as $key => $value) {
+            if (strpos($value, 'Zmsmessaging Failure') !== false) {
+                $this->assertStringContainsString('Queue entry older than 1 hour has been removed', $value);
+            } else {
+                $this->assertFalse(strpos($value, 'Zmsmessaging Failure') !== false);
+            }
+        }
     }
 }
