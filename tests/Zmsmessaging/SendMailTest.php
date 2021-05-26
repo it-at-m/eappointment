@@ -40,8 +40,8 @@ class SendMailTest extends Base
             if (isset($mail['errorInfo'])) {
                 echo "ERROR OCCURED: ". $mail['errorInfo'] ."\n";
             } else {
-                $this->assertContains('text/html', trim($mail['mime']));
-                $this->assertContains('calendar', json_encode($mail['attachments'][0]));
+                $this->assertStringContainsString('text/html', trim($mail['mime']));
+                $this->assertStringContainsString('calendar', json_encode($mail['attachments'][0]));
             }
         }
     }
@@ -71,7 +71,7 @@ class SendMailTest extends Base
         \App::$messaging = new \BO\Zmsmessaging\Mail();
         $resultList = \App::$messaging->initQueueTransmission();
         foreach ($resultList as $mail) {
-            $this->assertContains('No mail entry found in Database', $mail['errorInfo']);
+            $this->assertStringContainsString('No mail entry found in Database', $mail['errorInfo']);
         }
     }
 
