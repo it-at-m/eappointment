@@ -1,3 +1,7 @@
+## v2.4.5
+
+* #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
+
 ## v2.4.4
 
 * #46558 Bugfix: Wenn ESI Includes deaktiviert sind werden die Inhalte nun mit einem User-Agent im Request abgefragt wodurch die Requests nicht mehr blockiert werden
