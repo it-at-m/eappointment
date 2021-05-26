@@ -1,3 +1,7 @@
+## v2.24.00
+
+* #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
+
 ## v2.23.10
 
 #42756 Bugfix: Ring-Ton wird nur noch initiiert, wenn ein Vorgang aufgerufen wird
