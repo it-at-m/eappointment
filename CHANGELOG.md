@@ -1,5 +1,6 @@
-## v2.23.11
+## v2.24.00
 
+* #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
 * #44509 - Timezone in ICS Templates für Terminbestätigung und Terminabsagen eingefügt
 
 ## v2.23.10
