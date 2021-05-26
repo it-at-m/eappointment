@@ -16,9 +16,9 @@ class Notification extends BaseController
 {
     protected $messagesQueue = null;
 
-    public function __construct($maxRunTime = 50)
+    public function __construct($verbose = false, $maxRunTime = 50)
     {
-        parent::__construct($maxRunTime);
+        parent::__construct($verbose, $maxRunTime);
         $this->log(
             "Read Notification QueueList start with limit ". \App::$mails_per_minute ." - ". \App::$now->format('c')
         );
