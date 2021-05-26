@@ -1,5 +1,6 @@
-## v2.23.11
+## v2.24.00
 
+* #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
 * #36114 Notifications erhalten nur noch aufgelöste Standorte, wenn diese nicht zwischenzeitlich dereferenziert wurden - somit ist das Schreiben in die Abrechnungstabelle mit korrektem Standort sichergestellt
 * #49131 Die Statuswerte für mailqueue, notificationqueue und Anzahl freier Slots wurde korrigiert
 * #49077 Bugfix - Bei der Änderung eines vorhandenen Termins werden die Dienstleistungen wieder korrekt zugeordnet
