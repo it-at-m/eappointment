@@ -7,6 +7,8 @@
  */
 namespace BO\Zmsclient\PhpUnit;
 
+use PHPUnit\Framework\TestCase;
+
 use \Prophecy\PhpUnit\ProphecyTrait;
 
 use \Prophecy\Argument;
@@ -14,7 +16,7 @@ use \Prophecy\Argument;
 /**
  * @codeCoverageIgnore
  */
-abstract class Base extends \BO\Slim\PhpUnit\Base
+abstract class Base extends TestCase
 {
     /**
      * An array of API-Calls, e.g.:
