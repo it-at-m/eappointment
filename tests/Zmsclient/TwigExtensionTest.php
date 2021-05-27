@@ -16,6 +16,6 @@ class TwigExtensionTest extends Base
         };
 
         $this->assertEquals('bozmsclientExtension', $extension->getName());
-        $this->assertContains('For debugging: This log contains HTTP calls.', $extension->dumpHttpLog());
+        $this->assertStringContainsString('For debugging: This log contains HTTP calls.', $extension->dumpHttpLog());
     }
 }

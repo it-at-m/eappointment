@@ -12,3 +12,4 @@ bin/test
 composer.*.loc
 >>>>>>> 149e0d2... update composer, gitignore
 composer.*.lock
+.phpunit.result.cache

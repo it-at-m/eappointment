@@ -4,7 +4,7 @@ namespace BO\Zmsclient\Tests;
 
 class WorkstationRequestTest extends Base
 {
-    static $workstationRequest = null;
+    protected static $workstationRequest = null;
 
     public function testBasic()
     {
@@ -38,14 +38,17 @@ class WorkstationRequestTest extends Base
     {
         $now = (new \DateTimeImmutable('2016-04-04'));
         $processList = static::$workstationRequest->readProcessListByDate($now);
-        $this->assertContains('process#195408:dfd3 (confirmed) 2016-04-04', (string)$processList->getFirst());
+        $this->assertStringContainsString(
+            'process#195408:dfd3 (confirmed) 2016-04-04',
+            (string)$processList->getFirst()
+        );
         $this->assertEquals(141, $processList->count());
     }
 
     public function testNextProcess()
     {
         $process = static::$workstationRequest->readNextProcess(null);
-        $this->assertContains('process#82252:12a2 (confirmed) 2016-04-01', (string)$process);
+        $this->assertStringContainsString('process#82252:12a2 (confirmed) 2016-04-01', (string)$process);
     }
 
     public function testWithClusterEnabled()
