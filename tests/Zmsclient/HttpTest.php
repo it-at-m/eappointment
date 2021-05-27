@@ -27,19 +27,28 @@ class HttpTest extends Base
         $status['sources']['dldb']['last'] = (new \DateTimeImmutable())->modify('- 3 hour')->format('Y-m-d H:i:s');
 
         $response = \BO\Zmsclient\Status::testStatus($response, $status);
-        $this->assertContains('Oldest mail with age in seconds: 400s', (string)$response->getBody());
-        $this->assertContains('Oldest sms with age in seconds: 400s', (string)$response->getBody());
-        $this->assertContains('DB connection without replication log detected', (string)$response->getBody());
-        $this->assertContains('DB connection is not part of a galera cluster', (string)$response->getBody());
-        $this->assertContains('High amount of DB-Locks: 11', (string)$response->getBody());
-        $this->assertContains('High amount of DB-Threads: 31', (string)$response->getBody());
-        $this->assertContains('DB connected thread over 50% of available connections', (string)$response->getBody());
-        $this->assertContains('Last DLDB Import is more then 2 hours ago', (string)$response->getBody());
-        $this->assertContains('slot calculation is 14400 seconds old', (string)$response->getBody());
+        $this->assertStringContainsString('Oldest mail with age in seconds: 400s', (string)$response->getBody());
+        $this->assertStringContainsString('Oldest sms with age in seconds: 400s', (string)$response->getBody());
+        $this->assertStringContainsString(
+            'DB connection without replication log detected',
+            (string)$response->getBody()
+        );
+        $this->assertStringContainsString(
+            'DB connection is not part of a galera cluster',
+            (string)$response->getBody()
+        );
+        $this->assertStringContainsString('High amount of DB-Locks: 11', (string)$response->getBody());
+        $this->assertStringContainsString('High amount of DB-Threads: 31', (string)$response->getBody());
+        $this->assertStringContainsString(
+            'DB connected thread over 50% of available connections',
+            (string)$response->getBody()
+        );
+        $this->assertStringContainsString('Last DLDB Import is more then 2 hours ago', (string)$response->getBody());
+        $this->assertStringContainsString('slot calculation is 14400 seconds old', (string)$response->getBody());
 
         $status['sources']['dldb']['last'] = (new \DateTimeImmutable())->modify('- 6 hour')->format('Y-m-d H:i:s');
         $response = \BO\Zmsclient\Status::testStatus($response, $status);
-        $this->assertContains('Last DLDB Import is more then 4 hours ago', (string)$response->getBody());
+        $this->assertStringContainsString('Last DLDB Import is more then 4 hours ago', (string)$response->getBody());
     }
 
     public function testStatusFailed()
@@ -49,7 +58,7 @@ class HttpTest extends Base
         };
         $response = new \BO\Zmsclient\Psr7\Response();
         $response = \BO\Zmsclient\Status::testStatus($response, $closure);
-        $this->assertContains('Status failed', (string)$response->getBody());
+        $this->assertStringContainsString('Status failed', (string)$response->getBody());
     }
 
     public function testCollection()
@@ -61,7 +70,7 @@ class HttpTest extends Base
         $calendar->addScope("141");
         $result = static::$http_client->readGetResult('/scope/');
         $collection = $result->getCollection();
-        $this->assertContains('141', $result->getIds());
+        $this->assertStringContainsString('141', $result->getIds());
         $this->assertTrue($collection instanceof \BO\Zmsentities\Collection\Base);
     }
 
