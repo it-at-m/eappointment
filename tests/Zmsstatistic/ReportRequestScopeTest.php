@@ -38,14 +38,14 @@ class ReportRequestScopeTest extends Base
             ]
         );
         $response = $this->render([ ], [ ], [ ]);
-        $this->assertContains('Dienstleistungsstatistik Standort', (string) $response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('Dienstleistungsstatistik Standort', (string) $response->getBody());
+        $this->assertStringContainsString(
             '<a class="active" href="/report/request/scope/">Bürgeramt Heerstraße </a>',
             (string) $response->getBody()
         );
-        $this->assertContains('<a href="/report/request/scope/2016-04/">April</a>', (string) $response->getBody());
-        $this->assertContains('Charlottenburg-Wilmersdorf', (string) $response->getBody());
-        $this->assertContains('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
+        $this->assertStringContainsString('<a href="/report/request/scope/2016-04/">April</a>', (string) $response->getBody());
+        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
 
     public function testWithPeriod()
@@ -81,15 +81,15 @@ class ReportRequestScopeTest extends Base
             ]
         );
         $response = $this->render(['period' => '2016-04'], [], []);
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<th class="statistik">Apr</th>',
             (string) $response->getBody()
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Auswertung für Bürgeramt Heerstraße im Zeitraum April 2016',
             (string) $response->getBody()
         );
-        $this->assertContains('Reisepass beantragen', (string) $response->getBody());
+        $this->assertStringContainsString('Reisepass beantragen', (string) $response->getBody());
     }
 
     public function testWithDownloadXLSX()
@@ -134,7 +134,7 @@ class ReportRequestScopeTest extends Base
                 ],
                 [ ]
             );
-            $this->assertContains('xlsx', $response->getHeaderLine('Content-Disposition'));
+            $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
         });
     }
 
@@ -182,8 +182,8 @@ class ReportRequestScopeTest extends Base
         );
         $output = ob_get_contents();
         ob_end_clean();
-        $this->assertContains('csv', $response->getHeaderLine('Content-Disposition'));
-        $this->assertContains(
+        $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
+        $this->assertStringContainsString(
             '"Personalausweis beantragen";"14";"14";',
             $output
         );
@@ -233,9 +233,9 @@ class ReportRequestScopeTest extends Base
         );
         $output = ob_get_contents();
         ob_end_clean();
-        $this->assertContains('csv', $response->getHeaderLine('Content-Disposition'));
-        $this->assertContains('"Zeitraum:";"01.01.2016";"bis";"31.12.2016"', $output);
-        $this->assertContains(
+        $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
+        $this->assertStringContainsString('"Zeitraum:";"01.01.2016";"bis";"31.12.2016"', $output);
+        $this->assertStringContainsString(
             '"Personalausweis beantragen";"14";"0";"0";"0";"14";"0";"0";"0";"0";"0";"0";"0";"0"',
             $output
         );

@@ -38,14 +38,14 @@ class ReportClientDepartmentTest extends Base
             ]
         );
         $response = $this->render([ ], ['__uri' => '/report/client/department/'], [ ]);
-        $this->assertContains('Kundenstatistik Behörde', (string) $response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('Kundenstatistik Behörde', (string) $response->getBody());
+        $this->assertStringContainsString(
             '<a class="active" href="/report/client/department/">Bürgeramt</a>',
             (string) $response->getBody()
         );
-        $this->assertContains('<a href="/report/client/department/2016-04/">April</a>', (string) $response->getBody());
-        $this->assertContains('Charlottenburg-Wilmersdorf', (string) $response->getBody());
-        $this->assertContains('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
+        $this->assertStringContainsString('<a href="/report/client/department/2016-04/">April</a>', (string) $response->getBody());
+        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
 
     public function testWithPeriod()
@@ -95,12 +95,12 @@ class ReportClientDepartmentTest extends Base
             ],
             [ ]
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<td class="report-board--summary" colspan="2">April 2016</td>',
             (string) $response->getBody()
         );
-        $this->assertContains('Auswertung für Bürgeramt im Zeitraum April 2016', (string) $response->getBody());
-        $this->assertContains('135', (string) $response->getBody());
+        $this->assertStringContainsString('Auswertung für Bürgeramt im Zeitraum April 2016', (string) $response->getBody());
+        $this->assertStringContainsString('135', (string) $response->getBody());
     }
 
     public function testWithDownloadXLSX()
@@ -152,7 +152,7 @@ class ReportClientDepartmentTest extends Base
                 ],
                 [ ]
             );
-            $this->assertContains('xlsx', $response->getHeaderLine('Content-Disposition'));
+            $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
         });
     }
 
@@ -207,8 +207,8 @@ class ReportClientDepartmentTest extends Base
         );
         $output = ob_get_contents();
         ob_end_clean();
-        $this->assertContains('csv', $response->getHeaderLine('Content-Disposition'));
-        $this->assertContains(
+        $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
+        $this->assertStringContainsString(
             '"April";"2016";"Charlottenburg-Wilmersdorf";"Bürgeramt";"Bürgeramt Heerstraße ";"135";"";"";""',
             $output
         );

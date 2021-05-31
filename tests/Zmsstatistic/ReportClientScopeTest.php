@@ -38,14 +38,14 @@ class ReportClientScopeTest extends Base
             ]
         );
         $response = $this->render([ ], ['__uri' => '/report/client/scope/'], [ ]);
-        $this->assertContains('Kundenstatistik Standort', (string) $response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('Kundenstatistik Standort', (string) $response->getBody());
+        $this->assertStringContainsString(
             '<a class="active" href="/report/client/scope/">Bürgeramt Heerstraße </a>',
             (string) $response->getBody()
         );
-        $this->assertContains('<a href="/report/client/scope/2016-04/">April</a>', (string) $response->getBody());
-        $this->assertContains('Charlottenburg-Wilmersdorf', (string) $response->getBody());
-        $this->assertContains('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
+        $this->assertStringContainsString('<a href="/report/client/scope/2016-04/">April</a>', (string) $response->getBody());
+        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
 
     public function testWithPeriod()
@@ -87,15 +87,15 @@ class ReportClientScopeTest extends Base
             ]
         );
         $response = $this->render(['period' => '2016-04'], [ ], [ ]);
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<td class="report-board--summary" colspan="2">April 2016</td>',
             (string) $response->getBody()
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Auswertung für Bürgeramt Heerstraße im Zeitraum April 2016',
             (string) $response->getBody()
         );
-        $this->assertContains('135', (string) $response->getBody());
+        $this->assertStringContainsString('135', (string) $response->getBody());
     }
 
     public function testWithPeriodYear()
@@ -137,19 +137,19 @@ class ReportClientScopeTest extends Base
             ]
         );
         $response = $this->render(['period' => '2016'], [ ], [ ]);
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<td class="report-board--summary" colspan="2">Kalenderjahr 2016</td>',
             (string) $response->getBody()
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Auswertung für Bürgeramt Heerstraße im Zeitraum Kalenderjahr 2016',
             (string) $response->getBody()
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<td class="colWochenTag statistik">April</td>',
             (string) $response->getBody()
         );
-        $this->assertContains('135', (string) $response->getBody());
+        $this->assertStringContainsString('135', (string) $response->getBody());
     }
 
     public function testWithDownloadXLSX()
@@ -201,7 +201,7 @@ class ReportClientScopeTest extends Base
                 ],
                 [ ]
             );
-            $this->assertContains('xlsx', $response->getHeaderLine('Content-Disposition'));
+            $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
         });
     }
 
@@ -256,8 +256,8 @@ class ReportClientScopeTest extends Base
         );
         $output = ob_get_contents();
         ob_end_clean();
-        $this->assertContains('csv', $response->getHeaderLine('Content-Disposition'));
-        $this->assertContains(
+        $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
+        $this->assertStringContainsString(
             '"April";"2016";"Charlottenburg-Wilmersdorf";"Bürgeramt";"Bürgeramt Heerstraße ";"135";"";"";""',
             $output
         );

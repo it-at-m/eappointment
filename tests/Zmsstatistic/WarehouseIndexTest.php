@@ -38,10 +38,10 @@ class WarehouseIndexTest extends Base
             ]
         );
         $response = $this->render([ ], [ ], [ ]);
-        $this->assertContains('Übersicht verfügbarer Kategorien', (string) $response->getBody());
-        $this->assertContains('Wartestatistik Standort', (string) $response->getBody());
-        $this->assertContains('Kundenstatistik Behörde', (string) $response->getBody());
-        $this->assertContains('SMS-Statistik Organisation', (string) $response->getBody());
-        $this->assertContains('Dienstleistungsstatistik Organisation', (string) $response->getBody());
+        $this->assertStringContainsString('Übersicht verfügbarer Kategorien', (string) $response->getBody());
+        $this->assertStringContainsString('Wartestatistik Standort', (string) $response->getBody());
+        $this->assertStringContainsString('Kundenstatistik Behörde', (string) $response->getBody());
+        $this->assertStringContainsString('SMS-Statistik Organisation', (string) $response->getBody());
+        $this->assertStringContainsString('Dienstleistungsstatistik Organisation', (string) $response->getBody());
     }
 }

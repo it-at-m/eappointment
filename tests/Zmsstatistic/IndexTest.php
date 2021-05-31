@@ -33,7 +33,7 @@ class IndexTest extends Base
             ]
         );
         $response = $this->render([ ], [ ], [ ]);
-        $this->assertContains('Statistik - Anmeldung für Behördenmitarbeiter', (string) $response->getBody());
+        $this->assertStringContainsString('Statistik - Anmeldung für Behördenmitarbeiter', (string) $response->getBody());
     }
 
     public function testLogin()
@@ -69,7 +69,7 @@ class IndexTest extends Base
             ]
         );
         $response = $this->render($this->arguments, [], []);
-        $this->assertContains('Willkommen zurück', (string)$response->getBody());
+        $this->assertStringContainsString('Willkommen zurück', (string)$response->getBody());
     }
 
     public function testLoginFailed()
@@ -95,11 +95,11 @@ class IndexTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Das eingegebene Passwort und der Nutzername passen nicht zusammen',
             (string)$response->getBody()
         );
-        $this->assertContains('form-group has-error', (string)$response->getBody());
+        $this->assertStringContainsString('form-group has-error', (string)$response->getBody());
     }
 
     public function testDoubleLogin()

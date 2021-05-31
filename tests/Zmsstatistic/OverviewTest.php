@@ -48,12 +48,12 @@ class OverviewTest extends Base
             ]
         );
         $response = $this->render([ ], ['__uri' => '/overview'], [ ]);
-        $this->assertContains('Übersicht verfügbarer Statistik', (string) $response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('Übersicht verfügbarer Statistik', (string) $response->getBody());
+        $this->assertStringContainsString(
             '<a href="/report/client/scope/2016/">2016</a>',
             (string) $response->getBody()
         );
-        $this->assertContains('Charlottenburg-Wilmersdorf', (string) $response->getBody());
-        $this->assertContains('href="/warehouse/">Übersicht Kategorien</a>', (string) $response->getBody());
+        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        $this->assertStringContainsString('href="/warehouse/">Übersicht Kategorien</a>', (string) $response->getBody());
     }
 }

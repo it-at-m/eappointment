@@ -13,6 +13,6 @@ class ChangelogTest extends Base
     public function testRendering()
     {
         $response = $this->render([ ], ['__uri' => '/changelog'], [ ]);
-        $this->assertContains('Changelog', (string) $response->getBody());
+        $this->assertStringContainsString('Changelog', (string) $response->getBody());
     }
 }
