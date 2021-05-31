@@ -21,9 +21,9 @@ require(APP_PATH . '/config.php');
 
 // Set option for environment, routing, logging and templating
 \BO\Slim\Bootstrap::init();
-\BO\Slim\Bootstrap::addTwigExtension(new \Twig_Extensions_Extension_Text());
-\BO\Slim\Bootstrap::addTwigExtension(new \Twig_Extensions_Extension_I18n());
-\BO\Slim\Bootstrap::addTwigExtension(new \Twig_Extensions_Extension_Intl());
+\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\TextExtension());
+\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\I18nExtension());
+\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\IntlExtension());
 
 \App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL);
 \BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
