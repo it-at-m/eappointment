@@ -6,7 +6,7 @@ class View extends BaseView {
         super(element);
         this.bindPublicMethods('initClock', 'setInterval');
         console.log("Found digital clock");
-        this.$.ready(this.setInterval);
+        this.$(() => {this.setInterval});
     }
 
     initClock () {
