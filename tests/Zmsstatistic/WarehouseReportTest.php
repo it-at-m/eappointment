@@ -42,15 +42,15 @@ class WarehouseReportTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [ ]);
-        $this->assertContains('Report Rohdaten', (string) $response->getBody());
-        $this->assertContains('Wartestatistik', (string) $response->getBody());
-        $this->assertContains('ID of a scope', (string) $response->getBody());
-        $this->assertContains('2016-03-01', (string) $response->getBody());
-        $this->assertContains('2016-03-24', (string) $response->getBody());
-        $this->assertContains('hour', (string) $response->getBody());
-        $this->assertContains('waitingcount', (string) $response->getBody());
-        $this->assertContains('waitingtime', (string) $response->getBody());
-        $this->assertContains('waitingcalculated', (string) $response->getBody());
+        $this->assertStringContainsString('Report Rohdaten', (string) $response->getBody());
+        $this->assertStringContainsString('Wartestatistik', (string) $response->getBody());
+        $this->assertStringContainsString('ID of a scope', (string) $response->getBody());
+        $this->assertStringContainsString('2016-03-01', (string) $response->getBody());
+        $this->assertStringContainsString('2016-03-24', (string) $response->getBody());
+        $this->assertStringContainsString('hour', (string) $response->getBody());
+        $this->assertStringContainsString('waitingcount', (string) $response->getBody());
+        $this->assertStringContainsString('waitingtime', (string) $response->getBody());
+        $this->assertStringContainsString('waitingcalculated', (string) $response->getBody());
     }
 
     public function testDownload()
@@ -86,7 +86,7 @@ class WarehouseReportTest extends Base
         $response = $this->render($this->arguments, ['type' => 'xlsx'], [ ]);
         $output = ob_get_contents();
         ob_end_clean();
-        $this->assertContains(
+        $this->assertStringContainsString(
             'raw_statistic_waitingscope_141_2016-03.xlsx',
             $response->getHeaderLine('Content-Disposition')
         );

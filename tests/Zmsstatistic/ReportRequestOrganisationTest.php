@@ -38,16 +38,16 @@ class ReportRequestOrganisationTest extends Base
             ]
         );
         $response = $this->render([ ], [ ], [ ]);
-        $this->assertContains('Dienstleistungsstatistik Bezirk', (string) $response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('Dienstleistungsstatistik Bezirk', (string) $response->getBody());
+        $this->assertStringContainsString(
             '<a class="active" href="/report/request/organisation/">Charlottenburg-Wilmersdorf</a>',
             (string) $response->getBody()
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<a href="/report/request/organisation/2016-04/">April</a>',
             (string) $response->getBody()
         );
-        $this->assertContains('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
+        $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
 
     public function testWithPeriod()
@@ -83,15 +83,15 @@ class ReportRequestOrganisationTest extends Base
             ]
         );
         $response = $this->render(['period' => '2016-04'], [], []);
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<th class="statistik">Apr</th>',
             (string) $response->getBody()
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Auswertung für Charlottenburg-Wilmersdorf im Zeitraum April 2016',
             (string) $response->getBody()
         );
-        $this->assertContains('Reisepass beantragen', (string) $response->getBody());
+        $this->assertStringContainsString('Reisepass beantragen', (string) $response->getBody());
     }
 
     public function testWithDownloadXLSX()
@@ -136,7 +136,7 @@ class ReportRequestOrganisationTest extends Base
                 ],
                 [ ]
             );
-            $this->assertContains('xlsx', $response->getHeaderLine('Content-Disposition'));
+            $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
         });
     }
 
@@ -184,8 +184,8 @@ class ReportRequestOrganisationTest extends Base
         );
         $output = ob_get_contents();
         ob_end_clean();
-        $this->assertContains('csv', $response->getHeaderLine('Content-Disposition'));
-        $this->assertContains(
+        $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
+        $this->assertStringContainsString(
             '"Personalausweis beantragen";"14";"14";',
             $output
         );

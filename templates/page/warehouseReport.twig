@@ -25,7 +25,7 @@
                 {% endif %}
                 <table class="table--base">
                     <thead>
-                        {% for key, entry in report.dictionary|first|keys if key < 4 %}
+                        {% for key, entry in report.dictionary|first|keys|filter(key => key < 4) %}
                             {% if entry == "position" %}
                             <th>#</th>
                             {% else %}

@@ -38,17 +38,17 @@ class ReportClientOrganisationTest extends Base
             ]
         );
         $response = $this->render([ ], ['__uri' => '/report/client/department/'], [ ]);
-        $this->assertContains('Kundenstatistik Bezirk', (string) $response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('Kundenstatistik Bezirk', (string) $response->getBody());
+        $this->assertStringContainsString(
             '<a class="active" href="/report/client/organisation/">Charlottenburg-Wilmersdorf</a>',
             (string) $response->getBody()
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<a href="/report/client/organisation/2016-04/">April</a>',
             (string) $response->getBody()
         );
-        $this->assertContains('Charlottenburg-Wilmersdorf', (string) $response->getBody());
-        $this->assertContains('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
+        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
 
     public function testWithPeriod()
@@ -98,15 +98,15 @@ class ReportClientOrganisationTest extends Base
             ],
             [ ]
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<td class="report-board--summary" colspan="2">April 2016</td>',
             (string) $response->getBody()
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Auswertung für Charlottenburg-Wilmersdorf im Zeitraum April 2016',
             (string) $response->getBody()
         );
-        $this->assertContains('135', (string) $response->getBody());
+        $this->assertStringContainsString('135', (string) $response->getBody());
     }
 
     public function testWithDownloadXLSX()
@@ -158,7 +158,7 @@ class ReportClientOrganisationTest extends Base
                 ],
                 [ ]
             );
-            $this->assertContains('xlsx', $response->getHeaderLine('Content-Disposition'));
+            $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
             $this->assertEquals('da39a3ee5e6b4b0d3255bfef95601890afd80709', sha1((string)$response->getBody()));
         });
     }
@@ -214,8 +214,8 @@ class ReportClientOrganisationTest extends Base
         );
         $output = ob_get_contents();
         ob_end_clean();
-        $this->assertContains('csv', $response->getHeaderLine('Content-Disposition'));
-        $this->assertContains(
+        $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
+        $this->assertStringContainsString(
             '"April";"2016";"Charlottenburg-Wilmersdorf";"Bürgeramt";"Bürgeramt Heerstraße ";"135";"";"";""',
             $output
         );

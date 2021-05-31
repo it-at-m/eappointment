@@ -30,8 +30,8 @@ class RoutingTest extends Base
 
         $container = \App::$slim->getContainer();
         $response = $container['errorHandler']($request, $this->getResponse(), $exception);
-        $this->assertContains('board exception', (string)$response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('board exception', (string)$response->getBody());
+        $this->assertStringContainsString(
             'Um diese Seite aufzurufen fehlen Ihnen die notwendigen Rechte',
             (string)$response->getBody()
         );
@@ -53,8 +53,8 @@ class RoutingTest extends Base
         $exception = new \Exception('System Failure', 404);
         $container = \App::$slim->getContainer();
         $response = $container['errorHandler']($request, $this->getResponse(), $exception);
-        $this->assertContains('Es ist ein Fehler aufgetreten', (string)$response->getBody());
-        $this->assertContains('System Failure', (string)$response->getBody());
+        $this->assertStringContainsString('Es ist ein Fehler aufgetreten', (string)$response->getBody());
+        $this->assertStringContainsString('System Failure', (string)$response->getBody());
     }
 
     public function testErrorHandlerIgnoreException()
@@ -73,8 +73,8 @@ class RoutingTest extends Base
         $request = static::createBasicRequest('GET', '/workstation/');
         $container = \App::$slim->getContainer();
         $response = $container['errorHandler']($request, $this->getResponse(), $exception);
-        $this->assertContains('board exception', (string)$response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('board exception', (string)$response->getBody());
+        $this->assertStringContainsString(
             'Um diese Seite aufzurufen fehlen Ihnen die notwendigen Rechte',
             (string)$response->getBody()
         );

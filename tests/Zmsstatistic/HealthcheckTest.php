@@ -24,6 +24,6 @@ class HealthcheckTest extends Base
         );
 
         $response = parent::testRendering();
-        $this->assertContains('DB connection without replication log detected', (string)$response->getBody());
+        $this->assertStringContainsString('DB connection without replication log detected', (string)$response->getBody());
     }
 }

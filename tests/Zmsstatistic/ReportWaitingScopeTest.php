@@ -38,14 +38,14 @@ class ReportWaitingScopeTest extends Base
             ]
         );
         $response = $this->render([ ], ['__uri' => '/report/client/scope/'], [ ]);
-        $this->assertContains('Wartestatistik Standort', (string) $response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('Wartestatistik Standort', (string) $response->getBody());
+        $this->assertStringContainsString(
             '<a class="active" href="/report/waiting/scope/">Bürgeramt Heerstraße </a>',
             (string) $response->getBody()
         );
-        $this->assertContains('<a href="/report/waiting/scope/2016-03/">März</a>', (string) $response->getBody());
-        $this->assertContains('Charlottenburg-Wilmersdorf', (string) $response->getBody());
-        $this->assertContains('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
+        $this->assertStringContainsString('<a href="/report/waiting/scope/2016-03/">März</a>', (string) $response->getBody());
+        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
 
     public function testWithPeriod()
@@ -81,13 +81,13 @@ class ReportWaitingScopeTest extends Base
             ]
         );
         $response = $this->render(['period' => '2016-03'], [], []);
-        $this->assertContains('<th class="statistik">Mär</th>', (string) $response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('<th class="statistik">Mär</th>', (string) $response->getBody());
+        $this->assertStringContainsString(
             'Auswertung für Bürgeramt Heerstraße im Zeitraum März 2016',
             (string) $response->getBody()
         );
-        $this->assertContains('532', (string) $response->getBody());
-        $this->assertContains('294', (string) $response->getBody());
+        $this->assertStringContainsString('532', (string) $response->getBody());
+        $this->assertStringContainsString('294', (string) $response->getBody());
     }
 
     public function testYearChange()
@@ -123,8 +123,8 @@ class ReportWaitingScopeTest extends Base
             ]
         );
         $response = $this->render(['period' => '2016-01'], [], []);
-        $this->assertContains('<th class="statistik">Jan</th>', (string) $response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('<th class="statistik">Jan</th>', (string) $response->getBody());
+        $this->assertStringContainsString(
             'Auswertung für Bürgeramt Heerstraße im Zeitraum Januar 2016',
             (string) $response->getBody()
         );
@@ -164,7 +164,7 @@ class ReportWaitingScopeTest extends Base
                 ]
             );
             $response = $this->render(['period' => '2016-03'], ['type' => 'xlsx'], []);
-            $this->assertContains('xlsx', $response->getHeaderLine('Content-Disposition'));
+            $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
         });
     }
 
@@ -204,8 +204,8 @@ class ReportWaitingScopeTest extends Base
         $response = $this->render(['period' => '2016-03'], ['type' => 'csv'], []);
         $output = ob_get_contents();
         ob_end_clean();
-        $this->assertContains('csv', $response->getHeaderLine('Content-Disposition'));
-        $this->assertContains(
+        $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
+        $this->assertStringContainsString(
             '"Tagesmaximum";"532";"414";"280";"160";"256";"437";"455";"202";"532";"359";"384";"417";"148";"375";"343";',
             $output
         );
@@ -247,8 +247,8 @@ class ReportWaitingScopeTest extends Base
         $response = $this->render(['period' => '2016'], ['type' => 'csv'], []);
         $output = ob_get_contents();
         ob_end_clean();
-        $this->assertContains('csv', $response->getHeaderLine('Content-Disposition'));
-        $this->assertContains('"2016";"Januar";"Februar";"März"', $output);
-        $this->assertContains('"Tagesmaximum";"532";"384";"506";"532"', $output);
+        $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
+        $this->assertStringContainsString('"2016";"Januar";"Februar";"März"', $output);
+        $this->assertStringContainsString('"Tagesmaximum";"532";"384";"506";"532"', $output);
     }
 }

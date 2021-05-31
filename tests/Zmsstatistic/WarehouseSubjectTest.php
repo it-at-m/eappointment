@@ -38,14 +38,14 @@ class WarehouseSubjectTest extends Base
             ]
         );
         $response = $this->render(['subject' => 'waitingscope'], [ ], [ ]);
-        $this->assertContains('Übersicht verfügbarer IDs', (string) $response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('Übersicht verfügbarer IDs', (string) $response->getBody());
+        $this->assertStringContainsString(
             '<a href="/warehouse/waitingscope/141/">141</a>',
             (string) $response->getBody()
         );
-        $this->assertContains('02.01.2015', (string) $response->getBody());
-        $this->assertContains('24.03.2016', (string) $response->getBody());
-        $this->assertContains('Bürgeramt Heerstraße Bürgeramt', (string) $response->getBody());
+        $this->assertStringContainsString('02.01.2015', (string) $response->getBody());
+        $this->assertStringContainsString('24.03.2016', (string) $response->getBody());
+        $this->assertStringContainsString('Bürgeramt Heerstraße Bürgeramt', (string) $response->getBody());
     }
 
     public function testDownload()
@@ -81,6 +81,6 @@ class WarehouseSubjectTest extends Base
         $response = $this->render(['subject' => 'waitingscope'], ['type' => 'xlsx'], [ ]);
         $output = ob_get_contents();
         ob_end_clean();
-        $this->assertContains('raw_statistic_waitingscope.xlsx', $response->getHeaderLine('Content-Disposition'));
+        $this->assertStringContainsString('raw_statistic_waitingscope.xlsx', $response->getHeaderLine('Content-Disposition'));
     }
 }
