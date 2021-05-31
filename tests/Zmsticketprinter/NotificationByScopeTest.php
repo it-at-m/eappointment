@@ -41,6 +41,6 @@ class NotificationByScopeTest extends Base
             'scopeId' => 141,
             'waitingNumber' => 2
         ], [ ]);
-        $this->assertContains('Bitte geben Sie hier<br/> Ihre Handynummer ein', (string) $response->getBody());
+        $this->assertStringContainsString('Bitte geben Sie hier<br/> Ihre Handynummer ein', (string) $response->getBody());
     }
 }

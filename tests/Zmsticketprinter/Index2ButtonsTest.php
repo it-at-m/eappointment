@@ -49,6 +49,6 @@ class Index2ButtonsTest extends Base
                 'buttonlist' => 's141'
             ]
         ], [ ]);
-        $this->assertContains('wartebuttonbereich_zweizeilig_tief', (string) $response->getBody());
+        $this->assertStringContainsString('wartebuttonbereich_zweizeilig_tief', (string) $response->getBody());
     }
 }

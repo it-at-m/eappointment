@@ -57,6 +57,6 @@ class ProcessByClusterTest extends Base
             ],
             'clusterId' => 110,
         ], [ ]);
-        $this->assertContains('Ihre Wartenummer wird gedruckt', (string) $response->getBody());
+        $this->assertStringContainsString('Ihre Wartenummer wird gedruckt', (string) $response->getBody());
     }
 }

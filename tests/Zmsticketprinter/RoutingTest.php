@@ -20,7 +20,7 @@ class RoutingTest extends Base
         $exception = new \BO\Zmsticketprinter\Exception\ScopeNotFound();
         $container = \App::$slim->getContainer();
         $response = $container['errorHandler']($request, $this->getResponse(), $exception);
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Es konnte zu den angegeben Daten kein Standort gefunden werden.',
             (string)$response->getBody()
         );
@@ -32,7 +32,7 @@ class RoutingTest extends Base
         $exception = new \Exception('System Failure', 404);
         $container = \App::$slim->getContainer();
         $response = $container['errorHandler']($request, $this->getResponse(), $exception);
-        $this->assertContains('Es ist ein Fehler aufgetreten', (string)$response->getBody());
-        $this->assertContains('System Failure', (string)$response->getBody());
+        $this->assertStringContainsString('Es ist ein Fehler aufgetreten', (string)$response->getBody());
+        $this->assertStringContainsString('System Failure', (string)$response->getBody());
     }
 }

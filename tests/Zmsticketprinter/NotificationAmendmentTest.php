@@ -40,6 +40,6 @@ class NotificationAmendmentTest extends Base
             ],
             'scopeId' => 141
         ], [ ]);
-        $this->assertContains('Bitte geben Sie hier Ihre Wartenummer ein:', (string) $response->getBody());
+        $this->assertStringContainsString('Bitte geben Sie hier Ihre Wartenummer ein:', (string) $response->getBody());
     }
 }

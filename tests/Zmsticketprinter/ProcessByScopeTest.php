@@ -57,7 +57,7 @@ class ProcessByScopeTest extends Base
             ],
             'scopeId' => 141,
         ], [ ]);
-        $this->assertContains('Es warten', (string) $response->getBody());
-        $this->assertContains('Ihre Wartenummer wird gedruckt', (string) $response->getBody());
+        $this->assertStringContainsString('Es warten', (string) $response->getBody());
+        $this->assertStringContainsString('Ihre Wartenummer wird gedruckt', (string) $response->getBody());
     }
 }
