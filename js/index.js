@@ -19,7 +19,7 @@ import preventFormResubmit from './element/form/preventFormResubmit'
 window.$ = $;
 window.bo = {
     "zmsticketprinter": settings
-};
+}; 
 
 // Init Views
 $('#newhash').each(function() { new GetHash(this);});
