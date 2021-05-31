@@ -13,3 +13,4 @@ VERSION
 public/_tests
 composer.*.lock
 .cache
+.phpunit.result.cache
