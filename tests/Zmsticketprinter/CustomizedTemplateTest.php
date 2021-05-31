@@ -59,8 +59,8 @@ class CustomizedTemplateTest extends Base
             ]
         ], [ ]);
         $this->assertEquals('200', $response->getStatusCode());
-        $this->assertContains('Ordnungsamt Charlottenburg-Wilmersdorf', (string) $response->getBody());
-        $this->assertNotContains('Wartenummer für', (string) $response->getBody());
+        $this->assertStringContainsString('Ordnungsamt Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        $this->assertStringNotContainsString('Wartenummer für', (string) $response->getBody());
     }
 
     public function testTemplateNotFound()

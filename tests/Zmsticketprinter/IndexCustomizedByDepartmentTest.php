@@ -49,6 +49,6 @@ class IndexCustomizedByDepartmentTest extends Base
                 'buttonlist' => 's637'
             ]
         ], [ ]);
-        $this->assertContains('customized', (string) $response->getBody());
+        $this->assertStringContainsString('customized', (string) $response->getBody());
     }
 }

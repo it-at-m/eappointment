@@ -56,8 +56,8 @@ class ProcessByScopeWithNotificationTest extends Base
             ],
             'scopeId' => 141,
         ], [ ]);
-        $this->assertContains('Wünschen Sie eine SMS-Benachrichtigung', (string) $response->getBody());
-        $this->assertContains('30 Minuten vor ihrem Aufruf?', (string) $response->getBody());
+        $this->assertStringContainsString('Wünschen Sie eine SMS-Benachrichtigung', (string) $response->getBody());
+        $this->assertStringContainsString('30 Minuten vor ihrem Aufruf?', (string) $response->getBody());
     }
 
     public function testWithoutNotificationEnabled()
@@ -105,7 +105,7 @@ class ProcessByScopeWithNotificationTest extends Base
             ],
             'scopeId' => 141,
         ], [ ]);
-        $this->assertNotContains('Wünschen Sie eine SMS-Benachrichtigung', (string) $response->getBody());
-        $this->assertNotContains('30 Minuten vor ihrem Aufruf?', (string) $response->getBody());
+        $this->assertStringNotContainsString('Wünschen Sie eine SMS-Benachrichtigung', (string) $response->getBody());
+        $this->assertStringNotContainsString('30 Minuten vor ihrem Aufruf?', (string) $response->getBody());
     }
 }

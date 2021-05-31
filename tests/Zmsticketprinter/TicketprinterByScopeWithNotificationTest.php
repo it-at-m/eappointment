@@ -58,8 +58,8 @@ class TicketprinterByScopeWithNotificationTest extends Base
                 'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
             ]
         ], [ ]);
-        $this->assertContains('Wartenummer für', (string) $response->getBody());
-        $this->assertContains('Heerstraße', (string) $response->getBody());
-        $this->assertContains('Handynummer nachträglich eintragen', (string) $response->getBody());
+        $this->assertStringContainsString('Wartenummer für', (string) $response->getBody());
+        $this->assertStringContainsString('Heerstraße', (string) $response->getBody());
+        $this->assertStringContainsString('Handynummer nachträglich eintragen', (string) $response->getBody());
     }
 }

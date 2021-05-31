@@ -37,6 +37,6 @@ class MessageTest extends Base
             ],
             'scopeId' => 141
         ], [ ]);
-        $this->assertContains('Wartenummernausdruck erfolgt!', (string) $response->getBody());
+        $this->assertStringContainsString('Wartenummernausdruck erfolgt!', (string) $response->getBody());
     }
 }

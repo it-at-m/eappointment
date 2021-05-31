@@ -13,8 +13,8 @@ class DialogHandlerTest extends Base
     public function testRendering()
     {
         $response = $this->render([], $this->parameters, []);
-        $this->assertContains('Unsicheres Protokoll verwendet', (string)$response->getBody());
-        $this->assertContains(
+        $this->assertStringContainsString('Unsicheres Protokoll verwendet', (string)$response->getBody());
+        $this->assertStringContainsString(
             'Die Nutzung dieser Seiten ist ausschließlich mit dem sicheren HTTPS-Protokoll gestattet.',
             (string)$response->getBody()
         );
