@@ -1,4 +1,5 @@
 import BaseView from '../lib/baseview';
+import $ from "jquery";
 
 class View extends BaseView {
 
@@ -6,7 +7,7 @@ class View extends BaseView {
         super(element);
         this.bindPublicMethods('setInterval', 'reloadPage');
         console.log('Redirect to home url every 30 seconds');
-        this.$(() => {this.setInterval});
+        $(function() {this.setInterval});
     }
 
     reloadPage () {

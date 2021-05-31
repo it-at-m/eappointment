@@ -1,4 +1,5 @@
 import BaseView from '../lib/baseview';
+import $ from "jquery";
 
 class View extends BaseView {
 
@@ -6,7 +7,7 @@ class View extends BaseView {
         super(element);
         this.bindPublicMethods('printDialog', 'reload');
         console.log('Print data and redirect to home url after presetted time');
-        this.$(() => {this.printDialog});
+        $(function() {this.printDialog});
     }
 
     reload () {
