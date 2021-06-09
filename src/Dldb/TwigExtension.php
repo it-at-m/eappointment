@@ -189,7 +189,7 @@ class TwigExtension extends \Twig_Extension
     public function getLocationHintByServiceId($location, $service_id)
     {
         $servicecompare = explode(',', $service_id);
-        $service = array_filter($location['services'], function($item) use ($service_id) {
+        $service = array_filter($location['services'], function ($item) use ($service_id) {
             return ($item['service'] == $service_id);
         });
         return array_values($service)[0]['hint'];
