@@ -11,7 +11,7 @@ class Status extends Base
      *
      * @return \BO\Zmsentities\Status
      */
-    public function readEntity($includeProcessStats = true)
+    public function readEntity($includeProcessStats = true, \DateTimeImmutable $now)
     {
         $entity = new Entity();
         $configVariables = $this->readConfigVariables();
@@ -27,7 +27,7 @@ class Status extends Base
             array_key_exists('log_bin', $configVariables) ? $configVariables['log_bin'] : 'OFF';
         $entity['processes'] = [];
         if ($includeProcessStats) {
-            $entity['processes'] = $this->readProcessStats();
+            $entity['processes'] = $this->readProcessStats($now);
             $outdated = $this->readOutdatedSlots();
             $entity['processes']['outdated'] = $outdated['cnt'];
             $entity['processes']['outdatedOldest'] = $outdated['oldest'];
@@ -160,8 +160,10 @@ class Status extends Base
      *
      * @return Array
      */
-    protected function readProcessStats()
+    protected function readProcessStats(\DateTimeImmutable $now)
     {
+        $midnight = $now->modify('00:00:00')->getTimestamp();
+        $last7days = $now->modify('-7days 00:00:00')->getTimestamp();
         $processStats = $this->getReader()->fetchOne(
             'SELECT
                 SUM(CASE name WHEN "dereferenced" THEN 1 ELSE NULL END) as blocked,
@@ -174,6 +176,8 @@ class Status extends Base
                 SUM(CASE WHEN name = "(abgesagt)" THEN 1 ELSE NULL END) as deleted,
                 SUM(CASE WHEN nicht_erschienen > 0 AND b.StandortID != 0 THEN 1 ELSE NULL END) as missed,
                 SUM(CASE WHEN vorlaeufigeBuchung = 1 AND b.StandortID != 0 THEN 1 ELSE NULL END) as reserved,
+                SUM(CASE WHEN IPTimeStamp > '.intval($midnight).' AND b.StandortID != 0 AND vorlaeufigeBuchung = 0  AND Abholer = 0 THEN 1 ELSE NULL END) as sincemidnight,
+                SUM(CASE WHEN IPTimeStamp > '.intval($last7days).' AND b.StandortID != 0 AND vorlaeufigeBuchung = 0  AND Abholer = 0 THEN 1 ELSE NULL END) as last7days,
                 FROM_UNIXTIME(MAX(IPTimeStamp)) as lastInsert
             FROM buerger AS b
             WHERE
