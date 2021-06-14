@@ -67,6 +67,28 @@ class Service extends Base
      *
      * @return Collection
      */
+    public function fetchListRelated($service_id)
+    {
+        $service = $this->fetchId($service_id);
+        $serviceList = $this->getItemList();
+
+        $relatedList = new Collection(
+            array_filter(
+                (array) $serviceList, 
+                function ($item) use ($service) {
+                    $leikaIdentItem = substr(strval($item['leika']), 0, 11);
+                    $leikaIdentService = substr(strval($service['leika']), 0, 11);
+                    return ($leikaIdentItem == $leikaIdentService && $item['id'] != $service['id']);
+                }
+            )
+        );
+        return ($relatedList) ? $relatedList : new Collection();
+    }
+
+    /**
+     *
+     * @return Collection
+     */
     public function fetchCombinations($service_csv)
     {
         return $this->fetchList($this->fetchLocationCsv($service_csv));
