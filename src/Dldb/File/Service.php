@@ -74,7 +74,7 @@ class Service extends Base
 
         $relatedList = new Collection(
             array_filter(
-                (array) $serviceList, 
+                (array) $serviceList,
                 function ($item) use ($service) {
                     $leikaIdentItem = substr(strval($item['leika']), 0, 11);
                     $leikaIdentService = substr(strval($service['leika']), 0, 11);
