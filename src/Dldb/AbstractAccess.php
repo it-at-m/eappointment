@@ -28,9 +28,14 @@ class AbstractAccess
         ),
         'en' => array(
             'Authority' => null,
+            'Borough' => null,
+            'Link' => null,
             'Location' => null,
+            'Office' => null,
             'Service' => null,
-        ),
+            'Setting' => null,
+            'Topic' => null
+        )
     );
 
     private function getInstanceCompatibilities()
