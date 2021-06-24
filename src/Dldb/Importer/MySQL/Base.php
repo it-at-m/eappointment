@@ -1,0 +1,141 @@
+<?php
+
+namespace BO\Dldb\Importer\MySQL;
+
+
+use BO\Dldb\PDOAccess,
+    BO\Dldb\Importer\OptionsTrait,
+    BO\Dldb\Importer\PDOTrait,
+    BO\Dldb\Importer\ItemNeedsUpdateTrait,
+    BO\Dldb\Importer\Options,
+    \BO\Dldb\Importer\MySQL\Entity\Meta AS MetaEntity
+;
+
+abstract class Base implements Options
+{
+    use PDOTrait, OptionsTrait;
+
+    protected $entityClass = null;
+    protected $importData = [];
+    protected $hash = null;
+    protected $locale = 'de';
+    protected $metaObject = null;
+
+    public function __construct(PDOAccess $mySqlAccess, array $importData = [], string $locale = 'de', $options = 0) {
+        try { 
+            $this->setPDOAccess($mySqlAccess);
+            $this->setImportData($importData['data']);
+            $this->setImportHash($importData['hash']);
+            $this->setLocale($locale);
+
+            $this->setOptions($options);
+            $this->clearEntity();
+        }
+        catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function getPDOAccess() : PDOAccess {
+        return $this->pdoAccess;
+    }
+    
+    public function getImportData() : array {
+        return $this->importData;
+    }
+
+    public function getIterator() : iterable {
+        foreach ($this->importData AS $item) {
+            yield $item;
+        }
+    }
+
+    public function createMetaObject() {
+        try {
+            if (empty($this->metaObject)) {
+                $metaObject = new MetaEntity(
+                    $this->getPDOAccess(),
+                    [
+                        'object_id' => 0,
+                        'locale' => $this->getLocale(),
+                        'hash' => $this->getImportHash(),
+                        'type' => call_user_func($this->entityClass . '::getTableName')
+                    ]
+                );
+                $this->metaObject = $metaObject;
+            }
+        }
+        catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function getMetaObject() : MetaEntity {
+        $this->createMetaObject();
+        return $this->metaObject;
+    }
+
+    public function saveMetaObject() : self {
+        $this->getMetaObject()->save();
+        return $this;
+    }
+
+    public function needsUpdate() {
+        $metaObject = $this->getMetaObject();
+        return $metaObject->itemNeedsUpdate_();
+    }
+
+    public function setImportData(array $importData = []) : self {
+        $this->importData = $importData;
+        return $this;
+    }
+
+    public function setLocale(string $locale) : self {
+        $this->locale = $locale;
+        return $this;
+    }
+
+    public function getLocale() : string {
+        return $this->locale;
+    }
+
+    public function setImportHash(string $hash) : self {
+        $this->hash = $hash;
+        return $this;
+    }
+
+    public function getImportHash() : string {
+        return $this->hash;
+    }
+
+    public function createEntity(array $data = array(), bool $setup = true) {
+        if (null === $this->entityClass) {
+            throw new \InvalidArgumentException(__METHOD__ . " invalid entity class");
+        }
+        return new $this->entityClass($this->getPDOAccess(), $data, $setup);
+    }
+
+    final public function clearEntity() {
+        try {
+            $entity = null;
+            if ($this->checkOptionFlag(static::OPTION_CLEAR_ENTITIY_TABLE)) {
+                $entity = ($entity ?? $this->createEntity(['meta' => ['locale' => $this->getLocale()]], false));
+                $entity->clearEntity();
+            }
+            if ($this->checkOptionFlag(static::OPTION_CLEAR_ENTITIY_REFERENCES_TABLES)) {
+                $entity =  ($entity ?? $this->createEntity(['meta' => ['locale' => $this->getLocale()]], false));
+                $entity->clearEntityReferences();
+            }
+        }
+        catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function preImport() {}
+
+    public function postImport() {}
+
+    abstract public function runImport();
+
+}
