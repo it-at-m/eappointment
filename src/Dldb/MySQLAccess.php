@@ -15,7 +15,7 @@ class MySQLAccess extends PDOAccess
     const DEFAULT_DATABASE_HOST = 'mariadb';
     const DEFAULT_DATABASE_PORT = 3306;
     const DEFAULT_DATABASE_USER = 'root';
-    const DEFAULT_DATABASE_PASSWORD = 'alsoneu1';
+    const DEFAULT_DATABASE_PASSWORD = 'password';
 
     protected function connect(array $options) {
         $host = $options['host'] ?? static::DEFAULT_DATABASE_HOST;
