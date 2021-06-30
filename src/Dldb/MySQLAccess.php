@@ -23,6 +23,9 @@ class MySQLAccess extends PDOAccess
         $user = $options['user'] ?? static::DEFAULT_DATABASE_USER;
         $pass = $options['password'] ?? static::DEFAULT_DATABASE_PASSWORD;
         $port = $options['port'] ?? static::DEFAULT_DATABASE_PORT;
+        if (!$host) {
+            $host = 'localhost';
+        }
 
         $dsn = 'mysql:host=' . $host . ';port=' . $port . ';dbname=' . $dbname;
 
