@@ -31,7 +31,9 @@ class Location extends Base
                     'id' => 'object_id', 
                     'meta.locale' => 'locale'
                 ],
-                'addFields' => ['type' => static::getTableName()],
+                'addFields' => [
+                    'type' => static::getTableName()
+                ],
                 'deleteFields' => [
                     'object_id' => $this->get('id'), 
                     'locale' => $this->get('meta.locale'),

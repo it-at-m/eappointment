@@ -30,7 +30,9 @@ class Service extends Base
             'meta' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Meta',
                 'neededFields' => ['id' => 'object_id', 'meta.locale' => 'locale'],
-                'addFields' => ['type' => static::getTableName()],
+                'addFields' => [
+                    'type' => static::getTableName()
+                ],
                 'deleteFields' => [
                     'object_id' => $this->get('id'), 
                     'locale' => $this->get('meta.locale'),
