@@ -13,8 +13,22 @@ use BO\Dldb\FileAccess,
     \BO\Dldb\MySQLAccess,
     \BO\Dldb\Importer\MySQL AS MySQLImporter
 ; 
+use Garden\Cli\Cli;
 
 define('DEBUG', true);
+
+$cli = new Cli();
+
+$cli->description("Mysql Import.")
+    ->opt('host:h', 'Mysql host', true)
+    ->opt('user:u', 'Mysql user', true)
+    ->opt('password:p', 'Mysql password', true)
+    ->opt('database:d', 'Mysql database', true)
+    ->opt('port:o', 'Mysql port', true)
+    ->opt('jsonpath:j', 'Json datapath', false)
+    
+    ;
+$args = $cli->parse($argv, true);
 
 class Timer
 {
@@ -83,15 +97,15 @@ $timer = new Timer();
 
 $fileAccess = new FileAccess();
 
-$fileAccess->loadFromPath('/data/');
+$fileAccess->loadFromPath($args->getOpt('jsonpath'));
 
 $mysqlIporter = new MySQLImporter(
     new MySQLAccess([
-        'host' => MYSQL_HOST, 
-        'user' => MYSQL_USER, 
-        'password' => MYSQL_PASSWORD,
-        'port' => MYSQL_PORT,
-        'database' => MYSQL_DATABASE
+        'host' => $args->getOpt('host'), 
+        'user' => $args->getOpt('user'), 
+        'password' => $args->getOpt('password'),
+        'port' => $args->getOpt('port'),
+        'database' => $args->getOpt('database')
     ]), 
     $fileAccess
     #,MySQLImporter::OPTION_CLEAR_ENTITIY_REFERENCES_TABLES|MySQLImporter::OPTION_CLEAR_ENTITIY_TABLE

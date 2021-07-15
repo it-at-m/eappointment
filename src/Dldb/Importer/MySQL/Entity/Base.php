@@ -18,6 +18,8 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
 
     protected $referanceMapping = [];
 
+    protected $preFormatFields = [];
+
     protected $references = [];
 
     protected $dataRaw = [];
@@ -82,6 +84,8 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
+    protected function setupPreFormatFields() {}
+
     protected function setupMapping() {}
 
     public function preSetup() {}
@@ -101,6 +105,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
             
             $values = $this->get(array_keys(array_filter($this->fieldMapping)));
             foreach ($values AS $key => $value) {
+                
                 $this->__set($key, $value);
             }
             $this->postSetupFields();

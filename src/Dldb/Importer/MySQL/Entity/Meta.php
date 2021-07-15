@@ -15,6 +15,15 @@ class Meta extends Base
         'titles' => 'titles_json'
     ];
 
+    public function postSetupFields() {
+        if (array_key_exists('lastupdate', $this->fields) && !empty($this->fields['lastupdate'])) {
+            $this->fields['lastupdate'] = date_format(date_create($this->fields['lastupdate']), 'Y-m-d H:i:s');
+        }
+        else if (!array_key_exists('lastupdate', $this->fields) || empty($this->fields['lastupdate'])) {
+            $this->fields['lastupdate'] = '1970-01-01 01:00:00';
+        }
+    }
+
     public function deleteEntity(): bool
     {
         try {
