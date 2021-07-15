@@ -55,9 +55,27 @@ class Base extends \ArrayObject
 
     protected static function subcount($countable)
     {
-        if (is_array($countable) || $countable instanceof Countable) {
+        if (is_array($countable) || $countable instanceof \Countable) {
             return count($countable);
         }
         return null;
+    }
+
+    public function __set($name, $value) {
+        $this->offsetSet($name, $value);
+    }
+
+    public function offsetSet($index, $value) {
+        if ('data_json' == $index) {
+            $value = json_decode($value, true);
+            $this->exchangeArray($value);
+        }
+        else {
+            if (stripos($index, '_json')) {
+                $value = json_decode($value, true);
+                $index = str_replace('_json', '', $index);
+            }
+            parent::offsetSet($index, $value);
+        }
     }
 }

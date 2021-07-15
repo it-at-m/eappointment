@@ -11,7 +11,8 @@ class Topic extends Base
         'path' => 'path',
         'relation.navi' => 'navi',
         'relation.root' => 'root',
-        'relation.rank' => 'rank'
+        'relation.rank' => 'rank',
+        '__RAW__' => 'data_json'
     ];
 
     protected function setupMapping() {

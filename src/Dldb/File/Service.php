@@ -53,6 +53,7 @@ class Service extends Base
      */
     public function fetchList($location_csv = false)
     {
+        #echo '<pre>' . print_r($this,1) . '</pre>';exit;
         $servicelist = $this->getItemList();
         if ($location_csv) {
             $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use ($location_csv) {
