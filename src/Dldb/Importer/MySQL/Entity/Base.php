@@ -57,6 +57,10 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return $this;
     }
 
+    public function getRawData() : array {
+        return $this->dataRaw;
+    }
+
     public function setStatus(int $status = Base::STATUS_NEW) {
         $this->status = $status;
     }
@@ -265,6 +269,10 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         $values = [];
         
         foreach ($keys as $key) {
+            if ('__RAW__' == $key) {
+                $values[$key] = $this->dataRaw;
+                continue;
+            }
             $levels = static::arrayAccessByDotPerpareKeys($key);
             
             $value = $default;

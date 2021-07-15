@@ -21,6 +21,7 @@ abstract class PDOAccess extends AbstractAccess
 
     protected $engine = 'SQLite';
 
+    
     public function __construct(array $options) {
         try {
             $e = explode("\\", static::class);
@@ -56,7 +57,7 @@ abstract class PDOAccess extends AbstractAccess
             return parent::__call($method, $args);
         }
         catch (\Exception $e) {
-            if (preg_match('/load(?P<accessor>[A-Za-z]+)/', $method, $matches)) {
+            if ('loadFromPath' != $method && preg_match('/load(?P<accessor>[A-Za-z_0-9]+)/', $method, $matches)) {
                 $locale = $args[0] ?? 'de';
                 $instance = $this->loadAccessor($matches['accessor'], $locale);
                 
@@ -71,12 +72,10 @@ abstract class PDOAccess extends AbstractAccess
         if (isset($this->accessorClassNameByName[$name])) {
             if (null === $this->accessInstance[$locale][$this->accessorClassNameByName[$name]]) {
                 $accessorClass = __NAMESPACE__ . '\\' . $this->engine . '\\' . $this->accessorClassNameByName[$name];
-                
+
                 $instance = new $accessorClass($this, $locale);
-                $this->accessInstance[$locale] = [
-                    $name => $instance,
-                    $this->accessorNamesPlural[$name] => $instance
-                ];
+                $this->accessInstance[$locale][$name] = $instance;
+                $this->accessInstance[$locale][$this->accessorNamesPlural[$name]] = $instance;
             }
             return $this->accessInstance[$locale][$name];
         }

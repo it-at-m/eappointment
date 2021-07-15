@@ -19,7 +19,8 @@ class Location extends Base
         'transit' => 'transit_json',
         'payment' => 'payment_json',
         'accessibility' => 'accessibility_json',
-        'appointment' => 'appointment_json'
+        'appointment' => 'appointment_json',
+        '__RAW__' => 'data_json'
     ];
 
     protected function setupMapping() {

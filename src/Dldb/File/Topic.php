@@ -31,15 +31,7 @@ class Topic extends Base
     {
         $topiclist = new Collection();
         foreach ($this->getItemList() as $item) {
-            $service_csv = implode(',', $item->getServiceIds());
-            if ($service_csv) {
-                $servicelist = $this->access()
-                        ->fromService($this->locale)
-                        ->fetchFromCsv($service_csv);
-                if (count($servicelist)) {
-                    $topiclist[$item['id']] = $item;
-                }
-            }
+            $topiclist[$item['id']] = $item;
         }
         return $topiclist;
     }

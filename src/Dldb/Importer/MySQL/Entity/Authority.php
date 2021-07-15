@@ -12,7 +12,8 @@ class Authority extends Base
         'meta.locale' => 'locale',
         'locations' => 'locations_json',
         'relation' => 'relation_json',
-        'contact' => 'contact_json'
+        'contact' => 'contact_json',
+        '__RAW__' => 'data_json'
     ];
 
     protected function setupMapping() {

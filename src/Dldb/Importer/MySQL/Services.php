@@ -16,7 +16,6 @@ class Services extends Base
             }
             else {
                 print_r('NO Services(' . $this->getLocale() . ') Update needet' . \PHP_EOL);
-                #print_r($this->metaObject);
             }
             $this->saveMetaObject();
         }

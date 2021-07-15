@@ -11,6 +11,8 @@ namespace BO\Dldb;
  */
 class MySQLAccess extends PDOAccess
 {
+    protected $engine = 'MySQL';
+
     const DEFAULT_DATABASE_NAME = 'dldb_frontend_dev';
     const DEFAULT_DATABASE_HOST = 'mariadb';
     const DEFAULT_DATABASE_PORT = 3306;

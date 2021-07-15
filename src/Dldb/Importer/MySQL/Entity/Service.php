@@ -21,7 +21,8 @@ class Service extends Base
         'representation' => 'representation',
         'authorities' => 'authorities_json',
         'onlineprocessing' => 'onlineprocessing_json',
-        'relation' => 'relation_json'
+        'relation' => 'relation_json',
+        '__RAW__' => 'data_json'
     ];
 
     protected function setupMapping() {
@@ -175,6 +176,7 @@ class Service extends Base
         try {
             $fields = $this->get(['id', 'meta.locale', 'meta.hash']);
             $fields[] = static::getTableName();
+            
             $this->setStatus(static::STATUS_OLD);
             if ($this->itemNeedsUpdate(...array_values($fields))) {
                 $this->setStatus(static::STATUS_NEW);

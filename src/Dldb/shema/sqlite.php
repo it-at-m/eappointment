@@ -21,13 +21,14 @@ return [
         `rank`	INTEGER NOT NULL
     );",
     "CREATE TABLE IF NOT EXISTS `topic` (
-        `id`	INTEGER NOT NULL,
-        `locale`	VARCHAR ( 4 ) NOT NULL,
-        `name`	VARCHAR ( 255 ),
-        `path`	VARCHAR ( 255 ) NOT NULL,
-        `navi`	TINYINT,
-        `root`	TINYINT,
-        `rank`	INTEGER NOT NULL,
+        `id`	 INTEGER NOT NULL,
+        `locale` VARCHAR ( 4 ) NOT NULL,
+        `name`	 VARCHAR ( 255 ),
+        `path`	 VARCHAR ( 255 ) NOT NULL,
+        `navi`	 TINYINT,
+        `root`	 TINYINT,
+        `rank`	 INTEGER NOT NULL,
+        `data_json`	TEXT,
         PRIMARY KEY(`id`,`locale`)
     );",
     "CREATE TABLE IF NOT EXISTS `setting` (
@@ -64,6 +65,7 @@ return [
         `onlineprocessing_json`	TEXT,
         `relation_json`	TEXT,
         `authorities_json`	TEXT,
+        `data_json`	TEXT,
         PRIMARY KEY(`id`,`locale`)
     );",
     "CREATE TABLE IF NOT EXISTS `meta` (
@@ -106,6 +108,7 @@ return [
         `payment_json`	TEXT,
         `accessibility_json`	TEXT,
         `appointment_json`	TEXT,
+        `data_json`	TEXT,
         PRIMARY KEY(`id`,`locale`)
     );",
     "CREATE TABLE IF NOT EXISTS `contact` (
@@ -126,6 +129,7 @@ return [
         `locations_json`	TEXT,
         `relation_json`	TEXT,
         `contact_json`	TEXT,
+        `data_json`	TEXT,
         PRIMARY KEY(`id`,`locale`)
     );",
     "CREATE INDEX IF NOT EXISTS `topic_root_index` ON `topic` (

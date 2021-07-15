@@ -30,6 +30,7 @@ CREATE TABLE `authority` (
   `locations_json` text DEFAULT NULL,
   `relation_json` text DEFAULT NULL,
   `contact_json` text DEFAULT NULL,
+  `data_json` text DEFAULT NULL,
   PRIMARY KEY (`id`,`locale`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -76,6 +77,7 @@ CREATE TABLE `location` (
   `payment_json` text DEFAULT NULL,
   `accessibility_json` text DEFAULT NULL,
   `appointment_json` text DEFAULT NULL,
+  `data_json` text DEFAULT NULL,
   PRIMARY KEY (`id`,`locale`),
   KEY `name_index` (`name`),
   KEY `category_identifier_index` (`category_identifier`),
@@ -155,6 +157,7 @@ CREATE TABLE `service` (
   `onlineprocessing_json` text DEFAULT NULL,
   `relation_json` text DEFAULT NULL,
   `authorities_json` text DEFAULT NULL,
+  `data_json` text DEFAULT NULL,
   PRIMARY KEY (`id`,`locale`),
   FULLTEXT KEY `search_index` (`description`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -211,6 +214,7 @@ CREATE TABLE `topic` (
   `navi` tinyint(4) DEFAULT 0,
   `root` tinyint(4) DEFAULT 0,
   `rank` int(11) NOT NULL DEFAULT 0,
+  `data_json` text DEFAULT NULL,
   PRIMARY KEY (`id`,`locale`),
   KEY `path_index` (`path`),
   KEY `rank_index` (`rank`),
