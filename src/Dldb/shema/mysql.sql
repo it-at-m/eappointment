@@ -105,7 +105,10 @@ CREATE TABLE `location_service` (
   `contact_json` text DEFAULT NULL,
   PRIMARY KEY (`location_id`,`service_id`,`locale`),
   KEY `service_id_index` (`service_id`),
-  KEY `location_id_index` (`location_id`)
+  KEY `location_id_index` (`location_id`),
+  KEY `locale_index` (`locale`),
+  KEY `service_id_locale_index` (`service_id`,`locale`),
+  KEY `location_id_locale_index` (`location_id`,`locale`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

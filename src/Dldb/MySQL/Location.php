@@ -3,11 +3,11 @@
  * @package ClientDldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-namespace BO\Dldb\Elastic;
+namespace BO\Dldb\MySQL;
 
-use \BO\Dldb\Entity\Location as Entity;
-use \BO\Dldb\Collection\Locations as Collection;
-use \BO\Dldb\File\Location as Base;
+use \BO\Dldb\MySQL\Entity\Location as Entity;
+use \BO\Dldb\MySQL\Collection\Locations as Collection;
+use \BO\Dldb\Elastic\Location as Base;
 
 /**
  * @SuppressWarnings(Coupling)

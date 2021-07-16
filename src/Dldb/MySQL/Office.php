@@ -4,11 +4,11 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
-namespace BO\Dldb\Elastic;
+namespace BO\Dldb\MySQL;
 
-use \BO\Dldb\Entity\Office as Entity;
-use \BO\Dldb\Collection\Offices as Collection;
-use \BO\Dldb\File\Office as Base;
+use \BO\Dldb\MySQL\Entity\Office as Entity;
+use \BO\Dldb\MySQL\Collection\Offices as Collection;
+use \BO\Dldb\Elastic\Office as Base;
 
 /**
   *
