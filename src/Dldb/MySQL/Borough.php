@@ -4,11 +4,11 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
-namespace BO\Dldb\Elastic;
+namespace BO\Dldb\MySQL;
 
-use \BO\Dldb\Entity\Borough as Entity;
-use \BO\Dldb\Collection\Boroughs as Collection;
-use \BO\Dldb\File\Borough as Base;
+use \BO\Dldb\MySQL\Entity\Borough as Entity;
+use \BO\Dldb\MySQL\Collection\Boroughs as Collection;
+use \BO\Dldb\Elastic\Borough as Base;
 
 /**
   *

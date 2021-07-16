@@ -3,11 +3,11 @@
  * @package ClientDldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-namespace BO\Dldb\Elastic;
+namespace BO\Dldb\MySQL;
 
-use \BO\Dldb\Entity\Authority as Entity;
-use \BO\Dldb\Collection\Authorities as Collection;
-use \BO\Dldb\File\Authority as Base;
+use \BO\Dldb\MySQL\Entity\Authority as Entity;
+use \BO\Dldb\MySQL\Collection\Authorities as Collection;
+use \BO\Dldb\Elastic\Authority as Base;
 
 /**
  */

@@ -186,6 +186,15 @@ return [
     "CREATE INDEX IF NOT EXISTS `location_service_location_id_index` ON `location_service` (
         `location_id`
     );",
+    "CREATE INDEX IF NOT EXISTS `location_service_locale_index` ON `location_service` (
+        `locale`
+    );",
+    "CREATE INDEX IF NOT EXISTS `location_service_service_id_locale_index` ON `location_service` (
+        `service_id`, `locale`
+    );",
+    "CREATE INDEX IF NOT EXISTS `location_service_location_id_locale_index` ON `location_service` (
+        `location_id`, `locale`
+    );",
     "CREATE INDEX IF NOT EXISTS `location_name_index` ON `location` (
         `name`
     );",
