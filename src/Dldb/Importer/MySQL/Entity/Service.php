@@ -44,6 +44,20 @@ class Service extends Base
                     'locale' => $this->get('meta.locale')
                 ],
             ],
+            'authorities' => [
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Authority_Service',
+                'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
+                'addFields' => [
+
+                ],
+                'deleteFields' => [
+                    'service_id' => $this->get('id'), 
+                    'locale' => $this->get('meta.locale')
+                ],
+                'clearFields' => [
+                    'locale' => $this->get('meta.locale')
+                ]
+            ],
             'locations' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Location_Service',
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],

@@ -132,6 +132,18 @@ return [
         `data_json`	TEXT,
         PRIMARY KEY(`id`,`locale`)
     );",
+    "CREATE TABLE IF NOT EXISTS `authority_service` (
+        `authority_id`	INTEGER NOT NULL,
+        `service_id`	INTEGER NOT NULL,
+        `locale`	VARCHAR ( 4 ) NOT NULL,
+        PRIMARY KEY(`authority_id`,`service_id`,`locale`)
+    );",
+    "CREATE TABLE IF NOT EXISTS `authority_location` (
+        `authority_id`	INTEGER NOT NULL,
+        `location_id`	INTEGER NOT NULL,
+        `locale`	VARCHAR ( 4 ) NOT NULL,
+        PRIMARY KEY(`authority_id`,`location_id`,`locale`)
+    );",
     "CREATE INDEX IF NOT EXISTS `topic_root_index` ON `topic` (
         `root`
     );",
@@ -203,6 +215,38 @@ return [
     );",
     "CREATE INDEX IF NOT EXISTS `location_authority_id_index` ON `location` (
         `authority_id`
+    );",
+
+    "CREATE INDEX IF NOT EXISTS `authority_service_authority_id_index` ON `authority_service` (
+        `authority_id`
+    );",
+    "CREATE INDEX IF NOT EXISTS `authority_service_service_id_index` ON `authority_service` (
+        `service_id`
+    );",
+    "CREATE INDEX IF NOT EXISTS `authority_service_locale_index` ON `authority_service` (
+        `locale`
+    );",
+    "CREATE INDEX IF NOT EXISTS `authority_service_service_id_locale_index` ON `authority_service` (
+        `service_id`, `locale`
+    );",
+    "CREATE INDEX IF NOT EXISTS `authority_service_authority_id_locale_index` ON `authority_service` (
+        `authority_id`, `locale`
+    );",
+
+    "CREATE INDEX IF NOT EXISTS `authority_location_authority_id_index` ON `authority_location` (
+        `authority_id`
+    );",
+    "CREATE INDEX IF NOT EXISTS `authority_location_location_id_index` ON `authority_location` (
+        `location_id`
+    );",
+    "CREATE INDEX IF NOT EXISTS `authority_location_locale_index` ON `authority_location` (
+        `locale`
+    );",
+    "CREATE INDEX IF NOT EXISTS `authority_location_location_id_locale_index` ON `authority_location` (
+        `location_id`, `locale`
+    );",
+    "CREATE INDEX IF NOT EXISTS `authority_location_authority_id_locale_index` ON `authority_location` (
+        `authority_id`, `locale`
     );"
 
 

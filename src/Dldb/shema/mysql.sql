@@ -36,6 +36,46 @@ CREATE TABLE `authority` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `authority_service`
+--
+
+DROP TABLE IF EXISTS `authority_service`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `authority_service` (
+  `authority_id` int(11) NOT NULL DEFAULT 0,
+  `service_id` int(11) NOT NULL DEFAULT 0,
+  `locale` varchar(4) NOT NULL DEFAULT 'de',
+  PRIMARY KEY (`authority_id`,`service_id`,`locale`),
+  KEY `service_id_index` (`service_id`),
+  KEY `authority_id_index` (`authority_id`),
+  KEY `locale_index` (`locale`),
+  KEY `service_id_locale_index` (`service_id`,`locale`),
+  KEY `authority_id_locale_index` (`authority_id`,`locale`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `authority_localtion`
+--
+
+DROP TABLE IF EXISTS `authority_location`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `authority_location` (
+  `authority_id` int(11) NOT NULL DEFAULT 0,
+  `location_id` int(11) NOT NULL DEFAULT 0,
+  `locale` varchar(4) NOT NULL DEFAULT 'de',
+  PRIMARY KEY (`authority_id`,`location_id`,`locale`),
+  KEY `location_id_index` (`location_id`),
+  KEY `authority_id_index` (`authority_id`),
+  KEY `locale_index` (`locale`),
+  KEY `location_id_locale_index` (`location_id`,`locale`),
+  KEY `authority_id_locale_index` (`authority_id`,`locale`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `contact`
 --
 

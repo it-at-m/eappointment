@@ -121,8 +121,9 @@ class Service extends Base
     {
         try {
             $service = $this->fetchId($service_id);
+            $serviceList = new Collection();
             if (!$service) {
-                return new Collection();
+                return $serviceList;
             }
             $leika = str_split(substr(strval($service['leika']), 0, 11));
             $leika[0] = '_';
@@ -140,7 +141,7 @@ class Service extends Base
 
             $services = $stm->fetchAll();
 
-            $serviceList = new Collection();
+            
             foreach ($services as $service) {
                 $serviceList[$service['id']] = $service;
             }
