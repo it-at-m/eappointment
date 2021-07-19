@@ -102,8 +102,20 @@ abstract class Base implements Options
                     'Topics', 
                     'Settings'
                 ];
-                foreach ($types AS $type) {
-                    ($this->__call('get' . $type . 'Importer', [[], 'de', $this->getOptions()]))->clearEntity();
+                $tablesToClear = [];
+                
+                foreach ($this->importTypes AS $type => $entityName) {
+                    $importer = $this->__call('get' . $type . 'Importer', [['data' => [], 'hash' => ''], 'de', $this->getOptions()]);
+                    $entity = $importer->createEntity(['meta' => ['locale' => 'de']], false);
+                    $tablesToClear[$entity::getTableName()] = 1;
+
+                    foreach ($entity->getReferenceMapping(true) AS $key => $data) {
+                        $tablesToClear[call_user_func($data['class'] . '::getTableName')] = 1;
+                    }
+                }
+
+                foreach (array_flip($tablesToClear) AS $table ) {
+                    $this->getPDOAccess()->exec("DELETE FROM " . $table . " WHERE 1=1");
                 }
             }
         }

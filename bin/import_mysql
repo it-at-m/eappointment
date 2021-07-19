@@ -108,12 +108,13 @@ $mysqlIporter = new MySQLImporter(
         'database' => $args->getOpt('database')
     ]), 
     $fileAccess
-    #,MySQLImporter::OPTION_CLEAR_ENTITIY_REFERENCES_TABLES|MySQLImporter::OPTION_CLEAR_ENTITIY_TABLE
+    ,MySQLImporter::OPTION_CLEAR_ENTITIY_REFERENCES_TABLES|MySQLImporter::OPTION_CLEAR_ENTITIY_TABLE
 );
 
 try {
-    $mysqlIporter->clearDatabase();
+    
     $mysqlIporter->beginTransaction();
+    $mysqlIporter->clearDatabase();
     $mysqlIporter->runImport();
     $mysqlIporter->commit();
 }

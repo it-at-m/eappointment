@@ -34,7 +34,21 @@ class Authority extends Base
                 ],
                 'clearFields' => ['type' => static::getTableName(), 'locale' => $this->get('meta.locale')],
                 'multiple' => false
-            ]
+            ],
+            'locations' => [
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Authority_Location',
+                'neededFields' => ['id' => 'authority_id', 'meta.locale' => 'locale'],
+                'addFields' => [
+                    
+                ],
+                'deleteFields' => [
+                    'authority_id' => $this->get('id'), 
+                    'locale' => $this->get('meta.locale')
+                ],
+                'clearFields' => [
+                    'locale' => $this->get('meta.locale')
+                ]
+            ],
         ];
     }
 
