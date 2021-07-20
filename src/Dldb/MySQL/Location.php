@@ -112,7 +112,7 @@ class Location extends Base
             $sql = 'SELECT 
                 l.id, l.name, l.authority_name, l.category_json, 
                 c.contact_json, c.address_json, c.geo_json,
-                m.url  
+                m.url AS meta__url
             FROM 
                 location AS l
             LEFT JOIN 

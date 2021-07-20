@@ -75,7 +75,31 @@ class Base extends \ArrayObject
                 $value = json_decode($value, true);
                 $index = str_replace('_json', '', $index);
             }
+            if (stripos($index, '__')) {
+                static::doubleUnterlineToArray($this, $index, $value);
+                return true;
+            }
+            
             parent::offsetSet($index, $value);
         }
+    }
+
+    public static function doubleUnterlineToArray(&$array, $key, $value)
+    {
+        if (is_null($key)) {
+            return $array = $value;
+        }
+        $keys = explode('__', $key);
+    
+        while (count($keys) > 1) {
+            $key = array_shift($keys);
+            if (! isset($array[$key]) || ! is_array($array[$key])) {
+                $array[$key] = [];
+            }
+            $array = &$array[$key];
+        }
+        $array[array_shift($keys)] = $value;
+    
+        return $array;
     }
 }
