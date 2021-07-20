@@ -105,6 +105,78 @@ class Location extends Base
         }
     }
 
+    protected function fetchGeoJsonLocations($category, $getAll)
+    {
+        try {
+            $sqlArgs = [$this->locale, $this->locale, $this->locale];
+            $sql = 'SELECT 
+                l.id, l.name, l.authority_name, l.category_json, 
+                c.contact_json, c.address_json, c.geo_json,
+                m.url  
+            FROM 
+                location AS l
+            LEFT JOIN 
+                contact AS c ON c.object_id = l.id AND c.locale = ?
+            LEFT JOIN 
+                meta AS m ON m.object_id = l.id AND m.locale = ?
+            WHERE l.locale = ?';
+            if (!empty($category) && false === $getAll) {
+                $sqlArgs[] = $category;
+                $sql .= ' AND category_identifier = ?';
+            }
+            $sql .= ' ORDER BY l.category_identifier, l.name';
+            
+            $stm = $this->access()->prepare($sql);
+            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
+            $stm->execute($sqlArgs);
+            
+            $locations = $stm->fetchAll();
+
+            $locationList = new Collection();
+            foreach ($locations as $location) {
+                $locationList[$location['id']] = $location;
+            }
+            return $locationList;
+        }
+        catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * @todo Refactoring required, functions in this class should return entities, not JSON data
+     */
+    public function fetchGeoJson($category = null, $getAll = false)
+    {
+        $locationList = $this->fetchGeoJsonLocations($category, $getAll);
+        $geoJson = [];
+        // TODO check refactoring: the following lines were ineffective cause the line $geoJson=[] happened afterwards
+        //if (!empty($category) && false === $getAll) {
+        //    $geoJson['category'] = $category;
+        //}
+        foreach ($locationList as $location) {
+            if (empty($location['category']['identifier'])) {
+                continue;
+            }
+            if (!isset($geoJson[$location['category']['identifier']])) {
+                $geoJson[$location['category']['identifier']] = [
+                    'name' => $location['category']['name'],
+                    'type' => 'cluster',
+                    'active' => (
+                        !empty($category)
+                        && $category == $location['category']['identifier'] ? true : (
+                            !empty($category) && $category != $location['category']['identifier'] ? false : true
+                        )
+                    ),
+                    'data' => ['type' => 'FeatureCollection', 'features' => []]
+                ];
+            }
+            $geoJson[$location['category']['identifier']]['data']['features'][] = $location->getGeoJson();
+        }
+
+        return $geoJson;
+    }
+
     /**
      *
      * @return \BO\ClientDldb\Collection\Authorities
@@ -228,63 +300,7 @@ class Location extends Base
             ->fromLocationResults($resultList);
     }
 
-    protected function fetchGeoJsonLocations($category, $getAll)
-    {
-        $query = new \Elastica\Query();
-        $query->setSource(['id', 'name', 'address.*', 'geo.*', 'meta.*', 'category.*']);
-
-        $filter =  new \Elastica\Query\MatchAll();
-
-        if (!empty($category) && false === $getAll) {
-            $filter = new \Elastica\Query\BoolQuery();
-            $termFilter = new \Elastica\Query\Term(['category.identifier' => $category]);
-            $filter->addMust($termFilter);
-        }
-        $query->setQuery($filter);
-        $query->addSort(['office' => ['order' => 'asc']]);
-        $query->addSort(['name' => ['order' => 'asc']]);
-        $resultList = $this->access()
-            ->getIndex()
-            ->getType('location')
-            ->search($query, 1000)
-        ;
-        return $resultList;
-    }
-
-    /**
-     * @todo Refactoring required, functions in this class should return entities, not JSON data
-     */
-    public function fetchGeoJson($category = null, $getAll = false)
-    {
-        $resultList = $this->fetchGeoJsonLocations($category, $getAll);
-        $geoJson = [];
-        // TODO check refactoring: the following lines were ineffective cause the line $geoJson=[] happened afterwards
-        //if (!empty($category) && false === $getAll) {
-        //    $geoJson['category'] = $category;
-        //}
-        foreach ($resultList as $result) {
-            $location = new Entity($result->getData());
-            if (empty($location['category']['identifier'])) {
-                continue;
-            }
-            if (!isset($geoJson[$location['category']['identifier']])) {
-                $geoJson[$location['category']['identifier']] = [
-                    'name' => $location['category']['name'],
-                    'type' => 'cluster',
-                    'active' => (
-                        !empty($category)
-                        && $category == $location['category']['identifier'] ? true : (
-                            !empty($category) && $category != $location['category']['identifier'] ? false : true
-                        )
-                    ),
-                    'data' => ['type' => 'FeatureCollection', 'features' => []]
-                ];
-            }
-            $geoJson[$location['category']['identifier']]['data']['features'][] = $location->getGeoJson();
-        }
-
-        return $geoJson;
-    }
+    
 
     public function fetchLocationsForCompilation($authoritys = [], $locations = [])
     {

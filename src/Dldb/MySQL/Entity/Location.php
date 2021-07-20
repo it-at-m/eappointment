@@ -13,5 +13,5 @@ use \BO\Dldb\MySQL\Collection\Locations as Collection;
  */
 class Location extends Base 
 {
-
+   
 }
