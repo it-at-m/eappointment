@@ -101,6 +101,7 @@ return [
         `authority_id`	INTEGER,
         `authority_name`	VARCHAR ( 255 ) NOT NULL,
         `note`	TEXT,
+        `category_json` TEXT,
         `urgent_json`	TEXT,
         `opening_times_json`	TEXT,
         `transit_json`	TEXT,

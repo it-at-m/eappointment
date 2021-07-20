@@ -117,9 +117,9 @@ class Location extends Base
             'id' => $this['id'],
             'properties' => [
                 'name' => $this['name'],
-                'description' => '<p><strong>'
-                    . $this['name']
-                    . '</strong></p><p>'
+                'description' => '<div>'
+                    . ($this['authority']['name'] ?? $this['authority_name'] ?? '')
+                    . '</div><p>'
                     . $this['address']['street']
                     . ' '
                     . $this['address']['house_number']
@@ -128,7 +128,7 @@ class Location extends Base
                     . ' '
                     . $this['address']['city']
                     . '<br /><a href="'
-                    . $this['meta']['url']
+                    . ($this['meta']['url'] ?? $this['url']) 
                     . '" class="gmap-marker-link">Zum Standort</a>',
                 'categoryIdentifier' => $this['category']['identifier'],
             ],

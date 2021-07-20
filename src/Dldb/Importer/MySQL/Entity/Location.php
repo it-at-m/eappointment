@@ -14,6 +14,7 @@ class Location extends Base
         'authority.name' => 'authority_name',
         'meta.locale' => 'locale',
         'note' => 'note',
+        'category' => 'category_json',
         'urgent' => 'urgent_json',
         'opening_times' => 'opening_times_json',
         'transit' => 'transit_json',

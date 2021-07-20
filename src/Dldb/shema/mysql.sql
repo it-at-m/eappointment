@@ -110,6 +110,7 @@ CREATE TABLE `location` (
   `authority_id` int(11) DEFAULT 0,
   `authority_name` varchar(255) NOT NULL DEFAULT '',
   `note` text DEFAULT NULL,
+  `category_json` text DEFAULT NULL,
   `urgent_json` text DEFAULT NULL,
   `opening_times_json` text DEFAULT NULL,
   `transit_json` text DEFAULT NULL,
