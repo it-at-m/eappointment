@@ -24,39 +24,48 @@ class Authority extends Base
      */
     public function fetchList($servicelist = [])
     {
+        try {
+            $authorityList = new Collection();
 
-        $authorityList = new Collection();
-        $sqlArgs = [$this->locale];
-        
-        if (!empty($servicelist)) {
-            $sqlArgs[] = $this->locale;
-            $qm = array_fill(0, count($servicelist), '?');
-
-            $sql = "SELECT l.data_json 
-                FROM location_service ls
-                LEFT JOIN location AS l ON l.id = ls.location_id AND l.locale = ?
-                WHERE ls.locale = ? AND ls.service_id IN (" . implode(', ', $qm) . ")
-                GROUP BY ls.location_id 
-                ORDER BY l.name";
-
-            array_push($sqlArgs, ...$servicelist);
+            $sqlArgs = [$this->locale];
             
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
-            $stm->execute($sqlArgs);
+            if (!empty($servicelist)) {
+                $sqlArgs[] = $this->locale;
+                $qm = array_fill(0, count($servicelist), '?');
 
-            $locations = $stm->fetchAll();
-            
-        }
-        else {
-            $locations = $this->access()->fromLocation($this->locale)->fetchList();
-        }
+                $sql = "SELECT l.data_json 
+                    FROM location_service ls
+                    LEFT JOIN location AS l ON l.id = ls.location_id AND l.locale = ?
+                    WHERE ls.locale = ? AND ls.service_id IN (" . implode(', ', $qm) . ")
+                    GROUP BY ls.location_id 
+                    ORDER BY l.name";
 
-        $authorityList = new Collection();
-        foreach ($locations as $location) {
-            $authorityList->addLocation($location);
+                array_push($sqlArgs, ...$servicelist);
+                
+                $stm = $this->access()->prepare($sql);
+                $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
+                $stm->execute($sqlArgs);
+
+                $locations = $stm->fetchAll();
+                foreach ($locations as $location) {
+                    $authorityList->addLocation($location);
+                }
+            }
+            else {
+                $sql = 'SELECT data_json FROM authority WHERE locale = ?';
+                $stm = $this->access()->prepare($sql);
+                $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Authority');
+                $stm->execute($sqlArgs);
+                $authorities = $stm->fetchAll();
+                foreach ($authorities as $authority) {
+                    $authorityList[$authority['id']] = $authority;
+                }
+            }
+            return $authorityList;
         }
-        return $authorityList;
+        catch (\Exception $e) {
+            throw $e;
+        }
 
     }
 }
