@@ -14,83 +14,95 @@ use \BO\Dldb\Elastic\Location as Base;
  */
 class Location extends Base
 {
-
-    /**
-     *
-     * @return Entity
-     */
     public function fetchId($location_id)
     {
-        if ($location_id) {
-            $query = Helper::boolFilteredQuery();
-            $query->getFilter()->addMust(Helper::idsFilter($this->locale . $location_id));
-            $result = $this->access()
-                ->getIndex()
-                ->getType('location')
-                ->search($query, 1);
+        try {
+            if ($location_id) {
+                $sqlArgs = [$this->locale, (int)$location_id];
+                $sql = 'SELECT data_json FROM location WHERE locale = ? AND id = ?';
 
-            if ($result->count() == 1) {
-                $locationList = $result->getResults();
-                return new Entity($locationList[0]->getData());
+                $stm = $this->access()->prepare($sql);
+                $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
+                $stm->execute($sqlArgs);
+                if (!$stm || ($stm && $stm->rowCount() == 0)) {
+                    return false;
+                }
+                $service = $stm->fetch();
+                return $service;
             }
+            return false;
         }
-        return false;
+        catch (\Exception $e) {
+            throw $e;
+        }
     }
 
-    /**
-     *
-     * @return Collection
-     */
-    public function fetchList($service_csv = '')
+    public function fetchList($service_csv = false)
     {
-        $query = Helper::boolFilteredQuery();
-        $limit = 10000;
-        $query->getFilter()->addMust(Helper::localeFilter($this->locale));
-        if ($service_csv) {
-            foreach (explode(',', $service_csv) as $service_id) {
-                $filter = new \Elastica\Filter\Term(array(
-                    'services.service' => $service_id
-                ));
-                $query->getFilter()->addMust($filter);
-            }
-        }
-        $resultList = $this->access()
-            ->getIndex()
-            ->getType('location')
-            ->search($query, $limit);
+        try {
+            $sqlArgs = [$this->locale];
+            $sql = 'SELECT data_json FROM location WHERE locale = ?';
 
-        $locationList = new Collection();
-        foreach ($resultList as $result) {
-            $location = new Entity($result->getData());
-            $locationList[$location['id']] = $location;
+            if (!empty($service_csv)) {
+                $sqlArgs[] = $this->locale;
+                $ids = explode(',', $service_csv);
+                $qm = array_fill(0, count($ids), '?');
+
+                $sql = "SELECT l.data_json
+                FROM location AS l 
+                LEFT JOIN location_service AS ls ON ls.service_id = l.id AND l.locale = ?
+                WHERE l.locale = ? AND
+                ls.location_id IN (" . implode(', ', $qm) . ")
+                GROUP BY s.id";
+                array_push($sqlArgs, ...$ids);
+            }
+
+            $stm = $this->access()->prepare($sql);
+            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
+            $stm->execute($sqlArgs);
+            
+            $locations = $stm->fetchAll();
+            $locationList = new Collection();
+            foreach ($locations as $location) {
+                $locationList[$location['id']] = $location;
+            }
+            #echo '<pre>' . print_r($serviceList,1) . '</pre>';exit;
+            return $locationList;
         }
-        return $locationList;
+        catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     /**
      *
-     * @return Collection
+     * @return Collection\Services
      */
     public function fetchFromCsv($location_csv)
     {
-        $query = Helper::boolFilteredQuery();
-        $filter = new \Elastica\Filter\Ids();
-        $ids = explode(',', $location_csv);
-        $ids = array_map(function ($value) {
-            return $this->locale . $value;
-        }, $ids);
-        $filter->setIds($ids);
-        $query->getFilter()->addMust($filter);
-        $resultList = $this->access()
-            ->getIndex()
-            ->getType('location')
-            ->search($query, 10000);
-        $locationList = new Collection();
-        foreach ($resultList as $result) {
-            $location = new Entity($result->getData());
-            $locationList[$location['id']] = $location;
+        try {
+            $sqlArgs = [$this->locale];
+            $sql = 'SELECT data_json FROM location WHERE locale = ?';
+
+            $ids = explode(',', $location_csv);
+            $qm = array_fill(0, count($ids), '?');
+            $sql .= ' AND id IN (' . implode(', ', $qm) . ')';
+            array_push($sqlArgs, ...$ids);
+
+            $stm = $this->access()->prepare($sql);
+            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
+            $stm->execute($sqlArgs);
+            
+            $locations = $stm->fetchAll();
+            $locationList = new Collection();
+            foreach ($locations as $location) {
+                $locationList[$location['id']] = $location;
+            }
+            return $locationList;
         }
-        return $locationList;
+        catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     /**
