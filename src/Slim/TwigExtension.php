@@ -54,6 +54,7 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('dumpAppProfiler', array($this, 'dumpAppProfiler'), $safe),
             new \Twig_SimpleFunction('getSystemStatus', array($this, 'getSystemStatus'), $safe),
             new \Twig_SimpleFunction('getClientHost', array($this, 'getClientHost')),
+            new \Twig_SimpleFunction('kindOfPayment', array($this, 'kindOfPayment')),
         );
     }
 
@@ -307,5 +308,22 @@ class TwigExtension extends \Twig_Extension
             }
         }
         return $output .'</ul>';
+    }
+
+    public function kindOfPayment($code)
+    {
+        $result = '';
+        if ($code == 0) {
+            $result = 'eccash';
+        } elseif ($code == 1) {
+            $result = 'nocash';
+        } elseif ($code == 2) {
+            $result = 'ec';
+        } elseif ($code == 3) {
+            $result = 'cash';
+        } elseif ($code == 4) {
+            $result = 'subscribecash';
+        }
+        return $result;
     }
 }
