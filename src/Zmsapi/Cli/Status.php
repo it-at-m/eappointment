@@ -15,7 +15,7 @@ class Status extends Base
      */
     public function cli(array $argv, \League\CLImate\CLImate $climate)
     {
-        $status = (new \BO\Zmsdb\Status())->readEntity();
+        $status = (new \BO\Zmsdb\Status())->readEntity(\App::$now);
         $climate->json($status);
     }
 }
