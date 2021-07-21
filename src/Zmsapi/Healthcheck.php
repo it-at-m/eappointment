@@ -20,7 +20,7 @@ class Healthcheck extends BaseController
         array $args
     ) {
         $response = \BO\Zmsclient\Status::testStatus($response, function () {
-            return (new Query())->readEntity(false, \App::$now);
+            return (new Query())->readEntity(\App::$now, false);
         });
         $response = \BO\Slim\Render::withLastModified($response, time(), '0');
         return $response;

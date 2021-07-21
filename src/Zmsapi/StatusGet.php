@@ -23,7 +23,7 @@ class StatusGet extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $includeProcessStats = $validator->getParameter('includeProcessStats')->isNumber()->setDefault(1)->getValue();
-        $status = (new Status())->readEntity($includeProcessStats, \App::$now);
+        $status = (new Status())->readEntity(\App::$now, $includeProcessStats);
         $status['version'] = Helper\Version::getArray();
         if (\App::DEBUG) {
             $status['opcache'] = [
