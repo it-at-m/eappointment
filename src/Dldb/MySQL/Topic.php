@@ -17,20 +17,76 @@ class Topic extends Base
 {
     public function fetchList()
     {
-        $sqlArgs = [$this->locale];
-        $sql = 'SELECT data_json FROM topic WHERE locale = ?';
+        try {
+            $sqlArgs = [$this->locale];
+            $sql = 'SELECT data_json FROM topic WHERE locale = ?';
 
-        $stm = $this->access()->prepare($sql);
-        $stm->execute($sqlArgs);
-        
-        $topics = $stm->fetchAll(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Topic');
+            $stm = $this->access()->prepare($sql);
+            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Topic');
 
-        $topiclist = new Collection();
-        
-        foreach ($topics as $topic) {
-            $topiclist[$topic['id']] = $topic;
+            $stm->execute($sqlArgs);
+            $topics = $stm->fetchAll();
+
+            $topiclist = new Collection();
+            
+            foreach ($topics as $topic) {
+                $topiclist[$topic['id']] = $topic;
+            }
+            return $topiclist;
         }
-        return $topiclist;
+        catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     *
+     * @return Entity
+     */
+    public function fetchPath($topic_path)
+    {
+        try {
+            $sqlArgs = [$this->locale, (string)$topic_path];
+            $sql = 'SELECT data_json FROM topic WHERE locale = ? AND path = ?';
+
+            $stm = $this->access()->prepare($sql);
+            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Topic');
+            $stm->execute($sqlArgs);
+            
+            if (!$stm || ($stm && $stm->rowCount() == 0)) {
+                return false;
+            }
+            $topic = $stm->fetch();
+            return $topic;
+        }
+        catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     *
+     * @return Entity
+     */
+    public function fetchId($topicId)
+    {
+        try {
+            $sqlArgs = [$this->locale, (int)$topicId];
+            $sql = 'SELECT data_json FROM topic WHERE locale = ? AND id = ?';
+
+            $stm = $this->access()->prepare($sql);
+            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Topic');
+            $stm->execute($sqlArgs);
+            
+            if (!$stm || ($stm && $stm->rowCount() == 0)) {
+                return false;
+            }
+            $topic = $stm->fetch();
+            return $topic;
+        }
+        catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     public function readSearchResultList($query)
