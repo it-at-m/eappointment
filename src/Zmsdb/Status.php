@@ -11,7 +11,7 @@ class Status extends Base
      *
      * @return \BO\Zmsentities\Status
      */
-    public function readEntity($includeProcessStats = true, \DateTimeImmutable $now)
+    public function readEntity(\DateTimeImmutable $now, $includeProcessStats = true)
     {
         $entity = new Entity();
         $configVariables = $this->readConfigVariables();
@@ -176,8 +176,27 @@ class Status extends Base
                 SUM(CASE WHEN name = "(abgesagt)" THEN 1 ELSE NULL END) as deleted,
                 SUM(CASE WHEN nicht_erschienen > 0 AND b.StandortID != 0 THEN 1 ELSE NULL END) as missed,
                 SUM(CASE WHEN vorlaeufigeBuchung = 1 AND b.StandortID != 0 THEN 1 ELSE NULL END) as reserved,
-                SUM(CASE WHEN IPTimeStamp > '.intval($midnight).' AND b.StandortID != 0 AND vorlaeufigeBuchung = 0  AND Abholer = 0 THEN 1 ELSE NULL END) as sincemidnight,
-                SUM(CASE WHEN IPTimeStamp > '.intval($last7days).' AND b.StandortID != 0 AND vorlaeufigeBuchung = 0  AND Abholer = 0 THEN 1 ELSE NULL END) as last7days,
+                SUM(
+                    CASE 
+                        WHEN IPTimeStamp > '.intval($midnight).' AND b.StandortID != 0 
+                            AND vorlaeufigeBuchung = 0 AND Abholer = 0 
+                        THEN 
+                            1 
+                        ELSE 
+                            NULL 
+                        END) 
+                    as sincemidnight,
+                SUM(
+                    CASE 
+                        WHEN 
+                            IPTimeStamp > '.intval($last7days).' AND b.StandortID != 0 
+                            AND vorlaeufigeBuchung = 0  AND Abholer = 0 
+                        THEN 
+                            1 
+                        ELSE 
+                            NULL 
+                        END) 
+                        as last7days,
                 FROM_UNIXTIME(MAX(IPTimeStamp)) as lastInsert
             FROM buerger AS b
             WHERE
