@@ -12,7 +12,7 @@ vendor.old
 vendor.update
 VERSION
 public/_tests
-package-lock.json
+#package-lock.json
 #composer.*.lock
 .cache
 .phpunit.*
