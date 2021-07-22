@@ -12,6 +12,7 @@ cache
 vendor.old
 vendor.update
 #composer.*.lock
+package-lock.json
 .cache
 .parcel-cache
 .phpunit.result.cache
