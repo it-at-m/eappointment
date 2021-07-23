@@ -230,6 +230,28 @@ CREATE TABLE `service_information` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `search`
+--
+
+DROP TABLE IF EXISTS `search`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `search` (
+  `object_id` int(11) NOT NULL DEFAULT 0,
+  `locale` varchar(4) NOT NULL DEFAULT 'de',
+  `entity_type` varchar(255) DEFAULT NULL,
+  `search_type` ENUM('name', 'description', 'keywords', 'titles', 'address'),
+  `search_value` text DEFAULT NULL,
+  PRIMARY KEY (`object_id`,`locale`,`search_type`),
+  FULLTEXT KEY `search_index` (`search_value`),
+  KEY `object_id_index` (`object_id`),
+  KEY `search_type_index` (`search_type`),
+  KEY `entity_type_index` (`entity_type`),
+  KEY `locale_index` (`locale`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `setting`
 --
 
@@ -298,7 +320,10 @@ CREATE TABLE `topic_links` (
   `rank` int(11) NOT NULL DEFAULT 0,
   `url` varchar(255) DEFAULT NULL,
   `highlight` tinyint(4) DEFAULT 0,
+  `search` text DEFAULT NULL,
   `meta_json` text DEFAULT NULL,
+  `data_json` text DEFAULT NULL,
+  FULLTEXT KEY `keywords_search_index` (`search`),
   KEY `topic_id_index` (`topic_id`),
   KEY `rank_index` (`rank`),
   KEY `locale_index` (`locale`)

@@ -15,6 +15,58 @@ class Meta extends Base
         'titles' => 'titles_json'
     ];
 
+    protected function setupMapping() {
+        $this->referanceMapping = [
+            /*
+            'keywords' => [
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
+                'neededFields' => [
+                    'object_id' => 'object_id', 
+                    'locale' => 'locale',
+                    'keywords' => 'search_value',
+                    'type' => 'entity_type',
+                ],
+                'addFields' => [
+                    'search_type' => 'keywords'
+                ],
+                'deleteFields' => [
+                    'object_id' => $this->get('id'), 
+                    'locale' => $this->get('locale'),
+                    'entity_type' => $this->get('type')
+                ],
+                'multiple' => false,
+                'clearFields' => [
+                    'entity_type' => $this->get('type'), 
+                    'locale' => $this->get('locale')
+                ],
+                'selfAsArray' => true
+            ],
+            'titles' => [
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
+                'neededFields' => [
+                    'object_id' => 'object_id', 
+                    'locale' => 'locale',
+                    'titles' => 'search_value',
+                    'type' => 'entity_type',
+                ],
+                'addFields' => [
+                    'search_type' => 'titles'
+                ],
+                'deleteFields' => [
+                    'object_id' => $this->get('id'), 
+                    'locale' => $this->get('locale'),
+                    'entity_type' => $this->get('type')
+                ],
+                'multiple' => false,
+                'clearFields' => [
+                    'entity_type' => $this->get('type'), 
+                    'locale' => $this->get('locale')
+                ],
+                'selfAsArray' => true
+            ]*/
+        ];
+    }
+
     public function postSetupFields() {
         if (array_key_exists('lastupdate', $this->fields) && !empty($this->fields['lastupdate'])) {
             $this->fields['lastupdate'] = date_format(date_create($this->fields['lastupdate']), 'Y-m-d H:i:s');

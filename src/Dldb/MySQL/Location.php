@@ -236,13 +236,53 @@ class Location extends Base
             ->fromLocationResults($resultList);
     }
 
+    public function readSearchResultList($query, $service_csv = null)
+    {
+        try {
+            $sqlArgs = [$this->locale, $this->locale, $query];
+            $sql = "SELECT l.data_json 
+            FROM search AS se
+            LEFT JOIN location AS l ON l.id = se.object_id AND l.locale = ?
+            WHERE 
+                se.locale = ? AND MATCH (search_value) AGAINST (? IN NATURAL LANGUAGE MODE)
+                AND (search_type IN ('name', 'keywords', 'address')) AND entity_type='location'
+             GROUP BY se.object_id
+            ";
+            /*
+            if (!empty($service_csv)) {
+                $ids = explode(',', $service_csv);
+                $qm = array_fill(0, count($ids), '?');
+                $sql .= ' AND se.object_id IN (' . implode(', ', $qm) . ')';
+                array_push($sqlArgs, ...$ids);
+            }*/
+            #print_r($sql);exit;
+
+            $stm = $this->access()->prepare($sql);
+            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
+
+            $stm->execute($sqlArgs);
+            
+            $locations = $stm->fetchAll();
+
+            $locationList = new Collection();
+            foreach ($locations as $location) {
+                $locationList[$location['id']] = $location;
+            }
+            #echo '<pre>' . print_r($locationList,1) . '</pre>';exit;
+            return $locationList;
+        }
+        catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
     /**
      * search locations
      * this function is similar to self::searchAll() but it might get different boosts in the future
      *
      * @return Collection
      */
-    public function readSearchResultList($querystring, $service_csv = '')
+    public function _readSearchResultList($querystring, $service_csv = '')
     {
         $query = Helper::boolFilteredQuery();
         $query->getFilter()->addMust(Helper::localeFilter($this->locale));

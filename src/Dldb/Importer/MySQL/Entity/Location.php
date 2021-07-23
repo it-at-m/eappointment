@@ -26,6 +26,76 @@ class Location extends Base
 
     protected function setupMapping() {
         $this->referanceMapping = [
+            'name' => [
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
+                
+                'neededFields' => [
+                    'id' => 'object_id', 
+                    'meta.locale' => 'locale',
+                    'name' => 'search_value'
+                ],
+                'addFields' => [
+                    'entity_type' => static::getTableName(),
+                    'search_type' => 'name'
+                ],
+                'multiple' => false,
+                'clearFields' => [
+                    'entity_type' => static::getTableName(), 
+                    'locale' => $this->get('meta.locale')
+                ],
+                'deleteFields' => [
+                    'object_id' => $this->get('id'), 
+                    'locale' => $this->get('meta.locale'),
+                    'entity_type' => static::getTableName()
+                ],
+                'selfAsArray' => true
+            ],
+            'address' => [
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
+                'neededFields' => [
+                    'id' => 'object_id', 
+                    'meta.locale' => 'locale',
+                    'address' => 'search_value',
+                ],
+                'addFields' => [
+                    'entity_type' => static::getTableName(),
+                    'search_type' => 'address'
+                ],
+                'deleteFields' => [
+                    'object_id' => $this->get('id'), 
+                    'locale' => $this->get('meta.locale'),
+                    'entity_type' => static::getTableName()
+                ],
+                'multiple' => false,
+                'clearFields' => [
+                    'entity_type' => static::getTableName(), 
+                    'locale' => $this->get('meta.locale')
+                ],
+                'selfAsArray' => true
+            ],
+            'meta.keywords' => [
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
+                'neededFields' => [
+                    'id' => 'object_id', 
+                    'meta.locale' => 'locale',
+                    'meta.keywords' => 'search_value',
+                ],
+                'addFields' => [
+                    'entity_type' => static::getTableName(),
+                    'search_type' => 'keywords'
+                ],
+                'deleteFields' => [
+                    'object_id' => $this->get('id'), 
+                    'locale' => $this->get('meta.locale'),
+                    'entity_type' => static::getTableName()
+                ],
+                'multiple' => false,
+                'clearFields' => [
+                    'entity_type' => static::getTableName(), 
+                    'locale' => $this->get('meta.locale')
+                ],
+                'selfAsArray' => true
+            ],
             'meta' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Meta',
                 'neededFields' => [
@@ -59,6 +129,29 @@ class Location extends Base
                 'multiple' => false,
                 'selfAsArray' => true,
                 'clearFields' => ['locale' => $this->get('meta.locale')],
+            ],
+            'name' => [
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
+                'neededFields' => [
+                    'id' => 'object_id', 
+                    'meta.locale' => 'locale',
+                    'name' => 'search_value'
+                ],
+                'addFields' => [
+                    'entity_type' => static::getTableName(),
+                    'search_type' => 'name'
+                ],
+                'deleteFields' => [
+                    'object_id' => $this->get('id'), 
+                    'locale' => $this->get('meta.locale'),
+                    'entity_type' => static::getTableName()
+                ],
+                'multiple' => false,
+                'clearFields' => [
+                    'entity_type' => static::getTableName(), 
+                    'locale' => $this->get('meta.locale')
+                ],
+                'selfAsArray' => true
             ],
         ];
     }

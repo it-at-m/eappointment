@@ -27,6 +27,77 @@ class Service extends Base
 
     protected function setupMapping() {
         $this->referanceMapping = [
+            'name' => [
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
+                'neededFields' => [
+                    'id' => 'object_id', 
+                    'meta.locale' => 'locale',
+                    'name' => 'search_value'
+                ],
+                'addFields' => [
+                    'entity_type' => static::getTableName(),
+                    'search_type' => 'name'
+                ],
+                
+                'multiple' => false,
+                'clearFields' => [
+                    'entity_type' => static::getTableName(), 
+                    'locale' => $this->get('meta.locale')
+                ],
+                
+                'deleteFields' => [
+                    'object_id' => $this->get('id'), 
+                    'locale' => $this->get('meta.locale'),
+                    'entity_type' => static::getTableName()
+                ],
+                'selfAsArray' => true
+            ],
+            'description' => [
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
+                'neededFields' => [
+                    'id' => 'object_id', 
+                    'meta.locale' => 'locale',
+                    'description' => 'search_value'
+                ],
+                'addFields' => [
+                    'entity_type' => static::getTableName(),
+                    'search_type' => 'description'
+                ],
+                'deleteFields' => [
+                    'object_id' => $this->get('id'), 
+                    'locale' => $this->get('meta.locale'),
+                    'entity_type' => static::getTableName()
+                ],
+                'multiple' => false,
+                'clearFields' => [
+                    'entity_type' => static::getTableName(), 
+                    'locale' => $this->get('meta.locale')
+                ],
+                'selfAsArray' => true
+            ],
+            'meta.keywords' => [
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
+                'neededFields' => [
+                    'id' => 'object_id', 
+                    'meta.locale' => 'locale',
+                    'meta.keywords' => 'search_value',
+                ],
+                'addFields' => [
+                    'entity_type' => static::getTableName(),
+                    'search_type' => 'keywords'
+                ],
+                'deleteFields' => [
+                    'object_id' => $this->get('id'), 
+                    'locale' => $this->get('meta.locale'),
+                    'entity_type' => static::getTableName()
+                ],
+                'multiple' => false,
+                'clearFields' => [
+                    'entity_type' => static::getTableName(), 
+                    'locale' => $this->get('meta.locale')
+                ],
+                'selfAsArray' => true
+            ],
             'meta' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Meta',
                 'neededFields' => ['id' => 'object_id', 'meta.locale' => 'locale'],
@@ -220,6 +291,7 @@ class Service extends Base
 
     public function clearEntity(array $addWhere = []) : bool {
         try {
+
             #print_r((array)$this->get(['meta.locale']));exit;
             return $this->deleteWith(
                 ['locale' => $this->get('meta.locale')]

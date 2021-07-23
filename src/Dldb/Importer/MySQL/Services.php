@@ -18,6 +18,7 @@ class Services extends Base
                 print_r('NO Services(' . $this->getLocale() . ') Update needet' . \PHP_EOL);
             }
             $this->saveMetaObject();
+            #$this->clearEntity();
         }
         catch (\Exception $e) {
             throw $e;

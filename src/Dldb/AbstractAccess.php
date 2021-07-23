@@ -112,7 +112,6 @@ class AbstractAccess
 
     protected function from($instanceName, $locale = 'de')
     {
-        
         if (array_key_exists($instanceName, $this->accessInstance[$locale])) {
             $instance = $this->accessInstance[$locale][$instanceName];
             if (null === $instance) {

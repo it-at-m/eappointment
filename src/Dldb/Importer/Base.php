@@ -78,6 +78,7 @@ abstract class Base implements Options
                     $importer->preImport();
                     $importer->runImport();
                     $importer->postImport();
+                    #$importer->clearEntity();
                 }
             }
 
@@ -136,6 +137,44 @@ abstract class Base implements Options
             $importer->preImport();
             $importer->runImport();
             $importer->postImport();
+        }
+        catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     *
+     * @return self
+     */
+    protected function importTopics() {
+        try {
+            $importer = $this->getTopicsImporter(
+                $this->fileAccess->fromTopic('de')->getData(), 'de', $this->getOptions()
+            );
+            $importer->preImport();
+            $importer->runImport();
+            $importer->postImport();
+            #$importer->clearEntity();
+        }
+        catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     *
+     * @return self
+     */
+    protected function importAuthorities() {
+        try {
+            $importer = $this->getAuthoritiesImporter(
+                $this->fileAccess->fromAuthority('de')->getData(), 'de', $this->getOptions()
+            );
+            $importer->preImport();
+            $importer->runImport();
+            $importer->postImport();
+            #$importer->clearEntity();
         }
         catch (\Exception $e) {
             throw $e;

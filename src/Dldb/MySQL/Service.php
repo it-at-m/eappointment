@@ -151,4 +151,45 @@ class Service extends Base
             throw $e;
         }
     }
+
+    public function readSearchResultList($query, $service_csv = null)
+    {
+        try {
+            $sqlArgs = [$this->locale, $this->locale, $query];
+            $sql = "SELECT s.data_json 
+            FROM search AS se
+            LEFT JOIN service AS s ON s.id = se.object_id AND s.locale = ?
+            WHERE 
+                se.locale = ? AND MATCH (search_value) AGAINST (? IN NATURAL LANGUAGE MODE)
+                AND (search_type IN ('name', 'keywords')) AND entity_type='service'
+             GROUP BY se.object_id
+            ";
+
+            if (!empty($service_csv)) {
+                $ids = explode(',', $service_csv);
+                $qm = array_fill(0, count($ids), '?');
+                $sql .= ' AND se.object_id IN (' . implode(', ', $qm) . ')';
+                array_push($sqlArgs, ...$ids);
+            }
+            #print_r($sql);exit;
+
+            $stm = $this->access()->prepare($sql);
+            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Service');
+
+            $stm->execute($sqlArgs);
+            
+            $services = $stm->fetchAll();
+
+            $serviceList = new Collection();
+            foreach ($services as $service) {
+                $serviceList[$service['id']] = $service;
+            }
+
+            return $serviceList;
+        }
+        catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
 }
