@@ -37,10 +37,80 @@ class Topic extends Base
                     'locale' => $this->get('meta.locale')
                 ],
             ],
+            'name' => [
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
+                'neededFields' => [
+                    'id' => 'object_id', 
+                    'meta.locale' => 'locale',
+                    'name' => 'search_value'
+                ],
+                'addFields' => [
+                    'entity_type' => static::getTableName(),
+                    'search_type' => 'name'
+                ],
+                'multiple' => false,
+                'clearFields' => [
+                    'entity_type' => static::getTableName(), 
+                    'locale' => $this->get('meta.locale')
+                ],
+                'deleteFields' => [
+                    'object_id' => $this->get('id'), 
+                    'locale' => $this->get('meta.locale'),
+                    'entity_type' => static::getTableName()
+                ],
+                'selfAsArray' => true
+            ],
+            'meta.keywords' => [
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
+                'neededFields' => [
+                    'id' => 'object_id', 
+                    'meta.locale' => 'locale',
+                    'meta.keywords' => 'search_value',
+                ],
+                'addFields' => [
+                    'entity_type' => static::getTableName(),
+                    'search_type' => 'keywords'
+                ],
+                'deleteFields' => [
+                    'object_id' => $this->get('id'), 
+                    'locale' => $this->get('meta.locale'),
+                    'entity_type' => static::getTableName()
+                ],
+                'multiple' => false,
+                'clearFields' => [
+                    'entity_type' => static::getTableName(), 
+                    'locale' => $this->get('meta.locale')
+                ],
+                'selfAsArray' => true
+            ],
+            'meta.titles' => [
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
+                'neededFields' => [
+                    'id' => 'object_id', 
+                    'meta.locale' => 'locale',
+                    'meta.titles' => 'search_value',
+                    'type' => 'entity_type',
+                ],
+                'addFields' => [
+                    'entity_type' => static::getTableName(),
+                    'search_type' => 'titles'
+                ],
+                'deleteFields' => [
+                    'object_id' => $this->get('id'), 
+                    'locale' => $this->get('locale'),
+                    'entity_type' => static::getTableName()
+                ],
+                'multiple' => false,
+                'clearFields' => [
+                    'entity_type' => static::getTableName(), 
+                    'locale' => $this->get('locale')
+                ],
+                'selfAsArray' => true
+            ],
             'links' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Topic_Links',
                 'neededFields' => ['id' => 'topic_id', 'meta.locale' => 'locale'],
-                'addFields' => [],
+                'addFields' => ['locale' => $this->get('meta.locale')],
                 'delete' => false,
                 'deleteFunction' => function(\BO\Dldb\Importer\MySQL\Entity\Topic $topic) {
                     $id = $topic->get('id');
@@ -49,7 +119,9 @@ class Topic extends Base
                         $stm = $topic->getPDOAccess()->prepare($sql);
             
                         $stm->execute([$id]);
+
                         if ($stm && 0 < $stm->rowCount()) {
+                            print_r(static::class);
                             return true;
                         }
                         return false;
@@ -137,10 +209,11 @@ class Topic extends Base
         }
     }
 
-    public function clearEntity(array $addWhere = []) : bool {
+    public function clearEntity(array $addWhere = []) : bool 
+    {
         try {
             return $this->deleteWith(
-                ['locale' => $this->get('locale')]
+                ['locale' => $this->get('meta.locale')]
             );
         }
         catch (\Exception $e) {

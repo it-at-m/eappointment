@@ -54,6 +54,34 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
+    public static function entityFactory(
+        string $entityName, 
+        PDOAccess $mySqlAccess, 
+        array $dataRaw = [], 
+        bool $setup = true
+    ) {
+        try {
+            $className = preg_replace_callback('/[_-]([a-z0-9]*)/i', function($matches) {
+                return ucfirst($matches[1]);
+            }, $entityName);
+            $className = '\\BO\\Dldb\\Importer\\MySQL\\Entity' . $className;
+
+            return new $className($mySqlAccess, $dataRaw, $setup);
+        }
+        catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function factory(string $entityName, array $dataRaw = [], bool $setup = true) {
+        try {
+            return static::entityFactory($entityName, $this->getPDOAccess(), $dataRaw, $setup);
+        }
+        catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
     public function setRawData(array $rawData = []) {
         $this->dataRaw = $rawData;
         return $this;
@@ -137,7 +165,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                 $referenceEntityClass = $this->referanceMapping[$name]['class'];
                 $addFields = [];
                 
-                foreach ($this->referanceMapping[$name]['neededFields'] AS $sourceKey => $destinationKey) {
+                foreach (($this->referanceMapping[$name]['neededFields'] ?? []) AS $sourceKey => $destinationKey) {
                     $addFields[$destinationKey] = $this->get($sourceKey);
                 }
                 $isMultiple = $this->referanceMapping[$name]['multiple'] ?? true;
@@ -147,7 +175,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                 }
                 
                 $position = 0;
-                foreach ($references AS $reference) {
+                foreach (($references ?? []) AS $reference) {
                     foreach ($this->referanceMapping[$name]['addFields'] AS $key => $value) {
                         if (is_callable($value)) {
                             $addFields[$key] = call_user_func_array($value, [$position, $name, $reference]);
@@ -163,7 +191,10 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                     }
                     $referencesInstance = new $referenceEntityClass(
                         $this->getPDOAccess(), 
-                        array_merge($reference, $addFields)
+                        array_merge(
+                            $reference, 
+                            $addFields
+                        )
                     );
 
                     $this->addReference($name, $referencesInstance);
@@ -343,6 +374,8 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
 
                 $stm->execute(array_values($this->fields));
                 
+                #$this->postSave($stm, $this);
+
                 if ($stm && 0 < $stm->rowCount()) {
                     return true;
                 }
@@ -355,6 +388,10 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
             throw $e;
         }
         return false;
+    }
+
+    public function postSave(\PDOStatement $stm, Base $entity) {
+
     }
 
     final public function saveReferences() : bool {
@@ -408,7 +445,6 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                     $addFields[$sourceKey] = $val;
                 }
                 
-                
                 $referencesInstance = new $referenceEntityClass(
                     $this->getPDOAccess(), 
                     $addFields,
@@ -440,6 +476,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                 }, array_keys($fields));
                 $sql .= " WHERE " . implode(' AND ', $where);
             }
+            
             $stm = $this->getPDOAccess()->prepare($sql);
             $stm->execute(array_values($fields));
             if ($stm && 0 < $stm->rowCount()) {
@@ -475,12 +512,18 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                         $clearFields[$key] = $value;
                     }
                 }
+                
                 $referencesInstance = new $referenceEntityClass(
                     $this->getPDOAccess(), 
                     [],
                     false
                 );
-                $referencesInstance->deleteWith($clearFields);
+                if (!empty($clearFields)) {
+                    $referencesInstance->deleteWith($clearFields);
+                }
+                else {
+                    $referencesInstance->clearEntity();
+                }
             }
             return true;
         }

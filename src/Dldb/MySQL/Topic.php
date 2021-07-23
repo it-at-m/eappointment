@@ -91,29 +91,42 @@ class Topic extends Base
 
     public function readSearchResultList($query)
     {
-        $boolquery = Helper::boolFilteredQuery();
-        $searchquery = new \Elastica\Query\QueryString();
-        if ('' === trim($query)) {
-            $searchquery->setQuery('*');
-        } else {
-            $searchquery->setQuery($query);
+        try {
+            $sqlArgs = [$this->locale, $this->locale, $query];
+            $sql = "SELECT t.data_json 
+            FROM search AS se
+            LEFT JOIN topic AS t ON t.id = se.object_id AND t.locale = ?
+            WHERE 
+                se.locale = ? AND MATCH (search_value) AGAINST (? IN NATURAL LANGUAGE MODE)
+                AND (search_type IN ('name', 'keywords')) AND entity_type='topic'
+             GROUP BY se.object_id
+            ";
+            /*
+            if (!empty($service_csv)) {
+                $ids = explode(',', $service_csv);
+                $qm = array_fill(0, count($ids), '?');
+                $sql .= ' AND se.object_id IN (' . implode(', ', $qm) . ')';
+                array_push($sqlArgs, ...$ids);
+            }*/
+            #print_r($sql);exit;
+
+            $stm = $this->access()->prepare($sql);
+            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Topic');
+
+            $stm->execute($sqlArgs);
+            
+            $topics = $stm->fetchAll();
+
+            $topiclist = new Collection();
+            
+            foreach ($topics as $topic) {
+                $topiclist[$topic['id']] = $topic;
+            }
+            #echo '<pre>' . print_r($topiclist,1) . '</pre>';exit;
+            return $topiclist;
         }
-        $searchquery->setFields([
-            'name^9',
-            'keywords^5'
-        ]);
-        $boolquery->getQuery()->addShould($searchquery);
-        $filter = null;
-        $query = new \Elastica\Query\Filtered($boolquery, $filter);
-        $resultList = $this->access()
-            ->getIndex()
-            ->getType('topic')
-            ->search($query, 1000);
-        $topicList = new Collection();
-        foreach ($resultList as $result) {
-            $topic = new Entity($result->getData());
-            $topicList[$topic['id']] = $topic;
+        catch (\Exception $e) {
+            throw $e;
         }
-        return $topicList;
     }
 }

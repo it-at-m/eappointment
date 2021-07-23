@@ -16,30 +16,30 @@ class Link extends Base
 
     public function readSearchResultList($query)
     {
-        $boolquery = Helper::boolFilteredQuery();
-        $searchquery = new \Elastica\Query\QueryString();
-        if ('' === trim($query)) {
-            $searchquery->setQuery('*');
-        } else {
-            $searchquery->setQuery($query);
-        }
-        $searchquery->setFields([
-            'name^3',
-            'meta.titles^5',
-            'meta.keywords^9'
-        ]);
-        $boolquery->getQuery()->addShould($searchquery);
-        $resultList = $this->access()
-            ->getIndex()
-            ->getType('links')
-            ->search($boolquery, 1000);
-        $linkList = new Collection();
-        foreach ($resultList as $result) {
-            $link = new Entity($result->getData());
-            if (false === array_key_exists($link['link'], $linkList)) {
-                $linkList[$link['link']] = $link;
+        try {
+            $sqlArgs = [$this->locale, $query];
+            $sql = "SELECT tl.data_json 
+            FROM topic_links AS tl
+            WHERE 
+            tl.locale = ? AND MATCH (tl.search) AGAINST (? IN NATURAL LANGUAGE MODE)
+            ";
+           
+            $stm = $this->access()->prepare($sql);
+            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Link');
+            $stm->execute($sqlArgs);
+            
+            $links = $stm->fetchAll();
+            
+            $linklist = new Collection();
+            
+            foreach ($links as $link) {
+                $linklist[$link['link']] = $link;
             }
+            
+            return $linklist;
         }
-        return $linkList;
+        catch (\Exception $e) {
+            throw $e;
+        }
     }
 }
