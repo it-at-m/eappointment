@@ -37,7 +37,15 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('tsToDate', array($this, 'tsToDate')),
             new \Twig_SimpleFunction('dayIsBookable', array($this, 'dayIsBookable')),
             new \Twig_SimpleFunction('azPrefixList', array($this, 'azPrefixList')),
+            new \Twig_SimpleFunction('formatPhoneNumber', array($this, 'formatPhoneNumber')),
         );
+    }
+
+    public function formatPhoneNumber($phoneNumber) {
+        preg_match_all('/(^\+)?[\d]+/', $phoneNumber, $matches);
+        $number = implode($matches[0]);
+        $phonenumber = preg_replace('/^030/', '+4930', $number);
+        return $phonenumber;
     }
 
     public function convertOpeningTimes($name)
