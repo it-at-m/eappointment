@@ -48,34 +48,42 @@ class Service extends Base
      *
      * @return Collection
      */
-    public function fetchList($location_csv = false)
+    public function fetchList($location_csv = false, $mixLanguages = false)
     {
         try {
             $sqlArgs = [$this->locale];
-            #$sql = 'SELECT data_json FROM service WHERE locale = ?';
-
-
-            $sql = "SELECT 
-            IF(s2.id, s2.data_json, s.data_json) AS data_json
-            FROM location_service AS ls
-            LEFT JOIN service AS s ON s.id = ls.service_id AND s.locale = 'de'
-            LEFT JOIN service AS s2 ON s2.id = ls.service_id AND s2.locale = ?
-            GROUP BY ls.service_id";
-
+            $where = [];
+            $join = [];
+            $groupBy = '';
+            if (false === $mixLanguages) {
+                $where[] = 's.locale = ?';
+                $sql = 'SELECT data_json FROM service AS s ';
+            }
+            else {
+                $where[] = "s.locale='de'";
+                $sql = "SELECT 
+                IF(s2.id, s2.data_json, s.data_json) AS data_json
+                FROM service AS s
+                LEFT JOIN service AS s2 ON s2.id = s.id AND s2.locale = ?
+                ";
+            }
 
             if (!empty($location_csv)) {
-                $sqlArgs[] = $this->locale;
+                #$sqlArgs[] = $this->locale;
                 $ids = explode(',', $location_csv);
                 $qm = array_fill(0, count($ids), '?');
+                $join[] = 'LEFT JOIN location_service AS ls ON ls.service_id = s.id';# AND ls.locale = ?';
 
-                $sql = "SELECT s.data_json
-                FROM service AS s 
-                LEFT JOIN location_service AS ls ON ls.service_id = s.id AND ls.locale = ?
-                WHERE s.locale = ? AND
-                ls.location_id IN (" . implode(', ', $qm) . ")
-                GROUP BY s.id";
+                $where[] = "ls.location_id IN (" . implode(', ', $qm) . ")";
+                $groupBy = 'GROUP BY s.id';
                 array_push($sqlArgs, ...$ids);
             }
+            $sql .= " " . implode(' ', $join);
+            $sql .= " WHERE " . implode(' AND ', $where);
+            $sql .= " " . $groupBy;
+
+            #echo '<pre>' . print_r([$sql, $sqlArgs],1) . '</pre>';exit;
+
             $stm = $this->access()->prepare($sql);
             $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Service');
             $stm->execute($sqlArgs);
@@ -97,17 +105,35 @@ class Service extends Base
      *
      * @return Collection\Services
      */
-    public function fetchFromCsv($service_csv)
+    public function fetchFromCsv($service_csv, $mixLanguages = false)
     {
         try {
             $sqlArgs = [$this->locale];
-            $sql = 'SELECT data_json FROM service WHERE locale = ?';
-
+            $where = [];
+            $join = [];
+            
+            if (false === $mixLanguages) {
+                $where[] = 's.locale = ?';
+                $sql = 'SELECT data_json FROM service AS s ';
+            }
+            else {
+                $where[] = "s.locale='de'";
+                $sql = "SELECT 
+                IF(s2.id, s2.data_json, s.data_json) AS data_json
+                FROM service AS s
+                LEFT JOIN service AS s2 ON s2.id = s.id AND s2.locale = ?
+                ";
+            }
+            
             $ids = explode(',', $service_csv);
             $qm = array_fill(0, count($ids), '?');
-            $sql .= ' AND id IN (' . implode(', ', $qm) . ')';
+            
+            $where[] = 's.id IN (' . implode(', ', $qm) . ')';
             array_push($sqlArgs, ...$ids);
 
+            $sql .= " " . implode(' ', $join);
+            $sql .= " WHERE " . implode(' AND ', $where);
+            
             $stm = $this->access()->prepare($sql);
             $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Service');
             $stm->execute($sqlArgs);
@@ -140,9 +166,9 @@ class Service extends Base
 
             $leika = implode($leika);
             
-            $sqlArgs = [$this->locale, $leika.'%'];
+            $sqlArgs = [$this->locale, $service['leika'], $leika.'%'];
             
-            $sql = 'SELECT data_json FROM service WHERE locale = ? AND leika LIKE ?';
+            $sql = 'SELECT data_json FROM service WHERE locale = ? AND leika != ? AND leika LIKE ?';
 
             $stm = $this->access()->prepare($sql);
             $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Service');
@@ -171,7 +197,7 @@ class Service extends Base
             WHERE 
                 se.locale = ? AND MATCH (search_value) AGAINST (? IN NATURAL LANGUAGE MODE)
                 AND (search_type IN ('name', 'keywords')) AND entity_type='service'
-             GROUP BY se.object_id
+            GROUP BY se.object_id
             ";
 
             if (!empty($service_csv)) {

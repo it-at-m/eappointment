@@ -37,34 +37,41 @@ class Location extends Base
         }
     }
 
-    public function fetchList($service_csv = false)
+    public function fetchList($service_csv = false, $mixLanguages = false)
     {
         try {
             $sqlArgs = [$this->locale];
-            #$sql = 'SELECT data_json FROM location WHERE locale = ?';
-
-            $sql = "
-            SELECT 
-            IF(l2.id, l2.data_json, l.data_json) AS data_json
-            FROM location AS l
-            LEFT JOIN location AS l2 ON l2.id = l.id AND l2.locale = ?
-            WHERE l.locale='de'";
-
-            if (!empty($service_csv)) {
-                $sqlArgs[] = $this->locale;
-                $ids = explode(',', $service_csv);
-                $qm = array_fill(0, count($ids), '?');
-
-                $sql = "SELECT IF(l2.id, l2.data_json, l.data_json) AS data_json
-                FROM location AS l 
-                LEFT JOIN location_service AS ls ON ls.service_id = l.id
+            $where = [];
+            $join = [];
+            $groupBy = '';
+            if (false === $mixLanguages) {
+                $where[] = 'l.locale = ?';
+                $sql = 'SELECT data_json FROM location AS l';
+            }
+            else {
+                $where[] = "l.locale='de'";
+                $sql = "SELECT 
+                IF(l2.id, l2.data_json, l.data_json) AS data_json
+                FROM location AS l
                 LEFT JOIN location AS l2 ON l2.id = l.id AND l2.locale = ?
-                WHERE l.locale = 'de' AND
-                ls.location_id IN (" . implode(', ', $qm) . ")
-                GROUP BY ls.service_id";
-                array_push($sqlArgs, ...$ids);
+                ";
             }
 
+            if (!empty($service_csv)) {
+                #$sqlArgs[] = $this->locale;
+                $ids = explode(',', $service_csv);
+                $qm = array_fill(0, count($ids), '?');
+                $join[] = 'LEFT JOIN location_service AS ls ON ls.location_id = l.id';# AND ls.locale = ?';
+
+                $where[] = "ls.service_id IN (" . implode(', ', $qm) . ")";
+                $groupBy = 'GROUP BY l.id';
+                array_push($sqlArgs, ...$ids);
+            }
+            $sql .= " " . implode(' ', $join);
+            $sql .= " WHERE " . implode(' AND ', $where);
+            $sql .= " " . $groupBy;
+
+            #echo '<pre>' . print_r([$sql, $sqlArgs],1) . '</pre>';exit;
             $stm = $this->access()->prepare($sql);
             $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
             $stm->execute($sqlArgs);
@@ -74,7 +81,7 @@ class Location extends Base
             foreach ($locations as $location) {
                 $locationList[$location['id']] = $location;
             }
-            #echo '<pre>' . print_r($serviceList,1) . '</pre>';exit;
+            #echo '<pre>' . print_r($locationList,1) . '</pre>';exit;
             return $locationList;
         }
         catch (\Exception $e) {
@@ -86,16 +93,34 @@ class Location extends Base
      *
      * @return Collection\Services
      */
-    public function fetchFromCsv($location_csv)
+    public function fetchFromCsv($location_csv, $mixLanguages = false)
     {
         try {
             $sqlArgs = [$this->locale];
-            $sql = 'SELECT data_json FROM location WHERE locale = ?';
+            $where = [];
+            $join = [];
+            if (false === $mixLanguages) {
+                $where[] = 'l.locale = ?';
+                $sql = 'SELECT data_json FROM location AS l';
+            }
+            else {
+                $where[] = "l.locale='de'";
+                $sql = "SELECT 
+                IF(l2.id, l2.data_json, l.data_json) AS data_json
+                FROM location AS l
+                LEFT JOIN location AS l2 ON l2.id = l.id AND l2.locale = ?
+                ";
+            }
+
+            #$sql = 'SELECT data_json FROM location WHERE locale = ?';
 
             $ids = explode(',', $location_csv);
             $qm = array_fill(0, count($ids), '?');
-            $sql .= ' AND id IN (' . implode(', ', $qm) . ')';
+            $where[] = 'l.id IN (' . implode(', ', $qm) . ')';
             array_push($sqlArgs, ...$ids);
+
+            $sql .= " " . implode(' ', $join);
+            $sql .= " WHERE " . implode(' AND ', $where);
 
             $stm = $this->access()->prepare($sql);
             $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
@@ -181,67 +206,7 @@ class Location extends Base
             }
             $geoJson[$location['category']['identifier']]['data']['features'][] = $location->getGeoJson();
         }
-
         return $geoJson;
-    }
-
-    /**
-     *
-     * @return \BO\ClientDldb\Collection\Authorities
-     */
-    public function searchAll($querystring, $service_csv = '')
-    {
-        $query = Helper::boolFilteredQuery();
-        $mainquery = new \Elastica\Query();
-        $limit = 1000;
-        $searchquery = new \Elastica\Query\QueryString();
-        if ($querystring > 10000 && $querystring < 15000) {
-            // if it is a postal code, sort by distance and limit results
-            $coordinates = \BO\Dldb\Plz\Coordinates::zip2LatLon($querystring);
-            if (false !== $coordinates) {
-                $searchquery->setQuery('*');
-                $mainquery->addSort([
-                    "_geo_distance" => [
-                        "geo" => [
-                            "lat" => $coordinates['lat'],
-                            "lon" => $coordinates['lon']
-                        ],
-                        "order" => "asc",
-                        "unit" => "km"
-                    ]
-                ]);
-                $limit = 5;
-            }
-        } elseif ('' === trim($querystring)) {
-            // if empty, find all and trust in the filter
-            $searchquery->setQuery('*');
-        } else {
-            $searchquery->setQuery($querystring);
-        }
-        $searchquery->setFields([
-            'name^9',
-            'authority.name^5',
-            'address.street',
-            'address.postal_code^9'
-        ]);
-        $query->getQuery()->addShould($searchquery);
-        $filter = null;
-        if ($service_csv) {
-            foreach (explode(',', $service_csv) as $service_id) {
-                $filter = new \Elastica\Filter\Term(array(
-                    'services.service' => $service_id
-                ));
-                $query->getFilter()->addMust($filter);
-            }
-        }
-        $mainquery->setQuery($query);
-        $resultList = $this->access()
-            ->getIndex()
-            ->getType('location')
-            ->search($mainquery, $limit);
-        return $this->access()
-            ->fromAuthority()
-            ->fromLocationResults($resultList);
     }
 
     public function readSearchResultList($query, $service_csv = null)
@@ -282,70 +247,6 @@ class Location extends Base
         catch (\Exception $e) {
             throw $e;
         }
-    }
-
-    /**
-     * search locations
-     * this function is similar to self::searchAll() but it might get different boosts in the future
-     *
-     * @return Collection
-     */
-    public function _readSearchResultList($querystring, $service_csv = '')
-    {
-        $query = Helper::boolFilteredQuery();
-        $query->getFilter()->addMust(Helper::localeFilter($this->locale));
-        $mainquery = new \Elastica\Query();
-        $limit = 1000;
-        $sort = true;
-        $searchquery = new \Elastica\Query\QueryString();
-        if ($querystring > 10000 && $querystring < 15000) {
-            // if it is a postal code, sort by distance and limit results
-            $coordinates = \BO\Dldb\Plz\Coordinates::zip2LatLon($querystring);
-            if (false !== $coordinates) {
-                $searchquery->setQuery('*');
-                $mainquery->addSort([
-                    "_geo_distance" => [
-                        "geo" => [
-                            "lat" => $coordinates['lat'],
-                            "lon" => $coordinates['lon']
-                        ],
-                        "order" => "asc",
-                        "unit" => "km"
-                    ]
-                ]);
-                $limit = 5;
-                $sort = false;
-            }
-        } elseif ('' === trim($querystring)) {
-            // if empty, find all and trust in the filter
-            $searchquery->setQuery('*');
-        } else {
-            $searchquery->setQuery($querystring);
-        }
-        $searchquery->setFields([
-            'name^9',
-            'authority.name^5',
-            'address.street',
-            'address.postal_code^9'
-        ]);
-        $query->getQuery()->addShould($searchquery);
-        $filter = null;
-        if ($service_csv) {
-            foreach (explode(',', $service_csv) as $service_id) {
-                $filter = new \Elastica\Filter\Term(array(
-                    'services.service' => $service_id
-                ));
-                $query->getFilter()->addMust($filter);
-            }
-        }
-        $mainquery->setQuery($query);
-        $resultList = $this->access()
-            ->getIndex()
-            ->getType('location')
-            ->search($mainquery, $limit);
-        return $this->access()
-            ->fromAuthority()
-            ->fromLocationResults($resultList);
     }
 
     
