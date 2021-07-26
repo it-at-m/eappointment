@@ -41,19 +41,27 @@ class Location extends Base
     {
         try {
             $sqlArgs = [$this->locale];
-            $sql = 'SELECT data_json FROM location WHERE locale = ?';
+            #$sql = 'SELECT data_json FROM location WHERE locale = ?';
+
+            $sql = "
+            SELECT 
+            IF(l2.id, l2.data_json, l.data_json) AS data_json
+            FROM location AS l
+            LEFT JOIN location AS l2 ON l2.id = l.id AND l2.locale = ?
+            WHERE l.locale='de'";
 
             if (!empty($service_csv)) {
                 $sqlArgs[] = $this->locale;
                 $ids = explode(',', $service_csv);
                 $qm = array_fill(0, count($ids), '?');
 
-                $sql = "SELECT l.data_json
+                $sql = "SELECT IF(l2.id, l2.data_json, l.data_json) AS data_json
                 FROM location AS l 
-                LEFT JOIN location_service AS ls ON ls.service_id = l.id AND l.locale = ?
-                WHERE l.locale = ? AND
+                LEFT JOIN location_service AS ls ON ls.service_id = l.id
+                LEFT JOIN location AS l2 ON l2.id = l.id AND l2.locale = ?
+                WHERE l.locale = 'de' AND
                 ls.location_id IN (" . implode(', ', $qm) . ")
-                GROUP BY s.id";
+                GROUP BY ls.service_id";
                 array_push($sqlArgs, ...$ids);
             }
 
