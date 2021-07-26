@@ -14,7 +14,6 @@
   "devDependencies": {
   },
   "dependencies": {
-    "swiper": "~4.3.5"
   },
   "repository": {
     "type": "git",
