@@ -52,7 +52,16 @@ class Service extends Base
     {
         try {
             $sqlArgs = [$this->locale];
-            $sql = 'SELECT data_json FROM service WHERE locale = ?';
+            #$sql = 'SELECT data_json FROM service WHERE locale = ?';
+
+
+            $sql = "SELECT 
+            IF(s2.id, s2.data_json, s.data_json) AS data_json
+            FROM location_service AS ls
+            LEFT JOIN service AS s ON s.id = ls.service_id AND s.locale = 'de'
+            LEFT JOIN service AS s2 ON s2.id = ls.service_id AND s2.locale = ?
+            GROUP BY ls.service_id";
+
 
             if (!empty($location_csv)) {
                 $sqlArgs[] = $this->locale;

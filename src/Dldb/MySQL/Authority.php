@@ -28,6 +28,7 @@ class Authority extends Base
             $authorityList = new Collection();
 
             $sqlArgs = [$this->locale];
+            $sqlArgs = ['de'];
             
             if (!empty($servicelist)) {
                 $sqlArgs[] = $this->locale;
