@@ -18,7 +18,7 @@ class Location extends Base
         'urgent' => 'urgent_json',
         'opening_times' => 'opening_times_json',
         'transit' => 'transit_json',
-        'payment' => 'payment_json',
+        'payment_info' => 'payment_json',
         'accessibility' => 'accessibility_json',
         'appointment' => 'appointment_json',
         '__RAW__' => 'data_json'
@@ -28,7 +28,6 @@ class Location extends Base
         $this->referanceMapping = [
             'name' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
-                
                 'neededFields' => [
                     'id' => 'object_id', 
                     'meta.locale' => 'locale',
@@ -157,11 +156,15 @@ class Location extends Base
     }
 
     public function preSetupFields() {
-        $this->dataRaw['payment'] = [
-            'payment_info' => $this->dataRaw['payment'],
-            'paymentcode' => ($this->dataRaw['paymentcode'] ?? null)
+        #$this->dataRaw['payment'] = [
+        #    'payment_info' => $this->dataRaw['payment'],
+        #    'paymentcode' => ($this->dataRaw['paymentcode'] ?? null)
+        #];
+        $this->dataRaw['payment_info'] = [
+            'info' => $this->dataRaw['payment'],
+            'code' => ($this->dataRaw['paymentcode'] ?? null)
         ];
-        unset($this->dataRaw['paymentcode']);
+        #unset($this->dataRaw['paymentcode']);
     }
 
     public function preSetup()
