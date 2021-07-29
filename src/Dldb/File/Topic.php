@@ -57,9 +57,9 @@ class Topic extends Base
     public function readSearchResultList($querystring)
     {
         $topic = new Entity();
-        $topic['relation']['locations'] = $this->access()->fromLocation()->searchList($querystring);
-        $topic['relation']['services'] = $this->access()->fromService()->searchList($querystring);
-        $topic['links'] = $this->access()->fromLink()->searchAll($querystring);
+        $topic['relation']['locations'] = $this->access()->fromLocation()->readSearchResultList($querystring);
+        $topic['relation']['services'] = $this->access()->fromService()->readSearchResultList($querystring);
+        $topic['links'] = $this->access()->fromLink()->readSearchResultList($querystring);
         return $topic;
     }
 }
