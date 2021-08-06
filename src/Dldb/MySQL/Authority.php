@@ -69,4 +69,55 @@ class Authority extends Base
         }
 
     }
+
+    /**
+     * fetch locations for a list of service and group by authority
+     *
+     * @return Collection\Authorities
+     */
+    public function fetchId($id)
+    {
+        try {
+            $sqlArgs = [$this->locale, $id];
+            $sqlArgs = ['de', $id];
+            
+            
+            $sql = 'SELECT data_json FROM authority WHERE locale = ? AND id = ?';
+            $stm = $this->access()->prepare($sql);
+            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Authority');
+            $stm->execute($sqlArgs);
+
+
+            $stm->execute($sqlArgs);
+            if (!$stm || ($stm && $stm->rowCount() == 0)) {
+                return false;
+            }
+            $authority = $stm->fetch();
+            return $authority;
+        }
+        catch (\Exception $e) {
+            throw $e;
+        }
+
+    }
+
+    /**
+     *
+     * @return Collection
+     */
+    public function readListByOfficePath($officepath)
+    {
+        $authorityList = new Collection();
+
+        $locations = $this->access()->fromLocation($this->locale)->fetchListByOffice($officepath);
+
+        foreach ($locations AS $location) {
+            $authorityList->addLocation($location);
+        }
+        
+        #echo '<pre>' . print_r($authorityList,1) . '</pre>';exit;
+
+
+        return $authorityList;
+    }
 }

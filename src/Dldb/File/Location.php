@@ -71,4 +71,11 @@ class Location extends Base
             ->fromAuthority()
             ->fromLocationResults($locationlist);
     }
+
+    public function fetchListByOffice($office) {
+        return $this->access()->fromAuthority()
+        ->readListByOfficePath($office)
+        ->removeEmptyAuthorities()
+        ->sortByName();
+    }
 }

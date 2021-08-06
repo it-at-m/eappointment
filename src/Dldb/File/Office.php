@@ -21,6 +21,7 @@ class Office extends Base
         $itemList = new Collection();
         foreach ($data['data']['office'] as $item) {
             $itemList[$item['path']] = new Entity($item);
+            $itemList[$item['plural']] = $itemList[$item['path']];
         }
         return $itemList;
     }
@@ -34,4 +35,5 @@ class Office extends Base
     {
         return $this->fetchId($itemId);
     }
+  
 }

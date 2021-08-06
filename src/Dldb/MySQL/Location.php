@@ -89,6 +89,51 @@ class Location extends Base
         }
     }
 
+    public function fetchListByOffice($office, $mixLanguages = false)
+    {
+        try {
+            $sqlArgs = [$this->locale];
+            $where = [];
+            $join = [];
+            $groupBy = '';
+            if (false === $mixLanguages) {
+                $where[] = 'l.locale = ?';
+                $sql = 'SELECT data_json FROM location AS l';
+            }
+            else {
+                $where[] = "l.locale='de'";
+                $sql = "SELECT 
+                IF(l2.id, l2.data_json, l.data_json) AS data_json
+                FROM location AS l
+                LEFT JOIN location AS l2 ON l2.id = l.id AND l2.locale = ?
+                ";
+            }
+            $where[] = "l.category_identifier = ?";
+            $sqlArgs[] = $office;
+                
+            $sql .= " " . implode(' ', $join);
+            $sql .= " WHERE " . implode(' AND ', $where);
+            
+            $sql .= " " . $groupBy;
+
+            #echo '<pre>' . print_r([$sql, $sqlArgs],1) . '</pre>';exit;
+            $stm = $this->access()->prepare($sql);
+            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
+            $stm->execute($sqlArgs);
+            
+            $locations = $stm->fetchAll();
+            $locationList = new Collection();
+            foreach ($locations as $location) {
+                $locationList[$location['id']] = $location;
+            }
+            #echo '<pre>' . print_r($locationList,1) . '</pre>';exit;
+            return $locationList;
+        }
+        catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
     /**
      *
      * @return Collection\Services
@@ -248,8 +293,6 @@ class Location extends Base
             throw $e;
         }
     }
-
-    
 
     public function fetchLocationsForCompilation($authoritys = [], $locations = [])
     {
