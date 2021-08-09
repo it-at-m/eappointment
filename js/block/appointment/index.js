@@ -78,7 +78,7 @@ class View extends RequestView {
             this.bindEvents();
             this.$main.find('select#process_time').trigger('change');
         }).then(() => {
-            if (this.selectedScope) {
+            if (this.selectedScope || this.selectedDate) {
                 this.loadFreeProcessList().loadList().then(() => {
                     this.bindEvents();
                 });
