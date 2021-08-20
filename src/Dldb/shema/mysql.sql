@@ -300,6 +300,7 @@ CREATE TABLE `topic_cluster` (
   `topic_id` int(11) NOT NULL DEFAULT 0,
   `parent_id` int(11) NOT NULL DEFAULT 0,
   `rank` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`topic_id`,`parent_id`,`rank`),
   KEY `topic_id_index` (`topic_id`),
   KEY `parent_id_index` (`parent_id`),
   KEY `rank_index` (`rank`)
@@ -323,6 +324,7 @@ CREATE TABLE `topic_links` (
   `search` text DEFAULT NULL,
   `meta_json` text DEFAULT NULL,
   `data_json` text DEFAULT NULL,
+  PRIMARY KEY (`topic_id`,`locale`,`rank`),
   FULLTEXT KEY `keywords_search_index` (`search`),
   KEY `topic_id_index` (`topic_id`),
   KEY `rank_index` (`rank`),
