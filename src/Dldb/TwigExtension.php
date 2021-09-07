@@ -38,7 +38,17 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('dayIsBookable', array($this, 'dayIsBookable')),
             new \Twig_SimpleFunction('azPrefixList', array($this, 'azPrefixList')),
             new \Twig_SimpleFunction('formatPhoneNumber', array($this, 'formatPhoneNumber')),
+            new \Twig_SimpleFunction('getOSMOptions', array($this, 'getOSMOptions')),
+            new \Twig_SimpleFunction('getOSMAccessToken', array($this, 'getOSMAccessToken')),
         );
+    }
+
+    public function getOSMAccessToken() {
+        return \APP::OSM_ACCESS_TOKEN;
+    }
+
+    public function getOSMOptions() {
+        return 'gestureHandling: ' . \APP::OSM_GESTURE_HANDLING;
     }
 
     public function formatPhoneNumber($phoneNumber) {
