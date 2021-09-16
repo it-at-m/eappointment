@@ -45,12 +45,12 @@ class ScopeAppointmentsByDay extends BaseController
         );
     }
 
-    protected static function readSelectedDateTime($selectedDate)
+    public static function readSelectedDateTime($selectedDate)
     {
          return $selectedDate ? new \DateTimeImmutable($selectedDate) : \App::$now;
     }
 
-    protected static function readSelectedScope($workstation, $workstationRequest, $scopeId)
+    public static function readSelectedScope($workstation, $workstationRequest, $scopeId)
     {
         if ($workstation->getScope()->id != $scopeId) {
             $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/')->getEntity();
@@ -59,7 +59,7 @@ class ScopeAppointmentsByDay extends BaseController
         return $workstationRequest->getScope();
     }
 
-    protected static function readProcessList($workstationRequest, $selectedDateTime)
+    public static function readProcessList($workstationRequest, $selectedDateTime)
     {
         $processList = $workstationRequest->readProcessListByDate($selectedDateTime);
 
