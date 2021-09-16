@@ -24,11 +24,12 @@ class ScopeAppointmentsByDayXlsExport extends ScopeAppointmentsByDay
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
         $selectedDateTime = static::readSelectedDateTime($args['date']);
+        $scope = static::readSelectedScope($workstation, $workstationRequest, $args['id']);
         $processList = static::readProcessList($workstationRequest, $selectedDateTime);
-
+        
         $xlsSheetTitle = $selectedDateTime->format('d.m.Y');
         $clusterColumn = $workstation->isClusterEnabled() ? 'Kürzel' : 'Lfd. Nummer';
         $xlsHeaders = [
