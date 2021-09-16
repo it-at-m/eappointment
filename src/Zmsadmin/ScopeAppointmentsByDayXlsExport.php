@@ -12,7 +12,7 @@ use \XLSXWriter;
 /**
  * Handle requests concerning services
  */
-class ScopeAppointmentsByDayXlsExport extends ScopeAppointmentsByDay
+class ScopeAppointmentsByDayXlsExport extends BaseController
 {
 
     /**
@@ -26,9 +26,9 @@ class ScopeAppointmentsByDayXlsExport extends ScopeAppointmentsByDay
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
-        $selectedDateTime = static::readSelectedDateTime($args['date']);
-        $scope = static::readSelectedScope($workstation, $workstationRequest, $args['id']);
-        $processList = static::readProcessList($workstationRequest, $selectedDateTime);
+        $selectedDateTime = ScopeAppointmentsByDay::readSelectedDateTime($args['date']);
+        ScopeAppointmentsByDay::readSelectedScope($workstation, $workstationRequest, $args['id']);
+        $processList = ScopeAppointmentsByDay::readProcessList($workstationRequest, $selectedDateTime);
         
         $xlsSheetTitle = $selectedDateTime->format('d.m.Y');
         $clusterColumn = $workstation->isClusterEnabled() ? 'Kürzel' : 'Lfd. Nummer';
