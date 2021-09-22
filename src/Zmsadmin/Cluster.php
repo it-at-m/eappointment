@@ -23,8 +23,12 @@ class Cluster extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $entityId = Validator::value($args['clusterId'])->isNumber()->getValue();
         $departmentId = Validator::value($args['departmentId'])->isNumber()->getValue();
-        $entity = \App::$http->readGetResult('/cluster/' . $entityId . '/', ['resolveReferences' => 2])->getEntity();
-        $organisation = \App::$http->readGetResult('/cluster/' . $entityId . '/organisation/')->getEntity();
+
+        $entity = \App::$http
+                ->readGetResult('/cluster/' . $entityId . '/', ['resolveReferences' => 2])
+                ->getEntity();
+        $organisation = $this->testOrganisation($entityId);
+        
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
 
         $department = \App::$http->readGetResult(
@@ -67,5 +71,19 @@ class Cluster extends BaseController
                 'success' => $success,
             )
         );
+    }
+
+    protected function testOrganisation($entityId)
+    {
+        try {
+            $organisation = \App::$http->readGetResult('/cluster/' . $entityId . '/organisation/')->getEntity();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if ($exception->template == 'BO\Zmsdb\Exception\ClusterWithoutScopes') {
+                $organisation = new \BO\Zmsentities\Organisation();
+            } else {
+                throw $exception;
+            }
+        }
+        return $organisation;
     }
 }
