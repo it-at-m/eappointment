@@ -203,7 +203,9 @@ class View extends BaseView {
         if (changeScope) this.selectedScope = $(event.currentTarget).val();
         const sendData = $(event.currentTarget).closest('form').serializeArray();
         this.loadCall(`${this.includeUrl}/workstation/select/`, 'POST', sendData).then(() => {
-            if (changeScope) {
+            if (changeScope && this.selectedScope == 'cluster') {
+                location.reload();
+            } else if (changeScope && this.selectedScope != 'cluster') {
                 this.loadAllPartials();
             } else {
                 return Promise.all([
