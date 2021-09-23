@@ -212,4 +212,39 @@ class Useraccount extends Schema\Entity
 
         return $this;
     }
+
+    /**
+     * verify hashed password and create new if needs rehash
+     *
+     * @return array $useraccount
+    */
+    public function withVerifiedHash($password) {
+
+        // Do you have old, turbo-legacy, non-crypt hashes?
+        if( strpos( $this->password, '$' ) !== 0 ) {
+            //error_log(__METHOD__ . "::legacy_hash\n");
+            $result = $this->password === md5($password);
+        } else {
+            //error_log(__METHOD__ . "::password_verify\n");
+            $result = password_verify($password, $this->password);
+        }
+
+        // on passed validation check if the hash needs updating.
+        if( $result && password_needs_rehash($this->password, PASSWORD_DEFAULT) ) {
+            //error_log(__METHOD__ . "::rehash\n");
+            $this->password = $this->setHash($password);
+        }
+
+        return $this;
+    }
+
+    /**
+     * set salted hash by string
+     *
+     * @return string $hash
+    */
+    public function setHash($string) {
+        $hash = password_hash($string, PASSWORD_DEFAULT);
+        return $hash;
+    }
 }
