@@ -218,10 +218,11 @@ class Useraccount extends Schema\Entity
      *
      * @return array $useraccount
     */
-    public function withVerifiedHash($password) {
+    public function withVerifiedHash($password)
+    {
 
         // Do you have old, turbo-legacy, non-crypt hashes?
-        if( strpos( $this->password, '$' ) !== 0 ) {
+        if (strpos($this->password, '$') !== 0) {
             //error_log(__METHOD__ . "::legacy_hash\n");
             $result = $this->password === md5($password);
         } else {
@@ -230,7 +231,7 @@ class Useraccount extends Schema\Entity
         }
 
         // on passed validation check if the hash needs updating.
-        if( $result && password_needs_rehash($this->password, PASSWORD_DEFAULT) ) {
+        if ($result && password_needs_rehash($this->password, PASSWORD_DEFAULT)) {
             //error_log(__METHOD__ . "::rehash\n");
             $this->password = $this->setHash($password);
         }
@@ -243,7 +244,8 @@ class Useraccount extends Schema\Entity
      *
      * @return string $hash
     */
-    public function setHash($string) {
+    public function setHash($string)
+    {
         $hash = password_hash($string, PASSWORD_DEFAULT);
         return $hash;
     }
