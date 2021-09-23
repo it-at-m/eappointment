@@ -142,7 +142,7 @@ class Workstation extends Base
                     $authKey,
                     $dateTime->format('Y-m-d'),
                     $loginName,
-                    md5($password)
+                    $password
                 )
             );
             if ($result) {
