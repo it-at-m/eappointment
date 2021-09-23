@@ -88,7 +88,7 @@ class Useraccount extends Base implements MappingInterface
 
     public function addConditionPassword($password)
     {
-        $this->query->where('useraccount.Passworthash', '=', md5($password));
+        $this->query->where('useraccount.Passworthash', '=', $password);
         return $this;
     }
 
@@ -115,7 +115,7 @@ class Useraccount extends Base implements MappingInterface
         $data = array();
         $data['Name'] = $entity->id;
         $data['email'] = $entity->email;
-        $data['Passworthash'] = (isset($entity->password)) ? md5($entity->password) : null;
+        $data['Passworthash'] = (isset($entity->password)) ? $entity->password : null;
         $data['Berechtigung'] = $entity->getRightsLevel();
         if (isset($entity->departments) && 0 < $entity->departments->count()) {
             $data['BehoerdenID'] = $entity->departments->getFirst()->id;
