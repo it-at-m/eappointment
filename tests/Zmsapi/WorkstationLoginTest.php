@@ -10,7 +10,7 @@ class WorkstationLoginTest extends Base
 
     public static $loginName = 'superuser';
 
-    public static $authKey = 'c66aa72c84901eacb78fb9ef19bdb7bf';
+    public static $authKey = 'vorschau';
 
     public function __construct()
     {
