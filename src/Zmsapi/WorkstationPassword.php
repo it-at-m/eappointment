@@ -23,15 +23,17 @@ class WorkstationPassword extends BaseController
     ) {
         $workstation = (new Helper\User($request))->checkRights();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $useraccount = new \BO\Zmsentities\Useraccount($input);
-        $useraccount->testValid();
-        Helper\UserAuth::testUseraccountExists($workstation->getUseraccount()->id, $useraccount->password);
-        if ($useraccount->changePassword) {
-            $useraccount->password = reset($useraccount->changePassword);
+        $entity = new \BO\Zmsentities\Useraccount($input);
+        $entity->testValid();
+        $useraccount = $workstation->getUseraccount();
+        Helper\UserAuth::testUseraccountExists($entity->getId());
+        Helper\UserAuth::testPasswordMatching($useraccount, $entity->password);
+        if (isset($entity->changePassword)) {
+            $useraccount->password = $useraccount->getHash(reset($entity->changePassword));
         }
 
         $message = Response\Message::create($request);
-        $message->data = (new Query)->updateEntity($workstation->getUseraccount()->id, $useraccount);
+        $message->data = (new Query)->updateEntity($workstation->getUseraccount()->getId(), $useraccount);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

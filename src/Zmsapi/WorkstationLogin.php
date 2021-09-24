@@ -28,11 +28,16 @@ class WorkstationLogin extends BaseController
         $validator = $request->getAttribute('validator');
         $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $useraccount = new \BO\Zmsentities\Useraccount($input);
-        $useraccount->testValid();
+        $entity = new \BO\Zmsentities\Useraccount($input);
+        $entity->testValid();
 
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        Helper\UserAuth::testUseraccountExists($useraccount->id, $useraccount->password);
+        Helper\UserAuth::testUseraccountExists($entity->getId());
+        
+        $useraccount = Helper\UserAuth::getVerifiedUseraccount($entity);
+        Helper\UserAuth::testPasswordMatching($useraccount, $entity->password);
+        
+        
         $workstation = (new Helper\User($request, $resolveReferences))->readWorkstation();
         Helper\User::testWorkstationIsOveraged($workstation);
 

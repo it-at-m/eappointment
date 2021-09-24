@@ -54,7 +54,7 @@ class WorkstationPasswordTest extends Base
         $this->expectExceptionCode(401);
         $this->render([], [
             '__body' => '{
-                "id": "'. static::$loginName .'",
+                "id": "unittest",
                 "password": "vorschau2",
                 "departments": [
                     {"id":1}
