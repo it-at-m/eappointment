@@ -14,8 +14,8 @@ class LogoutTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         //superuser bo
         $userAccount = new UserAccountEntity(array(
-            'id' => 'superuser',
-            'password' => 'vorschau'
+            'id' => 'berlinonline',
+            'password' => 'c66aa72c84901eacb78fb9ef19bdb7bf'
         ));
 
         $workstation = $query->writeEntityLoginByName($userAccount->id, $userAccount->password, $now, 2);
