@@ -238,7 +238,8 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function isPasswordNeedingRehash() {
+    public function isPasswordNeedingRehash()
+    {
         return password_needs_rehash($this->password, PASSWORD_DEFAULT);
     }
 
