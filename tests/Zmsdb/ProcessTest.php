@@ -34,7 +34,8 @@ class ProcessTest extends Base
     public function testReadByWorkstation()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $workstation = (new \BO\Zmsdb\Workstation)->writeEntityLoginByName('testadmin', 'vorschau', $now, 2);
+        $workstation = (new \BO\Zmsdb\Workstation)
+            ->writeEntityLoginByName('testadmin', '128196aca512b2989d1d442455a57629', $now, 2);
         $process =(new Query)->readEntity(10029, '1c56');
         $workstation->process = (new \BO\Zmsdb\Workstation)->writeAssignedProcess($workstation, $process, $now);
         $process = (new Query)->readByWorkstation($workstation, 1);
