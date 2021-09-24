@@ -57,6 +57,7 @@ class Useraccount extends Base implements MappingInterface
     {
         return [
             'id' => 'useraccount.Name',
+            'password' => 'useraccount.Passworthash',
             'email' => 'useraccount.email',
             'lastLogin' => 'useraccount.Datum',
             'rights__superuser' => self::expression('`useraccount`.`Berechtigung` = 90'),
@@ -114,7 +115,7 @@ class Useraccount extends Base implements MappingInterface
     {
         $data = array();
         $data['Name'] = $entity->id;
-        $data['email'] = $entity->email;
+        $data['email'] = (isset($entity->email)) ? $entity->email : null;
         $data['Passworthash'] = (isset($entity->password)) ? $entity->password : null;
         $data['Berechtigung'] = $entity->getRightsLevel();
         if (isset($entity->departments) && 0 < $entity->departments->count()) {
