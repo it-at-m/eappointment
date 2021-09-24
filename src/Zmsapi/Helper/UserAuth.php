@@ -23,7 +23,8 @@ class UserAuth
         return $useraccount;
     }
 
-    public static function testPasswordMatching($useraccount, $password) {
+    public static function testPasswordMatching($useraccount, $password)
+    {
         if (! password_verify($password, $useraccount->password)) {
             $exception = new \BO\Zmsapi\Exception\Useraccount\InvalidCredentials();
             $exception->data['password']['messages'] = [
@@ -52,8 +53,8 @@ class UserAuth
             $useraccount = $useraccountQuery->readEntityByAuthKey($xAuthKey);
         }
 
-        if ($useraccount && $useraccount->isPasswordNeedingRehash()) {      
-            $useraccount->withVerifiedHash($useraccount->password);    
+        if ($useraccount && $useraccount->isPasswordNeedingRehash()) {
+            $useraccount->withVerifiedHash($useraccount->password);
             $useraccount = $useraccountQuery->updateEntity($useraccount->getId(), $useraccount);
         }
 
