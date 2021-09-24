@@ -7,6 +7,34 @@ use \BO\Zmsdb\Useraccount;
 
 class UserAuth
 {
+     /**
+     * Get existing useraccount entity with verified password hash
+     *
+     * @return array $useraccount
+    */
+    public static function getVerifiedUseraccount($entity)
+    {
+        $useraccountQuery = new Useraccount();
+        $useraccount = $useraccountQuery->readEntity($entity->getId());
+        if ($useraccount->isPasswordNeedingRehash()) {
+            $useraccount->withVerifiedHash($entity->password);
+            $useraccount = $useraccountQuery->updateEntity($useraccount->getId(), $useraccount);
+        }
+        return $useraccount;
+    }
+
+    public static function testPasswordMatching($useraccount, $password) {
+        if (! password_verify($password, $useraccount->password)) {
+            $exception = new \BO\Zmsapi\Exception\Useraccount\InvalidCredentials();
+            $exception->data['password']['messages'] = [
+                'Der Nutzername und das Passwort passen nicht zusammen'
+            ];
+            throw $exception;
+        }
+        return true;
+    }
+
+
     /**
      * Get useraccount entity by http basic auth or XAuthKey
      *
@@ -18,11 +46,17 @@ class UserAuth
         $useraccountQuery = new Useraccount();
         $basicAuth = static::getBasicAuth($request);
         $xAuthKey = static::getXAuthKey($request);
-        if ($basicAuth && static::testUseraccountExists($basicAuth['username'], $basicAuth['password'])) {
+        if ($basicAuth && static::testUseraccountExists($basicAuth['username'])) {
             $useraccount = $useraccountQuery->readEntity($basicAuth['username']);
         } elseif ($xAuthKey) {
             $useraccount = $useraccountQuery->readEntityByAuthKey($xAuthKey);
         }
+
+        if ($useraccount && $useraccount->isPasswordNeedingRehash()) {      
+            $useraccount->withVerifiedHash($useraccount->password);    
+            $useraccount = $useraccountQuery->updateEntity($useraccount->getId(), $useraccount);
+        }
+
         return ($useraccount && $useraccount->hasId()) ? $useraccount : null;
     }
 
@@ -31,10 +65,10 @@ class UserAuth
      *
      * @return exception $exception
     */
-    public static function testUseraccountExists($loginName = false, $password = false)
+    public static function testUseraccountExists($loginName)
     {
         $query = new Useraccount();
-        if (! $query->readIsUserExisting($loginName, $password)) {
+        if (! $query->readIsUserExisting($loginName)) {
             $exception = new \BO\Zmsapi\Exception\Useraccount\InvalidCredentials();
             $exception->data['password']['messages'] = [
                 'Der Nutzername oder das Passwort wurden falsch eingegeben'
