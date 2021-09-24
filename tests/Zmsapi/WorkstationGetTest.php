@@ -13,7 +13,7 @@ class WorkstationGetTest extends Base
 
     public static $loginName = 'superuser'; // testadmin
 
-    public static $authKey = 'c66aa72c84901eacb78fb9ef19bdb7bf'; // 128196aca512b2989d1d442455a57629
+    public static $authKey = 'vorschau'; // vorschau
 
     public static $basicAuth = 'YmVybGlub25saW5lOjFwYWxtZTE='; // 6e7eaebc229aab21c976d857f59e7842
 
@@ -21,7 +21,7 @@ class WorkstationGetTest extends Base
     {
         parent::__construct();
         static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';
-        static::$authKey = (! \App::DEBUG) ? static::$authKey : '128196aca512b2989d1d442455a57629';
+        static::$authKey = (! \App::DEBUG) ? static::$authKey : 'vorschau';
         static::$basicAuth = (! \App::DEBUG) ? static::$basicAuth : 'dGVzdGFkbWluOnZvcnNjaGF1';
     }
 
@@ -39,7 +39,7 @@ class WorkstationGetTest extends Base
     public function testReadWorkstationByXAuthKey()
     {
         $workstation = (new \BO\Zmsdb\Workstation)
-            ->writeEntityLoginByName(static::$loginName, static::$authKey, \App::getNow(), 1);
+            ->writeEntityLoginByName(static::$loginName, md5(static::$authKey), \App::getNow(), 1);
         $logInHash = (new \BO\Zmsdb\Workstation)->readLoggedInHashByName($workstation->getUseraccount()->id);
         $response = $this->render([], [
             '__header' => [
@@ -59,7 +59,7 @@ class WorkstationGetTest extends Base
             ],
             '__userinfo' => [
                 'username' => static::$loginName,
-                'password' => 'vorschau'
+                'password' => static::$authKey
             ],
             'resolveReferences' => 0
         ], []);
