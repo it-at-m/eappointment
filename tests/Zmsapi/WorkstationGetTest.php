@@ -13,16 +13,16 @@ class WorkstationGetTest extends Base
 
     public static $loginName = 'superuser'; // testadmin
 
-    public static $authKey = 'vorschau'; // vorschau
+    public static $authKey = 'c66aa72c84901eacb78fb9ef19bdb7bf'; // 128196aca512b2989d1d442455a57629
 
-    public static $basicAuth = 'YmVybGlub25saW5lOjFwYWxtZTE='; // dGVzdGFkbWluOnZvcnNjaGF1
+    public static $basicAuth = 'YmVybGlub25saW5lOjFwYWxtZTE='; // 6e7eaebc229aab21c976d857f59e7842
 
     public function __construct()
     {
         parent::__construct();
-        //static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';
-        //static::$authKey = (! \App::DEBUG) ? static::$authKey : 'vorschau';
-        //static::$basicAuth = (! \App::DEBUG) ? static::$basicAuth : 'dGVzdGFkbWluOnZvcnNjaGF1';
+        static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';
+        static::$authKey = (! \App::DEBUG) ? static::$authKey : '128196aca512b2989d1d442455a57629';
+        static::$basicAuth = (! \App::DEBUG) ? static::$basicAuth : 'dGVzdGFkbWluOnZvcnNjaGF1';
     }
 
     public function testRendering()
@@ -59,7 +59,7 @@ class WorkstationGetTest extends Base
             ],
             '__userinfo' => [
                 'username' => static::$loginName,
-                'password' => static::$authKey
+                'password' => 'vorschau'
             ],
             'resolveReferences' => 0
         ], []);

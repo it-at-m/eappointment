@@ -17,13 +17,13 @@ class WorkstationUpdateTest extends Base
 
     public static $loginName = 'superuser';
 
-    public static $authKey = 'vorschau';
+    public static $authKey = 'c66aa72c84901eacb78fb9ef19bdb7bf';
 
     public function __construct()
     {
         parent::__construct();
         static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';
-        static::$authKey = (! \App::DEBUG) ? static::$authKey : 'vorschau';
+        static::$authKey = (! \App::DEBUG) ? static::$authKey : '128196aca512b2989d1d442455a57629';
     }
 
     public function testOveragedLogin()
