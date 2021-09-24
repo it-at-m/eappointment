@@ -220,7 +220,6 @@ class Useraccount extends Schema\Entity
     */
     public function withVerifiedHash($password)
     {
-
         // Do you have old, turbo-legacy, non-crypt hashes?
         if (strpos($this->password, '$') !== 0) {
             //error_log(__METHOD__ . "::legacy_hash\n");
@@ -231,12 +230,16 @@ class Useraccount extends Schema\Entity
         }
 
         // on passed validation check if the hash needs updating.
-        if ($result && password_needs_rehash($this->password, PASSWORD_DEFAULT)) {
+        if ($result && $this->isPasswordNeedingRehash()) {
+            $this->password = $this->getHash($password);
             //error_log(__METHOD__ . "::rehash\n");
-            $this->password = $this->setHash($password);
         }
 
         return $this;
+    }
+
+    public function isPasswordNeedingRehash() {
+        return password_needs_rehash($this->password, PASSWORD_DEFAULT);
     }
 
     /**
@@ -244,7 +247,7 @@ class Useraccount extends Schema\Entity
      *
      * @return string $hash
     */
-    public function setHash($string)
+    public function getHash($string)
     {
         $hash = password_hash($string, PASSWORD_DEFAULT);
         return $hash;
