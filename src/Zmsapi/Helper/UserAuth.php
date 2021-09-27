@@ -15,11 +15,8 @@ class UserAuth
     public static function getVerifiedUseraccount($entity)
     {
         $useraccountQuery = new Useraccount();
-        $useraccount = $useraccountQuery->readEntity($entity->getId());
-        if ($useraccount->isPasswordNeedingRehash()) {
-            $useraccount->withVerifiedHash($entity->password);
-            $useraccount = $useraccountQuery->updateEntity($useraccount->getId(), $useraccount);
-        }
+        $useraccount = $useraccountQuery->readEntity($entity->getId())->withVerifiedHash($entity->password);
+        $useraccount = $useraccountQuery->updateEntity($useraccount->getId(), $useraccount);
         return $useraccount;
     }
 
