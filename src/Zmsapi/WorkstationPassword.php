@@ -27,7 +27,7 @@ class WorkstationPassword extends BaseController
         $entity->testValid();
         Helper\UserAuth::testUseraccountExists($entity->getId());
         $useraccount = Helper\UserAuth::getVerifiedUseraccount($entity);
-        Helper\UserAuth::testPasswordMatching($useraccount, $entity->password);        
+        Helper\UserAuth::testPasswordMatching($useraccount, $entity->password);
         if (isset($entity->changePassword)) {
             $useraccount->password = $useraccount->getHash(reset($entity->changePassword));
         }
