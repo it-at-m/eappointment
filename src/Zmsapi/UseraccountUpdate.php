@@ -26,17 +26,20 @@ class UseraccountUpdate extends BaseController
         array $args
     ) {
         (new Helper\User($request, 2))->checkRights('useraccount');
-        if (! (new Useraccount)->readIsUserExisting($args['loginname'])) {
-            throw new Exception\Useraccount\UseraccountNotFound();
-        }
+        
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-
         $entity = new \BO\Zmsentities\Useraccount($input);
         $this->testEntity($entity, $input, $args);
+        
+        $useraccount = Helper\UserAuth::getVerifiedUseraccount($entity);
+       
+        if (isset($entity->changePassword)) {
+            $useraccount->password = $useraccount->getHash(reset($entity->changePassword));
+        }
 
         $message = Response\Message::create($request);
-        $message->data = (new Useraccount)->updateEntity($args['loginname'], $entity, $resolveReferences);
+        $message->data = (new Useraccount)->updateEntity($args['loginname'], $useraccount, $resolveReferences);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
@@ -65,6 +68,7 @@ class UseraccountUpdate extends BaseController
             throw new Exception\Useraccount\UseraccountAlreadyExists();
         }
 
+        Helper\UserAuth::testUseraccountExists($args['loginname']);
         Helper\User::testWorkstationAccessRights($entity);
         Helper\User::testWorkstationAssignedRights($entity);
     }

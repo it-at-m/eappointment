@@ -28,6 +28,7 @@ class UseraccountAdd extends BaseController
         $entity = new \BO\Zmsentities\Useraccount($input);
         $this->testEntity($entity, $input);
         Helper\User::testWorkstationAccessRights($entity);
+        $entity->password = $entity->getHash($entity->password);
 
         $message = Response\Message::create($request);
         $message->data = (new Useraccount)->writeEntity($entity, $resolveReferences);
