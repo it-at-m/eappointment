@@ -28,6 +28,7 @@ class UseraccountAddTest extends Base
                   {"id": 74}
               ],
               "id": "unittest",
+              "password": "unittest",
               "email": "unittest@berlinonline.de",
               "lastLogin": 1459461600
             }'
@@ -60,7 +61,8 @@ class UseraccountAddTest extends Base
               "departments": [
                   {"id": 74}
               ],
-              "id": "testuser"
+              "id": "testuser",
+              "password": "unittest"
             }'
         ], []);
     }
@@ -87,7 +89,8 @@ class UseraccountAddTest extends Base
               "departments": [
                   {"id": 74}
               ],
-              "id": "unittest_rights_failed"
+              "id": "unittest_rights_failed",
+              "password": "unittest"
             }'
         ], []);
     }
@@ -114,7 +117,8 @@ class UseraccountAddTest extends Base
                   {"id": 74}
               ],
               "id": "unittest-superuser",
-              "email": "test@zms.de"
+              "email": "test@zms.de",
+              "password": "unittest"
             }'
         ], []);
         $this->assertStringContainsString('useraccount.json', (string)$response->getBody());
@@ -148,7 +152,8 @@ class UseraccountAddTest extends Base
               "id": "unittest",
               "email": "unittest@berlinonline.de",
               "lastLogin": 1459461600,
-              "test": "unittest"
+              "test": "unittest",
+              "password": "unittest"
             }'
         ], []);
     }
@@ -174,7 +179,8 @@ class UseraccountAddTest extends Base
               },
               "id": "unittest",
               "email": "unittest@berlinonline.de",
-              "lastLogin": 1459461600
+              "lastLogin": 1459461600,
+              "password": "unittest"
             }'
         ], []);
     }

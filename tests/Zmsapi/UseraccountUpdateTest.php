@@ -28,7 +28,8 @@ class UseraccountUpdateTest extends Base
                   {"id": 74}
               ],
               "email": "unittest@berlinonline.de",
-              "id": "unittest"
+              "id": "unittest",
+              "password": "unittest"
             }'
         ], []);
         $this->assertStringContainsString('useraccount.json', (string)$response->getBody());
