@@ -95,7 +95,7 @@ class ValidatorProcessTest extends Base
         $this->assertNotEquals($process->getId(), $parameters['id']);
         $collectionStatus = $processValidator->getCollection()->getStatus();
         $this->assertEquals(
-            "Eine gültige Vorgangsnummer ist in der Regel eine sechsstellig Nummer wie '123456'", 
+            "Eine gültige Vorgangsnummer ist in der Regel eine sechsstellige Nummer wie '123456'", 
             $collectionStatus['id']['messages'][0]->message
         );
     }

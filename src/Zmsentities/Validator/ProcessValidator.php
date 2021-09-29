@@ -45,7 +45,7 @@ class ProcessValidator
     public function validateId(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
     {
         $valid = $unvalid->isNumber(
-            "Eine gültige Vorgangsnummer ist in der Regel eine sechsstellig Nummer wie '123456'"
+            "Eine gültige Vorgangsnummer ist in der Regel eine sechsstellige Nummer wie '123456'"
         );
         $length = strlen((string)$valid->getValue());
         if ($length) {
