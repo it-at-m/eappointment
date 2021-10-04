@@ -52,10 +52,11 @@ class TwigExtension extends \Twig_Extension
     {
         $settingsRepository = \App::$repository->fromSetting();
         $active = (bool)($settingsRepository->fetchName('d115.active') ?? true);
+        
 
         return $active;
     }
-    
+
     public function getD115OpeningTimes()
     {
         $settingsRepository = \App::$repository->fromSetting();
