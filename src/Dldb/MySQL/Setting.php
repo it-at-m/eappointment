@@ -24,7 +24,7 @@ class Setting extends Base
             
             $settingValue = $stm->fetchColumn();
 
-            return $settingValue;
+            return $settingValue ?? null;
         }
         catch (\Exception $e) {
             throw $e;

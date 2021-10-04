@@ -40,7 +40,44 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('formatPhoneNumber', array($this, 'formatPhoneNumber')),
             new \Twig_SimpleFunction('getOSMOptions', array($this, 'getOSMOptions')),
             new \Twig_SimpleFunction('getOSMAccessToken', array($this, 'getOSMAccessToken')),
+            new \Twig_SimpleFunction('getD115Enabeld', array($this, 'getD115Enabeld')),
+            new \Twig_SimpleFunction('getD115OpeningTimes', array($this, 'getD115OpeningTimes')),
+            new \Twig_SimpleFunction('getD115Text', array($this, 'getD115Text')),
+            new \Twig_SimpleFunction('getBobbiChatButtonEnabeld', array($this, 'getBobbiChatButtonEnabeld')),
         );
+    }
+
+    
+    public function getD115Enabeld()
+    {
+        $settingsRepository = \App::$repository->fromSetting();
+        $active = (bool)($settingsRepository->fetchName('d115.active') ?? true);
+
+        return $active;
+    }
+    
+    public function getD115OpeningTimes()
+    {
+        $settingsRepository = \App::$repository->fromSetting();
+        $openinTimes = $settingsRepository->fetchName('d115.openingTime') ?? \APP::D115_DEFAULT_OPENINGTIME;
+
+        return $openinTimes;
+    }
+
+    public function getD115Text()
+    {
+        $settingsRepository = \App::$repository->fromSetting();
+        $text = $settingsRepository->fetchName('d115.messageHtml') ?? \APP::D115_DEFAULT_TEXT;
+
+        return $text;
+    }
+
+    public function getBobbiChatButtonEnabeld()
+    {
+        $settingsRepository = \App::$repository->fromSetting();
+        $buttonEnabled = (bool)($settingsRepository->fetchName('frontend.bobbi.chatbutton.enabled') ?? false);
+
+        return $buttonEnabled;
     }
 
     public function getOSMAccessToken() {
