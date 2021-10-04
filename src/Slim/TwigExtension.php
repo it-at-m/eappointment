@@ -240,9 +240,10 @@ class TwigExtension extends \Twig_Extension
         return $this->includeUrl(false);
     }
 
-    public function getEsiFromPath($path)
+    public function getEsiFromPath($path, $locale = false)
     {
-        return \App::$esiBaseUrl . \App::$$path;
+        $localePath = ($locale && 'de' != $locale) ? '/' .$locale : '';
+        return \App::$esiBaseUrl . $localePath . \App::$$path;
     }
 
     public function getClientHost()
