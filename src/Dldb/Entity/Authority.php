@@ -121,4 +121,12 @@ class Authority extends Base
         }
         return false;
     }
+
+    public function clearLocations() {
+        $this['locations'] = new \BO\Dldb\Collection\Locations();
+    }
+
+    public function addLocation(\BO\Dldb\Entity\Location $location) {
+        $this['locations'][$location['id']] = $location;
+    }
 }

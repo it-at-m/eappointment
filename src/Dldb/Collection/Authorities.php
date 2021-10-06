@@ -197,4 +197,13 @@ class Authorities extends Base
         }
         return $authoritylist;
     }
+
+    public function getAuthorityIds() {
+        $ids = [];
+
+        foreach ($this as $key => $authority) {
+            $ids[] = $authority['id'] ?? $key;
+        }
+        return $ids;
+    }
 }
