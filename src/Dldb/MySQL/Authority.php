@@ -80,7 +80,6 @@ class Authority extends Base
                 }
 
                 #echo '<pre>' . print_r([$authorityList],1).'</pre>';exit;
-
             }
             else {
                 $sqlArgs = ['de'];
@@ -93,15 +92,11 @@ class Authority extends Base
                     $authorityList[$authority['id']] = $authority;
                     $authority->clearLocations();
                 }
-
                 $locations = $this->access()->fromLocation($this->locale)->fetchList(false, true);
                 
                 foreach ($locations as $location) {
                     $authorityList[$location['authority']['id']]->addLocation($location);
                 }
-
-                
-
             }
             return $authorityList;
         }

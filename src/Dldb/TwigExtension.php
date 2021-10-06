@@ -44,7 +44,33 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('getD115OpeningTimes', array($this, 'getD115OpeningTimes')),
             new \Twig_SimpleFunction('getD115Text', array($this, 'getD115Text')),
             new \Twig_SimpleFunction('getBobbiChatButtonEnabeld', array($this, 'getBobbiChatButtonEnabeld')),
+            new \Twig_SimpleFunction('currentRoute', array($this, 'currentRoute')),
         );
+    }
+
+    public function currentRoute($lang = null)
+    {
+        if ($this->container->has('currentRoute')) {
+            $routeParams = $this->container->get('currentRouteParams');
+            if (null !== $lang && 'de' == $lang) {
+                unset($routeParams['lang']);
+            }
+            else {
+                $routeParams['lang'] = ($lang !== null) ? $lang : \App::$language->getCurrentLanguage();
+            }
+            
+            $routeName = $this->container->get('currentRoute');
+            $route = array(
+                'name' => $routeName,
+                'params' => $routeParams
+            );
+        } else {
+            $route = array(
+                'name' => 'noroute',
+                'params' => []
+            );
+        }
+        return $route;
     }
 
     
