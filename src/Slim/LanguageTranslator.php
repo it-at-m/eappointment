@@ -37,7 +37,8 @@ class LanguageTranslator
         return $instance;
     }
 
-    public function getTranslator() {
+    public function getTranslator()
+    {
         return $this->translator;
     }
 
@@ -56,8 +57,8 @@ class LanguageTranslator
         foreach (\App::$supportedLanguages as $locale => $language) {
             if ($locale != $this->defaultLang) {
                 $this->translator->addResource(
-                    'pofile', 
-                    \App::APP_PATH .'/lang/'. $locale .'.po', 
+                    'pofile',
+                    \App::APP_PATH .'/lang/'. $locale .'.po',
                     $language['locale']
                 );
             }

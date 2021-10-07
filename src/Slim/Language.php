@@ -97,8 +97,7 @@ class Language
             $lang = $route->getArgument('lang');
             if (!empty($lang)) {
                 $current = $lang;
-            }
-            else {
+            } else {
                 $current = $this->getLanguageFromUri($request);
                 if (! $current) {
                     $requestParamLang = $request->getParam('lang');
