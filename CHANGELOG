@@ -1,3 +1,7 @@
+## v2.4.7
+
+* Mehrspachigkeit ist nun mit unterschiedlichen Übersetzungsdateien (po, json) möglich
+
 ## v2.4.5
 
 * #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
