@@ -25,7 +25,7 @@ class Language
         $fallbackLocale = $this->getCurrentLocale($this->getDefault());
         $defaultLocale = $this->getCurrentLocale($this->getCurrentLanguage());
         $defaultLang = $this->getDefault();
-        LanguageTranslator::setTranslator($fallbackLocale, $defaultLocale, $this->default);
+        LanguageTranslator::setTranslator($fallbackLocale, $defaultLocale, $defaultLang);
     }
 
     public function getCurrentLanguage($lang = '')
@@ -90,7 +90,6 @@ class Language
     // Detect current language based on request URI or Parameter
     protected function getLanguageFromRequest($request = null)
     {
-        error_log('call language from request at: '. time());
         $current = null;
         if (null !== $request) {
             $route = $request->getAttribute('route');
