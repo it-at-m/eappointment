@@ -93,9 +93,9 @@ class Language
         $current = null;
         if (null !== $request) {
             $route = $request->getAttribute('route');
-            $lang = $route->getArgument('lang');
-            if (!empty($lang)) {
-                $current = $lang;
+            if (null !== $route) {
+                $lang = $route->getArgument('lang');
+                $current = (!empty($lang)) ? $lang : $current;
             } else {
                 $current = $this->getLanguageFromUri($request);
                 if (! $current) {
