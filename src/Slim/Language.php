@@ -4,6 +4,8 @@ namespace BO\Slim;
 
 use Psr\Http\Message\RequestInterface;
 
+use Symfony\Bridge\Twig\Extension\TranslationExtension;
+
 class Language
 {
     public static $supportedLanguages = array();
@@ -12,7 +14,7 @@ class Language
 
     protected $default = '';
 
-    protected static $translator = null;
+    protected static $translatorInstance = null;
 
     public function __construct(RequestInterface $request, array $supportedLanguages)
     {
@@ -25,7 +27,18 @@ class Language
         $fallbackLocale = $this->getCurrentLocale($this->getDefault());
         $defaultLocale = $this->getCurrentLocale($this->getCurrentLanguage());
         $defaultLang = $this->getDefault();
-        LanguageTranslator::setTranslator($fallbackLocale, $defaultLocale, $defaultLang);
+        
+        if (null == self::$translatorInstance) {
+            self::$translatorInstance = (new LanguageTranslator(
+                $fallbackLocale, 
+                $defaultLocale, 
+                $defaultLang
+            ))->getInstance();
+            \BO\Slim\Bootstrap::addTwigExtension(new TranslationExtension(self::$translatorInstance));
+        } else {
+            self::$translatorInstance->setLocale($this->current);
+        }
+    
     }
 
     public function getCurrentLanguage($lang = '')
