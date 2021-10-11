@@ -20,9 +20,6 @@ class Language
     {
         self::$supportedLanguages = $supportedLanguages;
         $this->current = $this->getLanguageFromRequest($request);
-        if (!$this->current) {
-            $this->current = $this->getDefault();
-        }
         $this->setCurrentLocale();
         $fallbackLocale = $this->getCurrentLocale($this->getDefault());
         $defaultLocale = $this->getCurrentLocale($this->getCurrentLanguage());
@@ -109,21 +106,14 @@ class Language
             if (null !== $route) {
                 $lang = $route->getArgument('lang');
                 $current = (!empty($lang)) ? $lang : $current;
-            } else {
-                $current = $this->getLanguageFromUri($request);
-                if (! $current) {
-                    $requestParamLang = $request->getParam('lang');
-                    $current = ($requestParamLang) ? $requestParamLang : $this->getDefault();
-                }
-            }
+            }   
         }
-        return $current;
+        return ($current) ? $current : $this->getLanguageFromUri($request);
     }
 
     protected function getLanguageFromUri($request)
     {
-        $queryString = $request->getUri()->getQuery();
-        parse_str($queryString, $queryArr);
-        return isset($queryArr['lang']) ? $queryArr['lang'] : null;
+        $requestParamLang = $request->getParam('lang');
+        return ($requestParamLang) ? $requestParamLang : $this->getDefault();
     }
 }

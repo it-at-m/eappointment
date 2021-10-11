@@ -108,7 +108,13 @@ class TwigExtension extends \Twig_Extension
     {
         if ($this->container->has('currentRoute')) {
             $routeParams = $this->container->get('currentRouteParams');
-            $routeParams['lang'] = ($lang !== null) ? $lang : self::currentLang();
+            if (null !== $lang && 'de' == $lang) {
+                unset($routeParams['lang']);
+            }
+            else if (\App::MULTILANGUAGE) {
+                $routeParams['lang'] = ($lang !== null) ? $lang : \App::$language->getCurrentLanguage();
+            }
+            
             $routeName = $this->container->get('currentRoute');
             $route = array(
                 'name' => $routeName,
@@ -125,13 +131,17 @@ class TwigExtension extends \Twig_Extension
 
     public function currentLang()
     {
-        return \App::$language->getCurrentLanguage();
+        return (\App::MULTILANGUAGE) ? \App::$language->getCurrentLanguage() : 'de';
     }
 
     public function currentLocale()
     {
-        $locale = explode('.', \App::$language->getCurrentLocale());
-        return reset($locale);
+        $locale = 'de_DE';
+        if (\App::MULTILANGUAGE) {
+            $locale = explode('.', \App::$language->getCurrentLocale());
+            $locale = reset($locale);
+        }
+        return $locale;
     }
 
     public function currentVersion()
