@@ -27,15 +27,14 @@ class Language
         
         if (null == self::$translatorInstance) {
             self::$translatorInstance = (new LanguageTranslator(
-                $fallbackLocale, 
-                $defaultLocale, 
+                $fallbackLocale,
+                $defaultLocale,
                 $defaultLang
             ))->getInstance();
             \BO\Slim\Bootstrap::addTwigExtension(new TranslationExtension(self::$translatorInstance));
         } else {
             self::$translatorInstance->setLocale($this->current);
         }
-    
     }
 
     public function getCurrentLanguage($lang = '')
@@ -106,7 +105,7 @@ class Language
             if (null !== $route) {
                 $lang = $route->getArgument('lang');
                 $current = (!empty($lang)) ? $lang : $current;
-            }   
+            }
         }
         return ($current) ? $current : $this->getLanguageFromUri($request);
     }
