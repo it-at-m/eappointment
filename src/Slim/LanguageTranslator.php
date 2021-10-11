@@ -8,7 +8,6 @@ use Psr\Http\Message\RequestInterface;
 use Symfony\Component\Translation\Loader\JsonFileLoader;
 use Symfony\Component\Translation\Loader\PoFileLoader;
 use Symfony\Component\Translation\Translator;
-use Symfony\Bridge\Twig\Extension\TranslationExtension;
 
 class LanguageTranslator
 {
@@ -21,23 +20,20 @@ class LanguageTranslator
         'json' => 'setJsonFileLoader'
     ];
 
-    public static function setTranslator($fallbackLocale, $defaultLocale, $defaultLang)
+    public function __construct($fallbackLocale, $defaultLocale, $defaultLang)
     {
         $translatorType = (\App::LANGUAGESOURCE) ? \App::LANGUAGESOURCE : 'pofile';
-        $instance = new static();
-        $instance->defaultLang = $defaultLang;
+        $this->defaultLang = $defaultLang;
         // First param is the "default language" to use.
-        $instance->translator = new Translator($defaultLocale);
+        $this->translator = new Translator($defaultLocale);
         // Set a fallback language incase you don't have a translation in the default language
-        $instance->translator->setFallbackLocales([$fallbackLocale]);
+        $this->translator->setFallbackLocales([$fallbackLocale]);
         // Add a loader that will get the php files we are going to store our translations in
-        $initLoader = $instance->loaderTypes[$translatorType];
-        $instance->$initLoader();
-        \BO\Slim\Bootstrap::addTwigExtension(new TranslationExtension($instance->getTranslator()));
-        return $instance;
+        $initLoader = $this->loaderTypes[$translatorType];
+        $this->$initLoader();
     }
 
-    public function getTranslator()
+    public function getInstance()
     {
         return $this->translator;
     }
