@@ -1,6 +1,6 @@
-## v2.4.7
+## v2.4.8
 
-* Mehrspachigkeit ist nun mit unterschiedlichen Übersetzungsdateien (po, json) möglich
+* #51124 Mehrspachigkeit: Es können nun verschiedene Übersetzungsdateien (po, json) verwendet werden und wenn Mehrsprachigkeit deaktiviert ist, liefern Sprachfunktionen deutsch als default zurück
 
 ## v2.4.5
 
