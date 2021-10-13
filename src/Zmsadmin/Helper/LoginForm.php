@@ -21,12 +21,12 @@ class LoginForm
         // loginName
         $collection['loginName'] = Validator::param('loginName')->isString()
             ->isBiggerThan(2, "Es muss ein aussagekräftiger Name eingegeben werden")
-            ->isSmallerThan(250, "Der Name sollte 250 Zeichen nicht überschreiten");
+            ->isSmallerThan(40, "Der Name sollte 40 Zeichen nicht überschreiten");
 
         // password
         $collection['password'] = Validator::param('password')->isString()
             ->isBiggerThan(2, "Es muss ein Passwort eingegeben werden")
-            ->isSmallerThan(250, "Das Passwort sollte 250 Zeichen nicht überschreiten");
+            ->isSmallerThan(20, "Das Passwort sollte 20 Zeichen nicht überschreiten");
 
         // return validated collection
         $collection = Validator::collection($collection);
