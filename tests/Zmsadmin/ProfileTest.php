@@ -114,7 +114,7 @@ class ProfileTest extends Base
             'changePassword' => ['myPassword', 'myPassword'],
             'save' => 'save'
         ], [], 'POST');
-        $this->assertRedirect($response, '/profile/?success=password_changed');
+        $this->assertRedirect($response, '/profile/?success=useraccount_saved');
         $this->assertEquals(302, $response->getStatusCode());
     }
 

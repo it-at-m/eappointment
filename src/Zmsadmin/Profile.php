@@ -9,7 +9,7 @@ namespace BO\Zmsadmin;
 use BO\Zmsentities\Useraccount as Entity;
 use BO\Mellon\Validator;
 
-class Profile extends UseraccountEdit
+class Profile extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
