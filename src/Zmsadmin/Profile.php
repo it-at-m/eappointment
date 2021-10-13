@@ -6,10 +6,10 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Mellon\Validator;
 use BO\Zmsentities\Useraccount as Entity;
+use BO\Mellon\Validator;
 
-class Profile extends BaseController
+class Profile extends UseraccountEdit
 {
     /**
      * @SuppressWarnings(Param)
@@ -23,13 +23,13 @@ class Profile extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $confirmSuccess = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $entity = new Entity($workstation->useraccount);
-        $input = $request->getParsedBody();
 
-        if (is_array($input) && array_key_exists('id', $input)) {
-            $result = $this->writeUpdatedEntity($input);
+        if ($request->isPost()) {
+            $input = $request->getParsedBody();
+            $result = $this->writeUpdatedEntity($input, $entity->getId());
             if ($result instanceof Entity) {
                 return \BO\Slim\Render::redirect('profile', [], [
-                    'success' => 'password_changed'
+                    'success' => 'useraccount_saved'
                 ]);
             }
         }
