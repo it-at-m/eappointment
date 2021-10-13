@@ -21,7 +21,7 @@ class WorkstationPassword extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request, 1))->checkRights();
+        $workstation = (new Helper\User($request))->checkRights();
         $useraccount = $workstation->getUseraccount();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         if ($input['email']) {
