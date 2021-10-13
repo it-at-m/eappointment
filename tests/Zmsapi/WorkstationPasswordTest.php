@@ -56,6 +56,7 @@ class WorkstationPasswordTest extends Base
             '__body' => '{
                 "id": "unittest",
                 "password": "vorschau2",
+                "email": "unittest@berlinonline.de",
                 "departments": [
                     {"id":1}
                 ]
@@ -72,7 +73,9 @@ class WorkstationPasswordTest extends Base
         $this->render([], [
             '__body' => '{
                 "id": "'. static::$loginName .'",
-                "password": "vorschau2"
+                "password": "'. static::$authKey .'",
+                "changePassword": ["test","test"],
+                "email": "unittest@berlinonline.de"
             }'
         ], []);
     }
@@ -106,6 +109,7 @@ class WorkstationPasswordTest extends Base
                 },
                 "id": "'. static::$loginName .'",
                 "password": "'. static::$authKey .'",
+                "email": "unittest@berlinonline.de",
                 "changePassword": ["testPassword","testPassword2"]
             }'
         ], []);

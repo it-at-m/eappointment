@@ -24,13 +24,14 @@ class WorkstationPassword extends BaseController
         $workstation = (new Helper\User($request))->checkRights();
         $useraccount = $workstation->getUseraccount();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        if ($input['email']) {
+        if (isset($input['email'])) {
             $useraccount->email = $input['email'];
         }
         Helper\UserAuth::testPasswordMatching($useraccount, $input['password']);
         if (isset($input['changePassword'])) {
             $useraccount->password = $useraccount->getHash(reset($input['changePassword']));
         }
+        $useraccount->testValid();
 
         $message = Response\Message::create($request);
         $message->data = (new Query)->updateEntity($useraccount->getId(), $useraccount);
