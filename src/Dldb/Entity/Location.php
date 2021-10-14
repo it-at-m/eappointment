@@ -66,6 +66,7 @@ class Location extends Base
         }
         $location = $this->getArrayCopy();
         $servicecompare = explode(',', $serviceCsv);
+        
         $serviceList = array();
         foreach ($location['services'] as $serviceinfo) {
             $service_id = $serviceinfo['service'];
@@ -102,6 +103,16 @@ class Location extends Base
         } else {
             return count($serviceList) > 0 && count($servicecount) == count($serviceList);
         }
+    }
+
+    public function getAppointmentForService($service_id, $external = false) {
+        $serviceList = $this->getServiceInfoList($service_id);
+        
+        if (!empty($serviceList)) {
+            $service = end($serviceList);
+            return $service['appointment'];
+        }
+        return false;
     }
 
     /**
