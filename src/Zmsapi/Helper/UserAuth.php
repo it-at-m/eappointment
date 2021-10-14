@@ -24,7 +24,7 @@ class UserAuth
     {
         // Do you have old, turbo-legacy, non-crypt hashes?
         $result = (strpos($useraccount->password, '$') !== 0) ?
-            ($useraccount->password === md5($password)) : 
+            ($useraccount->password === md5($password)) :
             password_verify($password, $useraccount->password);
         if (! $result) {
             $exception = new \BO\Zmsapi\Exception\Useraccount\InvalidCredentials();
