@@ -52,6 +52,7 @@ class TwigExtension extends \Twig_Extension
     {
         if ($this->container->has('currentRoute')) {
             $routeParams = $this->container->get('currentRouteParams');
+            
             if (null !== $lang && 'de' == $lang) {
                 unset($routeParams['lang']);
             }
@@ -59,6 +60,7 @@ class TwigExtension extends \Twig_Extension
                 $routeParams['lang'] = ($lang !== null) ? $lang : \App::$language->getCurrentLanguage();
             }
             
+
             $routeName = $this->container->get('currentRoute');
             $route = array(
                 'name' => $routeName,
