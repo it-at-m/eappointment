@@ -47,7 +47,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
             'id' => $workstationId,
             'useraccount' => new Useraccount([
                 'id' => $loginname,
-                'password' => (new \BO\Zmsentities\Useraccount)->getHash($password)
+                'password' => md5($password)
             ]),
             'scope' => new Scope([
                 'id' => $scopeId,
