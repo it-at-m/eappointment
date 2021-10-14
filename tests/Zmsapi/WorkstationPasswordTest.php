@@ -19,7 +19,7 @@ class WorkstationPasswordTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
+        $this->setWorkstation(138, static::$loginName, 143, static::$authKey);
         $response = $this->render([], [
             '__body' => '{
                 "rights": {
