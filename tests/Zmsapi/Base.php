@@ -38,11 +38,11 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
     }
 
     protected function setWorkstation(
-        $workstationId = 137, 
-        $loginname = "testuser", 
-        $scopeId = 143, 
+        $workstationId = 137,
+        $loginname = "testuser",
+        $scopeId = 143,
         $password = "vorschau"
-    ){
+    ) {
         User::$workstation = new Workstation([
             'id' => $workstationId,
             'useraccount' => new Useraccount([

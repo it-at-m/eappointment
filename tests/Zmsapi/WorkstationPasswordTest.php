@@ -19,7 +19,7 @@ class WorkstationPasswordTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation(136,"testadmin");
+        $this->setWorkstation(136, "testadmin");
         $response = $this->render([], [
             '__body' => '{
                 "rights": {
@@ -49,7 +49,7 @@ class WorkstationPasswordTest extends Base
 
     public function testInvalidCredentials()
     {
-        $this->setWorkstation(136,"testadmin");
+        $this->setWorkstation(136, "testadmin");
         $this->expectException('\BO\Zmsapi\Exception\Useraccount\InvalidCredentials');
         $this->expectExceptionCode(401);
         $this->render([], [
@@ -66,7 +66,7 @@ class WorkstationPasswordTest extends Base
 
     public function testSchemsValidationFailed()
     {
-        $this->setWorkstation(136,"testadmin");
+        $this->setWorkstation(136, "testadmin");
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
         //6 chars for password required
@@ -82,14 +82,14 @@ class WorkstationPasswordTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation(136,"testadmin");
+        $this->setWorkstation(136, "testadmin");
         $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
 
     public function testNotValid()
     {
-        $workstation = $this->setWorkstation(136,"testadmin");
+        $workstation = $this->setWorkstation(136, "testadmin");
         $workstation->getUseraccount()->id = 'unittest';
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
@@ -117,7 +117,7 @@ class WorkstationPasswordTest extends Base
 
     public function testNotFound()
     {
-        $workstation = $this->setWorkstation(136,"testadmin");
+        $workstation = $this->setWorkstation(136, "testadmin");
         $workstation->getUseraccount()->id = 'unittest';
         $this->expectException('\BO\Zmsapi\Exception\Useraccount\InvalidCredentials');
         $this->expectExceptionCode(401);
