@@ -158,6 +158,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         // clone to new process with id = 0 and new appointment to reserve
         $processNew = clone $process;
         $processNew->id = 0;
+        $processNew->scope = $appointment->scope;
         $processNew->queue['arrivalTime'] = 0;
         $processNew->queue['number'] = 0;
         $processNew->appointments = (new \BO\Zmsentities\Collection\AppointmentList())->addEntity($appointment);
