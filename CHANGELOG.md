@@ -5,6 +5,7 @@
 * #49131 Die Statuswerte für mailqueue, notificationqueue und Anzahl freier Slots wurde korrigiert
 * #49077 Bugfix - Bei der Änderung eines vorhandenen Termins werden die Dienstleistungen wieder korrekt zugeordnet
 * #36078 Eigene Methode zum Aktualisieren von Terminen mit veränderter Slotanzahl
+* #51867 Bugfix: Eine Änderung eine reservierten Termins an einem anderen Standort funktioniert nun ohne Fehlermeldung, dass jemand anderes schneller war
 
 ## v2.23.09
 
