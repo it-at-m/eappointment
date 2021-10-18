@@ -121,7 +121,7 @@ class Topic extends Base
                         $stm->execute([$id]);
 
                         if ($stm && 0 < $stm->rowCount()) {
-                            print_r(static::class);
+                            #print_r(static::class);
                             return true;
                         }
                         return false;

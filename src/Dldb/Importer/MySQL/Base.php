@@ -20,6 +20,8 @@ abstract class Base implements Options
     protected $hash = null;
     protected $locale = 'de';
     protected $metaObject = null;
+    protected $currentEntitysToDelete = [];
+    protected $getCurrentEntitys = true;
 
     public function __construct(PDOAccess $mySqlAccess, array $importData = [], string $locale = 'de', $options = 0) {
         try { 
@@ -27,7 +29,7 @@ abstract class Base implements Options
             $this->setImportData($importData['data']);
             $this->setImportHash($importData['hash']);
             $this->setLocale($locale);
-
+            
             $this->setOptions($options);
             $this->clearEntity();
         }
@@ -47,6 +49,43 @@ abstract class Base implements Options
     public function getIterator() : iterable {
         foreach ($this->importData AS $item) {
             yield $item;
+        }
+    }
+
+    public function getCurrentEntitys() : array {
+        return $this->currentEntitysToDelete;
+    }
+
+    public function removeEntityFromCurrentList(int $id) {
+        unset($this->currentEntitysToDelete[$id]);
+    }
+
+    public function setCurrentEntitys() {
+        try {
+            if (false === $this->getCurrentEntitys) {
+                return true;
+            }
+            $this->currentEntitysToDelete = [];
+            $sql = "SELECT 
+            m.object_id AS id, 
+            e.data_json AS data_json 
+            FROM meta AS m
+            JOIN " . $this->entityClass::getTableName() . " AS e ON e.id = m.object_id AND e.locale = ?
+            WHERE m.locale = ?";
+            
+            
+            $stm = $this->getPDOAccess()->prepare($sql);
+            $stm->setFetchMode(\PDO::FETCH_OBJ);
+            $stm->execute([$this->getLocale(),$this->getLocale()]);
+            $entitys = $stm->fetchAll();
+            foreach ($entitys as $entity) {
+                $entityObject = $this->createEntity(json_decode($entity->data_json, true));
+                $this->currentEntitysToDelete[$entity->id] = $entityObject;
+            }
+            #error_log(print_r(['current', $this->entityClass::getTableName(), $this->getLocale(), count($this->currentEntitysToDelete)],1));
+        }
+        catch (\Exception $e) {
+            throw $e;
         }
     }
 
@@ -82,7 +121,11 @@ abstract class Base implements Options
 
     public function needsUpdate() {
         $metaObject = $this->getMetaObject();
-        return $metaObject->itemNeedsUpdate_();
+        $needsUpdate = $metaObject->itemNeedsUpdate_();
+        if ($needsUpdate) {
+            $this->setCurrentEntitys();
+        }
+        return $needsUpdate;
     }
 
     public function setImportData(array $importData = []) : self {

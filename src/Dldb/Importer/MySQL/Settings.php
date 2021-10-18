@@ -5,6 +5,7 @@ namespace BO\Dldb\Importer\MySQL;
 
 class Settings extends Base
 {
+    protected $getCurrentEntitys = false;
     protected $entityClass = '\\BO\\Dldb\\Importer\\MySQL\\Entity\\Setting';
 
     public function runImport() : bool {
