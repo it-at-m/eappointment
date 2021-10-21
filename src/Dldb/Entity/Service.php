@@ -67,4 +67,21 @@ class Service extends Base
     {
         return $this['responsibility_all'];
     }
+
+    /**
+     * @return Bool
+     */
+    public function isLocale($locale)
+    {
+        $service = $this->getArrayCopy();
+        return $service['meta']['locale'] == $locale;
+    }
+
+    public function getLocations() {
+        $locations = [];
+        foreach ($this['locations'] as $location) {
+            $locations[$location['location']] = $location;
+        }
+        return $locations;
+    }
 }

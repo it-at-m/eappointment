@@ -5,6 +5,8 @@
 
 namespace BO\Dldb;
 
+use Error;
+
 /**
   * Extension for Twig
   *
@@ -45,7 +47,16 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('getD115Text', array($this, 'getD115Text')),
             new \Twig_SimpleFunction('getBobbiChatButtonEnabeld', array($this, 'getBobbiChatButtonEnabeld')),
             new \Twig_SimpleFunction('currentRoute', array($this, 'currentRoute')),
+            new \Twig_SimpleFunction('dump', array($this, 'dump')),
+            new \Twig_SimpleFunction(
+                'getAppointmentForLocationFromServiceAppointmentLocations', 
+                array($this, 'getAppointmentForLocationFromServiceAppointmentLocations')
+            ),
         );
+    }
+
+    public function dump($item) {
+        return '<pre>' . print_r($item,1).'</pre>';
     }
 
     public function currentRoute($lang = null)
@@ -247,13 +258,27 @@ class TwigExtension extends \Twig_Extension
         $propertylist = array();
         foreach ($list as $item) {
             if (!is_scalar($item) && array_key_exists('services', $item)) {
-                $appointment = self::getAppointmentForService($item, $service_id);
+                $appointment = $this->getAppointmentForService($item, $service_id);
                 if (false === $appointment['external'] && true === $appointment['allowed']) {
                     $propertylist[] = $item['id'];
                 }
             }
         }
         return implode(',', array_unique($propertylist));
+    }
+
+    public function getAppointmentForLocationFromServiceAppointmentLocations(
+        array $serviceAppointmentLocationList, 
+        $locationId
+    )
+    {
+        if (isset($serviceAppointmentLocationList[$locationId])) {
+            $appointment = $serviceAppointmentLocationList[$locationId]['appointment'];
+            $appointment['responsibility_hint'] = $serviceAppointmentLocationList[$locationId]['responsibility_hint'];
+            $appointment['responsibility'] = $serviceAppointmentLocationList[$locationId]['responsibility'];
+            return $appointment;
+        }
+        return false;
     }
 
     public function getAppointmentForService($location, $service_id)
