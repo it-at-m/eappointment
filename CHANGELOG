@@ -1,6 +1,8 @@
-## v2.4.8
+## v2.4.9
 
 * #51124 Mehrspachigkeit: Es können nun verschiedene Übersetzungsdateien (po, json) verwendet werden und wenn Mehrsprachigkeit deaktiviert ist, liefern Sprachfunktionen deutsch als default zurück
+* #51864 Captcha-Verifizierung: Nach erfolgreicher Verifizierung wird man nun an die verweisende URL zurück geschickt
+
 
 ## v2.4.5
 
