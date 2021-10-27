@@ -31,7 +31,7 @@ class SessionHuman extends SessionContainer
         $this->set('origin', $origin, 'human');
     }
 
-    public function redirectOnSuspicion($request, $requiredSteps = array(), $fileName = false)
+    public function redirectOnSuspicion($request, $requiredSteps = array(), $referer = false)
     {
         $path = $request->getUri()->getPath();
         if (! $this->isOrigin('captcha')) {
@@ -47,16 +47,16 @@ class SessionHuman extends SessionContainer
             $clientIpAddress = $request->getAttribute('ip_address');
             if (!$this->has('remoteAddress', 'human') || $clientIpAddress != $this->get('remoteAddress', 'human')) {
                 \App::$log->error("[Human " . session_id() . "] Missing remote address " . $clientIpAddress);
-                $this->writeRedirectCaptcha($path, $fileName);
+                $this->writeRedirectCaptcha($path, $referer);
                 return true;
             }
         }
         if (!$this->isVerified()) {
             \App::$log->error("[Human " . session_id() . "] Missing session on " . $path);
-            $this->writeRedirectCaptcha($path, $fileName);
+            $this->writeRedirectCaptcha($path, $referer);
             return true;
         }
-        $this->writeRedirectCaptcha($path, end($requiredSteps));
+        $this->writeRedirectCaptcha($path, ($referer) ? $referer : end($requiredSteps));
         return false;
     }
 
@@ -138,12 +138,12 @@ class SessionHuman extends SessionContainer
      *
      * @return self
      */
-    protected function writeRedirectCaptcha($path, $filename = false)
+    protected function writeRedirectCaptcha($path, $referer = false)
     {
-        if (false === $filename) {
-            $filename = basename($path);
+        if (false === $referer) {
+            $referer = basename($path);
         }
-        $referer = array('human' => array('referer' => $filename));
+        $referer = array('human' => array('referer' => $referer));
         $this->setGroup($referer);
     }
 }
