@@ -23,9 +23,7 @@ class GraphQLNode extends GraphQLElement
     public function getFirstElement(): GraphQLElement
     {
         $first = reset($this->propertyList);
-        if (!$first) {
-            $first = new GraphQLNode('first');
-        }
+        $first = (!$first) ? new GraphQLNode('first') : $first;
         return $first;
     }
 

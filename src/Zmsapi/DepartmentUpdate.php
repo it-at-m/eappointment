@@ -21,12 +21,15 @@ class DepartmentUpdate extends BaseController
         array $args
     ) {
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $entity = new \BO\Zmsentities\Department($input);
-        (new Helper\User($request, 2))->checkRights('department');
         $department = Helper\User::checkDepartment($args['id']);
-
+        $department->addData($input)->testValid('de_DE', 1);
+        (new Helper\User($request, 2))->checkRights(
+            'department',
+            new \BO\Zmsentities\Useraccount\EntityAccess($department)
+        );
+        
         $message = Response\Message::create($request);
-        $message->data = (new Query())->updateEntity($department->id, $entity);
+        $message->data = (new Query())->updateEntity($department->id, $department);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

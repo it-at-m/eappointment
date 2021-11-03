@@ -50,6 +50,30 @@ class AppointmentUpdateTest extends Base
         $this->assertStringContainsString('process.json', (string)$response->getBody());
     }
 
+    public function testWithClientKey()
+    {
+        $this->setWorkstation();
+        \App::$now->modify('2016-05-30');
+        $response = $this->render(['id' => self::PROCESS_ID, 'authKey' => self::AUTHKEY], [
+            '__body' => $this->readFixture('PostAppointment.json'),
+            'clientkey' => 'default'
+        ], []);
+
+        $this->assertStringContainsString('"date":1464588000', (string)$response->getBody()); // 2016-05-30 08:00
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
+    }
+
+    public function testWithClientKeyBlocked()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Process\ApiclientInvalid');
+        $this->setWorkstation();
+        \App::$now->modify('2016-05-30');
+        $response = $this->render(['id' => self::PROCESS_ID, 'authKey' => self::AUTHKEY], [
+            '__body' => $this->readFixture('PostAppointment.json'),
+            'clientkey' => '8pnaRHkUBYJqz9i9NPDEeZq6mUDMyRHE'
+        ], []);
+    }
+
     public function testEmpty()
     {
         $this->expectException('\BO\Mellon\Failure\Exception');

@@ -35,9 +35,9 @@ class TicketprinterAccess
             foreach ($entity->buttons as $button) {
                 if ('scope' == $button['type'] && ! $scopeList->hasEntity($button['scope']['id'])) {
                     throw new \BO\Zmsapi\Exception\Ticketprinter\UnvalidButtonList();
-                } elseif ('cluster' == $button['type'] && ! $clusterList->hasEntity($button['cluster']['id'])) {
+                } /*elseif ('cluster' == $button['type'] && ! $clusterList->hasEntity($button['cluster']['id'])) {
                     throw new \BO\Zmsapi\Exception\Ticketprinter\UnvalidButtonList();
-                }
+                }*/
             }
         }
     }
