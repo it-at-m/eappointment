@@ -13,13 +13,26 @@ class ProcessGetTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testWithCompressLevel()
+    {
+        $response = $this->render(['id' => 10030, 'authKey' => '1c56'], ['compress' => 10], []);
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
     public function testWithGraphQL()
     {
+        $gqlString = '{ id authKey scope{ id source shortName } appointments{date} }';
         $response = $this->render(
             ['id' => 10030, 'authKey' => '1c56'],
-            ['gql' => '{ id authKey scope{ id source shortName } }'],
+            ['gql' => $gqlString],
             []
         );
+
+        $graphqlInterpreter = (new \BO\Zmsapi\Response\GraphQLInterpreter($gqlString))
+            ->setJson($this->readFixture('GetProcess_10030.json'));
+        $this->assertStringContainsString('"appointments":[{"date":1463379000}]', (string)$graphqlInterpreter);
+
         $this->assertStringContainsString('"id":"141","source":"dldb","shortName":""', (string)$response->getBody());
         $this->assertStringNotContainsString('"provider":{"id":"122208","source":"dldb"}', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -39,6 +52,15 @@ class ProcessGetTest extends Base
         $this->expectExceptionMessage('No content for graph');
         $this->setWorkstation();
         $this->render(['id' => 10030, 'authKey' => '1c56'], ['gql' => '[]'], []);
+    }
+
+    public function testWithGraphQLClosingBrackets()
+    {
+        $this->expectException('\BO\Zmsapi\Response\GraphQLException');
+        $this->expectExceptionMessage('Curly bracket match problem, too many closing brackets');
+        $gqlString = '{ id authKey } }';
+        $graphqlInterpreter = (new \BO\Zmsapi\Response\GraphQLInterpreter($gqlString))
+            ->setJson($this->readFixture('GetProcess_10030.json'));
     }
 
     public function testEmpty()

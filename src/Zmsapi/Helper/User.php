@@ -128,7 +128,7 @@ class User
         }
         if ($userAccount->isSuperUser()) {
             $department = (new \BO\Zmsdb\Department())->readEntity($departmentId);
-        } elseif ($userAccount->rights['department']) {
+        } elseif ($userAccount->hasRights(['department'])) {
             $department = self::testReadDepartmentByOrganisation($departmentId, $userAccount);
         } else {
             $department = $userAccount->testDepartmentById($departmentId);
@@ -159,10 +159,7 @@ class User
     protected static function testReadDepartmentByOrganisation($departmentId, $userAccount)
     {
         $organisation = (new \BO\Zmsdb\Organisation())->readByDepartmentId($departmentId, 1);
-        $organisation->departments = ($userAccount->hasRights(['department'])) ?
-            $organisation->getDepartmentList() :
-            $organisation->getDepartmentList()->withAccess($userAccount);
-        
+        $organisation->departments = $organisation->getDepartmentList()->withAccess($userAccount);
         $department = $organisation->departments->getEntity($departmentId);
         return $department;
     }
