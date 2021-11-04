@@ -37,6 +37,41 @@ class UseraccountUpdateTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testChangePassword()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setDepartment(74);
+        $response = $this->render(['loginname' => 'testadmin'], [
+            '__body' => '{
+                "rights": {
+                "availability": "0",
+                "basic": "0",
+                "cluster": "0",
+                "department": "0",
+                "organisation": "0",
+                "scope": "0",
+                "sms": "0",
+                "superuser": "0",
+                "ticketprinter": "0",
+                "useraccount": "1"
+              },
+              "departments": [
+                  {"id": 74}
+              ],
+              "email": "unittest@berlinonline.de",
+              "id": "unittest",
+              "changePassword": ["newpassword", "newpassword"]
+            }'
+        ], []);
+        $this->assertTrue(password_verify(
+            'newpassword', 
+            json_decode((string)$response->getBody(),1)['data']['password'])
+        );
+        $this->assertStringContainsString('useraccount.json', (string)$response->getBody());
+        $this->assertStringContainsString('unittest', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
     public function testMissingLogin()
     {
         $this->expectException('BO\Zmsentities\Exception\UserAccountMissingLogin');
