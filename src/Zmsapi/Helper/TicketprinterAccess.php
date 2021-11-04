@@ -31,7 +31,7 @@ class TicketprinterAccess
         if (isset($entity->buttons) && $entity->buttons) {
             $departmentList = (new \BO\Zmsdb\Department)->readByOrganisationId($organisationId, 1);
             $scopeList = $departmentList->getUniqueScopeList();
-            $clusterList = $departmentList->getUniqueClusterList();
+            //$clusterList = $departmentList->getUniqueClusterList();
             foreach ($entity->buttons as $button) {
                 if ('scope' == $button['type'] && ! $scopeList->hasEntity($button['scope']['id'])) {
                     throw new \BO\Zmsapi\Exception\Ticketprinter\UnvalidButtonList();
