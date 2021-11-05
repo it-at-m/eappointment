@@ -17,6 +17,14 @@ class ClusterGetTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testReducedDataAccess()
+    {
+        $response = $this->render(['id' => 109], [], []);
+        $this->assertStringContainsString('cluster.json', (string)$response->getBody());
+        $this->assertStringContainsString('"reducedData":true', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
     public function testWithScopeListStatusAvailability()
     {
         $this->setWorkstation();
