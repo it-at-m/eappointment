@@ -8,7 +8,7 @@ class ProcessLogTest extends Base
 {
     protected $classname = "ProcessLog";
 
-    const PROCESS_ID = 10030;
+    const PROCESS_ID = 10029;
 
     const AUTHKEY = '1c56';
 
