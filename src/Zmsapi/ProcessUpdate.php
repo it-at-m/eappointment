@@ -55,7 +55,7 @@ class ProcessUpdate extends BaseController
             if (!$apiClient || !isset($apiClient->accesslevel) || $apiClient->accesslevel == 'blocked') {
                 throw new Exception\Process\ApiclientInvalid();
             }
-            $process->apiclient = $apiClient;
+            $entity->apiclient = $apiClient;
             $process = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
         } else {
             $process = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
