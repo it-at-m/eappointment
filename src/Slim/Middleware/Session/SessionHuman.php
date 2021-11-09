@@ -45,7 +45,7 @@ class SessionHuman extends SessionContainer
                 }
                 if ($this->hasStepMaxReload($stepName)) {
                     \App::$log->notice(
-                        "[Human " . session_id() . "] Exceeded max reload for step $stepName on ". $path ." (referer: ". $referer .")"
+                        "[Human " . session_id() . "] Exceeded max reload for step $stepName on ". $path
                     );
                     $this->writeRedirectCaptcha($path, ($referer) ? $referer : end($requiredSteps));
                     return true;
