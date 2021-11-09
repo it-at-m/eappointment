@@ -13,6 +13,12 @@
                     "public": 2,
                     "type": "free"
                 },
+                "allAppointments": {
+                    "callcenter": 0,
+                    "intern": 9,
+                    "public": 6,
+                    "type": "sum"
+                },
                 "firstAppointmentTimestamp": {
                     "intern": 1447919770000
                 },

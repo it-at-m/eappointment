@@ -26,6 +26,7 @@ class Day extends Schema\Entity
             'day' => '',
             'status' => self::NOTBOOKABLE,
             'freeAppointments' => new Slot(),
+            'allAppointments' => new Slot()
         ];
     }
 

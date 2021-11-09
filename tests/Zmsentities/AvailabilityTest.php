@@ -68,7 +68,7 @@ class AvailabilityTest extends EntityCommonTests
         );
         $entity['repeat']['weekOfMonth'] = 2;
         $this->assertEquals(
-            $entity['repeat']['weekOfMonth'], 
+            $entity['repeat']['weekOfMonth'],
             \BO\Zmsentities\Helper\DateTime::create($time->modify('+1week'))->getWeekOfMonth()
         );
 
@@ -832,12 +832,38 @@ class AvailabilityTest extends EntityCommonTests
             'startTime' => '12:00:00',
             'endTime' => '16:00:00',
         ]);
+        $availabilityWrongStartAndEnd = new Availability([
+            'id' => '6',
+            'weekday' => array(
+                'monday' => '0',
+                'tuesday' => '4',
+                'wednesday' => '0',
+                'thursday' => '0',
+                'friday' => '0',
+                'saturday' => '0',
+                'sunday' => '0'
+            ),
+            'repeat' => array(
+                'afterWeeks' => '1',
+            ),
+            'workstationCount' => array(
+                'public' => '2',
+                'callcenter' => '2',
+                'intern' => '2'
+            ),
+            'slotTimeInMinutes' => '15',
+            'startDate' => strtotime('2016-04-19'),
+            'endDate' => strtotime('2016-04-20'),
+            'startTime' => '17:00:00',
+            'endTime' => '11:00:00',
+        ]);
         $availabilityList = new AvailabilityList([
             $availability,
             $availabilityOverlap,
             $availabilitySlotsize,
             $availabilityOverlap2,
-            $availabilityEqual
+            $availabilityEqual,
+            $availabilityWrongStartAndEnd
         ]);
         $startDate = new \DateTimeImmutable('2016-04-19 09:00');
         $endDate = new \DateTimeImmutable('2016-04-19 16:00');
@@ -845,10 +871,11 @@ class AvailabilityTest extends EntityCommonTests
         $list = [];
         foreach ($conflicts as $conflict) {
             /*error_log(
-                "\n$conflict " . 
-                $conflict->amendment . 
-                "(ID: ". $conflict->getFirstAppointment()->getAvailability()->getId() ." ". $conflict->getFirstAppointment()->getAvailability()->getStartDateTime() ." - ". $conflict->getFirstAppointment()->getAvailability()->getEndDateTime() .")" 
-            );*/
+                "\n$conflict " .
+                $conflict->amendment .
+                "(ID: ". $conflict->getFirstAppointment()->getAvailability()->getId() ." ". $conflict->getFirstAppointment()->getAvailability()->getStartDateTime() ." - ". $conflict->getFirstAppointment()->getAvailability()->getEndDateTime() .")"
+            );
+            */
 
             $id = $conflict->getFirstAppointment()->getAvailability()->getId();
             if (! isset($list[$conflict->amendment])) {
@@ -861,22 +888,26 @@ class AvailabilityTest extends EntityCommonTests
             }
         }
     
-        // Availability 1, 2, 4 und 5 überschneiden sich jeweils 2 mal
-        $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][1]);
+        // Availability 1 und 5 überschneiden sich jeweils 3 mal
+        $this->assertEquals(3, $list['Zwei Öffnungszeiten überschneiden sich.'][1]);
+        $this->assertEquals(3, $list['Zwei Öffnungszeiten überschneiden sich.'][5]);
+
+        // Availability 2, 4 und 6 überschneiden sich jeweils 2 mal
         $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][2]);
         $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][4]);
-        $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][5]);
+        $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][6]);
 
         // Availability 1 und 5 sind sich jeweils gleich
         $this->assertEquals(1, $list['Zwei Öffnungszeiten sind gleich.'][1]);
         $this->assertEquals(1, $list['Zwei Öffnungszeiten sind gleich.'][5]);
 
         // Availability 3 hat eine falsche Slotgröße
-        $this->assertEquals(1, 
+        $this->assertEquals(
+            1,
             $list['Der eingestellte Zeitschlitz von 25 Minuten sollte in die eingestellte Uhrzeit passen.'][3]
         );
-        
     }
+
 
     protected function getExampleWithTypeOpeningHours(\DateTimeImmutable $time)
     {

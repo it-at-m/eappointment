@@ -164,6 +164,7 @@ class CalendarTest extends EntityCommonTests
         $entity->scopes[0] = $scope;
         $entity = $entity->withLessData();
         $this->assertEntity($this->entityclass, $entity);
+        $this->assertFalse(isset($entity['days'][0]['allAppointments']), 'Converting to less data failed');
         $this->assertFalse(isset($entity['providers']), 'Converting to less data failed');
         $this->assertFalse(isset($entity['scopes'][0]['provider']['data']['extra']), 'Converting to less data failed');
         $this->assertTrue(isset($entity['scopes'][0]['provider']['data']['payment']), 'Converting to less data failed');

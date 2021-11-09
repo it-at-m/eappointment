@@ -276,7 +276,7 @@ class MailTest extends EntityCommonTests
     {
         $statusList = array(
             'queued',
-            'appointment', 
+            'appointment',
             'reminder',
             'pickup',
             'deleted',
@@ -285,7 +285,7 @@ class MailTest extends EntityCommonTests
         );
         $statusAdminList = array(
             'deleted',
-            'blocked', 
+            'blocked',
             'updated'
         );
         $statusFailedList = array(
@@ -325,7 +325,7 @@ class MailTest extends EntityCommonTests
             $resolvedEntity = $entity->toResolvedEntity($process, $config, $status);
             $this->assertStringContainsString('Sehr geehrte/r', $resolvedEntity->getPlainPart());
             $this->assertStringContainsString(
-                'Achtung! Dies ist eine automatisch erstellte E-Mail.', 
+                'Achtung! Dies ist eine automatisch erstellte E-Mail.',
                 $resolvedEntity->getPlainPart()
             );
         }

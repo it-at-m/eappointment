@@ -229,6 +229,7 @@ class ProcessTest extends EntityCommonTests
 
         $formCollection = $this->getFormValidator($entity, $validator);
         $this->assertFalse($formCollection['failed']);
+        
         $input = [
             'headsUpTime' => 60,
             'slotCount' => 1,
@@ -287,11 +288,11 @@ class ProcessTest extends EntityCommonTests
         $this->assertTrue($formCollection['process']['failed']);
         $this->assertTrue($formCollection['authKey']['failed']);
         $this->assertEquals(
-            'Eine Vorgangsnummer besteht aus mindestens 6 Ziffern', 
+            'Eine Vorgangsnummer besteht aus mindestens 6 Ziffern',
             $formCollection['process']['messages'][0]
         );
         $this->assertEquals(
-            'Es müssen mindestens 4 Zeichen eingegeben werden.', 
+            'Es müssen mindestens 4 Zeichen eingegeben werden.',
             $formCollection['authKey']['messages'][0]
         );
     }

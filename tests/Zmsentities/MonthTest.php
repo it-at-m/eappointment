@@ -21,7 +21,7 @@ class MonthTest extends EntityCommonTests
                 $this->assertTrue(
                     $day->year .'-'. $day->month .'-'. $day->day == self::FIRST_DAY,
                     'Bookable day '. self::FIRST_DAY. ' exptected'
-                    );
+                );
             }
             $this->assertInstanceOf('BO\Zmsentities\Day', $day);
         }

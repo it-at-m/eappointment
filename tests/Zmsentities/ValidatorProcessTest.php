@@ -95,7 +95,7 @@ class ValidatorProcessTest extends Base
         $this->assertNotEquals($process->getId(), $parameters['id']);
         $collectionStatus = $processValidator->getCollection()->getStatus();
         $this->assertEquals(
-            "Eine gültige Vorgangsnummer ist in der Regel eine sechsstellige Nummer wie '123456'", 
+            "Eine gültige Vorgangsnummer ist in der Regel eine sechsstellige Nummer wie '123456'",
             $collectionStatus['id']['messages'][0]->message
         );
     }
@@ -118,7 +118,7 @@ class ValidatorProcessTest extends Base
         $this->assertNotEquals($process->getId(), $parameters['id']);
         $collectionStatus = $processValidator->getCollection()->getStatus();
         $this->assertEquals(
-            "Eine Vorgangsnummer besteht aus mindestens 6 Ziffern", 
+            "Eine Vorgangsnummer besteht aus mindestens 6 Ziffern",
             $collectionStatus['id']['messages'][0]->message
         );
     }
@@ -141,7 +141,7 @@ class ValidatorProcessTest extends Base
         $this->assertNotEquals($process->getId(), $parameters['id']);
         $collectionStatus = $processValidator->getCollection()->getStatus();
         $this->assertEquals(
-            "Eine Vorgangsnummer besteht aus maximal 11 Ziffern", 
+            "Eine Vorgangsnummer besteht aus maximal 11 Ziffern",
             $collectionStatus['id']['messages'][0]->message
         );
     }
@@ -166,7 +166,7 @@ class ValidatorProcessTest extends Base
 
         $collectionStatus = $processValidator->getCollection()->getStatus();
         $this->assertEquals(
-            "Eine Vorgangsnummer wird benötigt.", 
+            "Eine Vorgangsnummer wird benötigt.",
             $collectionStatus['id']['messages'][0]->message
         );
     }
@@ -211,7 +211,7 @@ class ValidatorProcessTest extends Base
 
         $collectionStatus = $processValidator->getCollection()->getStatus();
         $this->assertEquals(
-            'Die Telefonnummer ist zu lang, bitte prüfen Sie Ihre Eingabe', 
+            'Die Telefonnummer ist zu lang, bitte prüfen Sie Ihre Eingabe',
             $collectionStatus['telephone']['messages'][0]
         );
         $this->assertTrue($collectionStatus['telephone']['failed']);
@@ -386,5 +386,4 @@ class ValidatorProcessTest extends Base
         $collectionStatus = $processValidator->getCollection()->getStatus();
         $this->assertTrue($collectionStatus['mail']['failed']);
     }
-
 }
