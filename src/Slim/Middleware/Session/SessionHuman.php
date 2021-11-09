@@ -31,6 +31,10 @@ class SessionHuman extends SessionContainer
         $this->set('origin', $origin, 'human');
     }
 
+    /**
+     * @SuppressWarnings(Complexity)
+     * @return Boolean
+     */
     public function redirectOnSuspicion($request, $requiredSteps = array(), $referer = false)
     {
         $path = $request->getUri()->getPath();
