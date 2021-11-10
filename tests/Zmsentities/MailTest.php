@@ -16,6 +16,7 @@ class MailTest extends EntityCommonTests
         $this->assertTrue(123456 == $entity->getProcessId(), 'Getting process id failed');
         $this->assertTrue('1234' == $entity->getProcessAuthKey(), 'Getting AuthKey failed');
         $this->assertTrue('Max Mustermann' == $entity->getFirstClient()['familyName'], 'Getting first client failed');
+        $this->assertTrue($entity->hasContent(), 'Missing content in mail');
     }
 
     public function testDateformat()
@@ -57,7 +58,7 @@ class MailTest extends EntityCommonTests
         $entity->client = null;
         $this->assertTrue(null === $entity->getHtmlPart(), 'Mimepart with mime text/html should not exist');
         $this->assertTrue(null === $entity->getPlainPart(), 'Mimepart with mime text/plain should not exist');
-        $this->assertTrue(null === $entity->getIcsPart(), 'Mimepart with mime text/calendar should not exist');
+        $this->assertFalse($entity->hasIcs(), 'Mimepart with mime text/calendar should not exist');
         $resolvedEntity = $entity->toResolvedEntity($process, $config, 'appointment');
         $this->assertStringContainsString(
             'Sehr geehrte/r Frau',
@@ -222,17 +223,35 @@ class MailTest extends EntityCommonTests
 
     public function testToCustomMessageEntity()
     {
-        $entity = (new $this->entityclass())->getExample();
+        $entity = (new $this->entityclass());
         $process = (new \BO\Zmsentities\Process())->getExample();
         $formCollection = array(
             'subject' => \BO\Mellon\Validator::value('Das ist ein Test')->isString()->isBiggerThan(2),
             'message' => \BO\Mellon\Validator::value('Das ist eine Testnachricht')->isString()->isBiggerThan(2)
         );
         $formCollection = \BO\Mellon\Validator::collection($formCollection);
-        $entity = $entity->toCustomMessageEntity($process, $formCollection->getValues());
-        $this->assertEquals('Das ist ein Test', $entity->subject);
-        $this->assertEquals('Das ist eine Testnachricht', $entity->getPlainPart());
-        $this->assertEquals(null, $entity->getIcsPart());
+        $customEntity = $entity->toCustomMessageEntity($process, $formCollection->getValues());
+        $this->assertEquals('Das ist ein Test', $customEntity->subject);
+        $this->assertEquals('Das ist eine Testnachricht', $customEntity->getPlainPart());
+        $this->assertFalse($customEntity->hasIcs());
+    }
+
+    public function testToCustomMessageEntityWithoutClient()
+    {
+        $entity = (new $this->entityclass());
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $process->addClientFromForm(['email' => 'unittest@berlinonline.de', 'familyName' => 'Unittest']);
+        $formCollection = array(
+            'subject' => \BO\Mellon\Validator::value('Das ist ein Test')->isString()->isBiggerThan(2),
+            'message' => \BO\Mellon\Validator::value('Das ist eine Testnachricht')->isString()->isBiggerThan(2)
+        );
+        $formCollection = \BO\Mellon\Validator::collection($formCollection);
+        $entity->client = null;
+        $customEntity = $entity->toCustomMessageEntity($process, $formCollection->getValues());
+        $this->assertEquals('unittest@berlinonline.de', $customEntity['client']['email']);
+        $this->assertEquals('Das ist ein Test', $customEntity->subject);
+        $this->assertEquals('Das ist eine Testnachricht', $customEntity->getPlainPart());
+        $this->assertFalse($customEntity->hasIcs());
     }
 
     public function testToScopeAdminProcessList()

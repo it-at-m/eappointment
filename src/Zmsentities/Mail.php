@@ -93,7 +93,7 @@ class Mail extends Schema\Entity
 
     public function toCustomMessageEntity(Process $process, $collection)
     {
-        $entity = new self();
+        $entity = clone $this;
         $message = '';
         if (Property::__keyExists(
             'message',
