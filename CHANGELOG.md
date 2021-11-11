@@ -1,7 +1,7 @@
-## v2.24.00
+## v2.24.01
 
 * #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
-
+* #52271 Bugfix: Die Authentifizierung für einen Request kann nun konfiguriert werden
 ## v2.23.04
 
 * #42054 Bugfix: Die Standort-ID wird jetzt bei Standortwechsel korrekt ausgelesen.
