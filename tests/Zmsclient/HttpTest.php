@@ -76,7 +76,7 @@ class HttpTest extends Base
 
     public function testMails()
     {
-        $now = (new \DateTimeImmutable('2016-04-04'));
+        $now = new \DateTimeImmutable();
         $entity = \BO\Zmsentities\Mail::createExample();
         
         $confirmedProcess = static::$http_client->readGetResult('/scope/141/process/'. $now->format('Y-m-d') .'/')
@@ -85,6 +85,7 @@ class HttpTest extends Base
             ->withStatus(['confirmed'])
             ->toProcessList()
             ->getFirst();
+
         $entity->process = static::$http_client
             ->readGetResult(
                 '/process/'. $confirmedProcess->getId() .'/'. $confirmedProcess->getAuthKey() .'/',
@@ -100,8 +101,8 @@ class HttpTest extends Base
         $data = $result->getData();
         $this->assertTrue($data[0] instanceof \BO\Zmsentities\Mail);
 
-        $result = static::$http_client->readDeleteResult("/mails/$mailId/", ['resolveReferences' => 0]);
-        $entity = $result->getEntity();
+        //$result = static::$http_client->readDeleteResult("/mails/$mailId/", []);
+        //$entity = $result->getEntity();
         $this->assertTrue($entity instanceof \BO\Zmsentities\Mail);
         $this->writeTestLogout(static::$http_client);
     }

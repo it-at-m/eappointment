@@ -28,6 +28,11 @@ class Http
     protected $http_baseurl = null;
 
     /**
+     * @var Boolean $authEnabled with authentification request if true
+     */
+    public static $authEnabled = true;
+
+    /**
      * @var Psr7\Uri $uri
      */
     protected $uri = null;
@@ -100,7 +105,12 @@ class Http
      */
     public function readResponse(\Psr\Http\Message\RequestInterface $request)
     {
-        $request = $this->getAuthorizedRequest($request);
+        if (static::$authEnabled) {
+            $request = $this->getAuthorizedRequest($request);
+        }
+        if (null !== static::$jsonCompressLevel) {
+            $request = $request->withHeader('X-JsonCompressLevel', static::$jsonCompressLevel);
+        }
         $startTime = microtime(true);
         $response = $this->client->readResponse($request);
         if (self::$logEnabled) {
@@ -133,9 +143,6 @@ class Http
         }
         if (null !== $this->workflowkeyString) {
             $request = $request->withHeader('X-Workflow-Key', $this->workflowkeyString);
-        }
-        if (null !== static::$jsonCompressLevel) {
-            $request = $request->withHeader('X-JsonCompressLevel', static::$jsonCompressLevel);
         }
 
         return $request;
