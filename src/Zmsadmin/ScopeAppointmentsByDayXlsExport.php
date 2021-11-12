@@ -27,7 +27,7 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
         $selectedDateTime = ScopeAppointmentsByDay::readSelectedDateTime($args['date']);
-        ScopeAppointmentsByDay::readSelectedScope($workstation, $workstationRequest, $args['id']);
+        $scope = ScopeAppointmentsByDay::readSelectedScope($workstation, $workstationRequest, $args['id']);
         $processList = ScopeAppointmentsByDay::readProcessList($workstationRequest, $selectedDateTime);
         
         $xlsSheetTitle = $selectedDateTime->format('d.m.Y');
@@ -64,12 +64,28 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
         }
 
         $response->getBody()->write($writer->writeToString());
-
+        $fileName = sprintf("Tagesübersicht_%s_%s.xlsx", $scope->contact['name'], $xlsSheetTitle);
         return $response
             ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             ->withHeader(
                 'Content-Disposition',
-                sprintf('download; filename="tagesuebersicht_%s.xlsx"', $xlsSheetTitle)
+                sprintf('download; filename="'. $this->convertspecialChars($fileName) .'"')
             );
+    }
+
+    protected function convertspecialchars($string) {
+    
+        $convert = array (
+            array ('ä','ae',),
+            array ('ö','oe',),
+            array ('ü','ue',),
+            array ('ß','ss',),
+        );
+        
+        
+        foreach ($convert as $array) {
+            $string = str_replace($array[0], $array[1], $string);
+        }
+        return $string;
     }
 }
