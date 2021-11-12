@@ -1,10 +1,13 @@
 ## v2.24.00
 
 * #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
-* #48174 Bugfix: Abholer und Öffnungszeiten können nun wieder gelöscht werden. 
+* #48174 Bugfix: Abholer und Öffnungszeiten können nun wieder gelöscht werden.
 * #49077 Änderung einer Terminzeit oder Datum wird nun ohne Änderung der ID durchgeführt
 * #49149 Bugfix: Die Terminzeiten und Buttons im Terminvereinbarungsformular werden wieder korrekt geladen
 * #36078 Bugfix: Bei der Änderungen der Terminslots im Terminvereinbarungsdialog werden die Slots nun als Folgetermine gespeichert. Bei einer Überbuchung erhält der Sachbearbeiter eine Meldung, die Buchung wird dennoch durchgeführt.
+* #50845 Passwörter werden nun sicher in der Datenbank hinterlegt und ständig bei Login und Nutzeranpassungen geprüft ob der Hash aktualisiert werden sollte
+* #36703 Bugfix: Die letzten Terminzeiten lassen sich nun korrekt buchen
+* #52301 Bugfix: Excel Download der Tagestermine nun mit Standort im Dateinamen und Drucklayout ist optimiert worden
 
 ## v2.23.10
 
