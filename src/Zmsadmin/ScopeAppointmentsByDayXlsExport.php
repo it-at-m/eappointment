@@ -73,7 +73,8 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
             );
     }
 
-    protected function convertspecialchars($string) {
+    protected function convertspecialchars($string)
+    {
     
         $convert = array (
             array ('ä','ae',),
