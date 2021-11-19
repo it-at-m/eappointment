@@ -53,7 +53,6 @@ class UserAuth
         } elseif ($xAuthKey) {
             $useraccount = $useraccountQuery->readEntityByAuthKey($xAuthKey);
             $useraccount = static::getWithVerifiedHash($useraccount, $useraccount->password);
-            static::testPasswordMatching($useraccount, $useraccount->password);
         }
 
         return ($useraccount && $useraccount->hasId()) ? $useraccount : null;
