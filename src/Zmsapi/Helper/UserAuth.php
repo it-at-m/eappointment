@@ -49,10 +49,11 @@ class UserAuth
         if ($basicAuth && static::testUseraccountExists($basicAuth['username'])) {
             $useraccount = $useraccountQuery->readEntity($basicAuth['username']);
             $useraccount = static::getWithVerifiedHash($useraccount, $basicAuth['password']);
-            
+            static::testPasswordMatching($useraccount, $basicAuth['password']);
         } elseif ($xAuthKey) {
             $useraccount = $useraccountQuery->readEntityByAuthKey($xAuthKey);
             $useraccount = static::getWithVerifiedHash($useraccount, $useraccount->password);
+            static::testPasswordMatching($useraccount, $useraccount->password);
         }
 
         return ($useraccount && $useraccount->hasId()) ? $useraccount : null;
