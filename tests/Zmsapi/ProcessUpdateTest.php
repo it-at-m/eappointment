@@ -12,7 +12,7 @@ class ProcessUpdateTest extends Base
 
     public function testRendering()
     {
-        $process = json_decode($this->readFixture("GetProcess_10029.json"),1);
+        $process = json_decode($this->readFixture("GetProcess_10029.json"), 1);
         $process['amendment'] = "Test Update";
         $response = $this->render([], [
             '__body' => json_encode($process),
@@ -25,7 +25,7 @@ class ProcessUpdateTest extends Base
     public function testInternalWithSlotsRequired()
     {
         $this->setWorkstation();
-        $process = json_decode($this->readFixture("GetProcess_10029.json"),1);
+        $process = json_decode($this->readFixture("GetProcess_10029.json"), 1);
         $process['amendment'] = 'Unittest update process with loggedin user and slotsrequired';
         $response = $this->render([], [
             '__body' => json_encode($process),
@@ -40,7 +40,7 @@ class ProcessUpdateTest extends Base
     public function testPublicWithSlotsRequired()
     {
         $this->setWorkstation();
-        $process = json_decode($this->readFixture("GetProcess_10029.json"),1);
+        $process = json_decode($this->readFixture("GetProcess_10029.json"), 1);
         $process['amendment'] = 'Unittest update process from public user and slotsrequired';
         $response = $this->render([], [
             '__body' => json_encode($process),
@@ -52,7 +52,7 @@ class ProcessUpdateTest extends Base
 
     public function testWithClientkey()
     {
-        $process = json_decode($this->readFixture("GetProcess_10029.json"),1);
+        $process = json_decode($this->readFixture("GetProcess_10029.json"), 1);
         $response = $this->render([], [
             '__body' => json_encode($process),
            'clientkey' => 'default'
@@ -66,7 +66,7 @@ class ProcessUpdateTest extends Base
     {
         $query = new \BO\Zmsdb\Process();
         $this->expectException('BO\Zmsapi\Exception\Process\ApiclientInvalid');
-        $this->expectExceptionCode(403);       
+        $this->expectExceptionCode(403);
         $this->render([], [
             '__body' => '{
                 "id": '. self::PROCESS_ID .',
@@ -79,7 +79,7 @@ class ProcessUpdateTest extends Base
 
     public function testRenderingWithInitiator()
     {
-        $process = json_decode($this->readFixture("GetProcess_27758.json"),1);
+        $process = json_decode($this->readFixture("GetProcess_27758.json"), 1);
         $response = $this->render([], [
             '__body' => json_encode($process),
             'initiator' => 1
@@ -87,7 +87,7 @@ class ProcessUpdateTest extends Base
         $mailList = (new \BO\Zmsdb\Mail)->readList();
         $this->assertStringContainsString('Information Terminänderung', $mailList->getFirst()['subject']);
         $this->assertStringContainsString(
-            'Geändert wurde der Termin von W45265 (Vorgangsnummer: 27758)', 
+            'Geändert wurde der Termin von W45265 (Vorgangsnummer: 27758)',
             $mailList->getFirst()->multipart[0]['content']
         );
         $this->assertStringContainsString('process.json', (string)$response->getBody());

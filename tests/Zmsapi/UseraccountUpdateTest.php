@@ -64,9 +64,9 @@ class UseraccountUpdateTest extends Base
             }'
         ], []);
         $this->assertTrue(password_verify(
-            'newpassword', 
-            json_decode((string)$response->getBody(),1)['data']['password'])
-        );
+            'newpassword',
+            json_decode((string)$response->getBody(), 1)['data']['password']
+        ));
         $this->assertStringContainsString('useraccount.json', (string)$response->getBody());
         $this->assertStringContainsString('unittest', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
