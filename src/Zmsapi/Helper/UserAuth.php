@@ -14,10 +14,8 @@ class UserAuth
     */
     public static function getVerifiedUseraccount($entity)
     {
-        $useraccountQuery = new Useraccount();
-        $useraccount = $useraccountQuery->readEntity($entity->getId())->withVerifiedHash($entity->password);
-        $useraccount = $useraccountQuery->updateEntity($useraccount->getId(), $useraccount);
-        return $useraccount;
+        $useraccount = (new Useraccount)->readEntity($entity->getId());
+        return static::getWithVerifiedHash($useraccount, $entity->password);
     }
 
     public static function testPasswordMatching($useraccount, $password)
@@ -50,16 +48,24 @@ class UserAuth
         $xAuthKey = static::getXAuthKey($request);
         if ($basicAuth && static::testUseraccountExists($basicAuth['username'])) {
             $useraccount = $useraccountQuery->readEntity($basicAuth['username']);
+            $useraccount = static::getWithVerifiedHash($useraccount, $basicAuth['password']);
+            
         } elseif ($xAuthKey) {
             $useraccount = $useraccountQuery->readEntityByAuthKey($xAuthKey);
-        }
-
-        if ($useraccount && $useraccount->isPasswordNeedingRehash()) {
-            $useraccount->withVerifiedHash($useraccount->password);
-            $useraccount = $useraccountQuery->updateEntity($useraccount->getId(), $useraccount);
+            $useraccount = static::getWithVerifiedHash($useraccount, $useraccount->password);
         }
 
         return ($useraccount && $useraccount->hasId()) ? $useraccount : null;
+    }
+
+    protected static function getWithVerifiedHash($useraccount, $password)
+    {
+        $useraccountQuery = new Useraccount();
+        if ($useraccount && $useraccount->isPasswordNeedingRehash()) {
+            $useraccount->withVerifiedHash($password);
+            $useraccount = $useraccountQuery->updateEntity($useraccount->getId(), $useraccount);
+        }
+        return $useraccount;
     }
 
     /**
@@ -67,10 +73,10 @@ class UserAuth
      *
      * @return exception $exception
     */
-    public static function testUseraccountExists($loginName)
+    public static function testUseraccountExists($loginName, $password = false)
     {
         $query = new Useraccount();
-        if (! $query->readIsUserExisting($loginName)) {
+        if (! $query->readIsUserExisting($loginName, $password)) {
             $exception = new \BO\Zmsapi\Exception\Useraccount\InvalidCredentials();
             $exception->data['password']['messages'] = [
                 'Der Nutzername oder das Passwort wurden falsch eingegeben'
