@@ -189,19 +189,19 @@ class Useraccount extends Base
     protected function updateAssignedDepartments($entity)
     {
         $loginName = $entity->id;
-        $this->deleteAssignedDepartments($loginName);
-        //if (! $entity->isSuperUser()) {
-        $userId = $this->readEntityIdByLoginName($loginName);
-        foreach ($entity->departments as $department) {
-            $this->perform(
-                Query\Useraccount::QUERY_WRITE_ASSIGNED_DEPARTMENTS,
-                array(
-                    $userId,
-                    $department['id']
-                )
-            );
+        if (! $entity->isSuperUser()) {
+            $this->deleteAssignedDepartments($loginName);
+            $userId = $this->readEntityIdByLoginName($loginName);
+            foreach ($entity->departments as $department) {
+                $this->perform(
+                    Query\Useraccount::QUERY_WRITE_ASSIGNED_DEPARTMENTS,
+                    array(
+                        $userId,
+                        $department['id']
+                    )
+                );
+            }
         }
-        //}
     }
 
     protected function readEntityIdByLoginName($loginName)
