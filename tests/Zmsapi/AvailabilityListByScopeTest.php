@@ -59,10 +59,10 @@ class AvailabilityListByScopeTest extends Base
         $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
         $this->setWorkstation()->getUseraccount()->setRights('scope')->addDepartment($department);
         $response =  $this->render(
-            ['id' => self::SCOPE_ID], 
+            ['id' => self::SCOPE_ID],
             ['__header' => array(
                 'X-Token' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4'
-            )], 
+            )],
             []
         );
         $this->assertStringContainsString('availability.json', (string)$response->getBody());
