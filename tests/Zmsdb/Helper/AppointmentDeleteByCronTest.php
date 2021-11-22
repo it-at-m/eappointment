@@ -19,7 +19,7 @@ class AppointmentDeleteByCronTest extends Base
     public function testStartProcessingBlocked()
     {
         $queryArchived = new ProcessStatusArchived();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $entity =(new Query)->readEntity(10029, '1c56', 0);
         $entity->status = 'finished';
         $entity->queue->callTime = 1460972400;
@@ -28,16 +28,16 @@ class AppointmentDeleteByCronTest extends Base
         $appointmentDelete = new AppointmentDeleteByCron(2, $now, false); // verbose
         $query = new Query();
         $appointmentDelete->startProcessing(false, false);
-        $this->assertEquals(1, count($query->readProcessListByScopeAndStatus(0, 'blocked', 0, $limit, $offset)));
+        $this->assertEquals(1, count($query->readProcessListByScopeAndStatus(0, 'blocked', 0, 10, 0)));
      
         $appointmentDelete->startProcessing(true, false);
-        $this->assertEquals(0, count($query->readProcessListByScopeAndStatus(0, 'blocked', 0, $limit, $offset)));
+        $this->assertEquals(0, count($query->readProcessListByScopeAndStatus(0, 'blocked', 0, 10, 0)));
     }
 
     public function testStartProcessingBlockedPickup()
     {
         $queryArchived = new ProcessStatusArchived();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141);
         $process = $query->writeNewPickup($scope, $now);
@@ -49,7 +49,7 @@ class AppointmentDeleteByCronTest extends Base
         $query = new Query();
 
         $appointmentDelete->startProcessing(false, false);
-        $this->assertEquals(1, count($query->readProcessListByScopeAndStatus(0, 'blocked', 0, $limit, $offset)));
+        $this->assertEquals(1, count($query->readProcessListByScopeAndStatus(0, 'blocked', 0, 10, 0)));
      
         /*
         $appointmentDelete->startProcessing(true, false);

@@ -10,7 +10,7 @@ class MailTest extends Base
 {
     public function testBasic()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $input = $this->getTestEntity();
         $query = new Query();
         $entity = $query->writeInQueue($input, $now);
@@ -55,7 +55,7 @@ class MailTest extends Base
 
     public function testWriteInQueueWithDailyProcessList()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $scope = (new \BO\Zmsdb\Scope)->readEntity(451, 1); // Mobiles Bürgeramt Reinickendorf with Admin Email
         $processList = new \BO\Zmsentities\Collection\ProcessList();
         $processList->addEntity(\BO\Zmsentities\Process::createExample());
@@ -69,7 +69,7 @@ class MailTest extends Base
 
     public function testWriteInQueueWithPickupStatus()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $entity = $this->getTestEntity();
         $entity->process['status'] = 'pickup';
         $this->assertEquals('0', $entity->getFirstClient()->emailSendCount);
@@ -81,7 +81,7 @@ class MailTest extends Base
     public function testExceptionWithoutMail()
     {
         $this->expectException('\BO\Zmsdb\Exception\Mail\ClientWithoutEmail');
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $input = $this->getTestEntity();
         $input->process['clients'][0]['email'] = '';
@@ -91,7 +91,7 @@ class MailTest extends Base
     public function testWriteMimepartFailed()
     {
         $this->expectException('BO\Zmsdb\Exception\MailWritePartFailed');
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $input = $this->getTestEntity();
         $input->multipart[0]['content'] = null;

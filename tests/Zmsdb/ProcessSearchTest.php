@@ -23,7 +23,7 @@ class ProcessSearchTest extends Base
         $this->assertEntityList("\\BO\\Zmsentities\\Process", $processList);
         $this->assertEquals(6, $processList->count());
         $processList = $query->readSearch(['query' => '10029']);
-        $this->assertEquals(2, $processList->count());
+        $this->assertEquals(('zmsdev' == \BO\Zmsdb\Connection\Select::$username) ? 1 : 2, $processList->count());
         $this->assertEquals(10029, $processList->getFirst()->id);
     }
 

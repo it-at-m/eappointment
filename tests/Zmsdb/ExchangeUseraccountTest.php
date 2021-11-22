@@ -10,11 +10,12 @@ class ExchangeUseraccountTest extends Base
 {
     public function testBasic()
     {
+        $usercount = ('zmsdev' == \BO\Zmsdb\Connection\Select::$username) ? 7 : 13;
         $query = new Query();
         $entity = $query->readEntity();
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(13, count($entity->data));
-        $this->assertEquals('berlinonline', $entity->data[0][2]);
+        $this->assertEquals($usercount, count($entity->data));
+        $this->assertEquals(static::$username, $entity->data[0][2]);
     }
 
     public function testSubjectList()

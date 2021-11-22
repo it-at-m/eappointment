@@ -11,11 +11,11 @@ class LogoutTest extends Base
     public function testBasic()
     {
         $query = new Query();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         //superuser bo
         $userAccount = new UserAccountEntity(array(
-            'id' => 'superuser',
-            'password' => md5("vorschau")
+            'id' => static::$username,
+            'password' => md5(static::$password)
         ));
 
         $workstation = $query->writeEntityLoginByName($userAccount->id, $userAccount->password, $now, 2);

@@ -18,17 +18,15 @@ class CalendarTest extends Base
     public function testExceptionCalendarWithoutScopes()
     {
         $this->expectException('\BO\Zmsdb\Exception\CalendarWithoutScopes');
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
-        (new Query())->readResolvedEntity($input, $now);
+        (new Query())->readResolvedEntity($input, static::$now);
     }
 
     public function testWithScope()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
         $input->addScope(141); // Bürgeramt Heerstr.
-        $entity = (new Query())->readResolvedEntity($input, $now);
+        $entity = (new Query())->readResolvedEntity($input, static::$now);
         $this->assertTrue($entity->hasDay(2016, 5, 27), "Missing 2016-05-27 in dataset");
         $this->assertEquals(2, $entity->getDay(2016, 5, 27)['freeAppointments']['public']);
     }
@@ -36,21 +34,19 @@ class CalendarTest extends Base
     public function testDayOffBASpandau()
     {
         //Bürgeramt Spandau with Day Off on 2016-05-25
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $freeProcessesDate = new \DateTimeImmutable("2016-05-25");
         $input = $this->getTestEntity();
         $input->addCluster(109); // Bürgeramt Heerstr.
-        $entity = (new Query())->readResolvedEntity($input, $now, $freeProcessesDate);
+        $entity = (new Query())->readResolvedEntity($input, static::$now, $freeProcessesDate);
         $this->assertEquals(0, count($entity['freeProcesses']));
     }
 
     public function testFalkenhagener()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
         //var_dump(json_encode($input, JSON_PRETTY_PRINT));
         $input->addProvider('dldb', 324414); // Falkenhagener Feld
-        $entity = (new Query())->readResolvedEntity($input, $now);
+        $entity = (new Query())->readResolvedEntity($input, static::$now);
         //var_dump(json_encode($entity, JSON_PRETTY_PRINT));
         //$array = json_decode(json_encode($entity), 1);
         //var_dump($array['days']);
@@ -61,12 +57,11 @@ class CalendarTest extends Base
 
     public function testHeerstr()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
         //var_dump(json_encode($input, JSON_PRETTY_PRINT));
         $input->addProvider('dldb', 122217); // Bürgeramt Heerstr.
         $input->addCluster(109); // Bürgeramt Heerstr.
-        $entity = (new Query())->readResolvedEntity($input, $now);
+        $entity = (new Query())->readResolvedEntity($input, static::$now);
         //var_dump(json_encode($entity, JSON_PRETTY_PRINT));
         //$array = json_decode(json_encode($entity), 1);
         //var_dump($array['days']);
@@ -85,10 +80,9 @@ class CalendarTest extends Base
 
     public function testZwickauerDamm()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
         $input->addProvider('dldb', 122296); // Bürgeramt Zwickauer Damm
-        $entity = (new Query())->readResolvedEntity($input, $now);
+        $entity = (new Query())->readResolvedEntity($input, static::$now);
         $this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
         $this->assertTrue($entity->hasDay(2016, 4, 25), "Missing 2016-04-25 in dataset");
         $this->assertEquals(
@@ -100,11 +94,10 @@ class CalendarTest extends Base
 
     public function testMultipleSlots()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
         $input->addProvider('dldb', 122271); // Bürgeramt Biesdorf Center
         $input->addRequest('dldb', 120335); // slots = 2 + Perso slots = 2 -> slots = 4
-        $entity = (new Query())->readResolvedEntity($input, $now);
+        $entity = (new Query())->readResolvedEntity($input, static::$now);
         $this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
         $this->assertTrue($entity->hasDay(2016, 5, 25), "Missing 2016-05-25 in dataset");
         $this->assertEquals(

@@ -9,10 +9,9 @@ class CalldisplayTest extends Base
 {
     public function testBasic()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = $this->getTestEntity();
-        $entity = $query->readResolvedEntity($input, $now);
+        $entity = $query->readResolvedEntity($input, static::$now);
         $this->assertEntity("\\BO\\Zmsentities\\Calldisplay", $entity);
 
         $organisation = $query->readResolvedOrganisation($entity);
@@ -27,7 +26,7 @@ class CalldisplayTest extends Base
 
     public function testBasicWithCluster()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $input = $this->getTestEntity();
         $cluster = (new \BO\Zmsentities\Cluster())->getExample();

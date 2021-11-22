@@ -27,7 +27,7 @@ class ScopeTest extends Base
 
     public function testCluster()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $entityList = (new Query())->readByClusterId(109, 1);
         $this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
 
@@ -74,7 +74,7 @@ class ScopeTest extends Base
     public function testReadWithWaitingTime()
     {
         $query = new Query();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $entity = (new Query())->readEntity(141, 1);
         $queueList = $query->readQueueListWithWaitingTime($entity, $now, 1);
         $this->assertEquals(103, count($queueList));
@@ -120,7 +120,7 @@ class ScopeTest extends Base
     public function testReadUpdatedWaitingNumber()
     {
         $query = new Query();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $this->assertTrue(1 <= $query->readWaitingNumberUpdated(141, $now));
     }
 
@@ -128,7 +128,7 @@ class ScopeTest extends Base
     {
         $this->expectException('\BO\Zmsdb\Exception\Scope\GivenNumberCountExceeded');
         $query = new Query();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $this->assertEquals(1, $query->readWaitingNumberUpdated(109, $now));
     }
 
@@ -137,7 +137,7 @@ class ScopeTest extends Base
         $query = new Query();
         $entity = $query->readEntity(146, 1);
         $entity->status['queue']['ghostWorkstationCount'] = 4;
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query->updateGhostWorkstationCount($entity, $now);
         $this->assertEquals(4, $entity->status['queue']['ghostWorkstationCount']);
     }
@@ -145,7 +145,7 @@ class ScopeTest extends Base
     public function testReadIsOpened()
     {
         $query = new Query();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $this->assertEquals(true, $query->readIsOpened(141, $now)); //Herrstraße
     }
 

@@ -11,13 +11,13 @@ class LoginTest extends Base
     public function testBasic()
     {
         $query = new Query();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         //superuser bo
         $userAccount = new UserAccountEntity(array(
-            'id' => 'superuser'
+            'id' => static::$username
         ));
 
-        $workstation = $query->writeEntityLoginByName($userAccount->id, md5("vorschau"), $now);
+        $workstation = $query->writeEntityLoginByName($userAccount->id, md5(static::$password), $now);
         $this->assertEquals(true, $workstation->hasAuthKey());
 
         $workstation->scope['id'] = 141; //Bürgeramt Heerstraße

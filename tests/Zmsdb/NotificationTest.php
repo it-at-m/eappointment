@@ -8,8 +8,8 @@ use \BO\Zmsentities\Notification as Entity;
 class NotificationTest extends Base
 {
     public function testBasic()
-    {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+    {;
+        $now = static::$now;
         $input = $this->getTestEntity();
         $input->process['status'] = 'pickup';
 
@@ -51,7 +51,7 @@ class NotificationTest extends Base
 
     public function testExceptionWithoutTelephone()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $this->expectException('\BO\Zmsdb\Exception\Notification\ClientWithoutTelephone');
         $query = new Query();
         $input = $this->getTestEntity();
@@ -61,7 +61,7 @@ class NotificationTest extends Base
 
     public function testExceptionMissingProperty()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $this->expectException('\BO\Zmsentities\Exception\NotificationMissedProperty');
         $query = new Query();
         $input = $this->getTestEntity();

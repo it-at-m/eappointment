@@ -6,8 +6,23 @@ use PHPUnit\Framework\TestCase;
 
 abstract class Base extends TestCase
 {
+    public static $username = 'superuser';
+    public static $password = 'vorschau';
+    public static $now = null;
+    public static $requestRelationCount = 2531;
+    public static $requestCount = 307;
+
     public function setUp(): void
     {
+        static::$now = ('zmsdev' == \BO\Zmsdb\Connection\Select::$username) ? 
+            new \DateTimeImmutable('2016-04-01 11:55:00') : 
+            new \DateTimeImmutable();
+        static::$requestRelationCount = ('zmsdev' == \BO\Zmsdb\Connection\Select::$username) ? 
+            2532 : 
+            static::$requestRelationCount;
+        static::$requestCount = ('zmsdev' == \BO\Zmsdb\Connection\Select::$username) ? 
+            308 : 
+            static::$requestCount;
         \BO\Zmsdb\Connection\Select::setTransaction();
         \BO\Zmsdb\Connection\Select::setProfiling();
         \BO\Zmsdb\Connection\Select::setQueryCache(false);

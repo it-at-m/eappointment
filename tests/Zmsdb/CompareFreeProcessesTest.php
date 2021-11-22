@@ -22,7 +22,7 @@ class CompareFreeProcessesTest extends Base
      */
     public function testBasic()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55:00");
+        $now = static::$now;
         $dateTime = new \DateTimeImmutable("2016-05-30");
         $freeProcessesDay = 0;
         $freeProcessesDayCallcenter = 0;

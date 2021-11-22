@@ -18,7 +18,7 @@ class UserAccountTest extends Base
     public function testBasic()
     {
         $query = new Query();
-        $entity = $query->readEntity('berlinonline', 1);
+        $entity = $query->readEntity(static::$username, 1);
         $entity->email = "test@berlinonline.de";
         $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $entity);
     }
@@ -38,7 +38,7 @@ class UserAccountTest extends Base
         $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $userAccount);
 
         $userAccount->setRights('organisation');
-        $userAccount = $query->updateEntity($userAccount->id, $userAccount, 2);
+        $userAccount = $query->writeUpdatedEntity($userAccount->id, $userAccount, 2);
 
         $workstation = (new Workstation())
             ->writeEntityLoginByName($userAccount->id, $input->password, $this->dateTime, 2);
@@ -72,7 +72,7 @@ class UserAccountTest extends Base
             $entity->email = "test@berlinonline.de";
         }
         $this->assertEntityList("\\BO\\Zmsentities\\Useraccount", $entityList);
-        $this->assertEquals(true, $entityList->hasEntity('berlinonline')); //superuser bo
+        $this->assertEquals(true, $entityList->hasEntity(static::$username)); //superuser bo
     }
 
     public function testReadListByDepartment()
@@ -135,7 +135,7 @@ class UserAccountTest extends Base
 
     public function testWriteRemovedProcess()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $workstation = $this->writeTestLogin();
         $process = (new \BO\Zmsdb\Process)->readEntity(10029, '1c56');
         $workstation->process = (new Workstation)->writeAssignedProcess($workstation, $process, $now);
@@ -167,7 +167,7 @@ class UserAccountTest extends Base
 
     public function testLoginFailed()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $this->expectException('\BO\Zmsdb\Exception\Useraccount\InvalidCredentials');
         (new Workstation())->writeEntityLoginByName('johndoe', 'secret', $now);
     }

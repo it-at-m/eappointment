@@ -17,11 +17,10 @@ class BAllTest extends Base
 
     public function testSingle()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
         foreach ($this->fullProviderIdList as $providerId) {
             $input = $this->getTestEntity();
             $input->addProvider('dldb', $providerId);
-            $entity = (new Query())->readResolvedEntity($input, $now);
+            $entity = (new Query())->readResolvedEntity($input, static::$now);
             $this->assertEquals(0, count($entity['freeProcesses']));
            
             $this->writeTestExport($entity, 'provider' . $providerId . '_daylist.php');
@@ -46,12 +45,11 @@ class BAllTest extends Base
      */
     public function testOverall()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
         foreach ($this->fullProviderIdList as $providerId) {
             $input->addProvider('dldb', $providerId);
         }
-        $entity = (new Query())->readResolvedEntity($input, $now);
+        $entity = (new Query())->readResolvedEntity($input, static::$now);
         $this->assertEquals(0, count($entity['freeProcesses']));
         //var_dump("$entity");
         //$this->dumpProfiler();
