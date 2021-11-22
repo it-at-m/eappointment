@@ -169,7 +169,7 @@ class Useraccount extends Schema\Entity
         return $department;
     }
 
-    public function withPassword($input)
+    public function setPassword($input)
     {
         if (isset($input['password']) && '' != $input['password']) {
             $this->password = $input['password'];
@@ -218,7 +218,7 @@ class Useraccount extends Schema\Entity
      *
      * @return array $useraccount
     */
-    public function withVerifiedHash($password)
+    public function setVerifiedHash($password)
     {
         // Do you have old, turbo-legacy, non-crypt hashes?
         if (strpos($this->password, '$') !== 0) {
@@ -236,6 +236,15 @@ class Useraccount extends Schema\Entity
         }
 
         return $this;
+    }
+
+    public function withVerifiedHash($password)
+    {
+        $useraccount = clone $this;
+        if ($useraccount->isPasswordNeedingRehash()) {
+            $useraccount->setVerifiedHash($password);
+        }
+        return $useraccount;
     }
 
     public function isPasswordNeedingRehash()
