@@ -12,7 +12,6 @@ class AvailabilityTest extends Base
     {
         $query = new Query();
         $entity = $query->readEntity(21202, 0); //check without cache
-
         $this->assertEntity("\\BO\\Zmsentities\\Availability", $entity);
         $this->assertTrue((bool)$entity->weekday['saturday']);
 
