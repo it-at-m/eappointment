@@ -159,7 +159,7 @@ class Useraccount extends Base
      *
      * @return Entity
      */
-    public function updateEntity($loginName, \BO\Zmsentities\Useraccount $entity, $resolveReferences = 0)
+    public function writeUpdatedEntity($loginName, \BO\Zmsentities\Useraccount $entity, $resolveReferences = 0)
     {
         $query = new Query\Useraccount(Query\Base::UPDATE);
         $query->addConditionLoginName($loginName);
