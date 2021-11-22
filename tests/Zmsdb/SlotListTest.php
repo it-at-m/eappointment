@@ -9,7 +9,7 @@ class SlotListTest extends Base
 {
     public function testBasic()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $dateTime = \DateTimeImmutable::createFromFormat('Y-m-d', '2016-04-05');
         $slotList = new SlotList($this->getTestSlotData(), $dateTime, $dateTime->modify('+1day'), $now);
         $slotList->setSlotData($this->getTestSlotList());
@@ -36,7 +36,7 @@ class SlotListTest extends Base
     {
         $this->expectException('\BO\Zmsdb\Exception\SlotDataWithoutPreGeneratedSlot');
         $slotData = $this->getTestSlotData();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $dateTime = \DateTimeImmutable::createFromFormat('Y-m-d', '2016-04-05');
         $slotList = new SlotList($slotData, $dateTime, $dateTime->modify('+1day'), $now);
         $slotList->addQueryData(array(

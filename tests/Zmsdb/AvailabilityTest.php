@@ -30,9 +30,8 @@ class AvailabilityTest extends Base
         $query = new Query();
         $entity = $query->readEntity(64054, 2); //Egon-Erwin-Kisch scope#135 for monday
         $dateTime = new DateTime("2016-05-30 10:00");
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $this->assertFalse(
-            $entity->hasDate($dateTime, $now),
+            $entity->hasDate($dateTime, static::$now),
             "Scope should not be open, cause it has only 56 days bookable from now on"
         );
     }

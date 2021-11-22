@@ -26,7 +26,7 @@ class TicketprinterTest extends Base
 
     public function testWithContact()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $input = $this->getTestEntity();
         $input['buttonlist'] = 's141';
@@ -45,7 +45,7 @@ class TicketprinterTest extends Base
 
     public function testReadByButtonList()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $input = $this->getTestEntity()->toStructuredButtonList();
         $entity = $query->readByButtonList($input, $now);
@@ -58,7 +58,7 @@ class TicketprinterTest extends Base
     {
         $this->expectException('\BO\Zmsdb\Exception\Ticketprinter\UnvalidButtonList');
         $this->expectExceptionCode(428);
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $input = (new Entity)->getExample()->toStructuredButtonList();
         $query->readByButtonList($input, $now);
@@ -68,7 +68,7 @@ class TicketprinterTest extends Base
     {
         $this->expectException('\BO\Zmsdb\Exception\Scope\GivenNumberCountExceeded');
         $this->expectExceptionCode(404);
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $input = (new Entity)->getExample();
         $input['buttonlist'] = 's109';
@@ -79,7 +79,7 @@ class TicketprinterTest extends Base
     {
         $this->expectException('\BO\Zmsdb\Exception\Ticketprinter\UnvalidButtonList');
         $this->expectExceptionCode(428);
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $buttonlist = 's999';
         $input = (new Entity)->getExample();
@@ -124,7 +124,7 @@ class TicketprinterTest extends Base
     {
         $this->expectException('\BO\Zmsdb\Exception\Ticketprinter\UnvalidButtonList');
         $this->expectExceptionCode(428);
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $input = $this->getTestEntity();
         $input->buttonlist = 's999,l[https://service.berlin.de|Service Berlin]';

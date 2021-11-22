@@ -322,8 +322,7 @@ class SlotTest extends Base
     {
         $availability = $this->readTestAvailability();
         $lastChange = (new Slot())->readLastChangedTimeByAvailability($availability);
-        $now = new \DateTimeImmutable();
-        $status = (new Slot())->writeByAvailability($availability, $now);
+        $status = (new Slot())->writeByAvailability($availability, static::$now);
         //$this->debugOutdated($availability, $now, $lastChange);
         $availability = $this->readTestAvailability();
         $now = (new Slot())->readLastChangedTimeByAvailability($availability);
@@ -331,6 +330,7 @@ class SlotTest extends Base
         $now = $now->modify('+1 day');
         $status = (new Slot())->writeByAvailability($availability, $now);
         //$this->debugOutdated($availability, $now, $lastChange);
+       
         $this->assertFalse(!$status, "Availability should rebuild slots if time allows new slots");
     }
 

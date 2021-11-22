@@ -61,7 +61,7 @@ class ProcessLockTest extends Base
     {
         $this->expectException('\BO\Zmsdb\Exception\Pdo\LockTimeout');
         $this->writeDBLock();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141, 0, true);
         $query->writeNewPickup($scope, $now);
@@ -71,7 +71,7 @@ class ProcessLockTest extends Base
     {
         $this->expectException('\BO\Zmsdb\Exception\Pdo\LockTimeout');
         $this->writeDBLock();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusFree();
         $input = (new ProcessTest)->getTestProcessEntity();
         $input->queue['callTime'] = 0;
@@ -85,7 +85,7 @@ class ProcessLockTest extends Base
     public function testConcurrentOnSameSlot()
     {
         $this->expectException("BO\Zmsdb\Exception\Pdo\LockTimeout");
-        $now = new \DateTimeImmutable("2016-04-01 11:55:00");
+        $now = static::$now;
         $statement = $this->pdo
             ->prepare(
                 "SELECT * FROM slot "

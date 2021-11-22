@@ -10,7 +10,7 @@ class ClusterTest extends Base
 {
     public function testBasic()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $entity = $query->readEntity(4, 0, $now);
         $this->assertEntity("\\BO\\Zmsentities\\Cluster", $entity);
@@ -38,7 +38,7 @@ class ClusterTest extends Base
 
     public function testWithScopeStatusAvailabilityIsOpened()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $cluster = $query->readEntityWithOpenedScopeStatus(4, $now, 1);
         $this->assertTrue($cluster->scopes->getFirst()->getStatus('availability', 'isOpened'));
@@ -46,7 +46,7 @@ class ClusterTest extends Base
 
     public function testReadEnabledScopeList()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $scopeList = $query->readEnabledScopeList(4, $now);
         $this->assertEquals(2, $scopeList->count());
@@ -64,7 +64,7 @@ class ClusterTest extends Base
 
     public function testReadQueueList()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $queueList = $query->readQueueList(110, $now);
         $this->assertEntityList("\\BO\\Zmsentities\\Queue", $queueList);
@@ -73,7 +73,7 @@ class ClusterTest extends Base
 
     public function testReadQueueListWithCalledProcess()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $queueList = $query->readQueueList(110, $now);
         $this->assertEntityList("\\BO\\Zmsentities\\Queue", $queueList);
@@ -83,7 +83,7 @@ class ClusterTest extends Base
     public function testReadIsOpenedScopeList()
     {
         $query = new Query();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $entityList = $query->readOpenedScopeList(60, $now); //by Egon-Erwin-Kisch-Str. Cluster
         $this->assertEquals(true, 0 <= $entityList->count());
     }
@@ -91,7 +91,7 @@ class ClusterTest extends Base
     public function testReadScopeWithShortestWaitingTime()
     {
         $query = new Query();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         //by Schöneberg with test ghostWorkstationCount of 3
         $scope = $query->readScopeWithShortestWaitingTime(4, $now);
         $queueList = (new \BO\Zmsdb\Scope())->readQueueListWithWaitingTime($scope, $now);
@@ -115,7 +115,7 @@ class ClusterTest extends Base
     public function testReadWithScopeWorkstationCount()
     {
         $query = new Query();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $cluster = $query->readWithScopeWorkstationCount(4, $now);
         $this->assertEquals(3, $cluster->scopes->getFirst()->status['queue']['workstationCount']);
     }
@@ -125,7 +125,7 @@ class ClusterTest extends Base
         $this->expectException('\BO\Zmsdb\Exception\Cluster\ScopesWithoutWorkstationCount');
         $this->expectExceptionCode('404');
         $query = new Query();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query->readScopeWithShortestWaitingTime(110, $now);
     }
 

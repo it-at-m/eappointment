@@ -14,7 +14,7 @@ class ProcessNotificationTest extends Base
     public function testSendNotificationReminder()
     {
         $query = new Query();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $processList = $query->readNotificationReminderProcessList($now, 10, 2);
         $this->assertEquals(10, $processList->count());
         $this->assertEquals(

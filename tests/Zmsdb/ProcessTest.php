@@ -21,7 +21,7 @@ class ProcessTest extends Base
 {
     public function testReadByQueueNumberAndScope()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusQueued();
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141, 0, true);
         $process = $query->writeNewFromTicketprinter($scope, $now);
@@ -33,8 +33,9 @@ class ProcessTest extends Base
 
     public function testReadByWorkstation()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $workstation = (new \BO\Zmsdb\Workstation)->writeEntityLoginByName('testadmin', md5('vorschau'), $now, 2);
+        $now = static::$now;
+        $workstation = (new \BO\Zmsdb\Workstation)
+            ->writeEntityLoginByName('testadmin', md5(static::$password), $now, 2);
         $process =(new Query)->readEntity(10029, '1c56');
         $workstation->process = (new \BO\Zmsdb\Workstation)->writeAssignedProcess($workstation, $process, $now);
         $process = (new Query)->readByWorkstation($workstation, 1);
@@ -45,7 +46,7 @@ class ProcessTest extends Base
 
     public function testPending()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141);
         $process = $query->writeNewPickup($scope, $now);
@@ -58,7 +59,7 @@ class ProcessTest extends Base
     {
         $this->expectException('\BO\Zmsdb\Exception\Process\ProcessCreateFailed');
 
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $input['queue']['number'] = 'invalidNumber';
@@ -69,7 +70,7 @@ class ProcessTest extends Base
     {
         $this->expectException('\BO\Zmsdb\Exception\Process\ProcessReserveFailed');
 
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
@@ -81,7 +82,7 @@ class ProcessTest extends Base
     {
         $this->expectException('\BO\Zmsdb\Exception\Process\ProcessReserveFailed');
 
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusFree();
         $mulitpleSlots = $this->getTestProcessEntity();
         $mulitpleSlots->getFirstAppointment()->slotCount = 10;
@@ -95,7 +96,7 @@ class ProcessTest extends Base
 
     public function testExceptionSQLUpdateFailed()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $input->id = 1000;
@@ -109,7 +110,7 @@ class ProcessTest extends Base
 
     public function testUpdateProcess()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $input->getFirstAppointment()->slotCount = 3;
@@ -146,7 +147,7 @@ class ProcessTest extends Base
 
     public function testUpdateFail()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $process = new Entity();
         $process->id = 100009;
         $process->authKey = 'abcd';
@@ -159,7 +160,7 @@ class ProcessTest extends Base
     {
         $query = new ProcessStatusFree();
         $queryProcess = new Query();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $appointment = new \BO\Zmsentities\Appointment([
             "date"=>"1464588000", // 2016-05-30 08:00:00
             "scope"=>[
@@ -196,7 +197,7 @@ class ProcessTest extends Base
     {
         $query = new ProcessStatusFree();
         $queryProcess = new Query();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $appointment = new \BO\Zmsentities\Appointment([
             "date"=>"1464588000", // 2016-05-30 08:00:00
             "scope"=>[
@@ -236,7 +237,7 @@ class ProcessTest extends Base
         $this->expectException('BO\Zmsdb\Exception\Process\ProcessReserveFailed');
         $query = new ProcessStatusFree();
         $queryProcess = new Query();
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $appointment = new \BO\Zmsentities\Appointment([
             "date"=>"1464340800", // 2016-05-27 11:20:00
             "scope"=>[
@@ -258,7 +259,7 @@ class ProcessTest extends Base
 
     public function testUpdateProcessWithStatusProcessing()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
@@ -271,7 +272,7 @@ class ProcessTest extends Base
 
     public function testProcessStatusCalled()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $input->queue['callTime'] = 1464350400;
@@ -289,7 +290,7 @@ class ProcessTest extends Base
 
     public function testProcessStatusFinished()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $entity =(new Query)->readEntity(10029, '1c56', 0);
         $entity->status = 'finished';
         $entity->requests[] = new \BO\Zmsentities\Request(
@@ -320,7 +321,7 @@ class ProcessTest extends Base
 
     public function testNewWriteFromAdmin()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusQueued();
         $input = $this->getTestProcessEntity();
         $process = $query->writeNewFromAdmin($input, $now);
@@ -353,7 +354,7 @@ class ProcessTest extends Base
 
     public function testProcessListByClusterAndTime()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $collection =(new Query)->readProcessListByClusterAndTime(110, $now);
         $this->assertEntityList("\\BO\\Zmsentities\\Process", $collection);
         $this->assertEquals(105, $collection->count());
@@ -361,7 +362,7 @@ class ProcessTest extends Base
 
     public function testReadSlotCount()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now, "public", 0, 1);
@@ -371,7 +372,7 @@ class ProcessTest extends Base
 
     public function testMultipleSlots()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusFree();
 
         $input = $this->getTestProcessEntity();
@@ -385,7 +386,7 @@ class ProcessTest extends Base
 
     public function testMultipleSlotsScopeDisabled()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusFree();
         $availabilityQuery = new AvailabilityQuery();
         $processQuery = new ProcessQuery();
@@ -423,7 +424,7 @@ class ProcessTest extends Base
 
     public function testMultipleSlotsScopeEnabled()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusFree();
         $availabilityQuery = new AvailabilityQuery();
         $processQuery = new ProcessQuery();
@@ -463,7 +464,7 @@ class ProcessTest extends Base
 
     public function testCancelProcess()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
@@ -479,7 +480,7 @@ class ProcessTest extends Base
 
     public function testDereferenceProcess()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
@@ -491,7 +492,7 @@ class ProcessTest extends Base
 
     public function testReserveProcess()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
@@ -503,7 +504,7 @@ class ProcessTest extends Base
 
     public function testReserveProcessWithApiclient()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $input['apiclient']['apiClientID'] = 1;
@@ -516,7 +517,7 @@ class ProcessTest extends Base
 
     public function testReadListByScopeAndTime()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $now = static::$now;
         $query = new Query();
         $processList = $query->readProcessListByScopeAndTime(141, $now); //Heerstraße
         $this->assertEquals(102, $processList->count(), "Scope 141 Heerstraße should have 105 assigned processes");
