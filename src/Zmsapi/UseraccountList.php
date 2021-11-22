@@ -22,7 +22,7 @@ class UseraccountList extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $workstation = (new Helper\User($request, 2))->checkRights('useraccount');
+        (new Helper\User($request, 2))->checkRights('useraccount');
         $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $rightRestriction = $validator->getParameter('right')->isString()->getValue();
         $useraccountList = (new Useraccount)->readList($resolveReferences);
