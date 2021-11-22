@@ -14,9 +14,9 @@ abstract class Base extends TestCase
 
     public function setUp(): void
     {
-        static::$now = ('zmsdev' == \BO\Zmsdb\Connection\Select::$username) ? 
-            new \DateTimeImmutable('2016-04-01 11:55:00') : 
-            new \DateTimeImmutable();
+        static::$username = ('zmsdev' == \BO\Zmsdb\Connection\Select::$username) ? 'superuser' : static::$username;
+        static::$password = ('zmsdev' == \BO\Zmsdb\Connection\Select::$username) ? 'vorschau' : static::$password;
+        static::$now = new \DateTimeImmutable('2016-04-01 11:55:00');
         static::$requestRelationCount = ('zmsdev' == \BO\Zmsdb\Connection\Select::$username) ? 
             2532 : 
             static::$requestRelationCount;
