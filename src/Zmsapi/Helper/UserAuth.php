@@ -14,8 +14,10 @@ class UserAuth
     */
     public static function getVerifiedUseraccount($entity)
     {
-        $useraccount = (new Useraccount)->readEntity($entity->getId());
-        return static::getWithVerifiedHash($useraccount, $entity->password);
+        $useraccountQuery = new Useraccount();
+        $useraccount = $useraccountQuery->readEntity($entity->getId())->withVerifiedHash($entity->password);
+        $useraccount = $useraccountQuery->writeUpdatedEntity($useraccount->getId(), $useraccount);
+        return $useraccount;
     }
 
     public static function testPasswordMatching($useraccount, $password)
@@ -46,25 +48,20 @@ class UserAuth
         $useraccountQuery = new Useraccount();
         $basicAuth = static::getBasicAuth($request);
         $xAuthKey = static::getXAuthKey($request);
+        $useraccountQuery = new Useraccount();
         if ($basicAuth && static::testUseraccountExists($basicAuth['username'])) {
             $useraccount = $useraccountQuery->readEntity($basicAuth['username']);
-            $useraccount = static::getWithVerifiedHash($useraccount, $basicAuth['password']);
+            $useraccount->withVerifiedHash($basicAuth['password']);
             static::testPasswordMatching($useraccount, $basicAuth['password']);
         } elseif ($xAuthKey) {
             $useraccount = $useraccountQuery->readEntityByAuthKey($xAuthKey);
-            $useraccount = static::getWithVerifiedHash($useraccount, $useraccount->password);
+            $useraccount->withVerifiedHash($useraccount->password);
         }
 
-        return ($useraccount && $useraccount->hasId()) ? $useraccount : null;
-    }
-
-    protected static function getWithVerifiedHash($useraccount, $password)
-    {
-        $useraccountQuery = new Useraccount();
-        if ($useraccount && $useraccount->isPasswordNeedingRehash()) {
-            $useraccount->withVerifiedHash($password);
-            $useraccount = $useraccountQuery->updateEntity($useraccount->getId(), $useraccount);
+        if ($useraccount && $useraccount->hasId()) {
+            $useraccount = $useraccountQuery->writeUpdatedEntity($useraccount->getId(), $useraccount);
         }
+        
         return $useraccount;
     }
 
