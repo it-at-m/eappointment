@@ -77,8 +77,15 @@ class User
      */
     public static function testWorkstationAccessRights($useraccount)
     {
-        if (! static::$workstation->hasAccessToUseraccount($useraccount) ||
-            ($useraccount->isSuperUser() && ! static::$workstation->getUseraccount()->isSuperUser())
+        if (
+            (
+                ! static::$workstation->getUseraccount()->isSuperUser() && 
+                ! static::$workstation->hasAccessToUseraccount($useraccount)
+            ) ||
+            (
+                ! static::$workstation->getUseraccount()->isSuperUser() && 
+                $useraccount->isSuperUser()
+            )
         ) {
             throw new \BO\Zmsentities\Exception\UserAccountAccessRightsFailed();
         }
