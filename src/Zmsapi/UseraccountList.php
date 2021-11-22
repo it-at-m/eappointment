@@ -23,14 +23,15 @@ class UseraccountList extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $workstation = (new Helper\User($request, 2))->checkRights('useraccount');
-        $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $rightRestriction = $validator->getParameter('right')->isString()->getValue();
         $useraccountList = (new Useraccount)->readList($resolveReferences);
-        /*
+
+        
         if ($rightRestriction) {
             $useraccountList = $useraccountList->withRights([$rightRestriction]);
-        }*/
-        $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
+        }
+        //$useraccountList = $useraccountList->withAccessByWorkstation($workstation);
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
 
