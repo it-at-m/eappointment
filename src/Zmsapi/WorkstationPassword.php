@@ -35,7 +35,7 @@ class WorkstationPassword extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = (new Query)->updateEntity($useraccount->getId(), $useraccount);
+        $message->data = (new Query)->writeUpdatedEntity($useraccount->getId(), $useraccount);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

@@ -41,7 +41,7 @@ class UseraccountUpdate extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = (new Useraccount)->updateEntity($args['loginname'], $entity, $resolveReferences);
+        $message->data = (new Useraccount)->writeUpdatedEntity($args['loginname'], $entity, $resolveReferences);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
