@@ -149,7 +149,7 @@ class UseraccountTest extends EntityCommonTests
         $this->assertFalse(array_key_exists('save', $entity->withCleanedUpFormData()));
     }
 
-    public function testWithPassword()
+    public function testSetPassword()
     {
         $entity = (new $this->entityclass())->getExample();
         $input = [
@@ -158,12 +158,12 @@ class UseraccountTest extends EntityCommonTests
                 'unittest2', 'unittest2'
             ]
         ];
-        $entity->withPassword($input);
+        $entity->setPassword($input);
         $this->assertEquals('unittest', $entity->password);
         $this->assertEquals(2, count($entity->changePassword));
     }
 
-    public function testWithPasswordChange()
+    public function testSetPasswordChange()
     {
         $entity = (new $this->entityclass())->getExample();
         $input = [
@@ -171,7 +171,7 @@ class UseraccountTest extends EntityCommonTests
                 'unittest2', 'unittest2'
             ]
         ];
-        $entity->withPassword($input);
+        $entity->setPassword($input);
         $this->assertEquals('unittest2', $entity->password);
         $this->assertEquals(2, count($entity->changePassword));
     }
