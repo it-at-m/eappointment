@@ -50,18 +50,15 @@ class UserAuth
         $xAuthKey = static::getXAuthKey($request);
         $useraccountQuery = new Useraccount();
         if ($basicAuth && static::testUseraccountExists($basicAuth['username'])) {
-            $useraccount = $useraccountQuery->readEntity($basicAuth['username']);
-            $useraccount->withVerifiedHash($basicAuth['password']);
+            $useraccount = $useraccountQuery
+                ->readEntity($basicAuth['username'])
+                ->withVerifiedHash($basicAuth['password']);
             static::testPasswordMatching($useraccount, $basicAuth['password']);
+            $useraccount = $useraccountQuery->writeUpdatedEntity($useraccount->getId(), $useraccount);
         } elseif ($xAuthKey) {
             $useraccount = $useraccountQuery->readEntityByAuthKey($xAuthKey);
-            $useraccount->withVerifiedHash($useraccount->password);
         }
 
-        if ($useraccount && $useraccount->hasId()) {
-            $useraccount = $useraccountQuery->writeUpdatedEntity($useraccount->getId(), $useraccount);
-        }
-        
         return $useraccount;
     }
 
