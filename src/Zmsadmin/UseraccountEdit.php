@@ -59,7 +59,7 @@ class UseraccountEdit extends BaseController
     protected function writeUpdatedEntity($input, $userAccountName)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
-        $entity->withPassword($input);
+        $entity->setPassword($input);
         try {
             $entity = \App::$http->readPostResult('/useraccount/'. $userAccountName .'/', $entity)->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
