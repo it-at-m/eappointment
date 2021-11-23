@@ -30,7 +30,7 @@ class Useraccount extends BaseController
                     "/useraccount/",
                     [
                         "resolveReferences" => 0,
-                        "right" => "superuser",
+                        "right" => "useraccount",
                     ]
                 )
                 ->getCollection()

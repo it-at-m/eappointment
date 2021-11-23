@@ -51,7 +51,7 @@ class Profile extends BaseController
     protected function writeUpdatedEntity($input)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
-        $entity->withPassword($input);
+        $entity->setPassword($input);
         try {
             $entity = \App::$http->readPostResult('/workstation/password/', $entity)->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
