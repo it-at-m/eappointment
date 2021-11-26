@@ -1,3 +1,6 @@
+## v2.24.03
+* #52383 Bugfix: In der Tresenansicht funktioniert nun die Auswahl des Standortes bei ausgewähltem Cluster
+
 ## v2.24.00
 
 * #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
