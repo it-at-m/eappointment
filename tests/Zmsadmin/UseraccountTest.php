@@ -23,7 +23,7 @@ class UseraccountTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/useraccount/',
-                    'parameters' => ['resolveReferences' => 0, 'right' => 'useraccount'],
+                    'parameters' => ['resolveReferences' => 0, 'right' => 'superuser'],
                     'response' => $this->readFixture("GET_useraccountlist_superuser.json")
                 ],
                 [
