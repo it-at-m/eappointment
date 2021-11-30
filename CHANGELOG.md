@@ -1,5 +1,6 @@
 ## v2.24.03
 * #52383 Bugfix: In der Tresenansicht funktioniert nun die Auswahl des Standortes bei ausgewähltem Cluster
+* #52247 Bugfix: Das Löschen eines Nutzers muss nun bestätigt werden und mehrfache Erfolgsmeldungen sind entfernt
 
 ## v2.24.00
 
