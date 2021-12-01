@@ -1,4 +1,8 @@
-## v2.24.00
+## v2.24.03
+
+* #52383 Bugfix: Einem Superuser Nutzer wird nun beim Login keine Behörde mehr zugeordet
+
+## v2.24.02
 
 * #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
 * #36114 Notifications erhalten nur noch aufgelöste Standorte, wenn diese nicht zwischenzeitlich dereferenziert wurden - somit ist das Schreiben in die Abrechnungstabelle mit korrektem Standort sichergestellt
