@@ -60,13 +60,13 @@
       "type": "string",
       "description": "this field is only used on changing the password and login",
       "minLength": 6,
-      "maxLength": 40,
+      "maxLength": 60,
       "x-locale": {
         "de_DE": {
           "pointer": "Passwort",
           "messages": {
             "minLength": "Die Länge des Passwortes muss mindestens 6 Zeichen betragen",
-            "maxLength": "Die Länge des Passwortes darf maximal 40 Zeichen betragen"
+            "maxLength": "Die Länge des Passwortes darf maximal 60 Zeichen betragen"
           }
         }
       }
