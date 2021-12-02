@@ -33,7 +33,7 @@ class ProcessReserve extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
         if ($process->hasId()) {
-            throw new Exception\Process\ProcessReserveFailed();
+            throw new Exception\Process\ProcessAlreadyExists();
         }
 
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
