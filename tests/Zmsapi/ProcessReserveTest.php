@@ -52,6 +52,18 @@ class ProcessReserveTest extends Base
         ], []);
     }
 
+    public function testWithProcessReserveExists()
+    {
+        $this->expectException('BO\Zmsapi\Exception\Process\ProcessAlreadyExists');
+        $this->setWorkstation();
+        $process = new \BO\Zmsentities\Process(
+            json_decode($this->readFixture("GetProcess_10029.json"),1)
+        );
+        $response = $this->render([], [
+            '__body' => json_encode($process)
+        ], []);
+    }
+
     public function testScopeHasRequests()
     {
         $this->expectException('BO\Zmsapi\Exception\Matching\RequestNotFound');
