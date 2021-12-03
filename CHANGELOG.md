@@ -1,4 +1,8 @@
-## v2.24.00
+## v2.24.03
+
+* #52508 - Sollte bei der Reservierung schon eine Vorgangsnummer existieren wird nun eine eindeutige Exception ausgegeben
+
+## v2.24.02
 
 * #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
 * #49020 Die Maillist Route hat nun einen limit Parameter über den bestimmt wird wie viele Mails aus der Datenbank gelesen werden.
@@ -18,7 +22,6 @@
 * #46608 - Öffnungszeiten können für einen Standort nun auch mit Basisrechten abgerufen werden, wenn die Terminzeiten vom Tresen benötigt werden. Nutzer mit Basisrechten können Öffnungszeiten weiterhin nicht bearbeiten
 
 * #46531 Bugfix: Ein Nutzer mit den Rechten zum Einrichten einer Behörde, kann nun auch eine Behörde einrichten
-
 
 ## v2.23.06
 
