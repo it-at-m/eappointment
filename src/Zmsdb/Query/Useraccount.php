@@ -118,6 +118,7 @@ class Useraccount extends Base implements MappingInterface
         $data['email'] = (isset($entity->email)) ? $entity->email : null;
         $data['Passworthash'] = (isset($entity->password)) ? $entity->password : null;
         $data['Berechtigung'] = $entity->getRightsLevel();
+        $data['BehoerdenID'] = 0;
         if (! $entity->isSuperUser() && isset($entity->departments) && 0 < $entity->departments->count()) {
             $data['BehoerdenID'] = $entity->departments->getFirst()->id;
         }
