@@ -48,6 +48,7 @@ class ProcessDelete extends BaseController
 
     public static function writeDeleteMailNotifications($process)
     {
+        #email only for clients with appointment if email address is given
         if ($process->getFirstClient()->hasEmail() &&
             $process->isWithAppointment() &&
             $process->scope->hasEmailFrom()
@@ -58,9 +59,9 @@ class ProcessDelete extends BaseController
                     $process
                 )->getEntity();
         }
+        #sms notifications for clients with and without appointment if telephone number is given
         if ($process->scope->hasNotificationEnabled() &&
-            $process->getFirstClient()->hasTelephone() &&
-            $process->isWithAppointment()
+            $process->getFirstClient()->hasTelephone()
         ) {
             \App::$http
                 ->readPostResult(

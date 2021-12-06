@@ -26,7 +26,11 @@ class DialogHandler extends \BO\Zmsadmin\BaseController
         if (isset($parameter['id'])) {
             $result = \App::$http->readGetResult('/process/'. $parameter['id'] .'/');
             if ($result) {
-                $parameter['id'] = $result->getEntity()->queue->number;
+                $process = $result->getEntity();
+                $parameter['settings']['isWithAppointment'] = $process->isWithAppointment();
+                $parameter['settings']['hasMail'] = $process->getFirstClient()->hasEmail();
+                $parameter['settings']['hasTelephone'] = $process->getFirstClient()->hasTelephone();
+                $parameter['id'] = $process->queue->number;
             }
         }
 
