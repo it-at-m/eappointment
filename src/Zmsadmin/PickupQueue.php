@@ -23,7 +23,9 @@ class PickupQueue extends BaseController
         $limit = $validator->getParameter('limit')->isNumber()->setDefault(1000)->getValue();
         $offset = $validator->getParameter('offset')->isNumber()->setDefault(null)->getValue();
         $scopeId = ($selectedScope) ? $selectedScope : $workstation->scope['id'];
-        $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/')->getEntity();
+        $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/', [
+            'gql' => Helper\GraphDefaults::getScope()
+        ])->getEntity();
         $department = \App::$http->readGetResult(
             '/scope/'. $scopeId .'/department/',
             ['resolveReferences' => 2]

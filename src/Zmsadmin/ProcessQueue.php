@@ -140,7 +140,10 @@ class ProcessQueue extends BaseController
     protected function isOpened($scope)
     {
         if ($scope->getResolveLevel() < 1) {
-            $scope =  \App::$http->readGetResult('/scope/'. $scope->getId() .'/', ['resolveReferences' => 1])
+            $scope =  \App::$http->readGetResult('/scope/'. $scope->getId() .'/', [
+                'resolveReferences' => 1,
+                'gql' => Helper\GraphDefaults::getScope()
+            ])
                 ->getEntity();
         }
         try {

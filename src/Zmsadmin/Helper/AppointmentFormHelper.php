@@ -19,7 +19,9 @@ class AppointmentFormHelper
         $validator = $request->getAttribute('validator');
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $selectedProcess = ($selectedProcessId)
-            ? \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity()
+            ? \App::$http->readGetResult('/process/'. $selectedProcessId .'/', [
+                'gql' => GraphDefaults::getProcess()
+            ])->getEntity()
             : null;
 
         $scope = static::readSelectedScope($request, $workstation, $selectedProcess);
@@ -49,7 +51,9 @@ class AppointmentFormHelper
         $requestList = null;
         if ($scope) {
             $requestList = \App::$http
-                ->readGetResult('/scope/'. $scope->getId().'/request/')
+                ->readGetResult('/scope/'. $scope->getId().'/request/', [
+                    'gql' => GraphDefaults::getRequest()
+                ])
                 ->getCollection();
         }
         return ($requestList) ? $requestList->sortByName() : new \BO\Zmsentities\Collection\RequestList;
@@ -71,7 +75,10 @@ class AppointmentFormHelper
         }
         if ($selectedScopeId) {
             $selectedScope = \App::$http
-              ->readGetResult('/scope/'. $selectedScopeId .'/', ['resolveReferences' => 1])
+              ->readGetResult('/scope/'. $selectedScopeId .'/', [
+                  'resolveReferences' => 1, 
+                  'gql' => GraphDefaults::getScope()
+                ])
               ->getEntity();
         }
         if (! $workstation->queue['clusterEnabled'] && $selectedProcess && $selectedProcess->hasId()) {
@@ -85,7 +92,9 @@ class AppointmentFormHelper
         $validator = $request->getAttribute('validator');
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         return ($selectedProcessId) ?
-            \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() :
+            \App::$http->readGetResult('/process/'. $selectedProcessId .'/', [
+                'gql' => GraphDefaults::getProcess()
+            ])->getEntity() :
             null;
     }
 

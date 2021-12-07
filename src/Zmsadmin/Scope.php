@@ -28,7 +28,11 @@ class Scope extends BaseController
 
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http
-            ->readGetResult('/scope/' . $entityId . '/', ['resolveReferences' => 1, 'accessRights' => 'scope'])
+            ->readGetResult('/scope/' . $entityId . '/', [
+                'resolveReferences' => 1, 
+                'accessRights' => 'scope',
+                'gql' => Helper\GraphDefaults::getScope()
+            ])
             ->getEntity();
 
         $sourceList = $this->readSourceList();

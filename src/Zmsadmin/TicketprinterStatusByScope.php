@@ -24,7 +24,9 @@ class TicketprinterStatusByScope extends BaseController
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
 
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
-        $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/')->getEntity();
+        $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/', [
+            'gql' => Helper\GraphDefaults::getScope()
+        ])->getEntity();
 
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {

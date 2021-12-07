@@ -53,7 +53,9 @@ class ScopeAppointmentsByDay extends BaseController
     public static function readSelectedScope($workstation, $workstationRequest, $scopeId)
     {
         if ($workstation->getScope()->id != $scopeId) {
-            $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/')->getEntity();
+            $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/', [
+                'gql' => Helper\GraphDefaults::getScope()
+            ])->getEntity();
             $workstationRequest->setDifferentScope($scope);
         }
         return $workstationRequest->getScope();

@@ -35,13 +35,13 @@ class ClusterHelper
             $processList = \App::$http
                 ->readGetResult(
                     '/cluster/'. static::$cluster->id .'/process/'. $selectedDate .'/',
-                    ['resolveReferences' => 1]
+                    ['resolveReferences' => 1, 'gql' => GraphDefaults::getProcess()]
                 );
         } else {
             $processList = \App::$http
                 ->readGetResult(
                     '/scope/'. static::$workstation->scope['id'] .'/process/'. $selectedDate .'/',
-                    ['resolveReferences' => 1]
+                    ['resolveReferences' => 1, 'gql' => GraphDefaults::getProcess()]
                 );
         }
         return ($processList) ? $processList->getCollection() : new \BO\Zmsentities\Collection\ProcessList();

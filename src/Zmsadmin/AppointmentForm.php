@@ -22,8 +22,11 @@ class AppointmentForm extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $selectedProcess = Helper\AppointmentFormHelper::readSelectedProcess($request, $workstation);
+        $workstation = \App::$http->readGetResult('/workstation/', [
+            'resolveReferences' => 2,
+            'gql' => Helper\GraphDefaults::getWorkstation()
+        ])->getEntity();
+        $selectedProcess = Helper\AppointmentFormHelper::readSelectedProcess($request);
         if ($selectedProcess && ! $workstation->hasSuperUseraccount()) {
             $workstation
                 ->testMatchingProcessScope((new Helper\ClusterHelper($workstation))->getScopeList(), $selectedProcess);
@@ -55,7 +58,9 @@ class AppointmentForm extends BaseController
                 'scope' => $selectedScope,
                 'cluster' => (new Helper\ClusterHelper($workstation, $selectedScope))->getEntity(),
                 'department' =>
-                    \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity(),
+                    \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/', [
+                        'gql' => Helper\GraphDefaults::getScope()
+                    ])->getEntity(),
                 'selectedProcess' => $selectedProcess,
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'selectedTime' => $selectedTime,
