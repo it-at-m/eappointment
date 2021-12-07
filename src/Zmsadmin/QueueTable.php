@@ -38,7 +38,7 @@ class QueueTable extends BaseController
         $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
         $department = $workstationRequest->readDepartment();
         $processList = $workstationRequest->readProcessListByDate(
-            $selectedDateTime, 
+            $selectedDateTime,
             Helper\GraphDefaults::getProcess()
         );
         $changedProcess = ($selectedProcessId)
