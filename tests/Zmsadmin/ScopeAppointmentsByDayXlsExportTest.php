@@ -58,7 +58,8 @@ class ScopeAppointmentsByDayXlsExportTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString('Hyperlink', (string)$response->getBody());
+        $this->assertStringContainsString("'=HYPERLINK", (string)$response->getBody());
+        $this->assertStringContainsString("'=SUMME", (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }
