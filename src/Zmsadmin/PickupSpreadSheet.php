@@ -6,7 +6,8 @@
 
 namespace BO\Zmsadmin;
 
-use \XLSXWriter;
+use \League\Csv\Writer;
+use \League\Csv\EscapeFormula;
 
 class PickupSpreadSheet extends BaseController
 {
@@ -32,30 +33,7 @@ class PickupSpreadSheet extends BaseController
 
         $providerName = $scope['provider']['name'];
 
-        $xlsSheetTitle = 'abholer_'. str_replace(' ', '_', $providerName);
-
-        $xlsHeaders = [
-            '',
-            'Datum',
-            'Nr.',
-            'Name',
-            'Telefonnr.',
-            'eMail',
-            'Dienstleistung',
-            'Anmerkung'
-        ];
-        $writer = new XLSXWriter();
-
-        $writer->writeSheetRow($xlsSheetTitle, [
-            'Abholer',
-            '','','','','','','',''
-        ]);
-        $writer->writeSheetRow($xlsSheetTitle, [
-            $department->name .' - '. $providerName,
-            '','','','','','','',''
-        ]);
-        $writer->writeSheetRow($xlsSheetTitle, $xlsHeaders);
-
+        $rows = [];
         $rowCount = 1;
         foreach ($processList->getArrayCopy() as $processItem) {
             $client = $processItem->getFirstClient();
@@ -69,7 +47,7 @@ class PickupSpreadSheet extends BaseController
             $date = new \DateTime('@' . $processItem->queue['arrivalTime']);
             $date->setTimezone(\App::$now->getTimezone());
 
-            $row = [
+            $rows[] = [
                 $rowCount,
                 $date->format('d.m.Y'),
                 $processItem->queue['number'],
@@ -80,16 +58,24 @@ class PickupSpreadSheet extends BaseController
                 $processItem->amendment
             ];
             $rowCount ++;
-            $writer->writeSheetRow($xlsSheetTitle, $row);
         }
 
-        $response->getBody()->write($writer->writeToString());
+        $writer = Writer::createFromString();
+        $writer->addFormatter(new EscapeFormula());
+        $writer->insertOne(['Abholer','','','','','','','','']);
+        $writer->insertOne([$department->name .' - '. $providerName,'','','','','','','','']);
+        $writer->insertOne(['','Datum','Nr.','Name','Telefonnr.','eMail','Dienstleistung','Anmerkung']);
+        $writer->insertAll($rows);
+
+        $response->getBody()->write($writer->toString());
+
+        $fileName = 'abholer_'. str_replace(' ', '_', $providerName);
 
         return $response
             ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             ->withHeader(
                 'Content-Disposition',
-                sprintf('download; filename="%s.xlsx"', $xlsSheetTitle)
+                sprintf('download; filename="%s.xlsx"', $fileName)
             );
     }
 }
