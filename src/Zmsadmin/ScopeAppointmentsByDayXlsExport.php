@@ -7,7 +7,9 @@
  */
 namespace BO\Zmsadmin;
 
-use \XLSXWriter;
+//use \XLSXWriter;
+use \League\Csv\Writer;
+use \League\Csv\EscapeFormula;
 
 /**
  * Handle requests concerning services
@@ -33,23 +35,22 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
         $xlsSheetTitle = $selectedDateTime->format('d.m.Y');
         $clusterColumn = $workstation->isClusterEnabled() ? 'Kürzel' : 'Lfd. Nummer';
         $xlsHeaders = [
-            $clusterColumn => $workstation->isClusterEnabled() ? 'string' : 'integer',
-            'Uhrzeit/Ankunftszeit' => 'string',
-            'Nr.' => 'integer',
-            'Name' => 'string',
-            'Telefon' => 'string',
-            'Email' => 'string',
-            'Dienstleistung' => 'string',
-            'Anmerkungen' => 'string'
+            $clusterColumn,
+            'Uhrzeit/Ankunftszeit',
+            'Nr.',
+            'Name',
+            'Telefon',
+            'Email',
+            'Dienstleistung',
+            'Anmerkungen'
         ];
-        $writer = new XLSXWriter();
-        $writer->writeSheetHeader($xlsSheetTitle, $xlsHeaders);
 
+        $rows = [];
         $key = 1;
         foreach ($processList as $queueItem) {
             $client = $queueItem->getFirstClient();
             $request = count($queueItem->requests) > 0 ? $queueItem->requests[0] : [];
-            $row = [
+            $rows[] = [
                 $workstation->isClusterEnabled() ? $queueItem->getCurrentScope()->shortName : $key++ ,
                 $queueItem->getArrivalTime()->setTimezone(\App::$now->getTimezone())->format('H:i:s'),
                 $queueItem->queue['number'],
@@ -59,11 +60,14 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
                 $queueItem->requests->getCsvForProperty('name'),
                 $queueItem->amendment
             ];
-
-            $writer->writeSheetRow($xlsSheetTitle, $row);
         }
 
-        $response->getBody()->write($writer->writeToString());
+        $writer = Writer::createFromString();
+        $writer->addFormatter(new EscapeFormula());
+        $writer->insertOne($xlsHeaders);
+        $writer->insertAll($rows);
+
+        $response->getBody()->write($writer->toString());
         $fileName = sprintf("Tagesübersicht_%s_%s.xlsx", $scope->contact['name'], $xlsSheetTitle);
         return $response
             ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
