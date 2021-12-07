@@ -17,7 +17,10 @@ class AppointmentFormButtons extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', [
+            'resolveReferences' => 2,
+            'gql' => Helper\GraphDefaults::getWorkstation()
+        ])->getEntity();
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();

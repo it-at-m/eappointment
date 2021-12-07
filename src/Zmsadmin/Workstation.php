@@ -20,7 +20,10 @@ class Workstation extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', [
+            'resolveReferences' => 2,
+            'gql' => Helper\GraphDefaults::getWorkstation()
+        ])->getEntity();
         if (! $workstation->hasId()) {
             return \BO\Slim\Render::redirect(
                 'index',

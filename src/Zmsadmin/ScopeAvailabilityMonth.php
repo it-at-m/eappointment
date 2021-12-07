@@ -31,7 +31,10 @@ class ScopeAvailabilityMonth extends BaseController
         $endDate = $dateTime->modify('last day of this month');
 
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
-        $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/', ['resolveReferences' => 1])->getEntity();
+        $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/', [
+            'resolveReferences' => 1,
+            'gql' => Helper\GraphDefaults::getScope()
+        ])->getEntity();
         $calendar = $this->getCalendar($scope, $startDate, $endDate);
 
         $availabilityList = $this->getAvailabilityList($scope, $startDate, $endDate);

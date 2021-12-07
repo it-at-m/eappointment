@@ -73,6 +73,7 @@ class Calendar
                 [
                     'slotType' => $slotType,
                     'slotsRequired' => $slotsRequired,
+                    'gql' => GraphDefaults::getFreeProcessList()
                 ]
             )->getCollection();
         } catch (\BO\Zmsclient\Exception $exception) {

@@ -16,7 +16,20 @@ class GraphDefaults
     {
         $default =<<< EOS
 { 
-    id
+    id,
+    scope {
+        id, 
+        source,
+        preferences {
+            appointment
+        }
+    },
+    queue {
+        clusterEnabled
+    }
+    useraccount {
+        rights
+    }
 }
 EOS;
         return static::defaultFormat($default);
@@ -114,12 +127,15 @@ EOS;
     id 
     name 
     link 
+    timeSlotCount
     data { 
         locations { 
             appointment 
         } 
     } 
 }
+
+
 EOS;
         return static::defaultFormat($default);
     }
@@ -211,7 +227,10 @@ EOS;
         telephone
     }
     queue{
-        arrivalTime
+        arrivalTime,
+        withAppointment,
+        number,
+        status
     }
     requests{
         id

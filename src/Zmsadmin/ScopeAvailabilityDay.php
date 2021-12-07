@@ -34,7 +34,10 @@ class ScopeAvailabilityDay extends BaseController
 
     protected static function getScope($scopeId)
     {
-        return \App::$http->readGetResult('/scope/' . $scopeId . '/', ['resolveReferences' => 1])->getEntity();
+        return \App::$http->readGetResult('/scope/' . $scopeId . '/', [
+            'resolveReferences' => 1,
+            'gql' => Helper\GraphDefaults::getScope()
+        ])->getEntity();
     }
 
     protected static function getAvailabilityData($scopeId, $dateString)

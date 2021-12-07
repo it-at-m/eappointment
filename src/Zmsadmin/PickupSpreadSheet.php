@@ -24,7 +24,10 @@ class PickupSpreadSheet extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $selectedScope = $validator->getParameter('selectedscope')->isNumber()->getValue();
         $scopeId = ($selectedScope) ? $selectedScope : $workstation->scope['id'];
-        $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/', ['resolveReferences' => 1])->getEntity();
+        $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/', [
+            'resolveReferences' => 1,
+            'gql' => Helper\GraphDefaults::getScope()
+        ])->getEntity();
         $processList = \App::$http
             ->readGetResult('/workstation/process/pickup/', [
                 'resolveReferences' => 1,
@@ -91,7 +94,6 @@ class PickupSpreadSheet extends BaseController
             array ('ö','oe',),
             array ('ü','ue',),
             array ('ß','ss',),
-            array (' ','_',),
         );
         
         

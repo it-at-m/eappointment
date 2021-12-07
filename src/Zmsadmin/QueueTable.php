@@ -31,12 +31,20 @@ class QueueTable extends BaseController
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         
         // HTTP requests
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', [
+            'resolveReferences' => 1,
+            'gql' => Helper\GraphDefaults::getWorkstation()
+        ])->getEntity();
         $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
         $department = $workstationRequest->readDepartment();
-        $processList = $workstationRequest->readProcessListByDate($selectedDateTime);
+        $processList = $workstationRequest->readProcessListByDate(
+            $selectedDateTime, 
+            Helper\GraphDefaults::getProcess()
+        );
         $changedProcess = ($selectedProcessId)
-          ? \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity()
+          ? \App::$http->readGetResult('/process/'. $selectedProcessId .'/', [
+            'gql' => Helper\GraphDefaults::getProcess()
+          ])->getEntity()
           : null;
 
         // data refinement
