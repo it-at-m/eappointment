@@ -59,7 +59,7 @@ class AppointmentForm extends BaseController
                 'cluster' => (new Helper\ClusterHelper($workstation, $selectedScope))->getEntity(),
                 'department' =>
                     \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/', [
-                        'gql' => Helper\GraphDefaults::getScope()
+                        'gql' => Helper\GraphDefaults::getDepartment()
                     ])->getEntity(),
                 'selectedProcess' => $selectedProcess,
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),

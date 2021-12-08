@@ -112,10 +112,33 @@ EOS;
     preferences {
         appointment
     }
+    provider {
+        contact 
+        name 
+        data { 
+            payment 
+        }
+    }
 }
 EOS;
         return static::defaultFormat($default);
     }
+
+     /**
+     * scope reduced response data
+     */
+    public static function getDepartment()
+    {
+        $default =<<< EOS
+{ 
+    id 
+    name
+    preferences 
+}
+EOS;
+        return static::defaultFormat($default);
+    }
+
 
     /**
      * requests reduced response data
