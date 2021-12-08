@@ -61,7 +61,10 @@ class CalendarPageTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                    ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [

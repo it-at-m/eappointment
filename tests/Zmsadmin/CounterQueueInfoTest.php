@@ -41,7 +41,10 @@ class CounterQueueInfoTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-05-27/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
                     'response' => $this->readFixture("GET_scope_141_freeProcessList.json")
                 ],
                 [
@@ -87,7 +90,10 @@ class CounterQueueInfoTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
                     'response' => $this->readFixture("GET_scope_141_freeProcessList.json")
                 ],
                 [
@@ -136,7 +142,10 @@ class CounterQueueInfoTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/cluster/109/process/2016-05-27/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
                     'response' => $this->readFixture("GET_scope_141_freeProcessList.json")
                 ],
                 [

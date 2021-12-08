@@ -26,7 +26,9 @@ class AppointmentFormFreeProcessList extends BaseController
         $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $selectedProcess = ($selectedProcessId) ?
-            \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() : null;
+            \App::$http->readGetResult('/process/'. $selectedProcessId .'/', [
+                'gql' => Helper\GraphDefaults::getProcess()
+            ])->getEntity() : null;
         $freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation);
 
         return \BO\Slim\Render::withHtml(

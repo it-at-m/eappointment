@@ -34,12 +34,17 @@ class PickupQueueTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/department/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => [
+                        'resolveReferences' => 2
+                    ],
                     'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                    ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ]
             ]

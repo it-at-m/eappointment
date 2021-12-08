@@ -18,13 +18,20 @@ class AppointmentFormFreeProcessListTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'parameters' => [
+                        'slotType' => 'intern', 
+                        'slotsRequired' => 0,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ]
             ]
@@ -41,13 +48,20 @@ class AppointmentFormFreeProcessListTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'parameters' => [
+                        'slotType' => 'intern', 
+                        'slotsRequired' => 0,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ]
             ]
@@ -65,24 +79,37 @@ class AppointmentFormFreeProcessListTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                    ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 1],
+                    'parameters' => [
+                        'slotType' => 'intern', 
+                        'slotsRequired' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/process/100044/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
                     'response' => $this->readFixture("GET_process_100044_57c2.json")
                 ],
             ]
@@ -103,24 +130,37 @@ class AppointmentFormFreeProcessListTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                    ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 1],
+                    'parameters' => [
+                        'slotType' => 'intern', 
+                        'slotsRequired' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/process/100044/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
                     'response' => $this->readFixture("GET_process_100044_57c2.json")
                 ],
             ]
@@ -143,13 +183,20 @@ class AppointmentFormFreeProcessListTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'parameters' => [
+                        'slotType' => 'intern', 
+                        'slotsRequired' => 0,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
                     'response' => '{}'
                 ]
             ]

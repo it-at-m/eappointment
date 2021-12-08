@@ -31,7 +31,11 @@ class CalendarWeekTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'parameters' => [
+                        'slotType' => 'intern', 
+                        'slotsRequired' => 0,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ],
                 [
@@ -78,7 +82,11 @@ class CalendarWeekTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'parameters' => [
+                        'slotType' => 'intern', 
+                        'slotsRequired' => 0,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ],
                 [
@@ -125,7 +133,11 @@ class CalendarWeekTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'parameters' => [
+                        'slotType' => 'intern', 
+                        'slotsRequired' => 0,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_20160530.json")
                 ],
                 [
@@ -169,7 +181,11 @@ class CalendarWeekTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'parameters' => [
+                        'slotType' => 'intern', 
+                        'slotsRequired' => 0,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ],
                 [

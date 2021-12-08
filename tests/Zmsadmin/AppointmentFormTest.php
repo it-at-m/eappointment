@@ -17,7 +17,10 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
@@ -28,17 +31,27 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/department/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getDepartment()
+                    ],
                     'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/request/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getRequest()
+                    ],
                     'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'parameters' => [
+                        'slotType' => 'intern', 
+                        'slotsRequired' => 0,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ]
             ]
@@ -57,7 +70,10 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_workstation_basic.json")
                 ],
                 [
@@ -68,6 +84,9 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/process/100044/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
                     'response' => $this->readFixture("GET_process_not_matching_id.json")
                 ]
             ]
@@ -82,7 +101,10 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
                 ],
                 [
@@ -93,6 +115,9 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/department/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getDepartment()
+                    ],
                     'response' => $this->readFixture("GET_department_74.json")
                 ]
             ]
@@ -108,13 +133,19 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                    ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
@@ -125,17 +156,27 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/department/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getDepartment()
+                    ],
                     'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/request/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getRequest()
+                    ],
                     'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'parameters' => [
+                        'slotType' => 'intern', 
+                        'slotsRequired' => 0,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ]
             ]
@@ -151,7 +192,10 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
@@ -162,22 +206,35 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/department/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getDepartment()
+                    ],
                     'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/process/100044/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
                     'response' => $this->readFixture("GET_process_100044_57c2.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/request/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getRequest()
+                    ],
                     'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 1],
+                    'parameters' => [
+                        'slotType' => 'intern', 
+                        'slotsRequired' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ]
             ]
@@ -193,7 +250,10 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
@@ -204,17 +264,27 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/department/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getDepartment()
+                    ],
                     'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/request/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getRequest()
+                    ],
                     'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'parameters' => [
+                        'slotType' => 'intern', 
+                        'slotsRequired' => 0,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ]
             ]
@@ -232,13 +302,19 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                    ],
                     'response' => $this->readFixture("GET_scope_141_multipleSlotsEnabled.json")
                 ],
                 [
@@ -249,17 +325,27 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/department/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getDepartment()
+                    ],
                     'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/request/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getRequest()
+                    ],
                     'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 3],
+                    'parameters' => [
+                        'slotType' => 'intern', 
+                        'slotsRequired' => 3,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ]
             ]
@@ -285,7 +371,10 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
@@ -296,22 +385,35 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/department/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getDepartment()
+                    ],
                     'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/request/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getRequest()
+                    ],
                     'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 1],
+                    'parameters' => [
+                        'slotType' => 'intern', 
+                        'slotsRequired' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/process/100044/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
                     'response' => $this->readFixture("GET_process_100044_57c2.json")
                 ]
             ]
@@ -334,7 +436,10 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
@@ -345,22 +450,35 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/department/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getDepartment()
+                    ],
                     'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/request/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getRequest()
+                    ],
                     'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 1],
+                    'parameters' => [
+                        'slotType' => 'intern', 
+                        'slotsRequired' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/process/100044/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
                     'response' => $this->readFixture("GET_process_100044_57c2.json")
                 ]
             ]
@@ -383,7 +501,10 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
@@ -394,17 +515,27 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/department/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getDepartment()
+                    ],
                     'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/request/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getRequest()
+                    ],
                     'response' => $this->readFixture("GET_scope_requestlist_empty.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'parameters' => [
+                        'slotType' => 'intern', 
+                        'slotsRequired' => 0,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ]
             ]
