@@ -33,11 +33,11 @@ class Pickup extends BaseController
         }
 
         $processList = (new Process)->readProcessListByScopeAndStatus(
-            $scope['id'], 
-            'pending', 
-            $resolveReferences, 
+            $scope['id'],
+            'pending',
+            $resolveReferences,
             $limit,
-            $offset 
+            $offset
         );
 
         $message = Response\Message::create($request);
