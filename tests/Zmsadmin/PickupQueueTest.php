@@ -17,14 +17,19 @@ class PickupQueueTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/process/pickup/',
-                    'parameters' => ['resolveReferences' => 1, 'selectedScope' => 141],
-                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
+                    'parameters' => [
+                        'resolveReferences' => 1, 
+                        'selectedScope' => 141,
+                        'limit' => 1000,
+                        'offset' => null
+                    ],
+                    'response' => $this->readFixture("GET_pickupqueue_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -42,10 +47,9 @@ class PickupQueueTest extends Base
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString('pickup-table', (string)$response->getBody());
         $this->assertStringContainsString('change-scope', (string)$response->getBody());
-        $this->assertStringContainsString('value="141"', (string)$response->getBody());
-        $this->assertStringContainsString('value="140"', (string)$response->getBody());
-        $this->assertStringContainsString('value="142"', (string)$response->getBody());
-        $this->assertStringContainsString('value="380"', (string)$response->getBody());
+        $this->assertStringContainsString('data-limit="1000" data-offset="1000"', (string)$response->getBody());
+        $this->assertStringContainsString('Nächste 1000 Abholer anzeigen', (string)$response->getBody());
+        $this->assertStringNotContainsString('Vorherige 1000 Abholer anzeigen', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }
