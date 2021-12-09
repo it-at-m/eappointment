@@ -25,7 +25,11 @@ class PickupSpreadSheetTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/process/pickup/',
-                    'parameters' => ['resolveReferences' => 1, 'selectedScope' => 141],
+                    'parameters' => [
+                        'resolveReferences' => 1, 
+                        'selectedScope' => 141,
+                        'limit' => 10000
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ],
                 [
@@ -43,7 +47,7 @@ class PickupSpreadSheetTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString(
-            'download; filename="abholer_Bürgeramt_Heerstraße.xlsx',
+            'download; filename="abholer_Buergeramt_Heerstrasse.xlsx',
             $response->getHeader('Content-Disposition')[0]
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -62,7 +66,11 @@ class PickupSpreadSheetTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/process/pickup/',
-                    'parameters' => ['resolveReferences' => 1, 'selectedScope' => 141],
+                    'parameters' => [
+                        'resolveReferences' => 1, 
+                        'selectedScope' => 141,
+                        'limit' => 10000
+                    ],
                     'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ],
                 [
@@ -80,7 +88,7 @@ class PickupSpreadSheetTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString(
-            'download; filename="abholer_Bürgeramt_Heerstraße.xlsx',
+            'download; filename="abholer_Buergeramt_Heerstrasse.xlsx',
             $response->getHeader('Content-Disposition')[0]
         );
         $this->assertEquals(200, $response->getStatusCode());
