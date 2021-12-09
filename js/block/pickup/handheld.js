@@ -17,6 +17,8 @@ class View extends BaseView {
     setOptions(options) {
         this.includeUrl = options.includeUrl || "";
         this.selectedProcess = options.selectedProcess;
+        this.limit = options.limit;
+        this.offset = options.offset;
     }
 
     setCallbacks(options) {
@@ -24,17 +26,20 @@ class View extends BaseView {
         this.onFinishProcess = options.onFinishProcess;
         this.onCancelProcess = options.onCancelProcess;
         this.onProcessNotFound = options.onProcessNotFound;
+        this.onLoadNextQueue = options.onLoadNextQueue;
     }
 
     bindEvents() {
         this.$main.off('click').on('click', 'a.process-pickup', (ev) => {
             this.onPickupCall(ev, () => { this.onFinishProcess(ev) });
+        }).on('click', 'a.load-next-queue', (ev) => {
+            this.onLoadNextQueue(ev);
         });
     }
 
     load() {
         if (this.selectedProcess) {
-            this.loadContent(`${this.includeUrl}/pickup/queue/?handheld=1`, 'GET').then(() => {
+            this.loadContent(`${this.includeUrl}/pickup/queue/?handheld=1&limit=${this.limit}&offset=${this.offset}`, 'GET').then(() => {
                 this.onPickupCall(
                     null, 
                     () => {
@@ -46,7 +51,7 @@ class View extends BaseView {
                     this.selectedProcess);
                 });
         } else {
-            this.loadContent(`${this.includeUrl}/pickup/queue/?handheld=1`, 'GET');
+            this.loadContent(`${this.includeUrl}/pickup/queue/?handheld=1&limit=${this.limit}&offset=${this.offset}`, 'GET');
         }
     }
 }

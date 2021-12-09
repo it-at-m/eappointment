@@ -18,11 +18,14 @@ class View extends BaseView {
         this.includeUrl = options.includeUrl || "";
         this.selectedProcess = options.selectedProcess;
         this.selectedScope = options.selectedScope;
+        this.limit = options.limit;
+        this.offset = options.offset;
     }
 
     setCallbacks(options) {
         this.onConfirm = options.onConfirm;
         this.onReloadQueue = options.onReloadQueue;
+        this.onLoadNextQueue = options.onLoadNextQueue;
         this.onPickupCall = options.onPickupCall;
         this.onFinishProcess = options.onFinishProcess;
         this.onCancelProcess = options.onCancelProcess;
@@ -49,7 +52,7 @@ class View extends BaseView {
                     this.selectedProcess);
             });
         } else {
-            this.loadContent(`${this.includeUrl}/pickup/queue/?selectedscope=${this.selectedScope}`, 'GET');
+            this.loadContent(`${this.includeUrl}/pickup/queue/?selectedscope=${this.selectedScope}&limit=${this.limit}&offset=${this.offset}`, 'GET');
         }
 
     }
@@ -61,6 +64,8 @@ class View extends BaseView {
             this.onReloadQueue(ev);
         }).on('click', 'a.process-finish-list', (ev) => {
             this.onConfirm(ev, "confirm_finish_list", () => { this.onFinishProcessList(ev) });
+        }).on('click', 'a.load-next-queue', (ev) => {
+            this.onLoadNextQueue(ev);
         }).on('click', 'a.process-pickup', (ev) => {
             this.onPickupCall(ev, () => { this.onFinishProcess(ev)}, () => { this.onCancelProcess(ev) });
         }).on('click', '.process-notification-send', (ev) => {
