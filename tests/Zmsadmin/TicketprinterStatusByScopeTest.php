@@ -23,12 +23,18 @@ class TicketprinterStatusByScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                    ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ]
             ]
@@ -50,12 +56,18 @@ class TicketprinterStatusByScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                    ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
@@ -78,12 +90,18 @@ class TicketprinterStatusByScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                    ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [

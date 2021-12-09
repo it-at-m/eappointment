@@ -24,7 +24,10 @@ class Scope extends BaseController
     ) {
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
 
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', [
+            'resolveReferences' => 1,
+            'gql' => Helper\GraphDefaults::getWorkstation()
+        ])->getEntity();
 
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http

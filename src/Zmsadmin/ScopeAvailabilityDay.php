@@ -20,7 +20,10 @@ class ScopeAvailabilityDay extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', [
+            'resolveReferences' => 1,
+            'gql' => Helper\GraphDefaults::getWorkstation()
+        ])->getEntity();
         $data = static::getAvailabilityData(intval($args['id']), $args['date']);
         $data['title'] = 'Behörden und Standorte - Öffnungszeiten';
         $data['menuActive'] = 'owner';
@@ -47,7 +50,9 @@ class ScopeAvailabilityDay extends BaseController
         $dateWithTime = $dateTime->setTime(\App::$now->format('H'), \App::$now->format('i'));
         $availabilityList = static::readAvailabilityList($scopeId, $dateTime);
         $processList = \App::$http
-            ->readGetResult('/scope/' . $scopeId . '/process/' . $dateTime->format('Y-m-d') . '/')
+            ->readGetResult('/scope/' . $scopeId . '/process/' . $dateTime->format('Y-m-d') . '/', [
+                'gql' => Helper\GraphDefaults::getProcess()
+            ])
                 ->getCollection()
                 ->toQueueList($dateWithTime)
                 ->withoutStatus(['fake'])

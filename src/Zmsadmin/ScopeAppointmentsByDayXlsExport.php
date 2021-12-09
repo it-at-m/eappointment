@@ -25,7 +25,10 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', [
+            'resolveReferences' => 1,
+            'gql' => Helper\GraphDefaults::getWorkstation()
+        ])->getEntity();
         $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
         $selectedDateTime = ScopeAppointmentsByDay::readSelectedDateTime($args['date']);
         $scope = ScopeAppointmentsByDay::readSelectedScope($workstation, $workstationRequest, $args['id']);
