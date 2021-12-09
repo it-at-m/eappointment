@@ -12,10 +12,13 @@ class View extends BaseView {
         this.selectedProcess = options['selected-process'];
         this.selectedScope = options['selected-scope'];
         this.includeUrl = options.includeurl;
+        this.limit = options.limit;
+        this.offset = options.offset;
         this.bindPublicMethods(
             'bindEvents',
             'onConfirm',
             'loadPickupTable',
+            'onLoadNextQueue',
             'onFinishProcess',
             'onFinishProcessList',
             'onPickupCall',
@@ -196,6 +199,13 @@ class View extends BaseView {
         return promise;
     }
 
+    onLoadNextQueue(event) {
+        stopEvent(event);
+        this.limit = $(event.currentTarget).data('limit');
+        this.offset = $(event.currentTarget).data('offset');
+        this.loadPickupTable();
+    }
+
     loadPickupTable() {
         hideSpinner(this.$main);
         return new PickupTableView(this.$main, {
@@ -203,6 +213,8 @@ class View extends BaseView {
             includeUrl: this.includeUrl,
             selectedProcess: this.selectedProcess,
             selectedScope: this.selectedScope,
+            limit: this.limit,
+            offset: this.offset,
             onConfirm: this.onConfirm,
             onReloadQueue: this.onReloadQueue,
             onFinishProcess: this.onFinishProcess,
@@ -214,7 +226,8 @@ class View extends BaseView {
             onMailCustomSent: this.onMailCustomSent,
             onCancelProcess: this.onCancelProcess,
             onProcessNotFound: this.onProcessNotFound,
-            onChangeScope: this.onChangeScope
+            onChangeScope: this.onChangeScope,
+            onLoadNextQueue: this.onLoadNextQueue
         })
     }
 

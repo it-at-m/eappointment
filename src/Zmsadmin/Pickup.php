@@ -17,7 +17,7 @@ class Pickup extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $validator = $request->getAttribute('validator');
         $selectedProcess = $validator->getParameter('selectedprocess')->isString()->getValue();
 
