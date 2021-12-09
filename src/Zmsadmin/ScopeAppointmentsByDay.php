@@ -19,7 +19,10 @@ class ScopeAppointmentsByDay extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', [
+            'resolveReferences' => 1,
+            'gql' => Helper\GraphDefaults::getWorkstation()
+        ])->getEntity();
         $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
         $selectedDateTime = static::readSelectedDateTime($args['date']);
         $scope = static::readSelectedScope($workstation, $workstationRequest, $args['id']);
@@ -63,8 +66,10 @@ class ScopeAppointmentsByDay extends BaseController
 
     public static function readProcessList($workstationRequest, $selectedDateTime)
     {
-        $processList = $workstationRequest->readProcessListByDate($selectedDateTime);
-
+        $processList = $workstationRequest->readProcessListByDate(
+            $selectedDateTime,
+            Helper\GraphDefaults::getProcess()
+        );
         // data refinement
         return $processList
             ->toQueueList(\App::$now)

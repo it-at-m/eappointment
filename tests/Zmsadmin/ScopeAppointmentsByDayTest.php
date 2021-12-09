@@ -20,13 +20,19 @@ class ScopeAppointmentsByDayTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
             ]
@@ -43,18 +49,27 @@ class ScopeAppointmentsByDayTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/144/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                    ],
                     'response' => $this->readFixture("GET_scope_144.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/144/process/2016-04-01/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
             ]
@@ -74,7 +89,10 @@ class ScopeAppointmentsByDayTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
                     'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
                 ],
                 [
@@ -85,7 +103,10 @@ class ScopeAppointmentsByDayTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/cluster/109/process/2016-04-01/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
                     'response' => $this->readFixture("GET_processlist_cluster_109.json")
                 ]
             ]

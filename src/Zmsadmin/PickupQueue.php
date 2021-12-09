@@ -27,7 +27,8 @@ class PickupQueue extends BaseController
             'gql' => Helper\GraphDefaults::getScope()
         ])->getEntity();
         $department = \App::$http->readGetResult(
-            '/scope/'. $scopeId .'/department/', [
+            '/scope/'. $scopeId .'/department/',
+            [
                 'resolveReferences' => 2
             ]
         )->getEntity();
