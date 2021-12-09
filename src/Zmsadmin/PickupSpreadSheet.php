@@ -26,7 +26,11 @@ class PickupSpreadSheet extends BaseController
         $scopeId = ($selectedScope) ? $selectedScope : $workstation->scope['id'];
         $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/', ['resolveReferences' => 1])->getEntity();
         $processList = \App::$http
-            ->readGetResult('/workstation/process/pickup/', ['resolveReferences' => 1, 'selectedScope' => $scopeId])
+            ->readGetResult('/workstation/process/pickup/', [
+                'resolveReferences' => 1, 
+                'selectedScope' => $scopeId,
+                'limit' => 10000
+            ])
             ->getCollection();
         $processList = ($processList) ? $processList : new \BO\Zmsentities\Collection\ProcessList();
         $department = \App::$http->readGetResult('/scope/'. $scopeId .'/department/')->getEntity();
@@ -69,13 +73,31 @@ class PickupSpreadSheet extends BaseController
 
         $response->getBody()->write($writer->toString());
 
-        $fileName = 'abholer_'. str_replace(' ', '_', $providerName);
+        $fileName = 'abholer_'. $providerName;
 
         return $response
             ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             ->withHeader(
                 'Content-Disposition',
-                sprintf('download; filename="%s.xlsx"', $fileName)
+                sprintf('download; filename="%s.xlsx"', $this->convertspecialChars($fileName))
             );
+    }
+
+    protected function convertspecialchars($string)
+    {
+    
+        $convert = array (
+            array ('ä','ae',),
+            array ('ö','oe',),
+            array ('ü','ue',),
+            array ('ß','ss',),
+            array (' ','_',),
+        );
+        
+        
+        foreach ($convert as $array) {
+            $string = str_replace($array[0], $array[1], $string);
+        }
+        return $string;
     }
 }
