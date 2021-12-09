@@ -90,7 +90,7 @@ class ProcessList extends Base
     {
         $this->uasort(function ($a, $b) {
             if ($a->queue['arrivalTime'] == $b->queue['arrivalTime']) {
-                error_log('equal arrival Time for :'. $a->id);
+                //error_log('equal arrival Time for :'. $a->id);
                 return strcmp(
                     Sorter::toSortableString($a->getFirstClient()['familyName']),
                     Sorter::toSortableString($b->getFirstClient()['familyName'])
