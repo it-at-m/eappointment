@@ -23,6 +23,8 @@ class Pickup extends BaseController
     ) {
         $workstation = (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $limit = Validator::param('limit')->isNumber()->setDefault(1000)->getValue();
+        $offset = Validator::param('offset')->isNumber()->setDefault(null)->getValue();
         $selectedScope = Validator::param('selectedScope')->isNumber()->getValue();
         $scopeId = ($selectedScope) ? $selectedScope : $workstation->scope['id'];
         $scope = (new \BO\Zmsdb\Scope)->readEntity($scopeId, 0);
@@ -30,7 +32,13 @@ class Pickup extends BaseController
             throw new Exception\Scope\ScopeNotFound();
         }
 
-        $processList = (new Process)->readProcessListByScopeAndStatus($scope['id'], 'pending', $resolveReferences);
+        $processList = (new Process)->readProcessListByScopeAndStatus(
+            $scope['id'], 
+            'pending', 
+            $resolveReferences, 
+            $limit,
+            $offset 
+        );
 
         $message = Response\Message::create($request);
         $message->data = $processList;
