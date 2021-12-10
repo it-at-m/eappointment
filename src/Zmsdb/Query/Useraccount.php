@@ -59,7 +59,7 @@ class Useraccount extends Base implements MappingInterface
             'id' => 'useraccount.Name',
             'password' => 'useraccount.Passworthash',
             'email' => 'useraccount.email',
-            'lastLogin' => 'useraccount.Datum',
+            'lastLogin' => 'useraccount.lastUpdate',
             'rights__superuser' => self::expression('`useraccount`.`Berechtigung` = 90'),
             'rights__organisation' => self::expression('`useraccount`.`Berechtigung` >= 70'),
             'rights__department' => self::expression('`useraccount`.`Berechtigung` >= 50'),
