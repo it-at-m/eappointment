@@ -28,8 +28,12 @@ class DialogHandler extends \BO\Zmsadmin\BaseController
             if ($result) {
                 $process = $result->getEntity();
                 $parameter['settings']['isWithAppointment'] = $process->isWithAppointment();
-                $parameter['settings']['hasMail'] = $process->getFirstClient()->hasEmail();
-                $parameter['settings']['hasTelephone'] = $process->getFirstClient()->hasTelephone();
+                $parameter['settings']['hasMail'] = (
+                    $process->getFirstClient()->hasEmail() && $process->scope->hasEmailFrom()
+                );
+                $parameter['settings']['hasTelephone'] = (
+                    $process->getFirstClient()->hasTelephone() && $process->scope->hasNotificationEnabled()
+                );
                 $parameter['id'] = $process->queue->number;
             }
         }
