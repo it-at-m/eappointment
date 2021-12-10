@@ -315,4 +315,15 @@ class ProcessList extends Base
         }
         return $conflictList;
     }
+
+    public function withScopeAppointment(\DateTimeInterface $now, $scopeId)
+    {
+        $conflictList = new self();
+        foreach ($this as $process) {
+            if ($process->hasAppointment($now->getTimestamp(), $scopeId)) {
+                $conflictList->addEntity(clone $process);
+            }
+        }
+        return $conflictList;
+    }
 }
