@@ -52,14 +52,16 @@ class ProcessSave extends BaseController
         }
 
         $process = $this->writeUpdatedProcess($input, $process, $validator);
-
+        $conflictList = ($process->isWithAppointment()) ? 
+            $this->getConflictList($scope->getId(), $process->getFirstAppointment()) : 
+            null;
         return \BO\Slim\Render::withHtml(
             $response,
             'element/helper/messageHandler.twig',
             array(
                 'selectedprocess' => $process,
                 'success' => $this->getSuccessMessage($process),
-                'conflictlist' => $this->getConflictList($scope->getId(), $dateTime)
+                'conflictlist' => $conflictList
             )
         );
     }
@@ -69,16 +71,20 @@ class ProcessSave extends BaseController
         return ($process->isWithAppointment()) ? 'process_updated' : 'process_withoutappointment_updated';
     }
 
-    protected function getConflictList($scopeId, $dateTime)
+    protected function getConflictList($scopeId, $appointment)
     {
         $conflictList = \App::$http
             ->readGetResult('/scope/' . $scopeId . '/conflict/', [
-                'startDate' => $dateTime->format('Y-m-d'),
-                'endDate' => $dateTime->format('Y-m-d')
+                'startDate' => $appointment->getStartTime()->format('Y-m-d'),
+                'endDate' => $appointment->getEndTime()->format('Y-m-d')
             ])
             ->getCollection();
+            
         return ($conflictList && $conflictList->count()) ?
-            $conflictList->toConflictListByDay()[$dateTime->format('Y-m-d')] :
+            $conflictList
+                ->withInAppointmentSlots($appointment)
+                ->sortByAppointmentDate()
+                ->toConflictListByDay()[$appointment->getStartTime()->format('Y-m-d')] :
             null;
     }
 

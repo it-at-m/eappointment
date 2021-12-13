@@ -22,6 +22,56 @@ class ProcessSaveTest extends Base
     {
         $startDate = new \DateTimeImmutable('2016-04-01');
         $endDate =  new \DateTimeImmutable('2016-04-01');
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/82252/',
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/82252/12a2/',
+                    'parameters' => [
+                        'initiator' => null,
+                        'slotType' => 'intern',
+                        'slotsRequired' => 0,
+                        'clientkey' => ''
+                    ],
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/conflict/',
+                    'parameters' => [
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d')
+                    ],
+                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, [], 'POST');
+        $this->assertStringNotContainsString('Es wurden Konflikte entdeckt',(string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testWithConflict()
+    {
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  new \DateTimeImmutable('2016-04-01');
 
         $this->setApiCalls(
             [
@@ -60,15 +110,13 @@ class ProcessSaveTest extends Base
                         'startDate' => $startDate->format('Y-m-d'),
                         'endDate' => $endDate->format('Y-m-d')
                     ],
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
+                    'response' => $this->readFixture("GET_conflictlist_141.json")
                 ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertStringContainsString(
-            '82252',
-            (string)$response->getBody()
-        );
+        $this->assertStringContainsString('Es wurden Konflikte entdeckt',(string)$response->getBody());
+        $this->assertStringContainsString('08:00 - 08:10',(string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -106,15 +154,6 @@ class ProcessSaveTest extends Base
                         'clientkey' => ''
                     ],
                     'response' => $this->readFixture("GET_process_queued.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/conflict/',
-                    'parameters' => [
-                        'startDate' => $startDate->format('Y-m-d'),
-                        'endDate' => $endDate->format('Y-m-d')
-                    ],
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
             ]
         );
