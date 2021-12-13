@@ -316,12 +316,17 @@ class ProcessList extends Base
         return $conflictList;
     }
 
-    public function withScopeAppointment(\DateTimeInterface $now, $scopeId)
+    public function withInAppointmentSlots(\BO\Zmsentities\Appointment $appointment)
     {
         $conflictList = new self();
-        foreach ($this as $process) {
-            if ($process->hasAppointment($now->getTimestamp(), $scopeId)) {
-                $conflictList->addEntity(clone $process);
+        if ($this->count()) {
+            foreach ($this as $process) {
+                if (
+                    $appointment->getStartTime() >= $process->getFirstAppointment()->getStartTime() && 
+                    $appointment->getEndTime() <= $process->getFirstAppointment()->getEndTime()
+                ) {
+                    $conflictList->addEntity(clone $process);
+                }
             }
         }
         return $conflictList;
