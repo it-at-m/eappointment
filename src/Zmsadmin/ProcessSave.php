@@ -52,8 +52,8 @@ class ProcessSave extends BaseController
         }
 
         $process = $this->writeUpdatedProcess($input, $process, $validator);
-        $conflictList = ($process->isWithAppointment()) ? 
-            $this->getConflictList($scope->getId(), $process->getFirstAppointment()) : 
+        $conflictList = ($process->isWithAppointment()) ?
+            $this->getConflictList($scope->getId(), $process->getFirstAppointment()) :
             null;
         return \BO\Slim\Render::withHtml(
             $response,
