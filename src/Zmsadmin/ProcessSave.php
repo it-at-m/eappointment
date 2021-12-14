@@ -52,8 +52,9 @@ class ProcessSave extends BaseController
         }
 
         $process = $this->writeUpdatedProcess($input, $process, $validator);
+        $appointment = $process->getFirstAppointment();
         $conflictList = ($process->isWithAppointment()) ?
-            $this->getConflictList($scope->getId(), $process->getFirstAppointment()) :
+            $this->getConflictList($scope->getId(), $appointment) :
             null;
         return \BO\Slim\Render::withHtml(
             $response,
@@ -61,7 +62,9 @@ class ProcessSave extends BaseController
             array(
                 'selectedprocess' => $process,
                 'success' => $this->getSuccessMessage($process),
-                'conflictlist' => $conflictList
+                'conflictlist' => (isset($conflictList[$appointment->getStartTime()->format('Y-m-d')])) ? 
+                    $conflictList[$appointment->getStartTime()->format('Y-m-d')] :
+                    null
             )
         );
     }
@@ -84,7 +87,7 @@ class ProcessSave extends BaseController
             $conflictList
                 ->withInAppointmentSlots($appointment)
                 ->sortByAppointmentDate()
-                ->toConflictListByDay()[$appointment->getStartTime()->format('Y-m-d')] :
+                ->toConflictListByDay() :
             null;
     }
 
