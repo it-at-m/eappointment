@@ -100,7 +100,6 @@ class ProcessSave extends BaseController
             [
                 'initiator' => $initiator,
                 'slotType' => 'intern',
-                'clientkey' => \App::CLIENTKEY,
                 'slotsRequired' => (isset($input['slotCount']) && 1 < $input['slotCount']) ? $input['slotCount'] : 0
             ]
         )->getEntity();
