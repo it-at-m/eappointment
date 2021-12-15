@@ -62,7 +62,7 @@ class ProcessSave extends BaseController
             array(
                 'selectedprocess' => $process,
                 'success' => $this->getSuccessMessage($process),
-                'conflictlist' => (isset($conflictList[$appointment->getStartTime()->format('Y-m-d')])) ? 
+                'conflictlist' => (isset($conflictList[$appointment->getStartTime()->format('Y-m-d')])) ?
                     $conflictList[$appointment->getStartTime()->format('Y-m-d')] :
                     null
             )
