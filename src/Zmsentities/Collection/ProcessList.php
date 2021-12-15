@@ -54,7 +54,7 @@ class ProcessList extends Base
     public function sortByAppointmentDate()
     {
         $this->uasort(function ($a, $b) {
-            return ($a->appointments->getFirst()->date - $b->appointments->getFirst()->date);
+            return ($a->getFirstAppointment()->date - $b->getFirstAppointment()->date);
         });
         return $this;
     }
@@ -314,6 +314,17 @@ class ProcessList extends Base
             }
         }
         return $conflictList;
+    }
+
+    public function withoutDublicatedConflicts()
+    {
+        $collection = new self();
+        foreach ($this as $conflict) {
+            if (! $collection->getAppointmentList()->hasAppointment($conflict->getFirstAppointment())) {
+                $collection->addEntity(clone $conflict);
+            }
+        }
+        return $collection;
     }
 
     public function withInAppointmentSlots(\BO\Zmsentities\Appointment $appointment)

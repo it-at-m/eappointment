@@ -207,7 +207,7 @@ class AvailabilityList extends Base
     {
         return array_reduce($this->getArrayCopy(), function ($carry, $item) use ($processList) {
             $itemId = $item->id;
-            $busySlots = $processList->withAvailability($item)->getAppointmentList()->getCalculatedSlotCount();
+            $busySlots = $processList->getAppointmentList()->getCalculatedSlotCount();
             $carry[$itemId] = $busySlots;
             return $carry;
         }, []);
