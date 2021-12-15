@@ -47,8 +47,7 @@ class ProcessSaveTest extends Base
                     'parameters' => [
                         'initiator' => null,
                         'slotType' => 'intern',
-                        'slotsRequired' => 0,
-                        'clientkey' => ''
+                        'slotsRequired' => 0
                     ],
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ],
@@ -98,8 +97,7 @@ class ProcessSaveTest extends Base
                     'parameters' => [
                         'initiator' => null,
                         'slotType' => 'intern',
-                        'slotsRequired' => 0,
-                        'clientkey' => ''
+                        'slotsRequired' => 0
                     ],
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ],
@@ -150,8 +148,7 @@ class ProcessSaveTest extends Base
                     'parameters' => [
                         'initiator' => null,
                         'slotType' => 'intern',
-                        'slotsRequired' => 0,
-                        'clientkey' => ''
+                        'slotsRequired' => 0
                     ],
                     'response' => $this->readFixture("GET_process_queued.json")
                 ]
