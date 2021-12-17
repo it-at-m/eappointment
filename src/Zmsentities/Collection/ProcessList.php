@@ -332,8 +332,8 @@ class ProcessList extends Base
         $conflictList = new self();
         if ($this->count()) {
             foreach ($this as $process) {
-                if ($appointment->getEndTime() >= $process->getFirstAppointment()->getStartTime() &&
-                    $appointment->getStartTime() <= $process->getFirstAppointment()->getEndTime()
+                if ($appointment->getEndTime() > $process->getFirstAppointment()->getStartTime() &&
+                    $appointment->getStartTime() < $process->getFirstAppointment()->getEndTime()
                 ) {
                     $conflictList->addEntity(clone $process);
                 }
