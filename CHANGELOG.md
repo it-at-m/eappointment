@@ -1,3 +1,7 @@
+## v2.24.04
+
+* #49206 Bugfix: Dem letzte Termin des Tages können nun auch weitere Slots zugeordnet werden, außerdem werden doppelte Konflikte beim aktualsieren eines Termins nicht mehr angezeigt
+
 ## v2.24.03
 * #52383 Bugfix: In der Tresenansicht funktioniert nun die Auswahl des Standortes bei ausgewähltem Cluster
 * #52247 Bugfix: Das Löschen eines Nutzers muss nun bestätigt werden und mehrfache Erfolgsmeldungen sind entfernt
