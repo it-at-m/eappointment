@@ -26,7 +26,7 @@ class PickupSpreadSheetTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/process/pickup/',
                     'parameters' => [
-                        'resolveReferences' => 1, 
+                        'resolveReferences' => 1,
                         'selectedScope' => 141,
                         'limit' => 10000
                     ],
@@ -67,7 +67,7 @@ class PickupSpreadSheetTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/process/pickup/',
                     'parameters' => [
-                        'resolveReferences' => 1, 
+                        'resolveReferences' => 1,
                         'selectedScope' => 141,
                         'limit' => 10000
                     ],

@@ -63,7 +63,7 @@ class ProcessSaveTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertStringNotContainsString('Es wurden Konflikte entdeckt',(string)$response->getBody());
+        $this->assertStringNotContainsString('Es wurden Konflikte entdeckt', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -113,8 +113,9 @@ class ProcessSaveTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertStringContainsString('Es wurden Konflikte entdeckt',(string)$response->getBody());
-        $this->assertStringContainsString('08:00 - 08:10',(string)$response->getBody());
+        $this->assertStringContainsString('Es wurden Konflikte entdeckt', (string)$response->getBody());
+        $this->assertStringContainsString('08:10 - 08:20', (string)$response->getBody());
+        $this->assertStringContainsString('08:20 - 08:30', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
