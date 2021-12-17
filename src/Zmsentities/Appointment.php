@@ -121,7 +121,7 @@ class Appointment extends Schema\Entity
         $time = $this->getStartTime();
         $availability = $this->getAvailability();
         return ($availability->slotTimeInMinutes)
-          ? $time->modify('+' . $availability->slotTimeInMinutes . ' minutes')
+          ? $time->modify('+' . ($availability->slotTimeInMinutes * $this->slotCount) . ' minutes')
           : $time;
     }
 
