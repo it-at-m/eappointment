@@ -487,7 +487,8 @@ class ProcessTest extends EntityCommonTests
         $this->assertArrayHasKey('2015-11-18', $list);
         $this->assertEquals('Beispiel Termin', $list['2015-11-18'][0]['message']);
         $this->assertEquals('18:52', $list['2015-11-18'][0]['appointments'][0]['startTime']);
-        $this->assertEquals('19:04', $list['2015-11-18'][0]['appointments'][0]['endTime']);
+        // endTime = slotTimeInMinutes * slotCount 12X2 = 24
+        $this->assertEquals('19:16', $list['2015-11-18'][0]['appointments'][0]['endTime']);
     }
 
     public function testToQueue()
