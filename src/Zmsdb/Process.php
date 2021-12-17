@@ -92,7 +92,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
         $process = clone $process;
         $appointment = $process->getAppointments()->getFirst();
-        $slotList = (new Slot)->readByAppointment($appointment, $slotsRequired);
+        $slotList = (new Slot)->readByAppointment($appointment, $slotsRequired, true);
         $processEntityList = $this->readEntityList($process->getId());
         foreach ($processEntityList as $entity) {
             if ($process->getId() != $entity->getId()) {

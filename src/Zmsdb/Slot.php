@@ -23,15 +23,18 @@ class Slot extends Base
      * @return \BO\Zmsentities\Collection\SlotList
      *
      */
-    public function readByAppointment(\BO\Zmsentities\Appointment $appointment, $overwriteSlotsCount = null)
-    {
+    public function readByAppointment(
+        \BO\Zmsentities\Appointment $appointment,
+        $overwriteSlotsCount = null,
+        $extendSlotList = false
+    ) {
         $appointment = clone $appointment;
         $availability = (new Availability())->readByAppointment($appointment);
         // Check if availability allows multiple slots, but allow overwrite
         if (!$availability->multipleSlotsAllowed || $overwriteSlotsCount >= 1) {
             $appointment->slotCount = ($overwriteSlotsCount >= 1) ? $overwriteSlotsCount : 1;
         }
-        $slotList = $availability->getSlotList()->withSlotsForAppointment($appointment);
+        $slotList = $availability->getSlotList()->withSlotsForAppointment($appointment, $extendSlotList);
         foreach ($slotList as $slot) {
             $this->readByAvailability($slot, $availability, $appointment->toDateTime(), true);
         }
