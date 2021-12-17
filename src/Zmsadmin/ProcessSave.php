@@ -87,6 +87,7 @@ class ProcessSave extends BaseController
             $conflictList
                 ->withInAppointmentSlots($appointment)
                 ->sortByAppointmentDate()
+                ->withoutDublicatedConflicts()
                 ->toConflictListByDay() :
             null;
     }
