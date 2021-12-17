@@ -24,7 +24,7 @@ class PickupQueueTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/process/pickup/',
                     'parameters' => [
-                        'resolveReferences' => 1, 
+                        'resolveReferences' => 1,
                         'selectedScope' => 141,
                         'limit' => 1000,
                         'offset' => null
