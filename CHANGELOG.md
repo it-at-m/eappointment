@@ -1,3 +1,7 @@
+## v2.24.04
+
+* #49206 - Die Slotlist kann bei Bedarf über die Öffnungszeit hinaus erweitert werden wenn ein Paramter gesetzt wird und eine Überbuchung vorhanden ist
+
 ## v2.24.00
 
 * #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
