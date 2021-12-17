@@ -3,6 +3,9 @@ namespace BO\Zmsentities\Collection;
 
 use BO\Zmsentities\Slot;
 
+/**
+ * @SuppressWarnings(Complexity)
+ */
 class SlotList extends Base
 {
     const ENTITY_CLASS = '\BO\Zmsentities\Slot';
@@ -66,28 +69,50 @@ class SlotList extends Base
      * Get all slots for an appointment
      *
      */
-    public function withSlotsForAppointment(\BO\Zmsentities\Appointment $appointment)
+    public function withSlotsForAppointment(\BO\Zmsentities\Appointment $appointment, $extendSlotList = false)
     {
         $slotList = new SlotList();
         $takeFollowingSlot = 0;
-        $startTime = $appointment->toDateTime()->format('H:i');
+        $startTime = $appointment->toDateTime();
+        $currentSlot = null;
         foreach ($this as $slot) {
+            $currentSlot = clone $slot;
             if ($takeFollowingSlot > 0) {
                 $takeFollowingSlot--;
-                $slotList[] = clone $slot;
+                $slotList[] = $currentSlot;
             }
-            if ($slot->hasTime() && $slot->time == $startTime) {
-                $slotList[] = clone $slot;
+            if ($slot->hasTime() && $slot->time == $startTime->format('H:i')) {
+                $slotList[] = $currentSlot;
                 $takeFollowingSlot = $appointment['slotCount'] - 1;
             }
         }
-        if (0 < $takeFollowingSlot) {
+        if (0 < $takeFollowingSlot && ! $extendSlotList) {
             throw new \BO\Zmsentities\Exception\AppointmentNotFitInSlotList(
                 "$appointment does not fit in $this"
             );
         }
+        if (0 < $takeFollowingSlot && $extendSlotList) {
+            $slotList = $this->extendList($slotList, $currentSlot, $appointment);
+        }
         return $slotList;
     }
+
+    public function extendList($slotList, $prevSlot, $appointment)
+    {
+        $startTime = \BO\Zmsentities\Helper\DateTime::create(
+            $appointment->toDateTime()->format('Y-m-d') .' '. $prevSlot->time
+        )->modify('+' . $appointment->getAvailability()->slotTimeInMinutes . 'minute');
+        $stopTime = $appointment->getEndTime();
+        do {
+            $slot = clone $prevSlot;
+            $slot->setTime($startTime);
+            $slotList[] = $slot;
+            $startTime = $startTime->modify('+' . $appointment->getAvailability()->slotTimeInMinutes . 'minute');
+            // Only add a slot, if at least a minute is left, otherwise do not ("<" instead "<=")
+        } while ($startTime->getTimestamp() < $stopTime->getTimestamp());
+        return $slotList;
+    }
+    
 
     /**
      * Reduce free appointments on slot matching appointment
