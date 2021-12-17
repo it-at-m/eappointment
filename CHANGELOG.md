@@ -1,3 +1,7 @@
+## v2.24.04
+
+* #49206 - Sachbearbeiter können für den letzten Termin einer Öffnungszeit nun auch mehrere Slots zuweisen
+
 ## v2.24.03
 
 * #52383 Bugfix: Einem Superuser Nutzer wird nun beim Login keine Behörde mehr zugeordet
