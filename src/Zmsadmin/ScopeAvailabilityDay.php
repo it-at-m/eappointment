@@ -62,9 +62,6 @@ class ScopeAvailabilityDay extends BaseController
         $maxSlots = $availabilityList->getSummerizedSlotCount();
         $busySlots = $availabilityList->getCalculatedSlotCount($processList);
 
-        $processConflictList = (new \BO\Zmsentities\Collection\ProcessList())
-            ->addData($processConflictList);
-
         return [
             'scope' => $scope,
             'availabilityList' => $availabilityList->getArrayCopy(),
