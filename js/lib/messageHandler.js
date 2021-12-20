@@ -54,7 +54,7 @@ class MessageHandler {
             this.callback(ev);
             this.handleLightbox();
         }).on('keydown', (ev) => {
-            var key = ev.keyCode || ev.which;
+            var key = ev.code;
             switch(key) {
             case 27: // ESC    
                 ev.preventDefault();
@@ -70,25 +70,25 @@ class MessageHandler {
         var tabbable = this.$main.find('select, input, textarea, button, a, *[role="button"]');
         // Focus the first element
         if (tabbable.length ) {
-            tabbable.filter(':visible').first().focus();
+            tabbable.filter(':visible').first().trigger('focus');
             //console.log(tabbable.filter(':visible').first());
         }
-        tabbable.bind('keydown', function (e) {
-            if (e.keyCode === 9) { // TAB pressed
+        tabbable.on('keydown', function (event) {
+            if (event.code === 9) { // TAB pressed
                 // we need to update the visible last and first focusable elements everytime tab is pressed,
                 // because elements can change their visibility
                 var firstVisible = tabbable.filter(':visible').first();
                 var lastVisible = tabbable.filter(':visible').last();
                 if (firstVisible && lastVisible) {
-                    if (e.shiftKey && ( $(firstVisible)[0] === $(this)[0] ) ) {
+                    if (event.shiftKey && ( $(firstVisible)[0] === $(this)[0] ) ) {
                         // TAB + SHIFT pressed on first visible element
-                        e.preventDefault();
-                        lastVisible.focus();
+                        event.preventDefault();
+                        lastVisible.trigger('focus');
                     } 
-                    else if (!e.shiftKey && ( $(lastVisible)[0] === $(this)[0] ) ) {
+                    else if (!event.shiftKey && ( $(lastVisible)[0] === $(this)[0] ) ) {
                         // TAB pressed pressed on last visible element
-                        e.preventDefault();
-                        firstVisible.focus();
+                        event.preventDefault();
+                        firstVisible.trigger('focus');
                     }
                 }
             }
