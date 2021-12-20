@@ -17,6 +17,7 @@ class GraphDefaults
         $default =<<< EOS
 { 
     id,
+    name,
     scope {
         id, 
         source,
