@@ -125,33 +125,20 @@ class SlotList extends Base
      */
     public function removeAppointment(\BO\Zmsentities\Appointment $appointment)
     {
-        $takeFollowingSlot = 0;
-        $startTime = $appointment->toDateTime()->format('H:i');
-        $containsAppointment = false;
-        //error_log('check: ' . $appointment);
-        foreach ($this as $slot) {
-            if ($takeFollowingSlot > 0) {
-                if (0 == $slot['intern']) {
-                    error_log('false 2: ' . $slot);
-                    return false;
-                }
-                $slot->removeAppointment();
-                $takeFollowingSlot--;
-                //error_log('intern 2: ' . $slot . ' | following: ' . $takeFollowingSlot);
-            }
-            if ($slot->hasTime() && $slot->time == $startTime) {
-                $takeFollowingSlot = $appointment['slotCount'] - 1;
-                //error_log('intern: ' . $slot . ' | following: ' . $takeFollowingSlot);
-                if (0 < $slot['intern']) {
-                    $containsAppointment = true;
+        $slot = $this->getByDateTime($appointment->toDateTime());
+        if ($slot && $slot->intern > 0) {
+            $slotCount = $appointment->getSlotCount();
+            do {
+                try {
                     $slot->removeAppointment();
-                } else {
-                    //error_log('false: ' . $slot);
+                } catch(\Exception $exception) {
                     return false;
                 }
-            }
+                $slotCount--;
+            } while ($slotCount > 0);
+            return true;
         }
-        return $containsAppointment;
+        return false;
     }
 
     public function getSlot($index)

@@ -245,6 +245,8 @@ class ProcessList extends Base
             $slotList = $availabilityList->withType('appointment')->withDateTime($dateTime)->getSlotList();
             foreach ($processListByDate as $process) {
                 if (!$slotList->removeAppointment($process->getFirstAppointment())) {
+                    //remove original amendment for overbooked message
+                    $process->amendment = "";
                     $processList[] = clone $process;
                 }
             }
