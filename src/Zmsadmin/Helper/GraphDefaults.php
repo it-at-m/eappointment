@@ -22,6 +22,7 @@ class GraphDefaults
         source,
         preferences {
             appointment
+            client
         }
     },
     queue {
@@ -111,6 +112,7 @@ EOS;
     }
     preferences {
         appointment
+        client
     }
     provider {
         contact 
