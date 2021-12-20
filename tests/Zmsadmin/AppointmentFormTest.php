@@ -48,7 +48,7 @@ class AppointmentFormTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
                     'parameters' => [
-                        'slotType' => 'intern', 
+                        'slotType' => 'intern',
                         'slotsRequired' => 0,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
                     ],
@@ -173,7 +173,7 @@ class AppointmentFormTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
                     'parameters' => [
-                        'slotType' => 'intern', 
+                        'slotType' => 'intern',
                         'slotsRequired' => 0,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
                     ],
@@ -231,7 +231,7 @@ class AppointmentFormTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
                     'parameters' => [
-                        'slotType' => 'intern', 
+                        'slotType' => 'intern',
                         'slotsRequired' => 1,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
                     ],
@@ -281,7 +281,7 @@ class AppointmentFormTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
                     'parameters' => [
-                        'slotType' => 'intern', 
+                        'slotType' => 'intern',
                         'slotsRequired' => 0,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
                     ],
@@ -342,7 +342,7 @@ class AppointmentFormTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
                     'parameters' => [
-                        'slotType' => 'intern', 
+                        'slotType' => 'intern',
                         'slotsRequired' => 3,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
                     ],
@@ -402,7 +402,7 @@ class AppointmentFormTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
                     'parameters' => [
-                        'slotType' => 'intern', 
+                        'slotType' => 'intern',
                         'slotsRequired' => 1,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
                     ],
@@ -467,7 +467,7 @@ class AppointmentFormTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
                     'parameters' => [
-                        'slotType' => 'intern', 
+                        'slotType' => 'intern',
                         'slotsRequired' => 1,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
                     ],
@@ -532,7 +532,7 @@ class AppointmentFormTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
                     'parameters' => [
-                        'slotType' => 'intern', 
+                        'slotType' => 'intern',
                         'slotsRequired' => 0,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
                     ],
