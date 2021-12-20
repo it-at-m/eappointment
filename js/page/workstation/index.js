@@ -444,6 +444,7 @@ class View extends BaseView {
         this.selectedProcess = $(event.currentTarget).data('id');
         $(event.currentTarget).closest('.message').fadeOut().remove();
         window.open(`${this.includeUrl}/process/queue/?print=1&selectedprocess=${this.selectedProcess}`)
+        this.selectedProcess = null;
         this.loadAppointmentForm();
     }
 
