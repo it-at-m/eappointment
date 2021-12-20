@@ -20,7 +20,7 @@ class AppointmentFormHelper
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $selectedProcess = ($selectedProcessId)
             ? \App::$http->readGetResult('/process/'. $selectedProcessId .'/', [
-                'gql' => GraphDefaults::getProcess()
+                'gql' => GraphDefaults::getFreeProcess()
             ])->getEntity()
             : null;
 

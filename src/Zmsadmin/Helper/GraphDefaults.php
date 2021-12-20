@@ -253,7 +253,10 @@ EOS;
         arrivalTime,
         withAppointment,
         number,
-        status
+        status,
+        waitingTimeEstimate,
+        waitingTimeOptimistic,
+        waitingTime
     }
     requests{
         id
@@ -282,4 +285,29 @@ EOS;
 EOS;
         return static::defaultFormat($default);
     }
+
+/**
+ *  reduced process response data
+ */
+public static function getFreeProcess()
+{
+        $default =<<< EOS
+{
+    appointments{
+        date
+        slotCount
+    }
+    scope{
+        id
+    }
+    queue{
+        arrivalTime,
+        withAppointment
+    }
+}
+EOS;
+        return static::defaultFormat($default);
+    }
+
+
 }
