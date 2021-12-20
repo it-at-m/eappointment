@@ -48,7 +48,7 @@ class AppointmentFormMultipleSlotsTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
                     'parameters' => [
-                        'slotType' => 'intern', 
+                        'slotType' => 'intern',
                         'slotsRequired' => 0,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
                     ],

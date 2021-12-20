@@ -51,7 +51,7 @@ class ScopeTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1, 
+                        'resolveReferences' => 1,
                         'accessRights' => 'scope',
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
@@ -119,7 +119,7 @@ class ScopeTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1, 
+                        'resolveReferences' => 1,
                         'accessRights' => 'scope',
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
@@ -223,7 +223,7 @@ class ScopeTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1, 
+                        'resolveReferences' => 1,
                         'accessRights' => 'scope',
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
@@ -318,7 +318,7 @@ class ScopeTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1, 
+                        'resolveReferences' => 1,
                         'accessRights' => 'scope',
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
@@ -413,7 +413,7 @@ class ScopeTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1, 
+                        'resolveReferences' => 1,
                         'accessRights' => 'scope',
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
@@ -489,7 +489,7 @@ class ScopeTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1, 
+                        'resolveReferences' => 1,
                         'accessRights' => 'scope',
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
@@ -592,7 +592,7 @@ class ScopeTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1, 
+                        'resolveReferences' => 1,
                         'accessRights' => 'scope',
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
