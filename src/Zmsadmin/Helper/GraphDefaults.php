@@ -289,8 +289,8 @@ EOS;
 /**
  *  reduced process response data
  */
-public static function getFreeProcess()
-{
+    public static function getFreeProcess()
+    {
         $default =<<< EOS
 {
     appointments{
@@ -308,6 +308,4 @@ public static function getFreeProcess()
 EOS;
         return static::defaultFormat($default);
     }
-
-
 }
