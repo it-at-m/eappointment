@@ -131,7 +131,7 @@ class SlotList extends Base
             do {
                 try {
                     $slot->removeAppointment();
-                } catch(\Exception $exception) {
+                } catch (\Exception $exception) {
                     return false;
                 }
                 $slotCount--;
