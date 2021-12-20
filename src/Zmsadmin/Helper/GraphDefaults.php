@@ -300,10 +300,6 @@ EOS;
     scope{
         id
     }
-    queue{
-        arrivalTime,
-        withAppointment
-    }
 }
 EOS;
         return static::defaultFormat($default);

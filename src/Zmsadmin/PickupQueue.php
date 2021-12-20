@@ -58,7 +58,8 @@ class PickupQueue extends BaseController
             'resolveReferences' => 1,
             'selectedScope' => $scopeId,
             'limit' => $limit,
-            'offset' => $offset
+            'offset' => $offset,
+            'gql' => Helper\GraphDefaults::getProcess()
         ])->getCollection();
         return ($processList) ? $processList->sortPickupQueue() : $processList;
     }
