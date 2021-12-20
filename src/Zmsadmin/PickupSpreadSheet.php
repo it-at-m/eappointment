@@ -94,6 +94,7 @@ class PickupSpreadSheet extends BaseController
             array ('ö','oe',),
             array ('ü','ue',),
             array ('ß','ss',),
+            array (' ','_',),
         );
         
         
