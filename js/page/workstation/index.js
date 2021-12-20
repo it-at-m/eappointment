@@ -63,7 +63,9 @@ class View extends BaseView {
             this.setLastReload();
             this.setReloadTimer();
         });
-        $.ajaxSetup({ cache: false });
+        $.ajaxSetup({ 
+            cache: false
+        });
         this.loadAllPartials().then(() => {
             this.bindEvents();
         });
@@ -264,13 +266,13 @@ class View extends BaseView {
                 this.loadMessage(response, () => {
                     this.selectedProcess = null;
                     this.loadAppointmentForm();
-                    if ('counter' == this.page)
-                        this.loadQueueInfo();
-                    this.loadQueueTable();
-                    this.loadCalendar();
                 }, scope.$main, event.currentTarget);
             }
         }).then(() => {
+            if ('counter' == this.page)
+                this.loadQueueInfo();
+            this.loadQueueTable();
+            this.loadCalendar();
             hideSpinner();
         });
     }
@@ -512,10 +514,10 @@ class View extends BaseView {
 
     loadAllPartials() {
         return Promise.all([
+            this.loadClientNext(),
+            this.loadAppointmentForm(),
             this.loadCalendar(),
             this.loadQueueTable(),
-            this.loadAppointmentForm(),
-            this.loadClientNext(),
             this.loadHeaderScope()
         ]);
     }
