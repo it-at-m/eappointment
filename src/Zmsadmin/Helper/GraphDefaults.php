@@ -115,6 +115,7 @@ EOS;
     preferences {
         appointment
         client
+        queue
     }
     provider {
         id
