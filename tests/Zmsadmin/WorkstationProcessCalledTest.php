@@ -31,7 +31,9 @@ class WorkstationProcessCalledTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/process/called/',
-                    'parameters' => ['allowClusterWideCall' => false],
+                    'parameters' => [
+                        'allowClusterWideCall' => false
+                    ],
                     'response' => $this->readFixture("GET_workstation_with_process_called.json")
                 ]
             ]
@@ -79,7 +81,10 @@ class WorkstationProcessCalledTest extends Base
         $response = $this->render(['id' => 161275], [
             'exclude' => 82252
         ], []);
-        $this->assertStringContainsString('Dieser Arbeitsplatz hat schon einen Abholer aufgerufen.', (string)$response->getBody());
+        $this->assertStringContainsString(
+            'Dieser Arbeitsplatz hat schon einen Abholer aufgerufen.',
+            (string)$response->getBody()
+        );
         $this->assertStringContainsString('Zur Abholerverwaltung', (string)$response->getBody());
         $this->assertStringNotContainsString('client-called_button-success', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());

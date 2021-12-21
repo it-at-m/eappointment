@@ -25,11 +25,11 @@ class WorkstationProcessPreCall extends BaseController
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
 
-        $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
+        $excludedIds = $validator->getParameter('exclude')->isString()->setDefault('')->getValue();
         if ($excludedIds) {
             $exclude = explode(',', $excludedIds);
         }
-        $exclude[] = $process['id'];
+        $exclude[] = $process->toQueue(\App::$now)->number;
 
         $error = $validator->getParameter('error')->isString()->getValue();
         if ($workstation->process->getId()) {
