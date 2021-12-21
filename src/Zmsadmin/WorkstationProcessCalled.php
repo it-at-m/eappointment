@@ -29,10 +29,7 @@ class WorkstationProcessCalled extends BaseController
         }
 
         $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
-        if ($excludedIds) {
-            $exclude = explode(',', $excludedIds);
-        }
-        $exclude[] = $workstation->process->getId();
+        $exclude = ($excludedIds) ? explode(',', $excludedIds) : [];
         
         $error = $validator->getParameter('error')->isString()->getValue();
         if (isset($processId) && $workstation->process->getId() != $processId) {

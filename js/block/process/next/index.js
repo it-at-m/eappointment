@@ -48,7 +48,7 @@ class View extends BaseView {
 
     loadCalled() {
         this.cleanInstance();
-        const url = `${this.includeUrl}/workstation/process/${this.processId}/called/`
+        const url = `${this.includeUrl}/workstation/process/${this.processId}/called/?exclude=` + this.exclude
         return this.loadInto(url).then(() => this.onNextProcess()).then(this.setTimeSinceCall);
     }
 
@@ -79,11 +79,13 @@ class View extends BaseView {
         this.$main.on('click', '.button-callnextclient .button', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
+            this.exclude = $(ev.target).data('exclude') || '';
             this.loadClientNext();
         }).on('click', '.client-precall_button-success', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.processId = $(ev.target).data('processid');
+            this.exclude = $(ev.target).data('exclude');
             this.loadCalled();
         }).on('click', '.client-precall_button-skip', (ev) => {
             ev.preventDefault();

@@ -28,6 +28,7 @@ class GraphDefaults
     },
     queue {
         clusterEnabled
+        appointmentsOnly
     }
     useraccount {
         rights
@@ -116,6 +117,7 @@ EOS;
         client
     }
     provider {
+        id
         contact 
         name 
         data { 

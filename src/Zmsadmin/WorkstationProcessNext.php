@@ -32,7 +32,8 @@ class WorkstationProcessNext extends BaseController
                 'block/process/next.twig',
                 array(
                     'workstation' => $workstation,
-                    'processNotFoundInQueue' => 1
+                    'processNotFoundInQueue' => 1,
+                    'exclude' => ''
                 )
             );
         }
