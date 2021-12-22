@@ -182,12 +182,14 @@ class View extends BaseView {
 
     onReloadQueue(event) {
         stopEvent(event);
+        this.offset = 0;
         this.selectedProcess = null;
         this.loadAllPartials();
     }
 
     onChangeScope(event) {
         stopEvent(event);
+        this.offset = 0;
         this.selectedScope = $(event.currentTarget).val();
         this.loadPickupTable();
     }
