@@ -27,7 +27,8 @@ class PickupQueueTest extends Base
                         'resolveReferences' => 1,
                         'selectedScope' => 141,
                         'limit' => 1000,
-                        'offset' => null
+                        'offset' => 0,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getPickup()
                     ],
                     'response' => $this->readFixture("GET_pickupqueue_141.json")
                 ],
@@ -38,7 +39,8 @@ class PickupQueueTest extends Base
                         'resolveReferences' => 1,
                         'selectedScope' => 141,
                         'limit' => 1000,
-                        'offset' => 1000
+                        'offset' => 1000,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getPickup()
                     ],
                     'response' => $this->readFixture("GET_pickupqueue_141.json")
                 ],
