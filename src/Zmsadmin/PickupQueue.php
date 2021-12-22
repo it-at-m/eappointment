@@ -8,7 +8,6 @@ namespace BO\Zmsadmin;
 
 class PickupQueue extends BaseController
 {
-    public $defaultLimit = 1000;
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -21,7 +20,7 @@ class PickupQueue extends BaseController
         $validator = $request->getAttribute('validator');
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $selectedScope = $validator->getParameter('selectedscope')->isNumber()->getValue();
-        $limit = $validator->getParameter('limit')->isNumber()->setDefault($this->defaultLimit)->getValue();
+        $limit = $validator->getParameter('limit')->isNumber()->setDefault(Pickup::$defaultLimit)->getValue();
         $offset = $validator->getParameter('offset')->isNumber()->setDefault(0)->getValue();
         $scopeId = ($selectedScope) ? $selectedScope : $workstation->scope['id'];
         $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/')->getEntity();
