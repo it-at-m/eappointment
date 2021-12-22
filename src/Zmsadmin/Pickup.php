@@ -8,7 +8,7 @@ namespace BO\Zmsadmin;
 
 class Pickup extends BaseController
 {
-    public static $defaultLimit = 1000;
+    public static $defaultLimit = 500;
 
     /**
      * @SuppressWarnings(Param)

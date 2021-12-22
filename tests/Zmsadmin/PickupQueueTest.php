@@ -26,7 +26,7 @@ class PickupQueueTest extends Base
                     'parameters' => [
                         'resolveReferences' => 1,
                         'selectedScope' => 141,
-                        'limit' => 1000,
+                        'limit' => 500,
                         'offset' => 0,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getPickup()
                     ],
@@ -38,8 +38,8 @@ class PickupQueueTest extends Base
                     'parameters' => [
                         'resolveReferences' => 1,
                         'selectedScope' => 141,
-                        'limit' => 1000,
-                        'offset' => 1000,
+                        'limit' => 500,
+                        'offset' => 500,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getPickup()
                     ],
                     'response' => $this->readFixture("GET_pickupqueue_141.json")
@@ -62,9 +62,9 @@ class PickupQueueTest extends Base
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString('pickup-table', (string)$response->getBody());
         $this->assertStringContainsString('change-scope', (string)$response->getBody());
-        $this->assertStringContainsString('data-limit="1000" data-offset="1000"', (string)$response->getBody());
+        $this->assertStringContainsString('data-limit="500" data-offset="500"', (string)$response->getBody());
         $this->assertStringContainsString('Nächste 100 Abholer anzeigen', (string)$response->getBody());
-        $this->assertStringNotContainsString('Vorherige 1000 Abholer anzeigen', (string)$response->getBody());
+        $this->assertStringNotContainsString('Vorherige 500 Abholer anzeigen', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }
