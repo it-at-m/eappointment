@@ -29,7 +29,55 @@ class PickupSpreadSheetTest extends Base
                         'resolveReferences' => 1,
                         'selectedScope' => 141,
                         'offset' => 0,
-                        'limit' => 3000,
+                        'limit' => 1000,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getPickup()
+                    ],
+                    'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/process/pickup/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'selectedScope' => 141,
+                        'offset' => 1000,
+                        'limit' => 1000,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getPickup()
+                    ],
+                    'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/process/pickup/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'selectedScope' => 141,
+                        'offset' => 2000,
+                        'limit' => 1000,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getPickup()
+                    ],
+                    'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/process/pickup/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'selectedScope' => 141,
+                        'offset' => 3000,
+                        'limit' => 1000,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getPickup()
+                    ],
+                    'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/process/pickup/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'selectedScope' => 141,
+                        'offset' => 4000,
+                        'limit' => 1000,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getPickup()
                     ],
                     'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
@@ -74,10 +122,58 @@ class PickupSpreadSheetTest extends Base
                         'resolveReferences' => 1,
                         'selectedScope' => 141,
                         'offset' => 0,
-                        'limit' => 3000,
+                        'limit' => 1000,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getPickup()
                     ],
                     'response' => $this->readFixture("GET_freeprocesslist_empty.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/process/pickup/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'selectedScope' => 141,
+                        'offset' => 1000,
+                        'limit' => 1000,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getPickup()
+                    ],
+                    'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/process/pickup/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'selectedScope' => 141,
+                        'offset' => 2000,
+                        'limit' => 1000,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getPickup()
+                    ],
+                    'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/process/pickup/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'selectedScope' => 141,
+                        'offset' => 3000,
+                        'limit' => 1000,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getPickup()
+                    ],
+                    'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/process/pickup/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'selectedScope' => 141,
+                        'offset' => 4000,
+                        'limit' => 1000,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getPickup()
+                    ],
+                    'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ],
                 [
                     'function' => 'readGetResult',
