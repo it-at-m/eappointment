@@ -25,14 +25,13 @@ class PickupSpreadSheet extends BaseController
         $selectedScope = $validator->getParameter('selectedscope')->isNumber()->getValue();
         $scopeId = ($selectedScope) ? $selectedScope : $workstation->scope['id'];
         $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/', [
-            'resolveReferences' => 1,
-            'gql' => Helper\GraphDefaults::getScope()
+            'resolveReferences' => 1
         ])->getEntity();
         $processList = \App::$http
             ->readGetResult('/workstation/process/pickup/', [
                 'resolveReferences' => 1,
                 'selectedScope' => $scopeId,
-                'limit' => 10000
+                'limit' => 5000
             ])
             ->getCollection();
         $processList = ($processList) ? $processList : new \BO\Zmsentities\Collection\ProcessList();
