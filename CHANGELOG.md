@@ -2,6 +2,7 @@
 
 * #49206 Bugfix: Dem letzte Termin des Tages können nun auch weitere Slots zugeordnet werden, außerdem werden doppelte Konflikte beim aktualisieren eines Termins nicht mehr angezeigt
 * #52818 Bugfix: Spontankunden können nun korrekt aufgerufen werden
+* #52297 Bugfix: In Abholerlisten mit mehr als 500 Einträgen kann nun navigiert werden um weitere Einträge anzuzeigen. Der Download der Abholerliste ist auf 3000 Einträge beschränkt
 
 ## v2.24.03
 * #52383 Bugfix: In der Tresenansicht funktioniert nun die Auswahl des Standortes bei ausgewähltem Cluster
