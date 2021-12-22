@@ -28,7 +28,7 @@ class PickupSpreadSheetTest extends Base
                     'parameters' => [
                         'resolveReferences' => 1,
                         'selectedScope' => 141,
-                        'limit' => 10000
+                        'limit' => 5000
                     ],
                     'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ],
@@ -41,8 +41,7 @@ class PickupSpreadSheetTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                        'resolveReferences' => 1
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ]
@@ -72,7 +71,7 @@ class PickupSpreadSheetTest extends Base
                     'parameters' => [
                         'resolveReferences' => 1,
                         'selectedScope' => 141,
-                        'limit' => 10000
+                        'limit' => 5000
                     ],
                     'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ],
@@ -85,8 +84,7 @@ class PickupSpreadSheetTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                        'resolveReferences' => 1
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ]
