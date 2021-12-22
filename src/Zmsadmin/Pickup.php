@@ -41,4 +41,3 @@ class Pickup extends BaseController
         );
     }
 }
- 
