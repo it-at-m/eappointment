@@ -11,6 +11,8 @@ use \League\Csv\EscapeFormula;
 
 class PickupSpreadSheet extends BaseController
 {
+    public static $maxSqlLoops = 5;
+    public static $maxLoopLimit = 1000;
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -27,38 +29,19 @@ class PickupSpreadSheet extends BaseController
         $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/', [
             'resolveReferences' => 1
         ])->getEntity();
-        $processList = PickupQueue::getProcessList($scopeId, 3000, 0);
-        $processList = ($processList) ? $processList : new \BO\Zmsentities\Collection\ProcessList();
         $department = \App::$http->readGetResult('/scope/'. $scopeId .'/department/')->getEntity();
 
         $providerName = $scope['provider']['name'];
 
         $rows = [];
         $rowCount = 1;
-        foreach ($processList->getArrayCopy() as $processItem) {
-            $client = $processItem->getFirstClient();
-            $requestNameList = [];
-            if (count($processItem->getRequests())) {
-                foreach ($processItem->getRequests() as $requestItem) {
-                    $requestNameList[] = $requestItem->getName();
-                }
-            }
-
-            $date = new \DateTime('@' . $processItem->queue['arrivalTime']);
-            $date->setTimezone(\App::$now->getTimezone());
-
-            $rows[] = [
-                $rowCount,
-                $date->format('d.m.Y'),
-                $processItem->queue['number'],
-                $client['familyName'],
-                $client['telephone'],
-                $client['email'],
-                join(', ', $requestNameList),
-                $processItem->amendment
-            ];
-            $rowCount ++;
-        }
+        $loop = 0;
+        do {
+            $processList = PickupQueue::getProcessList($scopeId, static::$maxLoopLimit, $loop * static::$maxLoopLimit);
+            $rows = $this->writeData($processList, $rowCount, $rows);
+            $loop++;
+            $rowCount = count($rows) + 1;
+        } while (static::$maxSqlLoops > $loop);
 
         $writer = Writer::createFromString();
         $writer->addFormatter(new EscapeFormula());
@@ -77,6 +60,37 @@ class PickupSpreadSheet extends BaseController
                 'Content-Disposition',
                 sprintf('download; filename="%s.xlsx"', $this->convertspecialChars($fileName))
             );
+    }
+
+    protected function writeData($processList, $rowCount, $rows)
+    {
+        if ($processList) {
+            foreach ($processList->getArrayCopy() as $processItem) {
+                $client = $processItem->getFirstClient();
+                $requestNameList = [];
+                if (count($processItem->getRequests())) {
+                    foreach ($processItem->getRequests() as $requestItem) {
+                        $requestNameList[] = $requestItem->getName();
+                    }
+                }
+
+                $date = new \DateTime('@' . $processItem->queue['arrivalTime']);
+                $date->setTimezone(\App::$now->getTimezone());
+
+                $rows[] = [
+                    $rowCount,
+                    $date->format('d.m.Y'),
+                    $processItem->queue['number'],
+                    $client['familyName'],
+                    $client['telephone'],
+                    $client['email'],
+                    join(', ', $requestNameList),
+                    $processItem->amendment
+                ];
+                $rowCount ++;
+            }
+        }
+        return $rows;
     }
 
     protected function convertspecialchars($string)
