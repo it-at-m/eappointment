@@ -50,6 +50,7 @@ class ProcessUpdate extends BaseController
                 $resolveReferences,
                 $workstation->getUseraccount()
             );
+            Helper\Matching::testCurrentScopeHasRequest($process);
         } elseif ($clientKey) {
             $apiClient = (new \BO\Zmsdb\Apiclient)->readEntity($clientKey);
             if (!$apiClient || !isset($apiClient->accesslevel) || $apiClient->accesslevel == 'blocked') {
