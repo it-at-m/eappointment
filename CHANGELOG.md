@@ -1,3 +1,7 @@
+## v2.24.04
+
+* #48987 Bugfix: Beim Aktualisieren eines Vorgangs wird nun geprüft ob dem Standort die angegebene Dienstleistung zugeordnet ist.
+
 ## v2.24.03
 
 * #52508 - Sollte bei der Reservierung schon eine Vorgangsnummer existieren wird nun eine eindeutige Exception ausgegeben
