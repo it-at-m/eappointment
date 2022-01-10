@@ -182,14 +182,8 @@ class View extends RequestView {
 
     onChangeScope(event) {
         this.selectedScope = $(event.currentTarget).val();
-        if (this.clusterEnabled && this.selectedScope && ! this.selectedProcess) {
-            this.onChangeScopeCallback(event);
-        } else {
-            this.loadFreeProcessList().loadList().then(() => {
-                this.bindEvents();
-            });
-            this.onChangeScopeCallback(event, true);
-        }
+        this.onChangeScopeCallback(event);
+       
     }
 
     onChangeProcessTime(event) {
