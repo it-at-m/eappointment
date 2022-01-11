@@ -19,8 +19,10 @@ class ProcessConflictTest extends Base
         $startDate = new \DateTimeImmutable("2016-04-01 11:55");
         $endDate = new \DateTimeImmutable("2016-04-30 23:59");
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141, 1, true);
-        $conflictList = (new \BO\Zmsdb\Process())->readConflictListByScopeAndTime($scope, $startDate, $endDate, $now, 0);
-        $this->assertEquals(10, $conflictList->count());
+        $conflictList = (new \BO\Zmsdb\Process())
+            ->readConflictListByScopeAndTime($scope, $startDate, $endDate, $now, 0);
+        //from 10 to 23 because of overbooked slots
+        $this->assertEquals(23, $conflictList->count());
     }
 
     public function testWithoutQueued()
@@ -37,8 +39,10 @@ class ProcessConflictTest extends Base
         $process = $query->writeNewFromAdmin($entity, $now);
 
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141, 1, true);
-        $conflictList = (new \BO\Zmsdb\Process())->readConflictListByScopeAndTime($scope, $startDate, $endDate, $now, 0);
-        $this->assertEquals(10, $conflictList->count());
+        $conflictList = (new \BO\Zmsdb\Process())
+            ->readConflictListByScopeAndTime($scope, $startDate, $endDate, $now, 0);
+        //from 10 to 23 because of overbooked slots
+        $this->assertEquals(23, $conflictList->count());
     }
 
     public function testOverbookedOnDay()
@@ -47,7 +51,8 @@ class ProcessConflictTest extends Base
         $startDate = new \DateTimeImmutable("2016-04-12 11:55");
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141, 1, true);
         $conflictList = (new \BO\Zmsdb\Process())->readConflictListByScopeAndTime($scope, $startDate, null, $now, 0);
-        $this->assertEquals(2, $conflictList->count());
+        //from 2 to 3 because of overbooked slots
+        $this->assertEquals(3, $conflictList->count());
     }
 
     public function testEqual()
@@ -60,7 +65,7 @@ class ProcessConflictTest extends Base
         $availabilityCopy->endTime = $availabilityCopy->getEndDateTime()->format('H:i');
         (new \BO\Zmsdb\Availability())->writeEntity($availabilityCopy);
         $conflictList = (new \BO\Zmsdb\Process())->readConflictListByScopeAndTime($scope, $startDate, null, $now, 0);
-        $this->assertEquals(2, $conflictList->count());
+        $this->assertEquals(7, $conflictList->count());
         $this->assertEquals('Zwei Öffnungszeiten sind gleich.', $conflictList->getFirst()->getAmendment());
         $this->assertEquals('conflict', $conflictList->getFirst()->getStatus());
     }
@@ -75,7 +80,7 @@ class ProcessConflictTest extends Base
         $availabilityCopy->endTime = $availabilityCopy->getEndDateTime()->modify('+2 hour')->format('H:i');
         (new \BO\Zmsdb\Availability())->writeEntity($availabilityCopy);
         $conflictList = (new \BO\Zmsdb\Process())->readConflictListByScopeAndTime($scope, $startDate, null, $now, 0);
-        $this->assertEquals(2, $conflictList->count());
+        $this->assertEquals(7, $conflictList->count());
         $this->assertEquals('Zwei Öffnungszeiten überschneiden sich.', $conflictList->getFirst()->getAmendment());
         $this->assertEquals('conflict', $conflictList->getFirst()->getStatus());
     }
