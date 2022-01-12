@@ -28,8 +28,11 @@ class WorkstationProcessCalled extends BaseController
             ])->getEntity();
         }
 
-        $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
-        $exclude = ($excludedIds) ? explode(',', $excludedIds) : [];
+        $excludedIds = $validator->getParameter('exclude')->isString()->setDefault('')->getValue();
+        if ($excludedIds) {
+            $exclude = explode(',', $excludedIds);
+        }
+        $exclude[] = $workstation->process->toQueue(\App::$now)->number;
         
         $error = $validator->getParameter('error')->isString()->getValue();
         if (isset($processId) && $workstation->process->getId() != $processId) {
