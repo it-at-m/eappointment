@@ -37,8 +37,8 @@ class PickupSpreadSheet extends BaseController
         $rowCount = 1;
         $loop = 0;
         do {
-            $processList = PickupQueue::getProcessList($scopeId, static::$maxLoopLimit, $loop * static::$maxLoopLimit);
-            $rows = $this->writeData($processList, $rowCount, $rows);
+            $processList = $this->readProcessList($scopeId, $loop);
+            $rows = $this->setRows($processList, $rowCount, $rows);
             $loop++;
             $rowCount = count($rows) + 1;
         } while (static::$maxSqlLoops > $loop);
@@ -62,7 +62,20 @@ class PickupSpreadSheet extends BaseController
             );
     }
 
-    protected function writeData($processList, $rowCount, $rows)
+    protected function readProcessList($scopeId, $loop, $retry = 0)
+    {
+        try {
+            return PickupQueue::getProcessList($scopeId, static::$maxLoopLimit, $loop * static::$maxLoopLimit);
+        } catch (\BO\Zmsclient\Exception\ApiFailed $exception) {
+            if ($retry < 3) {
+                sleep(1); // Let the other request complete his transaction
+                return $this->readProcessList($scopeId, $loop, $retry+1);
+            }
+            throw $exception;
+        }
+    }
+
+    protected function setRows($processList, $rowCount, $rows)
     {
         if ($processList) {
             foreach ($processList->getArrayCopy() as $processItem) {
