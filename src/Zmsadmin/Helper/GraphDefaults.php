@@ -20,11 +20,14 @@ class GraphDefaults
     name,
     scope {
         id, 
+        shortName
         source,
         preferences {
             appointment
             client
+            workstation
         }
+        status 
     },
     queue {
         clusterEnabled
@@ -125,6 +128,7 @@ EOS;
             payment 
         }
     }
+    queue
 }
 EOS;
         return static::defaultFormat($default);
@@ -272,6 +276,7 @@ EOS;
     }
     scope{
         id
+        shortName
         source
         contact
         provider{
