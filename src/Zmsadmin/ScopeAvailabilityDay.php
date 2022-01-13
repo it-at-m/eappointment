@@ -77,6 +77,9 @@ class ScopeAvailabilityDay extends BaseController
             'conflicts' => ($processConflictList) ? $processConflictList
                 ->sortByAppointmentDate()
                 ->withoutDublicatedConflicts()
+                ->toQueueList($dateWithTime)
+                ->withoutStatus(['fake', 'queued'])
+                ->toProcessList()
                 ->getArrayCopy() : [],
             'processList' => $processList->getArrayCopy(),
             'dateString' => $dateString,
