@@ -249,6 +249,7 @@ EOS;
     authKey
     id
     status
+    createTimestamp
     appointments{
         date
         slotCount
