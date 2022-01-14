@@ -88,10 +88,15 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
             if (isset($options['exception'])) {
                 $function->will(new \Prophecy\Promise\ThrowPromise($options['exception']));
             } elseif (isset($options['response'])) {
+                $responseData = json_decode($options['response'], true);
+                $graphqlInterpreter = $this->getGraphQL($parameters);
+                if ($graphqlInterpreter) {
+                    $responseData['data'] = $graphqlInterpreter->setJson(json_encode($responseData['data']));
+                }
                 $function->shouldBeCalled()
                     ->willReturn(
                         new \BO\Zmsclient\Result(
-                            $this->getResponse($options['response'], 200),
+                            $this->getResponse(json_encode($responseData), 200),
                             static::createBasicRequest()
                         )
                     );
@@ -109,6 +114,18 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
     protected function getApiCalls()
     {
         return $this->apiCalls;
+    }
+
+    protected function getGraphQL($parameters)
+    {
+        if (isset($parameters['gql'])) {
+            $gqlString = $parameters['gql'];
+            if ($gqlString) {
+                $graphqlInterpreter = new GraphQL\GraphQLInterpreter($gqlString);
+                return $graphqlInterpreter;
+            }
+        }
+        return null;
     }
 
     public function setApiCalls($apiCalls)
