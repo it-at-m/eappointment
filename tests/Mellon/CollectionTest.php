@@ -12,7 +12,7 @@ use BO\Mellon\Validator;
   *
   *
   */
-class CollectionTest extends \PHPUnit_Framework_TestCase
+class CollectionTest extends \PHPUnit\Framework\TestCase
 {
     public function testUsage()
     {
@@ -51,7 +51,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
 
     public function testNonvalid()
     {
-        $this->setExpectedException('\BO\Mellon\Exception');
+        $this->expectException('\BO\Mellon\Exception');
         Validator::collection(array(
             'name' => Validator::value('test')
         ));

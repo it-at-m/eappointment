@@ -13,7 +13,7 @@ use BO\Mellon\Valid;
   *
   *
   */
-class JsonTest extends \PHPUnit_Framework_TestCase
+class JsonTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testJson()

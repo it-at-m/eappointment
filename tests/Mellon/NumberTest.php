@@ -13,7 +13,7 @@ use BO\Mellon\Valid;
   *
   *
   */
-class NumberTest extends \PHPUnit_Framework_TestCase
+class NumberTest extends \PHPUnit\Framework\TestCase
 {
     public function testNumber()
     {
