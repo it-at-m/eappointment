@@ -48,6 +48,7 @@ class QueueTableTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString('queue-table', (string)$response->getBody());
+        $this->assertStringContainsString('<small>(1)</small>', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
