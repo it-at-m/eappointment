@@ -8,8 +8,13 @@
             "email": "mathias.fischer@berlinonline.de"
         }
     ],
+    "config": {
+        "platform": {
+            "php": "8.0"
+        }
+    },
     "require-dev": {
-        "phpmd/phpmd": "@stable",
+        "phpmd/phpmd": "^2.8.0",
         "squizlabs/php_codesniffer": "*",
         "phpunit/phpunit": "^9.5.4"
     },
