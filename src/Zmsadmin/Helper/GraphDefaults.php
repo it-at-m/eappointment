@@ -26,6 +26,7 @@ class GraphDefaults
             appointment
             client
             workstation
+            ticketprinter
         }
         status 
     },
@@ -119,6 +120,7 @@ EOS;
         appointment
         client
         queue
+        ticketprinter
     }
     provider {
         id
@@ -129,6 +131,7 @@ EOS;
         }
     }
     queue
+    status
 }
 EOS;
         return static::defaultFormat($default);
@@ -267,7 +270,8 @@ EOS;
         status,
         waitingTimeEstimate,
         waitingTimeOptimistic,
-        waitingTime
+        waitingTime,
+        callCount
     }
     requests{
         id
