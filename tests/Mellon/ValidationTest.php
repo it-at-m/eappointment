@@ -13,35 +13,35 @@ use BO\Mellon\Valid;
   *
   *
   */
-class ValidationTest extends \PHPUnit_Framework_TestCase
+class ValidationTest extends \PHPUnit\Framework\TestCase
 {
     public function testAssert()
     {
-        $this->setExpectedException("\BO\Mellon\Failure\Exception");
+        $this->expectException("\BO\Mellon\Failure\Exception");
         Validator::value("test")->isBool()->assertValid();
     }
 
     public function testMissingFunction()
     {
-        $this->setExpectedException("\BO\Mellon\Exception");
+        $this->expectException("\BO\Mellon\Exception");
         Validator::value("test")->isANotExistingFunction();
     }
 
     public function testInvalidFunction()
     {
-        $this->setExpectedException("\BO\Mellon\Exception");
+        $this->expectException("\BO\Mellon\Exception");
         Validator::value("test")->isaninvalidfunction();
     }
 
     public function testInvalidValidationFunction()
     {
-        $this->setExpectedException("\BO\Mellon\Exception");
+        $this->expectException("\BO\Mellon\Exception");
         Validator::value("test")->isString()->isANotExistingFunction();
     }
 
     public function testUndefinedFunction()
     {
-        $this->setExpectedException("\BO\Mellon\Exception");
+        $this->expectException("\BO\Mellon\Exception");
         Validator::value("test")->isString()->aninvalidfunction();
     }
 }

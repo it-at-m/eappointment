@@ -13,7 +13,7 @@ use BO\Mellon\Valid;
   *
   *
   */
-class MailTest extends \PHPUnit_Framework_TestCase
+class MailTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testMail()

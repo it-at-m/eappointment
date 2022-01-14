@@ -13,7 +13,7 @@ use BO\Mellon\Valid;
   *
   *
   */
-class UrlTest extends \PHPUnit_Framework_TestCase
+class UrlTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testUrl()

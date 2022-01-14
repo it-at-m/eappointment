@@ -13,7 +13,7 @@ use BO\Mellon\Valid;
   *
   *
   */
-class BasicsTest extends \PHPUnit_Framework_TestCase
+class BasicsTest extends \PHPUnit\Framework\TestCase
 {
     public function testBasic()
     {
@@ -36,7 +36,7 @@ class BasicsTest extends \PHPUnit_Framework_TestCase
     public function testRequired()
     {
         $valid = Validator::value('abc')->isRequired("Value abc should not fail");
-        $this->assertFalse($valid->hasFailed(), $valid->getMessages());
+        $this->assertFalse($valid->hasFailed(), "Should not show");
         $valid = Validator::value('')->isRequired("Empty value should fail");
         $this->assertTrue($valid->hasFailed(), $valid->getMessages());
     }
@@ -60,7 +60,7 @@ class BasicsTest extends \PHPUnit_Framework_TestCase
             $valid instanceof \BO\Mellon\Unvalidated,
             "Parameter should not be of class Valid if no validation happened"
         );
-        $this->setExpectedException('\BO\Mellon\Exception');
+        $this->expectException('\BO\Mellon\Exception');
         $valid->getValue();
     }
 
@@ -84,7 +84,7 @@ class BasicsTest extends \PHPUnit_Framework_TestCase
 
     public function testConstructFail()
     {
-        $this->setExpectedException('\BO\Mellon\Exception');
+        $this->expectException('\BO\Mellon\Exception');
         new Validator('123');
     }
 
