@@ -173,11 +173,12 @@ class AppointmentFormFreeProcessListTest extends Base
         $this->assertStringContainsString('11:40 (noch 1 frei)', (string)$response->getBody());
         $this->assertStringContainsString('17:00 (noch 0 frei)', (string)$response->getBody());
         $this->assertStringNotContainsString('Spontankunde', (string)$response->getBody());
+        $this->assertStringNotContainsString('disabled="disabled"', (string)$response->getBody());
+
     }
 
     public function testEmpty()
     {
-        $this->expectException('\BO\Zmsclient\Exception');
         $this->setApiCalls(
             [
                 [
@@ -197,10 +198,11 @@ class AppointmentFormFreeProcessListTest extends Base
                         'slotsRequired' => 0,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getFreeProcessList()
                     ],
-                    'response' => '{}'
+                    'response' => $this->readFixture("GET_processList_empty.json")
                 ]
             ]
         );
-        $this->render([], $this->parameters, []);
+        $response = $this->render([], $this->parameters, []);
+        $this->assertStringContainsString('disabled="disabled"', (string)$response->getBody());
     }
 }
