@@ -4,6 +4,8 @@ namespace BO\Zmsapi\Response;
 
 use \BO\Zmsdb\Connection\Select;
 
+use \BO\Zmsclient\GraphQL\GraphQLInterpreter;
+
 /**
  * example class to generate a response
  */
