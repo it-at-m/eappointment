@@ -659,7 +659,6 @@ class Process extends Base implements Interfaces\ResolveReferences
             if ($processEntityList->count()) {
                 foreach ($processEntityList as $entity) {
                     $entityId = $entity->getId();
-                    $this->deleteRequestsForProcessId($entityId);
                     (new Slot())->deleteSlotProcessMappingFor($entityId);
                     Log::writeLogEntry("DELETE (Process::writeBlockedEntity) $entityId ", $process->id);
                 }
