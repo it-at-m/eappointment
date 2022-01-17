@@ -578,16 +578,23 @@ class Process extends Base implements Interfaces\ResolveReferences
      */
     public function writeDeletedEntity($processId)
     {
-        $query = Query\Process::QUERY_DELETE;
-        $status = $this->perform($query, array(
-            $processId,
-            $processId
-        ));
-        if ($status) {
-            $this->deleteRequestsForProcessId($processId);
-            (new Slot())->deleteSlotProcessMappingFor($processId);
+        $processEntityList = $this->readEntityList($processId);
+        if ($processEntityList->count()) {
+            foreach ($processEntityList as $entity) {
+                $entityId = $entity->getId();
+                $query = Query\Process::QUERY_DELETE;
+                $status = $this->perform($query, array(
+                    $entityId,
+                    $entityId
+                ));
+                if ($status) {
+                    $this->deleteRequestsForProcessId($entityId);
+                    (new Slot())->deleteSlotProcessMappingFor($entityId);
+                    Log::writeLogEntry("DELETE (Process::writeDeletedEntity) $entityId ", $processId);
+                }
+            }
         }
-        Log::writeLogEntry("DELETE (Process::writeDeletedEntity) $processId ", $processId);
+       
         return $status;
     }
 
@@ -648,9 +655,16 @@ class Process extends Base implements Interfaces\ResolveReferences
             $process->id
         ));
         if ($status) {
-            (new Slot())->deleteSlotProcessMappingFor($process->id);
+            $processEntityList = $this->readEntityList($process->id);
+            if ($processEntityList->count()) {
+                foreach ($processEntityList as $entity) {
+                    $entityId = $entity->getId();
+                    $this->deleteRequestsForProcessId($entityId);
+                    (new Slot())->deleteSlotProcessMappingFor($entityId);
+                    Log::writeLogEntry("DELETE (Process::writeBlockedEntity) $entityId ", $process->id);
+                }
+            }
         }
-        Log::writeLogEntry("DELETE (Process::writeBlockedEntity) $process ", $process->id);
         return $status;
     }
 
