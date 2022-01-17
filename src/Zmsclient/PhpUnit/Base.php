@@ -11,6 +11,8 @@ use \Prophecy\PhpUnit\ProphecyTrait;
 
 use \Prophecy\Argument;
 
+use \BO\Zmsclient\GraphQL\GraphQLInterpreter;
+
 /**
  * @codeCoverageIgnore
  */
@@ -121,7 +123,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         if (isset($parameters['gql'])) {
             $gqlString = $parameters['gql'];
             if ($gqlString) {
-                $graphqlInterpreter = new GraphQL\GraphQLInterpreter($gqlString);
+                $graphqlInterpreter = new GraphQLInterpreter($gqlString);
                 return $graphqlInterpreter;
             }
         }

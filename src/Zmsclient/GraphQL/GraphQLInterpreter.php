@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsclient\PhpUnit\GraphQL;
+namespace BO\Zmsclient\GraphQL;
 
 class GraphQLInterpreter implements \JsonSerializable
 {
