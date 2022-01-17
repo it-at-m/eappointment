@@ -29,7 +29,7 @@ class ProcessGetTest extends Base
             []
         );
 
-        $graphqlInterpreter = (new \BO\Zmsapi\Response\GraphQLInterpreter($gqlString))
+        $graphqlInterpreter = (new \BO\Zmsclient\GraphQL\GraphQLInterpreter($gqlString))
             ->setJson($this->readFixture('GetProcess_10030.json'));
         $this->assertStringContainsString('"appointments":[{"date":1463379000}]', (string)$graphqlInterpreter);
 
@@ -40,7 +40,7 @@ class ProcessGetTest extends Base
 
     public function testWithGraphQLInvalid()
     {
-        $this->expectException('\BO\Zmsapi\Response\GraphQLException');
+        $this->expectException('\BO\Zmsclient\GraphQL\GraphQLException');
         $this->expectExceptionMessage('No valid graphql');
         $this->setWorkstation();
         $this->render(['id' => 10030, 'authKey' => '1c56'], ['gql' => 'test'], []);
@@ -48,7 +48,7 @@ class ProcessGetTest extends Base
 
     public function testWithGraphQLEmptyContent()
     {
-        $this->expectException('\BO\Zmsapi\Response\GraphQLException');
+        $this->expectException('\BO\Zmsclient\GraphQL\GraphQLException');
         $this->expectExceptionMessage('No content for graph');
         $this->setWorkstation();
         $this->render(['id' => 10030, 'authKey' => '1c56'], ['gql' => '[]'], []);
@@ -56,10 +56,10 @@ class ProcessGetTest extends Base
 
     public function testWithGraphQLClosingBrackets()
     {
-        $this->expectException('\BO\Zmsapi\Response\GraphQLException');
+        $this->expectException('\BO\Zmsclient\GraphQL\GraphQLException');
         $this->expectExceptionMessage('Curly bracket match problem, too many closing brackets');
         $gqlString = '{ id authKey } }';
-        $graphqlInterpreter = (new \BO\Zmsapi\Response\GraphQLInterpreter($gqlString))
+        $graphqlInterpreter = (new \BO\Zmsclient\GraphQL\GraphQLInterpreter($gqlString))
             ->setJson($this->readFixture('GetProcess_10030.json'));
     }
 
