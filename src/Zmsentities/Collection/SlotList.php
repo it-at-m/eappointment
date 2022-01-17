@@ -123,22 +123,37 @@ class SlotList extends Base
      *
      * @return bool true on success and false if no matching slot is found or no appointments are free
      */
+
+
     public function removeAppointment(\BO\Zmsentities\Appointment $appointment)
     {
-        $slot = $this->getByDateTime($appointment->toDateTime());
-        if ($slot && $slot->intern > 0) {
-            $slotCount = $appointment->getSlotCount();
-            do {
-                try {
-                    $slot->removeAppointment();
-                } catch (\Exception $exception) {
+        $takeFollowingSlot = 0;
+        $startTime = $appointment->toDateTime()->format('H:i');
+        $containsAppointment = false;
+        //error_log('check: ' . $appointment);
+        foreach ($this as $slot) {
+            if ($takeFollowingSlot > 0) {
+                if (0 == $slot['intern']) {
+                    //error_log('false 2: ' . $slot);
                     return false;
                 }
-                $slotCount--;
-            } while ($slotCount > 0);
-            return true;
+                $slot->removeAppointment();
+                $takeFollowingSlot--;
+                //error_log('intern 2: ' . $slot . ' | following: ' . $takeFollowingSlot);
+            }
+            if ($slot->hasTime() && $slot->time == $startTime) {
+                $takeFollowingSlot = $appointment['slotCount'] - 1;
+                //error_log('intern: ' . $slot . ' | following: ' . $takeFollowingSlot);
+                if (0 < $slot['intern']) {
+                    $containsAppointment = true;
+                    $slot->removeAppointment();
+                } else {
+                    //error_log('false: ' . $slot);
+                    return false;
+                }
+            }
         }
-        return false;
+        return $containsAppointment;
     }
 
     public function getSlot($index)
