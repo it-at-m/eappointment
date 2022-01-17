@@ -68,8 +68,10 @@ class WorkstationRequests
         return $this->cluster ? $this->cluster : new \BO\Zmsentities\Cluster();
     }
 
-    public function readProcessListByDate(\DateTimeInterface $selectedDate, $gql = "") : \BO\Zmsentities\Collection\ProcessList
-    {
+    public function readProcessListByDate(
+        \DateTimeInterface $selectedDate,
+        $gql = ""
+    ) : \BO\Zmsentities\Collection\ProcessList {
         if ($this->workstation->isClusterEnabled()) {
             $processList = $this->http
                 ->readGetResult(
