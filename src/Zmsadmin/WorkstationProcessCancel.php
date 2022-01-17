@@ -41,7 +41,7 @@ class WorkstationProcessCancel extends BaseController
 
     protected function writeCallCount($process)
     {
-        if (0 < $process->queue['callCount'] ) {
+        if (0 < $process->queue['callCount']) {
             $process->queue['callCount']--;
         }
         \App::$http->readPostResult('/process/'. $process->id .'/'. $process->authKey .'/', $process);
