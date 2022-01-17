@@ -24,7 +24,7 @@ const FormContent = (props) => {
             <ErrorBar errorList={errorList} conflictList={conflictList} setErrorRef={setErrorRef} />
             <form className="form--base">
                     <FormGroup>
-                        <Label attributes={{"htmlFor": "AvDayDescription"}} value="Anmerkung"></Label> 
+                        <Label attributes={{"htmlFor": "AvDayDescription"}}>Anmerkung</Label> 
                         <Controls>
                             <Inputs.Text 
                                 attributes={{ "id": "AvDayDescription", "aria-describedby": "help_AvDayDescription" }}
@@ -38,7 +38,7 @@ const FormContent = (props) => {
                         </Controls>
                     </FormGroup>
                     <FormGroup>
-                        <Label attributes={{"htmlFor": "AvDayType"}} value="Typ"></Label>
+                        <Label attributes={{"htmlFor": "AvDayType"}}>Typ</Label>
                         <Controls>
                             <Inputs.Select name="type"
                                 attributes={{ disabled: data.id ? 'disabled' : null, "id": "AvDayType" }}
@@ -47,7 +47,7 @@ const FormContent = (props) => {
                         </Controls>
                     </FormGroup>
                     <FormGroup>
-                        <Label attributes={{"htmlFor": "AvDaySeries"}} value="Serie"></Label>
+                        <Label attributes={{"htmlFor": "AvDaySeries"}}>Serie</Label>
                         <Controls>
                             <Inputs.Select 
                                 name="repeat"
@@ -81,7 +81,7 @@ const FormContent = (props) => {
                                     width="2"
                                     attributes={{ maxLength: 3, "id": "AvDaySlottime" }}
                                     {...{ onChange }} />
-                                <Label attributes={{"htmlFor": "AvDaySlottime", "className": "light"}} value="&nbsp;Minuten Abstand zweier aufeinander folgender Termine"></Label>
+                                <Label attributes={{"htmlFor": "AvDaySlottime", "className": "light"}}>&nbsp;Minuten Abstand zweier aufeinander folgender Termine</Label>
                             </Controls>
                         </FormGroup>
                         <FormGroup inline={true}>    
@@ -90,7 +90,7 @@ const FormContent = (props) => {
                                     checked={"1" == data.multipleSlotsAllowed} {...{ onChange }} 
                                     value="1"
                                 />
-                                <Label value="Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen"></Label>
+                                <Label>Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen</Label>
                             </Controls>
                         </FormGroup>
                     </fieldset>
@@ -123,7 +123,7 @@ const FormContent = (props) => {
                         <legend className="label">Buchbar</legend>
                         <FormGroup inline={true}>
                             <Controls>
-                                <Label attributes={{"htmlFor": "AvDayOpenfrom", "className": "light"}} value="von"></Label> 
+                                <Label attributes={{"htmlFor": "AvDayOpenfrom", "className": "light"}}>von</Label> 
                                 <Inputs.Text name="open_from"
                                     width="2"
                                     value={data.open_from}
@@ -132,8 +132,7 @@ const FormContent = (props) => {
                                 />
                             </Controls>
                             <Controls>
-                                <Label attributes={{"htmlFor": "AvDayOpento", "className": "light"}} value="bis">
-                                </Label> 
+                                <Label attributes={{"htmlFor": "AvDayOpento", "className": "light"}}>bis</Label> 
                                     <Inputs.Text name="open_to"
                                     width="2"
                                     value={data.open_to}
@@ -152,7 +151,7 @@ const FormContent = (props) => {
                     {data.type !== 'openinghours' ?
                         <div>
                             <FormGroup>
-                                <Label attributes={{"htmlFor": "WsCountIntern"}} value="Insgesamt"></Label>
+                                <Label attributes={{"htmlFor": "WsCountIntern"}}>Insgesamt</Label>
                                 <Controls>
                                     <Inputs.Select name="workstationCount_intern"
                                         value={data.workstationCount_intern}
@@ -168,7 +167,7 @@ const FormContent = (props) => {
                             </FormGroup>
 
                             <FormGroup>
-                                <Label attributes={{"htmlFor": "WsCountCallcenter"}} value="Callcenter"></Label>
+                                <Label attributes={{"htmlFor": "WsCountCallcenter"}}>Callcenter</Label>
                                 <Controls>
                                     <Inputs.Select name="workstationCount_callcenter"
                                         value={data.workstationCount_callcenter}
@@ -180,12 +179,12 @@ const FormContent = (props) => {
                                                 name: `${n}`
                                             }
                                         })} />
-                                    <Description attributes={{"id": "help_WsCountCallcenter"}} value="Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Callcenter zur Verfügung gestellt werden."></Description>
+                                    <Description attributes={{"id": "help_WsCountCallcenter"}}>Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Callcenter zur Verfügung gestellt werden.</Description>
                                 </Controls>
                             </FormGroup>
 
                             <FormGroup>
-                                <Label attributes={{"htmlFor": "WsCountPublic"}} value="Internet"></Label>
+                                <Label attributes={{"htmlFor": "WsCountPublic"}}>Internet</Label>
                                 <Controls>
                                     <Inputs.Select name="workstationCount_public"
                                         value={data.workstationCount_public}
@@ -197,7 +196,7 @@ const FormContent = (props) => {
                                                 name: `${n}`
                                             }
                                         })} />
-                                    <Description attributes={{"htmlFor": "help_WsCountPublic"}} value="Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Internet zur Verfügung gestellt werden."></Description>
+                                    <Description attributes={{"htmlFor": "help_WsCountPublic"}}>Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Internet zur Verfügung gestellt werden.</Description>
                                 </Controls>
                             </FormGroup>
                         </div>
