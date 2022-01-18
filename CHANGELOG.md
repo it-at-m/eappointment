@@ -1,8 +1,9 @@
 ## v2.24.04
 
-* #49206 Bugfix: Dem letzte Termin des Tages können nun auch weitere Slots zugeordnet werden, außerdem werden doppelte Konflikte beim aktualisieren eines Termins nicht mehr angezeigt
-* #52818 Bugfix: Spontankunden können nun korrekt aufgerufen werden
+* #52818 Bugfix: Spontankunden können nun korrekt aufgerufen werden und aufgerufene Vorgänge werden nicht bei Abbruch als aufgerufen gezählt
 * #52297 Bugfix: In Abholerlisten mit mehr als 500 Einträgen kann nun navigiert werden um weitere Einträge anzuzeigen. Der Download der Abholerliste ist auf 3000 Einträge beschränkt
+* #35372 - Performance: Im Adminbereich wurden die Antwort-Inhalte der API-Abfragen reduziert um eine bessere Leistung zu erreichen 
+* #49206 Bugfix: Dem letzte Termin des Tages können nun auch weitere Slots zugeordnet werden, außerdem werden doppelte Konflikte beim aktualisieren eines Termins nicht mehr angezeigt
 * #48987 Bugfix: Beim Aktualisieren eines Vorgangs wird nun geprüft ob dem Standort die angegebene Dienstleistung zugeordnet ist.
 
 ## v2.24.03
