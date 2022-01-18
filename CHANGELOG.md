@@ -1,6 +1,7 @@
 ## v2.24.04
 
 * #49206 - Sachbearbeiter können für den letzten Termin einer Öffnungszeit nun auch mehrere Slots zuweisen
+* #49206 - Bugfix: Beim Löschen eines Vorgangs mit mehreren Slots durch den Sachbearbeiter, werden nun auch die zusätzlichen Slots der Folgetermine freigegeben
 
 ## v2.24.03
 
