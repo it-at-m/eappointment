@@ -4,5 +4,6 @@ tags
 /public
 .DS_*
 .phpunit.result.cache
+composer.lock
 composer.*.lock
 clover.xml
