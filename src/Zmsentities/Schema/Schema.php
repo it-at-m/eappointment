@@ -40,7 +40,7 @@ class Schema extends \ArrayObject
         //error_log("Resolve($resolveLevel) Key = " . $key . " -> " . gettype($value));
         if (is_array($value)) {
             $value = $this->resolveReferences($value, $resolveLevel);
-        } elseif ($key === '$ref' && $value{0} != '#') {
+        } elseif ($key === '$ref' && $value[0] != '#') {
             //error_log("Load $value");
             $value = Loader::asArray($value)->withResolvedReferences($resolveLevel - 1);
         }
