@@ -107,6 +107,20 @@ class Scope extends Base
         return $scopeList;
     }
 
+    public function readByRequestId($requestId, $source, $resolveReferences = 0)
+    {
+        $scopeList = new Collection();
+        $providerList = (new Provider())->readListBySource($source, 0, true, $requestId);
+        
+        foreach ($providerList as $provider) {
+            $scopeListByProvider = $this->readByProviderId($provider->getId(),$resolveReferences);
+            if ($scopeListByProvider->count()) {
+                $scopeList->addList($scopeListByProvider);
+            }
+        }
+        return $scopeList->withUniqueScopes();
+    }
+
     public function readByDepartmentId($departmentId, $resolveReferences = 0)
     {
         $scopeList = new Collection();
