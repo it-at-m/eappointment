@@ -113,7 +113,7 @@ class Scope extends Base
         $providerList = (new Provider())->readListBySource($source, 0, true, $requestId);
         
         foreach ($providerList as $provider) {
-            $scopeListByProvider = $this->readByProviderId($provider->getId(),$resolveReferences);
+            $scopeListByProvider = $this->readByProviderId($provider->getId(), $resolveReferences);
             if ($scopeListByProvider->count()) {
                 $scopeList->addList($scopeListByProvider);
             }
