@@ -38,14 +38,20 @@ class ScopeTest extends Base
 
     public function testProvider()
     {
-        $entityList = (new Query())->readByProviderId(122217);
-        //$this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
-
         $entityList = (new Query())->readByProviderId(122217, 1);
         $this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
 
         $this->assertEquals(true, $entityList->hasEntity('141')); //Herrstraße exists
         $this->assertEquals(false, $entityList->hasEntity('153')); //Bürgeramt Rathaus Spandau does not exist
+    }
+
+    public function testRequest()
+    {
+        $entityList = (new Query())->readByRequestId(120335, 'dldb', 1);
+        $this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
+
+        $this->assertEquals(true, $entityList->hasEntity('141')); //Herrstraße exists
+        $this->assertEquals(true, $entityList->hasEntity('153')); //Bürgeramt Rathaus Spandau does not exist
     }
 
     public function testDepartment()
