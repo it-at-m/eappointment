@@ -3237,6 +3237,56 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("ScopeListByProvider");
 
+    /**
+ *  @swagger
+ *  "/request/{source}/{id}/scopes/":
+ *      get:
+ *          summary: Get a list of scope by request ID
+ *          x-since: 2.10
+ *          tags:
+ *              - request
+ *              - scope
+ *          parameters:
+ *              -   name: source
+ *                  description: request source like 'dldb'
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: id
+ *                  description: request number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: false
+ *                  description: authentication key to identify user for testing access rights. Without key, informations are shortened
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/scope.json"
+ *              404:
+ *                  description: "request id does not exists"
+ */
+\App::$slim->get(
+    '/request/{source}/{id:\d{1,11}}/scopes/',
+    '\BO\Zmsapi\ScopeListByRequest'
+)
+    ->setName("ScopeListByRequest");
+
 /**
  *  @swagger
  *  "/provider/{source}/":
