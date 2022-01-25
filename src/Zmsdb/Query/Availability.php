@@ -273,7 +273,7 @@ class Availability extends Base implements MappingInterface
             AND $availability.OeffnungszeitID IS NOT NULL
 
             -- match weekday
-            AND $availability.Wochentag & POW(2, DAYOFWEEK($process.Datum) - 1)
+            AND $availability.Wochentag & POW(2, DAYOFWEEK($process.Datum) - 1) >=1
 
             -- match week
             AND (
@@ -298,6 +298,7 @@ class Availability extends Base implements MappingInterface
                         )
                     )
                 )
+                OR (availability.allexWochen = 0 AND availability.jedexteWoche = 0)
             )
 
             -- match time and date
