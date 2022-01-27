@@ -52,6 +52,43 @@ class ProcessConflictTest extends Base
         $this->assertEquals(2, $conflictList->count());
     }
 
+    /*
+    * Test a single day availability without repeats but with conflicts out of availability start and enttime
+    */
+
+    public function testSingleDayOutOfAvailability()
+    {
+        $now = static::$now;
+        $startDate = new \DateTimeImmutable("2016-04-08 07:00");
+        $scope = (new \BO\Zmsdb\Scope())->readEntity(154, 1, true);
+        $conflictList = (new \BO\Zmsdb\Process())
+            ->readConflictListByScopeAndTime($scope, $startDate, null, $now, 1)
+            ->withoutDublicatedConflicts()
+            ->setConflictAmendment();
+        $this->assertEquals(8, $conflictList->count());
+        $this->assertStringContainsString(
+            'Der Vorgang (12437) befindet sich außerhalb der Öffnungszeit!',
+            $conflictList->getFirst()->amendment
+        );
+        $this->assertFalse($conflictList->getFirst()->getFirstAppointment()->availability->hasId());
+    }
+
+    public function testSingleDayOverbookedSlots()
+    {
+        $now = static::$now;
+        $startDate = new \DateTimeImmutable("2016-04-25 10:00");
+        $scope = (new \BO\Zmsdb\Scope())->readEntity(154, 1, true);
+        $conflictList = (new \BO\Zmsdb\Process())
+            ->readConflictListByScopeAndTime($scope, $startDate, null, $now, 1)
+            ->setConflictAmendment();
+        $this->assertEquals(1, $conflictList->count());
+        $this->assertStringContainsString(
+            'Die Slots für diesen Zeitraum wurden überbucht',
+            $conflictList->getFirst()->amendment
+        );
+        $this->assertTrue($conflictList->getFirst()->getFirstAppointment()->availability->hasId());
+    }
+
     public function testEqual()
     {
         $now = static::$now;

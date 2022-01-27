@@ -379,7 +379,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         \DateTimeInterface $startDate = null,
         \DateTimeInterface $endDate = null,
         \DateTimeInterface $now = null,
-        $resolveReferences = 0
+        $resolveReferences = 1
     ) {
         $availabilityList = (new Availability())
             ->readAvailabilityListByScope($scope, 0, $startDate, $endDate)
