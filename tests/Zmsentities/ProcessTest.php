@@ -592,7 +592,7 @@ class ProcessTest extends EntityCommonTests
                 'appointments' => [
                     new Appointment([
                         'date' => strtotime('2016-04-19 11:15'),
-                        'slotCount' => 1,
+                        'slotCount' => 1
                     ])
                 ],
                 'status' => 'confirmed',
@@ -603,6 +603,7 @@ class ProcessTest extends EntityCommonTests
                     new Appointment([
                         'date' => strtotime('2016-04-19 12:15'),
                         'slotCount' => 1,
+                        'availability' => $availability
                     ])
                 ],
                 'status' => 'confirmed',
@@ -612,15 +613,16 @@ class ProcessTest extends EntityCommonTests
                 'appointments' => [
                     new Appointment([
                         'date' => strtotime('2016-04-19 12:15'),
-                        'slotCount' => 3,
+                        'slotCount' => 2,
+                        'availability' => $availability
                     ])
                 ],
                 'status' => 'confirmed',
             ]),
         ]);
-        $withAvailability = $processList->withAvailability($availability);
+        $withAvailability = $processList->withAvailability($availability)->setConflictAmendment();
         $withStrict = $processList->withAvailabilityStrict($availability);
-        $withOutAvailability = $processList->withOutAvailability($availabilityList);
+        $withOutAvailability = $processList->withOutAvailability($availabilityList)->setConflictAmendment();
         $this->assertEquals(2, $withAvailability->count(), "Wrong count ProcessList::withAvailability()");
         $this->assertEquals(1, $withStrict->count(), "Wrong count ProcessList::withAvailabilityStrict()");
         $this->assertEquals(
@@ -631,6 +633,14 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals(
             strtotime('2016-04-19 11:15'),
             $withOutAvailability->getIterator()->current()->getFirstAppointment()->date
+        );
+        $this->assertStringContainsString(
+            'Die Slots für diesen Zeitraum wurden überbucht', 
+            $withAvailability->getLast()->amendment
+        );
+        $this->assertStringContainsString(
+            'Der Vorgang (1) befindet sich außerhalb der Öffnungszeit!', 
+            $withOutAvailability->getFirst()->amendment
         );
     }
 
