@@ -236,6 +236,17 @@ class ProcessList extends Base
         }
         return $processList;
     }
+    
+    public function setConflictAmendment()
+    {
+        foreach ($this as $process) {
+            $process->amendment = 'Die Slots für diesen Zeitraum wurden überbucht';
+            if (! $process->getFirstAppointment()->availability->hasId()) {
+                $process->amendment = 'Der Vorgang ('. $process->getId() .') befindet sich außerhalb der Öffnungszeit!';
+            }
+        }
+        return $this;
+    }
 
     public function withOutAvailability(\BO\Zmsentities\Collection\AvailabilityList $availabilityList)
     {
@@ -329,18 +340,21 @@ class ProcessList extends Base
         return $collection;
     }
 
-    public function withInAppointmentSlots(\BO\Zmsentities\Appointment $appointment)
+    /*
+    * reduce process list to items with appointment time in range of given appointment
+    */
+    public function withTimeRangeByAppointment(\BO\Zmsentities\Appointment $appointment)
     {
-        $conflictList = new self();
+        $processList = new self();
         if ($this->count()) {
             foreach ($this as $process) {
                 if ($appointment->getEndTime() > $process->getFirstAppointment()->getStartTime() &&
                     $appointment->getStartTime() < $process->getFirstAppointment()->getEndTime()
                 ) {
-                    $conflictList->addEntity(clone $process);
+                    $processList->addEntity(clone $process);
                 }
             }
         }
-        return $conflictList;
+        return $processList;
     }
 }
