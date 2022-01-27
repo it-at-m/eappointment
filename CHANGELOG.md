@@ -1,3 +1,7 @@
+## v2.24.05
+
+* #53262 An additional route and controller was created to obtain the scope list for a service.
+
 ## v2.24.04
 
 * #48987 Bugfix: Beim Aktualisieren eines Vorgangs wird nun geprüft ob dem Standort die angegebene Dienstleistung zugeordnet ist.
