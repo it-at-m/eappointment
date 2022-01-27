@@ -76,18 +76,11 @@ class ProcessSave extends BaseController
 
     protected function getConflictList($scopeId, $appointment)
     {
-        $conflictList = \App::$http
-            ->readGetResult('/scope/' . $scopeId . '/conflict/', [
-                'startDate' => $appointment->getStartTime()->format('Y-m-d'),
-                'endDate' => $appointment->getEndTime()->format('Y-m-d')
-            ])
-            ->getCollection();
-            
+        $conflictList = ScopeAvailabilityDay::readConflictList($scopeId, $appointment->getStartTime());
         return ($conflictList && $conflictList->count()) ?
             $conflictList
-                ->withInAppointmentSlots($appointment)
-                ->sortByAppointmentDate()
-                ->withoutDublicatedConflicts()
+                ->withTimeRangeByAppointment($appointment)
+                ->setConflictAmendment()
                 ->toConflictListByDay() :
             null;
     }

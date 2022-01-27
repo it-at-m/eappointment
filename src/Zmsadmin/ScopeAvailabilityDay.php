@@ -6,7 +6,6 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Availability;
 use BO\Zmsentities\Collection\AvailabilityList;
 
 class ScopeAvailabilityDay extends BaseController
@@ -48,9 +47,9 @@ class ScopeAvailabilityDay extends BaseController
         $scope = static::getScope($scopeId);
         $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
         $dateWithTime = $dateTime->setTime(\App::$now->format('H'), \App::$now->format('i'));
-        $availabilityList = static::readAvailabilityList($scopeId, $dateTime);
+        $availabilityList = static::readAvailabilityList($scopeId, $dateWithTime);
         $processList = \App::$http
-            ->readGetResult('/scope/' . $scopeId . '/process/' . $dateTime->format('Y-m-d') . '/', [
+            ->readGetResult('/scope/' . $scopeId . '/process/' . $dateWithTime->format('Y-m-d') . '/', [
                 'gql' => Helper\GraphDefaults::getProcess()
             ])
                 ->getCollection()
@@ -60,13 +59,9 @@ class ScopeAvailabilityDay extends BaseController
         if (!$processList->count()) {
             $processList = new \BO\Zmsentities\Collection\ProcessList();
         }
-        $processConflictList = \App::$http
-            ->readGetResult('/scope/' . $scopeId . '/conflict/', [
-                'startDate' => $dateTime->format('Y-m-d'),
-                'endDate' => $dateTime->format('Y-m-d')
-            ])
-            ->getCollection();
-
+        
+        
+        $conflictList = static::readConflictList($scopeId, $dateWithTime);
         $maxSlots = $availabilityList->getSummerizedSlotCount();
         $busySlots = $availabilityList->getCalculatedSlotCount($processList);
 
@@ -74,13 +69,7 @@ class ScopeAvailabilityDay extends BaseController
             'scope' => $scope,
             'availabilityList' => $availabilityList->getArrayCopy(),
             'availabilityListSlices' => $availabilityList->withCalculatedSlots()->getArrayCopy(),
-            'conflicts' => ($processConflictList) ? $processConflictList
-                ->sortByAppointmentDate()
-                ->withoutDublicatedConflicts()
-                ->toQueueList($dateWithTime)
-                ->withoutStatus(['fake', 'queued'])
-                ->toProcessList()
-                ->getArrayCopy() : [],
+            'conflicts' => ($conflictList) ? $conflictList->getArrayCopy() : [],
             'processList' => $processList->getArrayCopy(),
             'dateString' => $dateString,
             'timestamp' => $dateWithTime->getTimestamp(),
@@ -90,6 +79,22 @@ class ScopeAvailabilityDay extends BaseController
             'busySlotsForAvailabilities' => $busySlots,
             'today' => \App::$now->getTimestamp()
         ];
+    }
+
+    public static function readConflictList($scopeId, $dateTime)
+    {
+        $processConflictList = \App::$http
+            ->readGetResult('/scope/' . $scopeId . '/conflict/', [
+                'startDate' => $dateTime->format('Y-m-d'),
+                'endDate' => $dateTime->format('Y-m-d')
+            ])
+            ->getCollection();
+        return ($processConflictList) ? $processConflictList
+            ->sortByAppointmentDate()
+            ->withoutDublicatedConflicts()
+            ->toQueueList($dateTime)
+            ->withoutStatus(['fake', 'queued'])
+            ->toProcessList() : null;
     }
 
     public static function readAvailabilityList($scopeId, $dateTime)
