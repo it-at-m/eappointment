@@ -67,7 +67,7 @@ class ProcessSaveTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testWithConflict()
+    public function testWithConflictOverbookedSlots()
     {
         $startDate = new \DateTimeImmutable('2016-04-01');
         $endDate =  new \DateTimeImmutable('2016-04-01');
@@ -111,14 +111,75 @@ class ProcessSaveTest extends Base
                         'startDate' => $startDate->format('Y-m-d'),
                         'endDate' => $endDate->format('Y-m-d')
                     ],
-                    'response' => $this->readFixture("GET_conflictlist_141.json")
+                    'response' => $this->readFixture("GET_conflictlist_overbooked_slots.json")
                 ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
         $this->assertStringContainsString('Es wurden Konflikte entdeckt', (string)$response->getBody());
         $this->assertStringContainsString('08:10 - 08:20', (string)$response->getBody());
-        $this->assertStringContainsString('08:20 - 08:30', (string)$response->getBody());
+        $this->assertStringContainsString(
+            'Die Slots für diesen Zeitraum wurden überbucht', 
+            (string)$response->getBody()
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testWithConflictOutOfAvailability()
+    {
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  new \DateTimeImmutable('2016-04-01');
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/82252/',
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                    ],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/82252/12a2/',
+                    'parameters' => [
+                        'initiator' => null,
+                        'slotType' => 'intern',
+                        'slotsRequired' => 0
+                    ],
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/conflict/',
+                    'parameters' => [
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d')
+                    ],
+                    'response' => $this->readFixture("GET_conflictlist_out_of_availability.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, [], 'POST');
+        $this->assertStringContainsString('Es wurden Konflikte entdeckt', (string)$response->getBody());
+        $this->assertStringContainsString('08:10 - 08:20', (string)$response->getBody());
+        $this->assertStringContainsString(
+            'Der Vorgang (12293716) befindet sich außerhalb der Öffnungszeit!', 
+            (string)$response->getBody()
+        );
         $this->assertEquals(200, $response->getStatusCode());
     }
 
