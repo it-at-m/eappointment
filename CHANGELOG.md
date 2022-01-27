@@ -1,3 +1,9 @@
+## v2.24.05
+
+* #49206 - One-time opening hours are now also correctly transmitted to a process
+* #49206 - Opening hours are now correctly resolved and transferred to a process
+* #49206 - Additional unit tests have been created for the calculation of processes with overbooked time slots and out-of-hours appointments.
+
 ## v2.24.04
 
 * #49206 - Sachbearbeiter können für den letzten Termin einer Öffnungszeit nun auch mehrere Slots zuweisen
