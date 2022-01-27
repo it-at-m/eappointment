@@ -8,7 +8,7 @@ use \BO\Zmsentities\Notification as Entity;
 class NotificationTest extends Base
 {
     public function testBasic()
-    {;
+    {
         $now = static::$now;
         $input = $this->getTestEntity();
         $input->process['status'] = 'pickup';
