@@ -1,3 +1,7 @@
+## v2.24.05
+
+* #49206 - conflicts for overbooked time slots and out-of-hours get different description
+
 ## v2.24.04
 
 * #49206 - Die Slotlist kann bei Bedarf über die Öffnungszeit hinaus erweitert werden wenn ein Paramter gesetzt wird und eine Überbuchung vorhanden ist
