@@ -54,7 +54,7 @@ class ProcessSave extends BaseController
         $process = $this->writeUpdatedProcess($input, $process, $validator);
         $appointment = $process->getFirstAppointment();
         $conflictList = ($process->isWithAppointment()) ?
-            $this->getConflictList($scope->getId(), $appointment) :
+            static::getConflictList($scope->getId(), $appointment) :
             null;
         return \BO\Slim\Render::withHtml(
             $response,
@@ -62,9 +62,7 @@ class ProcessSave extends BaseController
             array(
                 'selectedprocess' => $process,
                 'success' => $this->getSuccessMessage($process),
-                'conflictlist' => (isset($conflictList[$appointment->getStartTime()->format('Y-m-d')])) ?
-                    $conflictList[$appointment->getStartTime()->format('Y-m-d')] :
-                    null
+                'conflictlist' => $conflictList
             )
         );
     }
@@ -74,15 +72,16 @@ class ProcessSave extends BaseController
         return ($process->isWithAppointment()) ? 'process_updated' : 'process_withoutappointment_updated';
     }
 
-    protected function getConflictList($scopeId, $appointment)
+    public static function getConflictList($scopeId, $appointment)
     {
         $conflictList = ScopeAvailabilityDay::readConflictList($scopeId, $appointment->getStartTime());
-        return ($conflictList && $conflictList->count()) ?
+        $conflictList = ($conflictList && $conflictList->count()) ?
             $conflictList
                 ->withTimeRangeByAppointment($appointment)
                 ->setConflictAmendment()
                 ->toConflictListByDay() :
             null;
+        return (isset($conflictList)) ? $conflictList[$appointment->getStartTime()->format('Y-m-d')] : null;
     }
 
     protected function writeUpdatedProcess($input, Entity $process, $validator)
