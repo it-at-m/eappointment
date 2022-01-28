@@ -403,7 +403,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             $statement = $this->fetchStatement($query);
             $processList = $this->readList($statement, $resolveReferences);
             $processList = $processList->toQueueList($currentDate)->withoutStatus(['queued'])->toProcessList();
-            $conflictList->addList($processList->withoutAvailability($availabilityList));
+            $conflictList->addList($processList->withOutAvailability($availabilityList));
             $currentDate = $currentDate->modify('+1 day');
         }
         $conflictList = $conflictList->withoutExpiredAppointmentDate($now);
