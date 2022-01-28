@@ -19,6 +19,9 @@ class ProcessReserveTest extends Base
 
     public function testRendering()
     {
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  new \DateTimeImmutable('2016-04-01');
+
         $this->setApiCalls(
             [
                 [
@@ -46,6 +49,15 @@ class ProcessReserveTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/confirmed/',
                     'response' => $this->readFixture("GET_process_100005_95a3_confirmed.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/conflict/',
+                    'parameters' => [
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d')
+                    ],
+                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ]
             ]
         );
@@ -55,8 +67,67 @@ class ProcessReserveTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testWithConflicts()
+    {
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  new \DateTimeImmutable('2016-04-01');
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/reserved/',
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0, 'clientkey' => ''],
+                    'response' => $this->readFixture("GET_process_100005_95a3_reserved.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                    ],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/confirmed/',
+                    'response' => $this->readFixture("GET_process_100005_95a3_confirmed.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/conflict/',
+                    'parameters' => [
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d')
+                    ],
+                    'response' => $this->readFixture("GET_conflictlist_overbooked_slots.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, [], 'POST');
+        $this->assertStringContainsString(
+            'Es wurden Konflikte entdeckt', 
+            (string)$response->getBody()
+        );
+        $this->assertStringContainsString(
+            'Die Slots für diesen Zeitraum wurden überbucht', 
+            (string)$response->getBody()
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testReserveCopy()
     {
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  new \DateTimeImmutable('2016-04-01');
+
         $this->setApiCalls(
             [
                 [
@@ -84,6 +155,15 @@ class ProcessReserveTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/confirmed/',
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/conflict/',
+                    'parameters' => [
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d')
+                    ],
+                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ]
             ]
         );
@@ -95,6 +175,9 @@ class ProcessReserveTest extends Base
 
     public function testWithConfirmations()
     {
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  new \DateTimeImmutable('2016-04-01');
+
         $this->setApiCalls(
             [
                 [
@@ -132,6 +215,15 @@ class ProcessReserveTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/194104/2b88/confirmation/notification/',
                     'response' => $this->readFixture("POST_notification.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/conflict/',
+                    'parameters' => [
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d')
+                    ],
+                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ]
             ]
         );
@@ -147,6 +239,9 @@ class ProcessReserveTest extends Base
 
     public function testWithManualSlotCount()
     {
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  new \DateTimeImmutable('2016-04-01');
+
         $this->setApiCalls(
             [
                 [
@@ -174,6 +269,15 @@ class ProcessReserveTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/confirmed/',
                     'response' => $this->readFixture("GET_process_100005_95a3_confirmed.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/conflict/',
+                    'parameters' => [
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d')
+                    ],
+                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ]
             ]
         );
@@ -185,7 +289,7 @@ class ProcessReserveTest extends Base
     }
 
     public function testWithRequiredMail()
-    {
+    {        
         $this->setApiCalls(
             [
                 [
@@ -220,6 +324,10 @@ class ProcessReserveTest extends Base
 
     public function testValidationFailed()
     {
+
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  new \DateTimeImmutable('2016-04-01');
+        
         $this->setApiCalls(
             [
                 [
@@ -247,6 +355,15 @@ class ProcessReserveTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/confirmed/',
                     'response' => $this->readFixture("GET_process_100005_95a3_confirmed.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/conflict/',
+                    'parameters' => [
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d')
+                    ],
+                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ]
             ]
         );
