@@ -255,8 +255,13 @@ class ProcessList extends Base
             $dateTime = $processListByDate[0]->getFirstAppointment()->toDateTime();
             $slotList = $availabilityList->withType('appointment')->withDateTime($dateTime)->getSlotList();
             foreach ($processListByDate as $process) {
-                if (!$slotList->removeAppointment($process->getFirstAppointment())) {
-                    //remove original amendment for overbooked message
+                try {
+                    $slotList->withSlotsForAppointment($process->getFirstAppointment());
+                    if (!$slotList->removeAppointment($process->getFirstAppointment())) {
+                        $process->amendment = "";
+                        $processList[] = clone $process;
+                    }
+                } catch (\BO\Zmsentities\Exception\AppointmentNotFitInSlotList $exception) {
                     $process->amendment = "";
                     $processList[] = clone $process;
                 }
