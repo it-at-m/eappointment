@@ -11,7 +11,6 @@ const renderLink = (conflict, onClick) => {
     const startTime = moment(appointment.date, 'X').format('DD.MM.YYYY HH:mm')
     const slotTime = availability.slotTimeInMinutes || 0
     const endTime = moment(appointment.date + slotTime * 60 * appointment.slotCount, 'X').format('HH:mm')
-    console.log(conflict) 
     if (availability.id) {
         if (moment(appointment.date, 'X').format('HH:mm') === endTime) {
                 return <a href="#" onClick={onClick}><strong>{startTime} Uhr</strong></a>
@@ -20,7 +19,7 @@ const renderLink = (conflict, onClick) => {
         }
 
     } else {
-        return <span><strong>{startTime} Uhr (Vorgang {conflict.id} mit Status {conflict.status}) </strong></span>
+        return <span><strong>{startTime} Uhr (Vorgang {conflict.id}) </strong></span>
     }
 }
 
@@ -39,7 +38,7 @@ const renderConflicts = (conflicts, onSelect) => {
                 <div className="message message--error message-keep" role="alert" key={key}>
                     {renderLink(conflict, onClick)}
                     {conflict.queue.withAppointment
-                     ? <p>Termin außerhalb der Öffnungszeiten oder Zeitslots für eine Uhrzeit überbucht</p>
+                     ? <p>Der Termin befindet sich außerhalb der Öffnungszeiten!</p>
                      : <p>{conflict.amendment}</p>
                     }
                 </div>
