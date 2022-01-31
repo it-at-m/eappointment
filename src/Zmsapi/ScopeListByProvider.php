@@ -21,7 +21,7 @@ class ScopeListByProvider extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
+        $message = Response\Message::create($request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $provider = (new \BO\Zmsdb\Provider)->readEntity($args['source'], $args['id']);
         if (! $provider->hasId()) {
@@ -29,8 +29,13 @@ class ScopeListByProvider extends BaseController
         }
 
         $scopeList = (new Query())->readByProviderId($provider->id, $resolveReferences);
+        if ((new Helper\User($request))->hasRights()) {
+            (new Helper\User($request))->checkRights('basic');
+        } else {
+            $scopeList = $scopeList->withLessData();
+            $message->meta->reducedData = true;
+        }
 
-        $message = Response\Message::create($request);
         $message->data = $scopeList;
 
         $response = Render::withLastModified($response, time(), '0');
