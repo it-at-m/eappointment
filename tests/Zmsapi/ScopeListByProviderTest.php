@@ -11,6 +11,16 @@ class ScopeListByProviderTest extends Base
         $this->setWorkstation();
         $response = $this->render(['source' => 'dldb', 'id' => 122217], [], []); //Bürgeramt Heerstraße
         $this->assertStringContainsString('scope.json', (string)$response->getBody());
+        $this->assertStringContainsString('preferences', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testLessData()
+    {
+        $response = $this->render(['source' => 'dldb', 'id' => 122217], [], []); //Bürgeramt Heerstraße
+        $this->assertStringContainsString('scope.json', (string)$response->getBody());
+        $this->assertStringNotContainsString('preferences', (string)$response->getBody());
+        $this->assertStringContainsString('"reducedData":true', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
