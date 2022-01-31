@@ -2,14 +2,14 @@
 
 namespace BO\Zmsapi\Tests;
 
-class ScopeListByProviderTest extends Base
+class ScopeListByRequestTest extends Base
 {
-    protected $classname = "ScopeListByProvider";
+    protected $classname = "ScopeListByRequest";
 
     public function testRendering()
     {
         $this->setWorkstation();
-        $response = $this->render(['source' => 'dldb', 'id' => 122217], [], []); //Bürgeramt Heerstraße
+        $response = $this->render(['source' => 'dldb', 'id' => 120335], [], []); //Abmeldung einer Wohnung
         $this->assertStringContainsString('scope.json', (string)$response->getBody());
         $this->assertStringContainsString('preferences', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -17,7 +17,7 @@ class ScopeListByProviderTest extends Base
 
     public function testLessData()
     {
-        $response = $this->render(['source' => 'dldb', 'id' => 122217], [], []); //Bürgeramt Heerstraße
+        $response = $this->render(['source' => 'dldb', 'id' => 120335], [], []); //Abmeldung einer Wohnung
         $this->assertStringContainsString('scope.json', (string)$response->getBody());
         $this->assertStringNotContainsString('preferences', (string)$response->getBody());
         $this->assertStringContainsString('"reducedData":true', (string)$response->getBody());
@@ -34,7 +34,7 @@ class ScopeListByProviderTest extends Base
     public function testNotFound()
     {
         $this->setWorkstation();
-        $this->expectException('\BO\Zmsapi\Exception\Provider\ProviderNotFound');
+        $this->expectException('\BO\Zmsdb\Exception\Request\RequestNotFound');
         $this->expectExceptionCode(404);
         $this->render(['source' => 'dldb', 'id' => 999], [], []);
     }
