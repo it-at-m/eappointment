@@ -2,8 +2,7 @@
 
 namespace BO\Zmsclient\Psr7;
 
-use Jgut\Spiral\Client as Transport;
-use Jgut\Spiral\Transport\Curl as Curl;
+use Sunrise\Http\Client\Curl\Client as Transport;
 
 class Client implements ClientInterface
 {
@@ -23,9 +22,9 @@ class Client implements ClientInterface
      */
     public static function readResponse(\Psr\Http\Message\RequestInterface $request, array $curlopts = array())
     {
-        $transport = static::getClient($curlopts);
+        $client = static::getClient($curlopts);
         try {
-            return $transport->request($request, new Response());
+            return $client->sendRequest($request);
         } catch (\Exception $exception) {
             throw new RequestException($exception->getMessage(), $request);
         }
@@ -39,10 +38,7 @@ class Client implements ClientInterface
                 'Client' . (defined("\App::IDENTIFIER") ? constant("\App::IDENTIFIER") : 'ZMS');
         }
         if (null === static::$curlClient) {
-            $curl = Curl::createFromDefaults();
-            $curl->setOptions($curlopts);
-            $transport = new Transport($curl);
-            static::$curlClient = $transport;
+            static::$curlClient = new Transport(new Response(), $curlopts);
         }
         return static::$curlClient;
     }
