@@ -1,21 +1,22 @@
-# ZMS HTTP client
+# Eappointment HTTP client
 
-Use this library to fetch data from the API via HTTP.
+[![pipeline status](https://gitlab.com/eappointment/zmsclient/badges/main/pipeline.svg)](https://gitlab.com/eappointment/zmsclient/-/commits/main)
+[![coverage report](https://gitlab.com/eappointment/zmsclient/badges/main/coverage.svg)](https://eappointment.gitlab.io/zmsclient/_tests/coverage/index.html)
+
+Use this library to fetch data from the eappointment API via HTTP.
+
+For a detailed project description, see https://gitlab.com/eappointment/eappointment
 
 ## Requirements
 
-* PHP 5.4+
+* PHP 7.3+
 
 ## Installation
 
 Usually this module is required by other modules and does not need any special installation. Add the following lines to your composer.json:
 
-```json
-{
-  "require": {
-    "bo/zmsclient": "^1.*"
-  }
-}
+```sh
+composer require eappointment/zmsclient
 ```
 
 ## Usage
@@ -26,25 +27,6 @@ $result = $http->readGetResult('/status/');
 $entity = $result->getEntity();
 var_dump($entity->version);
 ```
-
-### Methods
-
-```php
-Http::readGetResult($relativeUrl, Array $getParameters = null)
-```
-* Do a HTTP-GET request
-
-
-```php
-Http::readPostResult($relativeUrl, \BO\Zmsentities\Schema\Entity $entity, Array $getParameters = null)
-```
-* Do a HTTP-POST request with an entity as request body
-
-
-```php
-Http::readDeleteResult($relativeUrl, Array $getParameters = null)
-```
-* Do a HTTP-DELETE request
 
 ### Configuration
 
@@ -62,16 +44,6 @@ Setting up default CURL-Options, use the following line:
 
 Testing is automated on committing changes. If you want to run the test without a commit, type the following:
 
-    bin/test
-
-If you want to view a coverage report, you need php-xdebug to generate the report with the following command:
-
-    make coverage
-
-The report is located under `./coverage/index.html`.
-
-## Development
-
-For development, additional modules are required. Commits from a live environment require to ignore the pre-commit hooks.
-
-    make dev
+```sh
+./bin/test
+```
