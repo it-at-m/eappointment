@@ -153,6 +153,20 @@ class User
         return $userAccount->hasId();
     }
 
+    /**
+     * Get X-Api-Key from header
+     *
+    */
+    public static function hasXApiKey($request)
+    {
+        $xApiKeyEntity = null;
+        $xApiKey = $request->getHeaderLine('X-Api-Key');
+        if ($xApiKey) {
+            $xApiKeyEntity = (new \BO\Zmsdb\Apikey())->readEntity($xApiKey);
+        }
+        return ($xApiKeyEntity && $xApiKeyEntity->hasId());
+    }
+
     public static function testWorkstationIsOveraged($workstation)
     {
         if ($workstation->hasId() && $workstation->getUseraccount()->isOveraged(\App::$now)) {
