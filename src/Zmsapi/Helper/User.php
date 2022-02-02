@@ -160,7 +160,7 @@ class User
     public static function hasXApiKey($request)
     {
         $xApiKeyEntity = null;
-        $xApiKey = $request->getHeaderLine('X-Api-Key');
+        $xApiKey = $request->getHeaderLine('x-api-key');
         if ($xApiKey) {
             $xApiKeyEntity = (new \BO\Zmsdb\Apikey())->readEntity($xApiKey);
         }
