@@ -29,9 +29,7 @@ class ScopeListByRequest extends BaseController
         }
 
         $scopeList = (new Query())->readByRequestId($requestEntity->getId(), $args['source'], $resolveReferences);
-        if ((new Helper\User($request))->hasRights()) {
-            (new Helper\User($request))->checkRights('basic');
-        } else {
+        if (! (new Helper\User($request))->hasRights() && ! Helper\User::hasXApiKey($request)) {
             $scopeList = $scopeList->withLessData();
             $message->meta->reducedData = true;
         }
