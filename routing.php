@@ -5457,7 +5457,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/workstation/password/":
  *      post:
- *          operationId: WorkstationDelete
+ *          operationId: WorkstationPassword
  *          summary: Change the password and/or username of a useraccount
  *          x-since: 2.10
  *          tags:
