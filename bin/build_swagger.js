@@ -41,13 +41,19 @@ function validateSwagger() {
 }
 
 function buildSwagger() {
-    let basics = readFileContent('public/doc/partials/basic.yaml') + "\n";
-    let sources = {
-        paths: 
-          openapiSpecification.paths,
-    }
-    let definitions = readFileContent('public/doc/partials/definitions.yaml');
-    writeSwaggerFile(basics + yaml.dump(sources) + definitions)
+  let version = readFileContent('public/doc/partials/version.yaml') + "\n";
+  let info = readFileContent('public/doc/partials/info.yaml') + "\n";
+  //append current api version to info
+  info = info + "  version: " + readFileContent("./VERSION");
+  
+  let basics = readFileContent('public/doc/partials/basic.yaml') + "\n";
+  let paths = {
+    paths: 
+      openapiSpecification.paths,
+  }
+  let tags = readFileContent('public/doc/partials/tags.yaml');
+  let definitions = readFileContent('public/doc/partials/definitions.yaml');
+  writeSwaggerFile(version + info + basics + tags + yaml.dump(paths) + definitions)
     
 }
 
