@@ -3340,6 +3340,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/provider/{source}/request/{csv}/":
  *      get:
+ *          deprecated: true
  *          summary: DEPRECATED - use provider/{source}/ with requestList as paramter instead to get a list of provider by request numbers
  *          tags:
  *              - provider
