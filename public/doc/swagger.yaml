@@ -55,7 +55,7 @@ info:
   license:
     name: Commercial
     url: 'http://www.berlinonline.net'
-  version: 2.24.05-5-g83e4492
+  version: 2.24.05-6-g6a2472d
 basePath: /terminvereinbarung/api/2
 schemes:
   - https
@@ -2855,6 +2855,7 @@ paths:
           description: provider id for source does not exists
   /provider/{source}/request/{csv}/:
     get:
+      deprecated: true
       summary: >-
         DEPRECATED - use provider/{source}/ with requestList as paramter instead
         to get a list of provider by request numbers
