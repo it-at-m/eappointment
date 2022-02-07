@@ -55,7 +55,7 @@ info:
   license:
     name: Commercial
     url: 'http://www.berlinonline.net'
-  version: 2.24.05-6-g6a2472d
+  version: 2.24.05-8-g37bdbb7
 basePath: /terminvereinbarung/api/2
 schemes:
   - https
