@@ -82,9 +82,7 @@ class Messaging
     protected static function twigView()
     {
         $templatePath = TemplateFinder::getTemplatePath();
-        $templateDldbPath = \BO\Dldb\Helper\TemplateFinder::getTemplatePath();
         $loader = new FilesystemLoader($templatePath);
-        $loader->addPath($templateDldbPath, 'dldb');
         $loader->addPath($templatePath, 'zmsentities');
         $twig = new Environment($loader, array(
             //'cache' => '/cache/',

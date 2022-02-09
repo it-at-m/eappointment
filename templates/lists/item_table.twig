@@ -1,0 +1,28 @@
+
+    <ul class="list-tablelist">
+        {% for item in items %}
+        {% set name = item.name %}
+        <li>
+        <strong>{{ name|trans }}</strong>
+        {% if item.description %}
+        <br>
+        <div>
+            {{ item.description|raw }}
+        </div>
+        {% endif %}
+        {% if item.link %}
+        <p>
+        <a href="{{ item.link }}" class="list-item-style" title="{{ name }}">
+            {% trans %}Weitere Informationen{% endtrans %}
+        </a>
+        </p>
+        {% elseif item.path %}
+        <p>
+        <a href="{{ item.path }}" class="list-item-style" title="{{ name }}">
+            {% trans %}Weitere Informationen{% endtrans %}
+        </a>
+        </p>
+        {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
