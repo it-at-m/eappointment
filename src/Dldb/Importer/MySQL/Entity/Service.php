@@ -27,12 +27,13 @@ class Service extends Base
         '__RAW__' => 'data_json'
     ];
 
-    protected function setupMapping() {
+    protected function setupMapping()
+    {
         $this->referanceMapping = [
             'name' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
                 'neededFields' => [
-                    'id' => 'object_id', 
+                    'id' => 'object_id',
                     'meta.locale' => 'locale',
                     'name' => 'search_value'
                 ],
@@ -43,12 +44,12 @@ class Service extends Base
                 
                 'multiple' => false,
                 'clearFields' => [
-                    'entity_type' => static::getTableName(), 
+                    'entity_type' => static::getTableName(),
                     'locale' => $this->get('meta.locale')
                 ],
                 
                 'deleteFields' => [
-                    'object_id' => $this->get('id'), 
+                    'object_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'entity_type' => static::getTableName()
                 ],
@@ -57,7 +58,7 @@ class Service extends Base
             'description' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
                 'neededFields' => [
-                    'id' => 'object_id', 
+                    'id' => 'object_id',
                     'meta.locale' => 'locale',
                     'description' => 'search_value'
                 ],
@@ -66,13 +67,13 @@ class Service extends Base
                     'search_type' => 'description'
                 ],
                 'deleteFields' => [
-                    'object_id' => $this->get('id'), 
+                    'object_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'entity_type' => static::getTableName()
                 ],
                 'multiple' => false,
                 'clearFields' => [
-                    'entity_type' => static::getTableName(), 
+                    'entity_type' => static::getTableName(),
                     'locale' => $this->get('meta.locale')
                 ],
                 'selfAsArray' => true
@@ -80,7 +81,7 @@ class Service extends Base
             'meta.keywords' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
                 'neededFields' => [
-                    'id' => 'object_id', 
+                    'id' => 'object_id',
                     'meta.locale' => 'locale',
                     'meta.keywords' => 'search_value',
                 ],
@@ -89,13 +90,13 @@ class Service extends Base
                     'search_type' => 'keywords'
                 ],
                 'deleteFields' => [
-                    'object_id' => $this->get('id'), 
+                    'object_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'entity_type' => static::getTableName()
                 ],
                 'multiple' => false,
                 'clearFields' => [
-                    'entity_type' => static::getTableName(), 
+                    'entity_type' => static::getTableName(),
                     'locale' => $this->get('meta.locale')
                 ],
                 'selfAsArray' => true
@@ -107,13 +108,13 @@ class Service extends Base
                     'type' => static::getTableName()
                 ],
                 'deleteFields' => [
-                    'object_id' => $this->get('id'), 
+                    'object_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'type' => static::getTableName()
                 ],
                 'multiple' => false,
                 'clearFields' => [
-                    'type' => static::getTableName(), 
+                    'type' => static::getTableName(),
                     'locale' => $this->get('meta.locale')
                 ],
             ],
@@ -124,7 +125,7 @@ class Service extends Base
 
                 ],
                 'deleteFields' => [
-                    'service_id' => $this->get('id'), 
+                    'service_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale')
                 ],
                 'clearFields' => [
@@ -136,7 +137,7 @@ class Service extends Base
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [],
                 'deleteFields' => [
-                    'service_id' => $this->get('id'), 
+                    'service_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale')
                 ],
                 'clearFields' => [
@@ -148,12 +149,12 @@ class Service extends Base
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'requirements',
-                    'sort' => function($position, $key, $value) {
+                    'sort' => function ($position, $key, $value) {
                         return $position;
                     }
                 ],
                 'deleteFields' => [
-                    'service_id' => $this->get('id'), 
+                    'service_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'type' => 'requirements',
                 ],
@@ -167,12 +168,12 @@ class Service extends Base
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'forms',
-                    'sort' => function($position, $key, $value) {
+                    'sort' => function ($position, $key, $value) {
                         return $position;
                     }
                 ],
                 'deleteFields' => [
-                    'service_id' => $this->get('id'), 
+                    'service_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'type' => 'forms',
                 ],
@@ -186,12 +187,12 @@ class Service extends Base
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'prerequisites',
-                    'sort' => function($position, $key, $value) {
+                    'sort' => function ($position, $key, $value) {
                         return $position;
                     }
                 ],
                 'deleteFields' => [
-                    'service_id' => $this->get('id'), 
+                    'service_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'type' => 'prerequisites',
                 ],
@@ -205,12 +206,12 @@ class Service extends Base
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'links',
-                    'sort' => function($position, $key, $value) {
+                    'sort' => function ($position, $key, $value) {
                         return $position;
                     }
                 ],
                 'deleteFields' => [
-                    'service_id' => $this->get('id'), 
+                    'service_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'type' => 'links',
                 ],
@@ -224,12 +225,12 @@ class Service extends Base
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'publications',
-                    'sort' => function($position, $key, $value) {
+                    'sort' => function ($position, $key, $value) {
                         return $position;
                     }
                 ],
                 'deleteFields' => [
-                    'service_id' => $this->get('id'), 
+                    'service_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'type' => 'publications',
                 ],
@@ -243,12 +244,12 @@ class Service extends Base
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'legal',
-                    'sort' => function($position, $key, $value) {
+                    'sort' => function ($position, $key, $value) {
                         return $position;
                     }
                 ],
                 'deleteFields' => [
-                    'service_id' => $this->get('id'), 
+                    'service_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'type' => 'legal',
                 ],
@@ -283,8 +284,7 @@ class Service extends Base
                 $this->deleteEntity();
                 $this->deleteReferences();
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -295,21 +295,19 @@ class Service extends Base
             return $this->deleteWith(
                 array_combine(['id', 'locale'], array_values($this->get(['id', 'meta.locale'])))
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function clearEntity(array $addWhere = []) : bool {
+    public function clearEntity(array $addWhere = []) : bool
+    {
         try {
-
             #print_r((array)$this->get(['meta.locale']));exit;
             return $this->deleteWith(
                 ['locale' => $this->get('meta.locale')]
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

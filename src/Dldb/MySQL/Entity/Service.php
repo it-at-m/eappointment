@@ -11,7 +11,7 @@ use \BO\Dldb\MySQL\Collection\Services as Collection;
 /**
  * @SuppressWarnings(Coupling)
  */
-class Service extends Base 
+class Service extends Base
 {
 
 }

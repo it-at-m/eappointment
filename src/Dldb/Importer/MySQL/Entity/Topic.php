@@ -15,19 +15,20 @@ class Topic extends Base
         '__RAW__' => 'data_json'
     ];
 
-    protected function setupMapping() {
+    protected function setupMapping()
+    {
         $this->referanceMapping = [
             'meta' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Meta',
                 'neededFields' => [
-                    'id' => 'object_id', 
+                    'id' => 'object_id',
                     'meta.locale' => 'locale'
                 ],
                 'addFields' => [
                     'type' => static::getTableName()
                 ],
                 'deleteFields' => [
-                    'object_id' => $this->get('id'), 
+                    'object_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'type' => static::getTableName()
                 ],
@@ -40,7 +41,7 @@ class Topic extends Base
             'name' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
                 'neededFields' => [
-                    'id' => 'object_id', 
+                    'id' => 'object_id',
                     'meta.locale' => 'locale',
                     'name' => 'search_value'
                 ],
@@ -50,11 +51,11 @@ class Topic extends Base
                 ],
                 'multiple' => false,
                 'clearFields' => [
-                    'entity_type' => static::getTableName(), 
+                    'entity_type' => static::getTableName(),
                     'locale' => $this->get('meta.locale')
                 ],
                 'deleteFields' => [
-                    'object_id' => $this->get('id'), 
+                    'object_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'entity_type' => static::getTableName()
                 ],
@@ -63,7 +64,7 @@ class Topic extends Base
             'meta.keywords' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
                 'neededFields' => [
-                    'id' => 'object_id', 
+                    'id' => 'object_id',
                     'meta.locale' => 'locale',
                     'meta.keywords' => 'search_value',
                 ],
@@ -72,13 +73,13 @@ class Topic extends Base
                     'search_type' => 'keywords'
                 ],
                 'deleteFields' => [
-                    'object_id' => $this->get('id'), 
+                    'object_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'entity_type' => static::getTableName()
                 ],
                 'multiple' => false,
                 'clearFields' => [
-                    'entity_type' => static::getTableName(), 
+                    'entity_type' => static::getTableName(),
                     'locale' => $this->get('meta.locale')
                 ],
                 'selfAsArray' => true
@@ -86,7 +87,7 @@ class Topic extends Base
             'meta.titles' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
                 'neededFields' => [
-                    'id' => 'object_id', 
+                    'id' => 'object_id',
                     'meta.locale' => 'locale',
                     'meta.titles' => 'search_value',
                     'type' => 'entity_type',
@@ -96,13 +97,13 @@ class Topic extends Base
                     'search_type' => 'titles'
                 ],
                 'deleteFields' => [
-                    'object_id' => $this->get('id'), 
+                    'object_id' => $this->get('id'),
                     'locale' => $this->get('locale'),
                     'entity_type' => static::getTableName()
                 ],
                 'multiple' => false,
                 'clearFields' => [
-                    'entity_type' => static::getTableName(), 
+                    'entity_type' => static::getTableName(),
                     'locale' => $this->get('locale')
                 ],
                 'selfAsArray' => true
@@ -112,7 +113,7 @@ class Topic extends Base
                 'neededFields' => ['id' => 'topic_id', 'meta.locale' => 'locale'],
                 'addFields' => ['locale' => $this->get('meta.locale')],
                 'delete' => false,
-                'deleteFunction' => function(\BO\Dldb\Importer\MySQL\Entity\Topic $topic) {
+                'deleteFunction' => function (\BO\Dldb\Importer\MySQL\Entity\Topic $topic) {
                     $id = $topic->get('id');
                     try {
                         $sql = "DELETE FROM " . \BO\Dldb\Importer\MySQL\Entity\Topic_Links::getTableName() . ' WHERE topic_id = ?';
@@ -125,8 +126,7 @@ class Topic extends Base
                             return true;
                         }
                         return false;
-                    }
-                    catch (\Exception $e) {
+                    } catch (\Exception $e) {
                         throw $e;
                     }
                 },
@@ -138,7 +138,7 @@ class Topic extends Base
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Topic_Service',
                 'neededFields' => ['id' => 'topic_id'],
                 'addFields' => [],
-                'deleteFunction' => function(\BO\Dldb\Importer\MySQL\Entity\Topic $topic) {
+                'deleteFunction' => function (\BO\Dldb\Importer\MySQL\Entity\Topic $topic) {
                     $id = $topic->get('id');
                     try {
                         $sql = "DELETE FROM " . \BO\Dldb\Importer\MySQL\Entity\Topic_Service::getTableName() . ' WHERE topic_id = ?';
@@ -149,8 +149,7 @@ class Topic extends Base
                             return true;
                         }
                         return false;
-                    }
-                    catch (\Exception $e) {
+                    } catch (\Exception $e) {
                         throw $e;
                     }
                 }
@@ -159,7 +158,7 @@ class Topic extends Base
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Topic_Cluster',
                 'neededFields' => ['id' => 'parent_id'],
                 'addFields' => [],
-                'deleteFunction' => function(\BO\Dldb\Importer\MySQL\Entity\Topic $topic) {
+                'deleteFunction' => function (\BO\Dldb\Importer\MySQL\Entity\Topic $topic) {
                     $id = $topic->get('id');
                     try {
                         $sql = "DELETE FROM " . \BO\Dldb\Importer\MySQL\Entity\Topic_Cluster::getTableName() . ' WHERE parent_id = ?';
@@ -170,8 +169,7 @@ class Topic extends Base
                             return true;
                         }
                         return false;
-                    }
-                    catch (\Exception $e) {
+                    } catch (\Exception $e) {
                         throw $e;
                     }
                 }
@@ -191,8 +189,7 @@ class Topic extends Base
                 $this->deleteEntity();
                 $this->deleteReferences();
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -203,20 +200,18 @@ class Topic extends Base
             return $this->deleteWith(
                 array_combine(['id', 'locale'], array_values($this->get(['id', 'meta.locale'])))
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function clearEntity(array $addWhere = []) : bool 
+    public function clearEntity(array $addWhere = []) : bool
     {
         try {
             return $this->deleteWith(
                 ['locale' => $this->get('meta.locale')]
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

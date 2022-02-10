@@ -2,7 +2,7 @@
 
 namespace BO\Dldb\Importer\SQLite;
 
-use BO\Dldb\Importer\MySQL\Locations AS LocationsBase;
+use BO\Dldb\Importer\MySQL\Locations as LocationsBase;
 
 class Locations extends LocationsBase
 {

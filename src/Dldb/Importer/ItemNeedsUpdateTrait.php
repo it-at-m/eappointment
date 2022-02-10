@@ -2,13 +2,13 @@
 
 namespace BO\Dldb\Importer;
 
-
 /**
- * 
+ *
  */
 trait ItemNeedsUpdateTrait
 {
-    public function itemNeedsUpdate(int $objectId, string $locale, string $objectHash, string $type) : bool {
+    public function itemNeedsUpdate(int $objectId, string $locale, string $objectHash, string $type) : bool
+    {
         try {
             $statment = $this->getPDOAccess()->prepare(
                 "SELECT count(1) AS count FROM meta WHERE object_id = ? AND locale = ? AND hash = ? AND type = ?"
@@ -23,8 +23,7 @@ trait ItemNeedsUpdateTrait
                 }
             }
             return $needsUpdate;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

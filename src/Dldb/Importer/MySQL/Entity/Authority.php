@@ -2,7 +2,6 @@
 
 namespace BO\Dldb\Importer\MySQL\Entity;
 
-
 class Authority extends Base
 {
     protected $fieldMapping = [
@@ -16,19 +15,20 @@ class Authority extends Base
         '__RAW__' => 'data_json'
     ];
 
-    protected function setupMapping() {
+    protected function setupMapping()
+    {
         $this->referanceMapping = [
             'meta' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Meta',
                 'neededFields' => [
-                    'id' => 'object_id', 
+                    'id' => 'object_id',
                     'meta.locale' => 'locale'
                 ],
                 'addFields' => [
                     'type' => static::getTableName()
                 ],
                 'deleteFields' => [
-                    'object_id' => $this->get('id'), 
+                    'object_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'type' => static::getTableName()
                 ],
@@ -42,7 +42,7 @@ class Authority extends Base
                     
                 ],
                 'deleteFields' => [
-                    'authority_id' => $this->get('id'), 
+                    'authority_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale')
                 ],
                 'clearFields' => [
@@ -52,7 +52,8 @@ class Authority extends Base
         ];
     }
 
-    public function preSetupFields() {
+    public function preSetupFields()
+    {
         $this->dataRaw['parent_id'] = ($this->dataRaw['parent_id'] ?? 0);
     }
 
@@ -68,8 +69,7 @@ class Authority extends Base
                 $this->deleteEntity();
                 $this->deleteReferences();
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -80,19 +80,18 @@ class Authority extends Base
             return $this->deleteWith(
                 array_combine(['id', 'locale'], array_values($this->get(['id', 'meta.locale'])))
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function clearEntity(array $addWhere = []) : bool {
+    public function clearEntity(array $addWhere = []) : bool
+    {
         try {
             return $this->deleteWith(
                 ['locale' => $this->get('meta.locale')]
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

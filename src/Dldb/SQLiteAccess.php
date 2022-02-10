@@ -14,7 +14,8 @@ class SQLiteAccess extends PDOAccess
     const DEFAULT_DATABASE_NAME = 'dldb_frontend_dev';
     const DEFAULT_DATABASE_PATH = __DIR__;
 
-    protected function connect(array $options) {
+    protected function connect(array $options)
+    {
         try {
             $databasePath = rtrim(($options['databasePath'] ?? static::DEFAULT_DATABASE_PATH), \DIRECTORY_SEPARATOR);
             
@@ -25,13 +26,13 @@ class SQLiteAccess extends PDOAccess
             $dsn = 'sqlite:' . $databasePath . \DIRECTORY_SEPARATOR . $database;
 
             $this->pdo = new \PDO($dsn);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    protected function postConnect() {
+    protected function postConnect()
+    {
         try {
             $this->beginTransaction();
             $shemaQuerys = include(__DIR__ . '/shema/sqlite.php');
@@ -40,8 +41,7 @@ class SQLiteAccess extends PDOAccess
                 $this->exec($query);
             }
             $this->commit();
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

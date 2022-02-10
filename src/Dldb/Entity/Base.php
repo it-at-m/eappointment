@@ -61,16 +61,17 @@ class Base extends \ArrayObject
         return null;
     }
 
-    public function __set($name, $value) {
+    public function __set($name, $value)
+    {
         $this->offsetSet($name, $value);
     }
 
-    public function offsetSet($index, $value) {
+    public function offsetSet($index, $value)
+    {
         if ('data_json' == $index) {
             $value = json_decode($value, true);
             $this->exchangeArray($value);
-        }
-        else {
+        } else {
             if (stripos($index, '_json')) {
                 $value = json_decode($value, true);
                 $index = str_replace('_json', '', $index);

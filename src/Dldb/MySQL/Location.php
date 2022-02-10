@@ -31,8 +31,7 @@ class Location extends Base
                 return $service;
             }
             return false;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -47,8 +46,7 @@ class Location extends Base
             if (false === $mixLanguages) {
                 $where[] = 'l.locale = ?';
                 $sql = 'SELECT data_json FROM location AS l';
-            }
-            else {
+            } else {
                 $where[] = "l.locale='de'";
                 $sql = "SELECT 
                 IF(l2.id, l2.data_json, l.data_json) AS data_json
@@ -83,8 +81,7 @@ class Location extends Base
             }
             #echo '<pre>' . print_r($locationList,1) . '</pre>';exit;
             return $locationList;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -99,8 +96,7 @@ class Location extends Base
             if (false === $mixLanguages) {
                 $where[] = 'l.locale = ?';
                 $sql = 'SELECT data_json FROM location AS l';
-            }
-            else {
+            } else {
                 $where[] = "l.locale='de'";
                 $sql = "SELECT 
                 IF(l2.id, l2.data_json, l.data_json) AS data_json
@@ -128,8 +124,7 @@ class Location extends Base
             }
             #echo '<pre>' . print_r($locationList,1) . '</pre>';exit;
             return $locationList;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -147,8 +142,7 @@ class Location extends Base
             if (false === $mixLanguages) {
                 $where[] = 'l.locale = ?';
                 $sql = 'SELECT data_json FROM location AS l';
-            }
-            else {
+            } else {
                 $where[] = "l.locale='de'";
                 $sql = "SELECT 
                 IF(l2.id, l2.data_json, l.data_json) AS data_json
@@ -177,8 +171,7 @@ class Location extends Base
                 $locationList[$location['id']] = $location;
             }
             return $locationList;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -215,8 +208,7 @@ class Location extends Base
                 $locationList[$location['id']] = $location;
             }
             return $locationList;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -288,8 +280,7 @@ class Location extends Base
             }
             #echo '<pre>' . print_r($locationList,1) . '</pre>';exit;
             return $locationList;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

@@ -8,47 +8,56 @@ class Timer
 {
     protected $_start, $_pause, $_stop, $_elapsed;# = 0;
     
-    public function __construct() {
+    public function __construct()
+    {
         $this->start();
         if (true === DEBUG) {
             echo 'Working - please wait...' . PHP_EOL;
         }
     }
 
-    public function start() {
+    public function start()
+    {
         $this->_start = Timer::getMicroTime();
     }
 
-    public function stop() {
+    public function stop()
+    {
         $this->_stop = Timer::getMicroTime();
     }
 
-    public function pause() {
+    public function pause()
+    {
         $this->_pause = Timer::getMicroTime();
         $this->_elapsed += ($this->_pause - $this->_start);
     }
 
-    public function resume() {
+    public function resume()
+    {
         $this->_start = Timer::getMicroTime();
     }
 
-    public function getTime() {
+    public function getTime()
+    {
         if (!isset($this->_stop)) {
             $this->_stop = Timer::getMicroTime();
         }
         return $this->timeToString();
     }
 
-    protected function getLapTime() {
+    protected function getLapTime()
+    {
         return $this->timeToString();
     }
 
-    protected static function getMicroTime( ) {
+    protected static function getMicroTime()
+    {
         list($usec, $sec) = explode(' ', microtime());
         return ((float) $usec + (float) $sec);
     }
 
-    protected function timeToString() {
+    protected function timeToString()
+    {
         $seconds = ($this->_stop - $this->_start) + $this->_elapsed;
         $seconds = Timer::roundMicroTime($seconds);
         $hours = floor($seconds / (60 * 60));
@@ -57,11 +66,13 @@ class Timer
         return $hours . "h:" . $minutes . "m:" . $seconds . "s";
     }
 
-    protected static function roundMicroTime($microTime) {
+    protected static function roundMicroTime($microTime)
+    {
         return round($microTime, 4, PHP_ROUND_HALF_UP);
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         if (true === DEBUG) {
             echo 'Job finished in ' . $this->getTime() . PHP_EOL;
         }
@@ -69,7 +80,8 @@ class Timer
 }
 $timer = new Timer();
 
-function p() {
+function p()
+{
     print_r(func_get_args());
 }
 
@@ -123,7 +135,7 @@ $fileAccess = new \BO\Dldb\FileAccess();
 $fileAccess->loadFromPath(__DIR__ . '/../../../data/');
 
 $mysqlIporter = new MySQL(
-    new \BO\Dldb\MySQLAccess([]), 
+    new \BO\Dldb\MySQLAccess([]),
     $fileAccess
     #,MySQL::OPTION_CLEAR_ENTITIY_REFERENCES_TABLES|MySQL::OPTION_CLEAR_ENTITIY_TABLE
 );
@@ -132,12 +144,10 @@ try {
     $mysqlIporter->beginTransaction();
     $mysqlIporter->runImport();
     $mysqlIporter->commit();
-}
-catch (\Exception $e) {
+} catch (\Exception $e) {
     $mysqlIporter->rollBack();
     error_log('Import faild - ' . $e->getMessage());
 }
 
 unset($timer);
-echo "Memory usage: " . number_format( (memory_get_usage() / (1024 * 1024)), 2) . ' mb' . PHP_EOL;
-
+echo "Memory usage: " . number_format((memory_get_usage() / (1024 * 1024)), 2) . ' mb' . PHP_EOL;

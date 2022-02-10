@@ -4,27 +4,29 @@ namespace BO\Dldb\Importer;
 
 use BO\Dldb\PDOAccess;
 
-trait PDOTrait 
+trait PDOTrait
 {
     protected $pdoAccess;
 
-    public function setPDOAccess(PDOAccess $pdoAccess) : self {
+    public function setPDOAccess(PDOAccess $pdoAccess) : self
+    {
         $this->pdoAccess = $pdoAccess;
         return $this;
     }
 
-    public function getPDOAccess() : PDOAccess {
+    public function getPDOAccess() : PDOAccess
+    {
         return $this->pdoAccess;
     }
 
     /**
      * parameters see https://www.php.net/manual/de/pdo.query.php
      */
-    public function query(...$args) {
+    public function query(...$args)
+    {
         try {
             return $this->getPDOAccess()->query(...$args);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -33,11 +35,11 @@ trait PDOTrait
      * parameters see https://www.php.net/manual/de/pdo.exec.php
      */
 
-    public function exec(...$args) {
+    public function exec(...$args)
+    {
         try {
             return $this->getPDOAccess()->exec(...$args);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -45,47 +47,47 @@ trait PDOTrait
     /**
      * parameters see https://www.php.net/manual/de/pdo.prepare.php
      */
-    public function prepare(...$args) {
+    public function prepare(...$args)
+    {
         try {
             return $this->getPDOAccess()->prepare(...$args);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function beginTransaction() {
+    public function beginTransaction()
+    {
         try {
             return $this->getPDOAccess()->beginTransaction();
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function commit() {
+    public function commit()
+    {
         try {
             return $this->getPDOAccess()->commit();
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function rollBack() {
+    public function rollBack()
+    {
         try {
             return $this->getPDOAccess()->rollBack();
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function inTransaction() {
+    public function inTransaction()
+    {
         try {
             return $this->getPDOAccess()->inTransaction();
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

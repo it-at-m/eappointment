@@ -11,7 +11,7 @@ use \BO\Dldb\Collection\Authorities as Base;
 /**
  * @SuppressWarnings(Coupling)
  */
-class Authorities extends Base 
+class Authorities extends Base
 {
 
 }

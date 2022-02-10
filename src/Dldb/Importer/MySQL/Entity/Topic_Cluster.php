@@ -16,8 +16,7 @@ class Topic_Cluster extends Base
             return $this->deleteWith(
                 array_combine(['topic_id', 'parent_id'], array_values($this->get('id', 'parent_id')))
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

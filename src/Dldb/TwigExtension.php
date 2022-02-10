@@ -49,14 +49,15 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('currentRoute', array($this, 'currentRoute')),
             new \Twig_SimpleFunction('dump', array($this, 'dump')),
             new \Twig_SimpleFunction(
-                'getAppointmentForLocationFromServiceAppointmentLocations', 
+                'getAppointmentForLocationFromServiceAppointmentLocations',
                 array($this, 'getAppointmentForLocationFromServiceAppointmentLocations')
             ),
         );
     }
 
-    public function dump($item) {
-        return '<pre>' . print_r($item,1).'</pre>';
+    public function dump($item)
+    {
+        return '<pre>' . print_r($item, 1).'</pre>';
     }
 
     public function currentRoute($lang = null)
@@ -66,8 +67,7 @@ class TwigExtension extends \Twig_Extension
             
             if (null !== $lang && 'de' == $lang) {
                 unset($routeParams['lang']);
-            }
-            else {
+            } else {
                 $routeParams['lang'] = ($lang !== null) ? $lang : \App::$language->getCurrentLanguage();
             }
             
@@ -120,15 +120,18 @@ class TwigExtension extends \Twig_Extension
         return $buttonEnabled;
     }
 
-    public function getOSMAccessToken() {
+    public function getOSMAccessToken()
+    {
         return \APP::OSM_ACCESS_TOKEN;
     }
 
-    public function getOSMOptions() {
+    public function getOSMOptions()
+    {
         return 'gestureHandling: ' . \APP::OSM_GESTURE_HANDLING;
     }
 
-    public function formatPhoneNumber($phoneNumber) {
+    public function formatPhoneNumber($phoneNumber)
+    {
         preg_match_all('/(^\+)?[\d]+/', $phoneNumber, $matches);
         $number = implode($matches[0]);
         $phonenumber = preg_replace('/^030/', '+4930', $number);
@@ -268,10 +271,9 @@ class TwigExtension extends \Twig_Extension
     }
 
     public function getAppointmentForLocationFromServiceAppointmentLocations(
-        array $serviceAppointmentLocationList, 
+        array $serviceAppointmentLocationList,
         $locationId
-    )
-    {
+    ) {
         if (isset($serviceAppointmentLocationList[$locationId])) {
             $appointment = $serviceAppointmentLocationList[$locationId]['appointment'];
             $appointment['responsibility_hint'] = $serviceAppointmentLocationList[$locationId]['responsibility_hint'];

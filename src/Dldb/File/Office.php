@@ -35,5 +35,4 @@ class Office extends Base
     {
         return $this->fetchId($itemId);
     }
-  
 }

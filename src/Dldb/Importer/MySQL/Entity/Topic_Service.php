@@ -14,12 +14,11 @@ class Topic_Service extends Base
         try {
             return $this->deleteWith(
                 array_combine(
-                    ['topic_id', 'service_id'], 
+                    ['topic_id', 'service_id'],
                     array_values($this->get('topic_id', 'id'))
                 )
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

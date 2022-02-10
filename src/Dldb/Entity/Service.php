@@ -77,7 +77,8 @@ class Service extends Base
         return $service['meta']['locale'] == $locale;
     }
 
-    public function getLocations() {
+    public function getLocations()
+    {
         $locations = [];
         foreach ($this['locations'] as $location) {
             $locations[$location['location']] = $location;

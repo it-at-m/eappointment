@@ -11,7 +11,7 @@ use \BO\Dldb\MySQL\Collection\Links as Collection;
 /**
  * @SuppressWarnings(Coupling)
  */
-class Link extends Base 
+class Link extends Base
 {
 
 }

@@ -5,16 +5,16 @@
  **/
 namespace BO\Dldb\MySQL;
 
-use \BO\Dldb\MySQL\Entity\Service as Entity,
-    \BO\Dldb\MySQL\Collection\Services as Collection,
-    \BO\Dldb\Elastic\Service AS Base
+use \BO\Dldb\MySQL\Entity\Service as Entity;
+use \BO\Dldb\MySQL\Collection\Services as Collection;
+use \BO\Dldb\Elastic\Service as Base
 ;
 use Error;
 
 /**
  * @SuppressWarnings(Coupling)
  */
-class Service extends Base 
+class Service extends Base
 {
     /**
      *
@@ -38,8 +38,7 @@ class Service extends Base
                 return $service;
             }
             return false;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -58,8 +57,7 @@ class Service extends Base
             if (false === $mixLanguages) {
                 $where[] = 's.locale = ?';
                 $sql = 'SELECT data_json FROM service AS s ';
-            }
-            else {
+            } else {
                 $where[] = "s.locale='de'";
                 $sql = "SELECT 
                 IF(s2.id, s2.data_json, s.data_json) AS data_json
@@ -95,8 +93,7 @@ class Service extends Base
             }
             #echo '<pre>' . print_r($serviceList,1) . '</pre>';exit;
             return $serviceList;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -115,8 +112,7 @@ class Service extends Base
             if (false === $mixLanguages) {
                 $where[] = 's.locale = ?';
                 $sql = 'SELECT data_json FROM service AS s ';
-            }
-            else {
+            } else {
                 $where[] = "s.locale='de'";
                 $sql = "SELECT 
                 IF(s2.id, s2.data_json, s.data_json) AS data_json
@@ -145,8 +141,7 @@ class Service extends Base
                 $serviceList[$service['id']] = $service;
             }
             return $serviceList;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -181,8 +176,7 @@ class Service extends Base
                 $serviceList[$service['id']] = $service;
             }
             return $serviceList;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -221,10 +215,8 @@ class Service extends Base
             }
 
             return $serviceList;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
-
 }

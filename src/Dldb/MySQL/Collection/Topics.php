@@ -11,7 +11,7 @@ use \BO\Dldb\Collection\Topics as Base;
 /**
  * @SuppressWarnings(Coupling)
  */
-class Topics extends Base 
+class Topics extends Base
 {
 
 }

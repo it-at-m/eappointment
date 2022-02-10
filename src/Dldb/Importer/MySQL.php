@@ -7,35 +7,37 @@
 
 namespace BO\Dldb\Importer;
 
-use BO\Dldb\MySQLAccess,
-    BO\Dldb\FileAccess
+use BO\Dldb\MySQLAccess;
+use BO\Dldb\FileAccess
 ;
 
 class MySQL extends Base
 {
-    public function __construct(MySQLAccess $mysqlAccess, FileAccess $fileAccess, int $options = 0) {
+    public function __construct(MySQLAccess $mysqlAccess, FileAccess $fileAccess, int $options = 0)
+    {
         try {
             parent::__construct($mysqlAccess, $fileAccess, $options);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function runImport() {
+    public function runImport()
+    {
         try {
             parent::runImport();
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->rollBack();
             throw $e;
         }
     }
-    public function preImport() {
+    public function preImport()
+    {
         $this->beginTransaction();
     }
 
-    public function postImport() {
+    public function postImport()
+    {
         $this->commit();
     }
 }

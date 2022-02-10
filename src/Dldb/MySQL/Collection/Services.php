@@ -11,7 +11,7 @@ use \BO\Dldb\Collection\Services as Base;
 /**
  * @SuppressWarnings(Coupling)
  */
-class Services extends Base 
+class Services extends Base
 {
 
 }

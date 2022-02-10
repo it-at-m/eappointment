@@ -11,7 +11,7 @@ use \BO\Dldb\MySQL\Collection\Offices as Collection;
 /**
  * @SuppressWarnings(Coupling)
  */
-class Office extends Base 
+class Office extends Base
 {
 
 }

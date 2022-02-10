@@ -6,7 +6,6 @@
  **/
 namespace BO\Dldb;
 
-
 class AccessFactory
 {
     protected static $avilableAccessors = [
@@ -16,7 +15,8 @@ class AccessFactory
         'mysql' => 'MySQL',
     ];
 
-    public static function factory(string $type, array $arguments = []) {
+    public static function factory(string $type, array $arguments = [])
+    {
         if (!isset(static::$avilableAccessors[$type])) {
             throw new \Exception('Invalid accessor');
         }

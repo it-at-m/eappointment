@@ -11,7 +11,7 @@ use \BO\Dldb\MySQL\Collection\Authorities as Collection;
 /**
  * @SuppressWarnings(Coupling)
  */
-class Authority extends Base 
+class Authority extends Base
 {
 
 }

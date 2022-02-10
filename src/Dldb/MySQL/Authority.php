@@ -5,11 +5,11 @@
  **/
 namespace BO\Dldb\MySQL;
 
-use \BO\Dldb\MySQL\Entity\Authority as Entity,
-    \BO\Dldb\MySQL\Entity\Location as LocationEntity,   
-    \BO\Dldb\MySQL\Collection\Authorities as Collection,
-    \BO\Dldb\Elastic\Authority as Base,
-    \BO\Dldb\MySQL\Location AS LocationAccess
+use \BO\Dldb\MySQL\Entity\Authority as Entity;
+use \BO\Dldb\MySQL\Entity\Location as LocationEntity;
+use \BO\Dldb\MySQL\Collection\Authorities as Collection;
+use \BO\Dldb\Elastic\Authority as Base;
+use \BO\Dldb\MySQL\Location as LocationAccess
 ;
 
 /**
@@ -80,8 +80,7 @@ class Authority extends Base
                 }
 
                 #echo '<pre>' . print_r([$authorityList],1).'</pre>';exit;
-            }
-            else {
+            } else {
                 $sqlArgs = ['de'];
                 $sql = 'SELECT data_json FROM authority WHERE locale = ?';
                 $stm = $this->access()->prepare($sql);
@@ -99,11 +98,9 @@ class Authority extends Base
                 }
             }
             return $authorityList;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
-
     }
 
     /**
@@ -130,11 +127,9 @@ class Authority extends Base
             }
             $authority = $stm->fetch();
             return $authority;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
-
     }
 
     /**
@@ -147,7 +142,7 @@ class Authority extends Base
 
         $locations = $this->access()->fromLocation($this->locale)->fetchListByOffice($officepath);
 
-        foreach ($locations AS $location) {
+        foreach ($locations as $location) {
             $authorityList->addLocation($location);
         }
         

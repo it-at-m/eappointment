@@ -19,7 +19,8 @@ class MySQLAccess extends PDOAccess
     const DEFAULT_DATABASE_USER = 'root';
     const DEFAULT_DATABASE_PASSWORD = 'password';
 
-    protected function connect(array $options) {
+    protected function connect(array $options)
+    {
         $host = $options['host'] ?? static::DEFAULT_DATABASE_HOST;
         $dbname = $options['database'] ?? static::DEFAULT_DATABASE_NAME;
         $user = $options['user'] ?? static::DEFAULT_DATABASE_USER;
@@ -33,8 +34,7 @@ class MySQLAccess extends PDOAccess
 
         try {
             $this->pdo = new \PDO($dsn, $user, $pass);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
