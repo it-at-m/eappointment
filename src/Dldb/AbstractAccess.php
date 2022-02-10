@@ -123,8 +123,7 @@ class AbstractAccess
                         
                         return $instance;
                     }
-                }
-                catch (\Exception $e ) {
+                } catch (\Exception $e) {
                     throw new Exception("Instance for accessing $instanceName ($locale) is not initialized");
                 }
             }
@@ -133,7 +132,8 @@ class AbstractAccess
             }
             throw new Exception("Instance for accessing $instanceName failed");
         }
-        echo '<pre>' . print_r($this->accessInstance,1) . '</pre>';exit;
+        echo '<pre>' . print_r($this->accessInstance, 1) . '</pre>';
+        exit;
         throw new Exception("Instance for accessing $instanceName does not exists");
     }
 

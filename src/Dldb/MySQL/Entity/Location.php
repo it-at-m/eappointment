@@ -11,7 +11,7 @@ use \BO\Dldb\MySQL\Collection\Locations as Collection;
 /**
  * @SuppressWarnings(Coupling)
  */
-class Location extends Base 
+class Location extends Base
 {
    
 }

@@ -11,7 +11,7 @@ use \BO\Dldb\Collection\Offices as Base;
 /**
  * @SuppressWarnings(Coupling)
  */
-class Offices extends Base 
+class Offices extends Base
 {
 
 }

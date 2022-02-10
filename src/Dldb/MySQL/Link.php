@@ -37,8 +37,7 @@ class Link extends Base
             }
             
             return $linklist;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

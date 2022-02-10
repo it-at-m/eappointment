@@ -1,12 +1,12 @@
 <?php
 
 return [
-	"CREATE TABLE IF NOT EXISTS `topic_service` (
+    "CREATE TABLE IF NOT EXISTS `topic_service` (
 		`topic_id`	INTEGER NOT NULL,
 		`service_id`	INTEGER NOT NULL,
 		PRIMARY KEY(`topic_id`,`service_id`)
 	);",
-	"CREATE TABLE IF NOT EXISTS `topic_links` (
+    "CREATE TABLE IF NOT EXISTS `topic_links` (
 		`topic_id`	INTEGER NOT NULL,
 		`name`	VARCHAR ( 255 ),
 		`locale`	VARCHAR ( 4 ) NOT NULL,
@@ -17,12 +17,12 @@ return [
 		`meta_json`	TEXT,
 		`data_json`	TEXT
 	);",
-	"CREATE TABLE IF NOT EXISTS `topic_cluster` (
+    "CREATE TABLE IF NOT EXISTS `topic_cluster` (
 		`topic_id`	INTEGER NOT NULL,
 		`parent_id`	INTEGER NOT NULL,
 		`rank`	INTEGER NOT NULL
 	);",
-	"CREATE TABLE IF NOT EXISTS `topic` (
+    "CREATE TABLE IF NOT EXISTS `topic` (
 		`id`	INTEGER NOT NULL,
 		`locale`	VARCHAR ( 4 ) NOT NULL,
 		`name`	VARCHAR ( 255 ),
@@ -33,12 +33,12 @@ return [
 		`data_json`	TEXT,
 		PRIMARY KEY(`id`,`locale`)
 	);",
-	"CREATE TABLE IF NOT EXISTS `setting` (
+    "CREATE TABLE IF NOT EXISTS `setting` (
 		`name`	VARCHAR ( 255 ) NOT NULL,
 		`value`	TEXT,
 		PRIMARY KEY(`name`)
 	);",
-	"CREATE TABLE IF NOT EXISTS `service_information` (
+    "CREATE TABLE IF NOT EXISTS `service_information` (
 		`service_id`	INTEGER NOT NULL,
 		`locale`	VARCHAR ( 4 ) NOT NULL,
 		`name`	TEXT,
@@ -49,7 +49,7 @@ return [
 		`data_json`	TEXT,
 		PRIMARY KEY(`service_id`,`locale`,`type`,`sort`)
 	);",
-	"CREATE TABLE IF NOT EXISTS `service` (
+    "CREATE TABLE IF NOT EXISTS `service` (
 		`id`	INTEGER NOT NULL,
 		`locale`	VARCHAR ( 4 ) NOT NULL,
 		`leika`	VARCHAR ( 14 ) NOT NULL,
@@ -70,7 +70,7 @@ return [
 		`data_json`	TEXT,
 		PRIMARY KEY(`id`,`locale`)
 	);",
-	"CREATE TABLE IF NOT EXISTS `search` (
+    "CREATE TABLE IF NOT EXISTS `search` (
 		`object_id`	INTEGER NOT NULL,
 		`locale`	VARCHAR ( 4 ) NOT NULL,
 		`entity_type`	VARCHAR ( 255 ),
@@ -78,7 +78,7 @@ return [
 		`search_value`	TEXT,
 		PRIMARY KEY(`object_id`,`locale`,`search_type`)
 	);",
-	"CREATE TABLE IF NOT EXISTS `meta` (
+    "CREATE TABLE IF NOT EXISTS `meta` (
 		`object_id`	INTEGER NOT NULL,
 		`hash`	VARCHAR ( 255 ) NOT NULL,
 		`locale`	VARCHAR ( 4 ) NOT NULL,
@@ -89,7 +89,7 @@ return [
 		`titles_json`	TEXT,
 		PRIMARY KEY(`object_id`,`locale`,`type`)
 	);",
-	"CREATE TABLE IF NOT EXISTS `location_service` (
+    "CREATE TABLE IF NOT EXISTS `location_service` (
 		`location_id`	INTEGER NOT NULL,
 		`service_id`	INTEGER NOT NULL,
 		`locale`	VARCHAR ( 4 ) NOT NULL,
@@ -102,7 +102,7 @@ return [
 		`contact_json`	TEXT,
 		PRIMARY KEY(`location_id`,`service_id`,`locale`)
 	);",
-	"CREATE TABLE IF NOT EXISTS `location` (
+    "CREATE TABLE IF NOT EXISTS `location` (
 		`id`	INTEGER NOT NULL,
 		`locale`	VARCHAR ( 4 ) NOT NULL,
 		`name`	VARCHAR ( 255 ) NOT NULL,
@@ -122,7 +122,7 @@ return [
 		`data_json`	TEXT,
 		PRIMARY KEY(`id`,`locale`)
 	);",
-	"CREATE TABLE IF NOT EXISTS `contact` (
+    "CREATE TABLE IF NOT EXISTS `contact` (
 		`object_id`	INTEGER NOT NULL,
 		`locale`	VARCHAR ( 4 ) NOT NULL,
 		`name`	VARCHAR ( 255 ),
@@ -132,19 +132,19 @@ return [
 		`geo_json`	TEXT,
 		PRIMARY KEY(`object_id`,`locale`)
 	);",
-	"CREATE TABLE IF NOT EXISTS `authority_service` (
+    "CREATE TABLE IF NOT EXISTS `authority_service` (
 		`authority_id`	INTEGER NOT NULL,
 		`service_id`	INTEGER NOT NULL,
 		`locale`	VARCHAR ( 4 ) NOT NULL,
 		PRIMARY KEY(`authority_id`,`service_id`,`locale`)
 	);",
-	"CREATE TABLE IF NOT EXISTS `authority_location` (
+    "CREATE TABLE IF NOT EXISTS `authority_location` (
 		`authority_id`	INTEGER NOT NULL,
 		`location_id`	INTEGER NOT NULL,
 		`locale`	VARCHAR ( 4 ) NOT NULL,
 		PRIMARY KEY(`authority_id`,`location_id`,`locale`)
 	);",
-	"CREATE TABLE IF NOT EXISTS `authority` (
+    "CREATE TABLE IF NOT EXISTS `authority` (
 		`id`	INTEGER NOT NULL,
 		`locale`	VARCHAR ( 4 ) NOT NULL,
 		`name`	VARCHAR ( 255 ),
@@ -155,131 +155,130 @@ return [
 		`data_json`	TEXT,
 		PRIMARY KEY(`id`,`locale`)
 	);",
-	"CREATE INDEX IF NOT EXISTS `topic_root_index` ON `topic` (
+    "CREATE INDEX IF NOT EXISTS `topic_root_index` ON `topic` (
 		`root`
 	);",
-	"CREATE INDEX IF NOT EXISTS `topic_rank_index` ON `topic` (
+    "CREATE INDEX IF NOT EXISTS `topic_rank_index` ON `topic` (
 		`rank`
 	);",
-	"CREATE INDEX IF NOT EXISTS `topic_path_index` ON `topic` (
+    "CREATE INDEX IF NOT EXISTS `topic_path_index` ON `topic` (
 		`path`
 	);",
-	"CREATE INDEX IF NOT EXISTS `topic_navi_index` ON `topic` (
+    "CREATE INDEX IF NOT EXISTS `topic_navi_index` ON `topic` (
 		`navi`
 	);",
-	"CREATE INDEX IF NOT EXISTS `topic_links_topic_id_index` ON `topic_links` (
+    "CREATE INDEX IF NOT EXISTS `topic_links_topic_id_index` ON `topic_links` (
 		`topic_id`
 	);",
-	"CREATE INDEX IF NOT EXISTS `topic_links_rank_index` ON `topic_links` (
+    "CREATE INDEX IF NOT EXISTS `topic_links_rank_index` ON `topic_links` (
 		`rank`
 	);",
-	"CREATE INDEX IF NOT EXISTS `topic_links_locale_index` ON `topic_links` (
+    "CREATE INDEX IF NOT EXISTS `topic_links_locale_index` ON `topic_links` (
 		`locale`
 	);",
-	"CREATE INDEX IF NOT EXISTS `topic_links_keywords_search_index` ON `topic_links` (
+    "CREATE INDEX IF NOT EXISTS `topic_links_keywords_search_index` ON `topic_links` (
 		`search`
 	);",
-	"CREATE INDEX IF NOT EXISTS `topic_cluster_topic_id_index` ON `topic_cluster` (
+    "CREATE INDEX IF NOT EXISTS `topic_cluster_topic_id_index` ON `topic_cluster` (
 		`topic_id`
 	);",
-	"CREATE INDEX IF NOT EXISTS `topic_cluster_rank_index` ON `topic_cluster` (
+    "CREATE INDEX IF NOT EXISTS `topic_cluster_rank_index` ON `topic_cluster` (
 		`rank`
 	);",
-	"CREATE INDEX IF NOT EXISTS `topic_cluster_parent_id_index` ON `topic_cluster` (
+    "CREATE INDEX IF NOT EXISTS `topic_cluster_parent_id_index` ON `topic_cluster` (
 		`parent_id`
 	);",
-	"CREATE INDEX IF NOT EXISTS `service_search_index` ON `service` (
+    "CREATE INDEX IF NOT EXISTS `service_search_index` ON `service` (
 		`description`
 	);",
-	"CREATE INDEX IF NOT EXISTS `service_information_type_index` ON `service_information` (
+    "CREATE INDEX IF NOT EXISTS `service_information_type_index` ON `service_information` (
 		`type`
 	);",
-	"CREATE INDEX IF NOT EXISTS `service_information_service_id_index` ON `service_information` (
+    "CREATE INDEX IF NOT EXISTS `service_information_service_id_index` ON `service_information` (
 		`service_id`
 	);",
-	"CREATE INDEX IF NOT EXISTS `search_search_type_index` ON `search` (
+    "CREATE INDEX IF NOT EXISTS `search_search_type_index` ON `search` (
 		`search_type`
 	);",
-	"CREATE INDEX IF NOT EXISTS `search_search_index` ON `search` (
+    "CREATE INDEX IF NOT EXISTS `search_search_index` ON `search` (
 		`search_value`
 	);",
-	"CREATE INDEX IF NOT EXISTS `search_object_id_index` ON `search` (
+    "CREATE INDEX IF NOT EXISTS `search_object_id_index` ON `search` (
 		`object_id`
 	);",
-	"CREATE INDEX IF NOT EXISTS `search_locale_index` ON `search` (
+    "CREATE INDEX IF NOT EXISTS `search_locale_index` ON `search` (
 		`locale`
 	);",
-	"CREATE INDEX IF NOT EXISTS `search_entity_type_index` ON `search` (
+    "CREATE INDEX IF NOT EXISTS `search_entity_type_index` ON `search` (
 		`entity_type`
 	);",
-	"CREATE INDEX IF NOT EXISTS `meta_type_index` ON `meta` (
+    "CREATE INDEX IF NOT EXISTS `meta_type_index` ON `meta` (
 		`type`
 	);",
-	"CREATE INDEX IF NOT EXISTS `meta_object_id_index` ON `meta` (
+    "CREATE INDEX IF NOT EXISTS `meta_object_id_index` ON `meta` (
 		`object_id`
 	);",
-	"CREATE INDEX IF NOT EXISTS `meta_hash_index` ON `meta` (
+    "CREATE INDEX IF NOT EXISTS `meta_hash_index` ON `meta` (
 		`hash`
 	);",
-	"CREATE INDEX IF NOT EXISTS `location_service_service_id_locale_index` ON `location_service` (
+    "CREATE INDEX IF NOT EXISTS `location_service_service_id_locale_index` ON `location_service` (
 		`service_id`,
 		`locale`
 	);",
-	"CREATE INDEX IF NOT EXISTS `location_service_service_id_index` ON `location_service` (
+    "CREATE INDEX IF NOT EXISTS `location_service_service_id_index` ON `location_service` (
 		`service_id`
 	);",
-	"CREATE INDEX IF NOT EXISTS `location_service_location_id_locale_index` ON `location_service` (
+    "CREATE INDEX IF NOT EXISTS `location_service_location_id_locale_index` ON `location_service` (
 		`location_id`,
 		`locale`
 	);",
-	"CREATE INDEX IF NOT EXISTS `location_service_location_id_index` ON `location_service` (
+    "CREATE INDEX IF NOT EXISTS `location_service_location_id_index` ON `location_service` (
 		`location_id`
 	);",
-	"CREATE INDEX IF NOT EXISTS `location_service_locale_index` ON `location_service` (
+    "CREATE INDEX IF NOT EXISTS `location_service_locale_index` ON `location_service` (
 		`locale`
 	);",
-	"CREATE INDEX IF NOT EXISTS `location_name_index` ON `location` (
+    "CREATE INDEX IF NOT EXISTS `location_name_index` ON `location` (
 		`name`
 	);",
-	"CREATE INDEX IF NOT EXISTS `location_category_identifier_index` ON `location` (
+    "CREATE INDEX IF NOT EXISTS `location_category_identifier_index` ON `location` (
 		`category_identifier`
 	);",
-	"CREATE INDEX IF NOT EXISTS `location_authority_id_index` ON `location` (
+    "CREATE INDEX IF NOT EXISTS `location_authority_id_index` ON `location` (
 		`authority_id`
 	);",
-	"CREATE INDEX IF NOT EXISTS `authority_service_service_id_locale_index` ON `authority_service` (
+    "CREATE INDEX IF NOT EXISTS `authority_service_service_id_locale_index` ON `authority_service` (
 		`service_id`,
 		`locale`
 	);",
-	"CREATE INDEX IF NOT EXISTS `authority_service_service_id_index` ON `authority_service` (
+    "CREATE INDEX IF NOT EXISTS `authority_service_service_id_index` ON `authority_service` (
 		`service_id`
 	);",
-	"CREATE INDEX IF NOT EXISTS `authority_service_locale_index` ON `authority_service` (
+    "CREATE INDEX IF NOT EXISTS `authority_service_locale_index` ON `authority_service` (
 		`locale`
 	);",
-	"CREATE INDEX IF NOT EXISTS `authority_service_authority_id_locale_index` ON `authority_service` (
+    "CREATE INDEX IF NOT EXISTS `authority_service_authority_id_locale_index` ON `authority_service` (
 		`authority_id`,
 		`locale`
 	);",
-	"CREATE INDEX IF NOT EXISTS `authority_service_authority_id_index` ON `authority_service` (
+    "CREATE INDEX IF NOT EXISTS `authority_service_authority_id_index` ON `authority_service` (
 		`authority_id`
 	);",
-	"CREATE INDEX IF NOT EXISTS `authority_location_location_id_locale_index` ON `authority_location` (
+    "CREATE INDEX IF NOT EXISTS `authority_location_location_id_locale_index` ON `authority_location` (
 		`location_id`,
 		`locale`
 	);",
-	"CREATE INDEX IF NOT EXISTS `authority_location_location_id_index` ON `authority_location` (
+    "CREATE INDEX IF NOT EXISTS `authority_location_location_id_index` ON `authority_location` (
 		`location_id`
 	);",
-	"CREATE INDEX IF NOT EXISTS `authority_location_locale_index` ON `authority_location` (
+    "CREATE INDEX IF NOT EXISTS `authority_location_locale_index` ON `authority_location` (
 		`locale`
 	);",
-	"CREATE INDEX IF NOT EXISTS `authority_location_authority_id_locale_index` ON `authority_location` (
+    "CREATE INDEX IF NOT EXISTS `authority_location_authority_id_locale_index` ON `authority_location` (
 		`authority_id`,
 		`locale`
 	);",
-	"CREATE INDEX IF NOT EXISTS `authority_location_authority_id_index` ON `authority_location` (
+    "CREATE INDEX IF NOT EXISTS `authority_location_authority_id_index` ON `authority_location` (
 		`authority_id`
 	);"
 ];
-

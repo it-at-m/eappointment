@@ -7,10 +7,9 @@
 
 namespace BO\Dldb\Importer;
 
-use BO\Dldb\PDOAccess,
-    BO\Dldb\FileAccess
+use BO\Dldb\PDOAccess;
+use BO\Dldb\FileAccess
 ;
-
 
 abstract class Base implements Options
 {
@@ -24,24 +23,27 @@ abstract class Base implements Options
     ];
 
     protected $importTypes = [
-        'Services' => 'Service', 
-        'Locations' => 'Location', 
-        'Authorities' => 'Authority', 
-        'Topics' => 'Topic', 
+        'Services' => 'Service',
+        'Locations' => 'Location',
+        'Authorities' => 'Authority',
+        'Topics' => 'Topic',
         'Settings' => 'Setting'
     ];
 
-    public function __construct(PDOAccess $pdoAccess, FileAccess $fileAccess, int $options = 0) {
+    public function __construct(PDOAccess $pdoAccess, FileAccess $fileAccess, int $options = 0)
+    {
         $this->setPDOAccess($pdoAccess);
         $this->fileAccess = $fileAccess;
         $this->options = $options;
     }
 
-    public function setLocaleList(array $localeList = ['de', 'en']) {
+    public function setLocaleList(array $localeList = ['de', 'en'])
+    {
         $this->localeList = $localeList;
     }
 
-    public function __call($method, $args = []) {
+    public function __call($method, $args = [])
+    {
         try {
             if (preg_match('/get(?P<importer>[A-Za-z]+)Importer/', $method, $matches)) {
                 $ImporterClass = static::class . '\\' . $matches['importer'];
@@ -50,8 +52,7 @@ abstract class Base implements Options
                 return $instance;
             }
             throw new \BadMethodCallException('Method ' . $method . ' not found!');
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -60,11 +61,12 @@ abstract class Base implements Options
      *
      * @return self
      */
-    public function runImport() {
+    public function runImport()
+    {
         try {
             $this->preImport();
 
-            foreach ($this->importTypes AS $type => $accessor) {
+            foreach ($this->importTypes as $type => $accessor) {
                 if (method_exists($this, 'import' . $type)) {
                     call_user_func([$this, 'import' . $type]);
                     continue;
@@ -72,7 +74,7 @@ abstract class Base implements Options
                 foreach ($this->localeList as $locale) {
                     $entitys = call_user_func_array([$this->fileAccess, 'from' . $accessor], [$locale])->getData();
                     $importer = $this->__call(
-                        'get' . $type . 'Importer', 
+                        'get' . $type . 'Importer',
                         [$entitys, $locale, $this->getOptions()]
                     );
                     $importer->preImport();
@@ -84,43 +86,41 @@ abstract class Base implements Options
 
             $this->postImport();
             return $this;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function clearDatabase() 
+    public function clearDatabase()
     {
         try {
-            if ($this->checkOptionFlag(static::OPTION_CLEAR_ENTITIY_REFERENCES_TABLES) || 
+            if ($this->checkOptionFlag(static::OPTION_CLEAR_ENTITIY_REFERENCES_TABLES) ||
                 $this->checkOptionFlag(static::OPTION_CLEAR_ENTITIY_TABLE)
             ) {
                 $types = [
-                    'Services', 
-                    'Locations', 
-                    'Authorities', 
-                    'Topics', 
+                    'Services',
+                    'Locations',
+                    'Authorities',
+                    'Topics',
                     'Settings'
                 ];
                 $tablesToClear = [];
                 
-                foreach ($this->importTypes AS $type => $entityName) {
+                foreach ($this->importTypes as $type => $entityName) {
                     $importer = $this->__call('get' . $type . 'Importer', [['data' => [], 'hash' => ''], 'de', $this->getOptions()]);
                     $entity = $importer->createEntity(['meta' => ['locale' => 'de']], false);
                     $tablesToClear[$entity::getTableName()] = 1;
 
-                    foreach ($entity->getReferenceMapping(true) AS $key => $data) {
+                    foreach ($entity->getReferenceMapping(true) as $key => $data) {
                         $tablesToClear[call_user_func($data['class'] . '::getTableName')] = 1;
                     }
                 }
 
-                foreach (array_flip($tablesToClear) AS $table ) {
+                foreach (array_flip($tablesToClear) as $table) {
                     $this->getPDOAccess()->exec("DELETE FROM " . $table . " WHERE 1=1");
                 }
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -129,16 +129,18 @@ abstract class Base implements Options
      *
      * @return self
      */
-    protected function importSettings() {
+    protected function importSettings()
+    {
         try {
             $importer = $this->getSettingsImporter(
-                $this->fileAccess->fromSetting('de')->getData(), 'de', $this->getOptions()
+                $this->fileAccess->fromSetting('de')->getData(),
+                'de',
+                $this->getOptions()
             );
             $importer->preImport();
             $importer->runImport();
             $importer->postImport();
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -147,17 +149,19 @@ abstract class Base implements Options
      *
      * @return self
      */
-    protected function importTopics() {
+    protected function importTopics()
+    {
         try {
             $importer = $this->getTopicsImporter(
-                $this->fileAccess->fromTopic('de')->getData(), 'de', $this->getOptions()
+                $this->fileAccess->fromTopic('de')->getData(),
+                'de',
+                $this->getOptions()
             );
             $importer->preImport();
             $importer->runImport();
             $importer->postImport();
             #$importer->clearEntity();
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -166,22 +170,28 @@ abstract class Base implements Options
      *
      * @return self
      */
-    protected function importAuthorities() {
+    protected function importAuthorities()
+    {
         try {
             $importer = $this->getAuthoritiesImporter(
-                $this->fileAccess->fromAuthority('de')->getData(), 'de', $this->getOptions()
+                $this->fileAccess->fromAuthority('de')->getData(),
+                'de',
+                $this->getOptions()
             );
             $importer->preImport();
             $importer->runImport();
             $importer->postImport();
             #$importer->clearEntity();
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function preImport() {}
+    public function preImport()
+    {
+    }
 
-    public function postImport() {}
+    public function postImport()
+    {
+    }
 }

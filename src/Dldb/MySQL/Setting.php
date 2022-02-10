@@ -6,7 +6,6 @@
 
 namespace BO\Dldb\MySql;
 
-
 use \BO\Dldb\File\Setting as Base;
 
 /**
@@ -25,8 +24,7 @@ class Setting extends Base
             $settingValue = $stm->fetchColumn();
 
             return $settingValue ?? null;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

@@ -38,8 +38,7 @@ class Office extends Base
                 #echo '<pre>' . htmlspecialchars(print_r((static::$officeList),1)) . '</pre>';exit;
             }
             return static::$officeList;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

@@ -15,8 +15,7 @@ class Setting extends Base
             return $this->deleteWith(
                 array_combine(['name'], array_values((array)$this->get('name')))
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

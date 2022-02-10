@@ -20,8 +20,7 @@ class Contact extends Base
             return $this->deleteWith(
                 array_combine(['object_id', 'locale'], array_values($this->get(['object_id', 'locale'])))
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

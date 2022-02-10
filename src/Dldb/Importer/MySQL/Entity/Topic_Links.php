@@ -18,7 +18,8 @@ class Topic_Links extends Base
         '__RAW__' => 'data_json'
     ];
 
-    public function postSetupFields() {
+    public function postSetupFields()
+    {
         $searchValues = [$this->get('name')];
         /*
         if (array_key_exists('titles', ($this->fields['meta'] ?? [])) && !empty($this->fields['meta']['titles'])) {
@@ -43,13 +44,13 @@ class Topic_Links extends Base
         $this->fields['search'] = implode(', ', $searchValues);
     }
 
-    public function clearEntity(array $addWhere = []) : bool {
+    public function clearEntity(array $addWhere = []) : bool
+    {
         try {
             return $this->deleteWith(
                 ['locale' => $this->get('meta.locale')]
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -60,17 +61,16 @@ class Topic_Links extends Base
             return $this->deleteWith(
                 array_combine(['topic_id', 'locale'], array_values($this->get('topic_id', 'locale')))
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function postSave(\PDOStatement $stm, Base $entity) {
+    public function postSave(\PDOStatement $stm, Base $entity)
+    {
         return true;
         try {
             if ($stm && 0 < $stm->rowCount()) {
-
                 $pdoConnection = $this->getPDOAccess()->getConnection();
                 $lastInsertId = $pdoConnection->lastInsertId();
 
@@ -87,8 +87,7 @@ class Topic_Links extends Base
 
                 return true;
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

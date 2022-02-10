@@ -11,7 +11,7 @@ use \BO\Dldb\MySQL\Collection\Topics as Collection;
 /**
  * @SuppressWarnings(Coupling)
  */
-class Topic extends Base 
+class Topic extends Base
 {
 
 }

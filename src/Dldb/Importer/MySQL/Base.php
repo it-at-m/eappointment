@@ -2,13 +2,12 @@
 
 namespace BO\Dldb\Importer\MySQL;
 
-
-use BO\Dldb\PDOAccess,
-    BO\Dldb\Importer\OptionsTrait,
-    BO\Dldb\Importer\PDOTrait,
-    BO\Dldb\Importer\ItemNeedsUpdateTrait,
-    BO\Dldb\Importer\Options,
-    \BO\Dldb\Importer\MySQL\Entity\Meta AS MetaEntity
+use BO\Dldb\PDOAccess;
+use BO\Dldb\Importer\OptionsTrait;
+use BO\Dldb\Importer\PDOTrait;
+use BO\Dldb\Importer\ItemNeedsUpdateTrait;
+use BO\Dldb\Importer\Options;
+use \BO\Dldb\Importer\MySQL\Entity\Meta as MetaEntity
 ;
 
 abstract class Base implements Options
@@ -23,8 +22,9 @@ abstract class Base implements Options
     protected $currentEntitysToDelete = [];
     protected $getCurrentEntitys = true;
 
-    public function __construct(PDOAccess $mySqlAccess, array $importData = [], string $locale = 'de', $options = 0) {
-        try { 
+    public function __construct(PDOAccess $mySqlAccess, array $importData = [], string $locale = 'de', $options = 0)
+    {
+        try {
             $this->setPDOAccess($mySqlAccess);
             $this->setImportData($importData['data']);
             $this->setImportHash($importData['hash']);
@@ -32,35 +32,40 @@ abstract class Base implements Options
             
             $this->setOptions($options);
             $this->clearEntity();
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function getPDOAccess() : PDOAccess {
+    public function getPDOAccess() : PDOAccess
+    {
         return $this->pdoAccess;
     }
     
-    public function getImportData() : array {
+    public function getImportData() : array
+    {
         return $this->importData;
     }
 
-    public function getIterator() : iterable {
-        foreach ($this->importData AS $item) {
+    public function getIterator() : iterable
+    {
+        foreach ($this->importData as $item) {
             yield $item;
         }
     }
 
-    public function getCurrentEntitys() : array {
+    public function getCurrentEntitys() : array
+    {
         return $this->currentEntitysToDelete;
     }
 
-    public function removeEntityFromCurrentList(int $id) {
+    public function removeEntityFromCurrentList(int $id)
+    {
         unset($this->currentEntitysToDelete[$id]);
     }
 
-    public function setCurrentEntitys() {
+    public function setCurrentEntitys()
+    {
         try {
             if (false === $this->getCurrentEntitys) {
                 return true;
@@ -83,13 +88,13 @@ abstract class Base implements Options
                 $this->currentEntitysToDelete[$entity->id] = $entityObject;
             }
             #error_log(print_r(['current', $this->entityClass::getTableName(), $this->getLocale(), count($this->currentEntitysToDelete)],1));
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function createMetaObject() {
+    public function createMetaObject()
+    {
         try {
             if (empty($this->metaObject)) {
                 $metaObject = new MetaEntity(
@@ -103,23 +108,25 @@ abstract class Base implements Options
                 );
                 $this->metaObject = $metaObject;
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function getMetaObject() : MetaEntity {
+    public function getMetaObject() : MetaEntity
+    {
         $this->createMetaObject();
         return $this->metaObject;
     }
 
-    public function saveMetaObject() : self {
+    public function saveMetaObject() : self
+    {
         $this->getMetaObject()->save();
         return $this;
     }
 
-    public function needsUpdate() {
+    public function needsUpdate()
+    {
         $metaObject = $this->getMetaObject();
         $needsUpdate = $metaObject->itemNeedsUpdate_();
         if ($needsUpdate) {
@@ -128,37 +135,44 @@ abstract class Base implements Options
         return $needsUpdate;
     }
 
-    public function setImportData(array $importData = []) : self {
+    public function setImportData(array $importData = []) : self
+    {
         $this->importData = $importData;
         return $this;
     }
 
-    public function setLocale(string $locale) : self {
+    public function setLocale(string $locale) : self
+    {
         $this->locale = $locale;
         return $this;
     }
 
-    public function getLocale() : string {
+    public function getLocale() : string
+    {
         return $this->locale;
     }
 
-    public function setImportHash(string $hash) : self {
+    public function setImportHash(string $hash) : self
+    {
         $this->hash = $hash;
         return $this;
     }
 
-    public function getImportHash() : string {
+    public function getImportHash() : string
+    {
         return $this->hash;
     }
 
-    public function createEntity(array $data = array(), bool $setup = true) {
+    public function createEntity(array $data = array(), bool $setup = true)
+    {
         if (null === $this->entityClass) {
             throw new \InvalidArgumentException(__METHOD__ . " invalid entity class");
         }
         return new $this->entityClass($this->getPDOAccess(), $data, $setup);
     }
 
-    final public function clearEntity() {
+    final public function clearEntity()
+    {
         try {
             $entity = null;
             if ($this->checkOptionFlag(static::OPTION_CLEAR_ENTITIY_TABLE)) {
@@ -169,16 +183,18 @@ abstract class Base implements Options
                 $entity =  ($entity ?? $this->createEntity(['meta' => ['locale' => $this->getLocale()]], false));
                 $entity->clearEntityReferences();
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function preImport() {}
+    public function preImport()
+    {
+    }
 
-    public function postImport() {}
+    public function postImport()
+    {
+    }
 
     abstract public function runImport();
-
 }

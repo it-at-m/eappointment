@@ -2,7 +2,7 @@
 
 namespace BO\Dldb\Importer\SQLite;
 
-use BO\Dldb\Importer\MySQL\Services AS ServicesBase;
+use BO\Dldb\Importer\MySQL\Services as ServicesBase;
 
 class Services extends ServicesBase
 {

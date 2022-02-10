@@ -46,7 +46,8 @@ abstract class Base
         $this->locale = $locale;
     }
 
-    public function readDataFile() {
+    public function readDataFile()
+    {
         if (empty($this->data)) {
             $jsonFile = $this->dataFile;
             if (!is_readable($jsonFile)) {
@@ -61,35 +62,35 @@ abstract class Base
         return $this->data;
     }
 
-    public function getDataAsArray() {
+    public function getDataAsArray()
+    {
         try {
             $data = $this->readDataFile();
             
             return $data['data'];
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function getHash() {
+    public function getHash()
+    {
         try {
             $data = $this->readDataFile();
             
             return $data['hash'];
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function getData() {
+    public function getData()
+    {
         try {
             $data = $this->readDataFile();
             
             return $data;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -98,9 +99,8 @@ abstract class Base
     {
         try {
             $data = $this->readDataFile();
-            $this->itemList = $this->parseData($data);  
-        }
-        catch (\Exception $e) {
+            $this->itemList = $this->parseData($data);
+        } catch (\Exception $e) {
             throw $e;
         }
     }

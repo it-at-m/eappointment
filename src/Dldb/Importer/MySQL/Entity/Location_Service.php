@@ -22,12 +22,11 @@ class Location_Service extends Base
         try {
             return $this->deleteWith(
                 array_combine(
-                    ['location_id', 'service_id', 'locale'], 
+                    ['location_id', 'service_id', 'locale'],
                     array_values($this->get(['location', 'service_id', 'locale']))
                 )
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

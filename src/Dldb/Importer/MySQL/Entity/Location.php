@@ -2,7 +2,6 @@
 
 namespace BO\Dldb\Importer\MySQL\Entity;
 
-
 class Location extends Base
 {
     protected $fieldMapping = [
@@ -24,12 +23,13 @@ class Location extends Base
         '__RAW__' => 'data_json'
     ];
 
-    protected function setupMapping() {
+    protected function setupMapping()
+    {
         $this->referanceMapping = [
             'name' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
                 'neededFields' => [
-                    'id' => 'object_id', 
+                    'id' => 'object_id',
                     'meta.locale' => 'locale',
                     'name' => 'search_value'
                 ],
@@ -39,11 +39,11 @@ class Location extends Base
                 ],
                 'multiple' => false,
                 'clearFields' => [
-                    'entity_type' => static::getTableName(), 
+                    'entity_type' => static::getTableName(),
                     'locale' => $this->get('meta.locale')
                 ],
                 'deleteFields' => [
-                    'object_id' => $this->get('id'), 
+                    'object_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'entity_type' => static::getTableName()
                 ],
@@ -52,7 +52,7 @@ class Location extends Base
             'address' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
                 'neededFields' => [
-                    'id' => 'object_id', 
+                    'id' => 'object_id',
                     'meta.locale' => 'locale',
                     'address' => 'search_value',
                 ],
@@ -61,13 +61,13 @@ class Location extends Base
                     'search_type' => 'address'
                 ],
                 'deleteFields' => [
-                    'object_id' => $this->get('id'), 
+                    'object_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'entity_type' => static::getTableName()
                 ],
                 'multiple' => false,
                 'clearFields' => [
-                    'entity_type' => static::getTableName(), 
+                    'entity_type' => static::getTableName(),
                     'locale' => $this->get('meta.locale')
                 ],
                 'selfAsArray' => true
@@ -75,7 +75,7 @@ class Location extends Base
             'meta.keywords' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
                 'neededFields' => [
-                    'id' => 'object_id', 
+                    'id' => 'object_id',
                     'meta.locale' => 'locale',
                     'meta.keywords' => 'search_value',
                 ],
@@ -84,13 +84,13 @@ class Location extends Base
                     'search_type' => 'keywords'
                 ],
                 'deleteFields' => [
-                    'object_id' => $this->get('id'), 
+                    'object_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'entity_type' => static::getTableName()
                 ],
                 'multiple' => false,
                 'clearFields' => [
-                    'entity_type' => static::getTableName(), 
+                    'entity_type' => static::getTableName(),
                     'locale' => $this->get('meta.locale')
                 ],
                 'selfAsArray' => true
@@ -98,14 +98,14 @@ class Location extends Base
             'meta' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Meta',
                 'neededFields' => [
-                    'id' => 'object_id', 
+                    'id' => 'object_id',
                     'meta.locale' => 'locale'
                 ],
                 'addFields' => [
                     'type' => static::getTableName()
                 ],
                 'deleteFields' => [
-                    'object_id' => $this->get('id'), 
+                    'object_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'type' => static::getTableName()
                 ],
@@ -115,13 +115,13 @@ class Location extends Base
             'contact' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Contact',
                 'neededFields' => [
-                    'id' => 'object_id', 
+                    'id' => 'object_id',
                     'meta.locale' => 'locale',
                     'address' => 'address',
                     'geo' => 'geo'
                 ],
                 'deleteFields' => [
-                    'object_id' => $this->get('id'), 
+                    'object_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale')
                 ],
                 'addFields' => [],
@@ -132,7 +132,7 @@ class Location extends Base
             'name' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
                 'neededFields' => [
-                    'id' => 'object_id', 
+                    'id' => 'object_id',
                     'meta.locale' => 'locale',
                     'name' => 'search_value'
                 ],
@@ -141,13 +141,13 @@ class Location extends Base
                     'search_type' => 'name'
                 ],
                 'deleteFields' => [
-                    'object_id' => $this->get('id'), 
+                    'object_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
                     'entity_type' => static::getTableName()
                 ],
                 'multiple' => false,
                 'clearFields' => [
-                    'entity_type' => static::getTableName(), 
+                    'entity_type' => static::getTableName(),
                     'locale' => $this->get('meta.locale')
                 ],
                 'selfAsArray' => true
@@ -155,7 +155,8 @@ class Location extends Base
         ];
     }
 
-    public function preSetupFields() {
+    public function preSetupFields()
+    {
         #$this->dataRaw['payment'] = [
         #    'payment_info' => $this->dataRaw['payment'],
         #    'paymentcode' => ($this->dataRaw['paymentcode'] ?? null)
@@ -189,8 +190,7 @@ class Location extends Base
                 $this->deleteEntity();
                 $this->deleteReferences();
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -201,19 +201,18 @@ class Location extends Base
             return $this->deleteWith(
                 array_combine(['id', 'locale'], array_values($this->get(['id', 'meta.locale'])))
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function clearEntity(array $addWhere = []) : bool {
+    public function clearEntity(array $addWhere = []) : bool
+    {
         try {
             return $this->deleteWith(
                 ['locale' => $this->get('meta.locale')]
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

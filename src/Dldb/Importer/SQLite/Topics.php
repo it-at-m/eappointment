@@ -2,7 +2,7 @@
 
 namespace BO\Dldb\Importer\SQLite;
 
-use BO\Dldb\Importer\MySQL\Topics AS TopicsBase;
+use BO\Dldb\Importer\MySQL\Topics as TopicsBase;
 
 class Topics extends TopicsBase
 {

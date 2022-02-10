@@ -105,7 +105,8 @@ class Location extends Base
         }
     }
 
-    public function getAppointmentForService($service_id, $external = false) {
+    public function getAppointmentForService($service_id, $external = false)
+    {
         $serviceList = $this->getServiceInfoList($service_id);
         
         if (!empty($serviceList)) {
@@ -139,7 +140,7 @@ class Location extends Base
                     . ' '
                     . $this['address']['city']
                     . '<br /><a href="'
-                    . ($this['meta']['url'] ?? $this['url']) 
+                    . ($this['meta']['url'] ?? $this['url'])
                     . '" class="gmap-marker-link">Zum Standort</a>',
                 'categoryIdentifier' => $this['category']['identifier'],
             ],

@@ -11,7 +11,7 @@ use \BO\Dldb\Collection\Links as Base;
 /**
  * @SuppressWarnings(Coupling)
  */
-class Links extends Base 
+class Links extends Base
 {
 
 }

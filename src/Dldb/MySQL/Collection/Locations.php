@@ -11,7 +11,7 @@ use \BO\Dldb\Collection\Locations as Base;
 /**
  * @SuppressWarnings(Coupling)
  */
-class Locations extends Base 
+class Locations extends Base
 {
 
 }

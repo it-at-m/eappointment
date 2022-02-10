@@ -33,8 +33,7 @@ class Topic extends Base
                 $topiclist[$topic['id']] = $topic;
             }
             return $topiclist;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -58,8 +57,7 @@ class Topic extends Base
             }
             $topic = $stm->fetch();
             return $topic;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -83,8 +81,7 @@ class Topic extends Base
             }
             $topic = $stm->fetch();
             return $topic;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -124,8 +121,7 @@ class Topic extends Base
             }
             #echo '<pre>' . print_r($topiclist,1) . '</pre>';exit;
             return $topiclist;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

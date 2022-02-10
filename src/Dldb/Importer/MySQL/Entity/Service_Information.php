@@ -19,12 +19,11 @@ class Service_Information extends Base
         try {
             return $this->deleteWith(
                 array_combine(
-                    ['service_id', 'locale', 'type'], 
+                    ['service_id', 'locale', 'type'],
                     array_values($this->get('service_id', 'locale', 'type'))
                 )
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

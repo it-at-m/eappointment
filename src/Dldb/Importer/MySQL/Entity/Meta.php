@@ -15,13 +15,14 @@ class Meta extends Base
         'titles' => 'titles_json'
     ];
 
-    protected function setupMapping() {
+    protected function setupMapping()
+    {
         $this->referanceMapping = [
             /*
             'keywords' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
                 'neededFields' => [
-                    'object_id' => 'object_id', 
+                    'object_id' => 'object_id',
                     'locale' => 'locale',
                     'keywords' => 'search_value',
                     'type' => 'entity_type',
@@ -30,13 +31,13 @@ class Meta extends Base
                     'search_type' => 'keywords'
                 ],
                 'deleteFields' => [
-                    'object_id' => $this->get('id'), 
+                    'object_id' => $this->get('id'),
                     'locale' => $this->get('locale'),
                     'entity_type' => $this->get('type')
                 ],
                 'multiple' => false,
                 'clearFields' => [
-                    'entity_type' => $this->get('type'), 
+                    'entity_type' => $this->get('type'),
                     'locale' => $this->get('locale')
                 ],
                 'selfAsArray' => true
@@ -44,7 +45,7 @@ class Meta extends Base
             'titles' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
                 'neededFields' => [
-                    'object_id' => 'object_id', 
+                    'object_id' => 'object_id',
                     'locale' => 'locale',
                     'titles' => 'search_value',
                     'type' => 'entity_type',
@@ -53,13 +54,13 @@ class Meta extends Base
                     'search_type' => 'titles'
                 ],
                 'deleteFields' => [
-                    'object_id' => $this->get('id'), 
+                    'object_id' => $this->get('id'),
                     'locale' => $this->get('locale'),
                     'entity_type' => $this->get('type')
                 ],
                 'multiple' => false,
                 'clearFields' => [
-                    'entity_type' => $this->get('type'), 
+                    'entity_type' => $this->get('type'),
                     'locale' => $this->get('locale')
                 ],
                 'selfAsArray' => true
@@ -67,11 +68,11 @@ class Meta extends Base
         ];
     }
 
-    public function postSetupFields() {
+    public function postSetupFields()
+    {
         if (array_key_exists('lastupdate', $this->fields) && !empty($this->fields['lastupdate'])) {
             $this->fields['lastupdate'] = date_format(date_create($this->fields['lastupdate']), 'Y-m-d H:i:s');
-        }
-        else if (!array_key_exists('lastupdate', $this->fields) || empty($this->fields['lastupdate'])) {
+        } elseif (!array_key_exists('lastupdate', $this->fields) || empty($this->fields['lastupdate'])) {
             $this->fields['lastupdate'] = '1970-01-01 01:00:00';
         }
     }
@@ -81,31 +82,30 @@ class Meta extends Base
         try {
             return $this->deleteWith(
                 array_combine(
-                    ['object_id', 'locale', 'type'], 
+                    ['object_id', 'locale', 'type'],
                     array_values($this->get(['object_id', 'locale', 'type']))
                 )
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
-    public function clearEntity(array $addWhere = []) : bool {
+    public function clearEntity(array $addWhere = []) : bool
+    {
         try {
             return $this->deleteWith(
                 array_combine(['type', 'locale'], array_values($this->get(['type', 'locale'])))
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
 
     public function itemNeedsUpdate_(
-        int $objectId = 0, 
-        string $locale = '', 
-        string $objectHash = '', 
+        int $objectId = 0,
+        string $locale = '',
+        string $objectHash = '',
         string $type = ''
     ) : bool {
         try {
@@ -125,8 +125,7 @@ class Meta extends Base
             }
             #print_r([$needsUpdate ? 'T' : 'F', $fields]);
             return $needsUpdate;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
         return false;
