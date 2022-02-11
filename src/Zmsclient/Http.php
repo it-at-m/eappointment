@@ -113,6 +113,7 @@ class Http
         } elseif ($userInfo) {
             $request = $request->withHeader('Authorization', 'Basic '. base64_encode($userInfo));
         }
+
         return $request;
     }
 
