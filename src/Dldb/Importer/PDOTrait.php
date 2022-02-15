@@ -91,4 +91,4 @@ trait PDOTrait
             throw $e;
         }
     }
-};
+}

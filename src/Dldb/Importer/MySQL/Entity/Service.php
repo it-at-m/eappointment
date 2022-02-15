@@ -27,6 +27,9 @@ class Service extends Base
         '__RAW__' => 'data_json'
     ];
 
+    /**
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     */
     protected function setupMapping()
     {
         $this->referanceMapping = [
@@ -119,7 +122,7 @@ class Service extends Base
                 ],
             ],
             'authorities' => [
-                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Authority_Service',
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\AuthorityService',
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
 
@@ -133,7 +136,7 @@ class Service extends Base
                 ]
             ],
             'locations' => [
-                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Location_Service',
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\LocationService',
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [],
                 'deleteFields' => [
@@ -145,7 +148,7 @@ class Service extends Base
                 ]
             ],
             'requirements' => [
-                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Service_Information',
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\ServiceInformation',
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'requirements',
@@ -164,7 +167,7 @@ class Service extends Base
                 ],
             ],
             'forms' => [
-                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Service_Information',
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\ServiceInformation',
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'forms',
@@ -183,7 +186,7 @@ class Service extends Base
                 ],
             ],
             'prerequisites' => [
-                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Service_Information',
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\ServiceInformation',
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'prerequisites',
@@ -202,7 +205,7 @@ class Service extends Base
                 ],
             ],
             'links' => [
-                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Service_Information',
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\ServiceInformation',
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'links',
@@ -221,7 +224,7 @@ class Service extends Base
                 ],
             ],
             'publications' => [
-                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Service_Information',
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\ServiceInformation',
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'publications',
@@ -240,7 +243,7 @@ class Service extends Base
                 ],
             ],
             'legal' => [
-                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Service_Information',
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\ServiceInformation',
                 'neededFields' => ['id' => 'service_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     'type' => 'legal',
@@ -267,11 +270,17 @@ class Service extends Base
             /*
             if (false === $this->get('meta.translated')) {
                 $this->setStatus(static::STATUS_OLD);
-                error_log('not translated service - (' . $this->get('id') . ' | ' . $this->get('meta.locale') . ') - ' . $this->get('name'));
+                error_log(
+                    'not translated service - (' . $this->get('id') . ' | ' .
+                    $this->get('meta.locale') . ') - ' . $this->get('name')
+                );
                 return false;
             }
             else {
-                error_log('translated service - (' . $this->get('id') . ' | ' . $this->get('meta.locale') . ') - ' . $this->get('name'));
+                error_log(
+                    'translated service - (' . $this->get('id') . ' | ' .
+                    $this->get('meta.locale') . ') - ' . $this->get('name')
+                );
             }
             */
             $fields = $this->get(['id', 'meta.locale', 'meta.hash']);

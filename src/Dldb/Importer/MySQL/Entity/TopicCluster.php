@@ -2,7 +2,7 @@
 
 namespace BO\Dldb\Importer\MySQL\Entity;
 
-class Topic_Cluster extends Base
+class TopicCluster extends Base
 {
     protected $fieldMapping = [
         'id' => 'topic_id',

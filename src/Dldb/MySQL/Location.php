@@ -58,10 +58,10 @@ class Location extends Base
             if (!empty($service_csv)) {
                 #$sqlArgs[] = $this->locale;
                 $ids = explode(',', $service_csv);
-                $qm = array_fill(0, count($ids), '?');
+                $questionMarks = array_fill(0, count($ids), '?');
                 $join[] = 'LEFT JOIN location_service AS ls ON ls.location_id = l.id';# AND ls.locale = ?';
 
-                $where[] = "ls.service_id IN (" . implode(', ', $qm) . ")";
+                $where[] = "ls.service_id IN (" . implode(', ', $questionMarks) . ")";
                 $groupBy = 'GROUP BY l.id';
                 array_push($sqlArgs, ...$ids);
             }
@@ -154,8 +154,8 @@ class Location extends Base
             #$sql = 'SELECT data_json FROM location WHERE locale = ?';
 
             $ids = explode(',', $location_csv);
-            $qm = array_fill(0, count($ids), '?');
-            $where[] = 'l.id IN (' . implode(', ', $qm) . ')';
+            $questionMarks = array_fill(0, count($ids), '?');
+            $where[] = 'l.id IN (' . implode(', ', $questionMarks) . ')';
             array_push($sqlArgs, ...$ids);
 
             $sql .= " " . implode(' ', $join);

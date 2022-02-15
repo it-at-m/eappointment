@@ -19,7 +19,7 @@ abstract class Base implements Options
     protected $hash = null;
     protected $locale = 'de';
     protected $metaObject = null;
-    protected $currentEntitysToDelete = [];
+    protected $entitysToDelete = [];
     protected $getCurrentEntitys = true;
 
     public function __construct(PDOAccess $mySqlAccess, array $importData = [], string $locale = 'de', $options = 0)
@@ -56,12 +56,12 @@ abstract class Base implements Options
 
     public function getCurrentEntitys() : array
     {
-        return $this->currentEntitysToDelete;
+        return $this->entitysToDelete;
     }
 
-    public function removeEntityFromCurrentList(int $id)
+    public function removeEntityFromCurrentList(int $entityId)
     {
-        unset($this->currentEntitysToDelete[$id]);
+        unset($this->entitysToDelete[$entityId]);
     }
 
     public function setCurrentEntitys()
@@ -70,7 +70,7 @@ abstract class Base implements Options
             if (false === $this->getCurrentEntitys) {
                 return true;
             }
-            $this->currentEntitysToDelete = [];
+            $this->entitysToDelete = [];
             $sql = "SELECT 
             m.object_id AS id, 
             e.data_json AS data_json 
@@ -85,9 +85,18 @@ abstract class Base implements Options
             $entitys = $stm->fetchAll();
             foreach ($entitys as $entity) {
                 $entityObject = $this->createEntity(json_decode($entity->data_json, true));
-                $this->currentEntitysToDelete[$entity->id] = $entityObject;
+                $this->entitysToDelete[$entity->id] = $entityObject;
             }
-            #error_log(print_r(['current', $this->entityClass::getTableName(), $this->getLocale(), count($this->currentEntitysToDelete)],1));
+            /*
+            error_log(
+                print_r([
+                    'current',
+                    $this->entityClass::getTableName(),
+                    $this->getLocale(),
+                    count($this->entitysToDelete)
+                ],1
+            ));
+            */
         } catch (\Exception $e) {
             throw $e;
         }
@@ -128,7 +137,7 @@ abstract class Base implements Options
     public function needsUpdate()
     {
         $metaObject = $this->getMetaObject();
-        $needsUpdate = $metaObject->itemNeedsUpdate_();
+        $needsUpdate = $metaObject->itemNeedsUpdateAlt();
         if ($needsUpdate) {
             $this->setCurrentEntitys();
         }

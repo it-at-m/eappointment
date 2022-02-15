@@ -102,7 +102,11 @@ class Meta extends Base
         }
     }
 
-    public function itemNeedsUpdate_(
+    /**
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function itemNeedsUpdateAlt(
         int $objectId = 0,
         string $locale = '',
         string $objectHash = '',
@@ -114,12 +118,12 @@ class Meta extends Base
             );
             $fields = $this->get(['object_id', 'locale', 'hash', 'type']);
             
-            $r = $statment->execute(array_values($fields));
+            $result = $statment->execute(array_values($fields));
 
             $needsUpdate = false;
-            if ($r) {
-                $c = $statment->fetchColumn();
-                if ($c != 1) {
+            if ($result) {
+                $count = $statment->fetchColumn();
+                if ($count != 1) {
                     $needsUpdate = true;
                 }
             }

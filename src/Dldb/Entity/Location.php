@@ -104,7 +104,10 @@ class Location extends Base
             return count($serviceList) > 0 && count($servicecount) == count($serviceList);
         }
     }
-
+    /**
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function getAppointmentForService($service_id, $external = false)
     {
         $serviceList = $this->getServiceInfoList($service_id);

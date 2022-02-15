@@ -8,9 +8,11 @@ namespace BO\Dldb;
 use Error;
 
 /**
-  * Extension for Twig
-  *
-  */
+ * Extension for Twig
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ */
 class TwigExtension extends \Twig_Extension
 {
 
@@ -270,6 +272,9 @@ class TwigExtension extends \Twig_Extension
         return implode(',', array_unique($propertylist));
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.LongVariable)
+     */
     public function getAppointmentForLocationFromServiceAppointmentLocations(
         array $serviceAppointmentLocationList,
         $locationId

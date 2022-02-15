@@ -97,6 +97,7 @@ abstract class Base implements Options
             if ($this->checkOptionFlag(static::OPTION_CLEAR_ENTITIY_REFERENCES_TABLES) ||
                 $this->checkOptionFlag(static::OPTION_CLEAR_ENTITIY_TABLE)
             ) {
+                /*
                 $types = [
                     'Services',
                     'Locations',
@@ -104,14 +105,22 @@ abstract class Base implements Options
                     'Topics',
                     'Settings'
                 ];
+                */
                 $tablesToClear = [];
                 
-                foreach ($this->importTypes as $type => $entityName) {
-                    $importer = $this->__call('get' . $type . 'Importer', [['data' => [], 'hash' => ''], 'de', $this->getOptions()]);
+                foreach (array_keys($this->importTypes) as $type) {
+                    $importer = $this->__call(
+                        'get' . $type . 'Importer',
+                        [
+                            ['data' => [], 'hash' => ''],
+                            'de',
+                            $this->getOptions()
+                        ]
+                    );
                     $entity = $importer->createEntity(['meta' => ['locale' => 'de']], false);
                     $tablesToClear[$entity::getTableName()] = 1;
 
-                    foreach ($entity->getReferenceMapping(true) as $key => $data) {
+                    foreach (array_values($entity->getReferenceMapping(true)) as $data) {
                         $tablesToClear[call_user_func($data['class'] . '::getTableName')] = 1;
                     }
                 }

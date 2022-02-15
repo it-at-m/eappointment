@@ -2,7 +2,7 @@
 
 namespace BO\Dldb\Importer\MySQL\Entity;
 
-class Topic_Links extends Base
+class TopicLinks extends Base
 {
     protected $fieldMapping = [
         'topic_id' => 'topic_id',
@@ -71,14 +71,13 @@ class Topic_Links extends Base
         return true;
         try {
             if ($stm && 0 < $stm->rowCount()) {
-                $pdoConnection = $this->getPDOAccess()->getConnection();
-                $lastInsertId = $pdoConnection->lastInsertId();
+                #$lastInsertId = $pdoConnection->lastInsertId();
 
                 $sql = 'REPLACE INTO ' . static::getTableName() . ' ';
                 $sql .= '(`' . implode('`, `', array_keys($this->fields)) . '`) ';
                 
-                $qm = array_fill(0, count($this->fields), '?');
-                $sql .= 'VALUES (' . implode(', ', $qm) . ') ';
+                $questionMarks = array_fill(0, count($this->fields), '?');
+                $sql .= 'VALUES (' . implode(', ', $questionMarks) . ') ';
 
                 #print_r($sql . \PHP_EOL) ;
                 $stm = $this->getPDOAccess()->prepare($sql);

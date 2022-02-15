@@ -10,4 +10,6 @@
     <rule ref="rulesets/naming.xml" />
     <rule ref="rulesets/unusedcode.xml" />
     <rule ref="rulesets/controversial.xml/Superglobals" />
+    
+
 </ruleset>

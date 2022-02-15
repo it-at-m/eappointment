@@ -2,87 +2,10 @@
 
 namespace BO\Dldb\Importer;
 
-define('DEBUG', true);
+require_once('Timer.php');
 
-class Timer
-{
-    protected $_start, $_pause, $_stop, $_elapsed;# = 0;
-    
-    public function __construct()
-    {
-        $this->start();
-        if (true === DEBUG) {
-            echo 'Working - please wait...' . PHP_EOL;
-        }
-    }
-
-    public function start()
-    {
-        $this->_start = Timer::getMicroTime();
-    }
-
-    public function stop()
-    {
-        $this->_stop = Timer::getMicroTime();
-    }
-
-    public function pause()
-    {
-        $this->_pause = Timer::getMicroTime();
-        $this->_elapsed += ($this->_pause - $this->_start);
-    }
-
-    public function resume()
-    {
-        $this->_start = Timer::getMicroTime();
-    }
-
-    public function getTime()
-    {
-        if (!isset($this->_stop)) {
-            $this->_stop = Timer::getMicroTime();
-        }
-        return $this->timeToString();
-    }
-
-    protected function getLapTime()
-    {
-        return $this->timeToString();
-    }
-
-    protected static function getMicroTime()
-    {
-        list($usec, $sec) = explode(' ', microtime());
-        return ((float) $usec + (float) $sec);
-    }
-
-    protected function timeToString()
-    {
-        $seconds = ($this->_stop - $this->_start) + $this->_elapsed;
-        $seconds = Timer::roundMicroTime($seconds);
-        $hours = floor($seconds / (60 * 60));
-        $divisor_for_minutes = $seconds % (60 * 60);
-        $minutes = floor($divisor_for_minutes / 60);
-        return $hours . "h:" . $minutes . "m:" . $seconds . "s";
-    }
-
-    protected static function roundMicroTime($microTime)
-    {
-        return round($microTime, 4, PHP_ROUND_HALF_UP);
-    }
-
-    public function __destruct()
-    {
-        if (true === DEBUG) {
-            echo 'Job finished in ' . $this->getTime() . PHP_EOL;
-        }
-    }
-}
 $timer = new Timer();
-function p()
-{
-    print_r(func_get_args());
-}
+
 
 require_once('../Exception.php');
 require_once('../AbstractAccess.php');
