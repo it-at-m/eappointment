@@ -8,6 +8,14 @@ use BO\Dldb\Importer\ItemNeedsUpdateTrait;
 use BO\Dldb\Importer\MySQL\Entity\Collection as EntityCollection
 ;
 
+/**
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.NumberOfChildren)
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ */
 abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
 {
     use ItemNeedsUpdateTrait, PDOTrait;
@@ -163,7 +171,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
     {
         $referenceFields = array_flip(array_keys(array_filter($this->referanceMapping)));
         
-        foreach ($referenceFields as $name => $v) {
+        foreach (array_keys($referenceFields) as $name) {
             $referenceFields[$name] = $this->get($name);
         }
         return $referenceFields;
@@ -340,7 +348,8 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
             $value = $default;
 
             $pointer = &$this->dataRaw;
-            for ($i = 0; $i < count($levels); ++$i) {
+            $levelsCount = count($levels);
+            for ($i = 0; $i < $levelsCount; ++$i) {
                 if (array_key_exists($levels[$i], $pointer)) {
                     $pointer = &$pointer[$levels[$i]];
                     $value = $pointer;
@@ -394,8 +403,8 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                 $sql = 'REPLACE INTO ' . static::getTableName() . ' ';
                 $sql .= '(`' . implode('`, `', array_keys($this->fields)) . '`) ';
                 
-                $qm = array_fill(0, count($this->fields), '?');
-                $sql .= 'VALUES (' . implode(', ', $qm) . ') ';
+                $questionMarks = array_fill(0, count($this->fields), '?');
+                $sql .= 'VALUES (' . implode(', ', $questionMarks) . ') ';
 
                 #print_r($sql . \PHP_EOL) ;
                 $stm = $this->getPDOAccess()->prepare($sql);
@@ -417,6 +426,10 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return false;
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function postSave(\PDOStatement $stm, Base $entity)
     {
     }
@@ -560,7 +573,9 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         if (defined('static::TABLENAME')) {
             return strtolower(static::TABLENAME);
         }
-        $e = explode("\\", static::class);
-        return strtolower(end($e));
+        $classNameWithNs = explode("\\", static::class);
+        $className = end($classNameWithNs);
+        
+        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $className));
     }
 }

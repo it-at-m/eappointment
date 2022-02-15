@@ -2,12 +2,11 @@
 
 namespace BO\Dldb\Importer\MySQL\Entity;
 
-class Authority_Location extends Base
+class TopicService extends Base
 {
     protected $fieldMapping = [
-        'authority_id' => 'authority_id',
-        'id' => 'location_id',
-        'locale' => 'locale'
+        'id' => 'service_id',
+        'topic_id' => 'topic_id',
     ];
 
     public function deleteEntity(): bool
@@ -15,8 +14,8 @@ class Authority_Location extends Base
         try {
             return $this->deleteWith(
                 array_combine(
-                    ['authority_id', 'location_id', 'locale'],
-                    array_values($this->get(['authority_id', 'id', 'locale']))
+                    ['topic_id', 'service_id'],
+                    array_values($this->get('topic_id', 'id'))
                 )
             );
         } catch (\Exception $e) {

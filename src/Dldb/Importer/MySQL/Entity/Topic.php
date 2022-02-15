@@ -15,6 +15,9 @@ class Topic extends Base
         '__RAW__' => 'data_json'
     ];
 
+    /**
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     */
     protected function setupMapping()
     {
         $this->referanceMapping = [
@@ -109,72 +112,66 @@ class Topic extends Base
                 'selfAsArray' => true
             ],
             'links' => [
-                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Topic_Links',
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\TopicLinks',
                 'neededFields' => ['id' => 'topic_id', 'meta.locale' => 'locale'],
                 'addFields' => ['locale' => $this->get('meta.locale')],
                 'delete' => false,
                 'deleteFunction' => function (\BO\Dldb\Importer\MySQL\Entity\Topic $topic) {
-                    $id = $topic->get('id');
-                    try {
-                        $sql = "DELETE FROM " . \BO\Dldb\Importer\MySQL\Entity\Topic_Links::getTableName() . ' WHERE topic_id = ?';
-                        $stm = $topic->getPDOAccess()->prepare($sql);
-            
-                        $stm->execute([$id]);
-
-                        if ($stm && 0 < $stm->rowCount()) {
-                            #print_r(static::class);
-                            return true;
-                        }
-                        return false;
-                    } catch (\Exception $e) {
-                        throw $e;
-                    }
+                    return static::deleteReferencesFn(
+                        $topic,
+                        \BO\Dldb\Importer\MySQL\Entity\TopicLinks::getTableName(),
+                        'topic_id'
+                    );
                 },
                 'clearFields' => [
                     'locale' => $this->get('meta.locale')
                 ]
             ],
             'relation.services' => [
-                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Topic_Service',
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\TopicService',
                 'neededFields' => ['id' => 'topic_id'],
                 'addFields' => [],
                 'deleteFunction' => function (\BO\Dldb\Importer\MySQL\Entity\Topic $topic) {
-                    $id = $topic->get('id');
-                    try {
-                        $sql = "DELETE FROM " . \BO\Dldb\Importer\MySQL\Entity\Topic_Service::getTableName() . ' WHERE topic_id = ?';
-                        $stm = $topic->getPDOAccess()->prepare($sql);
-            
-                        $stm->execute([$id]);
-                        if ($stm && 0 < $stm->rowCount()) {
-                            return true;
-                        }
-                        return false;
-                    } catch (\Exception $e) {
-                        throw $e;
-                    }
+                    return static::deleteReferencesFn(
+                        $topic,
+                        \BO\Dldb\Importer\MySQL\Entity\TopicService::getTableName(),
+                        'topic_id'
+                    );
                 }
             ],
             'relation.childs' => [
-                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Topic_Cluster',
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\TopicCluster',
                 'neededFields' => ['id' => 'parent_id'],
                 'addFields' => [],
                 'deleteFunction' => function (\BO\Dldb\Importer\MySQL\Entity\Topic $topic) {
-                    $id = $topic->get('id');
-                    try {
-                        $sql = "DELETE FROM " . \BO\Dldb\Importer\MySQL\Entity\Topic_Cluster::getTableName() . ' WHERE parent_id = ?';
-                        $stm = $topic->getPDOAccess()->prepare($sql);
-            
-                        $stm->execute([$id]);
-                        if ($stm && 0 < $stm->rowCount()) {
-                            return true;
-                        }
-                        return false;
-                    } catch (\Exception $e) {
-                        throw $e;
-                    }
+                    return static::deleteReferencesFn(
+                        $topic,
+                        \BO\Dldb\Importer\MySQL\Entity\TopicCluster::getTableName(),
+                        'parent_id'
+                    );
                 }
             ]
         ];
+    }
+
+    protected static function deleteReferencesFn(
+        \BO\Dldb\Importer\MySQL\Entity\Topic $topic,
+        string $tableName,
+        string $whereField
+    ) {
+        $topicId = $topic->get('id');
+        try {
+            $sql = "DELETE FROM " + $tableName + " WHERE " + $whereField + " = ?";
+            $stm = $topic->getPDOAccess()->prepare($sql);
+
+            $stm->execute([$topicId]);
+            if ($stm && 0 < $stm->rowCount()) {
+                return true;
+            }
+            return false;
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
     
     public function preSetup()

@@ -69,10 +69,10 @@ class Service extends Base
             if (!empty($location_csv)) {
                 #$sqlArgs[] = $this->locale;
                 $ids = explode(',', $location_csv);
-                $qm = array_fill(0, count($ids), '?');
+                $questionMarks = array_fill(0, count($ids), '?');
                 $join[] = 'LEFT JOIN location_service AS ls ON ls.service_id = s.id';# AND ls.locale = ?';
 
-                $where[] = "ls.location_id IN (" . implode(', ', $qm) . ")";
+                $where[] = "ls.location_id IN (" . implode(', ', $questionMarks) . ")";
                 $groupBy = 'GROUP BY s.id';
                 array_push($sqlArgs, ...$ids);
             }
@@ -122,9 +122,9 @@ class Service extends Base
             }
             
             $ids = explode(',', $service_csv);
-            $qm = array_fill(0, count($ids), '?');
+            $questionMarks = array_fill(0, count($ids), '?');
             
-            $where[] = 's.id IN (' . implode(', ', $qm) . ')';
+            $where[] = 's.id IN (' . implode(', ', $questionMarks) . ')';
             array_push($sqlArgs, ...$ids);
 
             $sql .= " " . implode(' ', $join);
@@ -196,8 +196,8 @@ class Service extends Base
 
             if (!empty($service_csv)) {
                 $ids = explode(',', $service_csv);
-                $qm = array_fill(0, count($ids), '?');
-                $sql .= ' AND se.object_id IN (' . implode(', ', $qm) . ')';
+                $questionMarks = array_fill(0, count($ids), '?');
+                $sql .= ' AND se.object_id IN (' . implode(', ', $questionMarks) . ')';
                 array_push($sqlArgs, ...$ids);
             }
             #print_r($sql);exit;

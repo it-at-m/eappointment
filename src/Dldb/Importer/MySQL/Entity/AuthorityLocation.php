@@ -2,11 +2,11 @@
 
 namespace BO\Dldb\Importer\MySQL\Entity;
 
-class Authority_Service extends Base
+class AuthorityLocation extends Base
 {
     protected $fieldMapping = [
-        'service_id' => 'service_id',
-        'id' => 'authority_id',
+        'authority_id' => 'authority_id',
+        'id' => 'location_id',
         'locale' => 'locale'
     ];
 
@@ -15,8 +15,8 @@ class Authority_Service extends Base
         try {
             return $this->deleteWith(
                 array_combine(
-                    ['service_id', 'authority_id', 'locale'],
-                    array_values($this->get(['service_id', 'id', 'locale']))
+                    ['authority_id', 'location_id', 'locale'],
+                    array_values($this->get(['authority_id', 'id', 'locale']))
                 )
             );
         } catch (\Exception $e) {

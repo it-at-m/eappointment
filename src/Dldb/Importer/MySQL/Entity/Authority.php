@@ -36,7 +36,7 @@ class Authority extends Base
                 'multiple' => false
             ],
             'locations' => [
-                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Authority_Location',
+                'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\AuthorityLocation',
                 'neededFields' => ['id' => 'authority_id', 'meta.locale' => 'locale'],
                 'addFields' => [
                     

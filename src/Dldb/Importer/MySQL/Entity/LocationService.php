@@ -2,7 +2,7 @@
 
 namespace BO\Dldb\Importer\MySQL\Entity;
 
-class Location_Service extends Base
+class LocationService extends Base
 {
     protected $fieldMapping = [
         'location' => 'location_id',

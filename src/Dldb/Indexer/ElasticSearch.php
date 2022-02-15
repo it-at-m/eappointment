@@ -140,8 +140,8 @@ class ElasticSearch
         $docs = array();
         foreach ($this->localeList as $locale) {
             foreach ($this->dldb->fromService($locale)->fetchList() as $service) {
-                $id = $locale . $service['id'];
-                $docs[] = new \Elastica\Document($id, $service);
+                $serviceId = $locale . $service['id'];
+                $docs[] = new \Elastica\Document($serviceId, $service);
             }
         }
         $esType->addDocuments($docs);
@@ -158,8 +158,8 @@ class ElasticSearch
         $docs = array();
         foreach ($this->localeList as $locale) {
             foreach ($this->dldb->fromLocation($locale)->fetchList() as $location) {
-                $id = $locale . $location['id'];
-                $docs[] = new \Elastica\Document($id, $location);
+                $locationId = $locale . $location['id'];
+                $docs[] = new \Elastica\Document($locationId, $location);
             }
         }
         $esType->addDocuments($docs);
@@ -176,8 +176,8 @@ class ElasticSearch
         $docs = array();
         foreach ($this->localeList as $locale) {
             foreach ($this->dldb->fromAuthority($locale)->fetchSource() as $authority) {
-                $id = $locale . $authority['id'];
-                $docs[] = new \Elastica\Document($id, $authority);
+                $authorityId = $locale . $authority['id'];
+                $docs[] = new \Elastica\Document($authorityId, $authority);
             }
         }
         $esType->addDocuments($docs);

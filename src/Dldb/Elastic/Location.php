@@ -164,7 +164,7 @@ class Location extends Base
         $query->getFilter()->addMust(Helper::localeFilter($this->locale));
         $mainquery = new \Elastica\Query();
         $limit = 1000;
-        $sort = true;
+        //$sort = true;
         $searchquery = new \Elastica\Query\QueryString();
         if ($querystring > 10000 && $querystring < 15000) {
             // if it is a postal code, sort by distance and limit results
@@ -182,7 +182,7 @@ class Location extends Base
                     ]
                 ]);
                 $limit = 5;
-                $sort = false;
+                //$sort = false;
             }
         } elseif ('' === trim($querystring)) {
             // if empty, find all and trust in the filter

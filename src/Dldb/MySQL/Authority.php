@@ -31,12 +31,12 @@ class Authority extends Base
             
             if (!empty($servicelist)) {
                 $sqlArgs = ['de',$this->locale];
-                $qm = array_fill(0, count($servicelist), '?');
+                $questionMarks = array_fill(0, count($servicelist), '?');
 
                 $sql = "SELECT a.data_json
                 FROM authority_service AS aservice
                 LEFT JOIN authority AS a ON a.id = aservice.authority_id AND a.locale = ?
-                WHERE aservice.locale = ? AND aservice.service_id IN (" . implode(', ', $qm) . ")";
+                WHERE aservice.locale = ? AND aservice.service_id IN (" . implode(', ', $questionMarks) . ")";
                 
                 array_push($sqlArgs, ...$servicelist);
                
@@ -51,12 +51,12 @@ class Authority extends Base
                 }
 
                 $sqlArgs = [$this->locale];
-                $qm = array_fill(0, count($servicelist), '?');
+                $questionMarks = array_fill(0, count($servicelist), '?');
 
                 $sql = "SELECT ls.location_id AS id
                     FROM location_service ls
                     -- LEFT JOIN location AS l ON l.id = ls.location_id AND l.locale = ?
-                    WHERE ls.locale = ? AND ls.service_id IN (" . implode(', ', $qm) . ")
+                    WHERE ls.locale = ? AND ls.service_id IN (" . implode(', ', $questionMarks) . ")
                     GROUP BY ls.location_id 
                     ";
 
@@ -73,7 +73,8 @@ class Authority extends Base
                     $locationsIds[] = $location->id;
                 }
  
-                $locations = $this->access()->fromLocation($this->locale)->fetchFromCsv(implode(',', $locationsIds), true);
+                $locations = $this->access()->fromLocation($this->locale)
+                    ->fetchFromCsv(implode(',', $locationsIds), true);
                 
                 foreach ($locations as $location) {
                     $authorityList[$location['authority']['id']]->addLocation($location);
@@ -108,11 +109,11 @@ class Authority extends Base
      *
      * @return Collection\Authorities
      */
-    public function fetchId($id)
+    public function fetchId($authorityid)
     {
         try {
-            $sqlArgs = [$this->locale, $id];
-            $sqlArgs = ['de', $id];
+            $sqlArgs = [$this->locale, $authorityid];
+            $sqlArgs = ['de', $authorityid];
             
             
             $sql = 'SELECT data_json FROM authority WHERE locale = ? AND id = ?';

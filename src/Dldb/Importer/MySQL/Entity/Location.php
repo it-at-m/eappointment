@@ -22,7 +22,9 @@ class Location extends Base
         'appointment' => 'appointment_json',
         '__RAW__' => 'data_json'
     ];
-
+    /**
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     */
     protected function setupMapping()
     {
         $this->referanceMapping = [
@@ -174,11 +176,17 @@ class Location extends Base
             /*
             if (false === $this->get('meta.translated')) {
                 $this->setStatus(static::STATUS_OLD);
-                error_log('not translated location - (' . $this->get('id') . ' | ' . $this->get('meta.locale') . ') - ' . $this->get('name'));
+                error_log(
+                    'not translated location - (' . $this->get('id') . ' | ' .
+                    $this->get('meta.locale') . ') - ' . $this->get('name')
+                );
                 return false;
             }
             else {
-                error_log('translated location - (' . $this->get('id') . ' | ' . $this->get('meta.locale') . ') - ' . $this->get('name'));
+                error_log(
+                    'translated location - (' . $this->get('id') . ' | ' .
+                    $this->get('meta.locale') . ') - ' . $this->get('name')
+                );
             }
             */
             $fields = $this->get(['id', 'meta.locale', 'meta.hash']);

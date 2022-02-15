@@ -13,12 +13,12 @@ trait ItemNeedsUpdateTrait
             $statment = $this->getPDOAccess()->prepare(
                 "SELECT count(1) AS count FROM meta WHERE object_id = ? AND locale = ? AND hash = ? AND type = ?"
             );
-            $r = $statment->execute([$objectId, $locale, $objectHash, $type]);
+            $result = $statment->execute([$objectId, $locale, $objectHash, $type]);
 
             $needsUpdate = false;
-            if ($r) {
-                $c = $statment->fetchColumn();
-                if ($c != 1) {
+            if ($result) {
+                $count = $statment->fetchColumn();
+                if ($count != 1) {
                     $needsUpdate = true;
                 }
             }

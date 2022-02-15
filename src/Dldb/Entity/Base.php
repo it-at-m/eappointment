@@ -92,7 +92,8 @@ class Base extends \ArrayObject
         }
         $keys = explode('__', $key);
     
-        while (count($keys) > 1) {
+        $numKeys = count($keys);
+        while ($numKeys > 1) {
             $key = array_shift($keys);
             if (! isset($array[$key]) || ! is_array($array[$key])) {
                 $array[$key] = [];

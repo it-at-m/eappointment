@@ -4,7 +4,10 @@ namespace BO\Dldb;
 
 abstract class PDOAccess extends AbstractAccess
 {
-    protected $accessorClassNameByName = [];
+    /**
+     * @SuppressWarnings(PHPMD.LongVariable)
+     */
+    protected $accessorClassName = [];
 
     protected $accessorNamesPlural = [
         'Authority' => 'Authorities',
@@ -25,14 +28,14 @@ abstract class PDOAccess extends AbstractAccess
     public function __construct(array $options)
     {
         try {
-            $e = explode("\\", static::class);
-            $this->engine = str_replace('Access', '', end($e));
+            $parts = explode("\\", static::class);
+            $this->engine = str_replace('Access', '', end($parts));
 
             $accessorNameKeys = array_keys($this->accessorNamesPlural);
-            $accessorClassNameByName = array_flip($this->accessorNamesPlural);
+            $accessorClassName = array_flip($this->accessorNamesPlural);
 
-            $this->accessorClassNameByName = array_merge(
-                $accessorClassNameByName,
+            $this->accessorClassName = array_merge(
+                $accessorClassName,
                 array_combine($accessorNameKeys, $accessorNameKeys)
             );
             $this->accessorNamesPlural = array_merge(
@@ -72,9 +75,9 @@ abstract class PDOAccess extends AbstractAccess
 
     protected function loadAccessor(string $name, string $locale = 'de')
     {
-        if (isset($this->accessorClassNameByName[$name])) {
-            if (null === $this->accessInstance[$locale][$this->accessorClassNameByName[$name]]) {
-                $accessorClass = __NAMESPACE__ . '\\' . $this->engine . '\\' . $this->accessorClassNameByName[$name];
+        if (isset($this->accessorClassName[$name])) {
+            if (null === $this->accessInstance[$locale][$this->accessorClassName[$name]]) {
+                $accessorClass = __NAMESPACE__ . '\\' . $this->engine . '\\' . $this->accessorClassName[$name];
 
                 $instance = new $accessorClass($this, $locale);
                 $this->accessInstance[$locale][$name] = $instance;

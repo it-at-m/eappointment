@@ -133,7 +133,7 @@ class AbstractAccess
             throw new Exception("Instance for accessing $instanceName failed");
         }
         echo '<pre>' . print_r($this->accessInstance, 1) . '</pre>';
-        exit;
+        //exit;
         throw new Exception("Instance for accessing $instanceName does not exists");
     }
 

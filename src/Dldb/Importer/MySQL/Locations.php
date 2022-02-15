@@ -19,9 +19,18 @@ class Locations extends Base
                 print_r('NO Locations(' . $this->getLocale() . ') Update needet' . \PHP_EOL);
                 #print_r($this->metaObject);
             }
+            /*
+            error_log(
+                print_r([
+                    'delete',
+                     $this->entityClass::getTableName(),
+                     $this->getLocale(),
+                     count($this->getCurrentEntitys()),
+                     array_keys($this->getCurrentEntitys())
+                ],
+            1));
 
-            error_log(print_r(['delete', $this->entityClass::getTableName(), $this->getLocale(), count($this->getCurrentEntitys()), array_keys($this->getCurrentEntitys())], 1));
-
+                */
             foreach ($this->getCurrentEntitys() as $entityToDelete) {
                 $entityToDelete->delete();
             }
