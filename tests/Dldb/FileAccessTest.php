@@ -8,7 +8,7 @@ namespace BO\Dldb\Tests;
 
 use BO\Dldb\FileAccess;
 
-class FileTest extends \PHPUnit_Framework_TestCase
+class FileTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testIds()
@@ -27,6 +27,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $authorityList = $access->fromAuthority()->fetchList(SERVICE_SINGLE);
         $this->assertArrayHasKey(12675, $authorityList);
         $serviceList = $access->fromService()->fetchFromCsv(SERVICE_CSV);
+        
         $this->assertArrayHasKey(SERVICE_SINGLE, $serviceList);
         $locationList = $access->fromLocation()->fetchFromCsv(LOCATION_CSV);
         $this->assertArrayHasKey(LOCATION_SINGLE, $locationList);

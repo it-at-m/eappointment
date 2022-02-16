@@ -6,6 +6,6 @@
 
 namespace BO\Dldb\Tests\Entities;
 
-class Base extends \PHPUnit_Framework_TestCase
+class Base extends \PHPUnit\Framework\TestCase
 {
 }

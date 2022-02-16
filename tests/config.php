@@ -18,3 +18,4 @@ define('ES_HOST', getenv('ES_HOST') ? getenv('ES_HOST') : 'localhost');
 define('ES_PORT', getenv('ES_PORT') ? getenv('ES_PORT') : '9200');
 define('ES_TRANSPORT', getenv('ES_TRANSPORT') ? getenv('ES_TRANSPORT') : 'Http');
 define('ES_ALIAS', getenv('ES_ALIAS') ? getenv('ES_ALIAS') : 'dldbtest');
+define('ES_TEST',false);
