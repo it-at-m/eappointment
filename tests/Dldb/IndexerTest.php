@@ -8,11 +8,15 @@ namespace BO\Dldb\Tests;
 
 use BO\Dldb\FileAccess;
 
-class IndexerTest extends \PHPUnit_Framework_TestCase
+class IndexerTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testIndexer()
     {
+        if (ES_TEST === false) {
+            $this->assertFalse(ES_TEST);
+            return true;
+        }
         if (!getenv('FASTTEST')) {
             $indexer = new \BO\Dldb\Indexer\ElasticSearch(FIXTURES);
             $indexer->setHost(ES_HOST);
@@ -26,6 +30,10 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
 
     public function testBasicQuery()
     {
+        if (ES_TEST === false) {
+            $this->assertFalse(ES_TEST);
+            return true;
+        }
         $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
         $access->loadFromPath(FIXTURES);
         $location = $access->fromLocation()->fetchId(LOCATION_SINGLE);
@@ -34,6 +42,10 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
 
     public function testAccess()
     {
+        if (ES_TEST === false) {
+            $this->assertFalse(ES_TEST);
+            return true;
+        }
         $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
         $access->loadFromPath(FIXTURES);
         $location = $access->fromLocation()->fetchId(LOCATION_SINGLE);
@@ -72,6 +84,10 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
 
     public function testFail()
     {
+        if (ES_TEST === false) {
+            $this->assertFalse(ES_TEST);
+            return true;
+        }
         $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
         $access->loadFromPath(FIXTURES);
         $location = $access->fromLocation()->fetchId(1);
@@ -82,6 +98,10 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
 
     public function testCompare()
     {
+        if (ES_TEST === false) {
+            $this->assertFalse(ES_TEST);
+            return true;
+        }
         if (!getenv('NOCOMPARE')) {
             $access1 = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
             $access1->loadFromPath(FIXTURES);
@@ -120,6 +140,10 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
 
     public function testLocale()
     {
+        if (ES_TEST === false) {
+            $this->assertFalse(ES_TEST);
+            return true;
+        }
         $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
         $access->loadFromPath(FIXTURES);
         $serviceList = $access->fromService('de')->searchAll('');
@@ -152,6 +176,10 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
 
     public function testSearch()
     {
+        if (ES_TEST === false) {
+            $this->assertFalse(ES_TEST);
+            return true;
+        }
         $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
         $access->loadFromPath(FIXTURES);
         $serviceList = $access->fromService()->searchAll('');

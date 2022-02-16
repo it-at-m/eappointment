@@ -8,7 +8,7 @@ namespace BO\Dldb\Tests;
 
 use BO\Dldb\Plz\Coordinates;
 
-class CoordinatesTest extends \PHPUnit_Framework_TestCase
+class CoordinatesTest extends \PHPUnit\Framework\TestCase
 {
     public function testCoordinates()
     {
