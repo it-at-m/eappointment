@@ -25,14 +25,18 @@ class CalldisplayQueue extends BaseController
         array $args
     ) {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $statusList = Validator::param('statusList')->isArray()->setDefault([])->getValue();
+
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $calldisplay = (new \BO\Zmsentities\Calldisplay($input))->withOutClusterDuplicates();
         $this->testScopeAndCluster($calldisplay, $resolveReferences);
 
-        $queueList = new \BO\Zmsentities\Collection\QueueList();
-        foreach ($calldisplay->getFullScopeList() as $scope) {
-            $queueList->addList($this->readCalculatedQueueListFromScope($scope, $resolveReferences));
-        }
+        //read full list if no statusList exists
+        $queueList = (count($statusList)) ?
+            $this->readQueueListByStatus($calldisplay, $statusList, $resolveReferences) :
+            $this->readFullQueueList($calldisplay, $resolveReferences);
+            
+       
 
         $message = Response\Message::create($request);
         $message->data = $queueList->withoutDublicates();
@@ -71,11 +75,40 @@ class CalldisplayQueue extends BaseController
             $this->scopeCache[$scope->id] :
             $query->readWithWorkstationCount($scope->id, \App::$now, $resolveReferences);
 
-        // TODO try to fetch only called processes
-        // cant fetch only called processes because we need less api calls as possible for calldisplay
-        // full list is needed for waitingtime and waitingcount calculation
         return $query
             ->readQueueListWithWaitingTime($scope, \App::$now, $resolveReferences)
             ->withPickupDestination($scope);
+    }
+
+    // full queueList for calculation optimistic and estimated waiting Time and number of waiting clients
+    protected function readFullQueueList($calldisplay, $resolveReferences)
+    {
+        $queueList = new \BO\Zmsentities\Collection\QueueList();
+        foreach ($calldisplay->getFullScopeList() as $scope) {
+            $queueList->addList($this->readCalculatedQueueListFromScope($scope, $resolveReferences));
+        }
+        return $queueList;
+    }
+
+    protected function readQueueListFromScopeAndStatus($scope, $status, $resolveReferences)
+    {
+        $query = new \BO\Zmsdb\Process();
+        return $query
+            ->readProcessListByScopeAndStatus($scope->getId(), $status, $resolveReferences)
+            ->toQueueList(\App::$now)
+            ->withPickupDestination($scope);
+    }
+
+    // short queueList only with status called, pickup and processing
+    protected function readQueueListByStatus($calldisplay, $statusList, $resolveReferences)
+    {
+        $queueList = new \BO\Zmsentities\Collection\QueueList();
+        foreach ($calldisplay->getFullScopeList() as $scope) {
+            foreach ($statusList as $status) {
+                $queueList
+                    ->addList($this->readQueueListFromScopeAndStatus($scope, $status, $resolveReferences));
+            }
+        }
+        return $queueList;
     }
 }
