@@ -8,5 +8,4 @@ class GraphDefaults
     {
         return preg_replace('#\s+#m', ' ', trim($string));
     }
-
 }
