@@ -383,6 +383,12 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: body
  *                  schema:
  *                      $ref: "schema/calldisplay.json"
+ *              -   name: statusList
+ *                  description: "List of statuses for displaying the associated calls in the call display"
+ *                  in: query
+ *                  type: array
+ *                  items:
+ *                      type: string
  *              -   name: resolveReferences
  *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
  *                  in: query

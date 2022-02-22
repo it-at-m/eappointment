@@ -57,7 +57,7 @@ class ProcessReserveTest extends Base
         $this->expectException('BO\Zmsapi\Exception\Process\ProcessAlreadyExists');
         $this->setWorkstation();
         $process = new \BO\Zmsentities\Process(
-            json_decode($this->readFixture("GetProcess_10029.json"),1)
+            json_decode($this->readFixture("GetProcess_10029.json"), 1)
         );
         $response = $this->render([], [
             '__body' => json_encode($process)
