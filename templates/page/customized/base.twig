@@ -1,7 +1,8 @@
 {% extends "layout/main.twig" %}
 
 {% use "block/marginal/clock.twig" %}
-{% use "block/queue/waitingInfo.twig" %}
+{% use "block/queue/estimatedWaitingClients.twig" %}
+{% use "block/queue/estimatedWaitingTime.twig" %}
 
 {% block title %}{% trans %}calldisplay{% endtrans %}{% endblock %}
 {% block pageid %}customized{% endblock %}
