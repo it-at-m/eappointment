@@ -1,9 +1,9 @@
-import jQuery from "jquery";
+import $ from "jquery";
 
 class BaseView {
 
     constructor(element) {
-        this.$main = jQuery(element);
+        this.$main = $(element);
     }
 
     get $ () {

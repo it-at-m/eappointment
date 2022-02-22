@@ -15,6 +15,6 @@ export default {
         'status': 'called,pickup',
         'showOnlyNumeric':false
     },
-    'reloadInterval': 5,
+    'reloadInterval': 10,
     'animationEnd': 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend'
 };

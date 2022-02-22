@@ -8,9 +8,11 @@ class View extends BaseView {
         this.bindPublicMethods('initSoundCheck');
     }
 
+
     initSoundCheck() {
         if (this.hasNewQueueId()) {
-            $("#ring").trigger('play');
+            setTimeout(function(){ $("#ring").trigger('play'); }, 1000);
+           
         }
         let newQueueIds = this.getCalledQueueIds();
         this.writeCalledQueueIds(newQueueIds);
@@ -26,7 +28,7 @@ class View extends BaseView {
     getCalledQueueIds() {
         let queueIds = [];
         $('#queueImport td.wartenummer span[data-status]').each(function () {
-            if ('called' == $(this).attr('data-status')) {
+            if ('called' == $(this).attr('data-status') || 'pickup' == $(this).attr('data-status')) {
                 queueIds.push($(this).attr('data-appointment'));
             }
             

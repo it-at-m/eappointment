@@ -1,37 +1,32 @@
 import BaseView from '../lib/baseview';
 import $ from "jquery";
-import RingAudio from "./ringAudio";
 
 class View extends BaseView {
 
     constructor(element) {
         super(element);
-        this.bindPublicMethods('initRequest', 'setInterval');
-        console.log('Found queueList container');
+        this.bindPublicMethods('load', 'setInterval');
+        console.log('Found waitingInfo container');
         $(window).on(
             'load', () => {
-                this.initRequest();
+                this.load();
             }
         );
         $.ajaxSetup({ cache: false });
     }
 
-    initRequest() {
+    load() {
         const ajaxopt = {
             type: "POST",
-            url: this.getUrl('/queue/'),
+            url: this.getUrl('/info/'),
             data: window.bo.zmscalldisplay,
-            timeout: ((window.bo.zmscalldisplay.reloadInterval * 1000) - 100)
+            timeout: ((window.bo.zmscalldisplay.queue.timeUntilOld * 1000) - 100)
         };
         $.ajax(ajaxopt)
             .done(data => {
                 this.hideMessages(0);
-                $('#queueImport').html(data);
                 this.setWaitingClients(data);
                 this.setWaitingTime(data);
-                var audioCheck = new RingAudio();
-                audioCheck.initSoundCheck();
-                this.getDestinationToNumber();
             })
             .fail(function () {
                 $('.fatal').show();
@@ -40,8 +35,8 @@ class View extends BaseView {
     }
 
     setInterval() {
-        var reloadTime = window.bo.zmscalldisplay.reloadInterval;
-        setTimeout(this.initRequest, reloadTime * 1000);
+        var reloadTime = window.bo.zmscalldisplay.queue.timeUntilOld;
+        setTimeout(this.load, reloadTime * 1000);
     }
 
     getUrl(relativePath) {
@@ -59,18 +54,6 @@ class View extends BaseView {
     setWaitingTime(data) {
         var waitingTime = $(data).filter("div#waitingTime").text();
         $("#wartezeit").html(waitingTime);
-    }
-
-    getDestinationToNumber() {
-        if (window.bo.zmscalldisplay.queue.showOnlyNumeric) {
-            $('#queueImport .destination').each(function () {
-                let string = $(this).text();
-                let regex = /\d/g;
-                if (regex.test(string)) {
-                    $(this).text(string.replace(/\D/g, ''));
-                }
-            });
-        }
     }
 
     hideMessages(delay = 5000) {
