@@ -1,6 +1,6 @@
 import BaseView from '../lib/baseview';
 import $ from "jquery";
-import RingAudio from "../block/ringAudio";
+import RingAudio from "./ringAudio";
 
 class View extends BaseView {
 
@@ -8,7 +8,11 @@ class View extends BaseView {
         super(element);
         this.bindPublicMethods('initRequest', 'setInterval');
         console.log('Found queueList container');
-        this.$.ready(this.initRequest);
+        $(window).on(
+            'load', () => {
+                this.initRequest();
+            }
+        );
         $.ajaxSetup({ cache: false });
     }
 

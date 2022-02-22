@@ -13,10 +13,14 @@ window.bo = {
 // Import Views
 import AnalogClock from "./block/analogClock";
 import QueueList from "./block/queueList";
+import WaitingInfo from "./block/waitingInfo";
 
 // Init Views
-$('#Uhr').each(function() { new AnalogClock(this);});
-$('#queueImport').each(function() { new QueueList(this);});
+$('#Uhr').each(function() { new AnalogClock();});
+$('#queueImport').each(function() { 
+    new QueueList();
+    new WaitingInfo();
+});
 
 // Say hello
 console.log("Welcome to the ZMS Calldisplay interface...");
