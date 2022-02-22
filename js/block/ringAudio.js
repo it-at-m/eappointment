@@ -10,9 +10,9 @@ class View extends BaseView {
 
 
     initSoundCheck() {
+        let audioPlay = $("#ring");
         if (this.hasNewQueueId()) {
-            setTimeout(function(){ $("#ring").trigger('play'); }, 1000);
-           
+            audioPlay.get(0).play();
         }
         let newQueueIds = this.getCalledQueueIds();
         this.writeCalledQueueIds(newQueueIds);
