@@ -23,16 +23,11 @@ class Queue extends BaseController
 
         $calldisplay = new Helper\Calldisplay($request);
 
-        $queueListFull = \App::$http
-            ->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false))
-            ->getCollection()
-            ->withStatus(['called','confirmed', 'queued', 'reserved', 'deleted', 'fake', 'pickup', 'processing']);
-        $queueList = ($queueListFull) ?
-            $queueListFull->withStatus($calldisplay::getRequestedQueueStatus($request)) :
-            new \BO\Zmsentities\Collection\QueueList();
-
-        $fakeEntity = $queueListFull->getFakeOrLastWaitingnumber();
-        $waitingClientsBefore = $queueListFull->getQueuePositionByNumber($fakeEntity->number);
+        $queueList = \App::$http
+            ->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false), [
+                'statusList' => $calldisplay::getRequestedQueueStatus($request)
+            ])
+            ->getCollection();
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -42,9 +37,6 @@ class Queue extends BaseController
                 'calldisplay' => $calldisplay->getEntity(false),
                 'scope' => $calldisplay->getSingleScope(),
                 'queueList' => $queueList,
-                'waitingClients' => $waitingClientsBefore,
-                'waitingTime' => $fakeEntity->waitingTimeEstimate,
-                'waitingTimeOptimistic' => $fakeEntity->waitingTimeOptimistic,
             )
         );
     }

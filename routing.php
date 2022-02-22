@@ -19,6 +19,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->post('/queue/', '\BO\Zmscalldisplay\Queue')
     ->setName("queue");
 
+\App::$slim->post('/info/', '\BO\Zmscalldisplay\Info')
+->setName("info");
+
 /*
  * ---------------------------------------------------------------------------
  * redirects from old to new
