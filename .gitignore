@@ -4,7 +4,6 @@ vendor.zmsbase
 config.php
 tags
 .DS_Store
-public/doc/bundle.*
 public/_tests
 cache
 vendor.old
