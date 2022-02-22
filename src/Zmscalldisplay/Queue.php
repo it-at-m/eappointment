@@ -36,7 +36,9 @@ class Queue extends BaseController
                 'tableSettings' => $validator->getParameter('tableLayout')->isArray()->getValue(),
                 'calldisplay' => $calldisplay->getEntity(false),
                 'scope' => $calldisplay->getSingleScope(),
-                'queueList' => $queueList,
+                'queueList' => ($queueList) ? 
+                    $queueList->withStatus($calldisplay::getRequestedQueueStatus($request)) : 
+                    new \BO\Zmsentities\Collection\QueueList()
             )
         );
     }
