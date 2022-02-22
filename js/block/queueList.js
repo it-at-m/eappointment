@@ -27,8 +27,6 @@ class View extends BaseView {
             .done(data => {
                 this.hideMessages(0);
                 $('#queueImport').html(data);
-                this.setWaitingClients(data);
-                this.setWaitingTime(data);
                 var audioCheck = new RingAudio();
                 audioCheck.initSoundCheck();
                 this.getDestinationToNumber();
@@ -47,18 +45,6 @@ class View extends BaseView {
     getUrl(relativePath) {
         let includepath = window.bo.zmscalldisplay.includepath;
         return includepath + relativePath;
-    }
-
-    setWaitingClients(data) {
-        var waitingClients = $(data).filter("div#waitingClients").text();
-        if (0 < waitingClients) {
-            $("#wartende").html(waitingClients);
-        }
-    }
-
-    setWaitingTime(data) {
-        var waitingTime = $(data).filter("div#waitingTime").text();
-        $("#wartezeit").html(waitingTime);
     }
 
     getDestinationToNumber() {
