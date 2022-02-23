@@ -19,7 +19,7 @@ const renderLink = (conflict, onClick) => {
         }
 
     } else {
-        return <span><strong>{startTime} Uhr (Vorgang {conflict.id}) </strong></span>
+        return <span><strong>{startTime} Uhr</strong></span>
     }
 }
 
@@ -36,11 +36,8 @@ const renderConflicts = (conflicts, onSelect) => {
 
             return (
                 <div className="message message--error message-keep" role="alert" key={key}>
-                    {renderLink(conflict, onClick)}
-                    {conflict.queue.withAppointment
-                     ? <p>Der Termin befindet sich außerhalb der Öffnungszeiten!</p>
-                     : <p>{conflict.amendment}</p>
-                    }
+                    {renderLink(conflict, onClick)}<br />
+                    {conflict.amendment}
                 </div>
             )
         })
