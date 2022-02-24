@@ -1,7 +1,7 @@
 {
-  "name": "bo-zmsentities",
+  "name": "eappointment-zmsentities",
   "version": "1.0.0",
-  "description": "entities for zms",
+  "description": "json schema entities for eappointment",
   "main": "index.js",
   "private": true,
   "scripts": {
@@ -10,14 +10,10 @@
   },
   "keywords": [],
   "author": "BerlinOnline GmbH & Co. KG",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "devDependencies": {
   },
   "dependencies": {
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://gitlab.berlinonline.net/land-intranet/zmsentities.git"
   },
   "files": [
     "schema/dereferenced/*.json"
