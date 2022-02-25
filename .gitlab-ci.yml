@@ -31,7 +31,7 @@ outdated:
 pages:
     stage: deploy
     script:
-        - echo "/slimproject/ /slimproject/_tests/coverage/index.html 302" >> public/_redirects
+        - echo "/zmsslim/ /zmsslim/_tests/coverage/index.html 302" >> public/_redirects
         - find public/
     artifacts:
         paths:
@@ -44,4 +44,4 @@ pages:
             - tests/**/*.{json,php}
     environment:
         name: analytics
-        url: https://eappointment.gitlab.io/slimproject
+        url: https://eappointment.gitlab.io/zmsslim

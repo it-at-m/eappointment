@@ -1,10 +1,4 @@
 <?php
-/**
- *
- * @package Slimproject
- * @copyright BerlinOnline Stadtportal GmbH & Co. KG
- *
- */
 namespace BO\Slim;
 
 class Application
