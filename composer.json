@@ -1,0 +1,39 @@
+{
+    "name": "eappointment/slimproject",
+    "description": "Basic configuration for a slim framework",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mathias Fischer",
+            "email": "mathias.fischer@berlinonline.de"
+        }
+    ],
+    "require": {
+        "php": ">=7.3.0",
+        "slim/slim": "3.*",
+        "twig/twig": "^2.14",
+        "twig/extensions": "*",
+        "monolog/monolog": "1.*",
+        "slim/twig-view": "^2.1",
+        "slim/http-cache": "^0.3.0",
+        "eappointment/mellon": "^2.6.0",
+        "aronduby/dump": "^0.9",
+        "symfony/translation": "^5.2",
+        "symfony/twig-bridge": "^5.2"
+    },
+    "require-dev": {
+        "phpmd/phpmd": "@stable",
+        "squizlabs/php_codesniffer": "*",
+        "phpunit/phpunit": "^9.5.4",
+        "helmich/phpunit-psr7-assert": "^4.3.0"
+    },
+    "scripts": {
+        "command": "bin/configure"
+    },
+    "autoload": {
+        "psr-4": {
+            "BO\\Slim\\": "src/Slim/",
+            "BO\\Slim\\Tests\\": "tests/Slim/"
+        }
+    }
+}
