@@ -1,3 +1,7 @@
+## v2.24.05
+
+* #53565 Performance: Separate call to the API for calculating the queue length and the waiting time. 
+
 ## v2.24.00
 
 * #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
