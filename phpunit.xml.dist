@@ -13,6 +13,11 @@
          stopOnFailure="true"
          bootstrap="tests/bootstrap.php"
 >
+    <coverage processUncoveredFiles="true">
+      <include>
+        <directory suffix=".php">./src</directory>
+      </include>
+    </coverage>
     <testsuites>
         <testsuite name="Slim Test Suite">
             <directory>./tests/Slim/</directory>
