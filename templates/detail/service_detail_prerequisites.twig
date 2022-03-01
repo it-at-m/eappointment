@@ -11,7 +11,7 @@
             {% endif %}
         {% endif %}
 
-        {% include "lists/item_table.twig" with {"items":service.prerequisites} %}
+        {% include "@zmsentities/lists/item_table.twig" with {"items":service.prerequisites} %}
 
         {% if service.representation is defined %}
             {% if service.representation == "1" %}
