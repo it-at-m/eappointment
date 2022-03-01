@@ -33,9 +33,9 @@ Sie haben folgende {{ requestalias }} ausgewählt:
     <strong>{{ request.name }}</strong><br/>
     {% if request.source == "dldb" and request.data %}
     <div style="border-left: 1em solid #ffffff; background: #ffffff;">
-    {% include "detail/service_detail_prerequisites.twig" with {"service":request.data, "headerlevel":"h4"} %}
-    {% include "detail/service_detail_requirements.twig" with {"service":request.data, "headerlevel":"h4"} %}
-    {% include "detail/service_detail_fees.twig" with {"service":request.data, "headerlevel":"h4"} %}
+    {% include "@zmsentities/detail/service_detail_prerequisites.twig" with {"service":request.data, "headerlevel":"h4"} %}
+    {% include "@zmsentities/detail/service_detail_requirements.twig" with {"service":request.data, "headerlevel":"h4"} %}
+    {% include "@zmsentities/detail/service_detail_fees.twig" with {"service":request.data, "headerlevel":"h4"} %}
     </div>
     {% endif %}
     {% endfor %}
