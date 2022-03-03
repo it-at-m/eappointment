@@ -3,6 +3,7 @@
 * #49206 conflicts are now retrieved from the API by a single controller using a static method
 * #49206 For the output of conflicts during the saving of an process, it is now checked whether an opening time is included in the appointment
 * #49206 Additional unit tests were written to check the output of conflicts for overbooked time slots and out-of-hours appointments.
+* #49206 show slotCount also for spontaneous clients
 
 
 ## v2.24.04
