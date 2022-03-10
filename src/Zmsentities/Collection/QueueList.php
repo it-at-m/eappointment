@@ -343,4 +343,17 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
     {
         return implode(',', $this->getWaitingNumberList());
     }
+
+    public function withSelectedProcessFirst(\BO\Zmsentities\Process $process)
+    {
+        $queueList = clone $this;
+        $list = new self();
+        $list->addEntity($process->queue);
+        foreach ($queueList as $entity) {
+            if ($entity->number != $process->queue->number) {
+                $list->addEntity($entity);
+            }
+        }
+        return $list;
+    }
 }
