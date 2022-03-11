@@ -42,7 +42,7 @@ class LanguageTranslator
     protected function setJsonFileLoader()
     {
         $this->translator->addLoader('json', new JsonFileLoader());
-        foreach (\App::$supportedLanguages as $locale => $language) {
+        foreach (\App::$supportedLanguages as $language) {
             $this->translator->addResource(
                 'json',
                 \App::APP_PATH .'/lang/'. $language['locale'] .'.json',
