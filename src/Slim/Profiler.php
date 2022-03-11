@@ -13,10 +13,9 @@ class Profiler
      */
     public static function init()
     {
+        static::$startupMicrotime = microtime(true);
         if (isset($_SERVER["REQUEST_TIME_FLOAT"])) {
             static::$startupMicrotime = $_SERVER["REQUEST_TIME_FLOAT"];
-        } else {
-            static::$startupMicrotime = microtime(true);
         }
     }
 

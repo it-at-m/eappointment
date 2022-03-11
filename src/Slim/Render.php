@@ -134,16 +134,12 @@ class Render
         $date,
         $expires = '+5 minutes'
     ) {
-        if (!$date) {
-            $date = time();
-        } elseif (!is_int($date)) {
-            $date = strtotime($date);
-        }
+
+        $date = (!$date) ? time() : (!is_int($date)) ? strtotime($date) : $date;
+        $maxAge = strtotime($expires) - time();
         if (false === strtotime($expires)) {
             $expires = '+'. $expires .' seconds';
             $maxAge = intval($expires);
-        } else {
-            $maxAge = strtotime($expires) - time();
         }
         $response = $response->withAddedHeader('Cache-Control', 'max-age=' . $maxAge);
         $response = \App::$slim->getContainer()->cache->withExpires($response, $expires);
