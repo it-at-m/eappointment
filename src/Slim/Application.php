@@ -97,7 +97,8 @@ class Application
      *
      */
     const MULTILANGUAGE = true;
-    const LANGUAGESOURCE = 'json';
+    
+    public static $languagesource = 'json';
 
     public static $language = null;
 

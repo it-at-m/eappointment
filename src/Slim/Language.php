@@ -25,7 +25,7 @@ class Language
         $defaultLocale = $this->getCurrentLocale($this->getCurrentLanguage());
         $defaultLang = $this->getDefault();
         
-        if (null == self::$translatorInstance) {
+        if (null === self::$translatorInstance) {
             self::$translatorInstance = (new LanguageTranslator(
                 $fallbackLocale,
                 $defaultLocale,
@@ -45,11 +45,10 @@ class Language
 
     public function getCurrentLocale($locale = '')
     {
+        $locale = $this->getDefault();
         if (isset(self::$supportedLanguages[$this->getCurrentLanguage($locale)]) &&
             isset(self::$supportedLanguages[$this->getCurrentLanguage($locale)]['locale'])) {
             $locale = self::$supportedLanguages[$this->getCurrentLanguage($locale)]['locale'];
-        } else {
-            $locale = $this->getDefault();
         }
         return $locale;
     }
@@ -73,12 +72,11 @@ class Language
 
     public function setCurrentLocale($locale = '')
     {
+        $locale = ('' == $locale) ? $this->getDefault() : $locale;
         if (isset(self::$supportedLanguages[$this->getCurrentLanguage()]) &&
             isset(self::$supportedLanguages[$this->getCurrentLanguage()]['locale'])) {
             $locale = self::$supportedLanguages[$this->getCurrentLanguage()]['locale'];
-        } elseif ('' == $locale) {
-            $locale = $this->getDefault();
-        }
+        } 
         if (class_exists("Locale")) {
             \Locale::setDefault($locale);
         }
@@ -99,15 +97,15 @@ class Language
     // Detect current language based on request URI or Parameter
     protected function getLanguageFromRequest($request = null)
     {
-        $current = null;
+        $language = $this->getLanguageFromUri($request);
         if (null !== $request) {
             $route = $request->getAttribute('route');
-            if (null !== $route) {
+            if ($route && $route instanceof \Slim\Route) {
                 $lang = $route->getArgument('lang');
-                $current = (!empty($lang)) ? $lang : $current;
+                $language = (!empty($lang)) ? $lang : $language;
             }
         }
-        return ($current) ? $current : $this->getLanguageFromUri($request);
+        return $language;
     }
 
     protected function getLanguageFromUri($request)
