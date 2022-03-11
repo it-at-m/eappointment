@@ -10,7 +10,6 @@ class RenderTest extends Base
         \BO\Slim\Render::$response = $this->getResponse("Test Response");
         $response = \BO\Slim\Render::html('unittest.twig');
         $this->assertStringContainsString('Test Response', (string)$response->getBody());
-
     }
 
     public function testJson()
@@ -33,7 +32,7 @@ class RenderTest extends Base
         $noCacheResponse = \BO\Slim\Render::lastModified(\App::$now->getTimestamp(), 300);
         $this->assertStringContainsString('max-age=300', (string)$noCacheResponse->getHeaderLine("Cache-Control"));
         $this->assertStringContainsString(
-            'Fri, 01 Apr 2016 06:00:00 GMT', 
+            'Fri, 01 Apr 2016 06:00:00 GMT',
             (string)$noCacheResponse->getHeaderLine("last-modified")
         );
     }

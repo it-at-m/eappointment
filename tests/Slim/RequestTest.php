@@ -18,5 +18,4 @@ class RequestTest extends Base
         $this->assertEquals('/unittest/123/', $request->getUri()->getPath());
         $this->assertStringContainsString('GET', (string)$request->getMethod());
     }
-
 }
