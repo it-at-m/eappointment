@@ -12,7 +12,7 @@ use \BO\Slim\Middleware\Session\SessionHuman;
 use \BO\Slim\Middleware\Session\SessionData;
 
 /**
- * @SuppressWarnings(Coupling)
+ * @SuppressWarnings(Coupling, CyclomaticComplexity, NPathComplexity)
  */
 abstract class Base extends TestCase
 {
