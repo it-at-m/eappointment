@@ -127,17 +127,10 @@ abstract class Base extends TestCase
 
     protected function getControllerIdentifier()
     {
-        if (null === $this->classname) {
-            $classname = get_class($this);
-            $classname = preg_replace('#^.*?(\w+)Test$#', '$1', $classname);
-        } else {
-            $classname = $this->classname;
-        }
-        if (false !== strpos($classname, '\\')) {
-            $controllername = $classname;
-        } else {
-            $controllername = $this->namespace . $classname;
-        }
+        $classname = (null === $this->classname) ? 
+            preg_replace('#^.*?(\w+)Test$#', '$1', get_class($this)) : 
+            $this->classname;
+        $controllername = (false !== strpos($classname, '\\')) ? $classname : $this->namespace . $classname;
         return $controllername;
     }
 
@@ -184,6 +177,9 @@ abstract class Base extends TestCase
                 $parameters['__userinfo']['username'],
                 $parameters['__userinfo']['password']
             ));
+        }
+        if (array_key_exists('__route', $parameters)) {
+            $request = $request->withAttribute('route', $parameters['__route']);
         }
 
 
