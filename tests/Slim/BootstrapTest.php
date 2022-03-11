@@ -14,5 +14,4 @@ class BootstrapTest extends Base
         $this->assertStringContainsString('Init=', \BO\Slim\Profiler::getList());
         $this->assertStringContainsString(';Mem', \BO\Slim\Profiler::getList());
     }
-
 }

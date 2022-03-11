@@ -8,7 +8,7 @@ class GetTest extends Base
     protected $classname = "Get";
     protected $arguments = [ ];
 
-    protected $parameters = [ 
+    protected $parameters = [
         'message' => 'this is a GET test message'
     ];
 
@@ -16,19 +16,6 @@ class GetTest extends Base
 
     public function testRendering()
     {
-        $response = $this->render($this->arguments, $this->parameters, $this->sessionData);
-        $this->assertStringContainsString('this is a GET test message', (string) $response->getBody());
-        $this->assertStringContainsString('GET test title', (string) $response->getBody());
-        $this->assertEquals('de', \App::$language->getCurrentLanguage());
-
-        //retry to test static::$translatorInstance not null
-        $response = $this->render($this->arguments, $this->parameters, $this->sessionData);
-        $this->assertEquals('de', \App::$language->getCurrentLanguage());
-    }
-
-    public function testWithLanguageFromPoFile()
-    {
-        \App::$languagesource = "pofile";
         $response = $this->render($this->arguments, $this->parameters, $this->sessionData);
         $this->assertStringContainsString('this is a GET test message', (string) $response->getBody());
         $this->assertStringContainsString('GET test title', (string) $response->getBody());

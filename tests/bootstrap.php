@@ -19,14 +19,6 @@ require(APP_PATH . '/Slim/Config.php');
 
 // Set option for environment, routing, logging and templating
 \BO\Slim\Bootstrap::init();
-\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\TextExtension());
-\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\I18nExtension());
-\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\IntlExtension());
-
-// load middleware
-\App::$slim->add(new \BO\Slim\Middleware\SessionMiddleware(\App::SESSION_NAME, []));
-\App::$slim->add(new \BO\Slim\Middleware\SessionHeadersHandler());
-\App::$slim->add(new \BO\Slim\Middleware\TrailingSlash());
 
 // load routing
 \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/Slim/routing.php');
