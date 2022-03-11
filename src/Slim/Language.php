@@ -22,18 +22,18 @@ class Language
         $this->current = $this->getLanguageFromRequest($request);
         $this->setCurrentLocale();
         $fallbackLocale = $this->getCurrentLocale($this->getDefault());
-        $defaultLocale = $this->getCurrentLocale($this->getCurrentLanguage());
+        $currentLocale = $this->getCurrentLocale($this->getCurrentLanguage());
         $defaultLang = $this->getDefault();
         
         if (null === self::$translatorInstance) {
             self::$translatorInstance = (new LanguageTranslator(
                 $fallbackLocale,
-                $defaultLocale,
+                $currentLocale,
                 $defaultLang
             ))->getInstance();
             \BO\Slim\Bootstrap::addTwigExtension(new TranslationExtension(self::$translatorInstance));
         } else {
-            self::$translatorInstance->setLocale($this->current);
+            self::$translatorInstance->setLocale($currentLocale);
         }
     }
 
@@ -45,7 +45,7 @@ class Language
 
     public function getCurrentLocale($locale = '')
     {
-        $locale = $this->getDefault();
+        $locale = ('' == $locale) ? $this->getDefault() : $locale;
         if (isset(self::$supportedLanguages[$this->getCurrentLanguage($locale)]) &&
             isset(self::$supportedLanguages[$this->getCurrentLanguage($locale)]['locale'])) {
             $locale = self::$supportedLanguages[$this->getCurrentLanguage($locale)]['locale'];

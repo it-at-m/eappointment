@@ -23,6 +23,7 @@ class LanguageTranslator
     public function __construct($fallbackLocale, $defaultLocale, $defaultLang)
     {
         $translatorType = (\App::$languagesource) ? \App::$languagesource : 'pofile';
+
         $this->defaultLang = $defaultLang;
         // First param is the "default language" to use.
         $this->translator = new Translator($defaultLocale);
@@ -42,13 +43,11 @@ class LanguageTranslator
     {
         $this->translator->addLoader('json', new JsonFileLoader());
         foreach (\App::$supportedLanguages as $locale => $language) {
-            if ($locale != $this->defaultLang) {
-                $this->translator->addResource(
-                    'json',
-                    \App::APP_PATH .'/lang/'. $locale .'.json',
-                    $language['locale']
-                );
-            }
+            $this->translator->addResource(
+                'json',
+                \App::APP_PATH .'/lang/'. $language['locale'] .'.json',
+                $language['locale']
+            );
         }
     }
 
@@ -56,13 +55,11 @@ class LanguageTranslator
     {
         $this->translator->addLoader('pofile', new PoFileLoader());
         foreach (\App::$supportedLanguages as $locale => $language) {
-            if ($locale != $this->defaultLang) {
-                $this->translator->addResource(
-                    'pofile',
-                    \App::APP_PATH .'/lang/'. $locale .'.po',
-                    $language['locale']
-                );
-            }
+            $this->translator->addResource(
+                'pofile',
+                \App::APP_PATH .'/lang/'. $locale .'.po',
+                $language['locale']
+            );
         }
     }
 }
