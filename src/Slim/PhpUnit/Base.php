@@ -127,8 +127,8 @@ abstract class Base extends TestCase
 
     protected function getControllerIdentifier()
     {
-        $classname = (null === $this->classname) ? 
-            preg_replace('#^.*?(\w+)Test$#', '$1', get_class($this)) : 
+        $classname = (null === $this->classname) ?
+            preg_replace('#^.*?(\w+)Test$#', '$1', get_class($this)) :
             $this->classname;
         $controllername = (false !== strpos($classname, '\\')) ? $classname : $this->namespace . $classname;
         return $controllername;

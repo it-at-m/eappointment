@@ -76,7 +76,7 @@ class Language
         if (isset(self::$supportedLanguages[$this->getCurrentLanguage()]) &&
             isset(self::$supportedLanguages[$this->getCurrentLanguage()]['locale'])) {
             $locale = self::$supportedLanguages[$this->getCurrentLanguage()]['locale'];
-        } 
+        }
         if (class_exists("Locale")) {
             \Locale::setDefault($locale);
         }

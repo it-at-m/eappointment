@@ -44,8 +44,8 @@ class LanguageTranslator
         foreach (\App::$supportedLanguages as $locale => $language) {
             if ($locale != $this->defaultLang) {
                 $this->translator->addResource(
-                    'json', 
-                    \App::APP_PATH .'/lang/'. $locale .'.json', 
+                    'json',
+                    \App::APP_PATH .'/lang/'. $locale .'.json',
                     $language['locale']
                 );
             }
