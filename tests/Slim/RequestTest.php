@@ -32,7 +32,6 @@ class RequestTest extends Base
             ]
         ], $method);
         $this->assertEquals('activated', $request->getCookieParam('unittest'));
-        
     }
 
     public function testUserInfo()
@@ -46,7 +45,6 @@ class RequestTest extends Base
             ]
         ], $method);
         $this->assertEquals('unit:test', $request->getUri()->getUserInfo());
-        
     }
 
     public function testFile()
@@ -57,6 +55,5 @@ class RequestTest extends Base
             '__file' => ['./lang/de.json']
         ], $method);
         $this->assertEquals('./lang/de.json', $request->getUploadedFiles()[0]);
-        
     }
 }
