@@ -37,7 +37,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
             'authKey' => '95a3',
         ),
         'entry' => array (
-            'source' => 'reinit',
+            'source' => 'unittest',
             'providerList' => '122217',
             'requestList' => '120703'
         )
