@@ -25,4 +25,6 @@ class PostTest extends Base
         $this->assertStringContainsString('POST test title', (string) $response->getBody());
         $this->assertStringContainsString('this is a post message', (string) $response->getBody());
     }
+
+    
 }
