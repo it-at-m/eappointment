@@ -19,7 +19,7 @@ class Filter extends BaseController
     ) {
         return \BO\Slim\Render::withHtml(
             $response,
-            'filtertest.twig',
+            'dldb/filtertest.twig',
             array()
         );
     }
