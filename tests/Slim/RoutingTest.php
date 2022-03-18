@@ -10,7 +10,8 @@ class RoutingTest extends Base
 
     public function testRendering()
     {
-        $this->assertEmpty(\BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/Slim/routing.php'));
+        \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/Slim/routing.php');
+        $this->assertEquals('getroute', \App::$slim->getContainer()->router->getNamedRoute('getroute')->getName());
     }
 
     public function testErrorHandler()
