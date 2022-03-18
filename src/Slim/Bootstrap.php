@@ -153,7 +153,6 @@ class Bootstrap
 
     public static function loadRouting($filename)
     {
-        $bootstrap = self::getInstance();
         $container = \App::$slim->getContainer();
         $cacheFile = static::readCacheDir();
         if ($cacheFile) {
