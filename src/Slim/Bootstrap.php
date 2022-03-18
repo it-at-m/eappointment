@@ -23,12 +23,8 @@ class Bootstrap
 
     public static function getInstance()
     {
-        if (self::$instance instanceof Bootstrap) {
-            return self::$instance;
-        }
-        $bootstrap = new self();
-        self::$instance = $bootstrap;
-        return $bootstrap;
+        self::$instance = (self::$instance instanceof Bootstrap) ? self::$instance : new self();
+        return self::$instance;
     }
 
     protected function configureLocale(
@@ -104,19 +100,11 @@ class Bootstrap
             $container
         ));
         self::addTwigExtension(new \Twig\Extension\DebugExtension());
-
-        //self::addTwigTemplateDirectory('default', \App::APP_PATH . \App::TEMPLATE_PATH);
-        \App::$slim->get('__noroute', function () {
-            throw new Exception('Route missing');
-        })->setName('noroute');
     }
 
     public static function getTwigView()
     {
-        $template_path = \App::APP_PATH  . \App::TEMPLATE_PATH;
-        if (is_array(\App::TEMPLATE_PATH)) {
-            $template_path = \App::TEMPLATE_PATH;
-        }
+        $template_path = (is_array(\App::TEMPLATE_PATH)) ? \App::TEMPLATE_PATH : \App::APP_PATH  . \App::TEMPLATE_PATH;
         $view = new \Slim\Views\Twig(
             $template_path,
             [
@@ -135,11 +123,7 @@ class Bootstrap
             $userinfo = posix_getpwuid(posix_getuid());
             $user = $userinfo['name'];
             $githead = Git::readCurrentHash();
-            if ($githead) {
-                $path .= '/' . $user . $githead . '/';
-            } else {
-                $path .= '/' . $user . '/';
-            }
+            $path .= ($githead) ? '/' . $user . $githead . '/' : '/' . $user . '/';
             if (!is_dir($path)) {
                 mkdir($path);
                 chmod($path, 0777);
@@ -181,15 +165,6 @@ class Bootstrap
                 throw $exception;
             }
         }
-        $bootstrap->addRoutingToSlim($filename);
-    }
-
-    /**
-     * This is a workaround for PHP prior to version 7
-     * Slim3 bind $this to a container in a callback, to enable this we fake a $this on routing
-     */
-    public function addRoutingToSlim($filename)
-    {
         require($filename);
     }
 }

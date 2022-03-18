@@ -56,4 +56,27 @@ class GetTest extends Base
         $response = $this->render($this->arguments, $this->parameters, $this->sessionData);
         $this->assertEquals('de', \App::$language->getCurrentLanguage());
     }
+
+    public function testMethodNotAllowed()
+    {
+        
+        $request = self::createBasicRequest('GET', '/unittest/');
+        $response = \App::$slim->process($request, $this->getResponse());
+        $response->getBody()->rewind();
+        $this->assertStringContainsString(
+            'Method not allowed. Must be one of: <strong>POST</strong>',
+            $response->getBody()->getContents()
+        );
+    }
+
+    public function testNotFound()
+    {
+        
+        $request = self::createBasicRequest('GET', '/notfound/');
+        $response = $this->render([], [], []);
+        $response = \App::$slim->__invoke($request, $response);
+        $response->getBody()->rewind();
+
+        $this->assertStringContainsString('Page Not Found', $response->getBody()->getContents());
+    }
 }
