@@ -41,7 +41,7 @@ class MyController extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $data = fetchMyDataById($args['id]);
+        $data = fetchMyDataById($args['id']);
         if (amIWrongHere($data)) {
             Render::redirect('myotherroute', $args);
         }
@@ -71,7 +71,7 @@ abstract class BaseController extends \BO\Slim\Controller
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
         $request = $this->initRequest($request);
-        $noCacheResponse = \BO\Slim\Render::withLastModified($response, time(), '0');
+        $noCacheResponse = Render::withLastModified($response, time(), '0');
         return $this->readResponse($request, $noCacheResponse, $args);
     }
 
