@@ -54,10 +54,10 @@ class LanguageTranslator
     protected function setPoFileLoader()
     {
         $this->translator->addLoader('pofile', new PoFileLoader());
-        foreach (\App::$supportedLanguages as $locale => $language) {
+        foreach (\App::$supportedLanguages as $language) {
             $this->translator->addResource(
                 'pofile',
-                \App::APP_PATH .'/lang/'. $locale .'.po',
+                \App::APP_PATH .'/lang/'. $language['locale'] .'.po',
                 $language['locale']
             );
         }
