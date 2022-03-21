@@ -120,10 +120,38 @@ The translation files are stored in the "lang" folder in the root directory. The
 de_DE.json
 en_GB.json
 ```
+json example:
+```json
+{
+  "languageswitch": {
+    "title": "language",
+    "choose": "choose language",
+    "languages": {
+      "de": "Deutsch",
+      "en": "English"
+    }
+  }
+}
+```
 oder
 ```php
 de_DE.po
 en_GB.po
+```
+
+po example:
+```php
+msgid "title"
+msgstr "language"
+
+msgid "choose"
+msgstr "choose language"
+
+msgid "de"
+msgstr "Deutsch"
+
+msgid "en"
+msgstr "English"
 ```
 
 ### Logging
