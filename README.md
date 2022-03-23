@@ -43,7 +43,7 @@ class MyController extends BaseController
     ) {
         $data = fetchMyDataById($args['id']);
         if (amIWrongHere($data)) {
-            Render::redirect('myotherroute', $args);
+            return Render::redirect('myotherroute', $args);
         }
 
         $request = $this->initRequest($request);
@@ -133,7 +133,7 @@ json example:
   }
 }
 ```
-oder
+or
 ```php
 de_DE.po
 en_GB.po
