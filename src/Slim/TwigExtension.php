@@ -106,6 +106,10 @@ class TwigExtension extends \Twig_Extension
 
     public function currentRoute($lang = null)
     {
+        $route = array(
+            'name' => 'noroute',
+            'params' => []
+        );
         if ($this->container->has('currentRoute')) {
             $routeParams = $this->container->get('currentRouteParams');
             if (null !== $lang && 'de' == $lang) {
@@ -118,11 +122,6 @@ class TwigExtension extends \Twig_Extension
             $route = array(
                 'name' => $routeName,
                 'params' => $routeParams
-            );
-        } else {
-            $route = array(
-                'name' => 'noroute',
-                'params' => []
             );
         }
         return $route;

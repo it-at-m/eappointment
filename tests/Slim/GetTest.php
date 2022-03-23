@@ -24,6 +24,8 @@ class GetTest extends Base
         //retry to test static::$translatorInstance not null
         $response = $this->render($this->arguments, $this->parameters, $this->sessionData);
         $this->assertEquals('de', \App::$language->getCurrentLanguage());
+        $this->assertEquals('de', $this->getTwigExtensions()->currentLang());
+        $this->assertEquals('de_DE', $this->getTwigExtensions()->currentLocale());
     }
 
     public function testWithLanguageFromRoute()
@@ -36,6 +38,8 @@ class GetTest extends Base
         ], $this->sessionData);
         $this->assertStringContainsString('language: en', (string) $response->getBody());
         $this->assertEquals('en', \App::$language->getCurrentLanguage());
+        $this->assertEquals('en', $this->getTwigExtensions()->currentLang());
+        $this->assertEquals('en_GB', $this->getTwigExtensions()->currentLocale());
     }
 
     public function testLanguageWithoutDefault()
@@ -55,6 +59,7 @@ class GetTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, $this->sessionData);
         $this->assertEquals('de', \App::$language->getCurrentLanguage());
+        $this->assertEquals('de_DE', $this->getTwigExtensions()->currentLocale());
     }
 
     public function testMethodNotAllowed()

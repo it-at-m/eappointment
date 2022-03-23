@@ -62,13 +62,3 @@ class TranslatorTest extends TestCase
         );
     }
 }
-
-
-// \BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\TextExtension());
-// \BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\I18nExtension());
-// \BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\IntlExtension());
-
-// // load middleware
-// \App::$slim->add(new \BO\Slim\Middleware\SessionMiddleware(\App::SESSION_NAME, []));
-// \App::$slim->add(new \BO\Slim\Middleware\SessionHeadersHandler());
-// \App::$slim->add(new \BO\Slim\Middleware\TrailingSlash());

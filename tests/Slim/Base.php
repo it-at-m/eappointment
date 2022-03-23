@@ -42,4 +42,12 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
             'requestList' => '120703'
         )
     ];
+
+    public function getTwigExtensions()
+    {
+        return $twigExtensionsClass = \App::$slim
+            ->getContainer()->view
+            ->getEnvironment()
+            ->getExtension('\BO\Slim\TwigExtension');
+    }
 }
