@@ -19,7 +19,7 @@ class TwigExtensionsTest extends TestCase
         $this->assertEquals(\App::$now, $twigExtensionsClass->getNow());
         \App::$now = null;
         $this->assertEquals(
-            (new \DateTimeImmutable())->format('yy-mm-dd'), 
+            (new \DateTimeImmutable())->format('yy-mm-dd'),
             $twigExtensionsClass->getNow()->format('yy-mm-dd')
         );
         $this->assertFalse($twigExtensionsClass->getSystemStatus('APP_ENV'));
@@ -68,6 +68,4 @@ class TwigExtensionsTest extends TestCase
         $this->assertEquals('unittest', $twigExtensionsClass->currentRoute('de')['name']);
         $this->assertArrayNotHasKey('lang', $twigExtensionsClass->currentRoute('de')['params']);
     }
-
-    
 }
