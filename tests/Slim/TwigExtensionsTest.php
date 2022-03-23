@@ -32,6 +32,12 @@ class TwigExtensionsTest extends TestCase
         $this->assertEquals('2016-04-01', $twigExtensionsClass->formatDateTime($date)['ymd']);
         $this->assertEquals('1459461600', $twigExtensionsClass->formatDateTime($date)['ts']);
         $this->assertEquals('noroute', $twigExtensionsClass->currentRoute()['name']);
+        $this->assertNotEquals('version.unknown', $twigExtensionsClass->currentVersion());
+
+        $this->assertEquals(
+            '/unittest/123/?lang=en',
+            $twigExtensionsClass->urlGet('getroute', ['id' => 123], ['lang' => 'en'])
+        );
     }
 
     public function testCurrentRouteEn()
