@@ -19,6 +19,7 @@ require(APP_PATH . '/Slim/Config.php');
 
 // Set option for environment, routing, logging and templating
 \BO\Slim\Bootstrap::init();
+\BO\Slim\Bootstrap::addTwigExtension(new \BO\Slim\TwigExtension(\App::$slim->getContainer()));
 
 // load routing
 \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/Slim/routing.php');

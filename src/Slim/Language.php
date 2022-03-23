@@ -12,6 +12,8 @@ class Language
 
     public $current = '';
 
+    protected $currentLocale = '';
+
     protected $default = '';
 
     protected static $translatorInstance = null;
@@ -20,20 +22,20 @@ class Language
     {
         self::$supportedLanguages = $supportedLanguages;
         $this->current = $this->getLanguageFromRequest($request);
+        $fallbackLocale = $this->getLocale($this->getDefault());
+        $this->currentLocale = $this->getLocale($this->getCurrentLanguage());
         $this->setCurrentLocale();
-        $fallbackLocale = $this->getCurrentLocale($this->getDefault());
-        $currentLocale = $this->getCurrentLocale($this->getCurrentLanguage());
         $defaultLang = $this->getDefault();
         
         if (null === self::$translatorInstance) {
             self::$translatorInstance = (new LanguageTranslator(
                 $fallbackLocale,
-                $currentLocale,
+                $this->currentLocale,
                 $defaultLang
             ))->getInstance();
             \BO\Slim\Bootstrap::addTwigExtension(new TranslationExtension(self::$translatorInstance));
         } else {
-            self::$translatorInstance->setLocale($currentLocale);
+            self::$translatorInstance->setLocale($this->currentLocale);
         }
     }
 
@@ -43,7 +45,7 @@ class Language
         return ($lang != '') ? $lang : $current;
     }
 
-    public function getCurrentLocale($locale = '')
+    public function getLocale($locale = '')
     {
         $locale = ('' == $locale) ? $this->getDefault() : $locale;
         if (isset(self::$supportedLanguages[$this->getCurrentLanguage($locale)]) &&
@@ -51,6 +53,30 @@ class Language
             $locale = self::$supportedLanguages[$this->getCurrentLanguage($locale)]['locale'];
         }
         return $locale;
+    }
+
+    public function getCurrentLocale()
+    {
+        return $this->currentLocale;
+    }
+
+    public function setCurrentLocale()
+    {
+        if (class_exists("Locale")) {
+            \Locale::setDefault($this->currentLocale);
+        }
+        \setlocale(LC_ALL, $this->getLocaleList($this->currentLocale));
+    }
+
+    protected function getLocaleList($locale)
+    {
+        $localeList[] = $this->getCurrentLanguage();
+        $localeList[] = $locale;
+        $suffixList = ['utf8', 'utf-8'];
+        foreach ($suffixList as $suffix) {
+            array_unshift($localeList, $locale .'.'. $suffix);
+        }
+        return $localeList;
     }
 
     public function getDefault()
@@ -68,30 +94,6 @@ class Language
             }
         }
         return $this->default;
-    }
-
-    public function setCurrentLocale($locale = '')
-    {
-        $locale = ('' == $locale) ? $this->getDefault() : $locale;
-        if (isset(self::$supportedLanguages[$this->getCurrentLanguage()]) &&
-            isset(self::$supportedLanguages[$this->getCurrentLanguage()]['locale'])) {
-            $locale = self::$supportedLanguages[$this->getCurrentLanguage()]['locale'];
-        }
-        if (class_exists("Locale")) {
-            \Locale::setDefault($locale);
-        }
-        \setlocale(LC_ALL, $this->getLocaleList($locale));
-    }
-
-    protected function getLocaleList($locale)
-    {
-        $localeList[] = $this->getCurrentLanguage();
-        $localeList[] = $locale;
-        $suffixList = ['utf8', 'utf-8'];
-        foreach ($suffixList as $suffix) {
-            array_unshift($localeList, $locale .'.'. $suffix);
-        }
-        return $localeList;
     }
 
     // Detect current language based on request URI or Parameter

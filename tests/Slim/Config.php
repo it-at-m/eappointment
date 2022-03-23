@@ -10,7 +10,7 @@ class App extends \BO\Slim\Application
 
     const SESSION_NAME = "Unittest";
     const SESSION_ATTRIBUTE = 'session';
-    const MULTILANGUAGE = false;
+    const MULTILANGUAGE = true;
     const TWIG_CACHE = '/cache';
 }
 
