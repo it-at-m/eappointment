@@ -21,13 +21,13 @@ class Db
         $query = '';
         while ($line = gzgets($sqlFile)) {
             $query .= $line;
-            if (false !== strpos($line, ';')) {
+            if (preg_match('/;\s*$/',$line)) {
                 try {
                     $pdo->exec($query);
                     echo ".";
                     //echo "Successful:\n$query\n";
                     $query = '';
-                } catch (Exception $exception) {
+                } catch (\Exception $exception) {
                     echo "Offending query: \n$query\n";
                     throw $exception;
                 }
@@ -50,7 +50,7 @@ class Db
         } else {
             $dbname_zms =& \BO\Zmsdb\Connection\Select::$dbname_zms;
             \BO\Zmsdb\Connection\Select::$writeSourceName =
-                preg_replace("#$dbname_zms.*?;#", "$dbname;", self::$baseDSN);
+                preg_replace("#dbname=$dbname_zms.*?;#", "dbname=$dbname;", self::$baseDSN);
         }
         error_log("Use Connection ".\BO\Zmsdb\Connection\Select::$writeSourceName);
         $pdo = \BO\Zmsdb\Connection\Select::getWriteConnection();
