@@ -79,7 +79,7 @@ $downloads = [];
 foreach ($availablelanguages['data'] as $shortCode => $laguageInfo) {
     $urlPostfix = ('de' == $shortCode ? '' : '/' . $shortCode) . '/';
     $urlLocations = '/export/standorte/json' . $urlPostfix;
-    $urlServices = '/export/standorte/json' . $urlPostfix;
+    $urlServices = '/export/dienstleistungen/json' . $urlPostfix;
     $urlOnlineServices = '/export/onlinedienste/json' . $urlPostfix;
 
     $downloads[] = [
