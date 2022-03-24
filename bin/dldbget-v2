@@ -57,7 +57,9 @@ Request::ini($client);
 
 $request = Request::get($baseDomain . '/export/json/availablelanguages/');
 
+$hasAuth = false;
 if (!empty($auth)) {
+    $hasAuth = true;
     $auth = explode(':', $auth, 2);
     $request->authenticateWith($auth[0], $auth[1]);
 }
@@ -120,6 +122,9 @@ foreach ($downloads as $download) {
 
     if (isset($oldContent['hash']) && !empty($oldContent['hash'])) {
         $request->addHeader('If-None-Match', $oldContent['hash']);
+    }
+    if (true === $hasAuth) {
+        $request->authenticateWith($auth[0], $auth[1]);
     }
 
     $respronse = $request
