@@ -58,7 +58,7 @@ Request::ini($client);
 $request = Request::get($baseDomain . '/export/json/availablelanguages/');
 
 if (!empty($auth)) {
-    $auth = explode(':', $auth, 1);
+    $auth = explode(':', $auth, 2);
     $request->authenticateWith($auth[0], $auth[1]);
 }
 
