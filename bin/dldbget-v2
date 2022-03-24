@@ -17,6 +17,7 @@ $cli->description("Downloads json files from the official site and validates the
     ->opt('output:o', 'Path to save files', true)
     ->opt('proxy:p', 'Proxy server like "proxy:3128"', false)
     ->opt('base:b', 'Base download url', false)
+    ->opt('auth:a', 'http auth example@example', false)
     ;
 $args = $cli->parse($argv, true);
 
@@ -28,10 +29,13 @@ if (!is_writeable($destinationPath) || !is_dir($destinationPath)) {
 }
 
 $baseDomain = $args->getOpt("base");
+$auth = $args->getOpt("auth", "");
 $client = Request::init()
     ->withoutAutoParsing()
     ->followRedirects()
     ->timeout(30);
+
+    
 $proxy = $args->getOpt('proxy') ? $args->getOpt('proxy') : getenv('HTTP_PROXY');
 if ($proxy) {
     $proxyconf = array();
@@ -53,6 +57,10 @@ Request::ini($client);
 
 $request = Request::get($baseDomain . '/export/json/availablelanguages/');
 
+if (!empty($auth)) {
+    $auth = explode('@', $auth, 1);
+    $request->authenticateWith($auth[0], $auth[1])
+}
 
 $respronse = $request->send();
 
