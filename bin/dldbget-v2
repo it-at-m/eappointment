@@ -67,10 +67,7 @@ $respronse = $request->send();
 $json = $respronse->body;
 
 $availablelanguages = json_decode($json, true);
-if (array_key_exists('error', $availablelanguages) && $availablelanguages['error'] === false) {
-    
-} 
-else {
+if (!array_key_exists('data', $availablelanguages) || 0 == count($availablelanguages['data'])) {
     echo $cli->red($baseDomain . "/export/json/availablelanguages/ did not validate\n");
     exit(1);
 }
