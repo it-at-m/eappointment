@@ -31,7 +31,12 @@ class Preferences extends Base
             "groupName" => $groupName,
             "name" => $name,
         ]);
-        return new \DateTimeImmutable($timeString . \BO\Zmsdb\Connection\Select::$connectionTimezone);
+        if (!$timeString) {
+            $timeString = 'now';
+        } else {
+            $timeString .= ' '.\BO\Zmsdb\Connection\Select::$connectionTimezone;
+        }
+        return new \DateTimeImmutable($timeString);
     }
 
     public function replaceProperty($entityName, $entityId, $groupName, $name, $value)
