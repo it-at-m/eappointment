@@ -307,11 +307,18 @@ Services
    ]
 }
 ```
+----------------------
+Usage of elasticsearch
+----------------------
+
+The functionality for elasticsearch is deprecated. Usage should be avoided.
+
 ---------------------
 Usage of postal codes
 ---------------------
 
 The used postal codes were fetched from http://opengeodb.org/wiki/OpenGeoDB_Downloads
+According to http://opengeodb.org/wiki/OpenGeoDB_Lizenz the used data is public domain.
 
 To update the list:
 
