@@ -11,6 +11,13 @@ class Dldb extends \BO\Zmsdb\Base
     public static $repository = null;
     public static $verbose = false;
 
+    public static function getFixturesImportPath()
+    {
+        $dir = dirname(__FILE__);
+        $importPath = realpath($dir.'/../../../tests/Zmsdb/fixtures/');
+        return $importPath;
+    }
+
     public function startImport($verbose = true)
     {
         if (!static::$importPath) {
