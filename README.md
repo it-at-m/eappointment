@@ -1,12 +1,19 @@
 Client for DLDB API
 ===================
 
-The service portal under for berlin.de offers export formats. This library supports the usage of these formats in other applications.
+[![pipeline status](https://gitlab.com/eappointment/zmsdldb/badges/main/pipeline.svg)](https://gitlab.com/eappointment/zmsdldb/-/commits/main)
+[![coverage report](https://gitlab.com/eappointment/zmsdldb/badges/main/coverage.svg)](https://eappointment.gitlab.io/zmsdldb/_tests/coverage/index.html)
 
+
+The service portal for berlin.de offers export formats. This library supports the usage of these formats in other applications.
+
+For a detailed project description, see https://gitlab.com/eappointment/eappointment
 
 ------------------
 Format definitions
 ------------------
+
+Warning: Some documentation is not translated to english yet.
 
 Locations
 +++++++++
