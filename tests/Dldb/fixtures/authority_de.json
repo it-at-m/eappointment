@@ -1,0 +1,5266 @@
+{
+  "created": "2016-01-15T09:40:59+01:00",
+  "datacount": 189,
+  "locale": "de_DE",
+  "hash": "8a4e25c5343ce61b8d0dd2793a3df411",
+  "error": false,
+  "data": [
+    {
+      "id": "12679",
+      "name": "Abgeordnetenhaus von Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-11-09T15:30:30+01:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "327073",
+          "name": "Test1",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "324683",
+      "name": "Abwasserverband der Fahrgastschifffahrt von Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-08T15:47:53+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12706",
+      "name": "Alice Salomon Hochschule Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T14:57:42+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12763",
+      "name": "Amt für Statistik Berlin-Brandenburg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T15:03:49+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12799",
+      "name": "Amtsanwaltschaft Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T17:02:40+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12781",
+      "name": "Amtsgericht Charlottenburg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-07-17T11:42:04+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "123092",
+          "name": "Amtsgericht Charlottenburg",
+          "office": "weitere"
+        },
+        {
+          "id": "326311",
+          "name": "Handelsregister",
+          "office": "weitere"
+        },
+        {
+          "id": "326491",
+          "name": "Insolvenzgericht",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12782",
+      "name": "Amtsgericht Köpenick",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-08-27T14:00:33+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "123187",
+          "name": "Amtsgericht Köpenick",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12783",
+      "name": "Amtsgericht Lichtenberg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-05-28T14:21:27+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "123190",
+          "name": "Amtsgericht Lichtenberg",
+          "office": "weitere"
+        },
+        {
+          "id": "326313",
+          "name": "Zentrales Grundbucharchiv",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12784",
+      "name": "Amtsgericht Mitte",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-08-12T15:12:34+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "123202",
+          "name": "Amtsgericht Mitte",
+          "office": "weitere"
+        },
+        {
+          "id": "326315",
+          "name": "Zentrales Vollstreckungsgericht",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12785",
+      "name": "Amtsgericht Neukölln",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-05-26T13:29:04+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "123204",
+          "name": "Amtsgericht Neukölln",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12786",
+      "name": "Amtsgericht Pankow-Weißensee",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-04-17T09:32:37+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "123207",
+          "name": "Amtsgericht Pankow/Weißensee",
+          "office": "weitere"
+        },
+        {
+          "id": "326319",
+          "name": "Familiengericht",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12787",
+      "name": "Amtsgericht Schöneberg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T07:27:50+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "123208",
+          "name": "Amtsgericht Schöneberg",
+          "office": "weitere"
+        },
+        {
+          "id": "326321",
+          "name": "Dienstgebäude Ringstraße",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12788",
+      "name": "Amtsgericht Spandau",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2014-08-04T08:41:05+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "123211",
+          "name": "Amtsgericht Spandau",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12789",
+      "name": "Amtsgericht Tempelhof-Kreuzberg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-05-05T15:42:33+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "123220",
+          "name": "Amtsgericht Tempelhof-Kreuzberg",
+          "office": "weitere"
+        },
+        {
+          "id": "326323",
+          "name": "Amtsgericht Tempelhof-Kreuzberg -Familiengericht-",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12790",
+      "name": "Amtsgericht Tiergarten",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-07-09T08:47:10+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "123222",
+          "name": "Amtsgericht Tiergarten",
+          "office": "weitere"
+        },
+        {
+          "id": "326325",
+          "name": "Standort Kirchstraße",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12791",
+      "name": "Amtsgericht Wedding",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-08-13T15:25:28+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "123226",
+          "name": "Amtsgericht Wedding",
+          "office": "weitere"
+        },
+        {
+          "id": "326331",
+          "name": "Zentrales Mahngericht Berlin-Brandenburg",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12814",
+      "name": "Anwaltsgericht",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2014-04-28T11:37:19+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12813",
+      "name": "Anwaltsgerichtshof",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2014-04-28T11:37:17+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12752",
+      "name": "Apothekerkammer Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:45:36+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12770",
+      "name": "Arbeitsgericht Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-01T15:50:06+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12749",
+      "name": "Ärztekammer Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:45:13+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12824",
+      "name": "Baukammer Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-08T15:48:20+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12707",
+      "name": "Berlin-Brandenburgische Akademie der Wissenschaften",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-02T11:28:25+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12764",
+      "name": "Berliner Bäderbetriebe",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T15:03:58+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12759",
+      "name": "Berliner Feuerwehr",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T15:03:27+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12837",
+      "name": "Berliner Stadtreinigungsbetriebe (BSR)",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-03T11:51:13+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12838",
+      "name": "Berliner Verkehrsbetriebe (BVG)",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-03T11:51:41+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12839",
+      "name": "Berliner Wasserbetriebe (BWB)",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-03T11:52:09+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12703",
+      "name": "Beuth Hochschule für Technik Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T14:58:26+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12667",
+      "name": "Bezirksamt Charlottenburg - Wilmersdorf",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-09-01T10:32:48+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "122058",
+          "name": "Ordnungsamt Charlottenburg-Wilmersdorf (Zentrale Anlauf- und Beratungsstelle)",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "122210",
+          "name": "Bürgeramt Halemweg (Außenstelle)",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122217",
+          "name": "Bürgeramt Heerstraße",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122219",
+          "name": "Bürgeramt Hohenzollerndamm",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122227",
+          "name": "Bürgeramt Wilmersdorfer Straße",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122381",
+          "name": "Wohnungsamt Charlottenburg-Wilmersdorf",
+          "office": "weitere"
+        },
+        {
+          "id": "122602",
+          "name": "Soziale Dienste Charlottenburg-Wilmersdorf",
+          "office": "weitere"
+        },
+        {
+          "id": "122892",
+          "name": "Standesamt Charlottenburg-Wilmersdorf",
+          "office": "weitere"
+        },
+        {
+          "id": "122893",
+          "name": "Gesundheitsamt - Kinder- und Jugendgesundheitsdienst - Hohenzollerndamm",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "122979",
+          "name": "Umwelt- und Naturschutzamt Charlottenburg-Wilmersdorf",
+          "office": "weitere"
+        },
+        {
+          "id": "123435",
+          "name": "Bau-und Wohnungsaufsichtsamt Charlottenburg - Wilmersdorf",
+          "office": "weitere"
+        },
+        {
+          "id": "123461",
+          "name": "Ordnungsamt Charlottenburg-Wilmersdorf (Veterinär- und Lebensmittelaufsicht)",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "324175",
+          "name": "Einbürgerungsbehörde",
+          "office": "weitere"
+        },
+        {
+          "id": "324193",
+          "name": "Gesundheitsamt Hohenzollerndamm - Zentral",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324260",
+          "name": "Ordnungsamt Charlottenburg-Wilmersdorf (Straßenverkehrsbehörde)",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "324263",
+          "name": "Gesundheitsamt- Kinder- und Jugendgesundheitsdienst- Otto-Suhr-Allee",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324264",
+          "name": "Standesamt Charlottenburg-Wilmersdorf von Berlin - Heiratsbuch",
+          "office": "standesamt"
+        },
+        {
+          "id": "324265",
+          "name": "Standesamt Charlottenburg-Wilmersdorf von Berlin - Geburtenbuch",
+          "office": "standesamt"
+        },
+        {
+          "id": "324267",
+          "name": "Standesamt Charlottenburg-Wilmersdorf von Berlin - Sterbebuch",
+          "office": "standesamt"
+        },
+        {
+          "id": "324268",
+          "name": "Standesamt Charlottenburg-Wilmersdorf von Berlin - Urkundenstelle",
+          "office": "standesamt"
+        },
+        {
+          "id": "324270",
+          "name": "Gesundheitsamt - Lebensmittelpersonal-Beratungsstelle",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324271",
+          "name": "Gesundheitsamt Ordnungsbehördliche Bestattungen",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324413",
+          "name": "Gesundheitsamt Hygiene und Umweltmedizin",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324505",
+          "name": "Standesamt Charlottenburg-Wilmersdorf von Berlin - Familienbuch/Eheregister",
+          "office": "standesamt"
+        },
+        {
+          "id": "325467",
+          "name": "Vermessung Charlottenburg-Wilmersdorf",
+          "office": "weitere"
+        },
+        {
+          "id": "325555",
+          "name": "Jugendamt Charlottenburg-Wilmersdorf, Zentrale Fachdienste",
+          "office": "weitere"
+        },
+        {
+          "id": "325807",
+          "name": "Materielle Hilfen im Sozialamt",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325809",
+          "name": "Sozialdienst für Erwerbsfähige und Soziale Wohnhilfe",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325811",
+          "name": "Amt für Ausbildungsförderung und Unterhaltssicherung",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325813",
+          "name": "Seniorenbetreuung",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325815",
+          "name": "Ehrenamt",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325817",
+          "name": "Betreuungsbehörde",
+          "office": "weitere"
+        },
+        {
+          "id": "325819",
+          "name": "Bestattungen nach dem Zwölften Sozialgesetzbuch",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325867",
+          "name": "Tiefbau Charlottenburg-Wilmersdorf",
+          "office": "weitere"
+        },
+        {
+          "id": "325871",
+          "name": "Neu 1",
+          "office": "weitere"
+        },
+        {
+          "id": "325873",
+          "name": "Neu 2",
+          "office": "weitere"
+        },
+        {
+          "id": "326792",
+          "name": "Eingliederungshilfe",
+          "office": "sozialamt"
+        }
+      ]
+    },
+    {
+      "id": "12668",
+      "name": "Bezirksamt Friedrichshain - Kreuzberg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-05-13T13:45:24+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "122148",
+          "name": "Ordnungsamt Friedrichshain-Kreuzberg",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "122231",
+          "name": "Bürgeramt 1 (Kreuzberg), Yorckstr. ",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122238",
+          "name": "Bürgeramt 2.0 Ausbildungsbürgeramt Schlesische Str.",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122243",
+          "name": "Bürgeramt 3 (Friedrichshain), Frankfurter Allee",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122608",
+          "name": "Amt für Soziales",
+          "office": "sozialamt"
+        },
+        {
+          "id": "122898",
+          "name": "Standesamt Friedrichshain-Kreuzberg von Berlin",
+          "office": "standesamt"
+        },
+        {
+          "id": "122982",
+          "name": "Umwelt- und Naturschutzamt Friedrichshain-Kreuzberg",
+          "office": "weitere"
+        },
+        {
+          "id": "123593",
+          "name": "Jugendamt Friedrichshain-Kreuzberg",
+          "office": "jugendamt"
+        },
+        {
+          "id": "324180",
+          "name": "Staatsangehörigkeitsbehörde Friedrichshain-Kreuzberg",
+          "office": "weitere"
+        },
+        {
+          "id": "324191",
+          "name": "Vermessung Friedrichshain-Kreuzberg",
+          "office": "weitere"
+        },
+        {
+          "id": "325039",
+          "name": "Gesundheitsamt (Kreuzberg), Urbanstraße",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325041",
+          "name": "Gesundheitsamt (Friedrichshain), Koppenstraße",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325045",
+          "name": "Gesundheitsamt – Hygiene und Umweltmedizin",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325047",
+          "name": "Gesundheitsamt – Zentrum für sexuelle Gesundheit und Familienplanung",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325049",
+          "name": "Gesundheitsamt – Zahnärztlicher Dienst (Friedrichshain)",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325051",
+          "name": "Gesundheitsamt – Zahnärztlicher Dienst (Kreuzberg)",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325055",
+          "name": "Gesundheitsamt – Kinder- und Jugendgesundheitsdienst",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325057",
+          "name": "Gesundheitsamt – Kinder- und Jugendpsychiatrischer Dienst",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325059",
+          "name": "Gesundheitsamt – Sozialpsychiatrischer Dienst (Friedrichshain)",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325061",
+          "name": "Gesundheitsamt – Sozialpsychiatrischer Dienst (Kreuzberg)",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325065",
+          "name": "Gesundheitsamt – Beratungsstelle für hörbehinderte Kinder und Jugendliche (Friedrichshain)",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325067",
+          "name": "Gesundheitsamt – Beratungsstelle für hörbehinderte Kinder und Jugendliche (Neukölln)",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326167",
+          "name": "Gesundheitsamt",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326541",
+          "name": "Ordnungsamt Friedrichshain-Kreuzberg Gewerbe",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "326958",
+          "name": "Gesundheitsamt - Soziale Beratung für behinderte, chronisch erkrankte und alte Menschen",
+          "office": "gesundheitsamt"
+        }
+      ]
+    },
+    {
+      "id": "12669",
+      "name": "Bezirksamt Lichtenberg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-07-24T07:43:04+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "122207",
+          "name": "Ordnungsamt Lichtenberg",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "122252",
+          "name": "Bürgeramt 1 (Neu- Hohenschönhausen) Egon-Erwin-Kisch-Straße ",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122254",
+          "name": "Bürgeramt 4 (Alt- Hohenschönhausen) Große-Leege-Straße",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122260",
+          "name": "Bürgeramt 2 (Lichtenberg) Normannenstr.",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122262",
+          "name": "Bürgeramt 3 (Friedrichsfelde) Tierparkcenter",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122611",
+          "name": "Amt für Soziales Lichtenberg",
+          "office": "sozialamt"
+        },
+        {
+          "id": "122626",
+          "name": "Volkshochschule Lichtenberg",
+          "office": "weitere"
+        },
+        {
+          "id": "122899",
+          "name": "Gesundheitsamt  Lichtenberg",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "122900",
+          "name": "Standesamt Lichtenberg",
+          "office": "standesamt"
+        },
+        {
+          "id": "122984",
+          "name": "Umwelt- und Naturschutzamt",
+          "office": "weitere"
+        },
+        {
+          "id": "123440",
+          "name": "Stadtentwicklungsamt - Bau- und Wohnungsaufsicht",
+          "office": "weitere"
+        },
+        {
+          "id": "123583",
+          "name": "Straßen- und Grünflächenamt",
+          "office": "weitere"
+        },
+        {
+          "id": "324124",
+          "name": "Rathaus Lichtenberg",
+          "office": "weitere"
+        },
+        {
+          "id": "324322",
+          "name": "Einbürgerungs- und Staatsangehörigkeitsangelegenheiten",
+          "office": "weitere"
+        },
+        {
+          "id": "324452",
+          "name": "Dienstgebäude Große-Leege-Straße",
+          "office": "weitere"
+        },
+        {
+          "id": "324455",
+          "name": "Dienstgebäude Alfred-Kowalke-Straße",
+          "office": "weitere"
+        },
+        {
+          "id": "324456",
+          "name": "Dienstgebäude Alt-Friedrichsfelde",
+          "office": "weitere"
+        },
+        {
+          "id": "324462",
+          "name": "Vermessung Lichtenberg",
+          "office": "weitere"
+        },
+        {
+          "id": "325667",
+          "name": "Amt für Soziales - Ausbildungsförderung",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325669",
+          "name": "Amt für Soziales - Betreuungsbehörde",
+          "office": ""
+        },
+        {
+          "id": "325909",
+          "name": "Ordnungsamt - Fachbereich Veterinär- und Lebensmittelaufsicht",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "326065",
+          "name": "Jugendamt - Kindschaftsrechtliche Beratung und Vertretung",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326355",
+          "name": "Jugendamt - Tagesbetreuung von Kindern",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326357",
+          "name": "Gesundheitsamt - Kinder- und Jugendgesundheitsdienst OS",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326359",
+          "name": "Gesundheitsamt - Patientenaktenarchiv",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326361",
+          "name": "Gesundheitsamt - Beratungsstelle für behinderte, chronisch kranke, krebs- und aidskranke Menschen",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326363",
+          "name": "Gesundheitsamt - Heilpraktikerbereich",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326379",
+          "name": "Gesundheitsamt - Zahnärztlicher Dienst",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326381",
+          "name": "Gesundheitsamt - Sozialmedizienischer Bereich am Sonderpädagogischen Förderzentrum für Kinder- und Jugendliche mit Körperbehinderung",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326383",
+          "name": "Gesundheitsamt - Infektionsschutz, umweltbezogener Gesundheits- und Kathastrophenschutz",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326385",
+          "name": "Gesundheitsamt - Kinder- und Jugendgesundheitsdienst AKS",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326387",
+          "name": "Gesundheitsamt - Kinder- und Jugendpsychiatrischer Dienst AKS",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326389",
+          "name": "Gesundheitsamt - Kinder- und Jugendpsychiatrischer Dienst OS",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326391",
+          "name": "Gesundheitsamt - Lebensmittelpersonalhygiene",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326393",
+          "name": "Gesundheitsamt - Sozialpsychatrischer Dienst",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326395",
+          "name": "Gesundheitsamt - Suchtberatung Hohenschönhausen",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326397",
+          "name": "Gesundheitsamt - Zentrum für tuberkulosekranke und -gefährdete Menschen",
+          "office": "gesundheitsamt"
+        }
+      ]
+    },
+    {
+      "id": "12670",
+      "name": "Bezirksamt Marzahn - Hellersdorf",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-08-11T14:54:20+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "122271",
+          "name": "Bürgeramt Biesdorf - Center",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122273",
+          "name": "Bürgeramt Helle Mitte",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122277",
+          "name": "Bürgeramt Marzahner Promenade",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122628",
+          "name": "Volkshochschule Marzahn-Hellersdorf",
+          "office": "weitere"
+        },
+        {
+          "id": "122901",
+          "name": "Gesundheitsamt Marzahn-Hellersdorf - Kinder- und Jugendgesundheitsdienst ",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "122905",
+          "name": "Standesamt Marzahn-Hellersdorf",
+          "office": "standesamt"
+        },
+        {
+          "id": "123597",
+          "name": "Jugendamt Marzahn-Hellersdorf",
+          "office": "jugendamt"
+        },
+        {
+          "id": "324261",
+          "name": "Einbürgerung/Staatsangehörigkeitsangelegenheiten Marzahn-Hellersdorf",
+          "office": "weitere"
+        },
+        {
+          "id": "324357",
+          "name": "Vermessung Marzahn-Hellersdorf  ",
+          "office": "weitere"
+        },
+        {
+          "id": "324392",
+          "name": "Gesundheitsamt Marzahn-Hellersdorf - Kinder-und Jugendgesundheitsdienst",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324493",
+          "name": "Straßen- und Grünflächenamt",
+          "office": "weitere"
+        },
+        {
+          "id": "324549",
+          "name": "Amt für Soziales - Marzahn-Hellersdorf",
+          "office": "sozialamt"
+        },
+        {
+          "id": "324673",
+          "name": "Ordnungsamt/Gewerbeamt Marzahn-Hellersdorf",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "324677",
+          "name": "Ordnungsamt/Straßenverkehrsbehörde Marzahn-Hellersdorf",
+          "office": "weitere"
+        },
+        {
+          "id": "324679",
+          "name": "Ordnungsamt/Veterinärüberwachung Marzahn-Hellersdorf",
+          "office": "weitere"
+        },
+        {
+          "id": "325575",
+          "name": "Gesundheitsamt - Zentrum für sexuelle Gesundheit und Familienplanung",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325589",
+          "name": "Gesundheitsamt - Hygiene und Umweltmedizin",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325725",
+          "name": "Stadtplanung Marzahn-Hellersdorf",
+          "office": "weitere"
+        },
+        {
+          "id": "325845",
+          "name": "Ordnungsamt/Zentrale Anlauf- und Beratungsstelle Marzahn-Hellersdorf",
+          "office": "weitere"
+        },
+        {
+          "id": "325847",
+          "name": "Ordnungsamt/Lärmschutz Marzahn-Hellersdorf",
+          "office": "weitere"
+        },
+        {
+          "id": "325849",
+          "name": "Ordnungsamt/Lebensmittelüberwachung Marzahn-Hellersdorf",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "327056",
+          "name": "Ordnungsamt/Lebensmittelüberwachung Marzahn-Hellersdorf",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12671",
+      "name": "Bezirksamt Mitte",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-08-27T10:42:45+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "122222",
+          "name": "Ordnungsamt Mitte",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "122280",
+          "name": "Bürgeramt Rathaus Mitte",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122282",
+          "name": "Bürgeramt Rathaus Tiergarten",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122284",
+          "name": "Bürgeramt Wedding ",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122619",
+          "name": "Amt für Soziales",
+          "office": "sozialamt"
+        },
+        {
+          "id": "122903",
+          "name": "Gesundheitsamt  Mitte",
+          "office": "weitere"
+        },
+        {
+          "id": "122908",
+          "name": "Standesamt Mitte von Berlin",
+          "office": "standesamt"
+        },
+        {
+          "id": "123600",
+          "name": "Jugendamt Mitte",
+          "office": "jugendamt"
+        },
+        {
+          "id": "324359",
+          "name": "Vermessung Mitte",
+          "office": "weitere"
+        },
+        {
+          "id": "325175",
+          "name": "Sozialamt Mitte - Materielle Hilfen - allgemeine Beratung",
+          "office": "weitere"
+        },
+        {
+          "id": "325489",
+          "name": "Ambulante Hilfe zur Pflege/ Pflegegeld",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325491",
+          "name": "Bestattungen",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325493",
+          "name": "Betreuungsstelle",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325497",
+          "name": "Eingliederungshilfe/ Fallmanagement",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325503",
+          "name": "Hilfe zur Pflege in Einrichtungen",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325505",
+          "name": "Hilfe zum Lebensunterhalt/ Grundsicherung",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325507",
+          "name": "Schuldner- und Insolvenzberatung - Wedding",
+          "office": "weitere"
+        },
+        {
+          "id": "325509",
+          "name": "Schuldner- und Insolvenzberatung - Mitte",
+          "office": "weitere"
+        },
+        {
+          "id": "325511",
+          "name": "Schuldner- und Insolvenzberatung - Tiergarten",
+          "office": "weitere"
+        },
+        {
+          "id": "325513",
+          "name": "Allgemeiner Sozialdienst",
+          "office": "weitere"
+        },
+        {
+          "id": "325515",
+          "name": "Zuwendungen an freie Träger",
+          "office": "weitere"
+        },
+        {
+          "id": "325759",
+          "name": "Gesundheitsamt – Beratungsstelle für sexuelle Gesundheit",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325761",
+          "name": "Gesundheitsamt - Beratungsstelle für Sehbehinderte",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325763",
+          "name": "Gesundheitsamt - Sozialpsychiatrischer Dienst (Wedding)",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325765",
+          "name": "Gesundheitsamt - Sozialpsychiatrischer Dienst (Mitte, Tiergarten)",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325767",
+          "name": "Gesundheitsamt - Kinder- und Jugendpsychiatrischer Dienst",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325769",
+          "name": "Gesundheitsamt - Lebensmittelpersonalberatung",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325771",
+          "name": "Gesundheitsamt - Hygiene und Umweltmedizin",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325773",
+          "name": "Gesundheitsamt - Zahnärztlicher Dienst (Tiergarten)",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325775",
+          "name": "Gesundheitsamt - Zahnärztlicher Dienst (Wedding)",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325777",
+          "name": "Gesundheitsamt - Beratungsstelle für Familienplanung und Schwangerschaft",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325779",
+          "name": "Gesundheitsamt - Beratungsstelle für behinderte und krebskranke Menschen",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325781",
+          "name": "Gesundheitsamt - Kinder- und Jugendgesundheitsdienst (Wedding und Mitte)",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325783",
+          "name": "Gesundheitsamt - Kinder- und Jugendgesundheitsdienst (Tiergarten)",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325785",
+          "name": "Haus der Gesundheit",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326001",
+          "name": "Bürgeramt – Bereich Leistungen für Bildung und Teilhabe",
+          "office": "buergeramt"
+        },
+        {
+          "id": "326644",
+          "name": "Sozialamt Mitte - Bestattungen",
+          "office": "weitere"
+        },
+        {
+          "id": "326646",
+          "name": "Sozialamt Mitte - Senioren",
+          "office": "weitere"
+        },
+        {
+          "id": "326648",
+          "name": "Sozialamt Mitte - Ehrenamtsbüro",
+          "office": "weitere"
+        },
+        {
+          "id": "326650",
+          "name": "Sozialamt Mitte - Bildungs- und Teilhabepaket",
+          "office": "weitere"
+        },
+        {
+          "id": "326652",
+          "name": "Sozialamt Mitte - Fachstelle Obdachlosenhilfe",
+          "office": "weitere"
+        },
+        {
+          "id": "326674",
+          "name": "Einbürgerungs- und Staatsangehörigkeitsbehörde Mitte",
+          "office": "weitere"
+        },
+        {
+          "id": "327066",
+          "name": "Wohngeldberatung Mitte",
+          "office": "buergeramt"
+        }
+      ]
+    },
+    {
+      "id": "12672",
+      "name": "Bezirksamt Neukölln",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-08-18T11:54:20+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "122233",
+          "name": "Ordnungsamt Neukölln - Allgemein",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "122285",
+          "name": "Bürgeramt Rathaus Neukölln",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122286",
+          "name": "Bürgeramt Sonnenallee",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122291",
+          "name": "Bürgeramt Blaschkoallee",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122296",
+          "name": "Bürgeramt Zwickauer Damm",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122441",
+          "name": "Wohnungsamt Neukölln",
+          "office": "weitere"
+        },
+        {
+          "id": "122623",
+          "name": "Amt für Soziales",
+          "office": "sozialamt"
+        },
+        {
+          "id": "122659",
+          "name": "Volkshochschule Neukölln",
+          "office": "weitere"
+        },
+        {
+          "id": "122911",
+          "name": "Standesamt ",
+          "office": "standesamt"
+        },
+        {
+          "id": "123445",
+          "name": "Bau- und Wohnungsaufsichtsamt Neukölln",
+          "office": "weitere"
+        },
+        {
+          "id": "123602",
+          "name": "Unterhaltsvorschussstelle Jugendamt Neukölln",
+          "office": "jugendamt"
+        },
+        {
+          "id": "324757",
+          "name": "Ordnungsamt Neukölln - Straßenverkehrsbehörde ",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "324759",
+          "name": "Ordnungsamt Neukölln - Zentrale Anlauf - und Beratungsstelle ",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "324761",
+          "name": "Ordnungsamt Neukölln - Ordnungswidrigkeitenverfahren / Gewerbeuntersagung",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "324763",
+          "name": "Ordnungsamt Neukölln - Allgemeiner Ordnungsdienst - AOD",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "324765",
+          "name": "Ordnungsamt Neukölln - Veterinärwesen und Lebensmittelberatung",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "324773",
+          "name": "Gesundheitsamt - Kinder- und Jugendgesundheitsdienst Neukölln - Blaschkoallee 32",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324775",
+          "name": "Gesundheitsamt - Kinder- und Jugendgesundheitsdienst Neukölln - Neuköllner Str. 333",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324777",
+          "name": "Gesundheitsamt - Kinder- und Jugendgesundheitsdienst Neukölln - Hermannstr. 214-216",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324779",
+          "name": "Gesundheitsamt - Kinder- und Jugendgesundheitsdienst Neukölln - Rütlistr. 7",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "325223",
+          "name": "Vermessung Neukölln",
+          "office": "weitere"
+        },
+        {
+          "id": "325657",
+          "name": "Mobiles Bürgeramt Rudow",
+          "office": "buergeramt"
+        },
+        {
+          "id": "325793",
+          "name": "Amt für Soziales - Betreuungsbehörde",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325795",
+          "name": "Amt für Soziales - Seniorenservice",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325797",
+          "name": "Amt für Soziales - Wohnungsnotfälle",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325799",
+          "name": "Amt für Soziales - Eingliederungshilfe (Fallmanagement)",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325801",
+          "name": "Amt für Soziales - Hilfe zur Pflege (stationär)",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325803",
+          "name": "Amt für Soziales - Hilfe zur Pflege (ambulant)",
+          "office": "sozialamt"
+        },
+        {
+          "id": "326742",
+          "name": "Jugendamt Neukölln Erziehungs- und Familienberatung Böhmische Straße 39, 12055 Berlin",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326744",
+          "name": "Jugendamt Neukölln Beistandschaften / Pflegschaften / Vormundschaften ",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326746",
+          "name": "Jugendamt Neukölln Jugendgerichtshilfe",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326748",
+          "name": "Jugendamt Neukölln Kinderschutzteam ",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326750",
+          "name": "Jugendamt (Hilfe zur Erziehung) Regionaler Dienst Nord-Ost",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326752",
+          "name": "Jugendamt Neukölln Tagesbetreuung von Kindern",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326858",
+          "name": "Straßen- und Grünflächenamt",
+          "office": "weitere"
+        },
+        {
+          "id": "326930",
+          "name": "Staatsangehörigkeitsbehörde",
+          "office": "weitere"
+        },
+        {
+          "id": "326932",
+          "name": "Wahlamt",
+          "office": "weitere"
+        },
+        {
+          "id": "326936",
+          "name": "Gesundheitsamt",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326938",
+          "name": "Jugendamt (Hilfe zur Erziehung) Regionaler Dienst Nord-West",
+          "office": "jugendamt"
+        },
+        {
+          "id": "327032",
+          "name": "Jugendamt (Hilfe zur Erziehung) Regionaler Dienst Süd",
+          "office": "weitere"
+        },
+        {
+          "id": "327034",
+          "name": "Jugendamt Neukölln Elterngeld",
+          "office": "weitere"
+        },
+        {
+          "id": "327036",
+          "name": "Jugend2",
+          "office": "weitere"
+        },
+        {
+          "id": "327038",
+          "name": "Jugend1",
+          "office": "weitere"
+        },
+        {
+          "id": "327062",
+          "name": "Amt für Soziales - Hilfe zur Überwindung besonderer sozialer Schwierigkeiten",
+          "office": "sozialamt"
+        }
+      ]
+    },
+    {
+      "id": "12673",
+      "name": "Bezirksamt Pankow",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-08-17T11:41:33+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "122294",
+          "name": "Bürgeramt Weißensee",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122297",
+          "name": "Bürgeramt Prenzlauer Berg",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122301",
+          "name": "Bürgeramt Pankow",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122909",
+          "name": "Gesundheitsamt - Kinder- und Jugendgesundheitsdienst",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "122913",
+          "name": "Standesamt Pankow - Eheregister und Lebenspartnerschaftsregister",
+          "office": "standesamt"
+        },
+        {
+          "id": "150230",
+          "name": "Bürgeramt Karow / Buch",
+          "office": "buergeramt"
+        },
+        {
+          "id": "324201",
+          "name": "Rathaus Pankow",
+          "office": "weitere"
+        },
+        {
+          "id": "324903",
+          "name": "Jugendamt Fachdienst 5, Gutscheinstelle, Fröbelstr. 17, Haus 4",
+          "office": "jugendamt"
+        },
+        {
+          "id": "324905",
+          "name": "Jugendamt FD 5, Kindertagespflege, Fröbelstr. 17, Haus 7",
+          "office": "jugendamt"
+        },
+        {
+          "id": "324909",
+          "name": "Jugendamt FD 5, AG Fachliche Steuerung, Fröbelstr. 17, Haus 7",
+          "office": "jugendamt"
+        },
+        {
+          "id": "324945",
+          "name": "Stadtentwicklungsamt Pankow FB Vermessung",
+          "office": "weitere"
+        },
+        {
+          "id": "325887",
+          "name": "Gesundheitsamt - Kinder- und Jugendpsychiatrischer Dienst",
+          "office": "weitere"
+        },
+        {
+          "id": "326011",
+          "name": "Amt für Soziales: Eingliederungshilfe-Sachbearbeitung",
+          "office": "sozialamt"
+        },
+        {
+          "id": "326013",
+          "name": "Amt für Soziales: Hilfe zum Lebensunterhalt / Grundsicherung",
+          "office": "sozialamt"
+        },
+        {
+          "id": "326017",
+          "name": "Amt für Soziales: Leistungen nach dem Landespflegegeldgesetz",
+          "office": "sozialamt"
+        },
+        {
+          "id": "326019",
+          "name": "Amt für Soziales: Leistungen nach dem Asylbewerberleistungsgesetz",
+          "office": "sozialamt"
+        },
+        {
+          "id": "326021",
+          "name": "Amt für Soziales: Soziale Wohnhilfe / Wohnungslose",
+          "office": "sozialamt"
+        },
+        {
+          "id": "326023",
+          "name": "Amt für Soziales: Hilfe zur Pflege",
+          "office": "weitere"
+        },
+        {
+          "id": "326029",
+          "name": "Amt für Soziales: Eingliederungshilfe-Fallmanagement ",
+          "office": "sozialamt"
+        },
+        {
+          "id": "326107",
+          "name": "Amt für Soziales: Ausbildungsförderung",
+          "office": "sozialamt"
+        },
+        {
+          "id": "326109",
+          "name": "Amt für Soziales: Betreuungsbehörde",
+          "office": "sozialamt"
+        },
+        {
+          "id": "326117",
+          "name": "Amt für Soziales: Seniorenservice",
+          "office": "sozialamt"
+        },
+        {
+          "id": "326147",
+          "name": "Standesamt Pankow ",
+          "office": "standesamt"
+        },
+        {
+          "id": "326283",
+          "name": "Ordnungsamt - Parkraumbewirtschaftung",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "326285",
+          "name": "Ordnungsamt - Gewerbeangelegenheiten Fröbelstraße Haus 6",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "326467",
+          "name": "Gesundheitsamt - Sozialpsychiatrischer Dienst",
+          "office": "weitere"
+        },
+        {
+          "id": "326469",
+          "name": "Gesundheitsamt - Hygiene und Umweltmedizin",
+          "office": "weitere"
+        },
+        {
+          "id": "326497",
+          "name": "Ordnungsamt - Straßenverkehrsbehörde",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "326499",
+          "name": "Ordnungsamt - Veterinär- und Lebensmittelaufsicht",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "326682",
+          "name": "Standesamt Pankow - Geburten",
+          "office": "standesamt"
+        },
+        {
+          "id": "326684",
+          "name": "Standesamt Pankow - Sterberegister",
+          "office": "standesamt"
+        },
+        {
+          "id": "326686",
+          "name": "Standesamt Pankow - Urkundenstelle und Namenserklärungen",
+          "office": "standesamt"
+        },
+        {
+          "id": "326904",
+          "name": "Gesundheitsamt - Hygiene und Umweltmedizin",
+          "office": "weitere"
+        },
+        {
+          "id": "326906",
+          "name": "Gesundheitsamt -Hygiene und Umweltmedizin- Außenstelle Neue Schönholzer Str. 33/34",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12674",
+      "name": "Bezirksamt Reinickendorf",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-08-06T13:46:48+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "122290",
+          "name": "Ordnungsamt Reinickendorf - Gewerbe",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "122304",
+          "name": "Bürgeramt Rathaus Reinickendorf",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122309",
+          "name": "Bürgeramt Tegel",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122311",
+          "name": "Bürgeramt Reinickendorf-Ost",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122312",
+          "name": "Bürgeramt Heiligensee",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122314",
+          "name": "Bürgeramt Märkisches Viertel",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122316",
+          "name": "Bürgeramt - Bereich Berlinpass",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122664",
+          "name": "Volkshochschule Reinickendorf",
+          "office": "weitere"
+        },
+        {
+          "id": "122921",
+          "name": "Gesundheitsamt Reinickendorf",
+          "office": "weitere"
+        },
+        {
+          "id": "122929",
+          "name": "Standesamt Reinickendorf",
+          "office": "weitere"
+        },
+        {
+          "id": "123012",
+          "name": "Umwelt- und Naturschutzamt Reinickendorf",
+          "office": "weitere"
+        },
+        {
+          "id": "123450",
+          "name": "Bau- und Wohnungsaufsichtsamt Reinickendorf",
+          "office": "weitere"
+        },
+        {
+          "id": "123586",
+          "name": "Straßen- und Grünflächenamt",
+          "office": "weitere"
+        },
+        {
+          "id": "123606",
+          "name": "Jugendamt Reinickendorf",
+          "office": "weitere"
+        },
+        {
+          "id": "317869",
+          "name": "Mobiles Bürgeramt Hermsdorf",
+          "office": "buergeramt"
+        },
+        {
+          "id": "324433",
+          "name": "Mobiles Bürgeramt MV",
+          "office": "buergeramt"
+        },
+        {
+          "id": "324434",
+          "name": "Mobiles Bürgeramt Reinickendorf Ost",
+          "office": "buergeramt"
+        },
+        {
+          "id": "324733",
+          "name": "Vermessung Reinickendorf",
+          "office": "weitere"
+        },
+        {
+          "id": "324735",
+          "name": "Standort 2",
+          "office": "weitere"
+        },
+        {
+          "id": "324737",
+          "name": "Standort 3",
+          "office": "weitere"
+        },
+        {
+          "id": "324739",
+          "name": "Standort 4",
+          "office": "weitere"
+        },
+        {
+          "id": "324741",
+          "name": "Standort 5",
+          "office": "weitere"
+        },
+        {
+          "id": "325341",
+          "name": "Mobiles Bürgeramt Reinickendorf",
+          "office": "buergeramt"
+        },
+        {
+          "id": "325597",
+          "name": "Stadtplanung und Denkmalschutz Reinickendorf",
+          "office": "weitere"
+        },
+        {
+          "id": "325603",
+          "name": "Rathaus Reinickendorf",
+          "office": "weitere"
+        },
+        {
+          "id": "325605",
+          "name": "Amt für Soziales - Allgemeine Materielle Hilfen",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325607",
+          "name": "Amt für Soziales - Soziale Wohnhilfe",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325609",
+          "name": "Amt für Soziales - Hilfe zur Pflege",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325611",
+          "name": "Amt für Soziales - Eingliederungshilfe",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325613",
+          "name": "Amt für Soziales - Kosteneinziehung",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325615",
+          "name": "Amt für Soziales - Betreuung",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325617",
+          "name": "Amt für Soziales - Ehrenamt",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325691",
+          "name": "Ordnungsamt Reinickendorf - Zentrale Anlauf- und Beratungsstelle",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "325693",
+          "name": "Ordnungsamt Reinickendorf - Ordnungswidrigkeiten, Sondernutzung und Straßenreinigung",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "325695",
+          "name": "Ordnungsamt Reinickendorf - Straßenverkehrsbehörde",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "325697",
+          "name": "Ordnungsamt Reinickendorf - Veterinär- und Lebensmittelaufsicht",
+          "office": "weitere"
+        },
+        {
+          "id": "325699",
+          "name": "Ord Standort 5",
+          "office": "weitere"
+        },
+        {
+          "id": "325701",
+          "name": "Ord Standort 6",
+          "office": "weitere"
+        },
+        {
+          "id": "325855",
+          "name": "Wohnungsamt Reinickendorf",
+          "office": "weitere"
+        },
+        {
+          "id": "325857",
+          "name": "Einbürgerung Reinickendorf",
+          "office": "weitere"
+        },
+        {
+          "id": "325859",
+          "name": "Wahlamt Reinickendorf",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12675",
+      "name": "Bezirksamt Spandau",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-06-01T15:24:49+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "122279",
+          "name": "Bürgeramt Spandau - Bürgerbüro Wasserstadt",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122281",
+          "name": "Bürgeramt Spandau - Bürgeramt Rathaus Spandau",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122283",
+          "name": "Bürgeramt Spandau - Bürgerbüro Kladow",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122604",
+          "name": "Wohnungsamt",
+          "office": "weitere"
+        },
+        {
+          "id": "122932",
+          "name": "Standesamt Spandau",
+          "office": "standesamt"
+        },
+        {
+          "id": "324414",
+          "name": "Bürgeramt Spandau - Bürgerbüro Falkenhagener Feld",
+          "office": "buergeramt"
+        },
+        {
+          "id": "324711",
+          "name": "Vermessung Spandau",
+          "office": "weitere"
+        },
+        {
+          "id": "324967",
+          "name": "Einbürgerung und Staatsangehörigkeiten",
+          "office": "weitere"
+        },
+        {
+          "id": "324969",
+          "name": "Wahlamt",
+          "office": "weitere"
+        },
+        {
+          "id": "326171",
+          "name": "Amt für Soziales - Betreuungsbehörde",
+          "office": "sozialamt"
+        },
+        {
+          "id": "326211",
+          "name": "Amt für Soziales",
+          "office": "sozialamt"
+        },
+        {
+          "id": "326247",
+          "name": "Ordnungsamt Spandau - Veterinär- und Lebensmittelaufsicht",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "326249",
+          "name": "Ordnungsamt Spandau - Straßenverkehrsbehörde",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "326251",
+          "name": "Ordnungsamt Spandau - Gewerbeservice   außer   Gaststättenanträge und Gewerbeabmeldungen",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "326253",
+          "name": "Ordnungsamt Spandau - Zentrale Anlauf- und Beratungsstelle  inkl.  Gaststättenanträge u. Gewerbeabmeldungen",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "326255",
+          "name": "Ordnungsamt Spandau - Ordnungswidrigkeiten und belastende Verwaltungsakte",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "326670",
+          "name": "Standesamt Spandau - Geburtenabteilung",
+          "office": "standesamt"
+        },
+        {
+          "id": "326688",
+          "name": "Straßen- und Grünflächenamt",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12676",
+      "name": "Bezirksamt Steglitz-Zehlendorf",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-05-28T11:38:46+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "122267",
+          "name": "Bürgeramt Zehlendorf",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122274",
+          "name": "Bürgeramt Steglitz",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122276",
+          "name": "Bürgeramt Lankwitz",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122307",
+          "name": "Ordnungsamt Steglitz-Zehlendorf",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "122606",
+          "name": "Wohnungsamt Steglitz-Zehlendorf",
+          "office": "weitere"
+        },
+        {
+          "id": "122667",
+          "name": "Volkshochschule Steglitz-Zehlendorf",
+          "office": "weitere"
+        },
+        {
+          "id": "122930",
+          "name": "Gesundheitsamt",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324139",
+          "name": "Rathaus Zehlendorf",
+          "office": "weitere"
+        },
+        {
+          "id": "324140",
+          "name": "Rathaus Steglitz",
+          "office": "weitere"
+        },
+        {
+          "id": "324239",
+          "name": "Robert-Lück-Str. 5",
+          "office": "weitere"
+        },
+        {
+          "id": "324240",
+          "name": "Potsdamer Str. 8",
+          "office": "weitere"
+        },
+        {
+          "id": "324241",
+          "name": "Sonneberger Weg 28/29",
+          "office": "weitere"
+        },
+        {
+          "id": "324242",
+          "name": "Gesundheitsamt - Hygiene- und Umweltmedizin",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324243",
+          "name": "Gesundheitsamt - Sozialpsychiatrischer Dienst",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324244",
+          "name": "Gesundheitsamt - Zahnärztlicher Dienst",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324245",
+          "name": "Gesundheitsamt - Zentrum für Familienplanung",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324246",
+          "name": "Gesundheitsamt - Beratungsstelle für behinderte Menschen, Krebs- und AIDS-Kranke",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324247",
+          "name": "Gesundheitsamt - Kinder- und Jugendpsychiatrischer Dienst",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324248",
+          "name": "Gesundheitsamt - Kinder- und Jugendgesundheitsdienst Robert-Lück-Str. 5",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324249",
+          "name": "Gesundheitsamt - Kinder- und Jugendgesundheitsdienst Potsdamer Str. 8",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324250",
+          "name": "Gesundheitsamt - Kinder- und Jugendgesundheitsdienst Mercatorweg 6",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324251",
+          "name": "Gesundheitsamt - Kinder- und Jugendgesundheitsdienst Sonneberger Weg 28/29",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324252",
+          "name": "Gesundheitsamt - Kopflaus-Sprechstunde",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324418",
+          "name": "Einbürgerung / Staatsangehörigkeitsbehörde",
+          "office": "weitere"
+        },
+        {
+          "id": "324529",
+          "name": "Amt für Soziales",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325441",
+          "name": "Vermessung Steglitz-Zehlendorf",
+          "office": "weitere"
+        },
+        {
+          "id": "325987",
+          "name": "Volkshochschule Steglitz-Zehlendorf - Rathaus Lichterfelde",
+          "office": "weitere"
+        },
+        {
+          "id": "325989",
+          "name": "Volkshochschule Steglitz-Zehlendorf - Rondellstr.",
+          "office": "weitere"
+        },
+        {
+          "id": "325991",
+          "name": "Volkshochschule Steglitz-Zehlendorf - Onkel-Tom-Str.",
+          "office": "weitere"
+        },
+        {
+          "id": "326091",
+          "name": "Jugendamt - Elterngeld",
+          "office": "weitere"
+        },
+        {
+          "id": "326093",
+          "name": "Jugendamt_KBV_CD",
+          "office": "weitere"
+        },
+        {
+          "id": "326095",
+          "name": "Jugendamt_KBV_AB",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326137",
+          "name": "Gesundheitsamt - Ordnungsbehördliche Bestattungen",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "326241",
+          "name": "Ordnungsamt Steglitz-Zehlendorf - Veterinär- und Lebensmittelaufsicht",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "326483",
+          "name": "Standesamt Steglitz-Zehlendorf / Urkundenstelle, Archivbehörde, Namenserklärungen",
+          "office": "standesamt"
+        },
+        {
+          "id": "326487",
+          "name": "Standesamt Steglitz-Zehlendorf / Ehe- und Lebenspartnerschaftsregister",
+          "office": "standesamt"
+        },
+        {
+          "id": "326489",
+          "name": "Standesamt Steglitz-Zehlendorf / Geburten- und Sterberegister",
+          "office": "standesamt"
+        },
+        {
+          "id": "326878",
+          "name": "Amt für Soziales - Betreuungbehörde",
+          "office": "sozialamt"
+        },
+        {
+          "id": "326976",
+          "name": "Jugendamt - Tagesbetreuung von Kindern",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12677",
+      "name": "Bezirksamt Tempelhof-Schöneberg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-04-12T15:14:14+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "122246",
+          "name": "Bürgeramt Lichtenrade",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122251",
+          "name": "Bürgeramt Schöneberg",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122257",
+          "name": "Bürgeramt Tempelhof",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122317",
+          "name": "Ordnungsamt Tempelhof-Schöneberg",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "122938",
+          "name": "Standesamt Tempelhof-Schöneberg",
+          "office": "standesamt"
+        },
+        {
+          "id": "123474",
+          "name": "Veterinär- und Lebensmittelaufsicht Tempelhof-Schöneberg",
+          "office": "weitere"
+        },
+        {
+          "id": "123612",
+          "name": "Jugendamt Tempelhof-Schöneberg",
+          "office": "jugendamt"
+        },
+        {
+          "id": "324098",
+          "name": "Zentrales Fundbüro Berlin",
+          "office": "weitere"
+        },
+        {
+          "id": "324334",
+          "name": "Einbürgerung Tempelhof-Schöneberg",
+          "office": "weitere"
+        },
+        {
+          "id": "324335",
+          "name": "Wohnungsamt Tempelhof-Schöneberg",
+          "office": "weitere"
+        },
+        {
+          "id": "324961",
+          "name": "Vermessung Tempelhof-Schöneberg",
+          "office": "weitere"
+        },
+        {
+          "id": "325665",
+          "name": "Amt für Soziales Tempelhof-Schöneberg",
+          "office": "sozialamt"
+        },
+        {
+          "id": "325897",
+          "name": "Jugendamt, Strelitzstr. 15, 12105 Berlin",
+          "office": "jugendamt"
+        },
+        {
+          "id": "325899",
+          "name": "Jugendamt, Briesingstraße 6, 12307 Berlin",
+          "office": "jugendamt"
+        }
+      ]
+    },
+    {
+      "id": "12678",
+      "name": "Bezirksamt Treptow-Köpenick",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-06-19T12:26:01+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "122208",
+          "name": "Bürgeramt I in Köpenick",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122226",
+          "name": "Bürgeramt II in Schöneweide",
+          "office": "buergeramt"
+        },
+        {
+          "id": "122613",
+          "name": "Wohnungsamt Treptow-Köpenick",
+          "office": "weitere"
+        },
+        {
+          "id": "122671",
+          "name": "Volkshochschule Treptow-Köpenick",
+          "office": "weitere"
+        },
+        {
+          "id": "122672",
+          "name": "Amt für Soziales Treptow-Köpenick",
+          "office": "sozialamt"
+        },
+        {
+          "id": "122935",
+          "name": "Gesundheitsamt - Infektions-, Katastrophenschutz und umweltbezogener Gesundheitsschutz",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "122943",
+          "name": "Standesamt Treptow-Köpenick",
+          "office": "standesamt"
+        },
+        {
+          "id": "122995",
+          "name": "Umwelt- und Naturschutzamt Treptow-Köpenick",
+          "office": "weitere"
+        },
+        {
+          "id": "123476",
+          "name": "Ordnungsamt Treptow-Köpenick / Veterinär- und Lebensmittelaufsicht",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "123559",
+          "name": "Tiefbau",
+          "office": "weitere"
+        },
+        {
+          "id": "123613",
+          "name": "Jugendamt Treptow-Köpenick - Kitagutscheinverfahren und Hort",
+          "office": "jugendamt"
+        },
+        {
+          "id": "324302",
+          "name": "Vermessung Treptow-Köpenick",
+          "office": "weitere"
+        },
+        {
+          "id": "324303",
+          "name": "Stadtplanungsamt",
+          "office": "weitere"
+        },
+        {
+          "id": "324306",
+          "name": "Rathaus Köpenick",
+          "office": "weitere"
+        },
+        {
+          "id": "324307",
+          "name": "Rathaus Treptow",
+          "office": "weitere"
+        },
+        {
+          "id": "324400",
+          "name": "Hans-Schmidt-Str. 16 und 18",
+          "office": "weitere"
+        },
+        {
+          "id": "324403",
+          "name": "Amt für Soziales - Ambulante Hilfe zur Pflege",
+          "office": "sozialamt"
+        },
+        {
+          "id": "324404",
+          "name": "Amt für Soziales - Fallmanagement Eingliederungshilfe für Menschen mit Behinderung",
+          "office": "sozialamt"
+        },
+        {
+          "id": "324405",
+          "name": "Amt für Soziales - Grundsicherung im Alter und bei Erwerbsminderung",
+          "office": "sozialamt"
+        },
+        {
+          "id": "324406",
+          "name": "Amt für Soziales - Hilfe zur Überwindung besonderer sozialer Schwierigkeiten",
+          "office": "weitere"
+        },
+        {
+          "id": "324407",
+          "name": "Sozialamt - Rechts-, Kosteneinziehungs und Unterhaltsstelle",
+          "office": "weitere"
+        },
+        {
+          "id": "324408",
+          "name": "Amt für Soziales - Koordinationsstelle zur Vermeidung und Behebung von Wohnungsverlust",
+          "office": "sozialamt"
+        },
+        {
+          "id": "324409",
+          "name": "Sozialamt - Sozialdienst für Erwerbsfähige",
+          "office": "weitere"
+        },
+        {
+          "id": "324410",
+          "name": "Sozialamt - Sozialdienst für Nichterwerbsfähige und Senioren",
+          "office": "weitere"
+        },
+        {
+          "id": "324411",
+          "name": "Amt für Soziales - Betreuungsbehörde",
+          "office": "sozialamt"
+        },
+        {
+          "id": "324421",
+          "name": "Gesundheitsamt - Kinder- und Jugendgesundheitsdienst - Ortolfstr. 182-184",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324423",
+          "name": "Gesundheitsamt - Kinder- und Jugendgesundheitsdienst - Hans-Schmidt-Str. 16",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324424",
+          "name": "Gesundheitsamt - Kinder- und Jugendpsychiatrischer Dienst - Hans-Schmidt-Str. 16",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324425",
+          "name": "Gesundheitsamt - Zahnärztlicher Dienst ",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324426",
+          "name": "Gesundheitsamt - Sozialpsychiatrischer Dienst - Hans-Schmidt-Str. 16",
+          "office": "gesundheitsamt"
+        },
+        {
+          "id": "324460",
+          "name": "Amt für Soziales - Hilfe zum Lebensunterhalt",
+          "office": "sozialamt"
+        },
+        {
+          "id": "324461",
+          "name": "Amt für Soziales - Asylbewerberleistungsgesetz",
+          "office": "sozialamt"
+        },
+        {
+          "id": "324585",
+          "name": "Amt für Soziales - Bürgerschaftliches Engagement",
+          "office": "sozialamt"
+        },
+        {
+          "id": "326053",
+          "name": "Ordnungsamt Treptow-Köpenick / Straßenverkehrsbehörde",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "326055",
+          "name": "Ordnungsamt Treptow-Köpenick / Zentrale Anlauf- und Beratungsstelle",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "326059",
+          "name": "Ordnungsamt Treptow-Köpenick / Gewerbeangelegenheiten",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "326061",
+          "name": "Ordnungsamt Treptow-Köpenick / Veranstaltungen - Erlaubnis",
+          "office": "ordnungsamt"
+        },
+        {
+          "id": "326303",
+          "name": "Amt für Soziales – Stationäre Hilfe zur Pflege",
+          "office": "sozialamt"
+        },
+        {
+          "id": "326509",
+          "name": "Einbürgerung und Staatsangehörigkeiten Treptow-Köpenick",
+          "office": "weitere"
+        },
+        {
+          "id": "326620",
+          "name": "Jugendamt Treptow-Köpenick - Elterngeld",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326622",
+          "name": "Jugendamt Treptow-Köpenick - Betreuungsgeld",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326624",
+          "name": "Jugendamt Treptow-Köpenick - Unterhalts- und Sorgerecht",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326626",
+          "name": "Jugendamt Treptow-Köpenick - wirtschaftliche Jugendhilfe",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326628",
+          "name": "Jugendamt Treptow-Köpenick - Eingliederungshilfe",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326630",
+          "name": "Jugendamt Treptow-Köpenick - Jugendgerichtshilfe",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326632",
+          "name": "Jugendamt Treptow-Köpenick - Pflegekinderdienst",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326634",
+          "name": "Jugendamt Treptow-Köpenick - Erziehungs- und Familienberatung",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326636",
+          "name": "Jugendamt Treptow-Köpenick - Kinderschutz (Krisendienst)",
+          "office": "jugendamt"
+        },
+        {
+          "id": "326638",
+          "name": "Jugendamt Treptow-Köpenick - Kindertagespflege",
+          "office": "jugendamt"
+        }
+      ]
+    },
+    {
+      "id": "12836",
+      "name": "BF Rückversicherung",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2013-03-08T13:35:15+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12835",
+      "name": "Börse Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-03T11:50:13+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12644",
+      "name": "Brücke-Museum",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:27:54+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12816",
+      "name": "Bund Deutscher Schiedsmänner und Schiedsfrauen Bezirksvereinigung Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-03T12:19:21+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12699",
+      "name": "Charité Universitätsmedizin Berlin - Gliedkörperschaft der Freien Universität Berlin und der Humboldt-Universität zu Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-07T16:24:48+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12681",
+      "name": "Der Berliner Beauftragte für Datenschutz und Informationsfreiheit",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:29:00+01:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": []
+    },
+    {
+      "id": "12758",
+      "name": "Der Polizeipräsident in Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-01-30T11:00:23+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "121649",
+          "name": "Sicherstellungsgelände - Berlin-Schöneberg",
+          "office": "weitere"
+        },
+        {
+          "id": "121650",
+          "name": "Sicherstellungsgelände - Berlin-Biesdorf",
+          "office": "weitere"
+        },
+        {
+          "id": "324186",
+          "name": "Bußgeldstelle beim Polizeipräsidenten in Berlin",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12643",
+      "name": "Der Regierende Bürgermeister von Berlin - Kulturelle Angelegenheiten",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:27:27+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12642",
+      "name": "Der Regierende Bürgermeister von Berlin - Senatskanzlei",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2014-04-10T14:16:18+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "324321",
+          "name": "Berliner Rathaus",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12768",
+      "name": "Deutsche Dienststelle für die Benachrichtigung der nächsten Angehörigen von Gefallenen der ehemaligen deutschen Wehrmacht (WASt)",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-01T15:55:20+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12740",
+      "name": "Deutsche Klassenlotterie Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2014-01-17T12:27:00+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "324697",
+      "name": "Deutsche Rentenversicherung Berlin-Brandenburg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-07T17:04:41+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12825",
+      "name": "Deutsches Institut für Bautechnik",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-08T15:48:41+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12646",
+      "name": "Deutsches Theater / Kammerspiele",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:27:07+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12716",
+      "name": "Finanzamt Charlottenburg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:32:24+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "122937",
+          "name": "Finanzamt Charlottenburg",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12717",
+      "name": "Finanzamt Friedrichshain-Kreuzberg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:33:09+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "324113",
+          "name": "Finanzamt Friedrichshain-Kreuzberg",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12737",
+      "name": "Finanzamt für Fahndung und Strafsachen Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:35:12+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "324106",
+          "name": "Finanzamt für Fahndung und Strafsachen",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12733",
+      "name": "Finanzamt für Körperschaften I",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:36:14+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "324144",
+          "name": "Finanzamt für Körperschaften I",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12734",
+      "name": "Finanzamt für Körperschaften II",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:37:04+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "324145",
+          "name": "Finanzamt für Körperschaften II",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12735",
+      "name": "Finanzamt für Körperschaften III",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:37:37+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "324147",
+          "name": "Finanzamt für Körperschaften III",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12736",
+      "name": "Finanzamt für Körperschaften IV",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:38:03+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "324148",
+          "name": "Finanzamt für Körperschaften IV",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12718",
+      "name": "Finanzamt Lichtenberg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:39:13+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "324134",
+          "name": "Finanzamt Lichtenberg",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12719",
+      "name": "Finanzamt Marzahn-Hellersdorf",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:39:55+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "324135",
+          "name": "Finanzamt Marzahn-Hellersdorf",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12720",
+      "name": "Finanzamt Mitte/Tiergarten",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:40:16+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "122945",
+          "name": "Finanzamt Mitte/Tiergarten",
+          "office": "finanzamt"
+        },
+        {
+          "id": "324158",
+          "name": "Finanzamt Mitte/Tiergarten -Zweitwohnungsteuerstelle-",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12721",
+      "name": "Finanzamt Neukölln",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:40:39+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "324108",
+          "name": "Finanzamt Neukölln",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12722",
+      "name": "Finanzamt Pankow/Weißensee",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:41:24+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "122951",
+          "name": "Finanzamt Pankow/Weißensee",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12723",
+      "name": "Finanzamt Prenzlauer Berg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:42:08+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "122953",
+          "name": "Finanzamt Prenzlauer Berg",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12724",
+      "name": "Finanzamt Reinickendorf",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:42:36+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "324112",
+          "name": "Finanzamt Reinickendorf",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12725",
+      "name": "Finanzamt Schöneberg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:43:12+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "122961",
+          "name": "Finanzamt Schöneberg",
+          "office": "finanzamt"
+        },
+        {
+          "id": "122963",
+          "name": "Finanzamt Schöneberg - Außenstelle -",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12726",
+      "name": "Finanzamt Spandau",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:46:45+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "324109",
+          "name": "Finanzamt Spandau",
+          "office": "weitere"
+        },
+        {
+          "id": "324110",
+          "name": "Finanzamt Spandau-Grunderwerbsteuerstelle ",
+          "office": "finanzamt"
+        },
+        {
+          "id": "324111",
+          "name": "Finanzamt Spandau",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12727",
+      "name": "Finanzamt Steglitz",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:47:08+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "122969",
+          "name": "Finanzamt Steglitz",
+          "office": "finanzamt"
+        },
+        {
+          "id": "122971",
+          "name": "Finanzamt Steglitz (Außenstelle)",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12728",
+      "name": "Finanzamt Tempelhof",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:47:36+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "122973",
+          "name": "Finanzamt Tempelhof",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12729",
+      "name": "Finanzamt Treptow-Köpenick",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:48:00+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "324136",
+          "name": "Finanzamt Treptow-Köpenick",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12730",
+      "name": "Finanzamt Wedding",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:48:19+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "122975",
+          "name": "Finanzamt Wedding",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12731",
+      "name": "Finanzamt Wilmersdorf",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:48:39+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "122976",
+          "name": "Finanzamt Wilmersdorf",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12732",
+      "name": "Finanzamt Zehlendorf",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:49:05+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "122978",
+          "name": "Finanzamt Zehlendorf",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12794",
+      "name": "Finanzgericht Berlin-Brandenburg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T17:01:05+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12694",
+      "name": "Freie Universität Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T15:02:21+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12822",
+      "name": "Gemeinsame Obere Luftfahrtbehörde Berlin-Brandenburg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-08T15:49:10+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12748",
+      "name": "Gemeinsames Krebsregister der Länder Berlin, Brandenburg, Mecklenburg- Vorpommern, Sachsen-Anhalt und der Freistaaten Sachsen und Thüringen (GKR)",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2013-07-26T09:48:20+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12797",
+      "name": "Generalstaatsanwaltschaft Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T17:02:17+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "325647",
+      "name": "Handwerksinnungen",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2013-07-26T09:48:03+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12832",
+      "name": "Handwerkskammer Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2013-07-26T09:48:05+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "149013",
+          "name": "Handwerkskammer Berlin",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12701",
+      "name": "Hochschule für Musik \"Hanns Eisler\"",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-02T11:45:43+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12702",
+      "name": "Hochschule für Schauspielkunst \"Ernst Busch\"",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T14:58:38+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12704",
+      "name": "Hochschule für Technik und Wirtschaft Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T14:58:12+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12705",
+      "name": "Hochschule für Wirtschaft und Recht Berlin ",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-02T11:33:38+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12696",
+      "name": "Humboldt Universität zu Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T15:00:08+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12831",
+      "name": "Industrie- und Handelskammer zu Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-08-12T15:18:17+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "148396",
+          "name": "Industrie- und Handelskammer zu Berlin",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12834",
+      "name": "Investitionsbank Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-06-28T10:18:26+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "325397",
+      "name": "Jobcenter Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2013-07-26T09:48:10+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": []
+    },
+    {
+      "id": "12692",
+      "name": "Jugend- und Familienstiftung des Landes Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T15:00:21+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12807",
+      "name": "Jugendarrestanstalt Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:54:21+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12806",
+      "name": "Jugendstrafanstalt Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:54:12+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12804",
+      "name": "Justizvollzugsanstalt des Offenen Vollzuges Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:53:36+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12803",
+      "name": "Justizvollzugsanstalt für Frauen Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:53:44+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "325321",
+      "name": "Justizvollzugsanstalt Heidering",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2013-03-11T10:27:10+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12800",
+      "name": "Justizvollzugsanstalt Moabit",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:53:08+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12805",
+      "name": "Justizvollzugsanstalt Plötzensee",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:54:01+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12801",
+      "name": "Justizvollzugsanstalt Tegel",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-03T12:48:06+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12777",
+      "name": "Kaiser Wilhelm- und Augusta-Stiftung",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-01T15:56:42+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12753",
+      "name": "Kammer für Psychologische Psychotherapeuten und Kinder- und Jugendlichenpsychotherapeuten",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:45:41+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12779",
+      "name": "Kammergericht",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-08-12T15:32:49+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "326305",
+          "name": "Kammergericht",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12754",
+      "name": "Kassenärztliche Vereinigung Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:45:46+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12755",
+      "name": "Kassenzahnärztliche Vereinigung Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:45:50+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12710",
+      "name": "Konrad-Zuse-Zentrum für Informationstechnik Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-02T11:36:47+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12649",
+      "name": "Konzerthaus Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:27:15+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12747",
+      "name": "Krankenhaus des Maßregelvollzugs Berlin (KMV)",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-02T12:13:06+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "324695",
+      "name": "Krematorium Berlin (Landesbetrieb)",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-08T15:49:32+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12698",
+      "name": "Kunsthochschule Berlin (Weißensee)",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-02T11:38:45+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12829",
+      "name": "Landesamt für Bergbau, Geologie und Rohstoffe",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-06-28T10:18:40+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12760",
+      "name": "Landesamt für Bürger- und Ordnungsangelegenheiten",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-09-03T10:02:42+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "121362",
+          "name": "Kfz-Zulassungsbehörde-Lichtenberg",
+          "office": "kfz-zulassungsstelle"
+        },
+        {
+          "id": "121364",
+          "name": "Kfz-Zulassungsbehörde-Friedr.-Kreuzberg",
+          "office": "kfz-zulassungsstelle"
+        },
+        {
+          "id": "121646",
+          "name": "Fahrerlaubnisbehörde",
+          "office": "weitere"
+        },
+        {
+          "id": "121885",
+          "name": "Ausländerbehörde Berlin ",
+          "office": "auslandsamt"
+        },
+        {
+          "id": "121918",
+          "name": "Auslandseinladungen - Einladungen zu Besuchszwecken",
+          "office": "weitere"
+        },
+        {
+          "id": "151700",
+          "name": "Pass- und Ausweisrechtliche Sonderangelegenheiten",
+          "office": "weitere"
+        },
+        {
+          "id": "158239",
+          "name": "Glücksspielwesen",
+          "office": "weitere"
+        },
+        {
+          "id": "311322",
+          "name": "Standesamt I in Berlin",
+          "office": "standesamt"
+        },
+        {
+          "id": "324290",
+          "name": "Entschädigungsbehörde",
+          "office": "weitere"
+        },
+        {
+          "id": "324291",
+          "name": "Apostillen / Legalisationen",
+          "office": "weitere"
+        },
+        {
+          "id": "324292",
+          "name": "Melderegisterauskünfte",
+          "office": "weitere"
+        },
+        {
+          "id": "324315",
+          "name": "Kfz-Zulassungsbehörde - Berlin Lichtenberg - Ausfuhrkennzeichen",
+          "office": "kfz-zulassungsstelle"
+        },
+        {
+          "id": "326163",
+          "name": "Kfz-Zulassungsbehörde-Friedr.-Kreuzberg - Rote Kennzeichen",
+          "office": "kfz-zulassungsstelle"
+        },
+        {
+          "id": "326531",
+          "name": "Fahrerlaubnisbehörde - Gewerbeangelegenheiten",
+          "office": "weitere"
+        },
+        {
+          "id": "326962",
+          "name": "Fahrerlaubnisbehörde - Personenbeförderung",
+          "office": "weitere"
+        },
+        {
+          "id": "327052",
+          "name": "Kfz-Zulassungsbehörde-Friedr.-Kreuzberg - Wiedererfassung",
+          "office": "kfz-zulassungsstelle"
+        },
+        {
+          "id": "327058",
+          "name": "Fahrerlaubnisbehörde - Fahrerkarte",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12767",
+      "name": "Landesamt für Gesundheit und Soziales Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-07-08T08:59:40+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "324743",
+          "name": "ZMGA",
+          "office": "weitere"
+        },
+        {
+          "id": "324787",
+          "name": "LAGeSo - Versorgungsamt - Akteneinsicht",
+          "office": "weitere"
+        },
+        {
+          "id": "324799",
+          "name": "LAGeSo - Landesprüfungsamt für Gesundheitsberufe",
+          "office": "weitere"
+        },
+        {
+          "id": "325581",
+          "name": "LAGeSo - Versicherungsamt",
+          "office": "weitere"
+        },
+        {
+          "id": "325583",
+          "name": "LAGeSo - Integrationsamt",
+          "office": "weitere"
+        },
+        {
+          "id": "325643",
+          "name": "Landesamt für Gesundheit und Soziales - Zentral",
+          "office": "weitere"
+        },
+        {
+          "id": "325645",
+          "name": "LAGeSo - Zentrale Leistungsstelle für Asylbewerber",
+          "office": "weitere"
+        },
+        {
+          "id": "325679",
+          "name": "LAGeSo - Versorgungsamt - Zentral",
+          "office": "weitere"
+        },
+        {
+          "id": "325721",
+          "name": "LAGeSo - Versorgungsamt - KundenCenter",
+          "office": "weitere"
+        },
+        {
+          "id": "325861",
+          "name": "LAGeSo - Heimaufsicht",
+          "office": "weitere"
+        },
+        {
+          "id": "325863",
+          "name": "Artothek",
+          "office": "weitere"
+        },
+        {
+          "id": "326139",
+          "name": "LAGeSo - Versorgungsamt - Kundencenter - Dienstleistungen in Gebärdensprache",
+          "office": "weitere"
+        },
+        {
+          "id": "327020",
+          "name": "LAGeSo - Reproduktionsmedizin",
+          "office": ""
+        }
+      ]
+    },
+    {
+      "id": "12828",
+      "name": "Landesamt für Mess- und Eichwesen Berlin-Brandenburg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-06-28T10:18:50+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12769",
+      "name": "Landesarbeitsgericht Berlin-Brandenburg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-01T15:51:09+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12647",
+      "name": "Landesarchiv Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-06-25T15:45:40+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12715",
+      "name": "Landesbetrieb für Gebäudebewirtschaftung Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2014-01-17T12:37:14+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12714",
+      "name": "Landeshauptkasse Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2014-04-28T11:10:37+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12746",
+      "name": "Landesinstitut für gerichtliche und soziale Medizin Berlin (GerMed)",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-02T12:21:11+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12686",
+      "name": "Landesinstitut für Schule und Medien Berlin-Brandenburg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T15:01:27+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12756",
+      "name": "Landeslabor Berlin-Brandenburg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-02T12:27:28+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12795",
+      "name": "Landessozialgericht Berlin-Brandenburg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T17:01:15+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12684",
+      "name": "Landeszentrale für politische Bildungsarbeit",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T15:01:58+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12780",
+      "name": "Landgericht Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-06-12T12:49:53+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "326333",
+          "name": "Littenstraße",
+          "office": "weitere"
+        },
+        {
+          "id": "326335",
+          "name": "Tegeler Weg",
+          "office": "weitere"
+        },
+        {
+          "id": "326337",
+          "name": "Turmstraße",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12689",
+      "name": "Lette-Verein",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-02T11:42:15+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12709",
+      "name": "Max-Delbrück-Centrum für Molekulare Medizin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-02T11:44:33+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12648",
+      "name": "Maxim Gorki Theater",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:29:06+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "324687",
+      "name": "Museum für Naturkunde",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-03T12:10:03+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12811",
+      "name": "Notarkammer Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:56:01+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12792",
+      "name": "Oberverwaltungsgericht Berlin-Brandenburg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T17:00:37+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12688",
+      "name": "Pestalozzi-Fröbel-Haus",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T15:00:58+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12820",
+      "name": "Pflanzenschutzamt Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-05-20T13:26:24+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "326950",
+          "name": "Pflanzenschutzamt",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12682",
+      "name": "Rechnungshof von Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:29:19+01:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": []
+    },
+    {
+      "id": "12812",
+      "name": "Rechtsanwaltskammer Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:56:09+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12687",
+      "name": "Sekretariat der Ständigen Konferenz der Kultusminister der Länder in der Bundesrepublik Deutschland (KMK)",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-02T11:47:30+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12766",
+      "name": "Senatsverwaltung für Arbeit, Integration und Frauen",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T12:57:49+01:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "324104",
+          "name": "Senatsverwaltung für Arbeit, Integration und Frauen (Potsdamer Str. 65, 10785 Berlin)",
+          "office": "weitere"
+        },
+        {
+          "id": "326820",
+          "name": "Senatsverwaltung für Arbeit, Integration und Frauen",
+          "office": "weitere"
+        },
+        {
+          "id": "326822",
+          "name": "Senatsverwaltung für Arbeit, Integration und Frauen (Oranienstr. 106, 10969 Berlin)",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12683",
+      "name": "Senatsverwaltung für Bildung, Jugend und Wissenschaft",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-08-13T13:19:22+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "324219",
+          "name": "Regionale Schulaufsicht Mitte",
+          "office": "weitere"
+        },
+        {
+          "id": "324220",
+          "name": "Regionale Schulaufsicht Friedrichshain-Kreuzberg",
+          "office": "weitere"
+        },
+        {
+          "id": "324224",
+          "name": "Regionale Schulaufsicht Steglitz-Zehlendorf",
+          "office": "weitere"
+        },
+        {
+          "id": "324226",
+          "name": "Regionale Schulaufsicht Neukölln, Schulpsychologische Beratungsstelle",
+          "office": "weitere"
+        },
+        {
+          "id": "324229",
+          "name": "Regionale Schulaufsicht Marzahn-Hellersdorf",
+          "office": "weitere"
+        },
+        {
+          "id": "324230",
+          "name": "Regionale Schulaufsicht Lichtenberg",
+          "office": "weitere"
+        },
+        {
+          "id": "324296",
+          "name": "Regionale Schulaufsicht Tempelhof-Schöneberg, Schulpsychologische Beratungsstelle",
+          "office": "weitere"
+        },
+        {
+          "id": "324298",
+          "name": "Sonderpädagogische Koordinierungsstelle",
+          "office": "weitere"
+        },
+        {
+          "id": "324311",
+          "name": "Senatsverwaltung für Bildung, Jugend und Wissenschaft",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12711",
+      "name": "Senatsverwaltung für Finanzen",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-08-18T15:18:54+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": []
+    },
+    {
+      "id": "12742",
+      "name": "Senatsverwaltung für Gesundheit und Soziales",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-07-13T09:03:56+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "324581",
+          "name": "Senatsverwaltung für Gesundheit und Soziales",
+          "office": "weitere"
+        },
+        {
+          "id": "324947",
+          "name": "Senatsverwaltung für Gesundheit und Soziales, Abteilung Gesundheit",
+          "office": "weitere"
+        },
+        {
+          "id": "324949",
+          "name": "Senatsverwaltung für Gesundheit und Soziales, Abteilung Soziales",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12757",
+      "name": "Senatsverwaltung für Inneres und Sport",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2013-07-26T09:49:10+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": []
+    },
+    {
+      "id": "12778",
+      "name": "Senatsverwaltung für Justiz und Verbraucherschutz",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-07-17T09:49:37+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": []
+    },
+    {
+      "id": "12817",
+      "name": "Senatsverwaltung für Stadtentwicklung und Umwelt",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-06-04T15:47:03+02:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "326950",
+          "name": "Pflanzenschutzamt",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12827",
+      "name": "Senatsverwaltung für Wirtschaft, Technologie und Forschung",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-02-17T15:22:24+01:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": [
+        {
+          "id": "141568",
+          "name": "Einheitlicher Ansprechpartner",
+          "office": "weitere"
+        }
+      ]
+    },
+    {
+      "id": "12809",
+      "name": "Soziale Dienste der Justiz Berlin -Gerichts- und Bewährungshilfe-",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-03T12:28:44+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12796",
+      "name": "Sozialgericht Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T17:02:04+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12685",
+      "name": "Sozialpädagogisches Fortbildungsinstitut Berlin-Brandenburg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T15:01:45+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12773",
+      "name": "St. Gertraudt-Stiftung",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-01T15:59:38+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12713",
+      "name": "Staatliche Münze Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2014-01-17T12:38:16+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12798",
+      "name": "Staatsanwaltschaft Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T17:02:31+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12739",
+      "name": "Steuerberaterkammer Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2014-01-17T12:38:35+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12665",
+      "name": "Stiftung Berliner Mauer",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:29:14+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12663",
+      "name": "Stiftung Berliner Philharmoniker",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:29:35+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12657",
+      "name": "Stiftung Berlinische Galerie",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:29:40+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12658",
+      "name": "Stiftung Bröhan-Museum",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:30:00+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12693",
+      "name": "Stiftung Demokratische Jugend",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T15:02:10+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12741",
+      "name": "Stiftung Deutsche Klassenlotterie Berlin (DKLB-Stiftung)",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2014-01-17T12:38:49+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12662",
+      "name": "Stiftung Deutsches Technikmuseum",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:30:05+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12664",
+      "name": "Stiftung für kulturelle Weiterbildung und Kulturberatung",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:30:29+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12661",
+      "name": "Stiftung Gedenkstätte Berlin- Hohenschönhausen",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:30:36+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12656",
+      "name": "Stiftung Gedenkstätte Deutscher Widerstand",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:30:54+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "324681",
+      "name": "Stiftung Hilfe für die Familie",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-02T11:54:07+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12776",
+      "name": "Stiftung Hospitäler zum Heiligen Geist und St. Georg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-01T16:00:31+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12772",
+      "name": "Stiftung Invalidenhaus Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-01T16:01:51+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12826",
+      "name": "Stiftung Naturschutz",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-08T15:51:25+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12653",
+      "name": "Stiftung Neue Synagoge / Centrum Judaicum",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:30:59+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12651",
+      "name": "Stiftung Oper in Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:31:17+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12654",
+      "name": "Stiftung Preußische Schlösser und Gärten Berlin-Brandenburg",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:31:21+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12652",
+      "name": "Stiftung Preußischer Kulturbesitz",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2014-04-28T11:09:59+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12659",
+      "name": "Stiftung Stadtmuseum Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:27:22+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12655",
+      "name": "Stiftung Topographie des Terrors",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:28:43+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12660",
+      "name": "Stiftung Zentral- und Landesbibliothek Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:28:39+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12708",
+      "name": "Studentenwerk Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T14:57:07+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12695",
+      "name": "Technische Universität Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T15:00:33+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12738",
+      "name": "Technisches Finanzamt Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:49:47+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": [
+        {
+          "id": "304510",
+          "name": "Technisches Finanzamt Berlin",
+          "office": "finanzamt"
+        }
+      ]
+    },
+    {
+      "id": "12645",
+      "name": "Theater an der Parkaue",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-06-25T15:47:51+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12751",
+      "name": "Tierärztekammer Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:45:30+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "324685",
+      "name": "Tradegate Exchange",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-03T12:07:15+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12771",
+      "name": "Unfallkasse Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-01T16:02:57+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12697",
+      "name": "Universität der Künste Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-03-17T14:59:53+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12680",
+      "name": "Verfassungsgerichtshof des Landes Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T17:08:17+01:00"
+      },
+      "relation": {
+        "navi": "1"
+      },
+      "locations": []
+    },
+    {
+      "id": "12830",
+      "name": "Vergabekammer des Landes Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2015-03-18T11:50:33+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12821",
+      "name": "Verkehrslenkung Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-08T15:51:39+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12815",
+      "name": "Versorgungswerk der Rechtsanwälte in Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:56:40+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12762",
+      "name": "Verwaltungsakademie Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2014-04-28T11:08:17+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12793",
+      "name": "Verwaltungsgericht Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T17:00:54+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12650",
+      "name": "Volksbühne",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2012-08-06T13:28:00+02:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12810",
+      "name": "Wiedergutmachungsämter von Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:55:10+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    },
+    {
+      "id": "12750",
+      "name": "Zahnärztekammer Berlin",
+      "contact": {
+        "webinfo": "http://example.com"
+      },
+      "meta": {
+        "lastupdate": "2011-02-22T16:45:25+01:00"
+      },
+      "relation": {
+        "navi": "0"
+      },
+      "locations": []
+    }
+  ]
+}

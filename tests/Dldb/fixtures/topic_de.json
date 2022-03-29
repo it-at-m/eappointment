@@ -1,0 +1,6041 @@
+{
+  "created": "2016-01-15T09:40:59+01:00",
+  "datacount": 170,
+  "locale": "de_DE",
+  "hash": "d7369a6b5e3a9d6b48ab8fb13d9fcd40",
+  "error": false,
+  "data": [
+    {
+      "id": "325241",
+      "name": "Abfall, Entsorgung",
+      "path": "abfall-entsorgung",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "326690",
+            "name": "Abfälle - Genehmigung für Sammler, Beförderer, Händler und Makler"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325297",
+      "name": "Aktuelles aus der Politik",
+      "path": "aktuelles-politik",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325007",
+      "name": "Ämter, Verwaltungen, Institutionen: Arbeit, Beruf und Soziales",
+      "path": "aemter-arbeitberufsoziales",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325069",
+            "name": "Wirtschaftsämter",
+            "path": "wirtschaftsaemter",
+            "rank": "0"
+          },
+          {
+            "id": "325073",
+            "name": "BAföG-Ämter",
+            "path": "bafoeg-aemter",
+            "rank": "0"
+          },
+          {
+            "id": "325075",
+            "name": "Sozialämter",
+            "path": "sozialaemter",
+            "rank": "0"
+          },
+          {
+            "id": "325077",
+            "name": "Grundsicherungsämter",
+            "path": "grundsicherungsaemter",
+            "rank": "0"
+          },
+          {
+            "id": "327018",
+            "name": "Jobcenter",
+            "path": "jobcenter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324899",
+      "name": "Ämter, Verwaltungen, Institutionen: Auto, Verkehr",
+      "path": "aemter-autoverkehr",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325129",
+      "name": "Ämter, Verwaltungen, Institutionen: Behinderung",
+      "path": "aemter-behinderung",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325005",
+      "name": "Ämter, Verwaltungen, Institutionen: Familie, Partnerschaft und Gleichstellung",
+      "path": "aemter-familiepartnerschaftgleichstellung",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325127",
+            "name": "Jugendämter",
+            "path": "jugendaemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325197",
+      "name": "Ämter, Verwaltungen, Institutionen: Gesundheit und Pflege",
+      "path": "aemter-gesundheitpflege",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325193",
+            "name": "Veterinär- und Lebensmittelaufsichtsämter",
+            "path": "veterinaer-lebensmittelaufsichtsaemter",
+            "rank": "0"
+          },
+          {
+            "id": "325199",
+            "name": "Gesundheitsämter",
+            "path": "gesundheitsaemter",
+            "rank": "0"
+          },
+          {
+            "id": "325201",
+            "name": "Berufsorganisationen Gesundheit",
+            "path": "berufsorganisationen-gesundheit",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325099",
+      "name": "Ämter, Verwaltungen, Institutionen: Kultur, Medien, Wissenschaft",
+      "path": "aemter-kulturmedienwissenschaft",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325101",
+            "name": "Bibliotheksämter",
+            "path": "bibliotheksaemter",
+            "rank": "0"
+          },
+          {
+            "id": "325103",
+            "name": "Kunst- und Kulturämter",
+            "path": "kunst-kulturaemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325231",
+      "name": "Ämter, Verwaltungen, Institutionen: Meldewesen und Ordnung",
+      "path": "aemter-meldewesenordnung",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325235",
+            "name": "Ordnungsämter",
+            "path": "ordnungsaemter",
+            "rank": "0"
+          },
+          {
+            "id": "325275",
+            "name": "Bürgerberatung, -ämter",
+            "path": "buergerberatung-aemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325137",
+      "name": "Ämter, Verwaltungen, Institutionen: Migration und Integration",
+      "path": "aemter-migrationintegration",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325305",
+      "name": "Ämter, Verwaltungen, Institutionen: Schule, Ausbildung und Studium",
+      "path": "aemter-schuleausbildungstudium",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325073",
+            "name": "BAföG-Ämter",
+            "path": "bafoeg-aemter",
+            "rank": "0"
+          },
+          {
+            "id": "325101",
+            "name": "Bibliotheksämter",
+            "path": "bibliotheksaemter",
+            "rank": "0"
+          },
+          {
+            "id": "325303",
+            "name": "Schulämter",
+            "path": "schulaemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325233",
+      "name": "Ämter, Verwaltungen, Institutionen: Sicherheit und Notlagen",
+      "path": "aemter-sicherheitnotlagen",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325235",
+            "name": "Ordnungsämter",
+            "path": "ordnungsaemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325155",
+      "name": "Ämter, Verwaltungen, Institutionen: Sport",
+      "path": "aemter-sport",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325157",
+            "name": "Sportämter",
+            "path": "sportaemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325079",
+      "name": "Ämter, Verwaltungen, Institutionen: Steuern, Finanzen, Recht",
+      "path": "aemter-steuernfinanzenrecht",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325093",
+            "name": "Gerichte/Schiedsstellen",
+            "path": "gerichte-schiedsstellen",
+            "rank": "0"
+          },
+          {
+            "id": "325235",
+            "name": "Ordnungsämter",
+            "path": "ordnungsaemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325189",
+      "name": "Ämter, Verwaltungen, Institutionen: Tourismus",
+      "path": "aemter-tourismus",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325239",
+      "name": "Ämter, Verwaltungen, Institutionen: Umwelt, Natur und Tiere",
+      "path": "aemter-umweltnaturtiere",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325193",
+            "name": "Veterinär- und Lebensmittelaufsichtsämter",
+            "path": "veterinaer-lebensmittelaufsichtsaemter",
+            "rank": "0"
+          },
+          {
+            "id": "325243",
+            "name": "Umwelt- und Naturschutzämter",
+            "path": "umwelt-naturschutzaemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325191",
+      "name": "Ämter, Verwaltungen, Institutionen: Verbraucherschutz",
+      "path": "aemter-verbraucherschutz",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325193",
+            "name": "Veterinär- und Lebensmittelaufsichtsämter",
+            "path": "veterinaer-lebensmittelaufsichtsaemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325211",
+      "name": "Ämter, Verwaltungen, Institutionen: Wirtschaft",
+      "path": "aemter-wirtschaft",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325007",
+            "name": "Ämter, Verwaltungen, Institutionen: Arbeit, Beruf und Soziales",
+            "path": "aemter-arbeitberufsoziales",
+            "rank": "0"
+          },
+          {
+            "id": "325069",
+            "name": "Wirtschaftsämter",
+            "path": "wirtschaftsaemter",
+            "rank": "0"
+          },
+          {
+            "id": "325071",
+            "name": "Wirtschaftsförderung der Bezirke",
+            "path": "wirtschaftsfoerderung-bezirke",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324853",
+      "name": "Ämter, Verwaltungen, Institutionen: Wohnen, Bauen",
+      "path": "aemter-wohnenbauen",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "324925",
+            "name": "Bau- und Wohnungsaufsichtsämter",
+            "path": "bau-wohnungsaufsichtamt",
+            "rank": "0"
+          },
+          {
+            "id": "324927",
+            "name": "Stadtplanungsämter",
+            "path": "stadtplanungsaemter",
+            "rank": "0"
+          },
+          {
+            "id": "324929",
+            "name": "Straßen- und Grünflächenamt - Tiefbau",
+            "path": "strassen-gruenflaechen-tiefbauaemter",
+            "rank": "0"
+          },
+          {
+            "id": "324931",
+            "name": "Vermessungsämter / Kataster",
+            "path": "vermessungsaemter",
+            "rank": "0"
+          },
+          {
+            "id": "324933",
+            "name": "Wohnungsämter",
+            "path": "wohnungsaemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324801",
+      "name": "Arbeit, Beruf und Soziales",
+      "path": "arbeit-beruf-soziales",
+      "relation": {
+        "navi": "1",
+        "services": [
+          {
+            "id": "326564",
+            "name": "Niederlassungserlaubnis für Selbständige"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325007",
+            "name": "Ämter, Verwaltungen, Institutionen: Arbeit, Beruf und Soziales",
+            "path": "aemter-arbeitberufsoziales",
+            "rank": "0"
+          },
+          {
+            "id": "325009",
+            "name": "Arbeitgeber- und Arbeitnehmer-Infos",
+            "path": "arbeitgeber-arbeitnehmerinfos",
+            "rank": "0"
+          },
+          {
+            "id": "325011",
+            "name": "Arbeitgeber- und Arbeitnehmervertretungen",
+            "path": "arbeitgeber-arbeitnehmervertretungen",
+            "rank": "0"
+          },
+          {
+            "id": "325013",
+            "name": "Arbeitslosengeld II, Grundsicherung, Sozialhilfe",
+            "path": "arbeitslosengeld",
+            "rank": "0"
+          },
+          {
+            "id": "325017",
+            "name": "Arbeitsrecht, Tarifrecht",
+            "path": "arbeitsrecht-tarifrecht",
+            "rank": "0"
+          },
+          {
+            "id": "325019",
+            "name": "Arbeitsschutz, Arbeitssicherheit",
+            "path": "arbeitsschutz-arbeitssicherheit",
+            "rank": "0"
+          },
+          {
+            "id": "325021",
+            "name": "Arbeitsvermittlung, Stellenangebote",
+            "path": "arbeitsvermittlung-stellenangebote",
+            "rank": "0"
+          },
+          {
+            "id": "325023",
+            "name": "Berufliche Bildung",
+            "path": "berufliche-bildung",
+            "rank": "0"
+          },
+          {
+            "id": "325025",
+            "name": "Sozialversicherung",
+            "path": "sozialversicherung",
+            "rank": "0"
+          },
+          {
+            "id": "325033",
+            "name": "Weiterbildung",
+            "path": "weiterbildung",
+            "rank": "0"
+          },
+          {
+            "id": "325135",
+            "name": "Sozialhilfe",
+            "path": "sozialhilfe",
+            "rank": "0"
+          },
+          {
+            "id": "325141",
+            "name": "Soziales: Beratung, Hilfe",
+            "path": "soziales-hilfeberatung",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325009",
+      "name": "Arbeitgeber- und Arbeitnehmer-Infos",
+      "path": "arbeitgeber-arbeitnehmerinfos",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "293946",
+            "name": "Anmeldung eines neuen Unternehmens zur Gesetzlichen Unfallversicherung (Berufsgenossenschaft)"
+          },
+          {
+            "id": "325661",
+            "name": "Arbeitnehmersparzulage - Gewährung"
+          },
+          {
+            "id": "326049",
+            "name": "Schwerbehinderung - Begleitende Hilfe im Arbeitsleben - Beantragung für Arbeitnehmerinnen und Arbeitnehmer"
+          },
+          {
+            "id": "325711",
+            "name": "Schwerbehinderung - Zustimmung zur Kündigung schwerbehinderter Menschen - Erteilung"
+          },
+          {
+            "id": "326007",
+            "name": "Sozialversicherung - Auskunft - Kontenklärung für die gesetzliche Rentenversicherung"
+          },
+          {
+            "id": "325145",
+            "name": "Ausübung der Heilkunde - Erlaubnis"
+          },
+          {
+            "id": "326047",
+            "name": "Schwerbehinderung - Begleitende Hilfe im Arbeitsleben - Beantragung für Arbeitgeberinnen und Arbeitgeber"
+          },
+          {
+            "id": "324156",
+            "name": "Berufsanerkennung für Spätaussiedler nach dem Bundesvertriebenengesetz (BVFG)"
+          },
+          {
+            "id": "324661",
+            "name": "Aufenthaltserlaubnis zur Arbeitsplatzsuche für qualifizierte Fachkräfte - Erteilung "
+          },
+          {
+            "id": "305265",
+            "name": "Aufenthaltserlaubnis für die Teilnahme am Working-Holiday- oder Youth-Mobility-Programm"
+          },
+          {
+            "id": "324659",
+            "name": "Blaue Karte EU"
+          },
+          {
+            "id": "326003",
+            "name": "Sozialversicherung - Auskunft - Rentenantrag stellen"
+          },
+          {
+            "id": "326015",
+            "name": "Sozialversicherung - Auskunft - Beglaubigung in Sozialversicherungsangelegenheiten"
+          },
+          {
+            "id": "325541",
+            "name": "Sozialversicherung - Auskunft"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325011",
+      "name": "Arbeitgeber- und Arbeitnehmervertretungen",
+      "path": "arbeitgeber-arbeitnehmervertretungen",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325013",
+      "name": "Arbeitslosengeld II, Grundsicherung, Sozialhilfe",
+      "path": "arbeitslosengeld",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "121742",
+            "name": "berlinpass beantragen"
+          },
+          {
+            "id": "325147",
+            "name": "berlinpass verlängern"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325075",
+            "name": "Sozialämter",
+            "path": "sozialaemter",
+            "rank": "0"
+          },
+          {
+            "id": "325077",
+            "name": "Grundsicherungsämter",
+            "path": "grundsicherungsaemter",
+            "rank": "0"
+          },
+          {
+            "id": "327018",
+            "name": "Jobcenter",
+            "path": "jobcenter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325017",
+      "name": "Arbeitsrecht, Tarifrecht",
+      "path": "arbeitsrecht-tarifrecht",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "324156",
+            "name": "Berufsanerkennung für Spätaussiedler nach dem Bundesvertriebenengesetz (BVFG)"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325019",
+      "name": "Arbeitsschutz, Arbeitssicherheit",
+      "path": "arbeitsschutz-arbeitssicherheit",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "326049",
+            "name": "Schwerbehinderung - Begleitende Hilfe im Arbeitsleben - Beantragung für Arbeitnehmerinnen und Arbeitnehmer"
+          },
+          {
+            "id": "326047",
+            "name": "Schwerbehinderung - Begleitende Hilfe im Arbeitsleben - Beantragung für Arbeitgeberinnen und Arbeitgeber"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325021",
+      "name": "Arbeitsvermittlung, Stellenangebote",
+      "path": "arbeitsvermittlung-stellenangebote",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "327018",
+            "name": "Jobcenter",
+            "path": "jobcenter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325149",
+      "name": "Archive",
+      "path": "archive",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325029",
+      "name": "Ausbildung",
+      "path": "ausbildung",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "324313",
+            "name": "Bildungsabschlüsse aus anderen Bundesländern - Anerkennung"
+          },
+          {
+            "id": "325167",
+            "name": "Ausbildungsförderung bei Ausbildung im Ausland (Auslands-BAföG)"
+          },
+          {
+            "id": "325169",
+            "name": "Ausbildungsförderung bei beruflicher Aufstiegsfortbildung (Meister-BAföG)"
+          },
+          {
+            "id": "324985",
+            "name": "Ausbildungsförderung für Schülerinnen und Schüler (Schüler-BAföG)"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325139",
+      "name": "Ausländerangelegenheiten",
+      "path": "auslaenderangelegenheiten",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "326231",
+            "name": "elektronischer Aufenthaltstitel (eAT) - Ausgabe"
+          },
+          {
+            "id": "324921",
+            "name": "Bescheinigung über ein unbefristetes Aufenthaltsrecht"
+          },
+          {
+            "id": "326233",
+            "name": "Fiktionsbescheinigung "
+          },
+          {
+            "id": "326235",
+            "name": "Antragsbescheinigung für Familienangehörige von Bürgern der EU (außer Deutschland) und des EWR"
+          },
+          {
+            "id": "326800",
+            "name": "elektronischer Aufenthaltstitel (eAT) - Änderung der Adresse nach Umzug"
+          },
+          {
+            "id": "326802",
+            "name": "elektronischer Aufenthaltstitel (eAT) - Verlust oder Diebstahl"
+          },
+          {
+            "id": "326856",
+            "name": "Beschäftigung - Wechsel des Arbeitgebers"
+          },
+          {
+            "id": "120691",
+            "name": "Verpflichtungserklärung für kurzfristige Aufenthalte (Besuchsaufenthalte und Geschäftsreisen)"
+          },
+          {
+            "id": "326540",
+            "name": "Verpflichtungserklärung für langfristige Aufenthalte"
+          },
+          {
+            "id": "324269",
+            "name": "Aufenthaltserlaubnis für im Bundesgebiet geborene Kinder - Erteilung"
+          },
+          {
+            "id": "326558",
+            "name": "Niederlassungserlaubnis für ausländische Absolventen deutscher Hochschulen"
+          },
+          {
+            "id": "324281",
+            "name": "Erlaubnis zum Daueraufenthalt-EU  "
+          },
+          {
+            "id": "325475",
+            "name": "Aufenthaltserlaubnis für in anderen EU-Staaten langfristig Aufenthaltsberechtigte"
+          },
+          {
+            "id": "324995",
+            "name": "Aufenthaltserlaubnis für türkische Arbeitnehmer und Familienangehörige (ARB 1/80) - Verlängerung"
+          },
+          {
+            "id": "326556",
+            "name": "Niederlassungserlaubnis für Inhaber einer Blauen Karte EU"
+          },
+          {
+            "id": "324661",
+            "name": "Aufenthaltserlaubnis zur Arbeitsplatzsuche für qualifizierte Fachkräfte - Erteilung "
+          },
+          {
+            "id": "305244",
+            "name": "Aufenthaltserlaubnis zum Studium"
+          },
+          {
+            "id": "305267",
+            "name": "Aufenthaltserlaubnis zur Beschäftigung als Au-pair"
+          },
+          {
+            "id": "305245",
+            "name": "Aufenthaltserlaubnis zur Arbeitsplatzsuche nach erfolgreichem Abschluss des Studiums"
+          },
+          {
+            "id": "305260",
+            "name": "Aufenthaltserlaubnis zur Beschäftigung als Gastwissenschaftler oder wissenschaftliches Personal"
+          },
+          {
+            "id": "324861",
+            "name": "Aufenthaltserlaubnis in Härtefällen - Verlängerung"
+          },
+          {
+            "id": "324289",
+            "name": "Aufenthaltserlaubnis zum Besuch eines Sprachkurses"
+          },
+          {
+            "id": "305265",
+            "name": "Aufenthaltserlaubnis für die Teilnahme am Working-Holiday- oder Youth-Mobility-Programm"
+          },
+          {
+            "id": "305304",
+            "name": "Aufenthaltserlaubnis zur Aufnahme einer Beschäftigung"
+          },
+          {
+            "id": "305303",
+            "name": "Aufenthaltserlaubnis zur Aufnahme eines Praktikums"
+          },
+          {
+            "id": "326239",
+            "name": "Aufenthaltserlaubnis zur Teilnahme an einem Schüleraustausch und in Ausnahmefällen für den Schulbesuch"
+          },
+          {
+            "id": "305156",
+            "name": "Aufenthaltserlaubnis zur Studienvorbereitung"
+          },
+          {
+            "id": "326564",
+            "name": "Niederlassungserlaubnis für Selbständige"
+          },
+          {
+            "id": "325675",
+            "name": "Aufenthaltstitel für ehemalige Deutsche"
+          },
+          {
+            "id": "324659",
+            "name": "Blaue Karte EU"
+          },
+          {
+            "id": "324863",
+            "name": "Niederlassungserlaubnis für Kinder (ab 16 Jahre)"
+          },
+          {
+            "id": "325471",
+            "name": "Reiseausweis - Neuausstellung"
+          },
+          {
+            "id": "326798",
+            "name": "Übertragung einer Blauen Karte EU zu einem neuen Pass"
+          },
+          {
+            "id": "121874",
+            "name": "Übertragung einer Aufenthaltserlaubnis in einen neuen Pass"
+          },
+          {
+            "id": "324280",
+            "name": "Übertragung einer Niederlassungserlaubnis in einen neuen Pass"
+          },
+          {
+            "id": "324785",
+            "name": "Schengen - Visum - Verlängerung"
+          },
+          {
+            "id": "324282",
+            "name": "Aufenthaltskarte für Familienangehörige von Bürgern der EU (außer Deutschland) und des EWR"
+          },
+          {
+            "id": "324284",
+            "name": "Bescheinigung über das Daueraufenthaltsrecht für Unionsbürger (EU/EWR)"
+          },
+          {
+            "id": "327012",
+            "name": "Niederlassungserlaubnis für Familienangehörige von Deutschen"
+          },
+          {
+            "id": "324919",
+            "name": "Aufenthaltsrechtliche Auskünfte"
+          },
+          {
+            "id": "324859",
+            "name": "Aufenthaltserlaubnis aus humanitären Gründen - Verlängerung "
+          },
+          {
+            "id": "326554",
+            "name": "Niederlassungserlaubnis für anerkannte Asylberechtigte und Flüchtlinge"
+          },
+          {
+            "id": "121864",
+            "name": "Niederlassungserlaubnis (allgemein)"
+          },
+          {
+            "id": "305289",
+            "name": "Aufenthaltserlaubnis für Ehepartner, Eltern und Kinder"
+          },
+          {
+            "id": "324283",
+            "name": "Daueraufenthaltskarte für Familienangehörige von Bürgern der EU (außer Deutschland) und des EWR"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325213",
+      "name": "Ausschreibungen",
+      "path": "ausschreibungen",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324803",
+      "name": "Auto und Verkehr",
+      "path": "auto-verkehr",
+      "relation": {
+        "navi": "1",
+        "services": [],
+        "childs": [
+          {
+            "id": "324885",
+            "name": "Fahren und Parken",
+            "path": "fahren-parken",
+            "rank": "0"
+          },
+          {
+            "id": "324887",
+            "name": "Führerschein",
+            "path": "fuehrerschein",
+            "rank": "0"
+          },
+          {
+            "id": "324889",
+            "name": "Auto/Kfz",
+            "path": "auto-kfz",
+            "rank": "0"
+          },
+          {
+            "id": "324891",
+            "name": "Fahrrad",
+            "path": "fahrrad",
+            "rank": "0"
+          },
+          {
+            "id": "324893",
+            "name": "Fußgänger",
+            "path": "fussgaenger",
+            "rank": "0"
+          },
+          {
+            "id": "324895",
+            "name": "Verkehrsinfos - Bus/Bahn/Flug",
+            "path": "verkehrsinfos",
+            "rank": "0"
+          },
+          {
+            "id": "324897",
+            "name": "Verkehrsplanung/steuerung",
+            "path": "verkehrsplanung",
+            "rank": "0"
+          },
+          {
+            "id": "324899",
+            "name": "Ämter, Verwaltungen, Institutionen: Auto, Verkehr",
+            "path": "aemter-autoverkehr",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324889",
+      "name": "Auto/Kfz",
+      "path": "auto-kfz",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "326525",
+            "name": "Beseitigung von Straßenschäden an Autobahnen sowie an Bundesstraßen ohne Randbebauung"
+          },
+          {
+            "id": "324189",
+            "name": "Kfz - Sicherstellungen"
+          },
+          {
+            "id": "324190",
+            "name": "Kfz - Umsetzungen"
+          },
+          {
+            "id": "326401",
+            "name": "Besichtigung und Entnahmen von im Land Berlin sichergestellten Fahrzeugen durch den Berechtigten"
+          },
+          {
+            "id": "326429",
+            "name": "Führerschein (Abgabe und Annahme)"
+          },
+          {
+            "id": "326423",
+            "name": "Abholung von sichergestellten Fahrzeugen"
+          },
+          {
+            "id": "326425",
+            "name": "Begutachtung von sichergestellten Fahrzeugen (nur für bestellte Gutachter und Versicherungen)"
+          },
+          {
+            "id": "326403",
+            "name": "Zahlungserleichterungen bei Ordnungswidrigkeiten"
+          },
+          {
+            "id": "326439",
+            "name": "Parkausweis für Schwerbehinderte Ausstellung"
+          },
+          {
+            "id": "325649",
+            "name": "Haltverbot für Umzüge"
+          },
+          {
+            "id": "326521",
+            "name": "Umweltzonen – Ausnahmen von der Kennzeichenpflicht – Genehmigung"
+          },
+          {
+            "id": "326523",
+            "name": "Handwerkerparkausweis - Ausnahmegenehmigung Parken für Handwerksbetriebe"
+          },
+          {
+            "id": "326113",
+            "name": "Anerkennung der Kraftfahrzeugwerkstätten für die Durchführung der Gassystemeinbauprüfungen"
+          },
+          {
+            "id": "324234",
+            "name": "Blanko-Zulassungsbescheinigung Teil II für Neufahrzeuge aus dem EU-Ausland beantragen"
+          },
+          {
+            "id": "296798",
+            "name": "Ausnahmegenehmigungen für Kraftfahrzeuge beantragen"
+          },
+          {
+            "id": "326103",
+            "name": "Anerkennung von Werkstätten zur Durchführung von Sicherheitsprüfungen"
+          },
+          {
+            "id": "326690",
+            "name": "Abfälle - Genehmigung für Sammler, Beförderer, Händler und Makler"
+          },
+          {
+            "id": "326133",
+            "name": "Anerkennung von Werkstätten zur Durchführung von Prüfungen von Fahrtenschreibern und Kontrollgeräten"
+          },
+          {
+            "id": "326405",
+            "name": "Rechtsbehelfe im Verkehrsordnungswidrigkeitenverfahren"
+          },
+          {
+            "id": "326041",
+            "name": "Vorführung von Fahrzeugen"
+          },
+          {
+            "id": "297016",
+            "name": "Bankbrief / -zulassungsbescheinigung Teil II"
+          },
+          {
+            "id": "120904",
+            "name": "technische Änderung für ein KFZ melden"
+          },
+          {
+            "id": "326043",
+            "name": "Telefonische Fachauskunft in KFZ-Angelegenheiten"
+          },
+          {
+            "id": "324173",
+            "name": "Namensänderung in den Fahrzeugpapieren"
+          },
+          {
+            "id": "297023",
+            "name": "Kraftfahrzeug - elektronische Versicherungsbestätigung"
+          },
+          {
+            "id": "326131",
+            "name": "Rote Kennzeichen für Kraftfahrzeuge"
+          },
+          {
+            "id": "326045",
+            "name": "Spielkennzeichen beantragen"
+          },
+          {
+            "id": "324907",
+            "name": "Kraftfahrzeugkennzeichen wegen Unleserlichkeit ersetzen"
+          },
+          {
+            "id": "121490",
+            "name": "Feinstaubplakette beantragen"
+          },
+          {
+            "id": "324235",
+            "name": "Blanko-Zulassungsbescheinigung Teil II für Neufahrzeuge aus dem Nicht-EU-Mitgliedstaat beantragen"
+          },
+          {
+            "id": "121575",
+            "name": "Zulassungsbescheinigung Teil I für KFZ wegen Verlust oder Diebstahl ersetzen"
+          },
+          {
+            "id": "324160",
+            "name": "Unternehmenskarte"
+          },
+          {
+            "id": "121584",
+            "name": "Zulassungsbescheinigung Teil II für KFZ wegen Verlust oder Diebstahl ersetzen"
+          },
+          {
+            "id": "324557",
+            "name": "Werkstattkarte"
+          },
+          {
+            "id": "326033",
+            "name": "Zulassung von Taxen (Kraftdroschken)"
+          },
+          {
+            "id": "121484",
+            "name": "Kraftfahrzeugkennzeichen reservieren"
+          },
+          {
+            "id": "120877",
+            "name": "Außerbetriebsetzung eines KFZ"
+          },
+          {
+            "id": "120658",
+            "name": "Anschriftenänderung in dem Fahrzeugschein bzw. der Zulassungsbescheinigung Teil I (ZBI)"
+          },
+          {
+            "id": "324178",
+            "name": "Ausfuhrkennzeichen beantragen für eingeführte fabrikneue Fahrzeuge aus dem Ausland ohne Fahrzeugbrief bzw. Zulassungsbescheinigung Teil II"
+          },
+          {
+            "id": "324168",
+            "name": "Ausfuhrkennzeichen beantragen für eingeführte fabrikneue Fahrzeuge aus dem Ausland mit Fahrzeugbrief bzw. Zulassungsbescheinigung Teil II"
+          },
+          {
+            "id": "121476",
+            "name": "Ausfuhrkennzeichen beantragen für Neu- und Gebrauchtfahrzeuge aus dem Inland"
+          },
+          {
+            "id": "324185",
+            "name": "Ausfuhrkennzeichen beantragen für eingeführte Gebrauchtfahrzeuge aus dem Ausland"
+          },
+          {
+            "id": "121482",
+            "name": "Grünes Kennzeichen beantragen"
+          },
+          {
+            "id": "121491",
+            "name": "Halterauskunft zu einem KFZ beantragen"
+          },
+          {
+            "id": "121478",
+            "name": "Historisches Kennzeichen beantragen"
+          },
+          {
+            "id": "121473",
+            "name": "Kraftfahrzeugkennzeichen auf Wunsch ändern"
+          },
+          {
+            "id": "324169",
+            "name": "Umschreibung eines außer Betrieb gesetzten Fahrzeuges mit Berliner Kennzeichen auf einen anderen Halter"
+          },
+          {
+            "id": "324196",
+            "name": "Kraftfahrzeugkennzeichen wegen Verlust ersetzen"
+          },
+          {
+            "id": "121480",
+            "name": "Saisonkennzeichen für KFZ beantragen"
+          },
+          {
+            "id": "326039",
+            "name": "Zulassung als Selbstfahrervermietfahrzeug"
+          },
+          {
+            "id": "120906",
+            "name": "Umschreibung eines zugelassenen Fahrzeuges mit Berliner Kennzeichen auf einen anderen Halter"
+          },
+          {
+            "id": "120905",
+            "name": "Wiederzulassung eines Kraftfahrzeuges ohne Halterwechsel beantragen"
+          },
+          {
+            "id": "324199",
+            "name": "Zulassung eines aus dem EU-Ausland eingeführten fabrikneuen Fahrzeuges mit Zulassungsbescheinigung Teil II"
+          },
+          {
+            "id": "120914",
+            "name": "Zulassung eines Fahrzeuges mit auswärtigem Kennzeichen mit Halterwechsel"
+          },
+          {
+            "id": "324197",
+            "name": "Zulassung eines aus dem Nicht-EU-Mitgliedstaat eingeführten Gebrauchtfahrzeuges "
+          },
+          {
+            "id": "120918",
+            "name": "Zulassung eines Fahrzeuges mit auswärtigem Kennzeichen ohne Halterwechsel"
+          },
+          {
+            "id": "120892",
+            "name": "Zulassung eines aus einem Nicht-EU-Mitgliedstaat eingeführten Neufahrzeuges"
+          },
+          {
+            "id": "120882",
+            "name": "Zulassung eines Neufahrzeuges"
+          },
+          {
+            "id": "120884",
+            "name": "Zulassung eines aus dem EU-Ausland eingeführten Gebrauchtfahrzeuges"
+          },
+          {
+            "id": "324200",
+            "name": "Zulassung eines aus dem EU-Ausland eingeführten fabrikneuen Fahrzeuges ohne Zulassungsbescheinigung Teil II"
+          },
+          {
+            "id": "324587",
+            "name": "Wechselkennzeichen beantragen"
+          },
+          {
+            "id": "326399",
+            "name": "Akten im Bußgeldverfahren - Einsicht gewähren"
+          },
+          {
+            "id": "326407",
+            "name": "Zahlungsverkehr mit der Bußgeldstelle des Landes Berlin"
+          },
+          {
+            "id": "121479",
+            "name": "Kurzzeitkennzeichen beantragen"
+          },
+          {
+            "id": "121489",
+            "name": "Kraftfahrzeugkennzeichen wegen Diebstahl ersetzen"
+          },
+          {
+            "id": "120900",
+            "name": "Verkauf eines Kraftfahrzeuges melden"
+          },
+          {
+            "id": "325881",
+            "name": "Außerbetriebsetzung eines KFZ, Unvollständige Unterlagen"
+          },
+          {
+            "id": "121721",
+            "name": "Anwohner -/Bewohnerparkausweis - Antragstellung/ Umschreibung/Verlängerung"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325073",
+      "name": "BAföG-Ämter",
+      "path": "bafoeg-aemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325207",
+      "name": "Barrierefreiheit",
+      "path": "barrierefreiheit",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324925",
+      "name": "Bau- und Wohnungsaufsichtsämter",
+      "path": "bau-wohnungsaufsichtamt",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324841",
+      "name": "Bauen/Immobilien",
+      "path": "bauen-immobilien",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "325835",
+            "name": "Bauvorhaben - städteplanerische und planungsrechtliche Aspekte - Auskunft"
+          },
+          {
+            "id": "325837",
+            "name": "Bauvorhaben - städteplanerische und planungsrechtliche Aspekte - Stellungnahme"
+          },
+          {
+            "id": "325621",
+            "name": "Flurstück, Verschmelzung"
+          },
+          {
+            "id": "325629",
+            "name": "Lage- und Höhenbescheinigung"
+          },
+          {
+            "id": "325663",
+            "name": "Wohnungsbauprämie - Festsetzung"
+          },
+          {
+            "id": "120656",
+            "name": "Wohngeld - Bewilligung Antragsannahme Mietzuschuss"
+          },
+          {
+            "id": "325561",
+            "name": "Ausstellung des Negativzeugnisses über das Nichtbestehen oder die Nichtausübung eines gesetzlichen Vorkaufsrechts der Gemeinde"
+          },
+          {
+            "id": "325623",
+            "name": "Bodenrichtwert, Auskunft"
+          },
+          {
+            "id": "120665",
+            "name": "Wohngeld - Bewilligung - Antragsannahme Lastenzuschuss"
+          }
+        ],
+        "childs": [
+          {
+            "id": "324925",
+            "name": "Bau- und Wohnungsaufsichtsämter",
+            "path": "bau-wohnungsaufsichtamt",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325313",
+      "name": "Beglaubigungen",
+      "path": "beglaubigungen",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "121701",
+            "name": "Beglaubigung von Kopien oder Abschriften"
+          },
+          {
+            "id": "158142",
+            "name": "Beglaubigung von Unterschriften"
+          },
+          {
+            "id": "324703",
+            "name": "Vereinigungs- und Teilungsanträge (Grundstücke), Beglaubigung"
+          },
+          {
+            "id": "320310",
+            "name": "Beglaubigung von Fingerabdrücken zur Vorlage bei ausländischen Behörden"
+          },
+          {
+            "id": "320315",
+            "name": "Beglaubigung von Schriftstücken für den Gebrauch im Ausland (Apostille/ Legalisation)"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "324821",
+      "name": "Behinderung",
+      "path": "behinderung",
+      "relation": {
+        "navi": "1",
+        "services": [
+          {
+            "id": "326049",
+            "name": "Schwerbehinderung - Begleitende Hilfe im Arbeitsleben - Beantragung für Arbeitnehmerinnen und Arbeitnehmer"
+          },
+          {
+            "id": "325711",
+            "name": "Schwerbehinderung - Zustimmung zur Kündigung schwerbehinderter Menschen - Erteilung"
+          },
+          {
+            "id": "324484",
+            "name": "Eingliederungshilfe für behinderte Menschen"
+          },
+          {
+            "id": "324721",
+            "name": "Rechtliche Betreuung Volljähriger "
+          },
+          {
+            "id": "324353",
+            "name": "Anerkennung von niedrigschwelligen Betreuungsangeboten"
+          },
+          {
+            "id": "325143",
+            "name": "Schwerbehinderung - Änderungsmitteilung"
+          },
+          {
+            "id": "324352",
+            "name": "Vereinbarungen nach § 75 ff. SGB XII für Einrichtungen und Dienste für behinderte Menschen und Wohnungslose"
+          },
+          {
+            "id": "324336",
+            "name": "Anerkennung von Betreuungsvereinen"
+          },
+          {
+            "id": "324555",
+            "name": "Leistungen nach dem Landespflegegeldgesetz (LPflGG)"
+          },
+          {
+            "id": "326047",
+            "name": "Schwerbehinderung - Begleitende Hilfe im Arbeitsleben - Beantragung für Arbeitgeberinnen und Arbeitgeber"
+          },
+          {
+            "id": "326453",
+            "name": "Parkmöglichkeiten für schwerbehinderte Menschen  personenbezogen - Kennzeichnung - personengebunden"
+          },
+          {
+            "id": "326439",
+            "name": "Parkausweis für Schwerbehinderte Ausstellung"
+          },
+          {
+            "id": "325339",
+            "name": "Schwerbehinderung - Wertmarke / Beiblatt (Verlust)"
+          },
+          {
+            "id": "325159",
+            "name": "Schwerbehinderung - Akteneinsicht"
+          },
+          {
+            "id": "326560",
+            "name": "Schwerbehinderung - Sonderfahrdienst - Eigenbeteiligung - "
+          },
+          {
+            "id": "326794",
+            "name": "Schwerbehinderung - Wertmarke auf Beiblatt zum Schwerbehindertenausweis"
+          },
+          {
+            "id": "326562",
+            "name": "Schwerbehinderung - Sonderfahrdienst - Magnetkarte"
+          },
+          {
+            "id": "326584",
+            "name": "Schwerbehinderung - Sonderfahrdienst - befristete Nutzungsberechtigung"
+          },
+          {
+            "id": "326552",
+            "name": "Schwerbehinderung - Sonderfahrdienst - Taxikonto -"
+          },
+          {
+            "id": "326806",
+            "name": "Schwerbehindertenausweis - Verlust"
+          },
+          {
+            "id": "326173",
+            "name": "Schwerbehinderung - Feststellungsverfahren"
+          },
+          {
+            "id": "121737",
+            "name": "Schwerbehindertenausweis"
+          },
+          {
+            "id": "324725",
+            "name": "Vorsorgevollmachten"
+          },
+          {
+            "id": "324531",
+            "name": "Rundfunkbeitrag / Beitragspflicht, Befreiung vom Rundfunkbeitrag"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325129",
+            "name": "Ämter, Verwaltungen, Institutionen: Behinderung",
+            "path": "aemter-behinderung",
+            "rank": "0"
+          },
+          {
+            "id": "325131",
+            "name": "Pflege und Betreuung",
+            "path": "pflege-betreuung",
+            "rank": "0"
+          },
+          {
+            "id": "325207",
+            "name": "Barrierefreiheit",
+            "path": "barrierefreiheit",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324877",
+      "name": "Bereich Bauen: Gesetze/Verordnungen",
+      "path": "bauen-gesetzeverordnungen",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325181",
+      "name": "Berlin - Ansichten",
+      "path": "berlin-annsichten",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325205",
+      "name": "Berufe im Gesundheitswesen",
+      "path": "berufe-gesundheitswesen",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "325393",
+            "name": "Approbation als Tierarzt - Erteilung - wenn Tierärztliche Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325425",
+            "name": "Approbation als Apotheker - Erteilung - wenn Pharmazeutische Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325427",
+            "name": "Approbation als Zahnarzt - Erteilung - wenn Zahnärztliche Prüfung in Berlin abgelegt "
+          },
+          {
+            "id": "325429",
+            "name": "Approbation als Psychologischer Psychotherapeut - Erteilung - wenn staatliche Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325433",
+            "name": "Approbation als Kinder- und Jugendlichenpsychotherapeut - Erteilung - wenn staatliche Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325449",
+            "name": "Erlaubnis zum Führen der Berufsbezeichnung Ergotherapeutin / Ergotherapeut - Erteilung - wenn Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325451",
+            "name": "Erlaubnis zum Führen der Berufsbezeichnung Gesundheitsaufseherin / -aufseher - Erteilung - wenn Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325447",
+            "name": "Erlaubnis zum Führen der Berufsbezeichnung Diätassistentin / Diätassistent - Erteilung - wenn Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325465",
+            "name": "Erlaubnis zum Führen der Berufsbezeichnung Masseurin /Masseur und medizinische(r) Bademeisterin / Bademeister - Erteilung - wenn Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325459",
+            "name": "Erlaubnis zum Führen der Berufsbezeichnung Hebamme / Entbindungspfleger - Erteilung - wenn Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325453",
+            "name": "Erlaubnis zum Führen der Berufsbezeichnung Gesundheits- und Krankenpflegerin / - pfleger - Erteilung - wenn Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325461",
+            "name": "Erlaubnis zum Führen der Berufsbezeichnung Logopädin / Logopäde - Erteilung - wenn Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325463",
+            "name": "Erlaubnis zum Führen der Berufsbezeichnung Kardiotechnikerin / -techniker - Erteilung - wenn Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325455",
+            "name": "Erlaubnis zum Führen der Berufsbezeichnung Gesundheits- und Kinderkrankenpflegerin / -pfleger - Erteilung - wenn Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325527",
+            "name": "Erlaubnis zum Führen der Berufsbezeichnung Podologin / Podologe - Erteilung - wenn Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325523",
+            "name": "Erlaubnis zum Führen der Berufsbezeichnung Medizinisch-technische(r) Laboratoriumsassistentin / -assistent - Erteilung - wenn Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325525",
+            "name": "Erlaubnis zum Führen der Berufsbezeichnung Pharmazeutisch-technische(r) Assistentin / Assistent - Erteilung - wenn Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325519",
+            "name": "Erlaubnis zum Führen der Berufsbezeichnung Rettungsassistentin / -assistent - Erteilung - wenn Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325521",
+            "name": "Erlaubnis zum Führen der Berufsbezeichnung Medizinische(r) Sektions- und Präparationsassistentin / -assistent - Erteilung - wenn Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325567",
+            "name": "Erlaubnis zum Führen der Berufsbezeichnung Physiotherapeutin / -therapeut - Erteilung"
+          },
+          {
+            "id": "325593",
+            "name": "Staatliche Anerkennung als Hufbeschlagschmiedin / Hufbeschlagschmied - Erteilung - wenn Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325551",
+            "name": "Erlaubnis zur vorübergehenden Ausübung des zahnärztlichen Berufs - Erteilung"
+          },
+          {
+            "id": "325543",
+            "name": "Erlaubnis zur vorübergehenden Ausübung des Apothekerberufs - Erteilung"
+          },
+          {
+            "id": "325539",
+            "name": "Erlaubnis zur vorübergehenden Ausübung des ärztlichen Berufs - Erteilung"
+          },
+          {
+            "id": "325445",
+            "name": "Approbation als Tierarzt - Erteilung - bei abgeschlossener tierärztlicher Ausbildung im Ausland"
+          },
+          {
+            "id": "325553",
+            "name": "Erlaubnis zur vorübergehenden Ausübung des tierärztlichen Berufs - Erteilung"
+          },
+          {
+            "id": "325435",
+            "name": "Approbation als Apotheker - Erteilung - bei abgeschlossener pharmazeutischer Ausbildung im Ausland"
+          },
+          {
+            "id": "325601",
+            "name": "Ausstellung einer Unbedenklichkeitsbescheinigung (Certificate of good standing) "
+          },
+          {
+            "id": "325733",
+            "name": "Bestätigung der Echtheit des Zeugnisses der Ärztlichen Prüfung / der Approbation als Ärztin / Arzt (Verifikation)"
+          },
+          {
+            "id": "325571",
+            "name": "Approbation - Verzicht"
+          },
+          {
+            "id": "325389",
+            "name": "Approbation als Arzt - Erteilung - wenn Ärztliche Prüfung in Berlin abgelegt"
+          },
+          {
+            "id": "325401",
+            "name": "Approbation als Arzt - Erteilung - bei abgeschlossener ärztlicher Ausbildung im Ausland"
+          },
+          {
+            "id": "325579",
+            "name": "Zweitschrift einer Approbation"
+          },
+          {
+            "id": "325145",
+            "name": "Ausübung der Heilkunde - Erlaubnis"
+          },
+          {
+            "id": "325443",
+            "name": "Approbation als Zahnarzt - Erteilung - bei abgeschlossener zahnärztlicher Ausbildung im Ausland"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325023",
+      "name": "Berufliche Bildung",
+      "path": "berufliche-bildung",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "325167",
+            "name": "Ausbildungsförderung bei Ausbildung im Ausland (Auslands-BAföG)"
+          },
+          {
+            "id": "325169",
+            "name": "Ausbildungsförderung bei beruflicher Aufstiegsfortbildung (Meister-BAföG)"
+          },
+          {
+            "id": "324985",
+            "name": "Ausbildungsförderung für Schülerinnen und Schüler (Schüler-BAföG)"
+          },
+          {
+            "id": "324141",
+            "name": "Feststellung der fachlichen Ausbildereignung nach dem Berufsbildungsgesetz (BBiG)"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325201",
+      "name": "Berufsorganisationen Gesundheit",
+      "path": "berufsorganisationen-gesundheit",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325263",
+      "name": "Beteiligungsangebote",
+      "path": "beteiligungsangebote",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325295",
+      "name": "Bezirksämter",
+      "path": "bezirksaemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325293",
+      "name": "Bezirksverordnetenversammlungen",
+      "path": "bezirksverordnetenversammlungen",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325105",
+      "name": "Bibliotheken",
+      "path": "bibliotheken",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325113",
+            "name": "Stadtbibliotheken",
+            "path": "stadtbibliotheken",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325101",
+      "name": "Bibliotheksämter",
+      "path": "bibliotheksaemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325107",
+      "name": "Bühnen, Theater",
+      "path": "buenen-theater",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325115",
+            "name": "Staatliche Bühnen",
+            "path": "staatliche-buehnen",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325291",
+      "name": "Bundespolitik",
+      "path": "bundespolitik",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325277",
+      "name": "bürgeraktiv - das Engagementportal",
+      "path": "buergerschaftliches-engagement",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "324354",
+            "name": "Förderung von niedrigschwelligen Angeboten und Förderung ehrenamtlicher sowie Selbsthilfestrukturen"
+          },
+          {
+            "id": "324583",
+            "name": "Ehrenamtlicher Dienst im sozialen Bereich"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325263",
+            "name": "Beteiligungsangebote",
+            "path": "beteiligungsangebote",
+            "rank": "0"
+          },
+          {
+            "id": "325265",
+            "name": "Bürgerhaushalt",
+            "path": "buergerhaushalt",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325275",
+      "name": "Bürgerberatung, -ämter",
+      "path": "buergerberatung-aemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325265",
+      "name": "Bürgerhaushalt",
+      "path": "buergerhaushalt",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325267",
+      "name": "Bürgerinformationssystem der Bezirksverordnetenversammlung",
+      "path": "buegerinformationssystem-bvv",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325109",
+      "name": "Denkmäler",
+      "path": "denkmaeler",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324851",
+      "name": "Denkmalschutz",
+      "path": "denkmalschutz",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325261",
+      "name": "E-Government",
+      "path": "e-government",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325317",
+      "name": "Einbürgerung",
+      "path": "einbuergerung",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "318998",
+            "name": "Einbürgerung"
+          },
+          {
+            "id": "325675",
+            "name": "Aufenthaltstitel für ehemalige Deutsche"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325245",
+      "name": "Energie",
+      "path": "energie",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325289",
+      "name": "Europa",
+      "path": "europa",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325215",
+      "name": "Existenzgründung/Gewerbe",
+      "path": "existenzgruendung-gewerbe",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "141579",
+            "name": "Eintragung in das Verzeichnis handwerksähnliche Gewerbe (HWK)"
+          },
+          {
+            "id": "141577",
+            "name": "Eintragung in das Verzeichnis zulassungsfreier Handwerke (HWK)"
+          },
+          {
+            "id": "126672",
+            "name": "Reisegewerbe - Erlaubnis zum Betreiben von Spielhallen oder ähnlichen Unternehmen"
+          },
+          {
+            "id": "123066",
+            "name": "Wanderlager - Anzeige"
+          },
+          {
+            "id": "150276",
+            "name": "Erlaubnis und Registrierung als produktakzessorischer Versicherungsvermittler"
+          },
+          {
+            "id": "292634",
+            "name": "Anzeige eines Versteigerungsgewerbes"
+          },
+          {
+            "id": "302439",
+            "name": "Anzeige für die grenzüberschreitende vorübergehende Erbringung von Dienstleistungen im Bereich Handwerk"
+          },
+          {
+            "id": "141571",
+            "name": "Eintrag in die Handwerksrolle (HWK)"
+          },
+          {
+            "id": "141586",
+            "name": "Sachverständige nach § 36 der Gewerbeordnung"
+          },
+          {
+            "id": "126904",
+            "name": "Anzeige einer Versteigerung"
+          },
+          {
+            "id": "126432",
+            "name": "Reisegewerbekartenfreie Tätigkeiten"
+          },
+          {
+            "id": "141585",
+            "name": "Eintragung als Architekt oder Stadtplaner in Berlin"
+          },
+          {
+            "id": "293946",
+            "name": "Anmeldung eines neuen Unternehmens zur Gesetzlichen Unfallversicherung (Berufsgenossenschaft)"
+          },
+          {
+            "id": "121916",
+            "name": "Reisegewerbe betreiben"
+          },
+          {
+            "id": "326157",
+            "name": "Gewerberegisterauszug - elektronische Auskunft -"
+          },
+          {
+            "id": "126439",
+            "name": "Reisegewerbe - Ausnahmen aus besonderem Anlass"
+          },
+          {
+            "id": "324545",
+            "name": "Reisegewerbe - Angestellte (Bescheinigung)"
+          },
+          {
+            "id": "126218",
+            "name": "Reisegewerbekarte - Erweiterung / Änderung"
+          },
+          {
+            "id": "126559",
+            "name": "Reisegewerbe - Genehmigung für das Veranstalten von anderen Spielen mit Gewinnmöglichkeit"
+          },
+          {
+            "id": "148182",
+            "name": "Anmeldung eines überwachungspflichtigen Gewerbes"
+          },
+          {
+            "id": "121921",
+            "name": "Gewerbe - Anmeldung"
+          },
+          {
+            "id": "122107",
+            "name": "Gewerbe - Abmeldung"
+          },
+          {
+            "id": "122111",
+            "name": "Gewerbe - Ummeldung"
+          },
+          {
+            "id": "326870",
+            "name": "Sondernutzung von Straßen - Genehmigung - Straßenhandel aus Bauchladen"
+          },
+          {
+            "id": "326872",
+            "name": "Sondernutzung von Straßen - Genehmigung - Herausstellen von Stehtischen vor eigenen Geschäftsräumen"
+          },
+          {
+            "id": "326868",
+            "name": "Sondernutzung von Straßen - Genehmigung - Herausstellen von Waren vor eigenen Geschäftsräumen"
+          },
+          {
+            "id": "326864",
+            "name": "Sondernutzung von Straßen - Genehmigung - Herausstellen von Tischen und Stühlen vor eigenen Geschäftsräumen"
+          },
+          {
+            "id": "326876",
+            "name": "Sondernutzung von Straßen - Genehmigung - Fliegender Straßenhandel aus Verkaufsfahrzeugen"
+          },
+          {
+            "id": "326564",
+            "name": "Niederlassungserlaubnis für Selbständige"
+          },
+          {
+            "id": "141587",
+            "name": "Einheitlicher Ansprechpartner"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325069",
+            "name": "Wirtschaftsämter",
+            "path": "wirtschaftsaemter",
+            "rank": "0"
+          },
+          {
+            "id": "325071",
+            "name": "Wirtschaftsförderung der Bezirke",
+            "path": "wirtschaftsfoerderung-bezirke",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324885",
+      "name": "Fahren und Parken",
+      "path": "fahren-parken",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "326453",
+            "name": "Parkmöglichkeiten für schwerbehinderte Menschen  personenbezogen - Kennzeichnung - personengebunden"
+          },
+          {
+            "id": "326439",
+            "name": "Parkausweis für Schwerbehinderte Ausstellung"
+          },
+          {
+            "id": "325649",
+            "name": "Haltverbot für Umzüge"
+          },
+          {
+            "id": "326527",
+            "name": "Störungsmeldung Straßenbeleuchtung"
+          },
+          {
+            "id": "326523",
+            "name": "Handwerkerparkausweis - Ausnahmegenehmigung Parken für Handwerksbetriebe"
+          },
+          {
+            "id": "121490",
+            "name": "Feinstaubplakette beantragen"
+          },
+          {
+            "id": "121721",
+            "name": "Anwohner -/Bewohnerparkausweis - Antragstellung/ Umschreibung/Verlängerung"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "324891",
+      "name": "Fahrrad",
+      "path": "fahrrad",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324979",
+      "name": "Familie",
+      "path": "familie",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "150177",
+            "name": "Super Ferienpass (Verkauf)"
+          },
+          {
+            "id": "326081",
+            "name": "Beurkundung eines Unterhaltsanspruches des Kindes bzw. der Unterhaltsverpflichtung"
+          },
+          {
+            "id": "318992",
+            "name": "Mutterschaftsanerkennung"
+          },
+          {
+            "id": "324254",
+            "name": "Einschulungsuntersuchung"
+          },
+          {
+            "id": "326590",
+            "name": "Beurkundung der Ausübung der gemeinsamen elterlichen Sorge"
+          },
+          {
+            "id": "324466",
+            "name": "Leistungen nach dem Bildungs- und Teilhabepaket"
+          },
+          {
+            "id": "326079",
+            "name": "Elterngeld"
+          },
+          {
+            "id": "326588",
+            "name": "Beistandschaft durch das Jugendamt"
+          },
+          {
+            "id": "326069",
+            "name": "Unterhaltsvorschuss"
+          },
+          {
+            "id": "324269",
+            "name": "Aufenthaltserlaubnis für im Bundesgebiet geborene Kinder - Erteilung"
+          },
+          {
+            "id": "305267",
+            "name": "Aufenthaltserlaubnis zur Beschäftigung als Au-pair"
+          },
+          {
+            "id": "150169",
+            "name": "Familienpass (Verkauf)"
+          },
+          {
+            "id": "324917",
+            "name": "Hort-Gutschein - Erweiterung"
+          },
+          {
+            "id": "324901",
+            "name": "Hort-Gutschein / Bedarfsbescheid"
+          },
+          {
+            "id": "324873",
+            "name": "Kita-Gutschein"
+          },
+          {
+            "id": "324879",
+            "name": "Kita-Gutschein - Betreuungsumfang erweitern"
+          },
+          {
+            "id": "121742",
+            "name": "berlinpass beantragen"
+          },
+          {
+            "id": "325147",
+            "name": "berlinpass verlängern"
+          },
+          {
+            "id": "318991",
+            "name": "Vaterschaftsanerkennung"
+          },
+          {
+            "id": "305289",
+            "name": "Aufenthaltserlaubnis für Ehepartner, Eltern und Kinder"
+          },
+          {
+            "id": "325035",
+            "name": "Kinderfreibeträge - Allgemeines"
+          },
+          {
+            "id": "325325",
+            "name": "Entlastungsbetrag für Alleinerziehende"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325127",
+            "name": "Jugendämter",
+            "path": "jugendaemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324807",
+      "name": "Familie, Partnerschaft und Gleichstellung",
+      "path": "familie-partnerschaft-gleichstellung",
+      "relation": {
+        "navi": "1",
+        "services": [],
+        "childs": [
+          {
+            "id": "324979",
+            "name": "Familie",
+            "path": "familie",
+            "rank": "0"
+          },
+          {
+            "id": "324981",
+            "name": "Frauen",
+            "path": "frauen",
+            "rank": "0"
+          },
+          {
+            "id": "324983",
+            "name": "Gewalt im Alltag",
+            "path": "gewalt-alltag",
+            "rank": "0"
+          },
+          {
+            "id": "324997",
+            "name": "Kinder/Jugendliche",
+            "path": "kinder-jugendliche",
+            "rank": "0"
+          },
+          {
+            "id": "324999",
+            "name": "Senioren",
+            "path": "senioren",
+            "rank": "0"
+          },
+          {
+            "id": "325001",
+            "name": "Gender Mainstreaming",
+            "path": "gender-mainstreaming",
+            "rank": "0"
+          },
+          {
+            "id": "325003",
+            "name": "Gleichgeschlechtliche Lebensweisen",
+            "path": "gleichgeschlechtliche-lebensweisen",
+            "rank": "0"
+          },
+          {
+            "id": "325005",
+            "name": "Ämter, Verwaltungen, Institutionen: Familie, Partnerschaft und Gleichstellung",
+            "path": "aemter-familiepartnerschaftgleichstellung",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "657",
+      "name": "Formulare",
+      "path": "formulare",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324981",
+      "name": "Frauen",
+      "path": "frauen",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324809",
+      "name": "Freizeit und Sport",
+      "path": "freizeit-sport",
+      "relation": {
+        "navi": "1",
+        "services": [
+          {
+            "id": "324355",
+            "name": "Fischereischein - Erteilung oder Verlängerung "
+          }
+        ],
+        "childs": [
+          {
+            "id": "324813",
+            "name": "Kultur, Medien und Wissenschaft",
+            "path": "kultur-medien-wissenschaft",
+            "rank": "15"
+          },
+          {
+            "id": "325125",
+            "name": "Veranstaltungen",
+            "path": "veranstaltungen",
+            "rank": "0"
+          },
+          {
+            "id": "325155",
+            "name": "Ämter, Verwaltungen, Institutionen: Sport",
+            "path": "aemter-sport",
+            "rank": "0"
+          },
+          {
+            "id": "325161",
+            "name": "Freizeiteinrichtungen",
+            "path": "freizeiteinrichtungen",
+            "rank": "0"
+          },
+          {
+            "id": "325163",
+            "name": "Sport",
+            "path": "sport",
+            "rank": "0"
+          },
+          {
+            "id": "325165",
+            "name": "Sportvereine/Sportverbände",
+            "path": "sportvereine-sportverbaende",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325161",
+      "name": "Freizeiteinrichtungen",
+      "path": "freizeiteinrichtungen",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324887",
+      "name": "Führerschein",
+      "path": "fuehrerschein",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "121641",
+            "name": "Fahrerkarte"
+          },
+          {
+            "id": "324915",
+            "name": "Fahrerlaubnis zur Fahrgastbeförderung - Ersatz"
+          },
+          {
+            "id": "121598",
+            "name": "Umschreibung einer ausländischen Fahrerlaubnis"
+          },
+          {
+            "id": "121615",
+            "name": "Umschreibung einer Dienstfahrerlaubnis"
+          },
+          {
+            "id": "121589",
+            "name": "Begleitetes Fahren mit 17"
+          },
+          {
+            "id": "324160",
+            "name": "Unternehmenskarte"
+          },
+          {
+            "id": "121591",
+            "name": "Internationaler Führerschein"
+          },
+          {
+            "id": "121629",
+            "name": "Erweiterung einer Fahrerlaubnis"
+          },
+          {
+            "id": "121593",
+            "name": "Ersatzführerschein nach Verlust/Diebstahl"
+          },
+          {
+            "id": "121637",
+            "name": "Neuerteilung der Fahrerlaubnis"
+          },
+          {
+            "id": "324450",
+            "name": "Fahrerlaubnis - Erweiterung auf die Klassen D1, D1E, D und DE"
+          },
+          {
+            "id": "121616",
+            "name": "Umtausch eines Kartenführerscheins"
+          },
+          {
+            "id": "124556",
+            "name": "Umstellung der Fahrerlaubnis"
+          },
+          {
+            "id": "121622",
+            "name": "Fahrerlaubnis zur Fahrgastbeförderung (P-Schein) - Erteilung"
+          },
+          {
+            "id": "324389",
+            "name": "Fahrerlaubnis zur Fahrgastbeförderung (P-Schein) - Verlängerung"
+          },
+          {
+            "id": "121627",
+            "name": "Ersterteilung einer Fahrerlaubnis"
+          },
+          {
+            "id": "121634",
+            "name": "Verlängerung der Fahrerlaubnis"
+          },
+          {
+            "id": "121596",
+            "name": "Führerschein Karteikartenabschrift"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "324893",
+      "name": "Fußgänger",
+      "path": "fussgaenger",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "326527",
+            "name": "Störungsmeldung Straßenbeleuchtung"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325111",
+      "name": "Gedenkstätten",
+      "path": "gedaenkstaetten",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325001",
+      "name": "Gender Mainstreaming",
+      "path": "gender-mainstreaming",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324849",
+      "name": "Geodaten/Karten",
+      "path": "geodaten-karten",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325093",
+      "name": "Gerichte/Schiedsstellen",
+      "path": "gerichte-schiedsstellen",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "326037",
+            "name": "Rechtsangelegenheiten - Beratungshilfe"
+          },
+          {
+            "id": "326804",
+            "name": "Inkasso- und Rechtsdienstleister registrieren"
+          },
+          {
+            "id": "326786",
+            "name": "Schutz gegen Gewalt"
+          },
+          {
+            "id": "326834",
+            "name": "Wohnungseigentumssachen (WEG-Sachen)    "
+          },
+          {
+            "id": "326852",
+            "name": "Vereinsregister - Eintragung von Vorstandsänderungen"
+          },
+          {
+            "id": "326808",
+            "name": "Eintragung eines Vereins in das Vereinsregister     "
+          },
+          {
+            "id": "326788",
+            "name": "Zwangshypothek - Eintragung"
+          },
+          {
+            "id": "326900",
+            "name": "Zwangsversteigerung - Mitbieten"
+          },
+          {
+            "id": "326850",
+            "name": "Grundpfandrechte im Grundbuch - Eintragung"
+          },
+          {
+            "id": "326866",
+            "name": "Grundpfandrechte im Grundbuch - Veränderungen"
+          },
+          {
+            "id": "326840",
+            "name": "Betreuer - Bestellung"
+          },
+          {
+            "id": "326952",
+            "name": "Scheidungsantrag - Entscheidung"
+          },
+          {
+            "id": "326716",
+            "name": "Entschädigung von Zeuginnen und Zeugen in Straf- und Bußgeldverfahren"
+          },
+          {
+            "id": "326928",
+            "name": "Entschädigung von Schöffinnen und Schöffen"
+          },
+          {
+            "id": "326708",
+            "name": "Teilnahme von Schulklassen an Gerichtsverhandlungen"
+          },
+          {
+            "id": "326600",
+            "name": "Grundbuch - Eigentümerberichtigung nach Erbfall"
+          },
+          {
+            "id": "326598",
+            "name": "Grundpfandrechte im Grundbuch - Löschung"
+          },
+          {
+            "id": "327002",
+            "name": "Mediation durch Güterichterinnen oder Güterichter in Zivilprozessverfahren"
+          },
+          {
+            "id": "327008",
+            "name": "Prozess- und Verfahrenskostenhilfe"
+          },
+          {
+            "id": "326972",
+            "name": "Nichtberücksichtigung einer Unterhaltsverpflichtung der Schuldnerin oder des Schuldners bei der Ermittlung des unpfändbaren Teils des schuldnerischen Einkommens"
+          },
+          {
+            "id": "326812",
+            "name": "Pfändungsschutzkonto - Erweiterung des Pfändungsschutzes für das bestehende Pfändungsschutzkonto (P-Konto)"
+          },
+          {
+            "id": "326974",
+            "name": "Zwangsvollstreckung - Erinnerung gegen die Art und Weise der Zwangsvollstreckung"
+          },
+          {
+            "id": "326740",
+            "name": "Grundbuch - Einsichtnahme"
+          },
+          {
+            "id": "326441",
+            "name": "Mahnbescheid - im deutschen Mahnverfahren "
+          },
+          {
+            "id": "327028",
+            "name": "Schuldnerverzeichnis nach neuem Recht (Online) - Selbstauskunft"
+          },
+          {
+            "id": "326854",
+            "name": "Schuldnerverzeichnis nach neuem Recht (Online) - Auskunft"
+          },
+          {
+            "id": "327026",
+            "name": "Insolvenzverfahren - Durchführung - Verbraucherinsolvenz"
+          },
+          {
+            "id": "327070",
+            "name": "Abwesenheitspfleger - Bestellung"
+          },
+          {
+            "id": "327072",
+            "name": "Pflegschaft für unbekannte Beteiligte - Bestellung"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325097",
+            "name": "Schiedsstellen/Schiedsämter",
+            "path": "schiedsstellen-schiedsaemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324811",
+      "name": "Gesundheit und Pflege",
+      "path": "gesundheit-pflege",
+      "relation": {
+        "navi": "1",
+        "services": [
+          {
+            "id": "324975",
+            "name": "Beschwerden über die KV Berlin; die KZV Berlin sowie Arbeitsgemeinschaften nach § 94 SGB X"
+          },
+          {
+            "id": "324295",
+            "name": "Infektionsschutz - Erstbelehrung gemäß § 43 Infektionsschutzgesetz (ehem. Rote Karte, Gesundheits-Pass)"
+          },
+          {
+            "id": "324353",
+            "name": "Anerkennung von niedrigschwelligen Betreuungsangeboten"
+          },
+          {
+            "id": "324336",
+            "name": "Anerkennung von Betreuungsvereinen"
+          },
+          {
+            "id": "324571",
+            "name": "Hilfen zur Gesundheit"
+          },
+          {
+            "id": "324474",
+            "name": "Hilfe zur Pflege"
+          },
+          {
+            "id": "324356",
+            "name": "Impfung - Erlaubnis - Gelbfieberimpfstellenerlaubnis"
+          }
+        ],
+        "childs": [
+          {
+            "id": "324821",
+            "name": "Behinderung",
+            "path": "behinderung",
+            "rank": "4"
+          },
+          {
+            "id": "325019",
+            "name": "Arbeitsschutz, Arbeitssicherheit",
+            "path": "arbeitsschutz-arbeitssicherheit",
+            "rank": "0"
+          },
+          {
+            "id": "325131",
+            "name": "Pflege und Betreuung",
+            "path": "pflege-betreuung",
+            "rank": "0"
+          },
+          {
+            "id": "325197",
+            "name": "Ämter, Verwaltungen, Institutionen: Gesundheit und Pflege",
+            "path": "aemter-gesundheitpflege",
+            "rank": "0"
+          },
+          {
+            "id": "325203",
+            "name": "Krankenhäuser, Kliniken",
+            "path": "krankenhaeuser-kliniken",
+            "rank": "0"
+          },
+          {
+            "id": "325205",
+            "name": "Berufe im Gesundheitswesen",
+            "path": "berufe-gesundheitswesen",
+            "rank": "0"
+          },
+          {
+            "id": "325207",
+            "name": "Barrierefreiheit",
+            "path": "barrierefreiheit",
+            "rank": "0"
+          },
+          {
+            "id": "325209",
+            "name": "Gesundheit: Beratung, Hilfe",
+            "path": "gesundheit-beratunghilfe",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325209",
+      "name": "Gesundheit: Beratung, Hilfe",
+      "path": "gesundheit-beratunghilfe",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "324975",
+            "name": "Beschwerden über die KV Berlin; die KZV Berlin sowie Arbeitsgemeinschaften nach § 94 SGB X"
+          },
+          {
+            "id": "324397",
+            "name": "Dienstleistungen und Aufgaben nach dem Infektionsschutzgesetz (IfSG) - Hygieneaufsicht"
+          },
+          {
+            "id": "324354",
+            "name": "Förderung von niedrigschwelligen Angeboten und Förderung ehrenamtlicher sowie Selbsthilfestrukturen"
+          },
+          {
+            "id": "324351",
+            "name": "Pauschalförderung nach § 6 LPflegEG für Einrichtungen der Kurzzeitpflege und Einrichtungen der Tages- und Nachtpflege"
+          },
+          {
+            "id": "325457",
+            "name": "Sexuelle Gesundheit, AIDS und sexuell übertragbare Erkrankungen - Beratung"
+          },
+          {
+            "id": "325469",
+            "name": "Entschädigung für Opfer von Gewalttaten"
+          },
+          {
+            "id": "325619",
+            "name": "Hördiagnostik bei Kindern und Jugendlichen bei Verdacht auf Vorliegen einer Hörstörung und Beratung/Betreuung von Familien mit hörbehinderten Kindern"
+          },
+          {
+            "id": "293946",
+            "name": "Anmeldung eines neuen Unternehmens zur Gesetzlichen Unfallversicherung (Berufsgenossenschaft)"
+          },
+          {
+            "id": "325421",
+            "name": "Beratung für sehbehinderte Menschen"
+          },
+          {
+            "id": "325711",
+            "name": "Schwerbehinderung - Zustimmung zur Kündigung schwerbehinderter Menschen - Erteilung"
+          },
+          {
+            "id": "324484",
+            "name": "Eingliederungshilfe für behinderte Menschen"
+          },
+          {
+            "id": "324295",
+            "name": "Infektionsschutz - Erstbelehrung gemäß § 43 Infektionsschutzgesetz (ehem. Rote Karte, Gesundheits-Pass)"
+          },
+          {
+            "id": "326539",
+            "name": "Infektionsschutz - Beratung - Ebola"
+          },
+          {
+            "id": "324721",
+            "name": "Rechtliche Betreuung Volljähriger "
+          },
+          {
+            "id": "324254",
+            "name": "Einschulungsuntersuchung"
+          },
+          {
+            "id": "325143",
+            "name": "Schwerbehinderung - Änderungsmitteilung"
+          },
+          {
+            "id": "324350",
+            "name": "Bescheide zur Zustimmung zur Berechnung der betriebsnotwendigen Investitionsaufwendungen"
+          },
+          {
+            "id": "324555",
+            "name": "Leistungen nach dem Landespflegegeldgesetz (LPflGG)"
+          },
+          {
+            "id": "325327",
+            "name": "Unterbringung psychisch Kranker"
+          },
+          {
+            "id": "325875",
+            "name": "Kinder und Jugendliche mit psychischen und sozialen Verhaltensauffäligkeiten und Entwicklungsbeeinträchtigungen"
+          },
+          {
+            "id": "324571",
+            "name": "Hilfen zur Gesundheit"
+          },
+          {
+            "id": "324474",
+            "name": "Hilfe zur Pflege"
+          },
+          {
+            "id": "325159",
+            "name": "Schwerbehinderung - Akteneinsicht"
+          },
+          {
+            "id": "326560",
+            "name": "Schwerbehinderung - Sonderfahrdienst - Eigenbeteiligung - "
+          },
+          {
+            "id": "326794",
+            "name": "Schwerbehinderung - Wertmarke auf Beiblatt zum Schwerbehindertenausweis"
+          },
+          {
+            "id": "326562",
+            "name": "Schwerbehinderung - Sonderfahrdienst - Magnetkarte"
+          },
+          {
+            "id": "326584",
+            "name": "Schwerbehinderung - Sonderfahrdienst - befristete Nutzungsberechtigung"
+          },
+          {
+            "id": "326552",
+            "name": "Schwerbehinderung - Sonderfahrdienst - Taxikonto -"
+          },
+          {
+            "id": "326806",
+            "name": "Schwerbehindertenausweis - Verlust"
+          },
+          {
+            "id": "326173",
+            "name": "Schwerbehinderung - Feststellungsverfahren"
+          },
+          {
+            "id": "121737",
+            "name": "Schwerbehindertenausweis"
+          },
+          {
+            "id": "324356",
+            "name": "Impfung - Erlaubnis - Gelbfieberimpfstellenerlaubnis"
+          },
+          {
+            "id": "326916",
+            "name": "Lebensmittelsicherheit - Prüfung"
+          },
+          {
+            "id": "324725",
+            "name": "Vorsorgevollmachten"
+          },
+          {
+            "id": "324255",
+            "name": "Untersuchung nach dem Jugendarbeitsschutzgesetz"
+          },
+          {
+            "id": "325399",
+            "name": "Erlaubnis zur Durchführung von Maßnahmen zur Herbeiführung einer Schwangerschaft"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325199",
+      "name": "Gesundheitsämter",
+      "path": "gesundheitsaemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324983",
+      "name": "Gewalt im Alltag",
+      "path": "gewalt-alltag",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325003",
+      "name": "Gleichgeschlechtliche Lebensweisen",
+      "path": "gleichgeschlechtliche-lebensweisen",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "324693",
+            "name": "Lebenspartnerschaft - Anmeldung - mit Auslandsbeteiligung"
+          },
+          {
+            "id": "324729",
+            "name": "Lebenspartnerschaft - Anmeldung - ohne Auslandsbeteiligung"
+          },
+          {
+            "id": "324691",
+            "name": "Lebenspartnerschaft - Anmeldung - mit Auslandsbeteiligung- Auskunft"
+          },
+          {
+            "id": "324665",
+            "name": "Lebenspartnerschaft - Begründung von Lebenspartnerschaften"
+          },
+          {
+            "id": "324953",
+            "name": "Lebenspartnerschaft - Beratung - zur Anmeldung der Lebenspartnerschaft für Spätaussiedler"
+          },
+          {
+            "id": "324957",
+            "name": "Lebenspartnerschaft - Nachbeurkundung einer Begründung einer Lebenspartnerschaft im Ausland"
+          },
+          {
+            "id": "324959",
+            "name": "Lebenspartnerschaft - Nachbeurkundung einer Lebenspartnerschaft im Ausland - Beratung"
+          },
+          {
+            "id": "324607",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Lebenspartnerschaft - Hinzufügung eines Namens zum Lebenspartnerschaftsnamen"
+          },
+          {
+            "id": "324605",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Lebenspartnerschaft - Lebenspartnerschaftsname"
+          },
+          {
+            "id": "324603",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Lebenspartnerschaft - Rechtswahlerklärung"
+          },
+          {
+            "id": "324609",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Lebenspartnerschaft - Widerruf der Hinzufügung eines Namens zum Lebenspartnerschaftsnamen"
+          },
+          {
+            "id": "324611",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Lebenspartnerschaftsname - Wiederannahme des vorigen Familiennamens oder des Geburtsnamens"
+          },
+          {
+            "id": "324657",
+            "name": "Lebenspartnerschaft ohne Auslandsbeteiligung- Auskunft, Beratung, Anmeldung"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325077",
+      "name": "Grundsicherungsämter",
+      "path": "grundsicherungsaemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325081",
+      "name": "Haushalt/Finanzpolitik",
+      "path": "haushalt-finanzpolitik",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325269",
+      "name": "Interaktive Informationsdienste",
+      "path": "interaktive-informationsdienste",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325287",
+      "name": "Internationale Beziehungen",
+      "path": "internationale-beziehungen",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "327018",
+      "name": "Jobcenter",
+      "path": "jobcenter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325127",
+      "name": "Jugendämter",
+      "path": "jugendaemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325237",
+      "name": "Justizvollzug",
+      "path": "justizvollzug",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324997",
+      "name": "Kinder/Jugendliche",
+      "path": "kinder-jugendliche",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "150177",
+            "name": "Super Ferienpass (Verkauf)"
+          },
+          {
+            "id": "326081",
+            "name": "Beurkundung eines Unterhaltsanspruches des Kindes bzw. der Unterhaltsverpflichtung"
+          },
+          {
+            "id": "318992",
+            "name": "Mutterschaftsanerkennung"
+          },
+          {
+            "id": "326590",
+            "name": "Beurkundung der Ausübung der gemeinsamen elterlichen Sorge"
+          },
+          {
+            "id": "325875",
+            "name": "Kinder und Jugendliche mit psychischen und sozialen Verhaltensauffäligkeiten und Entwicklungsbeeinträchtigungen"
+          },
+          {
+            "id": "324466",
+            "name": "Leistungen nach dem Bildungs- und Teilhabepaket"
+          },
+          {
+            "id": "326079",
+            "name": "Elterngeld"
+          },
+          {
+            "id": "326588",
+            "name": "Beistandschaft durch das Jugendamt"
+          },
+          {
+            "id": "326069",
+            "name": "Unterhaltsvorschuss"
+          },
+          {
+            "id": "324917",
+            "name": "Hort-Gutschein - Erweiterung"
+          },
+          {
+            "id": "324901",
+            "name": "Hort-Gutschein / Bedarfsbescheid"
+          },
+          {
+            "id": "324873",
+            "name": "Kita-Gutschein"
+          },
+          {
+            "id": "324879",
+            "name": "Kita-Gutschein - Betreuungsumfang erweitern"
+          },
+          {
+            "id": "324255",
+            "name": "Untersuchung nach dem Jugendarbeitsschutzgesetz"
+          },
+          {
+            "id": "318991",
+            "name": "Vaterschaftsanerkennung"
+          },
+          {
+            "id": "325035",
+            "name": "Kinderfreibeträge - Allgemeines"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325127",
+            "name": "Jugendämter",
+            "path": "jugendaemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325117",
+      "name": "Kirchen- und Religionsgemeinschaften",
+      "path": "kirchen-religionsgemeinschaften",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325203",
+      "name": "Krankenhäuser, Kliniken",
+      "path": "krankenhaeuser-kliniken",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325083",
+      "name": "Kreditinstitute",
+      "path": "kreditinstitute",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324813",
+      "name": "Kultur, Medien und Wissenschaft",
+      "path": "kultur-medien-wissenschaft",
+      "relation": {
+        "navi": "1",
+        "services": [
+          {
+            "id": "326045",
+            "name": "Spielkennzeichen beantragen"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325099",
+            "name": "Ämter, Verwaltungen, Institutionen: Kultur, Medien, Wissenschaft",
+            "path": "aemter-kulturmedienwissenschaft",
+            "rank": "0"
+          },
+          {
+            "id": "325105",
+            "name": "Bibliotheken",
+            "path": "bibliotheken",
+            "rank": "0"
+          },
+          {
+            "id": "325107",
+            "name": "Bühnen, Theater",
+            "path": "buenen-theater",
+            "rank": "0"
+          },
+          {
+            "id": "325109",
+            "name": "Denkmäler",
+            "path": "denkmaeler",
+            "rank": "0"
+          },
+          {
+            "id": "325111",
+            "name": "Gedenkstätten",
+            "path": "gedaenkstaetten",
+            "rank": "0"
+          },
+          {
+            "id": "325117",
+            "name": "Kirchen- und Religionsgemeinschaften",
+            "path": "kirchen-religionsgemeinschaften",
+            "rank": "0"
+          },
+          {
+            "id": "325119",
+            "name": "Museen, Galerien",
+            "path": "museen-galerien",
+            "rank": "0"
+          },
+          {
+            "id": "325121",
+            "name": "Stiftungen und Museen öffentlichen Rechts (Kultur)",
+            "path": "stiftungen-museenoeffentlichenrechts",
+            "rank": "0"
+          },
+          {
+            "id": "325123",
+            "name": "Stipendien und Kulturförderung",
+            "path": "stipendien-kulturfoerderung",
+            "rank": "0"
+          },
+          {
+            "id": "325125",
+            "name": "Veranstaltungen",
+            "path": "veranstaltungen",
+            "rank": "0"
+          },
+          {
+            "id": "325149",
+            "name": "Archive",
+            "path": "archive",
+            "rank": "0"
+          },
+          {
+            "id": "325151",
+            "name": "Newsletter/Presse",
+            "path": "newsletter-presse",
+            "rank": "0"
+          },
+          {
+            "id": "325153",
+            "name": "Zeitungen/Magazine",
+            "path": "zeitungen-magazine",
+            "rank": "0"
+          },
+          {
+            "id": "325309",
+            "name": "Wissenschaft und Forschung",
+            "path": "wissenschaft-forschung",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325103",
+      "name": "Kunst- und Kulturämter",
+      "path": "kunst-kulturaemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325285",
+      "name": "Landesbeauftragte, Landeskommissionen",
+      "path": "landesbeauftragte-landeskommissionen",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325085",
+      "name": "Landesvermögen",
+      "path": "landesvermoegen",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325247",
+      "name": "Landschaftsplanung",
+      "path": "landschaftsplanung",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325251",
+      "name": "Luft",
+      "path": "luft",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325311",
+      "name": "Meldeangelegenheiten",
+      "path": "meldeangelegenheiten",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "151702",
+            "name": "Eintrag eines deutsch-arabischen Stempelabdrucks (Libyenstempel) in deutsche Reisepässe"
+          },
+          {
+            "id": "120678",
+            "name": "Melderegisterauskunft sperren"
+          },
+          {
+            "id": "326215",
+            "name": "Melderegisterauskunft - Auskunft für Eigentümer bzw. Wohnungsgeber und Vermieter"
+          },
+          {
+            "id": "120926",
+            "name": "Führungszeugnis"
+          },
+          {
+            "id": "320310",
+            "name": "Beglaubigung von Fingerabdrücken zur Vorlage bei ausländischen Behörden"
+          },
+          {
+            "id": "120697",
+            "name": "Änderung/Wechsel der Hauptwohnung"
+          },
+          {
+            "id": "319141",
+            "name": "Widerspruchsrechte gegen Datenübermittlungen und Melderegisterauskünfte"
+          },
+          {
+            "id": "318913",
+            "name": "Melderegisterauskunft online für Einzelabfrager"
+          },
+          {
+            "id": "318915",
+            "name": "Melderegisterauskunft online für registrierte Großkunden"
+          },
+          {
+            "id": "120732",
+            "name": "Melderegisterauskunft einholen"
+          },
+          {
+            "id": "120702",
+            "name": "Meldebescheinigung beantragen"
+          },
+          {
+            "id": "320303",
+            "name": "Melderegisterauskunft: Datenübermittlung an Behörden und öffentliche Stellen"
+          },
+          {
+            "id": "120726",
+            "name": "Verlust des Personalausweises melden (Verlustanzeige)"
+          },
+          {
+            "id": "120703",
+            "name": "Personalausweis beantragen"
+          },
+          {
+            "id": "121368",
+            "name": "Reisepassverlust"
+          },
+          {
+            "id": "306704",
+            "name": "Reisepass für in Berlin nicht gemeldete Personen, Touristen und Deutsche mit Wohnsitz im Ausland"
+          },
+          {
+            "id": "324573",
+            "name": "Reisepass, abholen im Bürgeramt"
+          },
+          {
+            "id": "121151",
+            "name": "Reisepass beantragen"
+          },
+          {
+            "id": "121153",
+            "name": "Reisepass beantragen (vorläufiger Reisepass)"
+          },
+          {
+            "id": "306684",
+            "name": "Personalausweis, vorläufig, für Berliner Einwohner ohne feste Wohnung bzw. für Personen, die außerhalb von Berlin gemeldet sind"
+          },
+          {
+            "id": "324325",
+            "name": "Personalausweis, abholen im Bürgeramt"
+          },
+          {
+            "id": "120682",
+            "name": "Personalausweis vorläufig beantragen"
+          },
+          {
+            "id": "326550",
+            "name": "Personalausweis für in Berlin nicht gemeldete Personen, Touristen und Deutsche mit Wohnsitz im Ausland"
+          },
+          {
+            "id": "121469",
+            "name": "Kinderreisepass beantragen / verlängern / aktualisieren"
+          },
+          {
+            "id": "326548",
+            "name": "Kinderreisepass für in Berlin nicht gemeldete Personen, Touristen und Deutsche mit Wohnsitz im Ausland"
+          },
+          {
+            "id": "120335",
+            "name": "Abmeldung einer Wohnung"
+          },
+          {
+            "id": "120686",
+            "name": "Anmeldung einer Wohnung"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "324835",
+      "name": "Meldewesen und Ordnung",
+      "path": "meldewesen-ordnung",
+      "relation": {
+        "navi": "1",
+        "services": [
+          {
+            "id": "325891",
+            "name": "Lärmschutz - Zulassung von Ausnahmen nach § 10 LImSchG / Genehmigungen nach § 11 LImSchG"
+          },
+          {
+            "id": "326263",
+            "name": "Hundehaltung - Anmeldung - Gefährlicher Hund"
+          },
+          {
+            "id": "121874",
+            "name": "Übertragung einer Aufenthaltserlaubnis in einen neuen Pass"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325139",
+            "name": "Ausländerangelegenheiten",
+            "path": "auslaenderangelegenheiten",
+            "rank": "0"
+          },
+          {
+            "id": "325231",
+            "name": "Ämter, Verwaltungen, Institutionen: Meldewesen und Ordnung",
+            "path": "aemter-meldewesenordnung",
+            "rank": "0"
+          },
+          {
+            "id": "325273",
+            "name": "Standesamts-Urkunden-Onlinebestellung",
+            "path": "standesamts-urkundenonlinebestellung",
+            "rank": "0"
+          },
+          {
+            "id": "325311",
+            "name": "Meldeangelegenheiten",
+            "path": "meldeangelegenheiten",
+            "rank": "0"
+          },
+          {
+            "id": "325313",
+            "name": "Beglaubigungen",
+            "path": "beglaubigungen",
+            "rank": "0"
+          },
+          {
+            "id": "325315",
+            "name": "Standesamtsangelegenheiten",
+            "path": "standesamtsangelegenheiten",
+            "rank": "0"
+          },
+          {
+            "id": "325317",
+            "name": "Einbürgerung",
+            "path": "einbuergerung",
+            "rank": "0"
+          },
+          {
+            "id": "325319",
+            "name": "Ordnungsangelegenheiten",
+            "path": "ordnungsangelegenheiten",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324815",
+      "name": "Migration und Integration",
+      "path": "migration-integration",
+      "relation": {
+        "navi": "1",
+        "services": [
+          {
+            "id": "325517",
+            "name": "Integrationskurs - Beratung und Einstufung"
+          },
+          {
+            "id": "324475",
+            "name": "Leistungen nach dem Asylbewerberleistungsgesetz"
+          },
+          {
+            "id": "305304",
+            "name": "Aufenthaltserlaubnis zur Aufnahme einer Beschäftigung"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325137",
+            "name": "Ämter, Verwaltungen, Institutionen: Migration und Integration",
+            "path": "aemter-migrationintegration",
+            "rank": "0"
+          },
+          {
+            "id": "325139",
+            "name": "Ausländerangelegenheiten",
+            "path": "auslaenderangelegenheiten",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325119",
+      "name": "Museen, Galerien",
+      "path": "museen-galerien",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325121",
+            "name": "Stiftungen und Museen öffentlichen Rechts (Kultur)",
+            "path": "stiftungen-museenoeffentlichenrechts",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325151",
+      "name": "Newsletter/Presse",
+      "path": "newsletter-presse",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325353",
+      "name": "Onlineverfahren, Online-Dienstleistungen",
+      "path": "onlineverfahren-onlinedienstleistungen",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325235",
+      "name": "Ordnungsämter",
+      "path": "ordnungsaemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325319",
+      "name": "Ordnungsangelegenheiten",
+      "path": "ordnungsangelegenheiten",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "126672",
+            "name": "Reisegewerbe - Erlaubnis zum Betreiben von Spielhallen oder ähnlichen Unternehmen"
+          },
+          {
+            "id": "123066",
+            "name": "Wanderlager - Anzeige"
+          },
+          {
+            "id": "126904",
+            "name": "Anzeige einer Versteigerung"
+          },
+          {
+            "id": "126432",
+            "name": "Reisegewerbekartenfreie Tätigkeiten"
+          },
+          {
+            "id": "158238",
+            "name": "Vermittlung von Sportwetten in einer Wettvermittlungsstelle"
+          },
+          {
+            "id": "121925",
+            "name": "Haus- und Nachbarschaftslärm"
+          },
+          {
+            "id": "325893",
+            "name": "Gaststättenlärm"
+          },
+          {
+            "id": "325891",
+            "name": "Lärmschutz - Zulassung von Ausnahmen nach § 10 LImSchG / Genehmigungen nach § 11 LImSchG"
+          },
+          {
+            "id": "121916",
+            "name": "Reisegewerbe betreiben"
+          },
+          {
+            "id": "325841",
+            "name": "Hundehaltung - Prüfung - Hunderasse"
+          },
+          {
+            "id": "326261",
+            "name": "Hundehaltung - Ummeldung - Gefährlicher Hund"
+          },
+          {
+            "id": "325999",
+            "name": "Straßenrechtliche Sondernutzung - Aufstellen von Werbestelltafeln"
+          },
+          {
+            "id": "326293",
+            "name": "Straßenrechtliche Sondernutzung Apothekenmast"
+          },
+          {
+            "id": "325689",
+            "name": "Straßenrechtliche Sondernutzung Baugrubenverbau, Bohr- und Spundwand"
+          },
+          {
+            "id": "326297",
+            "name": "Straßenrechtliche Sondernutzung Beleuchtung für Gebäude im Straßenland"
+          },
+          {
+            "id": "325713",
+            "name": "Straßenrechtliche Sondernutzung Erker, Balkon, Werbeschild an Gebäuden"
+          },
+          {
+            "id": "325715",
+            "name": "Straßenrechtliche Sondernutzung Filmaufnahmen"
+          },
+          {
+            "id": "326073",
+            "name": "Straßenrechtliche Sondernutzung Großflächenwerbetafel"
+          },
+          {
+            "id": "326299",
+            "name": "Straßenrechtliche Sondernutzung in gesperrten Bereichen von Demonstrationen"
+          },
+          {
+            "id": "325709",
+            "name": "Straßenrechtliche Sondernutzung Kellerlicht- und Biereinwurfschacht"
+          },
+          {
+            "id": "326291",
+            "name": "Straßenrechtliche Sondernutzung Kunstobjekt, Stele"
+          },
+          {
+            "id": "326067",
+            "name": "Straßenrechtliche Sondernutzung Lichtmastwerbung (Draussenwerber)"
+          },
+          {
+            "id": "326295",
+            "name": "Straßenrechtliche Sondernutzung Uhrenkandelaber"
+          },
+          {
+            "id": "326063",
+            "name": "Straßenrechtliche Sondernutzung Wahlplakate (DIN A 0)"
+          },
+          {
+            "id": "326071",
+            "name": "Straßenrechtliche Sondernutzung Zirkuswerbung"
+          },
+          {
+            "id": "326525",
+            "name": "Beseitigung von Straßenschäden an Autobahnen sowie an Bundesstraßen ohne Randbebauung"
+          },
+          {
+            "id": "325839",
+            "name": "Hundehaltung - Befreiung - vom Maulkorbzwang aus medizinsichen Gründen"
+          },
+          {
+            "id": "326157",
+            "name": "Gewerberegisterauszug - elektronische Auskunft -"
+          },
+          {
+            "id": "324911",
+            "name": "Veranstaltung Erlaubnis"
+          },
+          {
+            "id": "326640",
+            "name": "Winterdienst auf Gehwegen - Befreiung wegen Leistungsunfähigkeit"
+          },
+          {
+            "id": "326642",
+            "name": "Winterdienst auf Gehwegen - Befreiung wegen unbilliger Härte"
+          },
+          {
+            "id": "326453",
+            "name": "Parkmöglichkeiten für schwerbehinderte Menschen  personenbezogen - Kennzeichnung - personengebunden"
+          },
+          {
+            "id": "326439",
+            "name": "Parkausweis für Schwerbehinderte Ausstellung"
+          },
+          {
+            "id": "325649",
+            "name": "Haltverbot für Umzüge"
+          },
+          {
+            "id": "126439",
+            "name": "Reisegewerbe - Ausnahmen aus besonderem Anlass"
+          },
+          {
+            "id": "324545",
+            "name": "Reisegewerbe - Angestellte (Bescheinigung)"
+          },
+          {
+            "id": "126218",
+            "name": "Reisegewerbekarte - Erweiterung / Änderung"
+          },
+          {
+            "id": "126559",
+            "name": "Reisegewerbe - Genehmigung für das Veranstalten von anderen Spielen mit Gewinnmöglichkeit"
+          },
+          {
+            "id": "325653",
+            "name": "Straßenrechtliche Sondernutzung Baugerüst"
+          },
+          {
+            "id": "325655",
+            "name": "Straßenrechtliche Sondernutzung Kran, Schrägaufzug, Lift, Hebebühne"
+          },
+          {
+            "id": "325651",
+            "name": "Straßenrechtliche Sondernutzung Baustelleneinrichtung"
+          },
+          {
+            "id": "325983",
+            "name": "Straßenrechtliche Sondernutzung Schrottcontainer"
+          },
+          {
+            "id": "326714",
+            "name": "Winterdienst auf Gehwegen - Allgemeine Auskunft"
+          },
+          {
+            "id": "121898",
+            "name": "Sperrmüll (illegal) - Entsorgung"
+          },
+          {
+            "id": "326461",
+            "name": "Fahrräder (illegal) - Entsorgung"
+          },
+          {
+            "id": "326347",
+            "name": "Problemstoffe (illegal) - Entsorgung"
+          },
+          {
+            "id": "326351",
+            "name": "Wilder Müll (illegal) - Entsorgung"
+          },
+          {
+            "id": "326349",
+            "name": "Gewerbemüll (illegal) - Entsorgung"
+          },
+          {
+            "id": "326455",
+            "name": "Autowrack (illegal) - Entsorgung "
+          },
+          {
+            "id": "326473",
+            "name": "Werbematerialien - Verteilung"
+          },
+          {
+            "id": "326459",
+            "name": "Bauschutt (illegal) - Entsorgung"
+          },
+          {
+            "id": "326457",
+            "name": "Schrott (illegal) - Entsorgung "
+          },
+          {
+            "id": "326463",
+            "name": "Tierkadaver (illegal) - Entsorgung"
+          },
+          {
+            "id": "326345",
+            "name": "Hausmüll (illegal) - Entsorgung"
+          },
+          {
+            "id": "148182",
+            "name": "Anmeldung eines überwachungspflichtigen Gewerbes"
+          },
+          {
+            "id": "326527",
+            "name": "Störungsmeldung Straßenbeleuchtung"
+          },
+          {
+            "id": "326521",
+            "name": "Umweltzonen – Ausnahmen von der Kennzeichenpflicht – Genehmigung"
+          },
+          {
+            "id": "326277",
+            "name": "Erlaubnis zur Zucht, Haltung und zum Handel mit Tieren - Erteilung"
+          },
+          {
+            "id": "326245",
+            "name": "Fundtiere"
+          },
+          {
+            "id": "326756",
+            "name": "Erlaubnis zur Zucht, Haltung und zum Handel mit Tieren - Prüfung"
+          },
+          {
+            "id": "326243",
+            "name": "Angriffe durch Tiere - Verfolgung - Hundebisse"
+          },
+          {
+            "id": "326766",
+            "name": "Schutz vor Tierseuchen - Tote Tiere"
+          },
+          {
+            "id": "325951",
+            "name": "Altpapier (illegal) - Entsorgung"
+          },
+          {
+            "id": "326341",
+            "name": "Bioabfall (illegal) - Entsorgung"
+          },
+          {
+            "id": "326343",
+            "name": "Gartenabfall (illegal) - Entsorgung"
+          },
+          {
+            "id": "326257",
+            "name": "Hundehaltung - Abmeldung - Gefährlicher Hund"
+          },
+          {
+            "id": "121921",
+            "name": "Gewerbe - Anmeldung"
+          },
+          {
+            "id": "122107",
+            "name": "Gewerbe - Abmeldung"
+          },
+          {
+            "id": "122111",
+            "name": "Gewerbe - Ummeldung"
+          },
+          {
+            "id": "158163",
+            "name": "Genehmigung zur Veranstaltung einer Lotterie / Tombola"
+          },
+          {
+            "id": "120691",
+            "name": "Verpflichtungserklärung für kurzfristige Aufenthalte (Besuchsaufenthalte und Geschäftsreisen)"
+          },
+          {
+            "id": "158235",
+            "name": "Veranstaltung von Pokerturnieren und anderen Pokerveranstaltungen in Berlin, die nicht von den Spielbanken veranstaltet werden"
+          },
+          {
+            "id": "326870",
+            "name": "Sondernutzung von Straßen - Genehmigung - Straßenhandel aus Bauchladen"
+          },
+          {
+            "id": "326872",
+            "name": "Sondernutzung von Straßen - Genehmigung - Herausstellen von Stehtischen vor eigenen Geschäftsräumen"
+          },
+          {
+            "id": "326868",
+            "name": "Sondernutzung von Straßen - Genehmigung - Herausstellen von Waren vor eigenen Geschäftsräumen"
+          },
+          {
+            "id": "326864",
+            "name": "Sondernutzung von Straßen - Genehmigung - Herausstellen von Tischen und Stühlen vor eigenen Geschäftsräumen"
+          },
+          {
+            "id": "326876",
+            "name": "Sondernutzung von Straßen - Genehmigung - Fliegender Straßenhandel aus Verkaufsfahrzeugen"
+          },
+          {
+            "id": "324328",
+            "name": "Fundsachen suchen und abholen"
+          },
+          {
+            "id": "121543",
+            "name": "Fundsachen abgeben"
+          },
+          {
+            "id": "121721",
+            "name": "Anwohner -/Bewohnerparkausweis - Antragstellung/ Umschreibung/Verlängerung"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325283",
+      "name": "Parteien im Abgeordnetenhaus",
+      "path": "parteien-abgeordnetenhaus",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325131",
+      "name": "Pflege und Betreuung",
+      "path": "pflege-betreuung",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "324474",
+            "name": "Hilfe zur Pflege"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "324817",
+      "name": "Politik und Engagement",
+      "path": "politik-engagement",
+      "relation": {
+        "navi": "1",
+        "services": [],
+        "childs": [
+          {
+            "id": "325261",
+            "name": "E-Government",
+            "path": "e-government",
+            "rank": "0"
+          },
+          {
+            "id": "325263",
+            "name": "Beteiligungsangebote",
+            "path": "beteiligungsangebote",
+            "rank": "0"
+          },
+          {
+            "id": "325265",
+            "name": "Bürgerhaushalt",
+            "path": "buergerhaushalt",
+            "rank": "0"
+          },
+          {
+            "id": "325267",
+            "name": "Bürgerinformationssystem der Bezirksverordnetenversammlung",
+            "path": "buegerinformationssystem-bvv",
+            "rank": "0"
+          },
+          {
+            "id": "325269",
+            "name": "Interaktive Informationsdienste",
+            "path": "interaktive-informationsdienste",
+            "rank": "0"
+          },
+          {
+            "id": "325275",
+            "name": "Bürgerberatung, -ämter",
+            "path": "buergerberatung-aemter",
+            "rank": "0"
+          },
+          {
+            "id": "325277",
+            "name": "bürgeraktiv - das Engagementportal",
+            "path": "buergerschaftliches-engagement",
+            "rank": "0"
+          },
+          {
+            "id": "325279",
+            "name": "Verwaltungsgliederung, Organigramme",
+            "path": "verwaltungsgliederung-organigramme",
+            "rank": "0"
+          },
+          {
+            "id": "325281",
+            "name": "Senat/Senatsverwaltungen",
+            "path": "senatsverwaltungen",
+            "rank": "0"
+          },
+          {
+            "id": "325283",
+            "name": "Parteien im Abgeordnetenhaus",
+            "path": "parteien-abgeordnetenhaus",
+            "rank": "0"
+          },
+          {
+            "id": "325285",
+            "name": "Landesbeauftragte, Landeskommissionen",
+            "path": "landesbeauftragte-landeskommissionen",
+            "rank": "0"
+          },
+          {
+            "id": "325287",
+            "name": "Internationale Beziehungen",
+            "path": "internationale-beziehungen",
+            "rank": "0"
+          },
+          {
+            "id": "325289",
+            "name": "Europa",
+            "path": "europa",
+            "rank": "0"
+          },
+          {
+            "id": "325291",
+            "name": "Bundespolitik",
+            "path": "bundespolitik",
+            "rank": "0"
+          },
+          {
+            "id": "325293",
+            "name": "Bezirksverordnetenversammlungen",
+            "path": "bezirksverordnetenversammlungen",
+            "rank": "0"
+          },
+          {
+            "id": "325295",
+            "name": "Bezirksämter",
+            "path": "bezirksaemter",
+            "rank": "0"
+          },
+          {
+            "id": "325297",
+            "name": "Aktuelles aus der Politik",
+            "path": "aktuelles-politik",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325177",
+      "name": "Reisehinweise",
+      "path": "reisehinweise",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325097",
+      "name": "Schiedsstellen/Schiedsämter",
+      "path": "schiedsstellen-schiedsaemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325303",
+      "name": "Schulämter",
+      "path": "schulaemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325087",
+      "name": "Schuldnerberatung",
+      "path": "schuldnerberatung",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "324330",
+            "name": "Anerkennung von Schuldner- und Insolvenzberatungsstellen (\"geeignete Stelle\")"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325307",
+      "name": "Schule",
+      "path": "schule",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "324254",
+            "name": "Einschulungsuntersuchung"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "324805",
+      "name": "Schule, Ausbildung und Studium",
+      "path": "schule-ausbildung-studium",
+      "relation": {
+        "navi": "1",
+        "services": [],
+        "childs": [
+          {
+            "id": "325029",
+            "name": "Ausbildung",
+            "path": "ausbildung",
+            "rank": "0"
+          },
+          {
+            "id": "325031",
+            "name": "Studium",
+            "path": "studium",
+            "rank": "0"
+          },
+          {
+            "id": "325033",
+            "name": "Weiterbildung",
+            "path": "weiterbildung",
+            "rank": "0"
+          },
+          {
+            "id": "325305",
+            "name": "Ämter, Verwaltungen, Institutionen: Schule, Ausbildung und Studium",
+            "path": "aemter-schuleausbildungstudium",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325183",
+      "name": "Sehenswertes in den Bezirken",
+      "path": "sehenswertes-bezirke",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325281",
+      "name": "Senat/Senatsverwaltungen",
+      "path": "senatsverwaltungen",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324999",
+      "name": "Senioren",
+      "path": "senioren",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "324394",
+            "name": "Grundsicherung im Alter und bei Erwerbsminderung"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325077",
+            "name": "Grundsicherungsämter",
+            "path": "grundsicherungsaemter",
+            "rank": "0"
+          },
+          {
+            "id": "325131",
+            "name": "Pflege und Betreuung",
+            "path": "pflege-betreuung",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324819",
+      "name": "Sicherheit und Notlagen",
+      "path": "sicherheit-notlagen",
+      "relation": {
+        "navi": "1",
+        "services": [
+          {
+            "id": "324328",
+            "name": "Fundsachen suchen und abholen"
+          },
+          {
+            "id": "121543",
+            "name": "Fundsachen abgeben"
+          }
+        ],
+        "childs": [
+          {
+            "id": "324983",
+            "name": "Gewalt im Alltag",
+            "path": "gewalt-alltag",
+            "rank": "0"
+          },
+          {
+            "id": "325233",
+            "name": "Ämter, Verwaltungen, Institutionen: Sicherheit und Notlagen",
+            "path": "aemter-sicherheitnotlagen",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325179",
+      "name": "Sightseeing",
+      "path": "sightseeing",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325181",
+            "name": "Berlin - Ansichten",
+            "path": "berlin-annsichten",
+            "rank": "0"
+          },
+          {
+            "id": "325183",
+            "name": "Sehenswertes in den Bezirken",
+            "path": "sehenswertes-bezirke",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325075",
+      "name": "Sozialämter",
+      "path": "sozialaemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325141",
+      "name": "Soziales: Beratung, Hilfe",
+      "path": "soziales-hilfeberatung",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "324354",
+            "name": "Förderung von niedrigschwelligen Angeboten und Förderung ehrenamtlicher sowie Selbsthilfestrukturen"
+          },
+          {
+            "id": "325563",
+            "name": "Kriegsopferfürsorge"
+          },
+          {
+            "id": "325469",
+            "name": "Entschädigung für Opfer von Gewalttaten"
+          },
+          {
+            "id": "324987",
+            "name": "Unterhaltssicherung für Wehrdienstleistende und ihre Familienangehörigen"
+          },
+          {
+            "id": "325167",
+            "name": "Ausbildungsförderung bei Ausbildung im Ausland (Auslands-BAföG)"
+          },
+          {
+            "id": "326081",
+            "name": "Beurkundung eines Unterhaltsanspruches des Kindes bzw. der Unterhaltsverpflichtung"
+          },
+          {
+            "id": "326077",
+            "name": "Bestattung - Durchführung - Ordnungsbehördliche Bestattung"
+          },
+          {
+            "id": "326049",
+            "name": "Schwerbehinderung - Begleitende Hilfe im Arbeitsleben - Beantragung für Arbeitnehmerinnen und Arbeitnehmer"
+          },
+          {
+            "id": "325711",
+            "name": "Schwerbehinderung - Zustimmung zur Kündigung schwerbehinderter Menschen - Erteilung"
+          },
+          {
+            "id": "324484",
+            "name": "Eingliederungshilfe für behinderte Menschen"
+          },
+          {
+            "id": "324527",
+            "name": "Bestattungskosten"
+          },
+          {
+            "id": "324394",
+            "name": "Grundsicherung im Alter und bei Erwerbsminderung"
+          },
+          {
+            "id": "324583",
+            "name": "Ehrenamtlicher Dienst im sozialen Bereich"
+          },
+          {
+            "id": "324721",
+            "name": "Rechtliche Betreuung Volljähriger "
+          },
+          {
+            "id": "121829",
+            "name": "Hilfe zum Lebensunterhalt"
+          },
+          {
+            "id": "324353",
+            "name": "Anerkennung von niedrigschwelligen Betreuungsangeboten"
+          },
+          {
+            "id": "325143",
+            "name": "Schwerbehinderung - Änderungsmitteilung"
+          },
+          {
+            "id": "324330",
+            "name": "Anerkennung von Schuldner- und Insolvenzberatungsstellen (\"geeignete Stelle\")"
+          },
+          {
+            "id": "324350",
+            "name": "Bescheide zur Zustimmung zur Berechnung der betriebsnotwendigen Investitionsaufwendungen"
+          },
+          {
+            "id": "324352",
+            "name": "Vereinbarungen nach § 75 ff. SGB XII für Einrichtungen und Dienste für behinderte Menschen und Wohnungslose"
+          },
+          {
+            "id": "324336",
+            "name": "Anerkennung von Betreuungsvereinen"
+          },
+          {
+            "id": "325169",
+            "name": "Ausbildungsförderung bei beruflicher Aufstiegsfortbildung (Meister-BAföG)"
+          },
+          {
+            "id": "324555",
+            "name": "Leistungen nach dem Landespflegegeldgesetz (LPflGG)"
+          },
+          {
+            "id": "326047",
+            "name": "Schwerbehinderung - Begleitende Hilfe im Arbeitsleben - Beantragung für Arbeitgeberinnen und Arbeitgeber"
+          },
+          {
+            "id": "324985",
+            "name": "Ausbildungsförderung für Schülerinnen und Schüler (Schüler-BAföG)"
+          },
+          {
+            "id": "325339",
+            "name": "Schwerbehinderung - Wertmarke / Beiblatt (Verlust)"
+          },
+          {
+            "id": "325159",
+            "name": "Schwerbehinderung - Akteneinsicht"
+          },
+          {
+            "id": "324475",
+            "name": "Leistungen nach dem Asylbewerberleistungsgesetz"
+          },
+          {
+            "id": "324466",
+            "name": "Leistungen nach dem Bildungs- und Teilhabepaket"
+          },
+          {
+            "id": "324485",
+            "name": "Wohnungsnotfallhilfe"
+          },
+          {
+            "id": "326079",
+            "name": "Elterngeld"
+          },
+          {
+            "id": "326069",
+            "name": "Unterhaltsvorschuss"
+          },
+          {
+            "id": "324725",
+            "name": "Vorsorgevollmachten"
+          },
+          {
+            "id": "326121",
+            "name": "Hilfe zur Überwindung besonderer sozialer Schwierigkeiten"
+          },
+          {
+            "id": "325541",
+            "name": "Sozialversicherung - Auskunft"
+          },
+          {
+            "id": "324531",
+            "name": "Rundfunkbeitrag / Beitragspflicht, Befreiung vom Rundfunkbeitrag"
+          },
+          {
+            "id": "121742",
+            "name": "berlinpass beantragen"
+          },
+          {
+            "id": "325147",
+            "name": "berlinpass verlängern"
+          },
+          {
+            "id": "327028",
+            "name": "Schuldnerverzeichnis nach neuem Recht (Online) - Selbstauskunft"
+          },
+          {
+            "id": "326854",
+            "name": "Schuldnerverzeichnis nach neuem Recht (Online) - Auskunft"
+          },
+          {
+            "id": "327026",
+            "name": "Insolvenzverfahren - Durchführung - Verbraucherinsolvenz"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325135",
+      "name": "Sozialhilfe",
+      "path": "sozialhilfe",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "324527",
+            "name": "Bestattungskosten"
+          },
+          {
+            "id": "324394",
+            "name": "Grundsicherung im Alter und bei Erwerbsminderung"
+          },
+          {
+            "id": "121829",
+            "name": "Hilfe zum Lebensunterhalt"
+          },
+          {
+            "id": "324571",
+            "name": "Hilfen zur Gesundheit"
+          },
+          {
+            "id": "324474",
+            "name": "Hilfe zur Pflege"
+          },
+          {
+            "id": "324475",
+            "name": "Leistungen nach dem Asylbewerberleistungsgesetz"
+          },
+          {
+            "id": "324485",
+            "name": "Wohnungsnotfallhilfe"
+          },
+          {
+            "id": "326121",
+            "name": "Hilfe zur Überwindung besonderer sozialer Schwierigkeiten"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325025",
+      "name": "Sozialversicherung",
+      "path": "sozialversicherung",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "326007",
+            "name": "Sozialversicherung - Auskunft - Kontenklärung für die gesetzliche Rentenversicherung"
+          },
+          {
+            "id": "326003",
+            "name": "Sozialversicherung - Auskunft - Rentenantrag stellen"
+          },
+          {
+            "id": "326015",
+            "name": "Sozialversicherung - Auskunft - Beglaubigung in Sozialversicherungsangelegenheiten"
+          },
+          {
+            "id": "325541",
+            "name": "Sozialversicherung - Auskunft"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325163",
+      "name": "Sport",
+      "path": "sport",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325157",
+            "name": "Sportämter",
+            "path": "sportaemter",
+            "rank": "0"
+          },
+          {
+            "id": "325165",
+            "name": "Sportvereine/Sportverbände",
+            "path": "sportvereine-sportverbaende",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325157",
+      "name": "Sportämter",
+      "path": "sportaemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325165",
+      "name": "Sportvereine/Sportverbände",
+      "path": "sportvereine-sportverbaende",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325115",
+      "name": "Staatliche Bühnen",
+      "path": "staatliche-buehnen",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325113",
+      "name": "Stadtbibliotheken",
+      "path": "stadtbibliotheken",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325249",
+      "name": "Stadtgrün",
+      "path": "stadtgruen",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324847",
+      "name": "Stadtplanung/Stadtentwicklung",
+      "path": "stadtplanung-stadtentwicklung",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "324927",
+            "name": "Stadtplanungsämter",
+            "path": "stadtplanungsaemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324927",
+      "name": "Stadtplanungsämter",
+      "path": "stadtplanungsaemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325273",
+      "name": "Standesamts-Urkunden-Onlinebestellung",
+      "path": "standesamts-urkundenonlinebestellung",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325315",
+      "name": "Standesamtsangelegenheiten",
+      "path": "standesamtsangelegenheiten",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "324599",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Ehe - Wiederannahme"
+          },
+          {
+            "id": "324553",
+            "name": "Eheschließung - Anmeldung für Spätaussiedler"
+          },
+          {
+            "id": "324551",
+            "name": "Eheschließung - Beratung zur Anmeldung für Spätaussiedler  "
+          },
+          {
+            "id": "318959",
+            "name": "Geburt im Ausland - Nachbeurkundung"
+          },
+          {
+            "id": "318958",
+            "name": "Geburt im Ausland - Nachbeurkundung - Beratung"
+          },
+          {
+            "id": "324693",
+            "name": "Lebenspartnerschaft - Anmeldung - mit Auslandsbeteiligung"
+          },
+          {
+            "id": "324729",
+            "name": "Lebenspartnerschaft - Anmeldung - ohne Auslandsbeteiligung"
+          },
+          {
+            "id": "324691",
+            "name": "Lebenspartnerschaft - Anmeldung - mit Auslandsbeteiligung- Auskunft"
+          },
+          {
+            "id": "324665",
+            "name": "Lebenspartnerschaft - Begründung von Lebenspartnerschaften"
+          },
+          {
+            "id": "324953",
+            "name": "Lebenspartnerschaft - Beratung - zur Anmeldung der Lebenspartnerschaft für Spätaussiedler"
+          },
+          {
+            "id": "324957",
+            "name": "Lebenspartnerschaft - Nachbeurkundung einer Begründung einer Lebenspartnerschaft im Ausland"
+          },
+          {
+            "id": "324959",
+            "name": "Lebenspartnerschaft - Nachbeurkundung einer Lebenspartnerschaft im Ausland - Beratung"
+          },
+          {
+            "id": "324591",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Angleichung"
+          },
+          {
+            "id": "324589",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Ehe - Ehename"
+          },
+          {
+            "id": "324597",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Ehe - Hinzufügung eines Namens zum Ehenamen"
+          },
+          {
+            "id": "324601",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Ehe - Rechtswahlerklärung"
+          },
+          {
+            "id": "324595",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Ehe - Widerruf der Hinzufügung eines Namens zum Ehenamen"
+          },
+          {
+            "id": "324621",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Kind - Anschlusserklärung"
+          },
+          {
+            "id": "324619",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Kind - Einbenennung"
+          },
+          {
+            "id": "324623",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Kind - Einwilligungserklärung"
+          },
+          {
+            "id": "324617",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Kind - Namenserteilung durch alleinsorgeberechtigten Elternteil"
+          },
+          {
+            "id": "324615",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Kind - Neubestimmung des Geburtsnamens"
+          },
+          {
+            "id": "324613",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Kind - Rechtswahl"
+          },
+          {
+            "id": "324607",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Lebenspartnerschaft - Hinzufügung eines Namens zum Lebenspartnerschaftsnamen"
+          },
+          {
+            "id": "324605",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Lebenspartnerschaft - Lebenspartnerschaftsname"
+          },
+          {
+            "id": "324603",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Lebenspartnerschaft - Rechtswahlerklärung"
+          },
+          {
+            "id": "324609",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Lebenspartnerschaft - Widerruf der Hinzufügung eines Namens zum Lebenspartnerschaftsnamen"
+          },
+          {
+            "id": "324611",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Lebenspartnerschaftsname - Wiederannahme des vorigen Familiennamens oder des Geburtsnamens"
+          },
+          {
+            "id": "324593",
+            "name": "Namensrechtliche Erklärungen - Erklärung - Namenserklärung für Spätaussiedler und Vertriebene"
+          },
+          {
+            "id": "318989",
+            "name": "Sterbefall im Ausland - Nachbeurkundung"
+          },
+          {
+            "id": "318988",
+            "name": "Sterbefall im Ausland - Nachbeurkundung - Beratung"
+          },
+          {
+            "id": "318987",
+            "name": "Sterbeurkunde - Erstbeurkundung (Anzeige)"
+          },
+          {
+            "id": "318969",
+            "name": "Urkunden - Ausstellung - Eheurkunde"
+          },
+          {
+            "id": "325641",
+            "name": "Namenserklärung - neugeborene Kinder"
+          },
+          {
+            "id": "318962",
+            "name": "Eheschließung - Beratung zur Anmeldung mit Auslandsbeteiligung"
+          },
+          {
+            "id": "318966",
+            "name": "Eheschließung - Beratung zur Nachbeurkundung einer Eheschließung im Ausland"
+          },
+          {
+            "id": "324955",
+            "name": "Lebenspartnerschaft - Ausstellung von Personenstandsurkunden (für bereits beurkundete Personenstandsfälle) - Lebenspartnerschaftsregister"
+          },
+          {
+            "id": "318992",
+            "name": "Mutterschaftsanerkennung"
+          },
+          {
+            "id": "318967",
+            "name": "Eheschließung - Nachbeurkundung einer Eheschließung im Ausland"
+          },
+          {
+            "id": "318961",
+            "name": "Eheschließung - Anmeldung - ohne Auslandsbeteiligung - Auskunft, Beratung und Anmeldung"
+          },
+          {
+            "id": "318963",
+            "name": "Eheschließung - Anmeldung - mit Auslandsbeteiligung"
+          },
+          {
+            "id": "318968",
+            "name": "Eheschließung - Durchführung"
+          },
+          {
+            "id": "318994",
+            "name": "Ehefähigkeitszeugnis - Ausstellung"
+          },
+          {
+            "id": "318993",
+            "name": "Ehefähigkeitszeugnis -  Beratung zum Antrag"
+          },
+          {
+            "id": "326195",
+            "name": "Ehefähigkeitszeugnis - Ausstellung - ohne jemals Inlandswohnsitz"
+          },
+          {
+            "id": "326199",
+            "name": "Lebenspartnerschaft - Erstbeurkundung / Erstregistrierung einer Begründung einer Lebenspartnerschaft im Ausland - ohne Inlandswohnsitz"
+          },
+          {
+            "id": "326189",
+            "name": "Negativbescheinigung über nicht vorhandene Registereinträge"
+          },
+          {
+            "id": "326197",
+            "name": "Eheschließung - Erstbeurkundung / Erstregistrierung einer Eheschließung im Ausland - ohne Inlandswohnsitz"
+          },
+          {
+            "id": "326165",
+            "name": "Sterbefall im Ausland - Erstbeurkundung / Erstregistrierung - ohne Inlandswohnsitz"
+          },
+          {
+            "id": "326185",
+            "name": "Urkunden - Ausstellung - Lebenspartnerschaftsurkunde  bei Lebenspartnerschaft im Ausland"
+          },
+          {
+            "id": "326179",
+            "name": "Sterbefall ehemaliger deutscher Wehrmachtsangehöriger - Erstbeurkundung / Erstregistrierung - ohne Inlandswohnsitz"
+          },
+          {
+            "id": "326183",
+            "name": "Urkunden - Ausstellung - Eheurkunde bei Eheschließung im Ausland oder in einem ehemaligen deutschen Gebiet "
+          },
+          {
+            "id": "326181",
+            "name": "Urkunden - Ausstellung - Geburtsurkunde bei Geburt im Ausland oder in einem ehemaligen deutschen Gebiet -  "
+          },
+          {
+            "id": "326187",
+            "name": "Urkunden - Ausstellung - Sterbeurkunde bei Sterbefall im Ausland und auf deutschen Seeschiffen"
+          },
+          {
+            "id": "326177",
+            "name": "Sterbefall auf deutschen Seeschiffen - Erstbeurkundung / Erstregistrierung"
+          },
+          {
+            "id": "326191",
+            "name": "Bescheinigung - Ausstellung - Bescheinigung über Namensführung bei fehlendem inländischen Personenstandseintrag"
+          },
+          {
+            "id": "326193",
+            "name": "Geburt auf deutschen Seeschiffen - Erstbeurkundung / Erstregistrierung"
+          },
+          {
+            "id": "326207",
+            "name": "Geburt im Ausland - Erstbeurkundung / Erstregistrierung - ohne Inlandswohnsitz"
+          },
+          {
+            "id": "326129",
+            "name": "Todeserklärungen - Aufbewahrung - Erteilung beglaubigter Abschriften"
+          },
+          {
+            "id": "324657",
+            "name": "Lebenspartnerschaft ohne Auslandsbeteiligung- Auskunft, Beratung, Anmeldung"
+          },
+          {
+            "id": "318991",
+            "name": "Vaterschaftsanerkennung"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "324823",
+      "name": "Steuern, Finanzen und Recht",
+      "path": "steuern-finanzen-recht",
+      "relation": {
+        "navi": "1",
+        "services": [
+          {
+            "id": "325323",
+            "name": "Grunderwerbsteuer - Festsetzung"
+          },
+          {
+            "id": "325325",
+            "name": "Entlastungsbetrag für Alleinerziehende"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325079",
+            "name": "Ämter, Verwaltungen, Institutionen: Steuern, Finanzen, Recht",
+            "path": "aemter-steuernfinanzenrecht",
+            "rank": "0"
+          },
+          {
+            "id": "325081",
+            "name": "Haushalt/Finanzpolitik",
+            "path": "haushalt-finanzpolitik",
+            "rank": "0"
+          },
+          {
+            "id": "325083",
+            "name": "Kreditinstitute",
+            "path": "kreditinstitute",
+            "rank": "0"
+          },
+          {
+            "id": "325085",
+            "name": "Landesvermögen",
+            "path": "landesvermoegen",
+            "rank": "0"
+          },
+          {
+            "id": "325087",
+            "name": "Schuldnerberatung",
+            "path": "schuldnerberatung",
+            "rank": "0"
+          },
+          {
+            "id": "325089",
+            "name": "Steuern/Steuerhilfen",
+            "path": "steuern-steuerhilfen",
+            "rank": "0"
+          },
+          {
+            "id": "325091",
+            "name": "Zuwendungen",
+            "path": "zuwendungen",
+            "rank": "0"
+          },
+          {
+            "id": "325093",
+            "name": "Gerichte/Schiedsstellen",
+            "path": "gerichte-schiedsstellen",
+            "rank": "0"
+          },
+          {
+            "id": "325237",
+            "name": "Justizvollzug",
+            "path": "justizvollzug",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325089",
+      "name": "Steuern/Steuerhilfen",
+      "path": "steuern-steuerhilfen",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "324727",
+            "name": "Lohnsteuerhilfeverein - Anerkennung"
+          },
+          {
+            "id": "121859",
+            "name": "Zweitwohnungsteuer - Festsetzung"
+          },
+          {
+            "id": "325707",
+            "name": "Erbschaftsteuer - Festsetzung"
+          },
+          {
+            "id": "325405",
+            "name": "Steuerliche Abmeldung eines Unternehmens"
+          },
+          {
+            "id": "325661",
+            "name": "Arbeitnehmersparzulage - Gewährung"
+          },
+          {
+            "id": "325411",
+            "name": "Steueransprüche"
+          },
+          {
+            "id": "325413",
+            "name": "Steueransprüche - Stundung"
+          },
+          {
+            "id": "325823",
+            "name": "Steuerfreibeträge - Eintragung - Übertragung des Kinderfreibetrags"
+          },
+          {
+            "id": "325407",
+            "name": "Grundsteuer - Festsetzung"
+          },
+          {
+            "id": "325323",
+            "name": "Grunderwerbsteuer - Festsetzung"
+          },
+          {
+            "id": "325851",
+            "name": "Umsatzsteuer - Kleinunternehmer"
+          },
+          {
+            "id": "324713",
+            "name": "Bescheinigung in Steuersachen - Ausstellung (ehemals steuerliche Unbedenklichkeitsbescheinigung)"
+          },
+          {
+            "id": "326119",
+            "name": "Besteuerungsverfahren - verbindliche Auskunft"
+          },
+          {
+            "id": "326135",
+            "name": "Steueransprüche - Zahlung"
+          },
+          {
+            "id": "326169",
+            "name": "Steueransprüche - Erstattung"
+          },
+          {
+            "id": "326201",
+            "name": "Kirchensteuer - Auskunft - Einbehalt von Kirchensteuer auf Kapitalerträge"
+          },
+          {
+            "id": "325831",
+            "name": "Elektronische Lohnsteuerabzugsmerkmale - Einsicht gewähren"
+          },
+          {
+            "id": "324161",
+            "name": "Hundesteuer - Hund abmelden"
+          },
+          {
+            "id": "326205",
+            "name": "Umsatzsteuer - Voranmeldung - Allgemeines"
+          },
+          {
+            "id": "325409",
+            "name": "Gründungen - steuerliche Anmeldung von Unternehmen, Gesellschaften, Vereinen, Gewerben, Selbständigkeit oder land- und forstwirtschaftlicher Tätigkeit"
+          },
+          {
+            "id": "325821",
+            "name": "Freibeträge für Kinder ab 18 Jahren (Besonderheiten)"
+          },
+          {
+            "id": "325333",
+            "name": "Gewerbesteuer - Festsetzung"
+          },
+          {
+            "id": "325335",
+            "name": "Körperschaftsteuer - Festsetzung"
+          },
+          {
+            "id": "324715",
+            "name": "Umsatzsteuer - Voranmeldungen, Jahreserklärungen"
+          },
+          {
+            "id": "325685",
+            "name": "Einkommensteuer - Festsetzung - Antragsveranlagung"
+          },
+          {
+            "id": "325569",
+            "name": "Elektronische Lohnsteuerabzugsmerkmale - Allgemeines"
+          },
+          {
+            "id": "326287",
+            "name": "Lohnsteuer-Anmeldung"
+          },
+          {
+            "id": "325663",
+            "name": "Wohnungsbauprämie - Festsetzung"
+          },
+          {
+            "id": "325687",
+            "name": "Einkommensteuer - Festsetzung - Pflichtveranlagung"
+          },
+          {
+            "id": "325827",
+            "name": "Elektronische Lohnsteuerabzugsmerkmale - Änderung"
+          },
+          {
+            "id": "325329",
+            "name": "Vergnügungsteuer - Festsetzung"
+          },
+          {
+            "id": "326175",
+            "name": "Kirchensteuer - Festsetzung"
+          },
+          {
+            "id": "121494",
+            "name": "Hund anmelden"
+          },
+          {
+            "id": "325035",
+            "name": "Kinderfreibeträge - Allgemeines"
+          },
+          {
+            "id": "325325",
+            "name": "Entlastungsbetrag für Alleinerziehende"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325121",
+      "name": "Stiftungen und Museen öffentlichen Rechts (Kultur)",
+      "path": "stiftungen-museenoeffentlichenrechts",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325123",
+      "name": "Stipendien und Kulturförderung",
+      "path": "stipendien-kulturfoerderung",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324929",
+      "name": "Straßen- und Grünflächenamt - Tiefbau",
+      "path": "strassen-gruenflaechen-tiefbauaemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325031",
+      "name": "Studium",
+      "path": "studium",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "324313",
+            "name": "Bildungsabschlüsse aus anderen Bundesländern - Anerkennung"
+          },
+          {
+            "id": "324360",
+            "name": "akademische Grade, Titel und Bezeichnungen - Anerkennung"
+          },
+          {
+            "id": "305244",
+            "name": "Aufenthaltserlaubnis zum Studium"
+          },
+          {
+            "id": "305156",
+            "name": "Aufenthaltserlaubnis zur Studienvorbereitung"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325073",
+            "name": "BAföG-Ämter",
+            "path": "bafoeg-aemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324845",
+      "name": "Tiefbau",
+      "path": "tiefbau",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "326293",
+            "name": "Straßenrechtliche Sondernutzung Apothekenmast"
+          },
+          {
+            "id": "325689",
+            "name": "Straßenrechtliche Sondernutzung Baugrubenverbau, Bohr- und Spundwand"
+          },
+          {
+            "id": "326297",
+            "name": "Straßenrechtliche Sondernutzung Beleuchtung für Gebäude im Straßenland"
+          },
+          {
+            "id": "325713",
+            "name": "Straßenrechtliche Sondernutzung Erker, Balkon, Werbeschild an Gebäuden"
+          },
+          {
+            "id": "325715",
+            "name": "Straßenrechtliche Sondernutzung Filmaufnahmen"
+          },
+          {
+            "id": "326073",
+            "name": "Straßenrechtliche Sondernutzung Großflächenwerbetafel"
+          },
+          {
+            "id": "326299",
+            "name": "Straßenrechtliche Sondernutzung in gesperrten Bereichen von Demonstrationen"
+          },
+          {
+            "id": "325709",
+            "name": "Straßenrechtliche Sondernutzung Kellerlicht- und Biereinwurfschacht"
+          },
+          {
+            "id": "326291",
+            "name": "Straßenrechtliche Sondernutzung Kunstobjekt, Stele"
+          },
+          {
+            "id": "326067",
+            "name": "Straßenrechtliche Sondernutzung Lichtmastwerbung (Draussenwerber)"
+          },
+          {
+            "id": "326295",
+            "name": "Straßenrechtliche Sondernutzung Uhrenkandelaber"
+          },
+          {
+            "id": "326063",
+            "name": "Straßenrechtliche Sondernutzung Wahlplakate (DIN A 0)"
+          },
+          {
+            "id": "326071",
+            "name": "Straßenrechtliche Sondernutzung Zirkuswerbung"
+          },
+          {
+            "id": "325653",
+            "name": "Straßenrechtliche Sondernutzung Baugerüst"
+          },
+          {
+            "id": "325655",
+            "name": "Straßenrechtliche Sondernutzung Kran, Schrägaufzug, Lift, Hebebühne"
+          },
+          {
+            "id": "325651",
+            "name": "Straßenrechtliche Sondernutzung Baustelleneinrichtung"
+          },
+          {
+            "id": "325983",
+            "name": "Straßenrechtliche Sondernutzung Schrottcontainer"
+          },
+          {
+            "id": "324501",
+            "name": "Gehwegüberfahrten - provisorisch"
+          },
+          {
+            "id": "324499",
+            "name": "Gehwegüberfahrten - Herstellung und Änderung durch den Anlieger"
+          },
+          {
+            "id": "324489",
+            "name": "Gehwegüberfahrten - Herstellung und Änderung durch das Straßen- und Grünflächenamt"
+          }
+        ],
+        "childs": [
+          {
+            "id": "324929",
+            "name": "Straßen- und Grünflächenamt - Tiefbau",
+            "path": "strassen-gruenflaechen-tiefbauaemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325255",
+      "name": "Tiere und Pflanzen",
+      "path": "tiere-pflanzen",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "325841",
+            "name": "Hundehaltung - Prüfung - Hunderasse"
+          },
+          {
+            "id": "326275",
+            "name": "Gesundheitsbescheinigung für Tiere"
+          },
+          {
+            "id": "326261",
+            "name": "Hundehaltung - Ummeldung - Gefährlicher Hund"
+          },
+          {
+            "id": "326263",
+            "name": "Hundehaltung - Anmeldung - Gefährlicher Hund"
+          },
+          {
+            "id": "326592",
+            "name": "Artenschutz: EG-Vermarktungsgenehmigung"
+          },
+          {
+            "id": "324355",
+            "name": "Fischereischein - Erteilung oder Verlängerung "
+          },
+          {
+            "id": "326277",
+            "name": "Erlaubnis zur Zucht, Haltung und zum Handel mit Tieren - Erteilung"
+          },
+          {
+            "id": "326245",
+            "name": "Fundtiere"
+          },
+          {
+            "id": "326243",
+            "name": "Angriffe durch Tiere - Verfolgung - Hundebisse"
+          },
+          {
+            "id": "326257",
+            "name": "Hundehaltung - Abmeldung - Gefährlicher Hund"
+          },
+          {
+            "id": "326940",
+            "name": "Artenschutz - Vorlagebescheinigung zur Beantragung einer Ausfuhrgenehmigung für geschützte Tier- und Pflanzenarten"
+          },
+          {
+            "id": "326964",
+            "name": "Pflanzenschutzmittel - Anzeige Beratung und Anwendung"
+          },
+          {
+            "id": "326966",
+            "name": "Pflanzenschutzmittel - Anzeige zum Handel"
+          },
+          {
+            "id": "326914",
+            "name": "Umsiedelung oder Zerstörung von Nestern geschützter Insektenarten"
+          },
+          {
+            "id": "121494",
+            "name": "Hund anmelden"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325193",
+            "name": "Veterinär- und Lebensmittelaufsichtsämter",
+            "path": "veterinaer-lebensmittelaufsichtsaemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325185",
+      "name": "Tipps, Infos für Berlinbesucher",
+      "path": "tipps-infosberlinbesucher",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": [
+          {
+            "id": "325187",
+            "name": "Tourismusinformationen der Bezirke",
+            "path": "tourismusinformationen-bezirke",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324825",
+      "name": "Tourismus und Veranstaltungen",
+      "path": "tourismus-veranstaltungen",
+      "relation": {
+        "navi": "1",
+        "services": [
+          {
+            "id": "120691",
+            "name": "Verpflichtungserklärung für kurzfristige Aufenthalte (Besuchsaufenthalte und Geschäftsreisen)"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325125",
+            "name": "Veranstaltungen",
+            "path": "veranstaltungen",
+            "rank": "0"
+          },
+          {
+            "id": "325177",
+            "name": "Reisehinweise",
+            "path": "reisehinweise",
+            "rank": "0"
+          },
+          {
+            "id": "325179",
+            "name": "Sightseeing",
+            "path": "sightseeing",
+            "rank": "0"
+          },
+          {
+            "id": "325185",
+            "name": "Tipps, Infos für Berlinbesucher",
+            "path": "tipps-infosberlinbesucher",
+            "rank": "0"
+          },
+          {
+            "id": "325189",
+            "name": "Ämter, Verwaltungen, Institutionen: Tourismus",
+            "path": "aemter-tourismus",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325187",
+      "name": "Tourismusinformationen der Bezirke",
+      "path": "tourismusinformationen-bezirke",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324837",
+      "name": "Umwelt, Natur und Tiere",
+      "path": "umwelt-natur-tiere",
+      "relation": {
+        "navi": "1",
+        "services": [
+          {
+            "id": "325893",
+            "name": "Gaststättenlärm"
+          },
+          {
+            "id": "324161",
+            "name": "Hundesteuer - Hund abmelden"
+          },
+          {
+            "id": "326592",
+            "name": "Artenschutz: EG-Vermarktungsgenehmigung"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325239",
+            "name": "Ämter, Verwaltungen, Institutionen: Umwelt, Natur und Tiere",
+            "path": "aemter-umweltnaturtiere",
+            "rank": "0"
+          },
+          {
+            "id": "325241",
+            "name": "Abfall, Entsorgung",
+            "path": "abfall-entsorgung",
+            "rank": "0"
+          },
+          {
+            "id": "325245",
+            "name": "Energie",
+            "path": "energie",
+            "rank": "0"
+          },
+          {
+            "id": "325247",
+            "name": "Landschaftsplanung",
+            "path": "landschaftsplanung",
+            "rank": "0"
+          },
+          {
+            "id": "325249",
+            "name": "Stadtgrün",
+            "path": "stadtgruen",
+            "rank": "0"
+          },
+          {
+            "id": "325251",
+            "name": "Luft",
+            "path": "luft",
+            "rank": "0"
+          },
+          {
+            "id": "325253",
+            "name": "Wasser",
+            "path": "wasser",
+            "rank": "0"
+          },
+          {
+            "id": "325255",
+            "name": "Tiere und Pflanzen",
+            "path": "tiere-pflanzen",
+            "rank": "0"
+          },
+          {
+            "id": "325259",
+            "name": "Umwelt/Klima - Infos",
+            "path": "umweltklima-infos",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325243",
+      "name": "Umwelt- und Naturschutzämter",
+      "path": "umwelt-naturschutzaemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325259",
+      "name": "Umwelt/Klima - Infos",
+      "path": "umweltklima-infos",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "325893",
+            "name": "Gaststättenlärm"
+          },
+          {
+            "id": "325891",
+            "name": "Lärmschutz - Zulassung von Ausnahmen nach § 10 LImSchG / Genehmigungen nach § 11 LImSchG"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325125",
+      "name": "Veranstaltungen",
+      "path": "veranstaltungen",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "324911",
+            "name": "Veranstaltung Erlaubnis"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325225",
+      "name": "Veranstaltungen, Messen, Märkte, Marketing",
+      "path": "veranstaltungen-messenmmaerktemarketing",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325195",
+      "name": "Verbraucherinfos, -beratung",
+      "path": "verbraucherinfos-beratung",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "326916",
+            "name": "Lebensmittelsicherheit - Prüfung"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "324827",
+      "name": "Verbraucherschutz",
+      "path": "verbraucherschutz",
+      "relation": {
+        "navi": "1",
+        "services": [
+          {
+            "id": "326916",
+            "name": "Lebensmittelsicherheit - Prüfung"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325087",
+            "name": "Schuldnerberatung",
+            "path": "schuldnerberatung",
+            "rank": "0"
+          },
+          {
+            "id": "325191",
+            "name": "Ämter, Verwaltungen, Institutionen: Verbraucherschutz",
+            "path": "aemter-verbraucherschutz",
+            "rank": "0"
+          },
+          {
+            "id": "325195",
+            "name": "Verbraucherinfos, -beratung",
+            "path": "verbraucherinfos-beratung",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324895",
+      "name": "Verkehrsinfos - Bus/Bahn/Flug",
+      "path": "verkehrsinfos",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324897",
+      "name": "Verkehrsplanung/steuerung",
+      "path": "verkehrsplanung",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "324833",
+      "name": "Vermessung",
+      "path": "vermessung",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "324344",
+            "name": "Bebauungspläne (festgesetzt), Vervielfältigungen"
+          },
+          {
+            "id": "324319",
+            "name": "Straßenverzeichnis, Einsicht gewähren"
+          },
+          {
+            "id": "324342",
+            "name": "Geobasisdaten, Abgabe Karte 1:5000"
+          },
+          {
+            "id": "324511",
+            "name": "Kartenverkauf (Landeskartenwerke, Sonderkarten, Bezirkskarten, historische Karten)"
+          },
+          {
+            "id": "324707",
+            "name": "Identitätsbescheinigung"
+          },
+          {
+            "id": "325621",
+            "name": "Flurstück, Verschmelzung"
+          },
+          {
+            "id": "324579",
+            "name": "Grenzbescheinigung"
+          },
+          {
+            "id": "324699",
+            "name": "Entfernungsbescheinigung"
+          },
+          {
+            "id": "324337",
+            "name": "Nivellementspunkte, Auskunft"
+          },
+          {
+            "id": "324701",
+            "name": "Grundstücksnummerbescheinigung"
+          },
+          {
+            "id": "324338",
+            "name": "Gebäudevermessung, Aktualisierungspflicht"
+          },
+          {
+            "id": "324340",
+            "name": "Bildung neuer Flurstücke, Grenzherstellung"
+          },
+          {
+            "id": "324703",
+            "name": "Vereinigungs- und Teilungsanträge (Grundstücke), Beglaubigung"
+          },
+          {
+            "id": "324318",
+            "name": "Straßenverzeichnis, Auskunft"
+          },
+          {
+            "id": "324341",
+            "name": "Liegenschaftskataster, Auskunft"
+          },
+          {
+            "id": "324320",
+            "name": "Grundstücksnummerierung, Durchführung"
+          },
+          {
+            "id": "324339",
+            "name": "Unschädlichkeitszeugnis bei Grundstückseigentum"
+          },
+          {
+            "id": "325629",
+            "name": "Lage- und Höhenbescheinigung"
+          },
+          {
+            "id": "324789",
+            "name": "Begünstigungsbescheinigung (Bescheinigung nach § 1025 BGB)"
+          },
+          {
+            "id": "324343",
+            "name": "Bebauungspläne (festgesetzt) und Fluchtlinienpläne, Auskünfte"
+          },
+          {
+            "id": "325623",
+            "name": "Bodenrichtwert, Auskunft"
+          }
+        ],
+        "childs": [
+          {
+            "id": "324931",
+            "name": "Vermessungsämter / Kataster",
+            "path": "vermessungsaemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324931",
+      "name": "Vermessungsämter / Kataster",
+      "path": "vermessungsaemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325279",
+      "name": "Verwaltungsgliederung, Organigramme",
+      "path": "verwaltungsgliederung-organigramme",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325193",
+      "name": "Veterinär- und Lebensmittelaufsichtsämter",
+      "path": "veterinaer-lebensmittelaufsichtsaemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325253",
+      "name": "Wasser",
+      "path": "wasser",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325033",
+      "name": "Weiterbildung",
+      "path": "weiterbildung",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "325167",
+            "name": "Ausbildungsförderung bei Ausbildung im Ausland (Auslands-BAföG)"
+          },
+          {
+            "id": "325169",
+            "name": "Ausbildungsförderung bei beruflicher Aufstiegsfortbildung (Meister-BAföG)"
+          },
+          {
+            "id": "324141",
+            "name": "Feststellung der fachlichen Ausbildereignung nach dem Berufsbildungsgesetz (BBiG)"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325073",
+            "name": "BAföG-Ämter",
+            "path": "bafoeg-aemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324829",
+      "name": "Wirtschaft",
+      "path": "wirtschaft",
+      "relation": {
+        "navi": "1",
+        "services": [
+          {
+            "id": "141579",
+            "name": "Eintragung in das Verzeichnis handwerksähnliche Gewerbe (HWK)"
+          },
+          {
+            "id": "141577",
+            "name": "Eintragung in das Verzeichnis zulassungsfreier Handwerke (HWK)"
+          },
+          {
+            "id": "141571",
+            "name": "Eintrag in die Handwerksrolle (HWK)"
+          }
+        ],
+        "childs": [
+          {
+            "id": "324801",
+            "name": "Arbeit, Beruf und Soziales",
+            "path": "arbeit-beruf-soziales",
+            "rank": "1"
+          },
+          {
+            "id": "324823",
+            "name": "Steuern, Finanzen und Recht",
+            "path": "steuern-finanzen-recht",
+            "rank": "25"
+          },
+          {
+            "id": "325211",
+            "name": "Ämter, Verwaltungen, Institutionen: Wirtschaft",
+            "path": "aemter-wirtschaft",
+            "rank": "0"
+          },
+          {
+            "id": "325213",
+            "name": "Ausschreibungen",
+            "path": "ausschreibungen",
+            "rank": "0"
+          },
+          {
+            "id": "325215",
+            "name": "Existenzgründung/Gewerbe",
+            "path": "existenzgruendung-gewerbe",
+            "rank": "0"
+          },
+          {
+            "id": "325225",
+            "name": "Veranstaltungen, Messen, Märkte, Marketing",
+            "path": "veranstaltungen-messenmmaerktemarketing",
+            "rank": "0"
+          },
+          {
+            "id": "325227",
+            "name": "Wirtschaftsdaten, -meldungen, -statistiken",
+            "path": "wirtschaftsdaten-meldungenstatistiken",
+            "rank": "0"
+          },
+          {
+            "id": "325229",
+            "name": "Wirtschaftsförderung, Beratung, Finanzen",
+            "path": "wirtschaftsfoerderung-beratungfinanzen",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325069",
+      "name": "Wirtschaftsämter",
+      "path": "wirtschaftsaemter",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325227",
+      "name": "Wirtschaftsdaten, -meldungen, -statistiken",
+      "path": "wirtschaftsdaten-meldungenstatistiken",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325071",
+      "name": "Wirtschaftsförderung der Bezirke",
+      "path": "wirtschaftsfoerderung-bezirke",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325229",
+      "name": "Wirtschaftsförderung, Beratung, Finanzen",
+      "path": "wirtschaftsfoerderung-beratungfinanzen",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "141571",
+            "name": "Eintrag in die Handwerksrolle (HWK)"
+          }
+        ],
+        "childs": [
+          {
+            "id": "325069",
+            "name": "Wirtschaftsämter",
+            "path": "wirtschaftsaemter",
+            "rank": "0"
+          },
+          {
+            "id": "325071",
+            "name": "Wirtschaftsförderung der Bezirke",
+            "path": "wirtschaftsfoerderung-bezirke",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "325309",
+      "name": "Wissenschaft und Forschung",
+      "path": "wissenschaft-forschung",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "324360",
+            "name": "akademische Grade, Titel und Bezeichnungen - Anerkennung"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "324831",
+      "name": "Wohnen und Bauen",
+      "path": "wohnen-bauen",
+      "relation": {
+        "navi": "1",
+        "services": [
+          {
+            "id": "326824",
+            "name": "Erstellung IBB-Bescheinigung"
+          }
+        ],
+        "childs": [
+          {
+            "id": "324833",
+            "name": "Vermessung",
+            "path": "vermessung",
+            "rank": "0"
+          },
+          {
+            "id": "324841",
+            "name": "Bauen/Immobilien",
+            "path": "bauen-immobilien",
+            "rank": "0"
+          },
+          {
+            "id": "324843",
+            "name": "Wohnen/Mieten",
+            "path": "wohnen-mieten",
+            "rank": "0"
+          },
+          {
+            "id": "324845",
+            "name": "Tiefbau",
+            "path": "tiefbau",
+            "rank": "0"
+          },
+          {
+            "id": "324847",
+            "name": "Stadtplanung/Stadtentwicklung",
+            "path": "stadtplanung-stadtentwicklung",
+            "rank": "0"
+          },
+          {
+            "id": "324849",
+            "name": "Geodaten/Karten",
+            "path": "geodaten-karten",
+            "rank": "0"
+          },
+          {
+            "id": "324851",
+            "name": "Denkmalschutz",
+            "path": "denkmalschutz",
+            "rank": "0"
+          },
+          {
+            "id": "324853",
+            "name": "Ämter, Verwaltungen, Institutionen: Wohnen, Bauen",
+            "path": "aemter-wohnenbauen",
+            "rank": "0"
+          },
+          {
+            "id": "324877",
+            "name": "Bereich Bauen: Gesetze/Verordnungen",
+            "path": "bauen-gesetzeverordnungen",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324843",
+      "name": "Wohnen/Mieten",
+      "path": "wohnen-mieten",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "326714",
+            "name": "Winterdienst auf Gehwegen - Allgemeine Auskunft"
+          },
+          {
+            "id": "326824",
+            "name": "Erstellung IBB-Bescheinigung"
+          },
+          {
+            "id": "326810",
+            "name": "RlvF-Bescheinigung - Antragsannahme"
+          },
+          {
+            "id": "120671",
+            "name": "Wohnberechtigungsschein - WBS - Antragsannahme"
+          },
+          {
+            "id": "326217",
+            "name": "Zweckentfremdung von Wohnraum - Anzeige und Genehmigung"
+          },
+          {
+            "id": "120656",
+            "name": "Wohngeld - Bewilligung Antragsannahme Mietzuschuss"
+          },
+          {
+            "id": "325561",
+            "name": "Ausstellung des Negativzeugnisses über das Nichtbestehen oder die Nichtausübung eines gesetzlichen Vorkaufsrechts der Gemeinde"
+          },
+          {
+            "id": "120665",
+            "name": "Wohngeld - Bewilligung - Antragsannahme Lastenzuschuss"
+          }
+        ],
+        "childs": [
+          {
+            "id": "324933",
+            "name": "Wohnungsämter",
+            "path": "wohnungsaemter",
+            "rank": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "324933",
+      "name": "Wohnungsämter",
+      "path": "wohnungsaemter",
+      "relation": {
+        "navi": "0",
+        "services": [
+          {
+            "id": "326217",
+            "name": "Zweckentfremdung von Wohnraum - Anzeige und Genehmigung"
+          },
+          {
+            "id": "120656",
+            "name": "Wohngeld - Bewilligung Antragsannahme Mietzuschuss"
+          },
+          {
+            "id": "120665",
+            "name": "Wohngeld - Bewilligung - Antragsannahme Lastenzuschuss"
+          }
+        ],
+        "childs": []
+      }
+    },
+    {
+      "id": "325153",
+      "name": "Zeitungen/Magazine",
+      "path": "zeitungen-magazine",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    },
+    {
+      "id": "325091",
+      "name": "Zuwendungen",
+      "path": "zuwendungen",
+      "relation": {
+        "navi": "0",
+        "services": [],
+        "childs": []
+      }
+    }
+  ]
+}
