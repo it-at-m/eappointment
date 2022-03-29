@@ -100,6 +100,11 @@ class Bootstrap
             $container
         ));
         self::addTwigExtension(new \Twig\Extension\DebugExtension());
+
+        \App::$slim->get('__noroute', function () {
+            throw new Exception('Route missing');
+        })->setName('noroute');
+
     }
 
     public static function getTwigView()
