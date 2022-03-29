@@ -135,7 +135,12 @@ class Render
         $expires = '+5 minutes'
     ) {
 
-        $date = (!$date) ? time() : (!is_int($date)) ? strtotime($date) : $date;
+        if (!$date) {
+            $date = time();
+        } elseif (!is_int($date)) {
+            $date = strtotime($date);
+        }
+
         $maxAge = strtotime($expires) - time();
         if (false === strtotime($expires)) {
             $expires = '+'. $expires .' seconds';
