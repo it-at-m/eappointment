@@ -1,0 +1,144 @@
+{
+  "created": "2016-01-15T09:40:59+01:00",
+  "datacount": 3,
+  "locale": "de_DE",
+  "hash": "77d23060d521d09bdeedf47f792376dc",
+  "error": false,
+  "data": {
+    "boroughs": {
+      "13": {
+        "id": "13",
+        "name": "Berlin Gesamt",
+        "path": "berlin"
+      },
+      "1": {
+        "id": "1",
+        "name": "Charlottenburg-Wilmersdorf",
+        "path": "charlottenburg-wilmersdorf"
+      },
+      "2": {
+        "id": "2",
+        "name": "Friedrichshain-Kreuzberg",
+        "path": "friedrichshain-kreuzberg"
+      },
+      "3": {
+        "id": "3",
+        "name": "Lichtenberg",
+        "path": "lichtenberg"
+      },
+      "4": {
+        "id": "4",
+        "name": "Marzahn-Hellersdorf",
+        "path": "marzahn-hellersdorf"
+      },
+      "5": {
+        "id": "5",
+        "name": "Mitte",
+        "path": "mitte"
+      },
+      "6": {
+        "id": "6",
+        "name": "Neukölln",
+        "path": "neukoelln"
+      },
+      "7": {
+        "id": "7",
+        "name": "Pankow",
+        "path": "pankow"
+      },
+      "12": {
+        "id": "12",
+        "name": "Reinickendorf",
+        "path": "reinickendorf"
+      },
+      "8": {
+        "id": "8",
+        "name": "Spandau",
+        "path": "spandau"
+      },
+      "9": {
+        "id": "9",
+        "name": "Steglitz-Zehlendorf",
+        "path": "steglitz-zehlendorf"
+      },
+      "10": {
+        "id": "10",
+        "name": "Tempelhof-Schöneberg",
+        "path": "tempelhof-schoeneberg"
+      },
+      "11": {
+        "id": "11",
+        "name": "Treptow-Köpenick",
+        "path": "treptow-koepenick"
+      }
+    },
+    "settings": {
+      "ea_id": "141568",
+      "mail.send": "1",
+      "startseite.topdl.buerger": "120703,120686,121151,121737,121921",
+      "startseite.topdl.wirtschaft": ""
+    },
+    "office": [
+      {
+        "path": "auslandsamt",
+        "plural": "auslandsamt",
+        "name": "Ausländerbehörde",
+        "rank": 0
+      },
+      {
+        "path": "buergeramt",
+        "plural": "buergeraemter",
+        "name": "Bürgerämter",
+        "rank": 1
+      },
+      {
+        "path": "finanzamt",
+        "plural": "finanzaemter",
+        "name": "Finanzämter",
+        "rank": 2
+      },
+      {
+        "path": "gesundheitsamt",
+        "plural": "gesundheitsaemter",
+        "name": "Gesundheitsämter",
+        "rank": 3
+      },
+      {
+        "path": "kfz-zulassungsstelle",
+        "plural": "kfz-zulassungsstellen",
+        "name": "KFZ-Zulassungsstellen",
+        "rank": 4
+      },
+      {
+        "path": "jugendamt",
+        "plural": "jugendaemter",
+        "name": "Jugendämter",
+        "rank": 5
+      },
+      {
+        "path": "ordnungsamt",
+        "plural": "ordnungsaemter",
+        "name": "Ordnungsämter",
+        "rank": 6
+      },
+      {
+        "path": "sozialamt",
+        "plural": "sozialaemter",
+        "name": "Sozialämter",
+        "rank": 7
+      },
+      {
+        "path": "standesamt",
+        "plural": "standesaemter",
+        "name": "Standesämter",
+        "rank": 8
+      },
+      {
+        "path": "weitere",
+        "plural": "weitere",
+        "name": "Weitere Standorte",
+        "rank": 9
+      }
+    ]
+  }
+}
