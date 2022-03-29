@@ -8,7 +8,7 @@ test-php-73:
         - name: mariadb:10.1
           alias: mysql
           command: ["mysqld", "--general-log=1", "--general-log-file=/var/log/mysql/general.log"]
-    before:
+    before_script:
         - $CLI_COMPOSER
         - bin/importTestData --commit
     variables:
