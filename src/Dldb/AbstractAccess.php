@@ -3,13 +3,11 @@
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-
 namespace BO\Dldb;
 
 /**
-  * Common methods shared by access classes
-  *
-  */
+ * Common methods shared by access classes
+ */
 class AbstractAccess
 {
 
@@ -24,7 +22,7 @@ class AbstractAccess
             'Office' => null,
             'Service' => null,
             'Setting' => null,
-            'Topic' => null,
+            'Topic' => null
         ),
         'en' => array(
             'Authority' => null,
@@ -68,7 +66,7 @@ class AbstractAccess
             $actionType = 'fetch';
             $instanceName = $this->getInstanceOnName($functionName, 5);
             $actionName = substr($functionName, 5 + strlen($instanceName));
-            if (!$actionName) {
+            if (! $actionName) {
                 $actionName = 'Id';
             }
         } elseif (0 === strpos($functionName, 'search')) {
@@ -86,10 +84,10 @@ class AbstractAccess
             && method_exists($accessInstance[$instanceName], $actionType . $actionName)
         ) {
             $accessInstance[$instanceName]->setAccessInstance($this);
-            return call_user_func_array(
-                array($accessInstance[$instanceName], $actionType . $actionName),
-                $functionArguments
-            );
+            return call_user_func_array(array(
+                $accessInstance[$instanceName],
+                $actionType . $actionName
+            ), $functionArguments);
         }
         $classname = get_class($this);
         throw new Exception(
@@ -98,6 +96,7 @@ class AbstractAccess
     }
 
     /**
+     *
      * @return String InstanceName
      */
     protected function getInstanceOnName($name, $position = 0)

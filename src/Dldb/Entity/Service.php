@@ -63,6 +63,7 @@ class Service extends Base
         return false;
     }
 
+
     public function isResponsibleForAll()
     {
         return $this['responsibility_all'];

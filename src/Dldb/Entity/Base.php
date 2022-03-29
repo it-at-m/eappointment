@@ -8,6 +8,19 @@ namespace BO\Dldb\Entity;
 
 class Base extends \ArrayObject
 {
+
+    /**
+     * return an ID for this entity
+     *
+     */
+    public function getId()
+    {
+        if (!array_key_exists('id', $this)) {
+            return false;
+        }
+        return $this['id'];
+    }
+
     /**
      * return a name for this entity
      *
