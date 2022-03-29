@@ -1,7 +1,7 @@
 {
     "name": "eappointment/zmsdb",
     "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
-    "license": "EUPL",
+    "license": "EUPL-1.2",
     "authors": [
         {
             "name": "mfischer",
