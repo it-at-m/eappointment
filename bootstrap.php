@@ -19,7 +19,6 @@ require_once(VENDOR_PATH . '/autoload.php');
 require_once(APP_PATH . '/config.php');
 
 \BO\Slim\Bootstrap::init();
-\BO\Slim\Bootstrap::addTwigTemplateDirectory('dldb', VENDOR_PATH . '/bo/clientdldb/templates');
 
 // Set option for environment, routing, logging and templating
 \BO\Zmsdb\Connection\Select::$enableProfiling = \App::DEBUG;
