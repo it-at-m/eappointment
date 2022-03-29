@@ -1,0 +1,4 @@
+# Coverage
+- source: /src/Dldb/(.+?\.php).*/
+  public: '_tests/coverage/\1.html'
+
