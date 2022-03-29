@@ -104,7 +104,6 @@ class Bootstrap
         \App::$slim->get('__noroute', function () {
             throw new Exception('Route missing');
         })->setName('noroute');
-
     }
 
     public static function getTwigView()
