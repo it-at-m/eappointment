@@ -21,7 +21,10 @@ class Authorities extends Base
 
     public function addLocation(\BO\Dldb\Entity\Location $location)
     {
-        if (array_key_exists('authority', $location)) {
+        if (array_key_exists('authority', $location)
+            && array_key_exists('id', $location['authority'])
+            && $location['authority']['id']
+        ) {
             $this->addAuthority($location['authority']['id'], $location['authority']['name']);
             $this[$location['authority']['id']]['locations'][$location['id']] = $location;
         }
