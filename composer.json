@@ -13,7 +13,7 @@
         "ext-mbstring": ">=0",
         "ext-json": ">=1.0",
         "ext-pcre": ">=0",
-        "eappointment/zmsdldb": "dev-master || ^2.0",
+        "eappointment/zmsdldb": "dev-main || ^2.0",
         "eappointment/zmsentities": "dev-main || ^2.0",
         "eappointment/mellon": "^2.6.0",
         "aura/sql": "^2.4",
