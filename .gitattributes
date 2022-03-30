@@ -1,4 +1,4 @@
 *.php diff=php
-tests export-ignore
+#tests export-ignore
 composer.lock binary merge=ours
 *.gz diff=gz

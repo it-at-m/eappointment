@@ -6,4 +6,5 @@ public
 .DS_Store
 testdataset.sql.gz
 composer.*.lock
+composer.lock
 .phpunit.result.cache

@@ -21,7 +21,7 @@ class Db
         $query = '';
         while ($line = gzgets($sqlFile)) {
             $query .= $line;
-            if (preg_match('/;\s*$/',$line)) {
+            if (preg_match('/;\s*$/', $line)) {
                 try {
                     $pdo->exec($query);
                     echo ".";
