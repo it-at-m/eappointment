@@ -1,0 +1,29 @@
+{
+    "$schema": "https://schema.berlin.de/queuemanagement/scope.json",
+    "id": "141",
+    "source": "dldb",
+    "contact": {
+        "name": "B\u00fcrgeramt Heerstra\u00dfe",
+        "street": "Heerstr. 12, 14052 Berlin",
+        "email": "",
+        "country": "Germany"
+    },
+    "provider": {
+        "id": "122217",
+        "source": "dldb",
+        "contact": {
+            "city": "Berlin",
+            "country": "Germany",
+            "name": "B\u00fcrgeramt Heerstra\u00dfe",
+            "postalCode": "14052",
+            "region": "Berlin",
+            "street": "Heerstr.",
+            "streetNumber": "12"
+        },
+        "link": "https://service.berlin.de/standort/122217/",
+        "name": "B\u00fcrgeramt Heerstra\u00dfe"
+    },
+    "hint": "Nr. wird zum Termin aufgerufen",
+    "lastChange": 1618265883,
+    "shortName": ""
+}
