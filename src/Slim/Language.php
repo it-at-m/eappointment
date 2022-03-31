@@ -27,15 +27,17 @@ class Language
         $this->setCurrentLocale();
         $defaultLang = $this->getDefault();
         
-        if (null === self::$translatorInstance) {
-            self::$translatorInstance = (new LanguageTranslator(
-                $fallbackLocale,
-                $this->currentLocale,
-                $defaultLang
-            ))->getInstance();
-            \BO\Slim\Bootstrap::addTwigExtension(new TranslationExtension(self::$translatorInstance));
-        } else {
-            self::$translatorInstance->setLocale($this->currentLocale);
+        if (\App::MULTILANGUAGE) {
+            if (null === self::$translatorInstance) {
+                self::$translatorInstance = (new LanguageTranslator(
+                    $fallbackLocale,
+                    $this->currentLocale,
+                    $defaultLang
+                ))->getInstance();
+                \BO\Slim\Bootstrap::addTwigExtension(new TranslationExtension(self::$translatorInstance));
+            } else {
+                self::$translatorInstance->setLocale($this->currentLocale);
+            }
         }
     }
 
