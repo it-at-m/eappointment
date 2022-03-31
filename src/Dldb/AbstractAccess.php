@@ -36,6 +36,25 @@ class AbstractAccess
         )
     );
 
+    protected static $accessInstanceTypes = [
+        'Authority' => null,
+        'Borough' => null,
+        'Link' => null,
+        'Location' => null,
+        'Office' => null,
+        'Service' => null,
+        'Setting' => null,
+        'Topic' => null
+    ];
+
+    public function addAccessInstanceLocale($locale = 'de')
+    {
+        if (!isset($this->accessInstance[$locale])) {
+            $this->accessInstance[$locale] = static::$accessInstanceTypes;
+        }
+    }
+
+
     private function getInstanceCompatibilities()
     {
         $accessInstance = $this->accessInstance['de'];
