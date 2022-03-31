@@ -17,6 +17,7 @@ test-php-73:
       MYSQL_ROOT_PASSWORD: mysql
     only:
         changes:
+            - .gitlab-ci.yml
             - composer.lock
             - composer.json
             - schema/**/*
@@ -31,6 +32,7 @@ test-php-73:
 #      PHP_VERSION: "8.1"
 #    only:
 #        changes:
+#            - .gitlab-ci.yml
 #            - composer.lock
 #            - composer.json
 #            - schema/**/*
