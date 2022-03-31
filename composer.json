@@ -1,0 +1,40 @@
+{
+  "name": "eappointment/zmsapi",
+  "description": "This application offers a REST-like interface for ZMS functions and database access.",
+  "license": "EUPL-1.2",
+  "authors": [
+    {
+      "name": "Mathias Fischer",
+      "email": "mathias.fischer@berlinonline.de"
+    }
+  ],
+  "require-dev": {
+    "aronduby/dump": "*",
+    "phpmd/phpmd": "@stable",
+    "squizlabs/php_codesniffer": "*",
+    "mockery/mockery": "^0.9.4",
+    "phpunit/phpunit": "^9.5.4",
+    "helmich/phpunit-psr7-assert": "^4.3.0"
+  },
+  "require": {
+    "eappointment/zmsslim": "dev-main || ^2.0",
+    "eappointment/zmsclient": "dev-main || ^2.0",
+    "eappointment/zmsdldb": "dev-main || ^2.0",
+    "eappointment/zmsdb": "dev-main || ^2.0",
+    "monolog/monolog": "1.*",
+    "ulrichsg/getopt-php": "^2.3",
+    "league/climate": "^3.2",
+    "roave/security-advisories": "dev-master"
+  },
+  "scripts": {
+    "command": "bin/configure",
+    "assets": "echo 'Nothing to do'"
+  },
+  "bin": [],
+  "autoload": {
+    "psr-4": {
+      "BO\\Zmsapi\\": "src/Zmsapi/",
+      "BO\\Zmsapi\\Tests\\": "tests/Zmsapi/"
+    }
+  }
+}
