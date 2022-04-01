@@ -222,6 +222,7 @@ class Messaging
         $converter->getConfig()->setOption('remove_nodes', 'script');
         $converter->getConfig()->setOption('strip_tags', true);
         $converter->getConfig()->setOption('hard_break', true);
+        $converter->getConfig()->setOption('use_autolinks', false);
         $text = $converter->convert($content);
         $text = str_replace(',', '\,', $text);
         $text = str_replace(';', '\;', $text);
