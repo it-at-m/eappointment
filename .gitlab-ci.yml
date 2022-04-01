@@ -3,6 +3,7 @@ include:
 
 test-php-73:
     extends: .test-php
+    cache: []
     allow_failure: false
     services:
         - name: mariadb:10.1
