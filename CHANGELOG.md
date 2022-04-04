@@ -1,3 +1,7 @@
+## v2.23.06
+
+* #54479 - Link service in the confirmation email for an appointment
+
 ## v2.24.05
 
 * #49206 - conflicts for overbooked time slots and out-of-hours get different description
