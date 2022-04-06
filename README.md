@@ -42,8 +42,13 @@ Setting up default CURL-Options, use the following line:
 
 ## Testing
 
-Testing is automated on committing changes. If you want to run the test without a commit, type the following:
+If you want to run the test, docker-compose is required. Testing needs an HTTP server to answer the HTTP calls from this library.
+
+Run the following command:
 
 ```sh
-./bin/test
+docker-compose up
 ```
+
+The docker-compose starts the mockup server, waits 10 seconds and starts the unit tests. After the tests are finished, the mockup server is still running. If there are failures, you need to lookup possible HTTP calls. There is a port forwarding and you can see the calls under http://localhost:8082/
+

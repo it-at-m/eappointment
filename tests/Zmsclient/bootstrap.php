@@ -17,4 +17,4 @@ require_once(AUTOLOAD_PATH . '/autoload.php');
     CURLOPT_TIMEOUT => 15,
     //CURLOPT_VERBOSE => true,
 ];
-\BO\Zmsclient\Tests\Base::$http_baseurl = 'https://eappointment.example.com/api/2';
+\BO\Zmsclient\Tests\Base::$http_baseurl = getenv("ZMS_API_URL");
