@@ -55,7 +55,7 @@ info:
   license:
     name: Commercial
     url: 'http://www.berlinonline.net'
-  version: 2.24.05-1-gec38191
+  version: 05d37b5
 basePath: /terminvereinbarung/api/2
 schemes:
   - https
@@ -3335,6 +3335,10 @@ paths:
             Resolve references with $ref, which might be faster on the server
             side. The value of the parameter is the number of iterations to
             resolve references
+          in: query
+          type: integer
+        - name: reserveEntityIds
+          description: Deprecated
           in: query
           type: integer
         - name: startDate
