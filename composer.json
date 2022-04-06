@@ -14,7 +14,7 @@
         "ext-mbstring": ">=0",
         "ext-json": ">=1.0",
         "ext-pcre": ">=0",
-        "eappointment/zmsentities": "dev-master || ^2.0",
+        "eappointment/zmsentities": "dev-main || ^2.0",
         "eappointment/mellon": "^2.0.1",
         "psr/http-message": "^1.0",
         "aronduby/dump" : "^0.9",
