@@ -25,6 +25,6 @@ class ClientTest extends Base
         $uri = new Uri(self::$http_baseurl . '/status/');
         $uri = $uri->withPort(4444);
         $request = new Request('GET', $uri);
-        Client::readResponse($request, array('CURLOPT_TIMEOUT' => 0.1));
+        Client::readResponse($request);
     }
 }

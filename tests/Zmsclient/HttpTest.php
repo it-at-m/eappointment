@@ -63,22 +63,16 @@ class HttpTest extends Base
 
     public function testCollection()
     {
-        $now = new \DateTimeImmutable();
-        $calendar = new \BO\Zmsentities\Calendar();
-        $calendar->setFirstDayTime($now);
-        $calendar->setLastDayTime($now);
-        $calendar->addScope("141");
         $result = static::$http_client->readGetResult('/scope/');
         $collection = $result->getCollection();
-        $this->assertStringContainsString('141', $result->getIds());
+        $this->assertStringContainsString('123', $result->getIds());
         $this->assertTrue($collection instanceof \BO\Zmsentities\Collection\Base);
     }
 
     public function testMails()
     {
-        $now = new \DateTimeImmutable();
-        $entity = \BO\Zmsentities\Mail::createExample();
-        
+        $now = new \DateTimeImmutable('2016-04-01 08:00');
+        $entity = \BO\Zmsentities\Mail::createExample();        
         $confirmedProcess = static::$http_client->readGetResult('/scope/141/process/'. $now->format('Y-m-d') .'/')
             ->getCollection()
             ->toQueueList($now)
@@ -116,6 +110,7 @@ class HttpTest extends Base
 
     public function testToken()
     {
+        $this->createHttpClient(null, false);
         $result = static::$http_client->readGetResult('/config/', null, 'a9b215f1-e460-490c-8a0b-6d42c274d5e4');
         $entity = $result->getEntity();
         $this->assertTrue($entity instanceof \BO\Zmsentities\Config);
@@ -123,9 +118,6 @@ class HttpTest extends Base
 
     public function testMeta()
     {
-        $result = static::$http_client->readGetResult('/config/', null, 'a9b215f1-e460-490c-8a0b-6d42c274d5e4');
-        $this->assertTrue($result->getMeta() instanceof \BO\Zmsentities\Metaresult);
-
         $result = static::$http_client->readGetResult('/config/');
         $this->assertTrue($result->getMeta() instanceof \BO\Zmsentities\Metaresult);
     }
