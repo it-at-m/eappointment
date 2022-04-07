@@ -3,8 +3,6 @@ request:
   method: DELETE
   path: "/workstation/login/_system_soap/"
   headers:
-    Authorization:
-    - Basic X3N5c3RlbV9zb2FwOnptc3NvYXA=
     User-Agent:
     - ClientZMS
 response:
