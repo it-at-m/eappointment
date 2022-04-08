@@ -1,0 +1,20 @@
+
+request:
+  method: GET
+  path: "/session/ZmsclientUnittest/0058pfv918e8ipmbadj05sm1e7/"
+  headers:
+    User-Agent:
+    - ClientZMS
+response:
+  statusCode: 200
+  headers:
+    Content-Type: 
+    - "application/json"
+  body: > 
+    {"$schema":"https://mockup:8083/api/2/","meta":{"$schema":"https://schema.berlin.de/queuemanagement/metaresult.json","error":false,"generated":"2015-11-20T18:01:04+01:00","length":1,"server":"prod-zmsapi-01"},"data":{"$schema":"https://schema.berlin.de/queuemanagement/session.json","name":"Zmsappointment","id":"7b89b1c1fd6c7a52fa748ff663babd0c","content":{"basket":{"requests":"120703","providers":"122217","scope":"123","process":"1234567","date":"1456310041","familyName":"Max Mustermann","clientEmail":"max@zms-bo.de","clientTelehone":"03023232323","clientAmendment":"Notiz zum Termin","authKey":"1234","notificationConfirmation":false},"human":{"captcha_text":"kck6Qz","client":0,"ts":0,"origin":"captcha","remoteAddress":"127.0.0.1","referer":"dayselect","step":{"dayselect":1}},"entry":{"source":"specific","providers":"122217","requests":"120703","scope":123},"source":"dldb","status":"start","X-Authkey":"abc12345678def","error":""}}}
+control:
+  scenario:
+    name: session
+    requiredState:
+    - sessioncreated
+    newState: sessionreaded

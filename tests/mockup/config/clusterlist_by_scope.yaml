@@ -1,0 +1,58 @@
+
+request:
+  method: GET
+  path: "/scope/141/cluster/"
+  headers:
+    User-Agent:
+    - ClientZMS
+response:
+  statusCode: 200
+  headers:
+    Content-Type: 
+    - "application/json"
+  body: > 
+    {
+      "$schema": "https://mockup:8083/terminvereinbarung/api/2/",
+      "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2022-04-08T13:29:14+02:00",
+        "server": "Zmsapi-ENV (2.24.05-20-g3df8532)",
+        "reducedData": true
+      },
+      "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/cluster.json",
+        "scopes": [
+          {
+            "id": "141",
+            "source": "dldb",
+            "$ref": "/scope/141/"
+          },
+          {
+            "id": "361",
+            "source": "dldb",
+            "$ref": "/scope/361/"
+          },
+          {
+            "id": "610",
+            "source": "dldb",
+            "$ref": "/scope/610/"
+          },
+          {
+            "id": "952",
+            "source": "dldb",
+            "$ref": "/scope/952/"
+          },
+          {
+            "id": "2836",
+            "source": "dldb",
+            "$ref": "/scope/2836/"
+          }
+        ],
+        "id": "109",
+        "name": "Bürgeramt Heerstraße",
+        "hint": "",
+        "shortNameEnabled": "1",
+        "callDisplayText": ""
+      }
+    }
