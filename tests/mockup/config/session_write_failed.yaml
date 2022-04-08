@@ -1,0 +1,34 @@
+
+request:
+  method: POST
+  path: "/session/"
+  headers:
+    User-Agent:
+    - ClientZMS
+  body: >
+    {"$schema":"https:\/\/schema.berlin.de\/queuemanagement\/session.json","content":{"basket":{"requests":"120703","providers":123456,"scope":"123","process":"1234567","date":"1456310041","familyName":"Max Mustermann","email":"","telehone":"","amendment":"","authKey":"1234","clientEmail":"max@zms-bo.de","clientTelehone":"03023232323","clientAmendment":"Notiz zum Termin","notificationConfirmation":false},"human":{"captcha_text":"kck6Qz","client":0,"ts":0,"origin":"captcha","remoteAddress":"127.0.0.1","referer":"dayselect","step":{"dayselect":1,"timeselect":0,"register":0,"summary":0}},"source":"dldb","status":"start","X-Authkey":"abc12345678def","error":"","entry":{"source":"specific","providers":"122217","requests":"120703","scope":123}},"id":"0058pfv918e8ipmbadj05sm1e7","name":"ZmsclientUnittest"}
+response:
+  statusCode: 404
+  headers:
+    Content-Type: 
+    - "application/json"
+  body: > 
+    {
+      "$schema": "https://mockup:8083/terminvereinbarung/api/2/",
+      "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": true,
+        "exception": "BO\\Zmsapi\\Exception\\Matching\\MatchingNotFound",
+        "generated": "2022-04-08T12:33:19+02:00",
+        "server": "Zmsapi-ENV (2.24.05-20-g3df8532)",
+        "message": "Provider does not match with given request or does not over request",
+        "trace": "\\BO\\Zmsapi\\SessionUpdate::testMatching +28\n\\BO\\Zmsapi\\SessionUpdate::readResponse +22\n\\BO\\Zmsapi\\BaseController::__invoke +\n\\::call_user_func +40\n\\Slim\\Handlers\\Strategies\\RequestResponse::__invoke +281\n\\Slim\\Route::__invoke +117\n\\Slim\\Route::callMiddlewareStack +268\n\\Slim\\Route::run +503\n\\Slim\\App::__invoke +57\n\\Slim\\HttpCache\\Cache::__invoke +\n"
+      },
+      "data": null
+    }
+control:
+  scenario:
+    name: session
+    requiredState:
+    - sessionreaded
+    newState: sessionfailed

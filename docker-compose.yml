@@ -27,4 +27,4 @@ services:
       - "bash"
       - "-c"
       #- "while true;do sleep 5; bin/test; done;"
-      - sleep 5 && bin/test
+      - sleep 10 && bin/test

@@ -1,0 +1,28 @@
+
+request:
+  method: GET
+  path: "/status/deadlock/"
+  headers:
+    User-Agent:
+    - ClientZMS
+response:
+  statusCode: 500
+  headers:
+    Content-Type: 
+      - "application/json"
+  body: > 
+    {
+      "$schema": "https://192.168.59.101/api/2/",
+      "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": true,
+        "exception": "BO\\Zmsdb\\Exception\\Pdo\\DeadLockFound",
+        "generated": "2022-04-08T14:24:29+02:00",
+        "server": "Zmsapi-ENV (2.24.05-4-gac99933)",
+        "message": "Deadlock found when trying to get lock; try restarting transaction",
+        "trace": "\\BO\\Zmsapi\\StatusDeadlock::readResponse +22\n\\BO\\Zmsapi\\BaseController::__invoke +\n\\::call_user_func +40\n\\Slim\\Handlers\\Strategies\\RequestResponse::__invoke +281\n\\Slim\\Route::__invoke +117\n\\Slim\\Route::callMiddlewareStack +268\n\\Slim\\Route::run +503\n\\Slim\\App::__invoke +57\n\\Slim\\HttpCache\\Cache::__invoke +\n\\::call_user_func_array +57\n"
+      },
+      "data": null,
+      "profiler": []
+    }
+

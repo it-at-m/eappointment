@@ -3,13 +3,13 @@ request:
   method: GET
   path: "/config/"
 response:
-  statusCode: 200
+  statusCode: 401
   headers:
     Content-Type: 
     - "application/json"
   body: > 
     {
-      "$schema": "https://stg.service.berlin.de/terminvereinbarung/api/2/",
+      "$schema": "https://mockup:8083/terminvereinbarung/api/2/",
       "meta": {
         "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
         "error": true,
