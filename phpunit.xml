@@ -12,7 +12,7 @@
   forceCoversAnnotation="false" 
   stopOnFailure="true" 
   verbose="true"
-  processIsolation="true"
+  processIsolation="false"
 >
   <coverage processUncoveredFiles="true">
     <include>
