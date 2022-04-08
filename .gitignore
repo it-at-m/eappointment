@@ -1,15 +1,9 @@
-*~
-vendor
-vendor.zmsbase
-coverage
+/vendor/
+/vendor.zmsbase/
 tags
-Makefile
-bin/configure
-bin/test
-.DS_Store
-<<<<<<< HEAD
-=======
-composer.*.loc
->>>>>>> 149e0d2... update composer, gitignore
-composer.*.lock
+/public
+.DS_*
 .phpunit.result.cache
+composer.lock
+composer.*.lock
+clover.xml
