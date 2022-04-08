@@ -36,6 +36,12 @@ test-php-73:
             - composer.json
             - src/**/*
             - tests/**/*.{json,php}
+    script:
+        - $CLI_COMPOSER
+        - $CLI_PHPCS
+        - $CLI_PHPMD
+        - docker-php-ext-enable xdebug
+        - find *
 
 #test-php-81:
 #    extends: .test-php
