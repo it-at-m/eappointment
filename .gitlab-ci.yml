@@ -56,7 +56,7 @@ pages:
     stage: deploy
     script:
         - echo "/zmsclient/ /zmsclient/_tests/coverage/index.html 302" >> public/_redirects
-        - find *
+        - find public/
     artifacts:
         paths:
             - public
