@@ -30,7 +30,7 @@ test-php-73:
     before_script:
         - sleep 5 #wait for mockup server to be ready
         - mkdir -p public
-        - chmod -R 777 build
+        - chmod -R 777 public
     after_script:
         - ls -l; ls -l public
     # only:
