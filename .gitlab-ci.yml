@@ -30,12 +30,15 @@ test-php-73:
           alias: mockupserver
     before_script:
         - sleep 10 #wait for mockup server to be ready
-    only:
-        changes:
-            - composer.lock
-            - composer.json
-            - src/**/*
-            - tests/**/*.{json,php}
+        - ls -l
+    after_script:
+        - ls -l; ls -l public
+    #only:
+       # changes:
+       #     - composer.lock
+       #    - composer.json
+       #     - src/**/*
+        #    - tests/**/*.{json,php}
 
 #test-php-81:
 #    extends: .test-php
