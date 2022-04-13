@@ -20,16 +20,17 @@ build-mockup:
 
 test-php-73:
     extends: .test-php
-    cache: []
     allow_failure: false
     variables:
-      PHP_VERSION: "7.3"
-      ZMS_API_URL: http://mockupserver:8083/
+        PHP_VERSION: "7.3"
+        ZMS_API_URL: http://mockupserver:8083/
     services:
         - name: $MOCKUP_IMAGE
           alias: mockupserver
     before_script:
         - sleep 5 #wait for mockup server to be ready
+        - mkdir -p public
+        - chmod -R 777 build
     after_script:
         - ls -l; ls -l public
     # only:
