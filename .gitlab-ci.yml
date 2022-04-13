@@ -32,7 +32,7 @@ test-php-73:
         - mkdir -p public
         - chmod -R 777 public
     after_script:
-        - ls -l; ls -l public
+        - ls -l; find public
     # only:
     #   changes:
     #     - composer.lock
