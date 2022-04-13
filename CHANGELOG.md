@@ -1,6 +1,7 @@
-## v2.23.06
+## v2.24.06
 
 * #54479 - Link service in the confirmation email for an appointment
+* Add mockup service for http client unit testing
 
 ## v2.24.05
 
