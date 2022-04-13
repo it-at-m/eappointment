@@ -6,14 +6,19 @@ test-php-73:
     allow_failure: false
     variables:
       PHP_VERSION: "7.3"
-    only:
-        changes:
-            - composer.lock
-            - composer.json
-            - schema/**/*
-            - templates/**/*
-            - src/**/*
-            - tests/**/*.{json,php}
+    # only:
+    #     changes:
+    #         - composer.lock
+    #         - composer.json
+    #         - schema/**/*
+    #         - templates/**/*
+    #         - src/**/*
+    #         - tests/**/*.{json,php}
+    before_script:
+        - sleep 10 #wait for mockup server to be ready
+        - ls -l
+    after_script:
+        - ls -l; ls -l public
 
 #test-php-81:
 #    extends: .test-php
