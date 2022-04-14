@@ -2,9 +2,6 @@
 request:
   method: GET
   path: "/scope/"
-  headers:
-    User-Agent:
-    - ClientZMS
 response:
   statusCode: 200
   headers:
