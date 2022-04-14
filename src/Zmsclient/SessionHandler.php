@@ -63,16 +63,12 @@ class SessionHandler implements \SessionHandlerInterface
             )
             ->getEntity();
         } catch (Exception\ApiFailed $exception) {
-            // @codeCoverageIgnoreStart
             throw $exception;
-            // @codeCoverageIgnoreEnd
         } catch (Exception $exception) {
             if ($exception->getCode() == 404) {
                 $session = false;
             } else {
-                // @codeCoverageIgnoreStart
                 throw $exception;
-                // @codeCoverageIgnoreEnd
             }
         }
         return ($session && array_key_exists('content', $session)) ? serialize($session->getContent()) : '';
@@ -89,11 +85,9 @@ class SessionHandler implements \SessionHandlerInterface
             $session = $this->http->readPostResult('/session/', $entity)
                 ->getEntity();
         } catch (Exception $exception) {
-            // @codeCoverageIgnoreStart
             if ($exception->getCode() == 404) {
                 $session = null;
             }
-            // @codeCoverageIgnoreEnd
             throw $exception;
         }
 

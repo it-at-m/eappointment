@@ -14,11 +14,9 @@ class Auth
     public static function setKey($authKey)
     {
         $_COOKIE[self::getCookieName()] = $authKey; // for access in the same process
-        // @codeCoverageIgnoreStart
         if (!headers_sent()) {
             setcookie(self::getCookieName(), $authKey, 0, '/', null, true, true);
         }
-        // @codeCoverageIgnoreEnd
     }
 
     /**

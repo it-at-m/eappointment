@@ -6,6 +6,39 @@ use \BO\Mellon\Validator;
 
 class HttpTest extends Base
 {
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testBasicAuth()
+    {
+        $parsed = parse_url(static::$http_baseurl);
+        $parsed['user']  = "_system_soap";
+        $parsed['pass']  = "zmssoap";
+        $uri = new \BO\Zmsclient\Psr7\Uri();
+        $uri = $uri->withScheme($parsed['scheme']);
+        $uri = $uri->withUserInfo($parsed['user'], $parsed['pass']);
+        $uri = $uri->withHost($parsed['host']);
+        $uri = (isset($parsed['path'])) ? $uri->withPath($parsed['path']) : $uri;
+        $uri = (isset($parsed['port'])) ? $uri->withPort($parsed['port']) : $uri;
+        static::$http_baseurl = (string)$uri;
+        $this->createHttpClient(null, false);
+        $userInfo = static::$http_client->getUserInfo();
+        $this->assertEquals($userInfo, '_system_soap:zmssoap');
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testJsonCompressLevel()
+    {
+        \BO\Zmsclient\HTTP::$jsonCompressLevel = 1;
+        $this->createHttpClient(null);
+        $result = static::$http_client->readGetResult('/scope/');
+        $collection = $result->getCollection();
+        $this->assertStringContainsString('123', $result->getIds());
+    }
+
     public function testStatus()
     {
         $result = static::$http_client->readGetResult('/status/');

@@ -13,9 +13,6 @@ use \Prophecy\Argument;
 
 use \BO\Zmsclient\GraphQL\GraphQLInterpreter;
 
-/**
- * @codeCoverageIgnore
- */
 abstract class Base extends \BO\Slim\PhpUnit\Base
 {
     /**

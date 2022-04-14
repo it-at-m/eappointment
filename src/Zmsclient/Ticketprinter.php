@@ -18,7 +18,6 @@ class Ticketprinter
     public static function setHash($hash, $request)
     {
         $_COOKIE[self::HASH_COOKIE_NAME] = $hash;
-        // @codeCoverageIgnoreStart
         if (!headers_sent()) {
             setcookie(
                 self::HASH_COOKIE_NAME,
@@ -29,7 +28,6 @@ class Ticketprinter
                 false
             );
         }
-        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -54,11 +52,9 @@ class Ticketprinter
     public static function setHomeUrl($url, $request)
     {
         $_COOKIE[self::HOME_URL_COOKIE_NAME] = $url;
-        // @codeCoverageIgnoreStart
         if (!headers_sent()) {
             setcookie(self::HOME_URL_COOKIE_NAME, $url, 0, $request->getUri()->getBasePath(), null, false, true);
         }
-        // @codeCoverageIgnoreEnd
     }
 
     /**
