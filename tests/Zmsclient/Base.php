@@ -23,6 +23,7 @@ abstract class Base extends TestCase
     {
         $this->writeTestLogout();
         static::$http_client = null;
+        \BO\Zmsclient\HTTP::$jsonCompressLevel = 0;
     }
 
     public function createHttpClient($mockup = null, $withUser = true)
