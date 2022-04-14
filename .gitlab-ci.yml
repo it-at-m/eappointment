@@ -9,8 +9,6 @@ build-mockup:
   image: docker:stable
   services:
     - docker:dind
-  only:
-    - main
   variables:
     IMAGE: "$CI_REGISTRY_IMAGE"
   script:
