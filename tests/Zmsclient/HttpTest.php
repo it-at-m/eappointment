@@ -184,4 +184,33 @@ class HttpTest extends Base
         $result = static::$http_client->readGetResult('/status/deadlock/');
         $result->getEntity();
     }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testWithApiKey()
+    {
+        \BO\Zmsclient\Auth::removeKey();
+        $this->createHttpClient(null, false);
+        static::$http_client->setApiKey('unittest');
+        $result = static::$http_client->readGetResult('/provider/dldb/122217/scopes/');
+        $entity = $result->getEntity();
+        $this->assertTrue($entity instanceof \BO\Zmsentities\Scope);
+        $this->assertStringContainsString('unittest', $result->getResponse()->getHeaderline('x-api-key'));
+    }
+
+     /**
+     * @runInSeparateProcess
+     */
+    public function testWithWorkflowKey()
+    {
+        \BO\Zmsclient\Auth::removeKey();
+        $this->createHttpClient(null, false);
+        static::$http_client->setApiKey('unittest');
+        static::$http_client->setWorkflowKey('unittest');
+        $result = static::$http_client->readGetResult('/process/status/free/');
+        $collection = $result->getCollection();
+        $this->assertStringContainsString('unittest', $result->getResponse()->getHeaderline('x-workflow-key'));
+        $this->assertStringContainsString('unittest', $result->getResponse()->getHeaderline('x-api-key'));
+    }
 }

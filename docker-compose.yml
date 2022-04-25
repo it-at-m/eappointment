@@ -27,4 +27,5 @@ services:
       - "bash"
       - "-c"
       #- "while true;do sleep 5; bin/test; done;"
+      - curl -X POST "http://mockup:8082/api/scenarios/reset_all"
       - sleep 2 && bin/test;
