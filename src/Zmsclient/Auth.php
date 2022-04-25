@@ -32,6 +32,19 @@ class Auth
         return false;
     }
 
+    /**
+     *
+     * @SuppressWarnings(Superglobals)
+     *
+     */
+    public static function removeKey()
+    {
+        if (array_key_exists(self::getCookieName(), $_COOKIE)) {
+            unset($_COOKIE[self::getCookieName()]);
+            setcookie(self::getCookieName(), '', time() - 3600);
+        }
+    }
+
     protected static function getCookieName()
     {
         return 'Zmsclient';

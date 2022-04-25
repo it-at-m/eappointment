@@ -1,0 +1,32 @@
+
+request:
+  method: GET
+  path: "/provider/dldb/122217/scopes/"
+  headers:
+    X-Api-Key: 
+    - "unittest"
+response:
+  statusCode: 200
+  headers:
+    X-Api-Key: 
+    - "unittest"
+    Content-Type: 
+    - "application/json"
+  body: > 
+   {
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2022-01-31T15:21:16+01:00",
+        "server": "Zmsapiproxy-ENV (2.24.04)"
+    },
+    "data": [
+        {
+            "$schema": "https://schema.berlin.de/queuemanagement/scope.json",
+            "id": "141",
+            "source": "dldb",
+            "$ref": "/scope/141/"
+        }
+      ]
+    }
