@@ -1,0 +1,17 @@
+request:
+  method: GET
+  path: "/session/ZmsclientUnittest/0058pfv918e8ipmbadj05sm1e7/"
+  headers:
+    User-Agent:
+    - ClientZMS
+response:
+  statusCode: 500
+  headers:
+    Content-Type: 
+    - "application/json"
+control:
+  scenario:
+    name: session
+    requiredState:
+    - sessiondestroyed
+    newState: sessionreadfailed
