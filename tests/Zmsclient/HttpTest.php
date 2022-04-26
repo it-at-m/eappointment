@@ -42,6 +42,7 @@ class HttpTest extends Base
     public function testStatus()
     {
         $result = static::$http_client->readGetResult('/status/');
+        $this->assertTrue($result->isStatus(200));
         $response = new \BO\Zmsclient\Psr7\Response();
         $status = $result->getEntity();
         $response = \BO\Zmsclient\Status::testStatus($response, $status);
@@ -82,6 +83,15 @@ class HttpTest extends Base
         $status['sources']['dldb']['last'] = (new \DateTimeImmutable())->modify('- 6 hour')->format('Y-m-d H:i:s');
         $response = \BO\Zmsclient\Status::testStatus($response, $status);
         $this->assertStringContainsString('Last DLDB Import is more then 4 hours ago', (string)$response->getBody());
+    }
+
+    public function testStatusShort()
+    {
+        $result = static::$http_client->readGetResult('/status/?2');
+        $response = new \BO\Zmsclient\Psr7\Response();
+        $status = $result->getEntity();
+        $response = \BO\Zmsclient\Status::testStatus($response, $status);
+        $this->assertStringContainsString('OK - DB=0% Threads=1 Locks=0', (string)$response->getBody());
     }
 
     public function testStatusFailed()
@@ -128,8 +138,8 @@ class HttpTest extends Base
         $data = $result->getData();
         $this->assertTrue($data[0] instanceof \BO\Zmsentities\Mail);
 
-        //$result = static::$http_client->readDeleteResult("/mails/$mailId/", []);
-        //$entity = $result->getEntity();
+        $result = static::$http_client->readDeleteResult("/mails/$mailId/", []);
+        $entity = $result->getEntity();
         $this->assertTrue($entity instanceof \BO\Zmsentities\Mail);
         $this->writeTestLogout(static::$http_client);
     }
@@ -204,7 +214,6 @@ class HttpTest extends Base
      */
     public function testWithWorkflowKey()
     {
-        \BO\Zmsclient\Auth::removeKey();
         $this->createHttpClient(null, false);
         static::$http_client->setApiKey('unittest');
         static::$http_client->setWorkflowKey('unittest');

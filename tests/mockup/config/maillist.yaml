@@ -18,3 +18,4 @@ control:
     name: mail
     requiredState:
     - created
+    newState: listed
