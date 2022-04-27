@@ -11,6 +11,7 @@ if (file_exists(APP_PATH . '/../vendor/autoload.php')) {
     define('VENDOR_PATH', APP_PATH . '/../../../');
 }
 require_once(VENDOR_PATH . '/autoload.php');
+require(APP_PATH . '/config.php');
 
 \BO\Zmsclient\Psr7\Client::$curlopt = [
     CURLOPT_SSLVERSION        => 0,
