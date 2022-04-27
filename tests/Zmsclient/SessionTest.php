@@ -2,8 +2,6 @@
 
 namespace BO\Zmsclient\Tests;
 
-use \BO\Mellon\Validator;
-
 class SessionTest extends Base
 {
     const SESSION_NAME = 'ZmsclientUnittest';

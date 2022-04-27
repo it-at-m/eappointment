@@ -2,8 +2,6 @@
 
 namespace BO\Zmsclient\Tests;
 
-use \BO\Mellon\Validator;
-
 class TwigExtensionTest extends Base
 {
     public function testBasic()

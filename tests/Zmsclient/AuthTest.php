@@ -2,8 +2,6 @@
 
 namespace BO\Zmsclient\Tests;
 
-use \BO\Mellon\Validator;
-
 class AuthTest extends Base
 {
     /**

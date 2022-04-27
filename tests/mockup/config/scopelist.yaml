@@ -2,9 +2,6 @@
 request:
   method: GET
   path: "/scope/"
-  headers:
-    X-Jsoncompresslevel: 
-      - "0"
 response:
   statusCode: 200
   headers:

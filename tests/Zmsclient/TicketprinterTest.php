@@ -2,8 +2,6 @@
 
 namespace BO\Zmsclient\Tests;
 
-use \BO\Mellon\Validator;
-
 class TicketprinterTest extends Base
 {
     const HASH_COOKIE_NAME = 'Ticketprinter';
@@ -14,6 +12,9 @@ class TicketprinterTest extends Base
 
     const HOMEURL_TEST = 'https://service.berlin.de/terminvereinbarung/ticketprinter';
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testBasic()
     {
         $request = new \BO\Zmsclient\Psr7\Request('GET', '/');
