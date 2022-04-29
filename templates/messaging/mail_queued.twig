@@ -25,7 +25,7 @@ Sie haben keine Dienstleistungen ausgewählt.
 Sie haben folgende {{ requestalias }} ausgewählt:
 <br/><br />
     {% for request in process.requests %}
-    <strong>{{ request.name }}</strong><br/>
+    <strong><a href="https://service.berlin.de/dienstleistung/{{ request.id }}/standort/{{ process.scope.provider.id }}/">{{ request.name }}</a></strong><br/>
     {% if request.source == "dldb" and request.data %}
     <div style="border-left: 1em solid #ffffff; background: #ffffff;">
     {% include "@zmsentities/detail/service_detail_prerequisites.twig" with {"service":request.data, "headerlevel":"h4"} %}
@@ -35,6 +35,8 @@ Sie haben folgende {{ requestalias }} ausgewählt:
     {% include "@zmsentities/detail/service_detail_fees.twig" with {"service":request.data, "headerlevel":"h4"} %}
     </div>
     {% endif %}
+    <a href="https://service.berlin.de/dienstleistung/{{ request.id }}/standort/{{ process.scope.provider.id }}/">    Weitere Informationen zur Dienstleistung »</a>
+    <br />
     {% endfor %}
 {% endif %}
 
