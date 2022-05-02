@@ -1,7 +1,10 @@
-## v2.24.06
+## v2.24.07
 
+* #54479 - Revision of the confirmation email and the spontaneous customer email text
 * #54479 - Link service in the confirmation email for an appointment
 * Add mockup service for http client unit testing
+
+## v2.24.06 - cancelled
 
 ## v2.24.05
 
