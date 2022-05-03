@@ -13,7 +13,7 @@ class OwnerTest extends Base
         $entity = $query->readEntity(23, 1); //Berlin
 
         $this->assertEntity("\\BO\\Zmsentities\\Owner", $entity);
-        $this->assertEquals('https://service.berlin.de/terminvereinbarung', $entity->url);
+        $this->assertEquals('https://example.com', $entity->url);
         $this->assertEquals('Berlin', $entity->name);
         $this->assertEquals(true, $entity->hasOrganisation(78)); //Treptow Köpenick
     }
