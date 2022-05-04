@@ -43,7 +43,7 @@ Sie haben folgende {{ requestalias }} ausgewählt:
     {% include "@zmsentities/detail/service_detail_fees.twig" with {"service":request.data, "headerlevel":"h4"} %}
     </div>
     {% endif %}
-    <a href="https://service.berlin.de/dienstleistung/{{ request.id }}/standort/{{ process.scope.provider.id }}/">    Weitere Informationen zur Dienstleistung »</a>
+    <a href="https://service.berlin.de/dienstleistung/{{ request.id }}/standort/{{ process.scope.provider.id }}/">Weitere Informationen zur Dienstleistung »</a>
     {% if process.requests|length > 1 and not loop.last %}
     <br /><br />
     ----------------------
