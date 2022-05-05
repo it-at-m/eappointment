@@ -23,6 +23,7 @@ class Authorities extends Base
     {
         if (array_key_exists('authority', $location)
             && array_key_exists('id', $location['authority'])
+            && array_key_exists('name', $location['authority'])
             && $location['authority']['id']
         ) {
             $this->addAuthority($location['authority']['id'], $location['authority']['name']);

@@ -18,7 +18,8 @@ $cli->description("Downloads json files from the official site and validates the
     ->opt('proxy:p', 'Proxy server like "proxy:3128"', false)
     ->opt('base:b', 'Base download url', true)
     ->opt('auth:a', 'http auth example:example', false)
-    ;
+    ->opt('onlineservices:s', 'download onlineservices to', false)
+;
 $args = $cli->parse($argv, true);
 
 $destinationPath = realpath($args->getOpt('output'));
@@ -27,6 +28,10 @@ if (!is_writeable($destinationPath) || !is_dir($destinationPath)) {
     echo $cli->red("$destinationPath should be a writeable directory\n");
     exit(1);
 }
+
+$downloadOnlineservices = (bool)$args->getOpt("onlineservices", 0);
+
+
 
 $baseDomain = $args->getOpt("base");
 $auth = $args->getOpt("auth", "");
@@ -71,7 +76,23 @@ $json = $respronse->body;
 $availablelanguages = json_decode($json, true);
 if (!array_key_exists('data', $availablelanguages) || 0 == count($availablelanguages['data'])) {
     echo $cli->red($baseDomain . "/export/json/availablelanguages/ did not validate\n");
-    exit(1);
+    $availablelanguages = [
+        'data' => [
+            'de' => [
+                "long_code" => "de_DE",
+                "short_code" => "de",
+                "descriptor" => "Deutsch"
+            ],
+            'en' => [
+                "long_code" => "en_GB",
+                "short_code" => "en",
+                "descriptor" => "English"
+            ]
+        ]
+    ];
+}
+else {
+    file_put_contents($destinationPath . DIRECTORY_SEPARATOR . '/availablelanguages.json', $json);
 }
 
 $downloads = [];
@@ -90,10 +111,12 @@ foreach ($availablelanguages['data'] as $shortCode => $laguageInfo) {
         'url' => $urlServices,
         'file' => 'services_' . $shortCode . '.json'
     ];
-    $downloads[] = [
-        'url' => $urlOnlineServices,
-        'file' => 'onlineservices_' . $shortCode . '.json'
-    ];
+    if (false !== $downloadOnlineservices) {
+        $downloads[] = [
+            'url' => $urlOnlineServices,
+            'file' => 'onlineservices_' . $shortCode . '.json'
+        ];
+    }
 }
 $downloads[] = [
     'url' => '/export/themen/json/',

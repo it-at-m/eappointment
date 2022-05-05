@@ -112,7 +112,6 @@ $mysqlIporter = new MySQLImporter(
 );
 
 try {
-    
     $mysqlIporter->beginTransaction();
     $mysqlIporter->clearDatabase();
     $mysqlIporter->runImport();
