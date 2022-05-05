@@ -15,6 +15,7 @@ class AuthoritiesTest extends Base
         $access = new FileAccess();
         $access->loadFromPath(FIXTURES);
         $authorityList = $access->fromAuthority()->fetchList();
+        
         $this->assertTrue($authorityList->hasLocationId(LOCATION_SINGLE));
         $this->assertFalse($authorityList->removeLocation(LOCATION_SINGLE)->hasLocationId(LOCATION_SINGLE));
         $authorityList = $access->fromAuthority()->fetchList(SERVICE_SINGLE);

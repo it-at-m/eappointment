@@ -2,7 +2,7 @@
 
 
 define('FIXTURES', __DIR__ . DIRECTORY_SEPARATOR . 'Dldb' . DIRECTORY_SEPARATOR . 'fixtures');
-define('LOCATION_SINGLE', 122281); // Rathaus Spandau
+define('LOCATION_SINGLE', 12679); // Abgeordnetenhaus von Berlin
 define('SERVICE_SINGLE', 120703); // Personalausweis
 define('TOPIC_SINGLE', 324801); // Arbeit, Beruf und Soziales
 define('AUTHORITY_SINGLE', 12679); // Abgeordnetenhaus

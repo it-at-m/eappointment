@@ -161,7 +161,7 @@ class Topic extends Base
     ) {
         $topicId = $topic->get('id');
         try {
-            $sql = "DELETE FROM " + $tableName + " WHERE " + $whereField + " = ?";
+            $sql = "DELETE FROM " . $tableName . " WHERE " . $whereField . " = ?";
             $stm = $topic->getPDOAccess()->prepare($sql);
 
             $stm->execute([$topicId]);
