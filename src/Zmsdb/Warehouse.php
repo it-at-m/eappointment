@@ -24,6 +24,11 @@ class Warehouse extends Base
             'right' => 'organisation'
         ],
         [
+            'subject' => 'waitingowner',
+            'description' => 'Wartestatistik Berlin',
+            'right' => 'superuser'
+        ],
+        [
             'subject' => 'clientscope',
             'description' => 'Kundenstatistik Standort',
             'right' => 'scope'
@@ -37,6 +42,11 @@ class Warehouse extends Base
             'subject' => 'clientorganisation',
             'description' => 'Kundenstatistik Organisation',
             'right' => 'organisation'
+        ],
+        [
+            'subject' => 'clientowner',
+            'description' => 'Kundenstatistik Berlin',
+            'right' => 'superuser'
         ],
         [
             'subject' => 'notificationscope',
@@ -54,6 +64,11 @@ class Warehouse extends Base
             'right' => 'organisation'
         ],
         [
+            'subject' => 'notificationowner',
+            'description' => 'SMS-Statistik Berlin',
+            'right' => 'superuser'
+        ],
+        [
             'subject' => 'requestscope',
             'description' => 'Dienstleistungsstatistik Standort',
             'right' => 'scope'
@@ -67,6 +82,11 @@ class Warehouse extends Base
             'subject' => 'requestorganisation',
             'description' => 'Dienstleistungsstatistik Organisation',
             'right' => 'organisation'
+        ],
+        [
+            'subject' => 'requestowner',
+            'description' => 'Dienstleistungsstatistik Berlin',
+            'right' => 'superuser'
         ],
         [
             'subject' => 'useraccount',
