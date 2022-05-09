@@ -25,6 +25,7 @@ class Access extends \BO\Slim\Controller
         if ($this->workstation && isset($this->workstation->scope['id'])) {
             $this->department = $this->readDepartment();
             $this->organisation = $this->readOrganisation();
+            $this->owner = $this->readOwner();
         }
         $this->testAccessRights($request);
     }
@@ -54,9 +55,21 @@ class Access extends \BO\Slim\Controller
         }
     }
 
+    protected function readOwner()
+    {
+        if ($this->workstation->getUseraccount()->isSuperUser()) {
+            return \App::$http
+                ->readGetResult('/organisation/' . $this->organisation->getId() . '/owner/')
+                ->getEntity();
+        }
+    }
+
     protected function testAccessRights($request)
     {
         $path = $request->getUri()->getPath();
+        if (false !== strpos($path, 'owner') && ! $this->owner) {
+            throw new \BO\Zmsentities\Exception\UserAccountAccessRightsFailed();
+        }
         if (false !== strpos($path, 'organisation') && ! $this->organisation) {
             throw new \BO\Zmsentities\Exception\UserAccountAccessRightsFailed();
         }
