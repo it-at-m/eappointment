@@ -1,0 +1,72 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2022-05-09T19:27:51+02:00",
+        "server": "Zmsapi-ENV (2.24.07-rc5-1-gd004b75)"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/owner.json",
+        "organisations": [
+            {
+                "name": "",
+                "$ref": "organisation/54/"
+            },
+            {
+                "name": "",
+                "$ref": "organisation/65/"
+            },
+            {
+                "name": "",
+                "$ref": "organisation/66/"
+            },
+            {
+                "name": "",
+                "$ref": "organisation/70/"
+            },
+            {
+                "name": "",
+                "$ref": "organisation/71/"
+            },
+            {
+                "name": "",
+                "$ref": "organisation/72/"
+            },
+            {
+                "name": "",
+                "$ref": "organisation/73/"
+            },
+            {
+                "name": "",
+                "$ref": "organisation/74/"
+            },
+            {
+                "name": "",
+                "$ref": "organisation/75/"
+            },
+            {
+                "name": "",
+                "$ref": "organisation/76/"
+            },
+            {
+                "name": "",
+                "$ref": "organisation/78/"
+            },
+            {
+                "name": "",
+                "$ref": "organisation/80/"
+            }
+        ],
+        "name": "Berlin",
+        "id": "23",
+        "url": "https://www.example.com/terminvereinbarung",
+        "contact": {
+            "city": "Berlin",
+            "street": "Berlin",
+            "country": "Germany",
+            "name": "Berlin"
+        }
+    },
+    "profiler": []
+}

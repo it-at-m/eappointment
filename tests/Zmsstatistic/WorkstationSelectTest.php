@@ -29,7 +29,12 @@ class WorkstationSelectTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/department/74/organisation/',
                     'response' => $this->readFixture("GET_organisation_71_resolved3.json")
-                ]
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture("GET_owner_23.json")
+                ],
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
@@ -77,6 +82,11 @@ class WorkstationSelectTest extends Base
                     'response' => $this->readFixture("GET_organisation_71_resolved3.json")
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture("GET_owner_23.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/workstation/',
                     'response' => $this->readFixture("GET_Workstation_Resolved3.json")
@@ -109,7 +119,12 @@ class WorkstationSelectTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/department/74/organisation/',
                     'response' => $this->readFixture("GET_organisation_71_resolved3.json")
-                ]
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture("GET_owner_23.json")
+                ],
             ]
         );
         $response = $this->render($this->arguments, [

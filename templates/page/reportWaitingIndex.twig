@@ -18,9 +18,6 @@
                         {% set arguments = {"period": period} %}
                     {% endif %}
                     <li class="report-period--subject">{{ title|trans }}</li>
-                    {% if owner %}
-                        <li><a class="{{ activeOwner }}" href="{{ urlGet("ReportWaitingOwner", arguments, {}) }}">{{ owner.name }}</a></li>
-                    {% endif %}
                     {% if organisation %}
                         <li><a class="{{ activeOrganisation }}" href="{{ urlGet("ReportWaitingOrganisation", arguments, {}) }}">{{ organisation.name }}</a></li>
                     {% endif %}

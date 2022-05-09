@@ -31,6 +31,11 @@ class LogoutTest extends Base
                     'response' => $this->readFixture("GET_organisation_71_resolved3.json")
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture("GET_owner_23.json")
+                ],
+                [
                     'function' => 'readDeleteResult',
                     'url' => '/workstation/login/testadmin/',
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
@@ -64,6 +69,11 @@ class LogoutTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/department/74/organisation/',
                     'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture("GET_owner_23.json")
                 ],
                 [
                     'function' => 'readDeleteResult',
