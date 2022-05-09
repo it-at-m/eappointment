@@ -31,6 +31,11 @@ class ReportClientOrganisationTest extends Base
                   'response' => $this->readFixture("GET_organisation_71_resolved3.json")
               ],
               [
+                'function' => 'readGetResult',
+                'url' => '/organisation/71/owner/',
+                'response' => $this->readFixture("GET_owner_23.json")
+            ],
+              [
                   'function' => 'readGetResult',
                   'url' => '/warehouse/clientorganisation/71/',
                   'response' => $this->readFixture("GET_clientorganisation_71.json")
@@ -71,6 +76,11 @@ class ReportClientOrganisationTest extends Base
                   'url' => '/department/74/organisation/',
                   'response' => $this->readFixture("GET_organisation_71_resolved3.json")
               ],
+              [
+                'function' => 'readGetResult',
+                'url' => '/organisation/71/owner/',
+                'response' => $this->readFixture("GET_owner_23.json")
+            ],
               [
                   'function' => 'readGetResult',
                   'url' => '/warehouse/clientorganisation/71/',
@@ -132,6 +142,11 @@ class ReportClientOrganisationTest extends Base
                     ],
                     [
                         'function' => 'readGetResult',
+                        'url' => '/organisation/71/owner/',
+                        'response' => $this->readFixture("GET_owner_23.json")
+                    ],
+                    [
+                        'function' => 'readGetResult',
                         'url' => '/warehouse/clientorganisation/71/',
                         'response' => $this->readFixture("GET_clientorganisation_71.json")
                     ],
@@ -182,6 +197,11 @@ class ReportClientOrganisationTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/department/74/organisation/',
                     'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture("GET_owner_23.json")
                 ],
                 [
                     'function' => 'readGetResult',

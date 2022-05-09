@@ -32,6 +32,11 @@ class WarehousePeriodTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture("GET_owner_23.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/warehouse/waitingscope/141/',
                     'response' => $this->readFixture("GET_warehouse_waitingscope_141.json")
                 ]

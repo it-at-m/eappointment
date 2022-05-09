@@ -16,9 +16,8 @@ js: now
 	npm run js
 
 fix: # run code fixing
-	php vendor/bin/phpcbf --standard=psr2 src/
-	php vendor/bin/phpcbf --standard=psr2 tests/
-	npm run fix
+	php ../../bin/phpcbf --standard=psr2 src/
+	php ../../bin/phpcbf --standard=psr2 tests/
 
 live: # init live system
 	$(COMPOSER) install --no-dev --prefer-dist

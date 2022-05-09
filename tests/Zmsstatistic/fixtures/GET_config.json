@@ -9,8 +9,8 @@
   "data": {
     "$schema": "https://schema.berlin.de/queuemanagement/config.json",
     "appointments": {
-      "urlChange": "https://service.berlin.de/terminvereinbarung/termin/manage/",
-      "urlAppointments": "https://service.berlin.de/terminvereinbarung/"
+      "urlChange": "https://www.example.com/terminvereinbarung/termin/manage/",
+      "urlAppointments": "https://www.example.com/terminvereinbarung/"
     },
     "notifications": {
       "kommandoAbsage": "Storno",
