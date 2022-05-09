@@ -68,7 +68,8 @@ class Owner extends Base
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionOrganisationId($organisationId);
-        return $this->fetchOne($query, new Entity());
+        $owner = $this->fetchOne($query, new Entity());
+        return $this->readResolvedReferences($owner, $resolveReferences);
     }
 
     /**
