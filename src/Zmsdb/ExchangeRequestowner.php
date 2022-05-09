@@ -4,7 +4,7 @@ namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Exchange;
 
-class ExchangeRequestorganisation extends Base
+class ExchangeRequestowner extends Base
 {
     protected $groupBy = array(
         'month' => '%Y-%m',
@@ -18,11 +18,11 @@ class ExchangeRequestorganisation extends Base
         \DateTimeInterface $dateend,
         $period = 'day'
     ) {
-        $organisation = (new Organisation())->readEntity($subjectid);
+        $owner = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Dienstleistungsstatistik $organisation->name";
+        $entity['title'] = "Dienstleistungsstatistik $owner->Kundenname";
         $entity->setPeriod($datestart, $dateend, $period);
-        $entity->addDictionaryEntry('subjectid', 'string', 'ID of an organisation', 'organisation.id');
+        $entity->addDictionaryEntry('subjectid', 'string', 'ID of an owner', 'owner.id');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
         $entity->addDictionaryEntry('name', 'string', 'Name of request');
         $entity->addDictionaryEntry('requestscount', 'number', 'Amount of requests');
@@ -32,9 +32,9 @@ class ExchangeRequestorganisation extends Base
             $raw = $this
                 ->getReader()
                 ->fetchAll(
-                    constant("\BO\Zmsdb\Query\ExchangeRequestorganisation::QUERY_READ_REPORT"),
+                    constant("\BO\Zmsdb\Query\ExchangeRequestowner::QUERY_READ_REPORT"),
                     [
-                        'organisationid' => $subjectid,
+                        'ownerid' => $subjectid,
                         'datestart' => $datestart->format('Y-m-d'),
                         'dateend' => $dateend->format('Y-m-d'),
                         'groupby' => $this->groupBy[$period]
@@ -49,11 +49,11 @@ class ExchangeRequestorganisation extends Base
 
     public function readSubjectList()
     {
-        $raw = $this->getReader()->fetchAll(Query\ExchangeRequestorganisation::QUERY_SUBJECTS, []);
+        $raw = $this->getReader()->fetchAll(Query\ExchangeRequestowner::QUERY_SUBJECTS, []);
         $entity = new Exchange();
         $entity['title'] = "Dienstleistungsstatistik";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
-        $entity->addDictionaryEntry('subject', 'string', 'Behoerden ID', 'organisation.id');
+        $entity->addDictionaryEntry('subject', 'string', 'Behoerden ID', 'owner.id');
         $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
         $entity->addDictionaryEntry('periodend', 'string', 'Datum bis');
         $entity->addDictionaryEntry('description', 'string', 'Beschreibung der Organisation');
@@ -65,16 +65,16 @@ class ExchangeRequestorganisation extends Base
 
     public function readPeriodList($subjectid, $period = 'day')
     {
-        $organisation = (new Organisation())->readEntity($subjectid);
+        $owner = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Dienstleistungsstatistik $organisation->name";
+        $entity['title'] = "Dienstleistungsstatistik $owner->Kundenname";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 
         $montsList = $this->getReader()->fetchAll(
-            constant("\BO\Zmsdb\Query\ExchangeRequestorganisation::QUERY_PERIODLIST_MONTH"),
+            constant("\BO\Zmsdb\Query\ExchangeRequestowner::QUERY_PERIODLIST_MONTH"),
             [
-                'organisationid' => $subjectid,
+                'ownerid' => $subjectid,
             ]
         );
         $raw = [];
