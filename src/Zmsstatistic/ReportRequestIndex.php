@@ -58,6 +58,7 @@ class ReportRequestIndex extends BaseController
               'menuActive' => 'request',
               'department' => $this->department,
               'organisation' => $this->organisation,
+              'owner' => $this->owner,
               'requestPeriod' => $requestPeriod,
               'showAll' => 1,
               'period' => (isset($args['period'])) ? $args['period'] : null,
