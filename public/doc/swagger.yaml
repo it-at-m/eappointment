@@ -55,7 +55,7 @@ info:
   license:
     name: Commercial
     url: 'http://www.berlinonline.net'
-  version: 05d37b5
+  version: 2.24.07-rc4-2-g7768673
 basePath: /terminvereinbarung/api/2
 schemes:
   - https
@@ -850,7 +850,7 @@ paths:
           description: day in format YYYY-MM-DD
           in: path
           required: true
-          type: integer
+          type: string
         - name: X-Authkey
           required: true
           description: authentication key to identify user for testing access rights
@@ -1817,6 +1817,48 @@ paths:
           description: success
         '404':
           description: organisation id does not exists
+  /organisation/{id}/owner/:
+    get:
+      summary: Get the owner for an organisation
+      tags:
+        - organisation
+        - owner
+      parameters:
+        - name: id
+          description: organisation number
+          in: path
+          required: true
+          type: integer
+        - name: X-Authkey
+          required: true
+          description: authentication key to identify user for testing access rights
+          in: header
+          type: string
+        - name: resolveReferences
+          description: >-
+            Resolve references with $ref, which might be faster on the server
+            side. The value of the parameter is the number of iterations to
+            resolve references
+          in: query
+          type: integer
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: schema/metaresult.json
+              data:
+                type: array
+                items:
+                  $ref: schema/owner.json
+        '403':
+          x-since: 2.12
+          description: organisation is not assigned to logged in useraccount
+        '404':
+          x-since: 2.12
+          description: organisation does not exist
   /organisation/{id}/hash/:
     get:
       summary: >-
@@ -3337,10 +3379,6 @@ paths:
             resolve references
           in: query
           type: integer
-        - name: reserveEntityIds
-          description: Deprecated
-          in: query
-          type: integer
         - name: startDate
           description: only fetch availabilities starting this date
           in: query
@@ -3427,7 +3465,7 @@ paths:
           description: day in format YYYY-MM-DD
           in: path
           required: true
-          type: integer
+          type: string
         - name: X-Authkey
           required: true
           description: authentication key to identify user for testing access rights
