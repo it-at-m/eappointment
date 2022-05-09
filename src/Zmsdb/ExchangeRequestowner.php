@@ -18,9 +18,9 @@ class ExchangeRequestowner extends Base
         \DateTimeInterface $dateend,
         $period = 'day'
     ) {
-        $owner = (new Organisation())->readEntity($subjectid);
+        $owner = (new Owner())->readEntity($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Dienstleistungsstatistik $owner->Kundenname";
+        $entity['title'] = "Dienstleistungsstatistik $owner->name";
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of an owner', 'owner.id');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
@@ -56,7 +56,7 @@ class ExchangeRequestowner extends Base
         $entity->addDictionaryEntry('subject', 'string', 'Behoerden ID', 'owner.id');
         $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
         $entity->addDictionaryEntry('periodend', 'string', 'Datum bis');
-        $entity->addDictionaryEntry('description', 'string', 'Beschreibung der Organisation');
+        $entity->addDictionaryEntry('description', 'string', 'Beschreibung des Eigentümers');
         foreach ($raw as $entry) {
             $entity->addDataSet(array_values($entry));
         }
@@ -65,9 +65,9 @@ class ExchangeRequestowner extends Base
 
     public function readPeriodList($subjectid, $period = 'day')
     {
-        $owner = (new Organisation())->readEntity($subjectid);
+        $owner = (new Owner())->readEntity($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Dienstleistungsstatistik $owner->Kundenname";
+        $entity['title'] = "Dienstleistungsstatistik $owner->name";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 

@@ -22,7 +22,7 @@ class ExchangeNotificationorganisation extends Base
         $entity = new Exchange();
         $entity['title'] = "SMS-Statistik $organisation->name";
         $entity->setPeriod($datestart, $dateend, $period);
-        $entity->addDictionaryEntry('subjectid', 'string', 'ID of a organisation', 'organisation.id');
+        $entity->addDictionaryEntry('subjectid', 'string', 'ID of an organisation', 'organisation.id');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
         $entity->addDictionaryEntry('organisationname', 'string', 'name of the organisation');
         $entity->addDictionaryEntry('departmentname', 'string', 'name of the department');
