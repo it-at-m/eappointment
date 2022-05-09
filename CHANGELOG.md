@@ -1,3 +1,6 @@
+## v2.23.07
+* #52137 Additional statistical evaluations for the owner level for services, notifications, waiting statistics
+
 ## v2.23.05
 
 * #44170 Der Link "alle Jahre anzeigen" wird nun nur noch angezeigt, wenn mehr als 3 Jahre auswählbar sind
