@@ -2109,6 +2109,54 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("OrganisationGet");
 
+    /**
+ *  @swagger
+ *  "/organisation/{id}/owner/":
+ *      get:
+ *          summary: Get the owner for an organisation
+ *          tags:
+ *              - organisation
+ *              - owner
+ *          parameters:
+ *              -   name: id
+ *                  description: organisation number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/owner.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "organisation is not assigned to logged in useraccount"
+ *              404:
+ *                  x-since: 2.12
+ *                  description: "organisation does not exist"
+ */
+\App::$slim->get(
+    '/organisation/{id:\d{1,11}}/owner/',
+    '\BO\Zmsapi\OwnerByOrganisation'
+)
+    ->setName("OwnerByOrganisation");
+
 /**
  *  @swagger
  *  "/organisation/{id}/":
