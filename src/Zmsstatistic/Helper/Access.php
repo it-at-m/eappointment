@@ -67,13 +67,22 @@ class Access extends \BO\Slim\Controller
     protected function testAccessRights($request)
     {
         $path = $request->getUri()->getPath();
+        $this->testAccess($path);
+        $this->testScope($path);
+    }
+
+    protected function testAccess($path)
+    {
         if ((false !== strpos($path, 'owner') && ! $this->owner) ||
             (false !== strpos($path, 'organisation') && ! $this->organisation) ||
             (false !== strpos($path, 'department') && ! $this->department)
         ) {
             throw new \BO\Zmsentities\Exception\UserAccountAccessRightsFailed();
         }
+    }
 
+    protected function testScope($path)
+    {
         if ($this->isPathWithoutScope($path)
             && (! isset($this->workstation['scope']) || ! isset($this->workstation['scope']['id']))
         ) {
