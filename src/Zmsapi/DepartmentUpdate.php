@@ -21,9 +21,10 @@ class DepartmentUpdate extends BaseController
         array $args
     ) {
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $department = Helper\User::checkDepartment($args['id']);
+        $workstation = (new Helper\User($request, 2));
+        $department =  $workstation::checkDepartment($args['id']);
         $department->addData($input)->testValid('de_DE', 1);
-        (new Helper\User($request, 2))->checkRights(
+        $workstation->checkRights(
             'department',
             new \BO\Zmsentities\Useraccount\EntityAccess($department)
         );
