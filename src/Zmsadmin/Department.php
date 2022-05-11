@@ -30,7 +30,7 @@ class Department extends BaseController
         if ($request->isPost()) {
             $input = $this->withCleanupLinks($input);
             $input = $this->withCleanupDayoffs($input);
-            $entity =  new Entity($input);
+            $entity = (new Entity($input))->withCleanedUpFormData();
             $entity->id = $entityId;
             $entity->dayoff = $entity->getDayoffList()->withTimestampFromDateformat();
             $entity = \App::$http->readPostResult(
