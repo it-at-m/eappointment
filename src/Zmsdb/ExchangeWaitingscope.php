@@ -141,7 +141,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $waitingCalculated = $existingEntry['waitingcalculated'] > $queueEntry['waitingTimeEstimate'] ?
             $existingEntry['waitingcalculated']
             : $queueEntry['waitingTimeEstimate'];
-        $waitingCount = $queueList->getQueuePositionByNumber($queueEntry->number);
+        $waitingCount = $queueList->withOutAppointment()->withoutStatus(['fake'])->count();
         $waitingCount = $existingEntry['waitingcount'] > $waitingCount ?
             $existingEntry['waitingcount'] : $waitingCount;
         $this->perform(
