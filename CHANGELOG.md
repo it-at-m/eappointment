@@ -1,3 +1,8 @@
+## v2.24.08
+
+* #35877 - The calculation for the waiting time of spontaneous customers was corrected
+* #31586 - Refactored helper class that sends reminder mails in loops until limit is reached
+
 ## v2.24.05
 
 * #49206 - One-time opening hours are now also correctly transmitted to a process
