@@ -97,11 +97,12 @@ class SendNotificationReminder
             $entity = (new \BO\Zmsentities\Notification)->toResolvedEntity($process, $config, $department, 'reminder');
             if ($commit) {
                 $notification = (new \BO\Zmsdb\Notification)->writeInQueue($entity, $this->dateTime);
-                $this->log(
-                    "\nINFO: $processCount. Write reminder notification in queue with ID ". $notification->getId() . " for process id ". $process->getId()
-                );
-                $this->deleteReminderTimestamp($process, $notification, $processCount, $commit);
             }
+            $this->log(
+                "\nINFO: $processCount. Write reminder notification in queue with ID ". $notification->getId() . " 
+                for process id ". $process->getId()
+            );
+            $this->deleteReminderTimestamp($process, $notification, $processCount, $commit);
         }
         return $notification;
     }
@@ -114,7 +115,9 @@ class SendNotificationReminder
     ) {
         if ($notification) {
             $process->reminderTimestamp = 0;
-            $process = (new \BO\Zmsdb\Process)->updateEntity($process, $this->dateTime);
+            if ($commit) {
+                $process = (new \BO\Zmsdb\Process)->updateEntity($process, $this->dateTime);
+            }
             $this->log("INFO: $processCount. Updated $process->id - reminder timestamp removed");
         } else {
             $this->log("\nWARNING: Notification for $process->id not possible - no telephone or not enabled");
