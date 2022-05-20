@@ -4,8 +4,6 @@ namespace BO\Zmsdb\Helper;
 
 class SendMailReminder
 {
-    protected $processList;
-
     protected $datetime;
 
     protected $lastRun;
@@ -66,7 +64,6 @@ class SendMailReminder
     protected function writeMailReminderList($commit)
     {
         $count = $this->writeByCallback($commit, function ($limit, $offset) {
-            $query = new \BO\Zmsdb\Process();
             $processList = (new \BO\Zmsdb\Process)->readEmailReminderProcessListByInterval(
                 $this->dateTime,
                 $this->lastRun,
@@ -106,8 +103,12 @@ class SendMailReminder
         if ($process->getFirstClient()->hasEmail() && $department->hasMail()) {
             $config = (new \BO\Zmsdb\Config)->readEntity();
             $entity = (new \BO\Zmsentities\Mail)->toResolvedEntity($process, $config, 'reminder');
-            $entity = (new \BO\Zmsdb\Mail)->writeInQueue($entity, $this->dateTime);
-            $this->log("INFO: $processCount. Write mail in queue with ID ". $entity->getId() ." - ". $entity->subject);
+            if ($commit) {
+                $entity = (new \BO\Zmsdb\Mail)->writeInQueue($entity, $this->dateTime);
+                $this->log(
+                    "INFO: $processCount. Write mail in queue with ID ". $entity->getId() ." - ". $entity->subject
+                );
+            }
         }
         return $entity;
     }
