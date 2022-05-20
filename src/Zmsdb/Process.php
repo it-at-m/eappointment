@@ -760,6 +760,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function readNotificationReminderProcessList(
         \DateTimeInterface $dateTime,
         $limit = 500,
+        $offset = null,
         $resolveReferences = 0
     ) {
         $selectQuery = new Query\Process(Query\Base::SELECT);
@@ -771,7 +772,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addConditionAssigned()
             ->addConditionIgnoreSlots()
             ->addConditionStatus('confirmed')
-            ->addLimit($limit);
+            ->addLimit($limit, $offset);
         $statement = $this->fetchStatement($selectQuery);
         return $this->readList($statement, $resolveReferences);
     }
