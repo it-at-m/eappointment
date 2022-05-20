@@ -77,7 +77,7 @@ class SendMailReminder
             );
             return $processList;
         });
-        $this->count += $count; 
+        $this->count += $count;
     }
 
     protected function writeByCallback($commit, \Closure $callback)
