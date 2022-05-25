@@ -4,23 +4,13 @@ include:
 test-php-73:
     extends: .test-php
     allow_failure: false
-    services:
-        - name: mariadb:10.1
-          alias: mysql
-          command: ["mysqld", "--general-log=1", "--general-log-file=/var/log/mysql/general.log"]
-    before_script:
-        - $CLI_COMPOSER
-        - vendor/bin/importTestData --commit
     variables:
       PHP_VERSION: "7.3"
-      MYSQL_DATABASE: zmsbo
-      MYSQL_ROOT_PASSWORD: mysql
     only:
         changes:
             - .gitlab-ci.yml
             - composer.lock
             - composer.json
-            - schema/**/*
             - templates/**/*
             - src/**/*
             - tests/**/*.{json,php}
@@ -35,7 +25,6 @@ test-php-73:
 #            - .gitlab-ci.yml
 #            - composer.lock
 #            - composer.json
-#            - schema/**/*
 #            - templates/**/*
 #            - src/**/*
 #            - tests/**/*.{json,php}
