@@ -22,7 +22,11 @@ class Appointment extends Schema\Entity
 
     public function toDate($lang = 'de')
     {
-        return ($lang == 'en') ? date('l F d, Y', $this->date) : strftime("%A %d. %B %Y", $this->date);
+        // Mittwoch 18. November 2015
+        return ($lang == 'en') ? date('l F d, Y', $this->date) : Helper\DateTime::getFormatedDates(
+            $this->toDateTime(), 
+            'EEEE dd. MMMM yyyy'
+        );
     }
 
     public function toTime($lang = 'de')
