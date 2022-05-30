@@ -52,7 +52,7 @@ class Month extends Schema\Entity
             array(
                 'year' => $currentDate->format('Y'),
                 'month' => $currentDate->format('m'),
-                'calHeadline' => strftime('%B %Y', $currentDate->getTimestamp()),
+                'calHeadline' => \BO\Zmsentities\Helper\DateTime::getFormatedDates($currentDate, 'MMMM Y'),
                 'startDow' => ($startDow == 0) ? 6 : $startDow - 1, // change for week start with monday on 0,
                 'days' => $monthDayList,
                 'appointmentExists' => $monthDayList->hasDayWithAppointments(),
