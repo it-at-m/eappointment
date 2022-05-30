@@ -24,7 +24,7 @@ class Appointment extends Schema\Entity
     {
         // Mittwoch 18. November 2015
         return ($lang == 'en') ? date('l F d, Y', $this->date) : Helper\DateTime::getFormatedDates(
-            $this->toDateTime(), 
+            $this->toDateTime(),
             'EEEE dd. MMMM yyyy'
         );
     }
