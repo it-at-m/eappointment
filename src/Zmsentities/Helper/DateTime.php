@@ -59,8 +59,12 @@ class DateTime extends \DateTimeImmutable
         return $hours * 3600 + $minutes * 60 + $seconds;
     }
 
-    public static function getFormatedDates($date, $pattern = 'MMMM', $locale = 'de_DE', $timezone = 'Europe/Berlin')
-    {
+    public static function getFormatedDates(
+        \DateTimeInterface $date, 
+        $pattern = 'MMMM', 
+        $locale = 'de_DE', 
+        $timezone = 'Europe/Berlin'
+    ){
         $dateFormatter = new \IntlDateFormatter(
             $locale,
             \IntlDateFormatter::MEDIUM,
