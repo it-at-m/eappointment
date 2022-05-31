@@ -60,11 +60,11 @@ class DateTime extends \DateTimeImmutable
     }
 
     public static function getFormatedDates(
-        \DateTimeInterface $date, 
-        $pattern = 'MMMM', 
-        $locale = 'de_DE', 
+        \DateTimeInterface $date,
+        $pattern = 'MMMM',
+        $locale = 'de_DE',
         $timezone = 'Europe/Berlin'
-    ){
+    ) {
         $dateFormatter = new \IntlDateFormatter(
             $locale,
             \IntlDateFormatter::MEDIUM,
