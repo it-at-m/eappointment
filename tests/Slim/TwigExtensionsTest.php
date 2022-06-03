@@ -24,16 +24,6 @@ class TwigExtensionsTest extends TestCase
         );
         $this->assertFalse($twigExtensionsClass->getSystemStatus('APP_ENV'));
         $this->assertEquals('unittest', $twigExtensionsClass->toTextFormat('<span>unit<br />test</span>'));
-
-        $date = new \StdClass();
-        $date->year = 2016;
-        $date->month = 4;
-        $date->day = 1;
-        $this->assertEquals('2016-04-01', $twigExtensionsClass->formatDateTime($date)['ymd']);
-        $this->assertEquals('1459461600', $twigExtensionsClass->formatDateTime($date)['ts']);
-        $this->assertEquals('noroute', $twigExtensionsClass->currentRoute()['name']);
-        $this->assertNotEquals('version.unknown', $twigExtensionsClass->currentVersion());
-
         $this->assertEquals(
             '/unittest/123/?lang=en',
             $twigExtensionsClass->urlGet('getroute', ['id' => 123], ['lang' => 'en'])
