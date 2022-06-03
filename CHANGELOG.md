@@ -1,3 +1,7 @@
+## v2.24.08
+
+* The php function "strftime()" will be deprecated from php version 8. The "IntlDateFormatter" class has now been used to format dates.
+
 ## v2.24.07
 
 * #54479 - Revision of the confirmation email and the spontaneous customer email text
