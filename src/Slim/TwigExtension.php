@@ -99,14 +99,14 @@ class TwigExtension extends \Twig_Extension
         );
         $formatDate['date']     = Helper::getFormatedDates($dateTime, "EE, dd. MMMM yyyy");
         $formatDate['fulldate'] = Helper::getFormatedDates($dateTime, "EEEE, 'den' dd. MMMM yyyy");
-        $formatDate['weekday']  = (date('w', $dateTime->getTimestamp()) == 0) ? 
-            date('w', $dateTime->getTimestamp()) + 6 : 
+        $formatDate['weekday']  = (date('w', $dateTime->getTimestamp()) == 0) ?
+            date('w', $dateTime->getTimestamp()) + 6 :
             date('w', $dateTime->getTimestamp()) - 1;
         $formatDate['ym']       = $dateTime->format('Y-m');
         $formatDate['ymd']       = $dateTime->format('Y-m-d');
         $formatDate['ts']       = $dateTime->getTimestamp();
-        $formatDate['time']     = ($dateTime->format('H:i') != '00:00') ? 
-            Helper::getFormatedDates($dateTime, 'HH:mm Uhr') : 
+        $formatDate['time']     = ($dateTime->format('H:i') != '00:00') ?
+            Helper::getFormatedDates($dateTime, 'HH:mm Uhr') :
             false;
         return $formatDate;
     }
