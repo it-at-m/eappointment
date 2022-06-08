@@ -5,23 +5,19 @@ CALSCALE:GREGORIAN
 VERSION:2.0
 PRODID:ZMS-Berlin
 METHOD:REQUEST
-X-WR-TIMEZONE:Europe/Berlin
 BEGIN:VTIMEZONE
 TZID:CET
-X-LIC-LOCATION:Europe/Berlin
 BEGIN:DAYLIGHT
 TZOFFSETFROM:+0100
 TZOFFSETTO:+0200
 TZNAME:Central European Summer Time
-DTSTART:{{ startTime|date("Ymd") }}T{{ startTime|date("His") }}
-RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=3
+DTSTART:19700329T020000
 END:DAYLIGHT
 BEGIN:STANDARD
 TZOFFSETFROM:+0200
 TZOFFSETTO:+0100
 TZNAME:Central European Time
-DTSTART:{{ startTime|date("Ymd") }}T{{ startTime|date("His") }}
-RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10
+DTSTART:19701025T030000
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
@@ -33,8 +29,8 @@ GEO:48.85299;2.36885
 SUMMARY:{% trans "Berlin-Termin:" %} {{ process.id }}
 DESCRIPTION:{{ message }}
 CLASS:PUBLIC
-DTSTART;TZID=CET:{{ startTime|date("Ymd") }}T{{ startTime|date("His") }}
-DTEND;TZID=CET:{{ endTime|date("Ymd") }}T{{ endTime|date("His") }}
+DTSTART:{{ startTime|date("Ymd") }}T{{ startTime|date("His") }}
+DTEND:{{ endTime|date("Ymd") }}T{{ endTime|date("His") }}
 DTSTAMP:{{ timestamp|date("Ymd") }}T{{ timestamp|date("His") }}
 BEGIN:VALARM
 ACTION:DISPLAY
