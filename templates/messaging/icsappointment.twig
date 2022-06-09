@@ -5,12 +5,14 @@ CALSCALE:GREGORIAN
 VERSION:2.0
 PRODID:ZMS-Berlin
 METHOD:REQUEST
+X-WR-TIMEZONE:Europe/Berlin
 BEGIN:VTIMEZONE
 TZID:CET
+X-LIC-LOCATION:Europe/Berlin
 BEGIN:DAYLIGHT
 TZOFFSETFROM:+0100
 TZOFFSETTO:+0200
-TZNAME:Central European Summer Time
+TZNAME:CEST
 DTSTART:19700329T020000
 END:DAYLIGHT
 BEGIN:STANDARD
@@ -25,12 +27,11 @@ UID:{{ startTime|date("Ymd") }}-{{ process.id }}
 ORGANIZER;CN="{{ process.scope.provider.name }}":MAILTO:{{ process.scope.preferences.client.emailFrom }}
 SEQUENCE:0
 LOCATION:{{ process.scope.provider.name }} {{ process.scope.provider.contact.street }} {{ process.scope.provider.contact.streetNumber }}\, {{ process.scope.provider.contact.postalCode }} {{ process.scope.provider.contact.city }}
-GEO:48.85299;2.36885
 SUMMARY:{% trans "Berlin-Termin:" %} {{ process.id }}
 DESCRIPTION:{{ message }}
 CLASS:PUBLIC
-DTSTART:{{ startTime|date("Ymd") }}T{{ startTime|date("His") }}
-DTEND:{{ endTime|date("Ymd") }}T{{ endTime|date("His") }}
+DTSTART;TZID=CET:{{ startTime|date("Ymd") }}T{{ startTime|date("His") }}
+DTEND;TZID=CET:{{ endTime|date("Ymd") }}T{{ endTime|date("His") }}
 DTSTAMP:{{ timestamp|date("Ymd") }}T{{ timestamp|date("His") }}
 BEGIN:VALARM
 ACTION:DISPLAY
