@@ -167,15 +167,25 @@ class TwigExtension extends \Twig_Extension
         return $date;
     }
 
-    public function formatDateTime($datetime)
+    public function formatDateTime($dateString)
     {
-        $formatDate['date']     = strftime('%a, %d. %B %Y', $datetime);
-        $formatDate['fulldate'] = strftime('%A, den %d. %B %Y', $datetime);
-        $formatDate['weekday']  = (date('w', $datetime) == 0) ? date('w', $datetime) + 6 : date('w', $datetime) - 1;
-        $formatDate['time']     = (date('H:i', $datetime) != '00:00') ? strftime('%H:%M Uhr', $datetime): false;
-        $formatDate['dateId']   = date('Y-m-d', $datetime);
-        $formatDate['ym']      = date('Y-m', $datetime);
-        $formatDate['timeId']   = (date('H:i', $datetime) != '00:00') ? date('H:i', $datetime) : false;
+        $dateTime = new \DateTimeImmutable($dateString, new \DateTimezone('Europe/Berlin'));
+        $formatDate['date']     = Helper\DateTime::getFormatedDates($dateTime, "EE, dd. MMMM yyyy");
+        $formatDate['fulldate'] = Helper\DateTime::getFormatedDates($dateTime, "EEEE, 'den' dd. MMMM yyyy");
+        $formatDate['weekday']  = ($dateTime->format('N') == 0) ? 
+            $dateTime->format('N') + 6 : 
+            $dateTime->format('N') - 1;
+        $formatDate['weekdayfull'] = Helper\DateTime::getFormatedDates($dateTime, "EEEE");
+
+        $time = $dateTime->format('H:i');
+        $formatDate['time']     = ($time != '00:00') ? 
+            Helper\DateTime::getFormatedDates($dateTime, "HH:mm 'Uhr'") : 
+            false;
+        $formatDate['timeId']   = ($time != '00:00') ? $time : false;
+        $formatDate['ts']       = $dateTime->getTimestamp();
+        $formatDate['dateId']   = $dateTime->format('Y-m-d');
+        $formatDate['ym']      = $dateTime->format('Y-m');
+        
         return $formatDate;
     }
 
