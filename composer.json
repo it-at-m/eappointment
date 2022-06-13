@@ -12,7 +12,8 @@
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
         "phpunit/phpunit": "^9.5.4",
-        "seld/jsonlint": "*"
+        "seld/jsonlint": "*",
+        "twig/extensions": "*"
     },
     "require": {
         "php": ">=7.3.0",
