@@ -16,7 +16,7 @@
       "name": "Commercial",
       "url": "http://www.berlinonline.net"
     },
-    "version": "2.24.07-rc4-2-g7768673"
+    "version": "2.24.06-rc1-2-g99def46"
   },
   "basePath": "/terminvereinbarung/api/2",
   "schemes": [
@@ -88581,7 +88581,7 @@
             "description": "day in format YYYY-MM-DD",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "X-Authkey",
@@ -326466,6 +326466,12 @@
             "type": "integer"
           },
           {
+            "name": "reserveEntityIds",
+            "description": "Deprecated",
+            "in": "query",
+            "type": "integer"
+          },
+          {
             "name": "startDate",
             "description": "only fetch availabilities starting this date",
             "in": "query",
@@ -330647,7 +330653,7 @@
             "description": "day in format YYYY-MM-DD",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "X-Authkey",
