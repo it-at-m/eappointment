@@ -5,6 +5,7 @@ config.php
 tags
 .DS_Store
 public/_tests
+public/doc/redoc.standalone.js
 cache
 vendor.old
 vendor.update
