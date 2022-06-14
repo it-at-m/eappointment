@@ -200,12 +200,17 @@ class Messaging
         $message = self::getMailContent($process, $config, $initiator, $status);
         $plainContent = self::getPlainText($message, "\\n");
         $appointment = $process->getFirstAppointment();
+        $currentYear = $appointment->getStartTime()->format('Y');
         $icsString = self::twigView()->render(
             'messaging/' . $template,
             array(
                 'date' => $appointment->toDateTime()->format('U'),
                 'startTime' => $appointment->getStartTime()->format('U'),
                 'endTime' => $appointment->getEndTime()->format('U'),
+                'startSummerTime' => 
+                    \BO\Zmsentities\Helper\DateTime::getSummerTimeStartDateTime($currentYear)->format('U'),
+                'endSummerTime' => 
+                    \BO\Zmsentities\Helper\DateTime::getSummerTimeEndDateTime($currentYear)->format('U'),
                 'process' => $process,
                 'timestamp' => (!$now) ? time() : $now,
                 'message' => $plainContent
