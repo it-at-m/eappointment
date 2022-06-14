@@ -10,6 +10,8 @@ test-php-73:
           command: ["mysqld", "--general-log=1", "--general-log-file=/var/log/mysql/general.log"]
     before_script:
         - $CLI_COMPOSER
+        - rm -rf data
+        - ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
         - vendor/bin/importTestData --commit
     variables:
       PHP_VERSION: "7.3"
