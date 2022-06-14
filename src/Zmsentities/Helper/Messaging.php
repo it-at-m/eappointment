@@ -207,9 +207,9 @@ class Messaging
                 'date' => $appointment->toDateTime()->format('U'),
                 'startTime' => $appointment->getStartTime()->format('U'),
                 'endTime' => $appointment->getEndTime()->format('U'),
-                'startSummerTime' => 
+                'startSummerTime' =>
                     \BO\Zmsentities\Helper\DateTime::getSummerTimeStartDateTime($currentYear)->format('U'),
-                'endSummerTime' => 
+                'endSummerTime' =>
                     \BO\Zmsentities\Helper\DateTime::getSummerTimeEndDateTime($currentYear)->format('U'),
                 'process' => $process,
                 'timestamp' => (!$now) ? time() : $now,
