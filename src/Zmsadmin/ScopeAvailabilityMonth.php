@@ -1,8 +1,10 @@
 <?php
 
 /**
- * @copyright BerlinOnline Stadtportal GmbH & Co. KG
- **/
+ * Return availability list by scope in month view.
+ *
+ * @copyright 2018 BerlinOnline Stadtportal GmbH & Co. KG
+ */
 
 namespace BO\Zmsadmin;
 
@@ -17,6 +19,10 @@ class ScopeAvailabilityMonth extends BaseController
      * Return response.
      *
      * @SuppressWarnings(Param)
+     *
+     * @param \Psr\Http\Message\RequestInterface  $request  The request instance
+     * @param \Psr\Http\Message\ResponseInterface $response The response instance
+     * @param array                               $args     The path arguments
      *
      * @return string
      */
