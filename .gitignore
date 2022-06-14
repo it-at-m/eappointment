@@ -6,9 +6,13 @@ tags
 .DS_Store
 public/_tests
 public/doc/redoc.standalone.js
+public/_test/swagger-ui-bundle.js
+public/_test/swagger-ui.css
+public/_test/swagger-ui-standalone-preset.js
 cache
 vendor.old
 vendor.update
 VERSION
-composer.*.lock
+composer.lock
+package-lock.json
 .phpunit.result.cache

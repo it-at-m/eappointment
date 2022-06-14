@@ -10,24 +10,18 @@ help: # This help
 now: # Dummy target
 
 dev: # init development system
-	COMPOSER=composer.devel.json $(COMPOSER) update
+	COMPOSER=composer.json $(COMPOSER) update
 	npm install
 
 live: # init live system, delete unnecessary libs
 	$(COMPOSER) install --no-dev --prefer-dist
 
 fix: # run code fixing
-	php ../../bin/phpcbf --standard=psr2 src/
-	php ../../bin/phpcbf --standard=psr2 tests/
+	php vendor/bin/phpcbf --standard=psr2 src/
+	php vendor/bin/phpcbf --standard=psr2 tests/
 
-build: # Build CSS, JS and Swagger docs on changes
-	./node_modules/.bin/gulp
-
-validate: # validate JSON Schemes
-	./node_modules/.bin/gulp validate
-
-watch: build # Build CSS, JS and Swagger docs on changes
-	./node_modules/.bin/gulp watch
+openapi: # Swagger docs on changes
+	./bin/doc
 
 coverage:
 	php vendor/bin/phpunit --coverage-html public/_tests/coverage/
