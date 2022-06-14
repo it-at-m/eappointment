@@ -76,6 +76,22 @@ class DateTime extends \DateTimeImmutable
         return $dateFormatter->format($date->getTimestamp());
     }
 
+    public static function getSummerTimeStartDateTime($year = null)
+    {
+        $year = ($year) ? $year : date('Y');
+        $dateTimeMarch = new \DateTime($year. '-03-01', new \DateTimeZone('Europe/Berlin'));
+        $lastSunday = $dateTimeMarch->modify('Last Sunday of March');
+        return $lastSunday->setTime('02','00','00');
+    }
+
+    public static function getSummerTimeEndDateTime($year = null)
+    {
+        $year = ($year) ? $year : date('Y');
+        $dateTimeOctober = new \DateTime($year. '-10-01', new \DateTimeZone('Europe/Berlin'));
+        $lastSunday = $dateTimeOctober->modify('Last Sunday of October');
+        return $lastSunday->setTime('03','00','00');
+    }
+
     public function __toString()
     {
         return $this->format('c');

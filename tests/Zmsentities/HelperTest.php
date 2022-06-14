@@ -56,6 +56,15 @@ class HelperTest extends EntityCommonTests
         $this->assertStringContainsString('2016-01-31T12:50:00+01:00', $time->__toString(), 'Helper DateTime to string failed');
     }
 
+    public function testSummerTimeChange() 
+    {
+        $dateTimeSummerStart = \BO\Zmsentities\Helper\DateTime::getSummerTimeStartDateTime(2016);
+        $this->assertEquals('2016-03-27 03:00:00', $dateTimeSummerStart->format('Y-m-d H:i:s'));
+
+        $dateTimeSummerEnd = \BO\Zmsentities\Helper\DateTime::getSummerTimeEndDateTime(2016);
+        $this->assertEquals('2016-10-30 03:00:00', $dateTimeSummerEnd->format('Y-m-d H:i:s'));
+    }
+
     protected function getExampleList()
     {
         $list = [
