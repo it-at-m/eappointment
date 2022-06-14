@@ -2,8 +2,8 @@ import RequestView from "./requests"
 import FreeProcessView from './free-process-list'
 import FormButtons from './form-buttons'
 import $ from "jquery"
-import moment from 'moment'
 import maxChars from '../../element/form/maxChars'
+import moment from 'moment'
 
 class View extends RequestView {
 

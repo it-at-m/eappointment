@@ -22,6 +22,9 @@ class GraphDefaults
         id, 
         shortName
         source,
+        contact {
+            name
+        }
         preferences {
             appointment
             client
