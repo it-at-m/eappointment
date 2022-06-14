@@ -635,11 +635,11 @@ class ProcessTest extends EntityCommonTests
             $withOutAvailability->getIterator()->current()->getFirstAppointment()->date
         );
         $this->assertStringContainsString(
-            'Die Slots für diesen Zeitraum wurden überbucht', 
+            'Die Slots für diesen Zeitraum wurden überbucht',
             $withAvailability->getLast()->amendment
         );
         $this->assertStringContainsString(
-            'Der Vorgang (1) befindet sich außerhalb der Öffnungszeit!', 
+            'Der Vorgang (1) befindet sich außerhalb der Öffnungszeit!',
             $withOutAvailability->getFirst()->amendment
         );
     }
