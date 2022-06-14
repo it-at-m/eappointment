@@ -14,7 +14,7 @@ test-php-73:
     variables:
       PHP_VERSION: "7.3"
       MYSQL_DATABASE: zmsbo
-      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_ROOT_PASSWORD: zmsapi
     only:
         changes:
             - .gitlab-ci.yml
