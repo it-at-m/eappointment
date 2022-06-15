@@ -8,12 +8,11 @@ class WorkstationDeleteTest extends Base
 {
     protected $classname = "WorkstationDelete";
 
-    public static $loginName = 'berlinonline';
+    public static $loginName = 'testadmin';
 
     public function __construct()
     {
         parent::__construct();
-        static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';
     }
 
     public function testRendering()
