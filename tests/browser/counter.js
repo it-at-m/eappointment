@@ -115,7 +115,7 @@ test('ValidationAppointment', async t => {
         .typeText('input[name=email]', "012345678901", {replace: true})
         .click('button.process-reserve')
         .expect(Selector('.has-error input[type=text]').getAttribute('name')).eql('email')
-        .typeText('input[name=email]', "server@service.berlinonline.de", {replace: true})
+        .typeText('input[name=email]', "test@example.com", {replace: true})
         .click('button.process-reserve')
         ;
     const processId = await Selector('.dialog .message__body button[name="printWaitingNumber"]').getAttribute("data-id");

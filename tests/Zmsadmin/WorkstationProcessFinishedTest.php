@@ -95,7 +95,7 @@ class WorkstationProcessFinishedTest extends Base
                 'clients' => [
                     [
                         'familyName' => 'M252',
-                        'email' => 'zms@service.berlinonline.de'
+                        'email' => 'test@example.com'
                     ]
                 ]
             ],
@@ -143,7 +143,7 @@ class WorkstationProcessFinishedTest extends Base
                 'clients' => [
                     [
                         'familyName' => 'M252',
-                        'email' => 'zms@service.berlinonline.de'
+                        'email' => 'test@example.com'
                     ]
                 ]
             ],
@@ -191,7 +191,7 @@ class WorkstationProcessFinishedTest extends Base
                 'clients' => [
                     [
                         'familyName' => 'M252',
-                        'email' => 'zms@service.berlinonline.de'
+                        'email' => 'test@example.com'
                     ]
                 ]
             ],
