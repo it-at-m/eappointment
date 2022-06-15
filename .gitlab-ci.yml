@@ -48,7 +48,7 @@ outdated:
 pages:
     stage: deploy
     script:
-        - echo "/zmsapi/ /zmsapi/_tests/coverage/index.html 302" >> public/_redirects
+        - echo "/zmsapi/_tests/coverage/ /zmsapi/_tests/coverage/index.html 302" >> public/_redirects
         - echo "/zmsapi/doc/ /zmsapi/public/doc 302" >> public/_redirects
         - find public/
         - bash ./bin/doc #build swagger.yaml, valdiate it and create resolved swagger.json, get some files for documentation 
@@ -62,6 +62,7 @@ pages:
             - src/**/*
             - tests/**/*.{json,php}
             - routing.php
+            - .gitlab-ci.yml
     environment:
         name: analytics
         url: https://eappointment.gitlab.io/zmsapi
