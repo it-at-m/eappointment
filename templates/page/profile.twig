@@ -1,0 +1,22 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block headline %}
+    {{ headline1("Mein Profil") }}
+{% endblock %}
+
+{% block content %}
+    {{ parent() }}
+    <!-- page profile -->
+    <div class="profile-view" data-includeurl="{{ includeUrl() }}">
+        <div class="grid">
+            <div class="grid__item one-half">
+                {% include "block/useraccount/info.twig" %}
+            </div>
+            <div class="grid__item one-half" data-useraccount-changepassword>
+                {% include "block/useraccount/profile/changepassword.twig" %}
+            </div>
+        </div>
+    </div>
+    <!-- /page profile -->
+{% endblock %}

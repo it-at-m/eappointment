@@ -1,0 +1,46 @@
+{% from 'element/helper/form.twig' import formgroup, formbutton, inputfield %}
+{% set timeSlotOptions = [] %}
+
+{% if selectedProcess %}
+    {% set selectedProcessTime = selectedProcess.appointments|first.date|date("H-i") %}
+    {% set selectedProcessDate = selectedProcess.appointments|first.date|date("Y-m-d") %}
+{% endif %}
+
+{% if getNow()|date("Y-m-d") == selectedDate %}
+    {% set timeSlotOptions = [{ "value": "00-00", "name": "Spontankunde" }] %}
+{% endif %}
+
+{% for date,item in freeProcessList %}
+    {% if (selectedTime and selectedTime == date|date("H-i")) or selectedProcessTime == date|date("H-i") %}
+        {% set selected = "selected" %}
+    {% else %}
+        {% set selected = "" %}
+    {% endif %}
+
+    {% set freeLength = item|length %}
+    {% if freeLength > 0 and selectedProcessTime == date|date("H-i") and selectedProcessDate == date|date("Y-m-d") %}
+        {% set freeLength = freeLength - 1 %}
+    {% endif %}
+    {% set timeSlotOptions = timeSlotOptions|merge([{"data": {"scope": item|first.scope.id, "free": freeLength}, "value": date|date("H-i"), "name": date|date("H:i") ~ " (noch " ~ freeLength ~ " frei)", "selected": selected }]) %}
+{% endfor %}
+
+{% set disabled = "" %}
+{% if timeSlotOptions|length == 0 %}
+    {% set disabled = "disabled" %}
+{% endif %}
+
+{{ formgroup(
+    {"label": "Uhrzeit"},
+    [{
+        "type": "select",
+        "parameter": {
+            "accesskey":"z",
+            "disabled":disabled,
+            "id": "process_time",
+            "name": "selectedtime",
+            "options": timeSlotOptions
+        }
+    }]
+) }}
+
+<div class="body"></div>

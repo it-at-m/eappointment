@@ -1,0 +1,22 @@
+{% use "element/helper/messages.twig" %}
+
+{% block conflicts %}
+	{% if block("conflictsBlock") is defined and conflictlist %}
+		{{ block("conflictsBlock") }}
+	{% endif %}
+{% endblock %}
+{% block errors %}
+	{% if block(error) is defined %}
+		{{ block(error) }}
+	{% endif %}
+{% endblock %}
+{% block notices %}
+	{% if block(notice) is defined %}
+		{{ block(notice) }}
+	{% endif %}
+{% endblock %}
+{% block successes %}
+	{% if block(success) is defined %}
+		{{ block(success) }}
+	{% endif %}
+{% endblock %}

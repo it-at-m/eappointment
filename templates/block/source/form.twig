@@ -1,0 +1,98 @@
+{% from 'element/helper/form.twig' import formgroup, formbutton, inputfield %}
+
+{% set dataDescriptions = {
+        "data": "%s"|format("Die weiteren Daten werden im JSON Format hinterlegt und sind optional.")|trans,
+        "delete": "%s"|format("Ein Löschen einmal erstellter Dienstleister/Dienstleistungen ist nicht möglich! Diese müssen für bestehende Termin-Buchungen und eine statistische Auswertung erhalten bleiben.")|trans,
+        "requestrelation": "%s"|format("Wenn hier keine Kombinationen zwischen Dienstleistungen und Dienstleistern aufgeführt werden, werden automatisch alle Dienstleistungen zu allen Dienstleistern mit einem Zeitslot pro Buchung hinzugefügt.")|trans,
+        "mandantlabel": "%s"|format("Dieses Kürzel lässt sich nur beim Anlegen des Mandanten festlegen, danach ist es nicht mehr änderbar.")|trans
+    }
+%}
+{% set dataLabelsMandant = { 
+        "label": "%s"|format("Bezeichung")|trans, 
+        "contact": "%s"|format("Ansprechpartner")|trans, 
+        "source": "%s"|format("Kürzel")|trans, 
+        "name": "%s"|format("Name")|trans, 
+        "email": "%s"|format("E-Mail")|trans
+    } 
+%}
+{% set dataLabelsRequests = { 
+        "id": "%s"|format("LfdNr.")|trans, 
+        "name": "%s"|format("Name")|trans, 
+        "url": "%s"|format("URL")|trans, 
+        "group": "%s"|format("Gruppe")|trans, 
+        "data": "%s"|format("Weitere Daten")|trans 
+    } 
+%}
+{% set dataLabelsProviders = { 
+        "id": "%s"|format("LfdNr.")|trans, 
+        "name": "%s"|format("Name")|trans, 
+        "url": "%s"|format("URL")|trans, 
+        "street": "%s"|format("Straße")|trans, 
+        "streetNumber": "%s"|format("Hausnummer")|trans,
+        "postalCode": "%s"|format("PLZ")|trans,
+        "city": "%s"|format("Ort")|trans,
+        "data": "%s"|format("Weitere Daten")|trans 
+    } 
+%}
+
+{% set dataLabelsRequestRelation = {
+        "request": "%s"|format("Dienstleistung")|trans,
+        "provider": "%s"|format("Dienstleister")|trans,
+        "slots": "%s"|format("Zeitslots")|trans,
+        "delete": "%s"|format("Löschen")|trans,
+        "new": "%s"|format("Neue Kombination")|trans,
+        "noName": "- %s -"|format("Keinen Namen angegeben")|trans,
+    } 
+%}
+
+{% set defaultSource = {
+    "requests": [{
+                    id: 1,
+                    name: '',
+                    link: '',
+                    group: '',
+                    data: ''
+                }],
+    "providers": [{
+                    id: 1,
+                    name: '',
+                    link: '',
+                    contact: {
+                        street: '',
+                        streetNumber: '',
+                        postalCode: '',
+                        city: '',
+                    },
+                    data: ''
+                }],
+    "requestrelation": []
+
+} %}
+
+<!-- source form -->
+<div class="message message--default" role="alert">
+    <p>
+        <strong class="message__heading">Hinweis:</strong>
+        {% trans %}
+        Sobald ein Mandant angelegt wurde, kann dieser nicht mehr gelöscht werden. Damit wird sichergestellt, dass bereits gebuchte und archivierte Termine weiterhin verwendbar sind.
+        {% endtrans %}
+    </p>
+</div>
+
+<form method="post" action="./" enctype="multipart/form-data" class="form--base source-form">
+    <div class="source-form-edit" data-source="{{ source|default(defaultSource)|json_encode }}" data-labelsrequests={{ dataLabelsRequests|json_encode|e('html_attr') }} data-labelsproviders={{ dataLabelsProviders|json_encode|e('html_attr') }} data-labelsmandant={{ dataLabelsMandant|json_encode|e('html_attr') }} data-labelsmandant={{ dataLabelsMandant|json_encode|e('html_attr') }} data-labelsrequestrelation={{ dataLabelsRequestRelation|json_encode|e('html_attr') }} data-descriptions={{ dataDescriptions|json_encode|e('html_attr') }}>
+    </div>
+
+    <div class="form-actions">
+        {{ inputfield({
+            "type": "hidden",
+            "name": "editable",
+            "value": source.editable|default(1),
+        }) }}
+        <div class="controls">
+            {{ formbutton({ "type":"save", "name": "save", "label":"Speichern", "value": "save" }) }}
+        </div>
+    </div>
+    
+</form>
+<!-- /source form -->

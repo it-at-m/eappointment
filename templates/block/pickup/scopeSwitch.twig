@@ -1,0 +1,30 @@
+{% block scope_switch %}
+{% from 'element/helper/form.twig' import formgroup, inputfield %}
+<form action="{{ urlGet('pickup') }}" method="POST">
+    {% from 'element/helper/form.twig' import formgroup, inputfield %}
+
+    {% set pickupOptions = [{ "value": 0, "name": "%s"|format("Standort auswählen")|trans, "selected": selected }] %}
+    {% for pickup in pickupList %}
+        {% set selected="" %}
+        {% if pickup.preferences.pickup.isDefault %}
+            {% set selected="selected" %}
+        {% elseif pickup.id == scope.id %}
+            {% set selected="selected" %}
+        {% endif %}
+        {% set pickupOptions = pickupOptions|merge([{ "value": pickup.id, "name": pickup.contact.name  ~ " " ~ pickup.shortName, "selected": selected }]) %}
+    {% endfor %}
+    {{ formgroup(
+        {"label": "", "description": "","class":"change-scope"},
+        [{
+            "type":"select",
+            "parameter": {
+                "accesskey": "s",
+                "name": "pickupScope",
+                "options": pickupOptions
+            }
+        }]
+    ) }}
+
+</form>
+
+{% endblock %}

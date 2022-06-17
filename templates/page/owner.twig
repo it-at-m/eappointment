@@ -1,0 +1,13 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block headline %}
+    {{ headline1("Behörden und Standorte") }}
+{% endblock %}
+
+{% block content %}
+    <!-- page owner -->
+	{{ parent() }}
+    {% include "block/owner/form.twig" %}
+    <!-- /page owner -->
+{% endblock %}

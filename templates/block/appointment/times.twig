@@ -1,0 +1,20 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'queue-info-appointment-times'} %}
+    {% block board_title %}
+        Terminzeiten
+    {% endblock %}
+    {% block board_body %}
+        <p>
+        {% if workstation.queue.clusterEnabled == 1 %}
+            {% trans %}Es wurde die Clusteransicht ausgewählt. Terminzeiten sind nur für einzelne Standorte abrufbar.{% endtrans %}
+        {% else %}
+            {% for key, availability in availabilityList %}
+                {% if availability.type == 'appointment' %}
+                    {% set openingStartTime = availability.startTime|split(":") %}
+                    {% set openingEndTime = availability.endTime|split(":") %}
+                    {{ openingStartTime.0 }}:{{ openingStartTime.1 }} - {{ openingEndTime.0 }}:{{ openingEndTime.1 }}<br />
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        </p>
+    {% endblock %}
+{% endembed %}

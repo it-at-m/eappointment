@@ -1,0 +1,28 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'dayoff-byyear'} %}
+        {% from 'element/helper/form.twig' import formgroup, formbutton, custombutton, inputsubmit, inputfield, checkboxfield %}
+
+
+        {% block board_title %}
+            {{ title }} {{ year }}
+        {% endblock %}
+
+        {# Dieses freie Tage Formular mit Datepicker wird per JS in eine Tabelle umgebaut. #}
+
+        {% block board_body %}
+            <form method="post" action="./" class="form--base">
+                <fieldset>
+                    <div class="daysoff" aria-live="polite" id="liveregionDepartmentDaysoff" data-department-daysoff data-days="{{dayoffList|default([])|json_encode()}}" data-year="{{year}}">
+                    </div>
+
+                </fieldset>
+
+				<div class="form-actions">
+                    <div class="controls">
+                        {{ formbutton({ "type":"save", "name": "save", "label":"Speichern", "value": "save" }) }}
+                    </div>
+				</div>
+            </form>
+        {% endblock %}
+
+
+{% endembed %}
