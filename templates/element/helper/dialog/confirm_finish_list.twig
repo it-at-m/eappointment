@@ -1,0 +1,16 @@
+
+
+{% embed "block/scaffholding/board.twig" with {'class': 'dialog'} %}
+    {% block board_title %}Alle Abholer löschen{% endblock %}
+    {% block board_body %}
+        {% set message = "Wollen Sie wirklich alle Abholer aus dieser Liste löschen?" %}
+        <p>
+            {{ message|trans }}
+        </p>
+        <div class="form-actions">
+            <a data-action-abort class="button button--diamond button-abort" href="#">Abbruch</a>
+            <a data-action-finishList class="button button--destructive button-ok" href="#">Alle Abholer löschen</a>
+        </div>
+    {% endblock %}
+
+{% endembed %}

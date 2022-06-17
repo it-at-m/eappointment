@@ -1,0 +1,3 @@
+{% if exception.template %}
+    {% embed exception.template with {'data': exception.data, 'exceptionLayout': exceptionLayout|default('exception/embeddedException.twig')} %}{% endembed %}
+{% endif %}

@@ -1,0 +1,39 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'useraccount-departmentlist', 'messages': 'hide'} %}
+
+
+        {% block board_title %}
+            Behörde wählen
+        {% endblock %}
+
+
+        {% block board_body %}
+            {% if workstation.useraccount.rights.superuser %}
+            <h3>Behördenunabhängig</h3>
+            <ul>
+                <li><a href="{{ urlGet('useraccount', {}, {}) }}">Systemweite Nutzer</a></li>
+            </ul>
+            {% endif %}
+            {% for owner in ownerlist %}
+            <h3>{{owner.name}}</h3>
+            <ul>
+                {% for organisation in owner.organisations %}
+                <li>
+                    <h4>{{ organisation.name }}</h4>
+                    <ul>
+                        {% for department in organisation.departments %}
+                        <li>
+                        <a href="{{ urlGet('useraccountByDepartment', {id: department.id}, {}) }}">
+                            {{ department.name }}
+                        </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endfor %}
+
+        {% endblock %}
+
+
+{% endembed %}

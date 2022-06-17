@@ -1,0 +1,41 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% use "block/breadcrumb/breadcrumb.twig" %}
+
+{% block breadcrumb_items %}
+    {{ parent() }}
+    <li><a href="{{ urlGet('sourceindex', {}, {}) }}">{% trans %}Mandanten{% endtrans %}</a></li>
+    <li>{% trans %}Mandant{% endtrans %} {{ source.label }}</li>
+{% endblock %}
+
+{% block headline %}
+    {% if source.label %}
+         {{ headline1("Mandant bearbeiten: " ~ source.label) }}
+    {% else %}
+         {{ headline1("Mandant hinzufügen") }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {{ parent() }}
+    <!-- page sourceEdit -->
+    {{ include("block/source/form.twig") }}
+    {#% embed "block/scaffholding/board.twig" with {'class': 'source-form board--spaceless'} %}
+            {% block board_title %}
+                {% if source.label %}
+                    {{ source.label }}
+                {% else %}
+                    {% trans %}Neuer Mandant{% endtrans %}
+                {% endif %}
+            {% endblock %}
+
+            {% block board_body %}
+                {{ include("block/source/form.twig") }}
+            {% endblock %}
+    {% endembed %#}
+    <!-- /page sourceEdit -->
+{% endblock %}
+
+{% block javascript %}
+        <script type="text/javascript" src="{{ includeUrl() }}/_js/reactcomponents.js?version={{ currentVersion() }}"></script>
+{% endblock %}

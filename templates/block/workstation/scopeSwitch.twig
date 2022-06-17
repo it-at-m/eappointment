@@ -1,0 +1,11 @@
+{% block scope_switch %}
+{% from 'element/helper/form.twig' import formgroup, inputfield %}
+<form action="{{ urlGet('workstationSelect') }}" method="POST">
+    {% include 'block/cluster/scopeSelect.twig' %}
+    {{ inputfield({ "name":"selectedDate", "type":"hidden", "value":selectedDate }) }}
+    {{ inputfield({ "name":"redirect", "value": source, "type":"hidden", "class": "sourceSwitchCluster" }) }}
+    {{ inputfield({ "name":"workstation", "type":"hidden", "value":workstation.name }) }}
+    {{ inputfield({ "name":"appointmentsOnly", "type":"hidden", "value":workstation.queue.appointmentsOnly }) }}
+</form>
+
+{% endblock %}

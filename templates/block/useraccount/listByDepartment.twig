@@ -1,0 +1,74 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless useraccount-list'} %}
+    {% from 'element/helper/form.twig' import custombutton, inputfield %}
+
+    {% block board_title %}
+        Nutzerliste: {{ department.name }}
+    {% endblock %}
+
+    {% block board_body %}
+
+        {% if useraccountList|length == 0 %}
+        <div class="message message--info" role="alert">
+            <p>Dieser Behörde ist bisher noch kein Nutzer zugeordnet.</p>
+        </div>
+        {% else %}
+        <div class="table-responsive-wrapper"> 
+            <table class="table--base">
+                <thead>
+                    <tr>
+                        <th>Loginname</th>
+                        <th>Standort</th>
+                        <th>Platznummer</th>
+                        <th>Letzter Login</th>
+                        <th></th>
+                        <th>Aktion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for useraccount in useraccountList %}
+                    {% set loggedInWorkstation = null %}
+                    {% for loggedInworkstationItem in workstationList %}
+                        {% if
+                            loggedInworkstationItem.useraccount.id != workstation.useraccount.id and
+                            loggedInworkstationItem.useraccount.id == useraccount.id and
+                            loggedInworkstationItem.scope.id
+                        %}
+                            {% set loggedInWorkstation = loggedInworkstationItem %}
+                        {% endif %}
+                    {% endfor %}
+                    <tr>
+                        <td><a href="{{ urlGet('useraccountEdit', {'loginname':useraccount.id}, {}) }}">{{ useraccount.id }}</a></td>
+                        <td>
+                            {% if useraccount.lastLogin|date("U") > getNow()|date_modify("-1 day")|date("U") %}
+                            {{ loggedInWorkstation.scope.contact.name }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if useraccount.lastLogin|date("U") > getNow()|date_modify("-1 day")|date("U") %}
+                                {% if loggedInWorkstation.name %}{{ loggedInWorkstation.name }}{% elseif loggedInWorkstation %}Tresen{% endif %}
+                            {% endif %}
+                        </td>
+                        <td>{% if useraccount.lastLogin %}{{ useraccount.lastLogin|date("Y-m-d") }}{% endif %}</td>
+                        <td>
+                            {% if loggedInWorkstation %}
+                            <form method="POST" action="{{ urlGet('logoutBySuperuser', {'id':department.id}, {}) }}">
+                                {{ inputfield({ "name":"workstation[useraccount][id]", "type":"hidden", "value":loggedInWorkstation.useraccount.id }) }}
+                                <button class="link">❎ abmelden</button>
+                            </form>
+                            {% endif %}</td>
+                        <td>
+                            {{ custombutton({ "type":"edit", "class":"link" ,"target": urlGet('useraccountEdit', {'loginname':useraccount.id}, {}), "label":"✎ bearbeiten" }) }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+        {{ custombutton({ "type":"new", "class":"button-new" ,"target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-plus-square color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
+        <!-- /useraccount listByDepartment -->
+    {% endblock %}
+
+    {% block board_footer %}{% endblock %}
+
+{% endembed %}

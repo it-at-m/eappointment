@@ -1,0 +1,14 @@
+{% extends "layout/fullwidth.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block title %}Abholer{% endblock %}
+
+{% block headline %}
+    {{ headline1(title|trans) }}
+{% endblock %}
+
+{% block content %}
+    <div class="pickup-handheld-view" data-includeurl="{{ includeUrl() }}" data-selected-process="{{ selectedProcess }}">
+        {% include "block/pickup/table-handheld.twig" with {'selectedProcess': selectedProcess} %}
+    </div>
+{% endblock %}

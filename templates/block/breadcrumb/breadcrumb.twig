@@ -1,0 +1,11 @@
+{% block breadcrumb %}
+        {% if block('breadcrumb_items') is not empty -%}
+        <nav class="breadcrumb">
+            <h2 class="aural">Sie sind hier:</h2>
+            <ol>
+                {%- block breadcrumb_items %}{% endblock %}
+            </ol>
+        </nav>
+        {%- endif %}
+{% endblock %}
+

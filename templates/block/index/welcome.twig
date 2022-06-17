@@ -1,0 +1,16 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'welcome'} %}
+    
+        
+        {% block board_title %}
+            Herzlich willkommen
+        {% endblock %} 
+        
+        
+        {% block board_body %}
+            <p>Um alle Funktionen des Systems nutzen zu können, identifizieren Sie sich bitte mit ihrem <strong>Nutzernamen</strong> und ihrem <strong>Passwort</strong> und wählen Sie im folgenden Schritt einen <strong>Standort</strong> und falls erforderlich eine <strong>Platz- oder Raum-Nummer</strong>.</p>
+        {% endblock %} 
+
+        {% block board_footer %}
+            <span>Version {{ currentVersion() }}</span>
+        {% endblock %} 
+{% endembed %}

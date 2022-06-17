@@ -1,0 +1,58 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'pickup-table-handheld'} %}
+        {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield, providername %}
+        {% block board_title %}
+            {% trans %}Abholer verwalten{% endtrans %}:
+            {{ providername(workstation.scope) }}
+        {% endblock %}
+
+        {% block board_header_right %}
+           <a href="{{ urlGet('pickup_handheld') }}" title="Liste neu laden" class="button button--diamond btn reload"><i class="fas fa-sync-alt" aria-hidden="true"></i> Liste aktualisieren</a>
+                <a class="button button--diamond btn button-submit" href="{{ urlGet('pickup_keyboard', {'id': '1'}, {}) }}">Direkte Nummerneingabe</a>
+        {% endblock %}
+
+        {% block board_body %}
+            {% if processList|length %}
+            <table class="table--base" style="margin-bottom:10px;">
+                <thead>
+                    <tr>
+                        <th>Aufruf</th>
+                        <th>Nr.</th>
+                        <th style="width:100%">Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in processList %}
+                    <tr>
+                        <td>
+                            <a href="#" data-id="{{ item.id }}" data-name="{{ item.clients|first.familyName }}" class="button button-submit process-pickup" title="aufrufen">aufrufen</a>
+                        </td>
+                        <td>{% if item.queue.withAppointment %}{{ item.id }}{% else %}{{ item.queue.number }}{% endif %}</td>
+                        <td>{{ item.clients|first.familyName }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>
+                Es ist aktuell kein Abholer vorhanden.
+            </p>
+            {% endif %}
+            <div class="form-actions" style="margin-top:0px;">
+                {% if offset >= limit %}
+                <a class="button button--navigational load-next-queue" data-limit="{{ limit }}" data-offset="0" href="#">Zum Anfang der Liste</a>
+                <a class="button button--navigational load-next-queue" data-limit="{{ limit }}" data-offset="{{ offset - limit }}" href="#">Vorherige {{ limit }} Abholer anzeigen</a>
+                {% endif %}
+                {% if processListNext|length %}
+                <a class="button button--navigational load-next-queue" data-limit="{{ limit }}" data-offset="{{ offset + limit }}" href="#">Nächste {{ processListNext|length }} Abholer anzeigen</a>
+                {% endif %}
+            </div>
+        {% endblock %}
+
+        {% block board_footer %}
+            <div class="form-actions" style="margin-top:0px;">
+                <a class="button button-submit" href="{{ urlGet('pickup', {'id': '1'}, {}) }}">Zur Desktopansicht wechseln</a>
+            </div>
+        {% endblock %}
+
+
+{% endembed %}

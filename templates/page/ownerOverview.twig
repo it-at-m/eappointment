@@ -1,0 +1,14 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% set sitename = "Behörden und Standorte" %}
+
+{% block headline %}
+    {{ headline1("Behörden und Standorte") }}
+{% endblock %}
+
+{% block content %}
+    <!-- page ownerOverview -->
+	{{ parent() }}
+    {% include "block/owner/overview.twig" %}
+    <!-- /page ownerOverview -->
+{% endblock %}

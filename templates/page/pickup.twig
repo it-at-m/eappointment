@@ -1,0 +1,13 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% block headline %}
+    {{ headline1("Abholer verwalten") }}
+{% endblock %}
+
+{% block title %}Abholer{% endblock %}
+
+{% block content %}
+    <div class="pickup-view" aria-live="polite" id="liveregionPickupTable" data-pickup-table data-includeurl="{{ includeUrl() }}" data-selected-process="{{ selectedProcess }}" data-selected-scope="{{ selectedScope }}" data-limit="{{ limit }}" data-offset="{{ offset }}">
+        {% include "block/pickup/table.twig" %}
+    </div>
+{% endblock %}

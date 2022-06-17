@@ -1,0 +1,8 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% block headline %}{{ headline1(title|trans) }}{% endblock %}
+{% block content %}
+    <div class="print-content">
+    {% include "block/appointment/waitingnumber-print.twig" %}
+    </div>
+{% endblock %}

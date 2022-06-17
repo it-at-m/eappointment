@@ -1,0 +1,16 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block headline %}
+    {{ headline1("Freie Tage") }}
+{% endblock %}
+
+{% block content %}
+    <!-- page dayoff -->
+    {% include "block/dayoff/list.twig" %}
+    <!-- /page dayoff -->
+{% endblock %}
+
+{% block javascript %}
+        <script type="text/javascript" src="{{ includeUrl() }}/_js/reactcomponents.js?version={{ currentVersion() }}"></script>
+{% endblock %}
