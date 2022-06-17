@@ -1,0 +1,12 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": true,
+    "exception": "BO\\Zmsentities\\Exception\\UserAccountMissingLogin",
+    "generated": "2018-01-17T15:26:13+01:00",
+    "server": "Zmsapi-ENV (v2.14.02)",
+    "message": "",
+    "trace": []
+  }
+}

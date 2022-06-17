@@ -1,0 +1,25 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-07-03T10:45:31+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+        "source": "dldb",
+        "id": "122217",
+        "link": "https://service.berlin.de/standort/122217/",
+        "name": "Bürgeramt Heerstraße",
+        "contact": {
+            "city": "Berlin",
+            "country": "Germany",
+            "name": "Bürgeramt Heerstraße",
+            "postalCode": "14052",
+            "region": "Berlin",
+            "street": "Heerstr.",
+            "streetNumber": "12"
+        }
+    }
+}

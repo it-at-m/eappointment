@@ -1,0 +1,899 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-06-21T12:18:58+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "0": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "68985",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "0",
+                "wednesday": "8",
+                "thursday": "0",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": "3",
+                "callcenter": "3",
+                "intern": "3"
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1453935600,
+            "endDate": 1463868000,
+            "startTime": "08:00:00",
+            "endTime": "12:50:00",
+            "type": "appointment",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "1": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "68997",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "0",
+                "wednesday": "0",
+                "thursday": "0",
+                "friday": "32",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": "3",
+                "callcenter": "3",
+                "intern": "3"
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1454108400,
+            "endDate": 1463868000,
+            "startTime": "08:00:00",
+            "endTime": "13:50:00",
+            "type": "appointment",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "2": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "81871",
+            "weekday": {
+                "sunday": "0",
+                "monday": "2",
+                "tuesday": "0",
+                "wednesday": "0",
+                "thursday": "0",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": "3",
+                "callcenter": "3",
+                "intern": "3"
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1452553200,
+            "endDate": 1463868000,
+            "startTime": "08:00:00",
+            "endTime": "15:50:00",
+            "type": "appointment",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "3": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "93532",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "0",
+                "wednesday": "8",
+                "thursday": "0",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": "0",
+                "callcenter": "0",
+                "intern": "0"
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1467151200,
+            "endDate": 1467151200,
+            "startTime": "08:00:00",
+            "endTime": "12:50:00",
+            "type": "appointment",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "4": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "93535",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "0",
+                "wednesday": "8",
+                "thursday": "0",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": "2",
+                "callcenter": "2",
+                "intern": "2"
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1467237600,
+            "endDate": 1609369200,
+            "startTime": "08:00:00",
+            "endTime": "12:50:00",
+            "type": "appointment",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "5": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "94666",
+            "weekday": {
+                "sunday": "0",
+                "monday": "2",
+                "tuesday": "0",
+                "wednesday": "0",
+                "thursday": "0",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": "2",
+                "callcenter": "2",
+                "intern": "2"
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1463954400,
+            "endDate": 1609369200,
+            "startTime": "08:00:00",
+            "endTime": "15:50:00",
+            "type": "appointment",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "6": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "94672",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "0",
+                "wednesday": "8",
+                "thursday": "0",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": "2",
+                "callcenter": "2",
+                "intern": "2"
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1463954400,
+            "endDate": 1467064800,
+            "startTime": "08:00:00",
+            "endTime": "12:50:00",
+            "type": "appointment",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "7": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "94678",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "0",
+                "wednesday": "0",
+                "thursday": "0",
+                "friday": "32",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": "2",
+                "callcenter": "2",
+                "intern": "2"
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1463954400,
+            "endDate": 1609369200,
+            "startTime": "08:00:00",
+            "endTime": "13:50:00",
+            "type": "appointment",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "8": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "68991",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "0",
+                "wednesday": "0",
+                "thursday": "16",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": "3",
+                "callcenter": "3",
+                "intern": "3"
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1454022000,
+            "endDate": 1463868000,
+            "startTime": "10:00:00",
+            "endTime": "17:50:00",
+            "type": "appointment",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "9": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "94675",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "0",
+                "wednesday": "0",
+                "thursday": "16",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": "2",
+                "callcenter": "2",
+                "intern": "2"
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1463954400,
+            "endDate": 1609369200,
+            "startTime": "10:00:00",
+            "endTime": "17:50:00",
+            "type": "appointment",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "10": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "68979",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "4",
+                "wednesday": "0",
+                "thursday": "0",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": "3",
+                "callcenter": "3",
+                "intern": "3"
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1453849200,
+            "endDate": 1463868000,
+            "startTime": "11:00:00",
+            "endTime": "17:50:00",
+            "type": "appointment",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "11": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "94669",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "4",
+                "wednesday": "0",
+                "thursday": "0",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": "2",
+                "callcenter": "2",
+                "intern": "2"
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1463954400,
+            "endDate": 1609369200,
+            "startTime": "11:00:00",
+            "endTime": "17:50:00",
+            "type": "appointment",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "12": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "68985",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "0",
+                "wednesday": "8",
+                "thursday": "0",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": 0,
+                "callcenter": 0,
+                "intern": 0
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1453935600,
+            "endDate": 1463868000,
+            "startTime": "08:00:00",
+            "endTime": "13:00:00",
+            "type": "openinghours",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "13": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "68997",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "0",
+                "wednesday": "0",
+                "thursday": "0",
+                "friday": "32",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": 0,
+                "callcenter": 0,
+                "intern": 0
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1454108400,
+            "endDate": 1463868000,
+            "startTime": "08:00:00",
+            "endTime": "14:00:00",
+            "type": "openinghours",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "14": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "81871",
+            "weekday": {
+                "sunday": "0",
+                "monday": "2",
+                "tuesday": "0",
+                "wednesday": "0",
+                "thursday": "0",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": 0,
+                "callcenter": 0,
+                "intern": 0
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1452553200,
+            "endDate": 1463868000,
+            "startTime": "08:00:00",
+            "endTime": "16:00:00",
+            "type": "openinghours",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "15": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "93532",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "0",
+                "wednesday": "8",
+                "thursday": "0",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": 0,
+                "callcenter": 0,
+                "intern": 0
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1467151200,
+            "endDate": 1467151200,
+            "startTime": "08:00:00",
+            "endTime": "13:00:00",
+            "type": "openinghours",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "16": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "93535",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "0",
+                "wednesday": "8",
+                "thursday": "0",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": 0,
+                "callcenter": 0,
+                "intern": 0
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1467237600,
+            "endDate": 1609369200,
+            "startTime": "08:00:00",
+            "endTime": "13:00:00",
+            "type": "openinghours",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "17": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "94666",
+            "weekday": {
+                "sunday": "0",
+                "monday": "2",
+                "tuesday": "0",
+                "wednesday": "0",
+                "thursday": "0",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": 0,
+                "callcenter": 0,
+                "intern": 0
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1463954400,
+            "endDate": 1609369200,
+            "startTime": "08:00:00",
+            "endTime": "16:00:00",
+            "type": "openinghours",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "18": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "94672",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "0",
+                "wednesday": "8",
+                "thursday": "0",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": 0,
+                "callcenter": 0,
+                "intern": 0
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1463954400,
+            "endDate": 1467064800,
+            "startTime": "08:00:00",
+            "endTime": "13:00:00",
+            "type": "openinghours",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "19": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "94678",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "0",
+                "wednesday": "0",
+                "thursday": "0",
+                "friday": "32",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": 0,
+                "callcenter": 0,
+                "intern": 0
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1463954400,
+            "endDate": 1609369200,
+            "startTime": "08:00:00",
+            "endTime": "14:00:00",
+            "type": "openinghours",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "20": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "68991",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "0",
+                "wednesday": "0",
+                "thursday": "16",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": 0,
+                "callcenter": 0,
+                "intern": 0
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1454022000,
+            "endDate": 1463868000,
+            "startTime": "10:00:00",
+            "endTime": "18:00:00",
+            "type": "openinghours",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "21": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "94675",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "0",
+                "wednesday": "0",
+                "thursday": "16",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": 0,
+                "callcenter": 0,
+                "intern": 0
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1463954400,
+            "endDate": 1609369200,
+            "startTime": "10:00:00",
+            "endTime": "18:00:00",
+            "type": "openinghours",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "22": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "68979",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "4",
+                "wednesday": "0",
+                "thursday": "0",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": 0,
+                "callcenter": 0,
+                "intern": 0
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1453849200,
+            "endDate": 1463868000,
+            "startTime": "11:00:00",
+            "endTime": "18:00:00",
+            "type": "openinghours",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        },
+        "23": {
+            "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+            "id": "94669",
+            "weekday": {
+                "sunday": "0",
+                "monday": "0",
+                "tuesday": "4",
+                "wednesday": "0",
+                "thursday": "0",
+                "friday": "0",
+                "saturday": "0"
+            },
+            "repeat": {
+                "afterWeeks": "1",
+                "weekOfMonth": "0"
+            },
+            "bookable": {
+                "startInDays": "0",
+                "endInDays": "60"
+            },
+            "workstationCount": {
+                "public": 0,
+                "callcenter": 0,
+                "intern": 0
+            },
+            "multipleSlotsAllowed": "0",
+            "slotTimeInMinutes": "10",
+            "startDate": 1463954400,
+            "endDate": 1609369200,
+            "startTime": "11:00:00",
+            "endTime": "18:00:00",
+            "type": "openinghours",
+            "description": "",
+            "scope": {
+                "id": "141"
+            }
+        }
+    }
+}

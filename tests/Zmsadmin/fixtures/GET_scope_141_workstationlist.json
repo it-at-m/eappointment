@@ -1,0 +1,131 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-06-26T14:53:36+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "0": {
+            "$schema": "https://schema.berlin.de/queuemanagement/workstation.json",
+            "useraccount": {
+                "rights": {
+                    "availability": "1",
+                    "basic": "1",
+                    "cluster": "1",
+                    "department": "1",
+                    "organisation": "1",
+                    "scope": "1",
+                    "sms": "1",
+                    "superuser": "1",
+                    "ticketprinter": "1",
+                    "useraccount": "1"
+                },
+                "id": "berlinonline",
+                "lastLogin": 1459461600
+            },
+            "name": "12",
+            "id": "138",
+            "hint": "12",
+            "queue": {
+                "appointmentsOnly": "0",
+                "clusterEnabled": "0"
+            },
+            "scope": {
+                "id": "141",
+                "provider": {
+                    "$ref": "/provider/122217/",
+                    "id": "122217"
+                },
+                "hint": "Nr. wird zum Termin aufgerufen  |  Nr. wird zum Termin aufgerufen",
+                "contact": {
+                    "name": "Bürgeramt Heerstraße",
+                    "street": "Heerstr. 12",
+                    "email": "",
+                    "country": "Germany"
+                },
+                "preferences": {
+                    "appointment": {
+                        "deallocationDuration": "10",
+                        "endInDaysDefault": "60",
+                        "multipleSlotsEnabled": "0",
+                        "reservationDuration": "20",
+                        "startInDaysDefault": "0",
+                        "notificationConfirmationEnabled": "1",
+                        "notificationHeadsUpEnabled": "1"
+                    },
+                    "client": {
+                        "alternateAppointmentUrl": "",
+                        "amendmentActivated": "0",
+                        "amendmentLabel": "0",
+                        "emailRequired": "0",
+                        "telephoneActivated": "0",
+                        "telephoneRequired": "0"
+                    },
+                    "notifications": {
+                        "confirmationContent": "",
+                        "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+                        "headsUpTime": "30"
+                    },
+                    "pickup": {
+                        "alternateName": "Ausgabe",
+                        "isDefault": "0"
+                    },
+                    "queue": {
+                        "callCountMax": "0",
+                        "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                        "firstNumber": "1",
+                        "lastNumber": "499",
+                        "maxNumberContingent": "0",
+                        "processingTimeAverage": "15",
+                        "publishWaitingTimeEnabled": "1",
+                        "statisticsEnabled": "1"
+                    },
+                    "survey": {
+                        "emailContent": "",
+                        "enabled": "0",
+                        "label": ""
+                    },
+                    "ticketprinter": {
+                        "buttonName": "Bürgeramt",
+                        "confirmationEnabled": "0",
+                        "deactivatedText": "0",
+                        "notificationsAmendmentEnabled": "0",
+                        "notificationsEnabled": "0",
+                        "notificationsDelay": "0"
+                    },
+                    "workstation": {
+                        "emergencyEnabled": "1",
+                        "emergencyRefreshInterval": "5"
+                    }
+                },
+                "shortName": "",
+                "status": {
+                    "emergency": {
+                        "acceptedByWorkstation": "-1",
+                        "activated": "0",
+                        "calledByWorkstation": "-1"
+                    },
+                    "queue": {
+                        "ghostWorkstationCount": "-1",
+                        "givenNumberCount": "46",
+                        "lastGivenNumber": "47",
+                        "lastGivenNumberTimestamp": 1458774000
+                    },
+                    "ticketprinter": {
+                        "deactivated": "0"
+                    }
+                }
+            },
+            "linkList": [
+                {
+                    "name": "Bürgerämter Charlottenburg-Wilmersdorf",
+                    "url": "http://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                    "target": "1",
+                    "id": "72"
+                }
+            ]
+        }
+    }
+}

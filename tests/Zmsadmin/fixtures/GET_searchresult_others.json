@@ -1,0 +1,852 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-06-30T11:04:55+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "0": {
+            "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+            "appointments": [
+                {
+                    "date": 1459461600,
+                    "scope": {
+                        "id": "141"
+                    },
+                    "availability": {
+                        "type": "openinghours"
+                    },
+                    "slotCount": "1"
+                }
+            ],
+            "authKey": "9994",
+            "clients": [
+                {
+                    "familyName": "Test BO",
+                    "email": "",
+                    "emailSendCount": "0",
+                    "notificationsSendCount": "1",
+                    "telephone": "1234567890"
+                }
+            ],
+            "createIP": "",
+            "createTimestamp": "1459502925",
+            "id": "100005",
+            "archiveId": 0,
+            "queue": {
+                "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+                "arrivalTime": 1459502926,
+                "callCount": "0",
+                "callTime": 0,
+                "number": "1",
+                "waitingTime": null,
+                "status": "queued",
+                "lastCallTime": 0,
+                "destination": null,
+                "destinationHint": null,
+                "withAppointment": "0"
+            },
+            "reminderTimestamp": "1459458000",
+            "requests": [
+                {
+                    "id": "120703",
+                    "link": "https://service.berlin.de/dienstleistung/120703/",
+                    "name": "Personalausweis beantragen",
+                    "group": "Meldewesen und Ordnung",
+                    "source": "dldb"
+                }
+            ],
+            "scope": {
+                "id": "141",
+                "provider": {
+                    "$ref": "/provider/122217/",
+                    "id": "122217"
+                },
+                "hint": "Nr. wird zum Termin aufgerufen",
+                "contact": {
+                    "name": "Bürgeramt Heerstraße",
+                    "street": "Heerstr. 12, 14052 Berlin",
+                    "email": "",
+                    "country": "Germany"
+                },
+                "preferences": {
+                    "appointment": {
+                        "deallocationDuration": "10",
+                        "endInDaysDefault": "60",
+                        "multipleSlotsEnabled": "0",
+                        "reservationDuration": "20",
+                        "startInDaysDefault": "0",
+                        "notificationConfirmationEnabled": "1",
+                        "notificationHeadsUpEnabled": "1"
+                    },
+                    "client": {
+                        "alternateAppointmentUrl": "",
+                        "amendmentActivated": "0",
+                        "amendmentLabel": "0",
+                        "emailRequired": "0",
+                        "telephoneActivated": "0",
+                        "telephoneRequired": "0"
+                    },
+                    "notifications": {
+                        "confirmationContent": "",
+                        "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+                        "headsUpTime": "30"
+                    },
+                    "pickup": {
+                        "alternateName": "Ausgabe",
+                        "isDefault": "0"
+                    },
+                    "queue": {
+                        "callCountMax": "0",
+                        "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                        "firstNumber": "1",
+                        "lastNumber": "499",
+                        "maxNumberContingent": "0",
+                        "processingTimeAverage": "15",
+                        "publishWaitingTimeEnabled": "1",
+                        "statisticsEnabled": "1"
+                    },
+                    "survey": {
+                        "emailContent": "",
+                        "enabled": "0",
+                        "label": ""
+                    },
+                    "ticketprinter": {
+                        "buttonName": "Bürgeramt",
+                        "confirmationEnabled": "0",
+                        "deactivatedText": "",
+                        "notificationsAmendmentEnabled": "0",
+                        "notificationsEnabled": "1",
+                        "notificationsDelay": "0"
+                    },
+                    "workstation": {
+                        "emergencyEnabled": "1",
+                        "emergencyRefreshInterval": "5"
+                    }
+                },
+                "shortName": "",
+                "status": {
+                    "emergency": {
+                        "acceptedByWorkstation": "-1",
+                        "activated": "0",
+                        "calledByWorkstation": "-1"
+                    },
+                    "queue": {
+                        "ghostWorkstationCount": "-1",
+                        "givenNumberCount": "5",
+                        "lastGivenNumber": "5",
+                        "lastGivenNumberTimestamp": "2016-04-01"
+                    },
+                    "ticketprinter": {
+                        "deactivated": "0"
+                    }
+                }
+            },
+            "status": "queued"
+        },
+        "1": {
+            "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+            "appointments": [
+                {
+                    "date": 1459461600,
+                    "scope": {
+                        "id": "141"
+                    },
+                    "availability": {
+                        "type": "openinghours"
+                    },
+                    "slotCount": "1"
+                }
+            ],
+            "authKey": "6794",
+            "clients": [
+                {
+                    "familyName": "Test BO",
+                    "email": "",
+                    "emailSendCount": "0",
+                    "notificationsSendCount": "1",
+                    "telephone": "1234567890"
+                }
+            ],
+            "createIP": "",
+            "createTimestamp": "1459503273",
+            "id": "100007",
+            "archiveId": 0,
+            "queue": {
+                "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+                "arrivalTime": 1459503273,
+                "callCount": "0",
+                "callTime": 0,
+                "number": "2",
+                "waitingTime": null,
+                "status": "queued",
+                "lastCallTime": 0,
+                "destination": null,
+                "destinationHint": null,
+                "withAppointment": "0"
+            },
+            "reminderTimestamp": "1459458000",
+            "requests": [
+                {
+                    "id": "120658",
+                    "link": "https://service.berlin.de/dienstleistung/120658/",
+                    "name": "Anschriftenänderung in dem Fahrzeugschein bzw. der Zulassungsbescheinigung Teil I (ZBI)",
+                    "group": "Auto und Verkehr",
+                    "source": "dldb"
+                },
+                {
+                    "id": "120703",
+                    "link": "https://service.berlin.de/dienstleistung/120703/",
+                    "name": "Personalausweis beantragen",
+                    "group": "Meldewesen und Ordnung",
+                    "source": "dldb"
+                }
+            ],
+            "scope": {
+                "id": "141",
+                "provider": {
+                    "$ref": "/provider/122217/",
+                    "id": "122217"
+                },
+                "hint": "Nr. wird zum Termin aufgerufen",
+                "contact": {
+                    "name": "Bürgeramt Heerstraße",
+                    "street": "Heerstr. 12, 14052 Berlin",
+                    "email": "",
+                    "country": "Germany"
+                },
+                "preferences": {
+                    "appointment": {
+                        "deallocationDuration": "10",
+                        "endInDaysDefault": "60",
+                        "multipleSlotsEnabled": "0",
+                        "reservationDuration": "20",
+                        "startInDaysDefault": "0",
+                        "notificationConfirmationEnabled": "1",
+                        "notificationHeadsUpEnabled": "1"
+                    },
+                    "client": {
+                        "alternateAppointmentUrl": "",
+                        "amendmentActivated": "0",
+                        "amendmentLabel": "0",
+                        "emailRequired": "0",
+                        "telephoneActivated": "0",
+                        "telephoneRequired": "0"
+                    },
+                    "notifications": {
+                        "confirmationContent": "",
+                        "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+                        "headsUpTime": "30"
+                    },
+                    "pickup": {
+                        "alternateName": "Ausgabe",
+                        "isDefault": "0"
+                    },
+                    "queue": {
+                        "callCountMax": "0",
+                        "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                        "firstNumber": "1",
+                        "lastNumber": "499",
+                        "maxNumberContingent": "0",
+                        "processingTimeAverage": "15",
+                        "publishWaitingTimeEnabled": "1",
+                        "statisticsEnabled": "1"
+                    },
+                    "survey": {
+                        "emailContent": "",
+                        "enabled": "0",
+                        "label": ""
+                    },
+                    "ticketprinter": {
+                        "buttonName": "Bürgeramt",
+                        "confirmationEnabled": "0",
+                        "deactivatedText": "",
+                        "notificationsAmendmentEnabled": "0",
+                        "notificationsEnabled": "1",
+                        "notificationsDelay": "0"
+                    },
+                    "workstation": {
+                        "emergencyEnabled": "1",
+                        "emergencyRefreshInterval": "5"
+                    }
+                },
+                "shortName": "",
+                "status": {
+                    "emergency": {
+                        "acceptedByWorkstation": "-1",
+                        "activated": "0",
+                        "calledByWorkstation": "-1"
+                    },
+                    "queue": {
+                        "ghostWorkstationCount": "-1",
+                        "givenNumberCount": "5",
+                        "lastGivenNumber": "5",
+                        "lastGivenNumberTimestamp": "2016-04-01"
+                    },
+                    "ticketprinter": {
+                        "deactivated": "0"
+                    }
+                }
+            },
+            "status": "queued"
+        },
+        "2": {
+            "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+            "appointments": [
+                {
+                    "date": 1459461600,
+                    "scope": {
+                        "id": "141"
+                    },
+                    "availability": {
+                        "type": "openinghours"
+                    },
+                    "slotCount": "1"
+                }
+            ],
+            "authKey": "d229",
+            "clients": [
+                {
+                    "familyName": "Test BO",
+                    "email": "",
+                    "emailSendCount": "0",
+                    "notificationsSendCount": "1",
+                    "telephone": "1234567890"
+                }
+            ],
+            "createIP": "",
+            "createTimestamp": "1459503407",
+            "id": "100009",
+            "archiveId": 0,
+            "queue": {
+                "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+                "arrivalTime": 1459503408,
+                "callCount": "0",
+                "callTime": 0,
+                "number": "3",
+                "waitingTime": null,
+                "status": "queued",
+                "lastCallTime": 0,
+                "destination": null,
+                "destinationHint": null,
+                "withAppointment": "0"
+            },
+            "reminderTimestamp": "1459458000",
+            "requests": [
+                {
+                    "id": "121151",
+                    "link": "https://service.berlin.de/dienstleistung/121151/",
+                    "name": "Reisepass beantragen",
+                    "group": "Meldewesen und Ordnung",
+                    "source": "dldb"
+                }
+            ],
+            "scope": {
+                "id": "141",
+                "provider": {
+                    "$ref": "/provider/122217/",
+                    "id": "122217"
+                },
+                "hint": "Nr. wird zum Termin aufgerufen",
+                "contact": {
+                    "name": "Bürgeramt Heerstraße",
+                    "street": "Heerstr. 12, 14052 Berlin",
+                    "email": "",
+                    "country": "Germany"
+                },
+                "preferences": {
+                    "appointment": {
+                        "deallocationDuration": "10",
+                        "endInDaysDefault": "60",
+                        "multipleSlotsEnabled": "0",
+                        "reservationDuration": "20",
+                        "startInDaysDefault": "0",
+                        "notificationConfirmationEnabled": "1",
+                        "notificationHeadsUpEnabled": "1"
+                    },
+                    "client": {
+                        "alternateAppointmentUrl": "",
+                        "amendmentActivated": "0",
+                        "amendmentLabel": "0",
+                        "emailRequired": "0",
+                        "telephoneActivated": "0",
+                        "telephoneRequired": "0"
+                    },
+                    "notifications": {
+                        "confirmationContent": "",
+                        "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+                        "headsUpTime": "30"
+                    },
+                    "pickup": {
+                        "alternateName": "Ausgabe",
+                        "isDefault": "0"
+                    },
+                    "queue": {
+                        "callCountMax": "0",
+                        "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                        "firstNumber": "1",
+                        "lastNumber": "499",
+                        "maxNumberContingent": "0",
+                        "processingTimeAverage": "15",
+                        "publishWaitingTimeEnabled": "1",
+                        "statisticsEnabled": "1"
+                    },
+                    "survey": {
+                        "emailContent": "",
+                        "enabled": "0",
+                        "label": ""
+                    },
+                    "ticketprinter": {
+                        "buttonName": "Bürgeramt",
+                        "confirmationEnabled": "0",
+                        "deactivatedText": "",
+                        "notificationsAmendmentEnabled": "0",
+                        "notificationsEnabled": "1",
+                        "notificationsDelay": "0"
+                    },
+                    "workstation": {
+                        "emergencyEnabled": "1",
+                        "emergencyRefreshInterval": "5"
+                    }
+                },
+                "shortName": "",
+                "status": {
+                    "emergency": {
+                        "acceptedByWorkstation": "-1",
+                        "activated": "0",
+                        "calledByWorkstation": "-1"
+                    },
+                    "queue": {
+                        "ghostWorkstationCount": "-1",
+                        "givenNumberCount": "5",
+                        "lastGivenNumber": "5",
+                        "lastGivenNumberTimestamp": "2016-04-01"
+                    },
+                    "ticketprinter": {
+                        "deactivated": "0"
+                    }
+                }
+            },
+            "status": "queued"
+        },
+        "3": {
+            "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+            "appointments": [
+                {
+                    "date": 1459461600,
+                    "scope": {
+                        "id": "141"
+                    },
+                    "availability": {
+                        "type": "openinghours"
+                    },
+                    "slotCount": "1"
+                }
+            ],
+            "authKey": "bf20",
+            "clients": [
+                {
+                    "familyName": "Test BO",
+                    "email": "",
+                    "emailSendCount": "0",
+                    "notificationsSendCount": "1",
+                    "telephone": "1234567890"
+                }
+            ],
+            "createIP": "",
+            "createTimestamp": "1459503458",
+            "id": "100010",
+            "archiveId": 0,
+            "queue": {
+                "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+                "arrivalTime": 1459503459,
+                "callCount": "0",
+                "callTime": 0,
+                "number": "4",
+                "waitingTime": null,
+                "status": "queued",
+                "lastCallTime": 0,
+                "destination": null,
+                "destinationHint": null,
+                "withAppointment": "0"
+            },
+            "reminderTimestamp": "1459458000",
+            "requests": [
+                {
+                    "id": "120703",
+                    "link": "https://service.berlin.de/dienstleistung/120703/",
+                    "name": "Personalausweis beantragen",
+                    "group": "Meldewesen und Ordnung",
+                    "source": "dldb"
+                }
+            ],
+            "scope": {
+                "id": "141",
+                "provider": {
+                    "$ref": "/provider/122217/",
+                    "id": "122217"
+                },
+                "hint": "Nr. wird zum Termin aufgerufen",
+                "contact": {
+                    "name": "Bürgeramt Heerstraße",
+                    "street": "Heerstr. 12, 14052 Berlin",
+                    "email": "",
+                    "country": "Germany"
+                },
+                "preferences": {
+                    "appointment": {
+                        "deallocationDuration": "10",
+                        "endInDaysDefault": "60",
+                        "multipleSlotsEnabled": "0",
+                        "reservationDuration": "20",
+                        "startInDaysDefault": "0",
+                        "notificationConfirmationEnabled": "1",
+                        "notificationHeadsUpEnabled": "1"
+                    },
+                    "client": {
+                        "alternateAppointmentUrl": "",
+                        "amendmentActivated": "0",
+                        "amendmentLabel": "0",
+                        "emailRequired": "0",
+                        "telephoneActivated": "0",
+                        "telephoneRequired": "0"
+                    },
+                    "notifications": {
+                        "confirmationContent": "",
+                        "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+                        "headsUpTime": "30"
+                    },
+                    "pickup": {
+                        "alternateName": "Ausgabe",
+                        "isDefault": "0"
+                    },
+                    "queue": {
+                        "callCountMax": "0",
+                        "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                        "firstNumber": "1",
+                        "lastNumber": "499",
+                        "maxNumberContingent": "0",
+                        "processingTimeAverage": "15",
+                        "publishWaitingTimeEnabled": "1",
+                        "statisticsEnabled": "1"
+                    },
+                    "survey": {
+                        "emailContent": "",
+                        "enabled": "0",
+                        "label": ""
+                    },
+                    "ticketprinter": {
+                        "buttonName": "Bürgeramt",
+                        "confirmationEnabled": "0",
+                        "deactivatedText": "",
+                        "notificationsAmendmentEnabled": "0",
+                        "notificationsEnabled": "1",
+                        "notificationsDelay": "0"
+                    },
+                    "workstation": {
+                        "emergencyEnabled": "1",
+                        "emergencyRefreshInterval": "5"
+                    }
+                },
+                "shortName": "",
+                "status": {
+                    "emergency": {
+                        "acceptedByWorkstation": "-1",
+                        "activated": "0",
+                        "calledByWorkstation": "-1"
+                    },
+                    "queue": {
+                        "ghostWorkstationCount": "-1",
+                        "givenNumberCount": "5",
+                        "lastGivenNumber": "5",
+                        "lastGivenNumberTimestamp": "2016-04-01"
+                    },
+                    "ticketprinter": {
+                        "deactivated": "0"
+                    }
+                }
+            },
+            "status": "queued"
+        },
+        "4": {
+            "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+            "appointments": [
+                {
+                    "date": 1459461600,
+                    "scope": {
+                        "id": "141"
+                    },
+                    "availability": {
+                        "type": "openinghours"
+                    },
+                    "slotCount": "1"
+                }
+            ],
+            "authKey": "8d11",
+            "clients": [
+                {
+                    "familyName": "Test BO",
+                    "email": "",
+                    "emailSendCount": "0",
+                    "notificationsSendCount": "1",
+                    "telephone": "1234567890"
+                }
+            ],
+            "createIP": "",
+            "createTimestamp": "1459503507",
+            "id": "100011",
+            "archiveId": 0,
+            "queue": {
+                "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+                "arrivalTime": 1459503508,
+                "callCount": "0",
+                "callTime": 0,
+                "number": "5",
+                "waitingTime": null,
+                "status": "queued",
+                "lastCallTime": 0,
+                "destination": null,
+                "destinationHint": null,
+                "withAppointment": "0"
+            },
+            "reminderTimestamp": "1459458000",
+            "requests": [
+                {
+                    "id": "120703",
+                    "link": "https://service.berlin.de/dienstleistung/120703/",
+                    "name": "Personalausweis beantragen",
+                    "group": "Meldewesen und Ordnung",
+                    "source": "dldb"
+                }
+            ],
+            "scope": {
+                "id": "141",
+                "provider": {
+                    "$ref": "/provider/122217/",
+                    "id": "122217"
+                },
+                "hint": "Nr. wird zum Termin aufgerufen",
+                "contact": {
+                    "name": "Bürgeramt Heerstraße",
+                    "street": "Heerstr. 12, 14052 Berlin",
+                    "email": "",
+                    "country": "Germany"
+                },
+                "preferences": {
+                    "appointment": {
+                        "deallocationDuration": "10",
+                        "endInDaysDefault": "60",
+                        "multipleSlotsEnabled": "0",
+                        "reservationDuration": "20",
+                        "startInDaysDefault": "0",
+                        "notificationConfirmationEnabled": "1",
+                        "notificationHeadsUpEnabled": "1"
+                    },
+                    "client": {
+                        "alternateAppointmentUrl": "",
+                        "amendmentActivated": "0",
+                        "amendmentLabel": "0",
+                        "emailRequired": "0",
+                        "telephoneActivated": "0",
+                        "telephoneRequired": "0"
+                    },
+                    "notifications": {
+                        "confirmationContent": "",
+                        "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+                        "headsUpTime": "30"
+                    },
+                    "pickup": {
+                        "alternateName": "Ausgabe",
+                        "isDefault": "0"
+                    },
+                    "queue": {
+                        "callCountMax": "0",
+                        "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                        "firstNumber": "1",
+                        "lastNumber": "499",
+                        "maxNumberContingent": "0",
+                        "processingTimeAverage": "15",
+                        "publishWaitingTimeEnabled": "1",
+                        "statisticsEnabled": "1"
+                    },
+                    "survey": {
+                        "emailContent": "",
+                        "enabled": "0",
+                        "label": ""
+                    },
+                    "ticketprinter": {
+                        "buttonName": "Bürgeramt",
+                        "confirmationEnabled": "0",
+                        "deactivatedText": "",
+                        "notificationsAmendmentEnabled": "0",
+                        "notificationsEnabled": "1",
+                        "notificationsDelay": "0"
+                    },
+                    "workstation": {
+                        "emergencyEnabled": "1",
+                        "emergencyRefreshInterval": "5"
+                    }
+                },
+                "shortName": "",
+                "status": {
+                    "emergency": {
+                        "acceptedByWorkstation": "-1",
+                        "activated": "0",
+                        "calledByWorkstation": "-1"
+                    },
+                    "queue": {
+                        "ghostWorkstationCount": "-1",
+                        "givenNumberCount": "5",
+                        "lastGivenNumber": "5",
+                        "lastGivenNumberTimestamp": "2016-04-01"
+                    },
+                    "ticketprinter": {
+                        "deactivated": "0"
+                    }
+                }
+            },
+            "status": "queued"
+        },
+        "5": {
+            "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+            "appointments": [
+                {
+                    "date": 1459461600,
+                    "scope": {
+                        "id": "143"
+                    },
+                    "availability": {
+                        "type": "openinghours"
+                    },
+                    "slotCount": "1"
+                }
+            ],
+            "authKey": "8d11",
+            "clients": [
+                {
+                    "familyName": "Test BO",
+                    "email": "",
+                    "emailSendCount": "0",
+                    "notificationsSendCount": "1",
+                    "telephone": "1234567890"
+                }
+            ],
+            "createIP": "",
+            "createTimestamp": "1459503507",
+            "id": "100012",
+            "archiveId": 0,
+            "queue": {
+                "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+                "arrivalTime": 1459503508,
+                "callCount": "0",
+                "callTime": 0,
+                "number": "5",
+                "waitingTime": null,
+                "status": "queued",
+                "lastCallTime": 0,
+                "destination": null,
+                "destinationHint": null,
+                "withAppointment": "0"
+            },
+            "reminderTimestamp": "1459458000",
+            "requests": [
+                {
+                    "id": "120703",
+                    "link": "https://service.berlin.de/dienstleistung/120703/",
+                    "name": "Personalausweis beantragen",
+                    "group": "Meldewesen und Ordnung",
+                    "source": "dldb"
+                }
+            ],
+            "scope": {
+                "id": "143",
+                "provider": {
+                    "$ref": "/provider/122217/",
+                    "id": "122217"
+                },
+                "hint": "Nr. wird zum Termin aufgerufen",
+                "contact": {
+                    "name": "Bürgeramt Heerstraße",
+                    "street": "Heerstr. 12, 14052 Berlin",
+                    "email": "",
+                    "country": "Germany"
+                },
+                "preferences": {
+                    "appointment": {
+                        "deallocationDuration": "10",
+                        "endInDaysDefault": "60",
+                        "multipleSlotsEnabled": "0",
+                        "reservationDuration": "20",
+                        "startInDaysDefault": "0",
+                        "notificationConfirmationEnabled": "1",
+                        "notificationHeadsUpEnabled": "1"
+                    },
+                    "client": {
+                        "alternateAppointmentUrl": "",
+                        "amendmentActivated": "0",
+                        "amendmentLabel": "0",
+                        "emailRequired": "0",
+                        "telephoneActivated": "0",
+                        "telephoneRequired": "0"
+                    },
+                    "notifications": {
+                        "confirmationContent": "",
+                        "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+                        "headsUpTime": "30"
+                    },
+                    "pickup": {
+                        "alternateName": "Ausgabe",
+                        "isDefault": "0"
+                    },
+                    "queue": {
+                        "callCountMax": "0",
+                        "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                        "firstNumber": "1",
+                        "lastNumber": "499",
+                        "maxNumberContingent": "0",
+                        "processingTimeAverage": "15",
+                        "publishWaitingTimeEnabled": "1",
+                        "statisticsEnabled": "1"
+                    },
+                    "survey": {
+                        "emailContent": "",
+                        "enabled": "0",
+                        "label": ""
+                    },
+                    "ticketprinter": {
+                        "buttonName": "Bürgeramt",
+                        "confirmationEnabled": "0",
+                        "deactivatedText": "",
+                        "notificationsAmendmentEnabled": "0",
+                        "notificationsEnabled": "1",
+                        "notificationsDelay": "0"
+                    },
+                    "workstation": {
+                        "emergencyEnabled": "1",
+                        "emergencyRefreshInterval": "5"
+                    }
+                },
+                "shortName": "",
+                "status": {
+                    "emergency": {
+                        "acceptedByWorkstation": "-1",
+                        "activated": "0",
+                        "calledByWorkstation": "-1"
+                    },
+                    "queue": {
+                        "ghostWorkstationCount": "-1",
+                        "givenNumberCount": "5",
+                        "lastGivenNumber": "5",
+                        "lastGivenNumberTimestamp": "2016-04-01"
+                    },
+                    "ticketprinter": {
+                        "deactivated": "0"
+                    }
+                }
+            },
+            "status": "queued"
+        }
+    }
+}
