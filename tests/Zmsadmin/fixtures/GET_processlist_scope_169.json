@@ -1,0 +1,1965 @@
+{
+    "$schema": "https://minikube/api/2/",
+    "meta": {
+      "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+      "error": false,
+      "generated": "2020-03-20T12:16:08+01:00",
+      "server": "Zmsapi-ENV (version.unknown)"
+    },
+    "data": [
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "D12521625",
+        "appointments": [
+          {
+            "date": 1459490400,
+            "scope": {
+              "$ref": "scope/169/"
+            },
+            "availability": {
+              "$ref": "availability/86365/"
+            },
+            "slotCount": "1"
+          }
+        ],
+        "apiclient": {
+          "shortname": "default"
+        },
+        "authKey": "8295",
+        "clients": [
+          {
+            "familyName": "P53425416",
+            "email": "test@example.com",
+            "emailSendCount": "0",
+            "notificationsSendCount": "0",
+            "surveyAccepted": "0",
+            "telephone": "0049123456789"
+          }
+        ],
+        "createIP": "127.0.0.1",
+        "createTimestamp": "1458671760",
+        "id": "157778",
+        "archiveId": 0,
+        "queue": {
+          "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+          "arrivalTime": 1459490400,
+          "callCount": "0",
+          "callTime": 0,
+          "number": "157778",
+          "waitingTimeEstimate": 10,
+          "waitingTimeOptimistic": 0,
+          "waitingTime": 256,
+          "status": "confirmed",
+          "lastCallTime": 0,
+          "destination": null,
+          "destinationHint": null,
+          "withAppointment": true
+        },
+        "reminderTimestamp": "0",
+        "requests": [
+          {
+            "id": "120686",
+            "link": "https://service.berlin.de/dienstleistung/120686/",
+            "name": "Anmeldung einer Wohnung",
+            "group": "Meldewesen und Ordnung",
+            "source": "dldb"
+          }
+        ],
+        "scope": {
+          "id": "169",
+          "source": "dldb",
+          "contact": {
+            "name": "Bürgeramt Blaschkoallee, Neukölln",
+            "street": "Blaschkoallee 32, 12359 Berlin",
+            "email": "",
+            "country": "Germany"
+          },
+          "provider": {
+            "$ref": "provider/122291/"
+          },
+          "hint": "Aufruf im Warteraum/Zimmer 231",
+          "lastChange": "2019-08-23 15:22:22",
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "10",
+              "endInDaysDefault": "60",
+              "multipleSlotsEnabled": "1",
+              "reservationDuration": "30",
+              "startInDaysDefault": "0"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "0",
+              "amendmentLabel": "Anmerkung",
+              "emailFrom": "test@example.com",
+              "emailRequired": "0",
+              "telephoneActivated": "0",
+              "telephoneRequired": "0"
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "Ausgabe",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
+              "firstNumber": "1",
+              "lastNumber": "399",
+              "maxNumberContingent": "0",
+              "processingTimeAverage": "10",
+              "publishWaitingTimeEnabled": "0",
+              "statisticsEnabled": "1"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "buttonName": "Bürgeramt",
+              "confirmationEnabled": "0",
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "1",
+              "emergencyRefreshInterval": "5"
+            }
+          },
+          "shortName": "",
+          "status": {
+            "emergency": {
+              "acceptedByWorkstation": "-1",
+              "activated": "0",
+              "calledByWorkstation": "-1"
+            },
+            "queue": {
+              "ghostWorkstationCount": "-1",
+              "givenNumberCount": "19",
+              "lastGivenNumber": "20",
+              "lastGivenNumberTimestamp": "2016-03-24"
+            },
+            "ticketprinter": {
+              "deactivated": "1"
+            }
+          }
+        },
+        "status": "confirmed",
+        "lastChange": 1583149747
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "D12521625",
+        "appointments": [
+          {
+            "date": 1459491300,
+            "scope": {
+              "$ref": "scope/169/"
+            },
+            "availability": {
+              "$ref": "availability/86365/"
+            },
+            "slotCount": "1"
+          }
+        ],
+        "apiclient": {
+          "shortname": "default"
+        },
+        "authKey": "2960",
+        "clients": [
+          {
+            "familyName": "C536",
+            "email": "test@example.com",
+            "emailSendCount": "0",
+            "notificationsSendCount": "0",
+            "surveyAccepted": "0",
+            "telephone": "0049123456789"
+          }
+        ],
+        "createIP": "127.0.0.1",
+        "createTimestamp": "1458672232",
+        "id": "157948",
+        "archiveId": 0,
+        "queue": {
+          "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+          "arrivalTime": 1459491300,
+          "callCount": "0",
+          "callTime": 0,
+          "number": "157948",
+          "waitingTimeEstimate": 20,
+          "waitingTimeOptimistic": 8,
+          "waitingTime": 241,
+          "status": "confirmed",
+          "lastCallTime": 0,
+          "destination": null,
+          "destinationHint": null,
+          "withAppointment": true
+        },
+        "reminderTimestamp": "0",
+        "requests": [
+          {
+            "id": "120686",
+            "link": "https://service.berlin.de/dienstleistung/120686/",
+            "name": "Anmeldung einer Wohnung",
+            "group": "Meldewesen und Ordnung",
+            "source": "dldb"
+          }
+        ],
+        "scope": {
+          "id": "169",
+          "source": "dldb",
+          "contact": {
+            "name": "Bürgeramt Blaschkoallee, Neukölln",
+            "street": "Blaschkoallee 32, 12359 Berlin",
+            "email": "",
+            "country": "Germany"
+          },
+          "provider": {
+            "$ref": "provider/122291/"
+          },
+          "hint": "Aufruf im Warteraum/Zimmer 231",
+          "lastChange": "2019-08-23 15:22:22",
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "10",
+              "endInDaysDefault": "60",
+              "multipleSlotsEnabled": "1",
+              "reservationDuration": "30",
+              "startInDaysDefault": "0"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "0",
+              "amendmentLabel": "Anmerkung",
+              "emailFrom": "test@example.com",
+              "emailRequired": "0",
+              "telephoneActivated": "0",
+              "telephoneRequired": "0"
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "Ausgabe",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
+              "firstNumber": "1",
+              "lastNumber": "399",
+              "maxNumberContingent": "0",
+              "processingTimeAverage": "10",
+              "publishWaitingTimeEnabled": "0",
+              "statisticsEnabled": "1"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "buttonName": "Bürgeramt",
+              "confirmationEnabled": "0",
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "1",
+              "emergencyRefreshInterval": "5"
+            }
+          },
+          "shortName": "",
+          "status": {
+            "emergency": {
+              "acceptedByWorkstation": "-1",
+              "activated": "0",
+              "calledByWorkstation": "-1"
+            },
+            "queue": {
+              "ghostWorkstationCount": "-1",
+              "givenNumberCount": "19",
+              "lastGivenNumber": "20",
+              "lastGivenNumberTimestamp": "2016-03-24"
+            },
+            "ticketprinter": {
+              "deactivated": "1"
+            }
+          }
+        },
+        "status": "confirmed",
+        "lastChange": 1583149747
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "D125216254514",
+        "appointments": [
+          {
+            "date": 1459492200,
+            "scope": {
+              "$ref": "scope/169/"
+            },
+            "availability": {
+              "$ref": "availability/86365/"
+            },
+            "slotCount": "2"
+          }
+        ],
+        "apiclient": {
+          "shortname": "default"
+        },
+        "authKey": "7b0f",
+        "clients": [
+          {
+            "familyName": "P45653",
+            "email": "test@example.com",
+            "emailSendCount": "0",
+            "notificationsSendCount": "0",
+            "surveyAccepted": "0",
+            "telephone": "0049123456789"
+          }
+        ],
+        "createIP": "127.0.0.1",
+        "createTimestamp": "1458673291",
+        "id": "158066",
+        "archiveId": 0,
+        "queue": {
+          "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+          "arrivalTime": 1459492200,
+          "callCount": "0",
+          "callTime": 0,
+          "number": "158066",
+          "waitingTimeEstimate": 30,
+          "waitingTimeOptimistic": 16,
+          "waitingTime": 226,
+          "status": "confirmed",
+          "lastCallTime": 0,
+          "destination": null,
+          "destinationHint": null,
+          "withAppointment": true
+        },
+        "reminderTimestamp": "0",
+        "requests": [
+          {
+            "id": "120686",
+            "link": "https://service.berlin.de/dienstleistung/120686/",
+            "name": "Anmeldung einer Wohnung",
+            "group": "Meldewesen und Ordnung",
+            "source": "dldb"
+          }
+        ],
+        "scope": {
+          "id": "169",
+          "source": "dldb",
+          "contact": {
+            "name": "Bürgeramt Blaschkoallee, Neukölln",
+            "street": "Blaschkoallee 32, 12359 Berlin",
+            "email": "",
+            "country": "Germany"
+          },
+          "provider": {
+            "$ref": "provider/122291/"
+          },
+          "hint": "Aufruf im Warteraum/Zimmer 231",
+          "lastChange": "2019-08-23 15:22:22",
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "10",
+              "endInDaysDefault": "60",
+              "multipleSlotsEnabled": "1",
+              "reservationDuration": "30",
+              "startInDaysDefault": "0"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "0",
+              "amendmentLabel": "Anmerkung",
+              "emailFrom": "test@example.com",
+              "emailRequired": "0",
+              "telephoneActivated": "0",
+              "telephoneRequired": "0"
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "Ausgabe",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
+              "firstNumber": "1",
+              "lastNumber": "399",
+              "maxNumberContingent": "0",
+              "processingTimeAverage": "10",
+              "publishWaitingTimeEnabled": "0",
+              "statisticsEnabled": "1"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "buttonName": "Bürgeramt",
+              "confirmationEnabled": "0",
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "1",
+              "emergencyRefreshInterval": "5"
+            }
+          },
+          "shortName": "",
+          "status": {
+            "emergency": {
+              "acceptedByWorkstation": "-1",
+              "activated": "0",
+              "calledByWorkstation": "-1"
+            },
+            "queue": {
+              "ghostWorkstationCount": "-1",
+              "givenNumberCount": "19",
+              "lastGivenNumber": "20",
+              "lastGivenNumberTimestamp": "2016-03-24"
+            },
+            "ticketprinter": {
+              "deactivated": "1"
+            }
+          }
+        },
+        "status": "confirmed",
+        "lastChange": 1583149747
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "D12521625136562",
+        "appointments": [
+          {
+            "date": 1459494000,
+            "scope": {
+              "$ref": "scope/169/"
+            },
+            "availability": {
+              "$ref": "availability/86368/"
+            },
+            "slotCount": "1"
+          }
+        ],
+        "apiclient": {
+          "shortname": "default"
+        },
+        "authKey": "a791",
+        "clients": [
+          {
+            "familyName": "G316524",
+            "email": "test@example.com",
+            "emailSendCount": "0",
+            "notificationsSendCount": "0",
+            "surveyAccepted": "0",
+            "telephone": "0049123456789"
+          }
+        ],
+        "createIP": "127.0.0.1",
+        "createTimestamp": "1454500407",
+        "id": "116364",
+        "archiveId": 0,
+        "queue": {
+          "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+          "arrivalTime": 1459494000,
+          "callCount": "0",
+          "callTime": 0,
+          "number": "116364",
+          "waitingTimeEstimate": 40,
+          "waitingTimeOptimistic": 24,
+          "waitingTime": 196,
+          "status": "confirmed",
+          "lastCallTime": 0,
+          "destination": null,
+          "destinationHint": null,
+          "withAppointment": true
+        },
+        "reminderTimestamp": "0",
+        "requests": [
+          {
+            "id": "120686",
+            "link": "https://service.berlin.de/dienstleistung/120686/",
+            "name": "Anmeldung einer Wohnung",
+            "group": "Meldewesen und Ordnung",
+            "source": "dldb"
+          }
+        ],
+        "scope": {
+          "id": "169",
+          "source": "dldb",
+          "contact": {
+            "name": "Bürgeramt Blaschkoallee, Neukölln",
+            "street": "Blaschkoallee 32, 12359 Berlin",
+            "email": "",
+            "country": "Germany"
+          },
+          "provider": {
+            "$ref": "provider/122291/"
+          },
+          "hint": "Aufruf im Warteraum/Zimmer 231",
+          "lastChange": "2019-08-23 15:22:22",
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "10",
+              "endInDaysDefault": "60",
+              "multipleSlotsEnabled": "1",
+              "reservationDuration": "30",
+              "startInDaysDefault": "0"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "0",
+              "amendmentLabel": "Anmerkung",
+              "emailFrom": "test@example.com",
+              "emailRequired": "0",
+              "telephoneActivated": "0",
+              "telephoneRequired": "0"
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "Ausgabe",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
+              "firstNumber": "1",
+              "lastNumber": "399",
+              "maxNumberContingent": "0",
+              "processingTimeAverage": "10",
+              "publishWaitingTimeEnabled": "0",
+              "statisticsEnabled": "1"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "buttonName": "Bürgeramt",
+              "confirmationEnabled": "0",
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "1",
+              "emergencyRefreshInterval": "5"
+            }
+          },
+          "shortName": "",
+          "status": {
+            "emergency": {
+              "acceptedByWorkstation": "-1",
+              "activated": "0",
+              "calledByWorkstation": "-1"
+            },
+            "queue": {
+              "ghostWorkstationCount": "-1",
+              "givenNumberCount": "19",
+              "lastGivenNumber": "20",
+              "lastGivenNumberTimestamp": "2016-03-24"
+            },
+            "ticketprinter": {
+              "deactivated": "1"
+            }
+          }
+        },
+        "status": "confirmed",
+        "lastChange": 1583149747
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "D12521625",
+        "appointments": [
+          {
+            "date": 1459494900,
+            "scope": {
+              "$ref": "scope/169/"
+            },
+            "availability": {
+              "$ref": "availability/86368/"
+            },
+            "slotCount": "1"
+          }
+        ],
+        "apiclient": {
+          "shortname": "default"
+        },
+        "authKey": "7aad",
+        "clients": [
+          {
+            "familyName": "B61232",
+            "email": "test@example.com",
+            "emailSendCount": "0",
+            "notificationsSendCount": "0",
+            "surveyAccepted": "0",
+            "telephone": "0049123456789"
+          }
+        ],
+        "createIP": "127.0.0.1",
+        "createTimestamp": "1454326797",
+        "id": "199430",
+        "archiveId": 0,
+        "queue": {
+          "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+          "arrivalTime": 1459494900,
+          "callCount": "0",
+          "callTime": 0,
+          "number": "199430",
+          "waitingTimeEstimate": 50,
+          "waitingTimeOptimistic": 32,
+          "waitingTime": 181,
+          "status": "confirmed",
+          "lastCallTime": 0,
+          "destination": null,
+          "destinationHint": null,
+          "withAppointment": true
+        },
+        "reminderTimestamp": "0",
+        "requests": [
+          {
+            "id": "120686",
+            "link": "https://service.berlin.de/dienstleistung/120686/",
+            "name": "Anmeldung einer Wohnung",
+            "group": "Meldewesen und Ordnung",
+            "source": "dldb"
+          }
+        ],
+        "scope": {
+          "id": "169",
+          "source": "dldb",
+          "contact": {
+            "name": "Bürgeramt Blaschkoallee, Neukölln",
+            "street": "Blaschkoallee 32, 12359 Berlin",
+            "email": "",
+            "country": "Germany"
+          },
+          "provider": {
+            "$ref": "provider/122291/"
+          },
+          "hint": "Aufruf im Warteraum/Zimmer 231",
+          "lastChange": "2019-08-23 15:22:22",
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "10",
+              "endInDaysDefault": "60",
+              "multipleSlotsEnabled": "1",
+              "reservationDuration": "30",
+              "startInDaysDefault": "0"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "0",
+              "amendmentLabel": "Anmerkung",
+              "emailFrom": "test@example.com",
+              "emailRequired": "0",
+              "telephoneActivated": "0",
+              "telephoneRequired": "0"
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "Ausgabe",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
+              "firstNumber": "1",
+              "lastNumber": "399",
+              "maxNumberContingent": "0",
+              "processingTimeAverage": "10",
+              "publishWaitingTimeEnabled": "0",
+              "statisticsEnabled": "1"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "buttonName": "Bürgeramt",
+              "confirmationEnabled": "0",
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "1",
+              "emergencyRefreshInterval": "5"
+            }
+          },
+          "shortName": "",
+          "status": {
+            "emergency": {
+              "acceptedByWorkstation": "-1",
+              "activated": "0",
+              "calledByWorkstation": "-1"
+            },
+            "queue": {
+              "ghostWorkstationCount": "-1",
+              "givenNumberCount": "19",
+              "lastGivenNumber": "20",
+              "lastGivenNumberTimestamp": "2016-03-24"
+            },
+            "ticketprinter": {
+              "deactivated": "1"
+            }
+          }
+        },
+        "status": "confirmed",
+        "lastChange": 1583149747
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "D12521625",
+        "appointments": [
+          {
+            "date": 1459495800,
+            "scope": {
+              "$ref": "scope/169/"
+            },
+            "availability": {
+              "$ref": "availability/86368/"
+            },
+            "slotCount": "1"
+          }
+        ],
+        "apiclient": {
+          "shortname": "default"
+        },
+        "authKey": "7bb1",
+        "clients": [
+          {
+            "familyName": "W432453",
+            "email": "test@example.com",
+            "emailSendCount": "0",
+            "notificationsSendCount": "0",
+            "surveyAccepted": "0",
+            "telephone": "0049123456789"
+          }
+        ],
+        "createIP": "127.0.0.1",
+        "createTimestamp": "1454331692",
+        "id": "200358",
+        "archiveId": 0,
+        "queue": {
+          "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+          "arrivalTime": 1459495800,
+          "callCount": "0",
+          "callTime": 0,
+          "number": "200358",
+          "waitingTimeEstimate": 60,
+          "waitingTimeOptimistic": 40,
+          "waitingTime": 166,
+          "status": "confirmed",
+          "lastCallTime": 0,
+          "destination": null,
+          "destinationHint": null,
+          "withAppointment": true
+        },
+        "reminderTimestamp": "0",
+        "requests": [
+          {
+            "id": "120686",
+            "link": "https://service.berlin.de/dienstleistung/120686/",
+            "name": "Anmeldung einer Wohnung",
+            "group": "Meldewesen und Ordnung",
+            "source": "dldb"
+          }
+        ],
+        "scope": {
+          "id": "169",
+          "source": "dldb",
+          "contact": {
+            "name": "Bürgeramt Blaschkoallee, Neukölln",
+            "street": "Blaschkoallee 32, 12359 Berlin",
+            "email": "",
+            "country": "Germany"
+          },
+          "provider": {
+            "$ref": "provider/122291/"
+          },
+          "hint": "Aufruf im Warteraum/Zimmer 231",
+          "lastChange": "2019-08-23 15:22:22",
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "10",
+              "endInDaysDefault": "60",
+              "multipleSlotsEnabled": "1",
+              "reservationDuration": "30",
+              "startInDaysDefault": "0"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "0",
+              "amendmentLabel": "Anmerkung",
+              "emailFrom": "test@example.com",
+              "emailRequired": "0",
+              "telephoneActivated": "0",
+              "telephoneRequired": "0"
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "Ausgabe",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
+              "firstNumber": "1",
+              "lastNumber": "399",
+              "maxNumberContingent": "0",
+              "processingTimeAverage": "10",
+              "publishWaitingTimeEnabled": "0",
+              "statisticsEnabled": "1"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "buttonName": "Bürgeramt",
+              "confirmationEnabled": "0",
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "1",
+              "emergencyRefreshInterval": "5"
+            }
+          },
+          "shortName": "",
+          "status": {
+            "emergency": {
+              "acceptedByWorkstation": "-1",
+              "activated": "0",
+              "calledByWorkstation": "-1"
+            },
+            "queue": {
+              "ghostWorkstationCount": "-1",
+              "givenNumberCount": "19",
+              "lastGivenNumber": "20",
+              "lastGivenNumberTimestamp": "2016-03-24"
+            },
+            "ticketprinter": {
+              "deactivated": "1"
+            }
+          }
+        },
+        "status": "confirmed",
+        "lastChange": 1583149747
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "D12521625",
+        "appointments": [
+          {
+            "date": 1459496700,
+            "scope": {
+              "$ref": "scope/169/"
+            },
+            "availability": {
+              "$ref": "availability/86368/"
+            },
+            "slotCount": "1"
+          }
+        ],
+        "apiclient": {
+          "shortname": "default"
+        },
+        "authKey": "bfb0",
+        "clients": [
+          {
+            "familyName": "A321453",
+            "email": "test@example.com",
+            "emailSendCount": "0",
+            "notificationsSendCount": "0",
+            "surveyAccepted": "0",
+            "telephone": "0049123456789"
+          }
+        ],
+        "createIP": "127.0.0.1",
+        "createTimestamp": "1454335695",
+        "id": "200878",
+        "archiveId": 0,
+        "queue": {
+          "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+          "arrivalTime": 1459496700,
+          "callCount": "0",
+          "callTime": 0,
+          "number": "200878",
+          "waitingTimeEstimate": 70,
+          "waitingTimeOptimistic": 48,
+          "waitingTime": 151,
+          "status": "confirmed",
+          "lastCallTime": 0,
+          "destination": null,
+          "destinationHint": null,
+          "withAppointment": true
+        },
+        "reminderTimestamp": "0",
+        "requests": [
+          {
+            "id": "120703",
+            "link": "https://service.berlin.de/dienstleistung/120703/",
+            "name": "Personalausweis beantragen",
+            "group": "Meldewesen und Ordnung",
+            "source": "dldb"
+          }
+        ],
+        "scope": {
+          "id": "169",
+          "source": "dldb",
+          "contact": {
+            "name": "Bürgeramt Blaschkoallee, Neukölln",
+            "street": "Blaschkoallee 32, 12359 Berlin",
+            "email": "",
+            "country": "Germany"
+          },
+          "provider": {
+            "$ref": "provider/122291/"
+          },
+          "hint": "Aufruf im Warteraum/Zimmer 231",
+          "lastChange": "2019-08-23 15:22:22",
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "10",
+              "endInDaysDefault": "60",
+              "multipleSlotsEnabled": "1",
+              "reservationDuration": "30",
+              "startInDaysDefault": "0"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "0",
+              "amendmentLabel": "Anmerkung",
+              "emailFrom": "test@example.com",
+              "emailRequired": "0",
+              "telephoneActivated": "0",
+              "telephoneRequired": "0"
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "Ausgabe",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
+              "firstNumber": "1",
+              "lastNumber": "399",
+              "maxNumberContingent": "0",
+              "processingTimeAverage": "10",
+              "publishWaitingTimeEnabled": "0",
+              "statisticsEnabled": "1"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "buttonName": "Bürgeramt",
+              "confirmationEnabled": "0",
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "1",
+              "emergencyRefreshInterval": "5"
+            }
+          },
+          "shortName": "",
+          "status": {
+            "emergency": {
+              "acceptedByWorkstation": "-1",
+              "activated": "0",
+              "calledByWorkstation": "-1"
+            },
+            "queue": {
+              "ghostWorkstationCount": "-1",
+              "givenNumberCount": "19",
+              "lastGivenNumber": "20",
+              "lastGivenNumberTimestamp": "2016-03-24"
+            },
+            "ticketprinter": {
+              "deactivated": "1"
+            }
+          }
+        },
+        "status": "confirmed",
+        "lastChange": 1583149747
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "D125216252523452536531256251426235",
+        "appointments": [
+          {
+            "date": 1459497600,
+            "scope": {
+              "$ref": "scope/169/"
+            },
+            "availability": {
+              "$ref": "availability/86368/"
+            },
+            "slotCount": "3"
+          }
+        ],
+        "apiclient": {
+          "shortname": "default"
+        },
+        "authKey": "72d1",
+        "clients": [
+          {
+            "familyName": "S5141616",
+            "email": "test@example.com",
+            "emailSendCount": "0",
+            "notificationsSendCount": "0",
+            "surveyAccepted": "0",
+            "telephone": "0049123456789"
+          }
+        ],
+        "createIP": "127.0.0.1",
+        "createTimestamp": "1454327677",
+        "id": "199676",
+        "archiveId": 0,
+        "queue": {
+          "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+          "arrivalTime": 1459497600,
+          "callCount": "0",
+          "callTime": 0,
+          "number": "199676",
+          "waitingTimeEstimate": 80,
+          "waitingTimeOptimistic": 56,
+          "waitingTime": 136,
+          "status": "confirmed",
+          "lastCallTime": 0,
+          "destination": null,
+          "destinationHint": null,
+          "withAppointment": true
+        },
+        "reminderTimestamp": "0",
+        "requests": [
+          {
+            "id": "121591",
+            "link": "https://service.berlin.de/dienstleistung/121591/",
+            "name": "Internationaler Führerschein",
+            "group": "Auto und Verkehr",
+            "source": "dldb"
+          },
+          {
+            "id": "124556",
+            "link": "https://service.berlin.de/dienstleistung/124556/",
+            "name": "Umstellung der Fahrerlaubnis",
+            "group": "Auto und Verkehr",
+            "source": "dldb"
+          }
+        ],
+        "scope": {
+          "id": "169",
+          "source": "dldb",
+          "contact": {
+            "name": "Bürgeramt Blaschkoallee, Neukölln",
+            "street": "Blaschkoallee 32, 12359 Berlin",
+            "email": "",
+            "country": "Germany"
+          },
+          "provider": {
+            "$ref": "provider/122291/"
+          },
+          "hint": "Aufruf im Warteraum/Zimmer 231",
+          "lastChange": "2019-08-23 15:22:22",
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "10",
+              "endInDaysDefault": "60",
+              "multipleSlotsEnabled": "1",
+              "reservationDuration": "30",
+              "startInDaysDefault": "0"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "0",
+              "amendmentLabel": "Anmerkung",
+              "emailFrom": "test@example.com",
+              "emailRequired": "0",
+              "telephoneActivated": "0",
+              "telephoneRequired": "0"
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "Ausgabe",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
+              "firstNumber": "1",
+              "lastNumber": "399",
+              "maxNumberContingent": "0",
+              "processingTimeAverage": "10",
+              "publishWaitingTimeEnabled": "0",
+              "statisticsEnabled": "1"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "buttonName": "Bürgeramt",
+              "confirmationEnabled": "0",
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "1",
+              "emergencyRefreshInterval": "5"
+            }
+          },
+          "shortName": "",
+          "status": {
+            "emergency": {
+              "acceptedByWorkstation": "-1",
+              "activated": "0",
+              "calledByWorkstation": "-1"
+            },
+            "queue": {
+              "ghostWorkstationCount": "-1",
+              "givenNumberCount": "19",
+              "lastGivenNumber": "20",
+              "lastGivenNumberTimestamp": "2016-03-24"
+            },
+            "ticketprinter": {
+              "deactivated": "1"
+            }
+          }
+        },
+        "status": "confirmed",
+        "lastChange": 1583149747
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "D12521625",
+        "appointments": [
+          {
+            "date": 1459500300,
+            "scope": {
+              "$ref": "scope/169/"
+            },
+            "availability": {
+              "$ref": "availability/86368/"
+            },
+            "slotCount": "1"
+          }
+        ],
+        "apiclient": {
+          "shortname": "default"
+        },
+        "authKey": "a0a7",
+        "clients": [
+          {
+            "familyName": "B235256",
+            "email": "test@example.com",
+            "emailSendCount": "0",
+            "notificationsSendCount": "0",
+            "surveyAccepted": "0",
+            "telephone": "0049123456789"
+          }
+        ],
+        "createIP": "127.0.0.1",
+        "createTimestamp": "1454327799",
+        "id": "12309298",
+        "archiveId": 0,
+        "queue": {
+          "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+          "arrivalTime": 1459500300,
+          "callCount": "0",
+          "callTime": 0,
+          "number": "12309298",
+          "waitingTimeEstimate": 90,
+          "waitingTimeOptimistic": 64,
+          "waitingTime": 91,
+          "status": "confirmed",
+          "lastCallTime": 0,
+          "destination": null,
+          "destinationHint": null,
+          "withAppointment": true
+        },
+        "reminderTimestamp": "0",
+        "requests": [
+          {
+            "id": "120686",
+            "link": "https://service.berlin.de/dienstleistung/120686/",
+            "name": "Anmeldung einer Wohnung",
+            "group": "Meldewesen und Ordnung",
+            "source": "dldb"
+          }
+        ],
+        "scope": {
+          "id": "169",
+          "source": "dldb",
+          "contact": {
+            "name": "Bürgeramt Blaschkoallee, Neukölln",
+            "street": "Blaschkoallee 32, 12359 Berlin",
+            "email": "",
+            "country": "Germany"
+          },
+          "provider": {
+            "$ref": "provider/122291/"
+          },
+          "hint": "Aufruf im Warteraum/Zimmer 231",
+          "lastChange": "2019-08-23 15:22:22",
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "10",
+              "endInDaysDefault": "60",
+              "multipleSlotsEnabled": "1",
+              "reservationDuration": "30",
+              "startInDaysDefault": "0"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "0",
+              "amendmentLabel": "Anmerkung",
+              "emailFrom": "test@example.com",
+              "emailRequired": "0",
+              "telephoneActivated": "0",
+              "telephoneRequired": "0"
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "Ausgabe",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
+              "firstNumber": "1",
+              "lastNumber": "399",
+              "maxNumberContingent": "0",
+              "processingTimeAverage": "10",
+              "publishWaitingTimeEnabled": "0",
+              "statisticsEnabled": "1"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "buttonName": "Bürgeramt",
+              "confirmationEnabled": "0",
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "1",
+              "emergencyRefreshInterval": "5"
+            }
+          },
+          "shortName": "",
+          "status": {
+            "emergency": {
+              "acceptedByWorkstation": "-1",
+              "activated": "0",
+              "calledByWorkstation": "-1"
+            },
+            "queue": {
+              "ghostWorkstationCount": "-1",
+              "givenNumberCount": "19",
+              "lastGivenNumber": "20",
+              "lastGivenNumberTimestamp": "2016-03-24"
+            },
+            "ticketprinter": {
+              "deactivated": "1"
+            }
+          }
+        },
+        "status": "confirmed",
+        "lastChange": 1583149747
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "D12521625",
+        "appointments": [
+          {
+            "date": 1459501200,
+            "scope": {
+              "$ref": "scope/169/"
+            },
+            "availability": {
+              "$ref": "availability/86368/"
+            },
+            "slotCount": "3"
+          }
+        ],
+        "apiclient": {
+          "shortname": "default"
+        },
+        "authKey": "7e4c",
+        "clients": [
+          {
+            "familyName": "H5265",
+            "email": "test@example.com",
+            "emailSendCount": "0",
+            "notificationsSendCount": "0",
+            "surveyAccepted": "0",
+            "telephone": "0049123456789"
+          }
+        ],
+        "createIP": "127.0.0.1",
+        "createTimestamp": "1454326769",
+        "id": "199421",
+        "archiveId": 0,
+        "queue": {
+          "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+          "arrivalTime": 1459501200,
+          "callCount": "0",
+          "callTime": 0,
+          "number": "199421",
+          "waitingTimeEstimate": 100,
+          "waitingTimeOptimistic": 72,
+          "waitingTime": 76,
+          "status": "confirmed",
+          "lastCallTime": 0,
+          "destination": null,
+          "destinationHint": null,
+          "withAppointment": true
+        },
+        "reminderTimestamp": "0",
+        "requests": [
+          {
+            "id": "120686",
+            "link": "https://service.berlin.de/dienstleistung/120686/",
+            "name": "Anmeldung einer Wohnung",
+            "group": "Meldewesen und Ordnung",
+            "source": "dldb"
+          }
+        ],
+        "scope": {
+          "id": "169",
+          "source": "dldb",
+          "contact": {
+            "name": "Bürgeramt Blaschkoallee, Neukölln",
+            "street": "Blaschkoallee 32, 12359 Berlin",
+            "email": "",
+            "country": "Germany"
+          },
+          "provider": {
+            "$ref": "provider/122291/"
+          },
+          "hint": "Aufruf im Warteraum/Zimmer 231",
+          "lastChange": "2019-08-23 15:22:22",
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "10",
+              "endInDaysDefault": "60",
+              "multipleSlotsEnabled": "1",
+              "reservationDuration": "30",
+              "startInDaysDefault": "0"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "0",
+              "amendmentLabel": "Anmerkung",
+              "emailFrom": "test@example.com",
+              "emailRequired": "0",
+              "telephoneActivated": "0",
+              "telephoneRequired": "0"
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "Ausgabe",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
+              "firstNumber": "1",
+              "lastNumber": "399",
+              "maxNumberContingent": "0",
+              "processingTimeAverage": "10",
+              "publishWaitingTimeEnabled": "0",
+              "statisticsEnabled": "1"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "buttonName": "Bürgeramt",
+              "confirmationEnabled": "0",
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "1",
+              "emergencyRefreshInterval": "5"
+            }
+          },
+          "shortName": "",
+          "status": {
+            "emergency": {
+              "acceptedByWorkstation": "-1",
+              "activated": "0",
+              "calledByWorkstation": "-1"
+            },
+            "queue": {
+              "ghostWorkstationCount": "-1",
+              "givenNumberCount": "19",
+              "lastGivenNumber": "20",
+              "lastGivenNumberTimestamp": "2016-03-24"
+            },
+            "ticketprinter": {
+              "deactivated": "1"
+            }
+          }
+        },
+        "status": "confirmed",
+        "lastChange": 1583149747
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "",
+        "appointments": [
+          {
+            "date": 1459503900,
+            "scope": {
+              "$ref": "scope/169/"
+            },
+            "availability": {
+              "$ref": "availability/86368/"
+            },
+            "slotCount": "2"
+          }
+        ],
+        "apiclient": {
+          "shortname": "default"
+        },
+        "authKey": "b671",
+        "clients": [
+          {
+            "familyName": "S500",
+            "email": "test@example.com",
+            "emailSendCount": "0",
+            "notificationsSendCount": "0",
+            "surveyAccepted": "0",
+            "telephone": ""
+          }
+        ],
+        "createIP": "127.0.0.1",
+        "createTimestamp": "1454327375",
+        "id": "199578",
+        "archiveId": 0,
+        "queue": {
+          "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+          "arrivalTime": 1459503900,
+          "callCount": "0",
+          "callTime": 0,
+          "number": "199578",
+          "waitingTimeEstimate": 110,
+          "waitingTimeOptimistic": 80,
+          "waitingTime": 31,
+          "status": "confirmed",
+          "lastCallTime": 0,
+          "destination": null,
+          "destinationHint": null,
+          "withAppointment": true
+        },
+        "reminderTimestamp": "0",
+        "requests": [
+          {
+            "id": "120877",
+            "link": "https://service.berlin.de/dienstleistung/120877/",
+            "name": "Kraftfahrzeug außer Betrieb setzen",
+            "group": "Auto und Verkehr",
+            "source": "dldb"
+          }
+        ],
+        "scope": {
+          "id": "169",
+          "source": "dldb",
+          "contact": {
+            "name": "Bürgeramt Blaschkoallee, Neukölln",
+            "street": "Blaschkoallee 32, 12359 Berlin",
+            "email": "",
+            "country": "Germany"
+          },
+          "provider": {
+            "$ref": "provider/122291/"
+          },
+          "hint": "Aufruf im Warteraum/Zimmer 231",
+          "lastChange": "2019-08-23 15:22:22",
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "10",
+              "endInDaysDefault": "60",
+              "multipleSlotsEnabled": "1",
+              "reservationDuration": "30",
+              "startInDaysDefault": "0"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "0",
+              "amendmentLabel": "Anmerkung",
+              "emailFrom": "test@example.com",
+              "emailRequired": "0",
+              "telephoneActivated": "0",
+              "telephoneRequired": "0"
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "Ausgabe",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
+              "firstNumber": "1",
+              "lastNumber": "399",
+              "maxNumberContingent": "0",
+              "processingTimeAverage": "10",
+              "publishWaitingTimeEnabled": "0",
+              "statisticsEnabled": "1"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "buttonName": "Bürgeramt",
+              "confirmationEnabled": "0",
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "1",
+              "emergencyRefreshInterval": "5"
+            }
+          },
+          "shortName": "",
+          "status": {
+            "emergency": {
+              "acceptedByWorkstation": "-1",
+              "activated": "0",
+              "calledByWorkstation": "-1"
+            },
+            "queue": {
+              "ghostWorkstationCount": "-1",
+              "givenNumberCount": "19",
+              "lastGivenNumber": "20",
+              "lastGivenNumberTimestamp": "2016-03-24"
+            },
+            "ticketprinter": {
+              "deactivated": "1"
+            }
+          }
+        },
+        "status": "confirmed",
+        "lastChange": 1566566536
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "",
+        "appointments": [
+          {
+            "date": 1459505700,
+            "scope": {
+              "$ref": "scope/169/"
+            },
+            "availability": {
+              "$ref": "availability/86368/"
+            },
+            "slotCount": "1"
+          }
+        ],
+        "apiclient": {
+          "shortname": "default"
+        },
+        "authKey": "db88",
+        "clients": [
+          {
+            "familyName": "H250",
+            "email": "test@example.com",
+            "emailSendCount": "0",
+            "notificationsSendCount": "0",
+            "surveyAccepted": "0",
+            "telephone": ""
+          }
+        ],
+        "createIP": "127.0.0.1",
+        "createTimestamp": "1454327660",
+        "id": "199671",
+        "archiveId": 0,
+        "queue": {
+          "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+          "arrivalTime": 1459505700,
+          "callCount": "0",
+          "callTime": 0,
+          "number": "199671",
+          "waitingTimeEstimate": 120,
+          "waitingTimeOptimistic": 88,
+          "waitingTime": 1,
+          "status": "confirmed",
+          "lastCallTime": 0,
+          "destination": null,
+          "destinationHint": null,
+          "withAppointment": true
+        },
+        "reminderTimestamp": "0",
+        "requests": [
+          {
+            "id": "120877",
+            "link": "https://service.berlin.de/dienstleistung/120877/",
+            "name": "Kraftfahrzeug außer Betrieb setzen",
+            "group": "Auto und Verkehr",
+            "source": "dldb"
+          }
+        ],
+        "scope": {
+          "id": "169",
+          "source": "dldb",
+          "contact": {
+            "name": "Bürgeramt Blaschkoallee, Neukölln",
+            "street": "Blaschkoallee 32, 12359 Berlin",
+            "email": "",
+            "country": "Germany"
+          },
+          "provider": {
+            "$ref": "provider/122291/"
+          },
+          "hint": "Aufruf im Warteraum/Zimmer 231",
+          "lastChange": "2019-08-23 15:22:22",
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "10",
+              "endInDaysDefault": "60",
+              "multipleSlotsEnabled": "1",
+              "reservationDuration": "30",
+              "startInDaysDefault": "0"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "0",
+              "amendmentLabel": "Anmerkung",
+              "emailFrom": "test@example.com",
+              "emailRequired": "0",
+              "telephoneActivated": "0",
+              "telephoneRequired": "0"
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "Ausgabe",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
+              "firstNumber": "1",
+              "lastNumber": "399",
+              "maxNumberContingent": "0",
+              "processingTimeAverage": "10",
+              "publishWaitingTimeEnabled": "0",
+              "statisticsEnabled": "1"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "buttonName": "Bürgeramt",
+              "confirmationEnabled": "0",
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "1",
+              "emergencyRefreshInterval": "5"
+            }
+          },
+          "shortName": "",
+          "status": {
+            "emergency": {
+              "acceptedByWorkstation": "-1",
+              "activated": "0",
+              "calledByWorkstation": "-1"
+            },
+            "queue": {
+              "ghostWorkstationCount": "-1",
+              "givenNumberCount": "19",
+              "lastGivenNumber": "20",
+              "lastGivenNumberTimestamp": "2016-03-24"
+            },
+            "ticketprinter": {
+              "deactivated": "1"
+            }
+          }
+        },
+        "status": "confirmed",
+        "lastChange": 1566566536
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "D12521625",
+        "appointments": [
+          {
+            "date": 1459506600,
+            "scope": {
+              "$ref": "scope/169/"
+            },
+            "availability": {
+              "$ref": "availability/86368/"
+            },
+            "slotCount": "1"
+          }
+        ],
+        "apiclient": {
+          "shortname": "default"
+        },
+        "authKey": "55f8",
+        "clients": [
+          {
+            "familyName": "W536245",
+            "email": "test@example.com",
+            "emailSendCount": "0",
+            "notificationsSendCount": "0",
+            "surveyAccepted": "0",
+            "telephone": "0049123456789"
+          }
+        ],
+        "createIP": "127.0.0.1",
+        "createTimestamp": "1458665550",
+        "id": "156365",
+        "archiveId": 0,
+        "queue": {
+          "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+          "arrivalTime": 1459506600,
+          "callCount": "0",
+          "callTime": 0,
+          "number": "156365",
+          "waitingTimeEstimate": 130,
+          "waitingTimeOptimistic": 96,
+          "waitingTime": 0,
+          "status": "confirmed",
+          "lastCallTime": 0,
+          "destination": null,
+          "destinationHint": null,
+          "withAppointment": true
+        },
+        "reminderTimestamp": "0",
+        "requests": [
+          {
+            "id": "120703",
+            "link": "https://service.berlin.de/dienstleistung/120703/",
+            "name": "Personalausweis beantragen",
+            "group": "Meldewesen und Ordnung",
+            "source": "dldb"
+          }
+        ],
+        "scope": {
+          "id": "169",
+          "source": "dldb",
+          "contact": {
+            "name": "Bürgeramt Blaschkoallee, Neukölln",
+            "street": "Blaschkoallee 32, 12359 Berlin",
+            "email": "",
+            "country": "Germany"
+          },
+          "provider": {
+            "$ref": "provider/122291/"
+          },
+          "hint": "Aufruf im Warteraum/Zimmer 231",
+          "lastChange": "2019-08-23 15:22:22",
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "10",
+              "endInDaysDefault": "60",
+              "multipleSlotsEnabled": "1",
+              "reservationDuration": "30",
+              "startInDaysDefault": "0"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "0",
+              "amendmentLabel": "Anmerkung",
+              "emailFrom": "test@example.com",
+              "emailRequired": "0",
+              "telephoneActivated": "0",
+              "telephoneRequired": "0"
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "Ausgabe",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
+              "firstNumber": "1",
+              "lastNumber": "399",
+              "maxNumberContingent": "0",
+              "processingTimeAverage": "10",
+              "publishWaitingTimeEnabled": "0",
+              "statisticsEnabled": "1"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "buttonName": "Bürgeramt",
+              "confirmationEnabled": "0",
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "1",
+              "emergencyRefreshInterval": "5"
+            }
+          },
+          "shortName": "",
+          "status": {
+            "emergency": {
+              "acceptedByWorkstation": "-1",
+              "activated": "0",
+              "calledByWorkstation": "-1"
+            },
+            "queue": {
+              "ghostWorkstationCount": "-1",
+              "givenNumberCount": "19",
+              "lastGivenNumber": "20",
+              "lastGivenNumberTimestamp": "2016-03-24"
+            },
+            "ticketprinter": {
+              "deactivated": "1"
+            }
+          }
+        },
+        "status": "confirmed",
+        "lastChange": 1583149747
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "",
+        "apiclient": {
+          "shortname": "default"
+        },
+        "authKey": "",
+        "createIP": "",
+        "createTimestamp": 1584702968,
+        "id": 0,
+        "archiveId": 0,
+        "queue": {
+          "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+          "arrivalTime": 1459505760,
+          "callCount": 0,
+          "callTime": 0,
+          "number": -1,
+          "waitingTimeEstimate": 140,
+          "waitingTimeOptimistic": 104,
+          "waitingTime": 0,
+          "status": "fake",
+          "withAppointment": false,
+          "destination": "",
+          "destinationHint": "1"
+        },
+        "reminderTimestamp": 0,
+        "scope": {
+          "id": 0,
+          "source": "dldb"
+        },
+        "status": "deleted",
+        "lastChange": 1584702968
+      }
+    ],
+    "profiler": [
+      
+    ]
+  }

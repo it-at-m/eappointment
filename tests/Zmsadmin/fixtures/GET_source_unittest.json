@@ -1,0 +1,120 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2019-02-08T14:45:15+01:00",
+        "server": "Zmsapi-ENV (v2.19.02-38-g0ba2cba)"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/source.json",
+        "source": "unittest",
+        "contact": {
+            "name": "BerlinOnline Stadtportal GmbH",
+            "email": "test@example.com"
+        },
+        "providers": [
+            {
+                "id": "9999998",
+                "link": "https://www.berlinonline.de",
+                "name": "Unittest Source Dienstleister",
+                "source": "unittest",
+                "data": {
+                    "json": "data"
+                },
+                "contact": {
+                    "city": "Berlin",
+                    "country": "Germany",
+                    "name": "Unittest Source Dienstleister",
+                    "postalCode": "10178",
+                    "region": "Berlin",
+                    "street": "Alte Jakobstraße",
+                    "streetNumber": "105"
+                }
+            },
+            {
+                "id": "9999999",
+                "link": "https://www.berlinonline.de",
+                "name": "Unittest Source Dienstleister 2",
+                "source": "unittest",
+                "data": {
+                    "json": "data",
+                    "key": "value"
+                },
+                "contact": {
+                    "city": "Berlin",
+                    "country": "Germany",
+                    "name": "Unittest Source Dienstleister 2",
+                    "postalCode": "10178",
+                    "region": "Berlin",
+                    "street": "Alte Jakobstraße",
+                    "streetNumber": "106"
+                }
+            }
+        ],
+        "requests": [
+            {
+                "id": "9999998",
+                "link": "https://www.berlinonline.de",
+                "name": "Unittest Source Dienstleistung",
+                "group": "Unittests",
+                "source": "unittest",
+                "data": {
+                    "json": "data"
+                }
+            },
+            {
+                "id": "9999999",
+                "link": "https://www.berlinonline.de",
+                "name": "Unittest Source Dienstleistung 2",
+                "group": "Unittests",
+                "source": "unittest",
+                "data": {
+                    "json": "data",
+                    "key": "value"
+                }
+            }
+        ],
+        "label": "Unittest Source",
+        "editable": "1",
+        "lastChange": 1549546997,
+        "requestrelation": [
+            {
+                "provider": {
+                    "id": "9999998",
+                    "source": "unittest"
+                },
+                "request": {
+                    "id": "9999998",
+                    "$ref": "/request/unittest/9999998/"
+                },
+                "source": "unittest",
+                "slots": "2"
+            },
+            {
+                "provider": {
+                    "id": "9999999",
+                    "source": "unittest"
+                },
+                "request": {
+                    "id": "9999998",
+                    "$ref": "/request/unittest/9999998/"
+                },
+                "source": "unittest",
+                "slots": "1"
+            },
+            {
+                "provider": {
+                    "id": "9999999",
+                    "source": "unittest"
+                },
+                "request": {
+                    "id": "9999999",
+                    "$ref": "/request/unittest/9999999/"
+                },
+                "source": "unittest",
+                "slots": "1"
+            }
+        ]
+    }
+}

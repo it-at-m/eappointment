@@ -1,0 +1,358 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-06-21T12:24:17+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+        "id": "68985",
+        "weekday": {
+            "sunday": "0",
+            "monday": "0",
+            "tuesday": "0",
+            "wednesday": "8",
+            "thursday": "0",
+            "friday": "0",
+            "saturday": "0"
+        },
+        "repeat": {
+            "afterWeeks": "1",
+            "weekOfMonth": "0"
+        },
+        "bookable": {
+            "startInDays": "0",
+            "endInDays": "60"
+        },
+        "workstationCount": {
+            "public": "3",
+            "callcenter": "3",
+            "intern": "3"
+        },
+        "multipleSlotsAllowed": "0",
+        "slotTimeInMinutes": "10",
+        "startDate": 1453935600,
+        "endDate": 1463868000,
+        "startTime": "08:00:00",
+        "endTime": "12:50:00",
+        "type": "appointment",
+        "description": "",
+        "scope": {
+            "id": "141",
+            "hint": "Nr. wird zum Termin aufgerufen",
+            "shortName": "",
+            "contact": {
+                "name": "Bürgeramt Heerstraße",
+                "street": "Heerstr. 12, 14052 Berlin",
+                "email": "",
+                "country": "Germany"
+            },
+            "preferences": {
+                "appointment": {
+                    "deallocationDuration": "10",
+                    "endInDaysDefault": "60",
+                    "multipleSlotsEnabled": "0",
+                    "reservationDuration": "20",
+                    "startInDaysDefault": "0",
+                    "notificationConfirmationEnabled": "1",
+                    "notificationHeadsUpEnabled": "1"
+                },
+                "client": {
+                    "alternateAppointmentUrl": "",
+                    "amendmentActivated": "0",
+                    "amendmentLabel": "",
+                    "emailRequired": "0",
+                    "telephoneActivated": "0",
+                    "telephoneRequired": "0"
+                },
+                "notifications": {
+                    "confirmationContent": "",
+                    "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+                    "headsUpTime": "30"
+                },
+                "pickup": {
+                    "alternateName": "Ausgabe",
+                    "isDefault": "0"
+                },
+                "queue": {
+                    "callCountMax": "0",
+                    "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                    "firstNumber": "1",
+                    "lastNumber": "499",
+                    "maxNumberContingent": "0",
+                    "processingTimeAverage": "15",
+                    "publishWaitingTimeEnabled": "1",
+                    "statisticsEnabled": "1"
+                },
+                "survey": {
+                    "emailContent": "",
+                    "enabled": "0",
+                    "label": ""
+                },
+                "ticketprinter": {
+                    "buttonName": "Bürgeramt",
+                    "confirmationEnabled": "0",
+                    "deactivatedText": "",
+                    "notificationsAmendmentEnabled": "0",
+                    "notificationsEnabled": "1",
+                    "notificationsDelay": "0"
+                },
+                "workstation": {
+                    "emergencyEnabled": "1",
+                    "emergencyRefreshInterval": "5"
+                }
+            },
+            "status": {
+                "emergency": {
+                    "acceptedByWorkstation": "-1",
+                    "activated": "0",
+                    "calledByWorkstation": "-1"
+                },
+                "queue": {
+                    "ghostWorkstationCount": "-1",
+                    "givenNumberCount": "46",
+                    "lastGivenNumber": "47",
+                    "lastGivenNumberTimestamp": 1458774000
+                },
+                "ticketprinter": {
+                    "deactivated": "0"
+                }
+            },
+            "provider": {
+                "id": "122217",
+                "contact": {
+                    "city": "Berlin",
+                    "country": "Germany",
+                    "name": "Bürgeramt Heerstraße",
+                    "postalCode": "14052",
+                    "region": "Berlin",
+                    "street": "Heerstr.",
+                    "streetNumber": "12"
+                },
+                "source": "dldb",
+                "link": "https://service.berlin.de/standort/122217/",
+                "name": "Bürgeramt Heerstraße"
+            },
+            "dayoff": [
+                {
+                    "date": 1458860400,
+                    "name": "Karfreitag"
+                },
+                {
+                    "date": 1459116000,
+                    "name": "Ostermontag"
+                },
+                {
+                    "date": 1462053600,
+                    "name": "Maifeiertag"
+                },
+                {
+                    "date": 1462399200,
+                    "name": "Christi Himmelfahrt"
+                },
+                {
+                    "date": 1463349600,
+                    "name": "Pfingstmontag"
+                },
+                {
+                    "date": 1475445600,
+                    "name": "Tag der Deutschen Einheit"
+                },
+                {
+                    "date": 1482620400,
+                    "name": "1. Weihnachtstag"
+                },
+                {
+                    "date": 1482706800,
+                    "name": "2. Weihnachtstag"
+                },
+                {
+                    "date": 1483225200,
+                    "name": "Neujahr"
+                },
+                {
+                    "date": 1492120800,
+                    "name": "Karfreitag"
+                },
+                {
+                    "date": 1492380000,
+                    "name": "Ostermontag"
+                },
+                {
+                    "date": 1493589600,
+                    "name": "Maifeiertag"
+                },
+                {
+                    "date": 1495663200,
+                    "name": "Christi Himmelfahrt"
+                },
+                {
+                    "date": 1496613600,
+                    "name": "Pfingstmontag"
+                },
+                {
+                    "date": 1506981600,
+                    "name": "Tag der Deutschen Einheit"
+                },
+                {
+                    "date": 1514156400,
+                    "name": "1. Weihnachtstag"
+                },
+                {
+                    "date": 1514242800,
+                    "name": "2. Weihnachtstag"
+                },
+                {
+                    "date": 1514761200,
+                    "name": "Neujahr"
+                },
+                {
+                    "date": 1522360800,
+                    "name": "Karfreitag"
+                },
+                {
+                    "date": 1522620000,
+                    "name": "Ostermontag"
+                },
+                {
+                    "date": 1525125600,
+                    "name": "Maifeiertag"
+                },
+                {
+                    "date": 1525903200,
+                    "name": "Christi Himmelfahrt"
+                },
+                {
+                    "date": 1526853600,
+                    "name": "Pfingstmontag"
+                },
+                {
+                    "date": 1538517600,
+                    "name": "Tag der Deutschen Einheit"
+                },
+                {
+                    "date": 1545692400,
+                    "name": "1. Weihnachtstag"
+                },
+                {
+                    "date": 1545778800,
+                    "name": "2. Weihnachtstag"
+                },
+                {
+                    "date": 1546297200,
+                    "name": "Neujahr"
+                },
+                {
+                    "date": 1555624800,
+                    "name": "Karfreitag"
+                },
+                {
+                    "date": 1555884000,
+                    "name": "Ostermontag"
+                },
+                {
+                    "date": 1556661600,
+                    "name": "Maifeiertag"
+                },
+                {
+                    "date": 1559167200,
+                    "name": "Christi Himmelfahrt"
+                },
+                {
+                    "date": 1560117600,
+                    "name": "Pfingstmontag"
+                },
+                {
+                    "date": 1570053600,
+                    "name": "Tag der Deutschen Einheit"
+                },
+                {
+                    "date": 1577228400,
+                    "name": "1. Weihnachtstag"
+                },
+                {
+                    "date": 1577314800,
+                    "name": "2. Weihnachtstag"
+                },
+                {
+                    "date": 1577833200,
+                    "name": "Neujahr"
+                },
+                {
+                    "date": 1586469600,
+                    "name": "Karfreitag"
+                },
+                {
+                    "date": 1586728800,
+                    "name": "Ostermontag"
+                },
+                {
+                    "date": 1588284000,
+                    "name": "Maifeiertag"
+                },
+                {
+                    "date": 1590012000,
+                    "name": "Christi Himmelfahrt"
+                },
+                {
+                    "date": 1590962400,
+                    "name": "Pfingstmontag"
+                },
+                {
+                    "date": 1601676000,
+                    "name": "Tag der Deutschen Einheit"
+                },
+                {
+                    "date": 1608850800,
+                    "name": "1. Weihnachtstag"
+                },
+                {
+                    "date": 1608937200,
+                    "name": "2. Weihnachtstag"
+                },
+                {
+                    "date": 1609455600,
+                    "name": "Neujahr"
+                },
+                {
+                    "date": 1617314400,
+                    "name": "Karfreitag"
+                },
+                {
+                    "date": 1617573600,
+                    "name": "Ostermontag"
+                },
+                {
+                    "date": 1619820000,
+                    "name": "Maifeiertag"
+                },
+                {
+                    "date": 1620856800,
+                    "name": "Christi Himmelfahrt"
+                },
+                {
+                    "date": 1621807200,
+                    "name": "Pfingstmontag"
+                },
+                {
+                    "date": 1633212000,
+                    "name": "Tag der Deutschen Einheit"
+                },
+                {
+                    "date": 1640386800,
+                    "name": "1. Weihnachtstag"
+                },
+                {
+                    "date": 1640473200,
+                    "name": "2. Weihnachtstag"
+                },
+                {
+                    "date": 1478041200,
+                    "name": "Personalversammlung"
+                }
+            ]
+        }
+    }
+}

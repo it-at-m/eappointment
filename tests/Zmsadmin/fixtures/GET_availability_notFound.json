@@ -1,0 +1,42 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": true,
+        "generated": "2017-06-21T12:29:30+02:00",
+        "server": "Zmsapi-ENV",
+        "message": "Not found"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+        "weekday": {
+            "sunday": 0,
+            "monday": 0,
+            "tuesday": 0,
+            "wednesday": 0,
+            "thursday": 0,
+            "friday": 0,
+            "saturday": 0
+        },
+        "repeat": {
+            "afterWeeks": 1,
+            "weekOfMonth": 0
+        },
+        "bookable": {
+            "startInDays": 1,
+            "endInDays": 60
+        },
+        "workstationCount": {
+            "public": 0,
+            "callcenter": 0,
+            "intern": 0
+        },
+        "multipleSlotsAllowed": true,
+        "slotTimeInMinutes": 10,
+        "startDate": 0,
+        "endDate": 0,
+        "startTime": "0:00",
+        "endTime": "23:59",
+        "type": "appointment"
+    }
+}

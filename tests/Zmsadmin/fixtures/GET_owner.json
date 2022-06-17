@@ -1,0 +1,21 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-06-28T11:46:12+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/owner.json",
+        "id": "23",
+        "name": "Berlin",
+        "url": "https://service.berlin.de/terminvereinbarung",
+        "contact": {
+            "city": "Berlin",
+            "street": "Berlin",
+            "country": "Germany",
+            "name": "Berlin"
+        }
+    }
+}

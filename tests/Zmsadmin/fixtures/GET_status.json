@@ -1,0 +1,47 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2018-04-11T14:46:50+02:00",
+    "server": "Zmsapi-ENV (v2.15.03)"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/status.json",
+    "database": {
+      "nodeConnections": 0.01,
+      "clusterStatus": "OFF",
+      "logbin": "OFF",
+      "problems": "tmp_table_size should be at least 32MB; max_heap_table_size should be at least 32MB",
+      "locks": "0",
+      "threads": "1"
+    },
+    "processes": {
+      "confirmed": "86861",
+      "deleted": "3",
+      "missed": "6",
+      "reserved": "10",
+      "lastInsert": "2018-04-11 09:38:26"
+    },
+    "mail": {
+      "queueCount": "50",
+      "oldestSeconds": "17952",
+      "newestSeconds": "11903"
+    },
+    "notification": {
+      "queueCount": "4",
+      "oldestSeconds": "81051",
+      "newestSeconds": "81051"
+    },
+    "sources": {
+      "dldb": {
+        "last": "2018-04-10T14:47:06+02:00"
+      }
+    },
+    "version": {
+      "major": "2",
+      "minor": "15",
+      "patch": "03"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+    "$schema": "https:\/\/localhost\/terminvereinbarung\/api\/2\/",
+    "meta": {
+        "$schema": "https:\/\/schema.berlin.de\/queuemanagement\/metaresult.json",
+        "error": false,
+        "generated": "2018-11-19T17:02:49+01:00",
+        "server": "Zmsapi-ENV (v2.19.00-1-g7f08ae4)"
+    },
+    "data": {
+        "$schema": "https:\/\/schema.berlin.de\/queuemanagement\/source.json",
+        "source": "dldb",
+        "contact": {
+            "name": "Landesredaktion",
+            "email": "test@example.com"
+        },
+        "label": "Dienstleistungsdatenbank",
+        "editable": "0",
+        "lastChange": 1542202014
+    }
+}
