@@ -19,6 +19,7 @@ test-php-73:
       MYSQL_ROOT_PASSWORD: zmsapi
     only:
         changes:
+            - .gitlab-ci.yml
             - composer.lock
             - composer.json
             - schema/**/*
@@ -63,18 +64,18 @@ apidoc:
         - wget -P ./public/_test/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui.css"
         - wget -P ./public/_test/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-standalone-preset.js"
         - find public/
-    #only:
-     #   changes:
-     #       - .gitlab-ci.yml
-     #       - composer.lock
-     #       - composer.json
-     #       - src/**/*
-     #       - routing.php
+    only:
+        changes:
+            - .gitlab-ci.yml
+            - composer.lock
+            - composer.json
+            - src/**/*
+            - routing.php
 
 pages:
     stage: deploy
     script:
-        - echo "/zmsapi/coverage/ /zmsapi/_tests/coverage/index.html 302" >> public/_redirects
+        - echo "/zmsapi/_tests/coverage/ /zmsapi/_tests/coverage/index.html 302" >> public/_redirects
         - echo "/zmsapi/doc/ /zmsapi/public/doc/index.html 302" >> public/_redirects
         - echo "/zmsapi/_test/ /zmsapi/public/_test/index.html 302" >> public/_redirects
         - find public/
