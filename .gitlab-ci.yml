@@ -47,7 +47,7 @@ outdated:
 apidoc:
     extends: .test-php
     variables:
-      PHP_VERSION: 7.3
+      PHP_VERSION: "7.3"
     before_script:
         - $CLI_COMPOSER
         - npm install
