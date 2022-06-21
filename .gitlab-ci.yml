@@ -46,6 +46,9 @@ outdated:
 
 apidoc:
     stage: deploy
+    variables:
+      PHP_VERSION: 7.3
+    image: registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-dev
     before_script:
         - $CLI_COMPOSER
         - npm install
