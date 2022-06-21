@@ -53,7 +53,7 @@ apidoc:
         - npm install
     artifacts:
         paths:
-            - vendor/eappointment/zmsentities/schema
+            - public
     script:
         - npm run build
         - swagger-cli validate ./public/doc/swagger.yaml
