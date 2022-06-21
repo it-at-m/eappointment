@@ -74,7 +74,7 @@ apidoc:
 pages:
     stage: deploy
     script:
-        - echo "/zmsapi/_tests/coverage/ /zmsapi/_tests/coverage/index.html 302" >> public/_redirects
+        - echo "/zmsapi/coverage/ /zmsapi/_tests/coverage/index.html 302" >> public/_redirects
         - echo "/zmsapi/doc/ /zmsapi/public/doc/index.html 302" >> public/_redirects
         - echo "/zmsapi/_test/ /zmsapi/public/_test/index.html 302" >> public/_redirects
         - find public/
