@@ -46,9 +46,10 @@ outdated:
     extends: .test-phpoutdated
 
 apidoc:
-    extends: .test-php
+    stage: deploy
     variables:
-      PHP_VERSION: "7.3"
+        PHP_VERSION: "7.3"
+    image: registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-dev
     before_script:
         - $CLI_COMPOSER
         - npm install
@@ -60,9 +61,9 @@ apidoc:
         - swagger-cli validate ./public/doc/swagger.yaml
         - swagger-cli bundle -r -o ./public/doc/swagger.json ./public/doc/swagger.yaml
         - wget -P ./public/doc/ "https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"
-        - wget -P ./public/_test/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-bundle.js"
-        - wget -P ./public/_test/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui.css"
-        - wget -P ./public/_test/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-standalone-preset.js"
+        #- wget -P ./public/_test/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-bundle.js"
+        #- wget -P ./public/_test/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui.css"
+        #- wget -P ./public/_test/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-standalone-preset.js"
         - find public/
     only:
         changes:
@@ -77,7 +78,6 @@ pages:
     script:
         - echo "/zmsapi/_tests/coverage/ /zmsapi/_tests/coverage/index.html 302" >> public/_redirects
         - echo "/zmsapi/doc/ /zmsapi/public/doc/index.html 302" >> public/_redirects
-        - echo "/zmsapi/_test/ /zmsapi/public/_test/index.html 302" >> public/_redirects
         - find public/
     artifacts:
         paths:
