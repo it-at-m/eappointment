@@ -16,6 +16,7 @@ use BO\Dldb\FileAccess,
     \BO\Dldb\Importer\MySQL AS MySQLImporter
 ; 
 use Garden\Cli\Cli;
+use \Httpful\Request;
 
 define('DEBUG', true);
 
@@ -28,6 +29,8 @@ $cli->description("Mysql Import.")
     ->opt('database:d', 'Mysql database', true)
     ->opt('port:o', 'Mysql port', true)
     ->opt('jsonpath:j', 'Json datapath', false)
+    ->opt('base:b', 'Base download url', true)
+    ->opt('auth:a', 'http auth example:example', false)
     
     ;
 $args = $cli->parse($argv, true);
@@ -97,21 +100,104 @@ class Timer
 }
 $timer = new Timer();
 
+
+$baseDomain = $args->getOpt("base");
+$auth = $args->getOpt("auth", "");
+$client = Request::init()
+    ->withoutAutoParsing()
+    ->followRedirects()
+    ->timeout(30);
+
+    
+$proxy = $args->getOpt('proxy') ? $args->getOpt('proxy') : getenv('HTTP_PROXY');
+if ($proxy) {
+    $proxyconf = array();
+    preg_match('#^(?:(?P<user>[^:]+):(?P<pass>[^@]+)@)?(?P<host>[^:]+):?(?P<port>\d+)?$#', $proxy, $proxyconf);
+    $proxyconf = array_merge(array('host' => '','port' => '80','user' => false,'pass' => false), $proxyconf);
+    if ($proxyconf['user']) {
+        $client->useProxy(
+            $proxyconf['host'],
+            $proxyconf['port'],
+            CURLAUTH_BASIC,
+            $proxyconf['user'],
+            $proxyconf['pass']
+        );
+    } else {
+        $client->useProxy($proxyconf['host'], $proxyconf['port']);
+    }
+}
+Request::ini($client);
+
+$request = Request::get($baseDomain . '/export/json/availablelanguages/');
+
+$hasAuth = false;
+if (!empty($auth)) {
+    $hasAuth = true;
+    $auth = explode(':', $auth, 2);
+    $request->authenticateWith($auth[0], $auth[1]);
+}
+
+$respronse = $request->send();
+
+$json = $respronse->body;
+
+$availablelanguages = json_decode($json, true);
+if (!array_key_exists('data', $availablelanguages) || 0 == count($availablelanguages['data'])) {
+    echo $cli->red($baseDomain . "/export/json/availablelanguages/ did not validate\n");
+    $availablelanguages = [
+        'data' => [
+            'de' => [
+                "long_code" => "de_DE",
+                "short_code" => "de",
+                "descriptor" => "Deutsch"
+            ],
+            'en' => [
+                "long_code" => "en_GB",
+                "short_code" => "en",
+                "descriptor" => "English"
+            ]
+        ]
+    ];
+}
+
+
 $fileAccess = new FileAccess();
 
-$fileAccess->loadFromPath($args->getOpt('jsonpath'));
+$jsonPath = $args->getOpt('jsonpath');
+
+#$fileAccess->loadFromPath($args->getOpt('jsonpath'));
+
+$fileAccess->loadSettingsFromPath($jsonPath);
+$fileAccess->loadAuthoritiesFromPathByLocale($jsonPath, 'de');
+$fileAccess->loadTopicsFromPathByLocale($jsonPath, 'de');
+
+
+#print_r(array_keys($availablelanguages['data']));exit;
+
+$mySQLAccess = new MySQLAccess([
+    'host' => $args->getOpt('host'), 
+    'user' => $args->getOpt('user'), 
+    'password' => $args->getOpt('password'),
+    'port' => $args->getOpt('port'),
+    'database' => $args->getOpt('database')
+]);
+
+foreach (array_keys($availablelanguages['data']) as $locale) {
+    $fileAccess->addAccessInstanceLocale($locale);
+    $mySQLAccess->addAccessInstanceLocale($locale);
+    $fileAccess->loadServicesFromPathByLocale($jsonPath, $locale);
+    $fileAccess->loadLocationsFromPathByLocale($jsonPath, $locale);
+}
+#exit;
+
 
 $mysqlIporter = new MySQLImporter(
-    new MySQLAccess([
-        'host' => $args->getOpt('host'), 
-        'user' => $args->getOpt('user'), 
-        'password' => $args->getOpt('password'),
-        'port' => $args->getOpt('port'),
-        'database' => $args->getOpt('database')
-    ]), 
+    $mySQLAccess, 
     $fileAccess
     #,MySQLImporter::OPTION_CLEAR_ENTITIY_REFERENCES_TABLES|MySQLImporter::OPTION_CLEAR_ENTITIY_TABLE
 );
+
+$mysqlIporter->setLocaleList(array_keys($availablelanguages['data']));
 
 try {
     

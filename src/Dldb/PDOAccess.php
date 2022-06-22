@@ -73,7 +73,7 @@ abstract class PDOAccess extends AbstractAccess
     {
     }
 
-    protected function loadAccessor(string $name, string $locale = 'de')
+    public function loadAccessor(string $name, string $locale = 'de')
     {
         if (isset($this->accessorClassName[$name])) {
             if (null === $this->accessInstance[$locale][$this->accessorClassName[$name]]) {
