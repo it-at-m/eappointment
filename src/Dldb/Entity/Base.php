@@ -108,11 +108,14 @@ class Base extends \ArrayObject
         $numKeys = count($keys);
         while ($numKeys > 1) {
             $key = array_shift($keys);
+            $numKeys = count($keys);
             if (! isset($array[$key]) || ! is_array($array[$key])) {
                 $array[$key] = [];
             }
+
             $array = &$array[$key];
         }
+
         $array[array_shift($keys)] = $value;
     
         return $array;

@@ -191,6 +191,7 @@ class Location extends Base
             LEFT JOIN 
                 meta AS m ON m.object_id = l.id AND m.locale = ?
             WHERE l.locale = ?';
+
             if (!empty($category) && false === $getAll) {
                 $sqlArgs[] = $category;
                 $sql .= ' AND category_identifier = ?';
@@ -201,13 +202,20 @@ class Location extends Base
             $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
             $stm->execute($sqlArgs);
             
-            $locations = $stm->fetchAll();
-
             $locationList = new Collection();
-            foreach ($locations as $location) {
+            
+            while ($location = $stm->fetch()) {
                 $locationList[$location['id']] = $location;
             }
             return $locationList;
+            
+            #$locations = $stm->fetchAll();
+
+            #foreach ($locations as $location) {
+            #    $locationList[$location['id']] = $location;
+            #}
+            
+            #return $locationList;
         } catch (\Exception $e) {
             throw $e;
         }
