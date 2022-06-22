@@ -7,7 +7,7 @@
 namespace BO\Dldb;
 
 /**
- *
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class FileAccess extends AbstractAccess
 {
@@ -61,6 +61,31 @@ class FileAccess extends AbstractAccess
         $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topic_de.json', 'de');
         $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topic_de.json', 'en');
         return $this;
+    }
+
+    public function loadLocationsFromPathByLocale($path, $locale)
+    {
+        $this->loadLocations($path . DIRECTORY_SEPARATOR . 'locations_' . $locale . '.json', $locale);
+    }
+
+    public function loadServicesFromPathByLocale($path, $locale)
+    {
+        $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_' . $locale . '.json', $locale);
+    }
+
+    public function loadTopicsFromPathByLocale($path, $locale)
+    {
+        $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topic_' . $locale . '.json', $locale);
+    }
+
+    public function loadAuthoritiesFromPathByLocale($path, $locale)
+    {
+        $this->loadAuthorities($path . DIRECTORY_SEPARATOR . 'authority_' . $locale . '.json', $locale);
+    }
+
+    public function loadSettingsFromPath($path)
+    {
+        $this->loadSettings($path . DIRECTORY_SEPARATOR . 'settings.json');
     }
 
     /**
