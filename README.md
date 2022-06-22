@@ -8,7 +8,5 @@ This application offers a REST-like interface for ZMS functions and database acc
 
 The OpenApi documentation you will find here: https://eappointment.gitlab.io/zmsapi/doc/
 
-For testing the api with swagger, use this link: https://eappointment.gitlab.io/zmsapi/_test/
-
 For a detailed project description, see https://gitlab.com/eappointment/eappointment
 
