@@ -91,16 +91,23 @@ class TwigExtension extends \Twig_Extension
         return addSlashes($result);
     }
 
-    public function formatDateTime($date)
+    public function formatDateTime($dateString)
     {
-        $datetime = date_create($date->year .'-'. $date->month .'-'. $date->day);
-        $formatDate['date']     = $datetime->format('%a, %d. %B %Y');
-        $formatDate['fulldate'] = $datetime->format('%A, den %d. %B %Y');
-        $formatDate['time']     = $datetime->format('%H:%M Uhr');
-        $formatDate['ym']       = $datetime->format('Y-m');
-        $formatDate['ymd']       = $datetime->format('Y-m-d');
-        $formatDate['ts']       = $datetime->getTimestamp();
-
+        $dateTime = new \DateTimeImmutable(
+            $dateString->year.'-'.$dateString->month.'-'.$dateString->day,
+            new \DateTimezone('Europe/Berlin')
+        );
+        $formatDate['date']     = Helper::getFormatedDates($dateTime, "EE, dd. MMMM yyyy");
+        $formatDate['fulldate'] = Helper::getFormatedDates($dateTime, "EEEE, 'den' dd. MMMM yyyy");
+        $formatDate['weekday']  = (date('w', $dateTime->getTimestamp()) == 0) ?
+            date('w', $dateTime->getTimestamp()) + 6 :
+            date('w', $dateTime->getTimestamp()) - 1;
+        $formatDate['ym']       = $dateTime->format('Y-m');
+        $formatDate['ymd']       = $dateTime->format('Y-m-d');
+        $formatDate['ts']       = $dateTime->getTimestamp();
+        $formatDate['time']     = ($dateTime->format('H:i') != '00:00') ?
+            Helper::getFormatedDates($dateTime, 'HH:mm Uhr') :
+            false;
         return $formatDate;
     }
 

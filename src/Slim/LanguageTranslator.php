@@ -9,6 +9,7 @@ use Symfony\Component\Translation\Loader\JsonFileLoader;
 use Symfony\Component\Translation\Loader\PoFileLoader;
 use Symfony\Component\Translation\Translator;
 
+
 class LanguageTranslator
 {
     protected $translator = null;
@@ -25,8 +26,10 @@ class LanguageTranslator
         $translatorType = (\App::$languagesource) ? \App::$languagesource : 'pofile';
 
         $this->defaultLang = $defaultLang;
+
+        $translatorClass = \APP::TRANSLATOR_CLASS;
         // First param is the "default language" to use.
-        $this->translator = new Translator($defaultLocale);
+        $this->translator = new $translatorClass($defaultLocale);
         // Set a fallback language incase you don't have a translation in the default language
         $this->translator->setFallbackLocales([$fallbackLocale]);
         // Add a loader that will get the php files we are going to store our translations in
