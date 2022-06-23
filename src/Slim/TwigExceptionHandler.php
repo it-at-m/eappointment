@@ -127,7 +127,7 @@ class TwigExceptionHandler
 
     public static function getExtendedExceptionInfo(\Throwable $exception, RequestInterface $request)
     {
-        $servertime = strftime("%F %T");
+        $servertime = Helper::getFormatedDates((new \DateTimeImmutable())->getTimestamp(), 'yyyy-MM-dd H:mm:ss');
         $exceptionclass = get_class($exception);
         if (isset($exception->template)) {
             $exceptionclass = $exception->template;
