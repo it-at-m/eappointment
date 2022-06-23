@@ -9,7 +9,6 @@ use Symfony\Component\Translation\Loader\JsonFileLoader;
 use Symfony\Component\Translation\Loader\PoFileLoader;
 use Symfony\Component\Translation\Translator;
 
-
 class LanguageTranslator
 {
     protected $translator = null;
