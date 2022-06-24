@@ -1,4 +1,3 @@
-host: stg.service.berlin.de
 basePath: /terminvereinbarung/api/2
 schemes:
   - https
