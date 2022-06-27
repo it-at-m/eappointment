@@ -61,9 +61,10 @@ apidoc:
         - swagger-cli validate ./public/doc/swagger.yaml
         - swagger-cli bundle -r -o ./public/doc/swagger.json ./public/doc/swagger.yaml
         - wget -P ./public/doc/ "https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"
-        #- wget -P ./public/_test/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-bundle.js"
-        #- wget -P ./public/_test/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui.css"
-        #- wget -P ./public/_test/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-standalone-preset.js"
+        - wget -P ./public/doc/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-bundle.js"
+        - wget -P ./public/doc/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui.css"
+        - wget -P ./public/doc/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-standalone-preset.js"
+        - tar -cvzf openapi.tar.gz ./public/doc/
         - find public/
     only:
         changes:
