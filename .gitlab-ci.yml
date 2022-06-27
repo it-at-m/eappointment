@@ -66,6 +66,7 @@ apidoc:
         - wget -P ./ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui.css"
         - wget -P ./ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-standalone-preset.js"
         - tar -cvzf ./openapidoc.tar.gz logo.png redoc.standalone.js swagger*
+        - ln -s ./ assets
         - cd ../../ && find public/
     only:
         changes:
