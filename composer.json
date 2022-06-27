@@ -17,6 +17,7 @@
     "helmich/phpunit-psr7-assert": "^4.3.0"
   },
   "require": {
+    "bo/openapi": "@dev",
     "eappointment/zmsslim": "dev-main || ^2.0",
     "eappointment/zmsclient": "dev-main || ^2.0",
     "eappointment/zmsdldb": "dev-main || ^2.0",
@@ -36,5 +37,18 @@
       "BO\\Zmsapi\\": "src/Zmsapi/",
       "BO\\Zmsapi\\Tests\\": "tests/Zmsapi/"
     }
-  }
+  },
+  "repositories": [
+    {
+        "type": "package",
+        "package": {
+            "name": "bo/openapi",
+            "version": "2.24.08",
+            "dist": {
+                "url": "https://eappointment.gitlab.io/zmsapi/openapidoc.tar.gz",
+                "type": "gzip"
+            }
+        }
+    }
+  ]
 }
