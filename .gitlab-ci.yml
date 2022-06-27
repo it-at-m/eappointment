@@ -79,7 +79,7 @@ pages:
     script:
         - echo "/zmsapi/_tests/coverage/ /zmsapi/_tests/coverage/index.html 302" >> public/_redirects
         - echo "/zmsapi/doc/ /zmsapi/public/doc/index.html 302" >> public/_redirects
-        - echo "/zmsapi/doc/assets/ /zmsapi/public/openapidoc.gz 302" >> public/_redirects
+        - echo "/zmsapi/doc/assets/ /zmsapi/public/openapidoc.tar.gz 302" >> public/_redirects
         - find public/
     artifacts:
         paths:
