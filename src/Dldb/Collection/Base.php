@@ -28,8 +28,8 @@ class Base extends \ArrayObject
         $collator->setAttribute(\Collator::NUMERIC_COLLATION, \Collator::ON);
         
         $itemList = clone $this;
-        $itemList->uasort(function ($a, $b) use ($collator, $field) {
-            return collator_compare($collator, $a[$field], $b[$field]);
+        $itemList->uasort(function ($itemA, $itemB) use ($collator, $field) {
+            return collator_compare($collator, $itemA[$field], $itemB[$field]);
         });
         return $itemList;
     }
