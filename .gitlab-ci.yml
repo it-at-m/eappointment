@@ -46,7 +46,7 @@ outdated:
     extends: .test-phpoutdated
 
 apidoc:
-    stage: deploy
+    stage: apidoc
     variables:
         PHP_VERSION: "7.3"
     image: registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-dev
