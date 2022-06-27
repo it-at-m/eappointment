@@ -55,7 +55,7 @@ apidoc:
         - npm install
     artifacts:
         paths:
-            - ./openapidoc.tar.gz
+            - public
     script:
         - npm run build
         - swagger-cli validate ./public/doc/swagger.yaml
@@ -64,7 +64,7 @@ apidoc:
         - wget -P ./public/doc/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-bundle.js"
         - wget -P ./public/doc/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui.css"
         - wget -P ./public/doc/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-standalone-preset.js"
-        - tar -cvzf openapidoc.tar.gz ./public/doc/
+        - tar -cvzf ./public/openapidoc.tar.gz ./public/doc/
         - find public/
     only:
         changes:
@@ -79,7 +79,7 @@ pages:
     script:
         - echo "/zmsapi/_tests/coverage/ /zmsapi/_tests/coverage/index.html 302" >> public/_redirects
         - echo "/zmsapi/doc/ /zmsapi/public/doc/index.html 302" >> public/_redirects
-        - echo "/zmsapi/doc/assets/ /zmsapi/openapidoc.tar.gz 302" >> public/_redirects
+        - echo "/zmsapi/doc/assets/ /zmsapi/public/openapidoc.tar.gz 302" >> public/_redirects
         - find public/
     artifacts:
         paths:
