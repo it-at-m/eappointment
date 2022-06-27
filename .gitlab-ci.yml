@@ -55,7 +55,7 @@ apidoc:
         - npm install
     artifacts:
         paths:
-            - public
+            - public/doc
     script:
         - npm run build
         - swagger-cli validate ./public/doc/swagger.yaml
