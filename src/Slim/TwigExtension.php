@@ -38,6 +38,7 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('urlGet', array($this, 'urlGet')),
             new \Twig_SimpleFunction('csvProperty', array($this, 'csvProperty')),
             new \Twig_SimpleFunction('azPrefixList', array($this, 'azPrefixList')),
+            new \Twig_SimpleFunction('azPrefixListCollator', array($this, 'azPrefixListCollator')),
             new \Twig_SimpleFunction('isValueInArray', array($this, 'isValueInArray')),
             new \Twig_SimpleFunction('remoteInclude', array($this, 'remoteInclude'), $safe),
             new \Twig_SimpleFunction('includeUrl', array($this, 'includeUrl')),
@@ -192,6 +193,37 @@ class TwigExtension extends \Twig_Extension
                 uasort($azList[$currentPrefix]['sublist'], array($this,'sortByName'));
                 ksort($azList);
             }
+        }
+        return $azList;
+    }
+
+    public function azPrefixListCollator($list, $property, $locale)
+    {
+        $collator = collator_create($locale);
+        $collator->setAttribute(\Collator::QUATERNARY, \Collator::ON);
+        $collator->setAttribute(\Collator::CASE_FIRST, \Collator::ON);
+        $collator->setAttribute(\Collator::NUMERIC_COLLATION, \Collator::ON);
+
+        if (is_array($list)) {
+            uasort($list, function ($a, $b) use ($collator, $property) {
+                return collator_compare( $collator, $a[$property], $b[$property]);
+            });
+        }
+        else {
+            $list = $list->sortWithCollator($property, $locale);
+        }
+
+        $azList = array();
+
+        foreach ($list as $item) {
+            $currentPrefix = self::sortFirstChar($item[$property]);
+            if (!array_key_exists($currentPrefix, $azList)) {
+                $azList[$currentPrefix] = array(
+                    'prefix' => $currentPrefix,
+                    'sublist' => array(),
+                );
+            }
+            $azList[$currentPrefix]['sublist'][] = $item;
         }
         return $azList;
     }
