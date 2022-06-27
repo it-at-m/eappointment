@@ -19,7 +19,7 @@ test-php-73:
       MYSQL_ROOT_PASSWORD: zmsapi
     only:
         changes:
-            - .gitlab-ci.yml
+            #- .gitlab-ci.yml
             - composer.lock
             - composer.json
             - schema/**/*
@@ -79,6 +79,7 @@ pages:
     script:
         - echo "/zmsapi/_tests/coverage/ /zmsapi/_tests/coverage/index.html 302" >> public/_redirects
         - echo "/zmsapi/doc/ /zmsapi/public/doc/index.html 302" >> public/_redirects
+        - echo "/zmsapi/doc/assets/ /zmsapi/public/openapi.tar.gz 302" >> public/_redirects
         - find public/
     artifacts:
         paths:
