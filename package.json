@@ -21,5 +21,8 @@
     "swagger-parser": "^10.0.0",
     "openapi-types": "^10.0.0",
     "js-yaml": "^4.1.0"
+  },
+  "config": {
+    "unsafe-perm":true
   }
 }
