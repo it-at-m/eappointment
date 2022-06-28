@@ -11,7 +11,7 @@ now: # Dummy target
 
 dev: # init development system
 	COMPOSER=composer.json $(COMPOSER) update
-	npm install --unsafe-perm
+	npm install
 
 live: # init live system, delete unnecessary libs
 	$(COMPOSER) install --no-dev --prefer-dist
