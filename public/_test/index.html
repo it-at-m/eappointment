@@ -33,15 +33,15 @@
   <body>
     <div id="swagger-ui"></div>
 
-    <script src="../doc/assets/swagger-ui-bundle.js" charset="UTF-8"> </script>
-    <script src="../doc/assets/swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
+    <script src="./assets/swagger-ui-bundle.js" charset="UTF-8"> </script>
+    <script src="./assets/swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
     <script>
     window.onload = function() {
       var url = window.location.search.match(/url=([^&]+)/);
       if (url && url.length > 1) {
         url = decodeURIComponent(url[1]);
       } else {
-        url = "../doc/assets/swagger.json";
+        url = "../doc/swagger.json";
       }
       // Begin Swagger UI call region
       const ui = SwaggerUIBundle({

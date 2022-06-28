@@ -17,7 +17,6 @@
     "helmich/phpunit-psr7-assert": "^4.3.0"
   },
   "require": {
-    "bo/openapi": "@dev",
     "eappointment/zmsslim": "dev-main || ^2.0",
     "eappointment/zmsclient": "dev-main || ^2.0",
     "eappointment/zmsdldb": "dev-main || ^2.0",
@@ -28,8 +27,28 @@
     "roave/security-advisories": "dev-master"
   },
   "scripts": {
+    "clean": "rm -f public/doc/assets/*.* && rm -f public/_test/assets/*.*",
     "command": "bin/configure",
-    "assets": "echo 'Nothing to do'"
+    "openapi-build": [
+      "npm install",
+      "npm run build",
+      "swagger-cli validate ./public/doc/swagger.yaml",
+      "swagger-cli bundle -r -o ./public/doc/swagger.json ./public/doc/swagger.yaml"
+    ],
+    "wget-files": [
+        "wget https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js -O public/doc/assets/redoc.standalone.js",
+        "wget https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-bundle.js -O public/_test/assets/swagger-ui-bundle.js",
+        "wget https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui.css -O public/_test/assets/swagger-ui.css",
+        "wget https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-standalone-preset.js -O public/_test/assets/swagger-ui-standalone-preset.js"
+    ],
+    "post-install-cmd": [
+        "@openapi-build",
+        "@wget-files"
+    ],
+    "post-update-cmd": [
+        "@openapi-build",
+        "@wget-files"
+    ]
   },
   "bin": [],
   "autoload": {
@@ -37,18 +56,5 @@
       "BO\\Zmsapi\\": "src/Zmsapi/",
       "BO\\Zmsapi\\Tests\\": "tests/Zmsapi/"
     }
-  },
-  "repositories": [
-    {
-        "type": "package",
-        "package": {
-            "name": "bo/openapi",
-            "version": "2.24.08",
-            "dist": {
-                "url": "https://eappointment.gitlab.io/zmsapi/doc/openapidoc.tar.gz",
-                "type": "tar"
-            }
-        }
-    }
-  ]
+  }
 }

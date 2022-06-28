@@ -5,10 +5,11 @@ config.php
 tags
 .DS_Store
 public/_tests
-public/doc/redoc.standalone.js
-public/_test/swagger-ui-bundle.js
-public/_test/swagger-ui.css
-public/_test/swagger-ui-standalone-preset.js
+public/doc/assets/redoc.standalone.js
+public/doc/swagger.*
+public/_test/assets/swagger-ui-bundle.js
+public/_test/assets/swagger-ui.css
+public/_test/assets/swagger-ui-standalone-preset.js
 cache
 vendor.old
 vendor.update

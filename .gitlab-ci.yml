@@ -45,42 +45,10 @@ test-php-73:
 outdated:
     extends: .test-phpoutdated
 
-apidoc:
-    stage: .pre
-    variables:
-        PHP_VERSION: "7.3"
-    image: registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-dev
-    before_script:
-        - $CLI_COMPOSER
-        - npm install
-    artifacts:
-        paths:
-            - public
-    script:
-        - npm run build
-        - swagger-cli validate ./public/doc/swagger.yaml
-        - swagger-cli bundle -r -o ./public/doc/swagger.json ./public/doc/swagger.yaml
-        - cd public/doc
-        - wget -P ./ "https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"
-        - wget -P ./ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-bundle.js"
-        - wget -P ./ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui.css"
-        - wget -P ./ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-standalone-preset.js"
-        - tar -cvzf ./openapidoc.tar.gz logo.png redoc.standalone.js swagger*
-        - ln -s ./ assets
-        - cd ../../ && find public/
-    only:
-        changes:
-            - .gitlab-ci.yml
-            - composer.lock
-            - composer.json
-            - src/**/*
-            - routing.php
-
 pages:
     stage: deploy
     script:
         - echo "/zmsapi/_tests/coverage/ /zmsapi/_tests/coverage/index.html 302" >> public/_redirects
-        - echo "/zmsapi/doc/ /zmsapi/public/doc/index.html 302" >> public/_redirects
         - find public/
     artifacts:
         paths:
