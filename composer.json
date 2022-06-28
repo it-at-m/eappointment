@@ -30,7 +30,8 @@
     "clean": "rm -f public/doc/assets/*.* && rm -f public/_test/assets/*.*",
     "command": "bin/configure",
     "openapi-build": [
-      "npm install --unsafe-perm",
+      "npm install --location=global @apidevtools/swagger-cli",
+      "npm install",
       "npm run build",
       "swagger-cli validate ./public/doc/swagger.yaml",
       "swagger-cli bundle -r -o ./public/doc/swagger.json ./public/doc/swagger.yaml"
