@@ -14,9 +14,7 @@
   "author": "BerlinOnline GmbH & Co. KG",
   "license": "SEE LICENSE IN LICENSE FILE",
   "dependencies": {
-    "@apidevtools/swagger-cli": "^4.0.4"
-  },
-  "devDependencies": {
+    "@apidevtools/swagger-cli": "^4.0.4",
     "swagger-jsdoc": "^6.1.0",
     "swagger-parser": "^10.0.0",
     "openapi-types": "^10.0.0",
