@@ -31,7 +31,7 @@
     "command": "bin/configure",
     "openapi-build": [
       "npm install",
-      "npm install --location=global @apidevtools/swagger-cli",
+      "npm install --unsafe-perm --location=global @apidevtools/swagger-cli",
       "npm run build",
       "swagger-cli validate ./public/doc/swagger.yaml",
       "swagger-cli bundle -r -o ./public/doc/swagger.json ./public/doc/swagger.yaml"
