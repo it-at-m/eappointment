@@ -64,7 +64,7 @@ apidoc:
         - wget -P ./public/_test/assets/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-bundle.js"
         - wget -P ./public/_test/assets/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui.css"
         - wget -P ./public/_test/assets/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-standalone-preset.js"
-        - cd find public/
+        - find public/
     only:
         changes:
             - .gitlab-ci.yml
