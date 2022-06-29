@@ -34,7 +34,8 @@
         "wget https://eappointment.gitlab.io/zmsapi/doc/assets/redoc.standalone.js -O public/doc/assets/redoc.standalone.js",
         "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui-bundle.js -O public/_test/assets/swagger-ui-bundle.js",
         "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui.css -O public/_test/assets/swagger-ui.css",
-        "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui-standalone-preset.js -O public/_test/assets/swagger-ui-standalone-preset.js"
+        "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui-standalone-preset.js -O public/_test/assets/swagger-ui-standalone-preset.js",
+        "sha256sum --status -c checksums.txt"
     ],
     "post-install-cmd": [
         "@wget-files"
