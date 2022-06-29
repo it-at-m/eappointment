@@ -50,6 +50,7 @@ class SendNotificationReminder
     public function startProcessing($commit)
     {
         $this->writeNotificationReminderList($commit);
+        $this->log("\nINFO: Last run ". $this->dateTime->format('Y-m-d H:i:s'));
         $this->log("\nSUMMARY: Sent notification reminder: ".$this->count);
     }
 
@@ -97,11 +98,11 @@ class SendNotificationReminder
             $entity = (new \BO\Zmsentities\Notification)->toResolvedEntity($process, $config, $department, 'reminder');
             if ($commit) {
                 $notification = (new \BO\Zmsdb\Notification)->writeInQueue($entity, $this->dateTime);
+                $this->log(
+                    "\nINFO: $processCount. Write reminder notification in queue with ID ". $notification->getId() . " 
+                    for process id ". $process->getId()
+                );
             }
-            $this->log(
-                "\nINFO: $processCount. Write reminder notification in queue with ID ". $notification->getId() . " 
-                for process id ". $process->getId()
-            );
             $this->deleteReminderTimestamp($process, $notification, $processCount, $commit);
         }
         return $notification;

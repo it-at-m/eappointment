@@ -15,7 +15,12 @@ EOS;
 $verbose = preg_grep('#^--?v(erbose)?$#', $argv);
 $commit = preg_grep('#^--commit$#', $argv);
 
-$job = new \BO\Zmsdb\Helper\SendNotificationReminder($verbose);
+$now = new \DateTimeImmutable();
+if (class_exists('\App') && isset(\App::$now)) {
+    $now = \App::$now;
+}
+
+$job = new \BO\Zmsdb\Helper\SendNotificationReminder($now, $verbose);
 $job->startProcessing($commit);
 
 if (!$commit) {
