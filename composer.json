@@ -29,25 +29,17 @@
   "scripts": {
     "clean": "rm -f public/doc/assets/*.* && rm -f public/_test/assets/*.*",
     "command": "bin/configure",
-    "openapi-build": [
-      "npm install",
-      "npm run build",
-      "npm install --location=global @apidevtools/swagger-cli",
-      "swagger-cli validate ./public/doc/swagger.yaml",
-      "swagger-cli bundle -r -o ./public/doc/swagger.json ./public/doc/swagger.yaml"
-    ],
     "wget-files": [
-        "wget https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js -O public/doc/assets/redoc.standalone.js",
-        "wget https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-bundle.js -O public/_test/assets/swagger-ui-bundle.js",
-        "wget https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui.css -O public/_test/assets/swagger-ui.css",
-        "wget https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-standalone-preset.js -O public/_test/assets/swagger-ui-standalone-preset.js"
+        "wget https://eappointment.gitlab.io/zmsapi/doc/swagger.json -O public/doc/swagger.json",
+        "wget https://eappointment.gitlab.io/zmsapi/doc/redoc.standalone.js -O public/doc/assets/redoc.standalone.js",
+        "wget https://eappointment.gitlab.io/zmsapi/doc/swagger-ui-bundle.js -O public/_test/assets/swagger-ui-bundle.js",
+        "wget https://eappointment.gitlab.io/zmsapi/doc/swagger-ui.css -O public/_test/assets/swagger-ui.css",
+        "wget https://eappointment.gitlab.io/zmsapi/doc/swagger-ui-standalone-preset.js -O public/_test/assets/swagger-ui-standalone-preset.js"
     ],
     "post-install-cmd": [
-        "@openapi-build",
         "@wget-files"
     ],
     "post-update-cmd": [
-        "@openapi-build",
         "@wget-files"
     ]
   },
