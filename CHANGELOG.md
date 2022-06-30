@@ -1,3 +1,6 @@
+## v2.24.09
+
+* #55079 - Spelling for fetching the reminderTimestamp was corrected
 ## v2.24.08
 
 * #35877 - The calculation for the waiting time of spontaneous customers was corrected
