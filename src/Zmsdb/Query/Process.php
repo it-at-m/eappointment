@@ -231,7 +231,7 @@ class Process extends Base implements MappingInterface
                     "1"
                 )'
             ),
-            'reminderTimestamp' => 'process.Erinnerungszeitpunkt.',
+            'reminderTimestamp' => 'process.Erinnerungszeitpunkt',
             '__clientsCount' => 'process.AnzahlPersonen',
         ];
     }
