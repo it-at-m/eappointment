@@ -62,7 +62,7 @@ class TwigExtension extends \Twig_Extension
 
     public function getLanguageDescriptor($locale = 'de')
     {
-        $language = \App::$supportedLanguages[$locale] ?? ['name' => 'Deutsch'];
+        $language = \App::$supportedLanguages[$locale] ?? [];
         return $language['name'] ?? null;
     }
 
