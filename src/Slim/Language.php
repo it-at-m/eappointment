@@ -41,6 +41,12 @@ class Language
         }
     }
 
+    public function getDefaultLanguageName()
+    {
+        $default = \App::$supportedLanguages[$this->getDefault()]['name'] ?? null;
+        return $default;
+    }
+
     public function getCurrentLanguage($lang = '')
     {
         $current = (isset(self::$supportedLanguages[$this->current])) ? $this->current : $this->getDefault();
