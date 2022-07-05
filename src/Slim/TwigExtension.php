@@ -44,6 +44,7 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('includeUrl', array($this, 'includeUrl')),
             new \Twig_SimpleFunction('getEsiFromPath', array($this, 'getEsiFromPath')),
             new \Twig_SimpleFunction('baseUrl', array($this, 'baseUrl')),
+            new \Twig_SimpleFunction('getLanguageDescriptor', array($this, 'getLanguageDescriptor')),
             new \Twig_SimpleFunction('currentLang', array($this, 'currentLang')),
             new \Twig_SimpleFunction('currentRoute', array($this, 'currentRoute')),
             new \Twig_SimpleFunction('currentLocale', array($this, 'currentLocale')),
@@ -57,6 +58,12 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('getClientHost', array($this, 'getClientHost')),
             new \Twig_SimpleFunction('kindOfPayment', array($this, 'kindOfPayment')),
         );
+    }
+
+    public function getLanguageDescriptor($locale = 'de')
+    {
+        $language = \App::$supportedLanguages[$locale] ?? ['name' => 'Deutsch'];
+        return $language['name'] ?? null;
     }
 
     public static function isNumeric($var)
