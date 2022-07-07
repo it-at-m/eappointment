@@ -211,6 +211,37 @@ class TwigExtension extends \Twig_Extension
         return $azList;
     }
 
+    public function azPrefixListCollator($list, $property, $locale)
+    {
+        $collator = collator_create($locale);
+        $collator->setAttribute(\Collator::QUATERNARY, \Collator::ON);
+        $collator->setAttribute(\Collator::CASE_FIRST, \Collator::ON);
+        $collator->setAttribute(\Collator::NUMERIC_COLLATION, \Collator::ON);
+
+        if (is_array($list)) {
+            uasort($list, function ($a, $b) use ($collator, $property) {
+                return collator_compare( $collator, $a[$property], $b[$property]);
+            });
+        }
+        else {
+            $list = $list->sortWithCollator($property, $locale);
+        }
+
+        $azList = array();
+
+        foreach ($list as $item) {
+            $currentPrefix = self::sortFirstChar($item[$property]);
+            if (!array_key_exists($currentPrefix, $azList)) {
+                $azList[$currentPrefix] = array(
+                    'prefix' => $currentPrefix,
+                    'sublist' => array(),
+                );
+            }
+            $azList[$currentPrefix]['sublist'][] = $item;
+        }
+        return $azList;
+    }
+
     public function isValueInArray($value, $params)
     {
         $paramsArr = explode(',', $params);
