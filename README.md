@@ -18,7 +18,7 @@ Add these lines to your `composer.json` and run `composer.phar update`:
 
 ## Usage
 
-The idea of this tool is based on implementing a slim framework in a way that the route bindings can be adjusted at any time without having to change the module.
+The idea of this tool is based on implementing a slim framework in a way that the route bindings can be adjusted at any time without having to change the module. This repo should be integrated into your project via composer and initialized in the bootstrap.php of your project.
 
 A global class `\App` is configured, which can be used to access a Slim instance.
 
@@ -32,7 +32,7 @@ To render a route:
 
 ```php
 <?php 
-use `BO\SlimRender;
+use BO\Slim\Render;
 
 class MyController extends BaseController
 {
@@ -64,7 +64,7 @@ Define a Basecontroller to initiate/prepare the request with multilingualism, if
 
 ```php
 <?php 
-use `BO\SlimRender;
+use BO\Slim\Render;
 
 abstract class BaseController extends \BO\Slim\Controller
 {

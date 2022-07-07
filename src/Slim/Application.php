@@ -74,6 +74,11 @@ class Application
     const ESI_ENABLED = true;
 
     /**
+     * translator class
+     */
+    const TRANSLATOR_CLASS = '\\Symfony\\Component\\Translation\\Translator';
+
+    /**
      * Default parameters for templates
      *
      */
