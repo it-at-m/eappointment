@@ -35,5 +35,10 @@
             "BO\\Slim\\": "src/Slim/",
             "BO\\Slim\\Tests\\": "tests/Slim/"
         }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.24.09-dev"
+        }
     }
 }
