@@ -32,7 +32,6 @@ test-php-73:
 outdated:
     extends: .test-phpoutdated
 
-
 pages:
     stage: deploy
     script:
