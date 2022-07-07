@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b48829c10c489f52984e3f2b3a01fe77",
+    "content-hash": "17adcafd3a74b5f72783a107744025e4",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -249,17 +249,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "2.24.08",
+            "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.com:eappointment/zmsslim.git",
-                "reference": "46f155b8617119a2867924c468efd7d7b36a413c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=46f155b8617119a2867924c468efd7d7b36a413c",
-                "reference": "46f155b8617119a2867924c468efd7d7b36a413c",
-                "shasum": ""
+                "url": "https://gitlab+deploy-token-1182224:zbGL4n64xnbXxMknYVwj@gitlab.com/eappointment/zmsslim.git",
+                "reference": "31005a265af7f3f95bf581a6fbf53839a6e2c444"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -280,14 +274,24 @@
                 "phpunit/phpunit": "^9.5.4",
                 "squizlabs/php_codesniffer": "*"
             },
+            "default-branch": true,
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "2.24.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "BO\\Slim\\": "src/Slim/",
                     "BO\\Slim\\Tests\\": "tests/Slim/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "command": [
+                    "bin/configure"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -298,7 +302,7 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-            "time": "2022-06-07T12:54:55+00:00"
+            "time": "2022-07-07T15:51:06+00:00"
         },
         {
             "name": "fig/http-message-util",
