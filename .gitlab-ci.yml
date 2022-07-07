@@ -7,7 +7,7 @@ test-php-73:
     before_script:
         - $CLI_COMPOSER
         - npm install
-        - make css && make js
+        - make css
     variables:
         PHP_VERSION: "7.3"
     only:
