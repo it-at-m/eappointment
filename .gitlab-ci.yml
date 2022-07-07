@@ -6,7 +6,7 @@ test-php-73:
     allow_failure: false
     before_script:
         - $CLI_COMPOSER
-        - $CLI_NPM
+        - npm install
         - make css && make js
     variables:
         PHP_VERSION: "7.3"
