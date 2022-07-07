@@ -219,8 +219,8 @@ class TwigExtension extends \Twig_Extension
         $collator->setAttribute(\Collator::NUMERIC_COLLATION, \Collator::ON);
 
         if (is_array($list)) {
-            uasort($list, function ($a, $b) use ($collator, $property) {
-                return collator_compare($collator, $a[$property], $b[$property]);
+            uasort($list, function ($itemA, $itemB) use ($collator, $property) {
+                return collator_compare($collator, $itemA[$property], $itemB[$property]);
             });
         } else {
             $list = $list->sortWithCollator($property, $locale);
