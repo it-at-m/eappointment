@@ -4,6 +4,10 @@ include:
 test-php-73:
     extends: .test-php
     allow_failure: false
+    before_script:
+        - $CLI_COMPOSER
+        - $CLI_NPM
+        - make css && make js
     variables:
         PHP_VERSION: "7.3"
     only:
