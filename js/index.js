@@ -37,16 +37,16 @@ import maxChars from './element/form/maxChars'
 import DialogHandler from './lib/dialogHandler'
 
 // Import JS from patternlab
-import accordion from 'bo-layout-admin-js/source/js/behavior/accordion';
-import tabs from 'bo-layout-admin-js/source/js/behavior/tabs';
-import collapse from 'bo-layout-admin-js/source/js/behavior/collapse';
-import stickytrigger from 'bo-layout-admin-js/source/js/behavior/form-actions--sticky-trigger';
-import navigationprimary from 'bo-layout-admin-js/source/js/behavior/navigation-primary';
-import datepicker from 'bo-layout-admin-js/source/js/behavior/datepicker';
-import infotext from 'bo-layout-admin-js/source/js/behavior/form-infotext-flyin';
-import hamburger from 'bo-layout-admin-js/source/js/behavior/hamburger';
-import metanavi from 'bo-layout-admin-js/source/js/behavior/header-metanavi-popup';
-import formalerts from 'bo-layout-admin-js/source/js/behavior/formalerts-flyin';
+import accordion from 'bo-layout-admin-js/behavior/accordion';
+import tabs from 'bo-layout-admin-js/behavior/tabs';
+import collapse from 'bo-layout-admin-js/behavior/collapse';
+import stickytrigger from 'bo-layout-admin-js/behavior/form-actions--sticky-trigger';
+import navigationprimary from 'bo-layout-admin-js/behavior/navigation-primary';
+import datepicker from 'bo-layout-admin-js/behavior/datepicker';
+import infotext from 'bo-layout-admin-js/behavior/form-infotext-flyin';
+import hamburger from 'bo-layout-admin-js/behavior/hamburger';
+import metanavi from 'bo-layout-admin-js/behavior/header-metanavi-popup';
+import formalerts from 'bo-layout-admin-js/behavior/formalerts-flyin';
 
 // load patternlab JS
 function loadResources() {

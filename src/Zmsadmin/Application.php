@@ -24,6 +24,12 @@ class Application extends \BO\Slim\Application
      */
 
     public static $allowClusterWideCall = true;
+
+    /**
+     * image preferences
+     */
+
+    public static $isImageAllowed = false;
     
     /**
      * language preferences

@@ -5,8 +5,11 @@
 
             {% block pageheader_left -%}
             <a class="page-header__logo" href="{{ includeUrl() }}" title="Zur Startseite">
-                <img src="{{ includeUrl() }}/_css/images/logo_berlin_admin.svg" alt="Berlin.Admin">
+                {% if isImageAllowed() %}
+                    <img src="{{ includeUrl() }}/_css/images/logo_berlin_admin.svg" alt="Berlin.Admin">
+                {% endif %}
             </a>
+            
             {%- endblock %}
 
         </div>
