@@ -35,10 +35,5 @@
             "BO\\Slim\\": "src/Slim/",
             "BO\\Slim\\Tests\\": "tests/Slim/"
         }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-main": "2.24.x-dev"
-        }
     }
 }
