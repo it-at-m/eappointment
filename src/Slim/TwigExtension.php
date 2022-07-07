@@ -55,7 +55,13 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('getSystemStatus', array($this, 'getSystemStatus'), $safe),
             new \Twig_SimpleFunction('getClientHost', array($this, 'getClientHost')),
             new \Twig_SimpleFunction('kindOfPayment', array($this, 'kindOfPayment')),
+            new \Twig_SimpleFunction('isImageAllowed', array($this, 'isImageAllowed')),
         );
+    }
+
+    public static function isImageAllowed()
+    {
+        return (isset(\App::$isImageAllowed)) ? \App::$isImageAllowed : true;
     }
 
     public static function isNumeric($var)

@@ -93,6 +93,12 @@ class Application
     public static $log = null;
 
     /**
+     * image preferences
+     */
+
+    public static $isImageAllowed = true;
+
+    /**
      * @var \BO\Slim\Language $language
      *
      */
