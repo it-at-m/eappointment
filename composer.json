@@ -29,7 +29,12 @@
     "container-interop/container-interop": "^1.2",
     "roave/security-advisories": "dev-master"
   },
-  "repositories": [],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://gitlab+deploy-token-1182224:zbGL4n64xnbXxMknYVwj@gitlab.com/eappointment/zmsslim.git"
+    }
+  ],
   "bin": [],
   "autoload": {
     "psr-4": {
