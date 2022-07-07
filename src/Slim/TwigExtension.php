@@ -38,11 +38,13 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('urlGet', array($this, 'urlGet')),
             new \Twig_SimpleFunction('csvProperty', array($this, 'csvProperty')),
             new \Twig_SimpleFunction('azPrefixList', array($this, 'azPrefixList')),
+            new \Twig_SimpleFunction('azPrefixListCollator', array($this, 'azPrefixListCollator')),
             new \Twig_SimpleFunction('isValueInArray', array($this, 'isValueInArray')),
             new \Twig_SimpleFunction('remoteInclude', array($this, 'remoteInclude'), $safe),
             new \Twig_SimpleFunction('includeUrl', array($this, 'includeUrl')),
             new \Twig_SimpleFunction('getEsiFromPath', array($this, 'getEsiFromPath')),
             new \Twig_SimpleFunction('baseUrl', array($this, 'baseUrl')),
+            new \Twig_SimpleFunction('getLanguageDescriptor', array($this, 'getLanguageDescriptor')),
             new \Twig_SimpleFunction('currentLang', array($this, 'currentLang')),
             new \Twig_SimpleFunction('currentRoute', array($this, 'currentRoute')),
             new \Twig_SimpleFunction('currentLocale', array($this, 'currentLocale')),
@@ -59,9 +61,16 @@ class TwigExtension extends \Twig_Extension
         );
     }
 
+
     public static function isImageAllowed()
     {
         return (isset(\App::$isImageAllowed)) ? \App::$isImageAllowed : true;
+    }
+
+    public function getLanguageDescriptor($locale = 'de')
+    {
+        $language = \App::$supportedLanguages[$locale] ?? [];
+        return $language['name'] ?? null;
     }
 
     public static function isNumeric($var)
