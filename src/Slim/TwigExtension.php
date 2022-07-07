@@ -220,10 +220,9 @@ class TwigExtension extends \Twig_Extension
 
         if (is_array($list)) {
             uasort($list, function ($a, $b) use ($collator, $property) {
-                return collator_compare( $collator, $a[$property], $b[$property]);
+                return collator_compare($collator, $a[$property], $b[$property]);
             });
-        }
-        else {
+        } else {
             $list = $list->sortWithCollator($property, $locale);
         }
 
