@@ -26,7 +26,7 @@
         "authKey": "ec58",
         "clients": [
             {
-                "familyName": "",
+                "familyName": "Max Mustermann",
                 "email": "test@example.com",
                 "emailSendCount": "0",
                 "notificationsSendCount": "0",
