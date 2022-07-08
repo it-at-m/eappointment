@@ -1,5 +1,4 @@
 {
-{% from 'element/helper/snippets.twig' import headline1 %}
   "$schema": "https://localhost/terminvereinbarung/api/2/",
   "meta": {
     "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
