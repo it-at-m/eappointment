@@ -41,7 +41,7 @@ outdated:
 pages:
     stage: deploy
     script:
-        - echo "/zmsadmin/_tests/coverage/ /zmsadmin/_tests/coverage/index.html 302" >> public/_redirects
+        - echo "/zmsadmin/ /zmsadmin/_tests/coverage/index.html 302" >> public/_redirects
         - find public/
     artifacts:
         paths:
