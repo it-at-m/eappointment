@@ -174,7 +174,6 @@ class AppointmentFormFreeProcessListTest extends Base
         $this->assertStringContainsString('17:00 (noch 0 frei)', (string)$response->getBody());
         $this->assertStringNotContainsString('Spontankunde', (string)$response->getBody());
         $this->assertStringNotContainsString('disabled="disabled"', (string)$response->getBody());
-
     }
 
     public function testEmpty()

@@ -122,7 +122,7 @@ class ProcessSaveTest extends Base
         $this->assertStringContainsString('Es wurden Konflikte entdeckt', (string)$response->getBody());
         $this->assertStringContainsString('08:10 - 08:20', (string)$response->getBody());
         $this->assertStringContainsString(
-            'Die Slots für diesen Zeitraum wurden überbucht', 
+            'Die Slots für diesen Zeitraum wurden überbucht',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -180,7 +180,7 @@ class ProcessSaveTest extends Base
         $this->assertStringContainsString('Es wurden Konflikte entdeckt', (string)$response->getBody());
         $this->assertStringContainsString('08:10 - 08:20', (string)$response->getBody());
         $this->assertStringContainsString(
-            'Der Vorgang (12293716) befindet sich außerhalb der Öffnungszeit!', 
+            'Der Vorgang (12293716) befindet sich außerhalb der Öffnungszeit!',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());

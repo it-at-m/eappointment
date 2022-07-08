@@ -113,11 +113,11 @@ class ProcessReserveTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
         $this->assertStringContainsString(
-            'Es wurden Konflikte entdeckt', 
+            'Es wurden Konflikte entdeckt',
             (string)$response->getBody()
         );
         $this->assertStringContainsString(
-            'Die Slots für diesen Zeitraum wurden überbucht', 
+            'Die Slots für diesen Zeitraum wurden überbucht',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -289,7 +289,7 @@ class ProcessReserveTest extends Base
     }
 
     public function testWithRequiredMail()
-    {        
+    {
         $this->setApiCalls(
             [
                 [
