@@ -1,3 +1,9 @@
+## v2.24.09
+
+* #55077 Links and holidays that can be assigned to an authority are now checked if they exist
+* #55078 A separate SMS message is now sent for spontaneous customers when their transaction is canceled
+
+
 ## v2.24.05
 
 * #49206 conflicts are now retrieved from the API by a single controller using a static method
