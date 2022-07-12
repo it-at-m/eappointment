@@ -24,5 +24,5 @@ test -d $ROOT/cache && chmod -fR a+rwX $ROOT/cache || echo "Could not chmod cach
 
 #VERSION=`git symbolic-ref -q --short HEAD || git describe --tags --exact-match`
 VERSION=`git describe --tags --always`
-echo $VERSION > $ROOT/VERSION
+#echo $VERSION > $ROOT/VERSION
 echo " $VERSION"
