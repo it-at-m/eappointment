@@ -59,6 +59,9 @@ class Department extends BaseController
 
     protected function withCleanupLinks(array $input)
     {
+        if (!isset($input['links'])) {
+            return $input;
+        }
         $links = $input['links'];
 
         $input['links'] = array_filter($links, function ($link) {
@@ -66,7 +69,7 @@ class Department extends BaseController
         });
 
         foreach ($input['links'] as $index => $link) {
-            $input['links'][$index]['target'] = ($link['target']) ? 1 : 0;
+            $input['links'][$index]['target'] = (isset($link['target']) && $link['target']) ? 1 : 0;
         }
 
         return $input;
@@ -74,6 +77,9 @@ class Department extends BaseController
 
     protected function withCleanupDayoffs(array $input)
     {
+        if (!isset($input['dayoff'])) {
+            return $input;
+        }
         $dayoffs = $input['dayoff'];
         $input['dayoff'] = array_filter($dayoffs, function ($dayoff) {
             return !($dayoff['name'] === '');

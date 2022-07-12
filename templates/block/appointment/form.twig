@@ -119,6 +119,7 @@
                         ) }}
                         {% if department.preferences.notifications.enabled %}
                         <div id="sms">
+                            {% if department.preferences.notifications.sendConfirmationEnabled %}
                             {{ formgroup(
                                 {},
                                 [{
@@ -132,8 +133,10 @@
                                     }
                                 }]
                             ) }}
-                            {% if scope.preferences.appointment.notificationHeadsUpEnabled %}
+                            {% endif %}
+                            {% if scope.preferences.appointment.notificationHeadsUpEnabled and department.preferences.notifications.sendReminderEnabled %}
                                 {% set selectedProcessHeadsUpTime = selectedProcess.appointments|first.date - selectedProcess.reminderTimestamp %}
+                                {{ dump(selectedProcess.reminderTimestamp) }}
                                 {% set allowedHeadsUpTime = [30,60,120,180,240,1440,2880] %}
                                 {% set headsUpTimeOptions = [{"value": 0, "name": "ohne Erinnerung"}] %}
                                 {% for headsUpTimeValue in allowedHeadsUpTime %}
@@ -155,7 +158,7 @@
                                 {% endfor %}
 
                                 {{ formgroup(
-                                    {"label": "Erinnern"},
+                                    {"label": "Terminerinnerung per SMS"},
                                     [{
                                         "type": "select",
                                         "parameter": {

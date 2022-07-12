@@ -256,6 +256,7 @@ EOS;
     id
     status
     createTimestamp
+    reminderTimestamp
     appointments{
         date
         slotCount
