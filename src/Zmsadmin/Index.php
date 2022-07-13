@@ -8,6 +8,7 @@ namespace BO\Zmsadmin;
 
 use \BO\Zmsadmin\Helper\LoginForm;
 use \BO\Mellon\Validator;
+use Jumbojett\OpenIDConnectClient;
 
 class Index extends BaseController
 {
@@ -26,6 +27,32 @@ class Index extends BaseController
             $workstation = null;
         }
         $input = $request->getParsedBody();
+
+        if(\App::AUTHORIZATION_TYPE === "OPENID"){ //TODO: "OPENID" as Constante
+            //TODO: create new class/Method and move functionality to it
+            $oidc = new OpenIDConnectClient(\App::AUTHORIZATION_PROVIDER_URL,
+                                            \App::AUTHORIZATION_CLIENT_ID,
+                                            \App::AUTHORIZATION_CLIENT_SECRET);
+
+            $oidc->setVerifyPeer(false); //TODO: check for development enviroment
+
+            try {
+                $oidc->authenticate();
+                /*$accessTokenPayload = $oidc->getAccessTokenPayload();
+                $userAccount = new \BO\Zmsentities\Useraccount(array(
+                    'id' => $getAccessTokenPayload->preferred_username,
+                    'password' => $getAccessTokenPayload->sid,
+                    'departments' => array('id' => 0) // required in schema validation
+                ));*/
+
+                //TODO: check if user exists 
+                //TODO: if false create user
+                //TODO: login with user
+            } catch (\Jumbojett\OpenIDConnectClientException $e) {
+                echo $e; //TODO: Logging
+            }
+            return \BO\Slim\Render::redirect('workstationSelect', array(), array());
+        }
         if (is_array($input) && array_key_exists('loginName', $input)) {
             return $this->testLogin($input, $response);
         }

@@ -27,7 +27,8 @@
     "league/csv": "^9.0",
     "psr/http-message": "^1.0",
     "container-interop/container-interop": "^1.2",
-    "roave/security-advisories": "dev-master"
+    "roave/security-advisories": "dev-master",
+    "jumbojett/openid-connect-php": "^0.9.6"
   },
   "repositories": [
     {
