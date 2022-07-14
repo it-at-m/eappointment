@@ -151,4 +151,14 @@ class Notification extends Schema\Entity
         }
         return true;
     }
+
+    public function __toString()
+    {
+        $string = "notification#";
+        $string .= $this->id;
+        $string .= " recipient:". $this->getRecipient();
+        $string .= " identification:". $this->getIdentification();
+        $string .= " process:". $this->getProcessId();
+        return $string;
+    }
 }
