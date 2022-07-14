@@ -51,7 +51,7 @@ apidoc:
         PHP_VERSION: "7.3"
     image: registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-dev
     before_script:
-        - $CLI_COMPOSER
+        - $CLI_COMPOSER --no-scripts
         - npm install
     artifacts:
         paths:
