@@ -3,7 +3,6 @@ include:
 
 test-php-73:
     extends: .test-php
-    coverage: '/Lines:.*\s(\d+)%/'
     allow_failure: false
     before_script:
         - $CLI_COMPOSER
