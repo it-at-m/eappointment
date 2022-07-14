@@ -1,6 +1,7 @@
 ## v2.24.09
 
 * #55079 - Spelling for fetching the reminderTimestamp was corrected
+* #31586 - write Log Entry for Mail and Notification Reminder
 ## v2.24.08
 
 * #35877 - The calculation for the waiting time of spontaneous customers was corrected
