@@ -105,8 +105,8 @@ class SendNotificationReminder
                     "\nINFO: $processCount. Write reminder notification in queue with ID ". $notification->getId() . " 
                     for process id ". $process->getId()
                 );
+                $this->deleteReminderTimestamp($process, $notification, $processCount, $commit);
             }
-            $this->deleteReminderTimestamp($process, $notification, $processCount, $commit);
         }
         return $notification;
     }

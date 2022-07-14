@@ -14,36 +14,82 @@ class ProcessNotificationTest extends Base
     public function testSendNotificationReminder()
     {
         $query = new Query();
-        $now = static::$now;
-        $processList = $query->readNotificationReminderProcessList($now, 15, null, 2);
-        $this->assertEquals(14, $processList->count());
+        $now = new \DateTimeImmutable('2016-04-07 08:00:00');
+        $processList = $query->readNotificationReminderProcessList($now, 10, null, 2);
+        $this->assertEquals(1, $processList->count());
         $this->assertEquals(
-            '2016-04-01 07:45',
+            '2016-04-08 08:00',
             $processList->getFirst()->getFirstAppointment()->toDateTime()->format('Y-m-d H:i')
         );
         $this->assertTrue($processList->getFirst()->getFirstClient()->hasTelephone());
-        $this->assertEquals(
-            '2016-04-01 12:30',
-            $processList->getLast()->getFirstAppointment()->toDateTime()->format('Y-m-d H:i')
-        );
-        $this->assertTrue($processList->getLast()->getFirstClient()->hasTelephone());
     }
 
-    public function testCronHelper()
+    public function testCronExakt()
     {
-        $now = static::$now;
+        $now = new \DateTimeImmutable('2016-04-07 08:00:00');
         $helper = new \BO\Zmsdb\Helper\SendNotificationReminder($now, false);
         $helper->startProcessing(true);
-        $this->assertEquals(14, $helper->getCount());
+        $this->assertEquals(1, $helper->getCount());
     }
 
-    public function testCronHelperWithLoopLimit()
+    public function testCronAfter()
     {
-        $now = static::$now;
+        $now = new \DateTimeImmutable('2016-04-07 08:00:50');
         $helper = new \BO\Zmsdb\Helper\SendNotificationReminder($now, false);
-        $helper->setLimit(10);
-        $helper->setLoopCount(5);
         $helper->startProcessing(true);
-        $this->assertEquals(10, $helper->getCount());
+        $this->assertEquals(1, $helper->getCount());
+    }
+
+    public function testCronBefore()
+    {
+        $now = new \DateTimeImmutable('2016-04-07 07:59:50');
+        $helper = new \BO\Zmsdb\Helper\SendNotificationReminder($now, false);
+        $helper->startProcessing(true);
+        $this->assertEquals(0, $helper->getCount());
+    }
+
+    public function testCronWithLimit()
+    {
+        $now = new \DateTimeImmutable('2016-04-08 08:00:00');
+        $query = new \BO\Zmsdb\ProcessStatusFree();
+        $input = (new \BO\Zmsdb\Tests\ProcessTest())->getTestProcessEntity();
+        
+        $process = $query->writeEntityReserved($input, $now);
+        $process->reminderTimestamp = ($now->modify('-30 minutes'))->getTimestamp();
+        $process = $query->updateEntity($process, $now);
+        $process = $query->updateProcessStatus($process, 'confirmed', $now);
+
+        $process2 = $query->writeEntityReserved($input, $now);
+        $process2->reminderTimestamp = ($now->modify('-30 minutes'))->getTimestamp();
+        $process2 = $query->updateEntity($process2, $now);
+        $process2 = $query->updateProcessStatus($process2, 'confirmed', $now);
+
+        $helper = new \BO\Zmsdb\Helper\SendNotificationReminder($now->modify('-30 minutes'), false);
+        $helper->setLimit(1);
+        $helper->setLoopCount(1);
+        $helper->startProcessing(true);
+        $this->assertEquals(1, $helper->getCount());
+    }
+
+    public function testCronWithoutLimit()
+    {
+        $now = new \DateTimeImmutable('2016-04-08 08:00:00');
+        $query = new \BO\Zmsdb\ProcessStatusFree();
+        $input = (new \BO\Zmsdb\Tests\ProcessTest())->getTestProcessEntity();
+        
+        $process = $query->writeEntityReserved($input, $now);
+        $process->reminderTimestamp = ($now->modify('-30 minutes'))->getTimestamp();
+        $process = $query->updateEntity($process, $now);
+        $process = $query->updateProcessStatus($process, 'confirmed', $now);
+
+        $process2 = $query->writeEntityReserved($input, $now);
+        $process2->reminderTimestamp = ($now->modify('-30 minutes'))->getTimestamp();
+        $process2 = $query->updateEntity($process2, $now);
+        $process2 = $query->updateProcessStatus($process2, 'confirmed', $now);
+
+        $helper = new \BO\Zmsdb\Helper\SendNotificationReminder($now->modify('-30 minutes'), false);
+        $helper->setLoopCount(1);
+        $helper->startProcessing(true);
+        $this->assertEquals(3, $helper->getCount());
     }
 }
