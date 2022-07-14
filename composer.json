@@ -21,6 +21,7 @@
     "eappointment/zmsclient": "dev-main || ^2.0",
     "eappointment/zmsdldb": "dev-main || ^2.0",
     "eappointment/zmsdb": "dev-main || ^2.0",
+    "eappointment/zmsentities": "dev-main || ^2.0",
     "monolog/monolog": "1.*",
     "ulrichsg/getopt-php": "^2.3",
     "league/climate": "^3.2",
