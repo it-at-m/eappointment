@@ -208,4 +208,13 @@ class Mail extends Schema\Entity
         }
         return $this['client']['email'];
     }
+
+    public function __toString()
+    {
+        $string = "mail#";
+        $string .= $this->id;
+        $string .= " recipient: ".$this->getRecipient();
+        $string .= " process." . $this->getProcessId();
+        return $string;
+    }
 }
