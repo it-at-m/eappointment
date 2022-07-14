@@ -288,16 +288,9 @@ class Process extends Base implements MappingInterface
     public function addConditionProcessReminderInterval(\DateTimeInterface $dateTime)
     {
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($dateTime) {
-            $query->andWith(
-                'process.Erinnerungszeitpunkt',
-                '<=',
-                $dateTime->getTimestamp()
-            );
-            $query->andWith(
-                'process.Erinnerungszeitpunkt',
-                '>',
-                1000 // there are timestamp values 2, 24 and 48 in database
-            );
+            $query
+                ->andWith('process.Erinnerungszeitpunkt', '<=', $dateTime->getTimestamp())
+                ->andWith('process.Erinnerungszeitpunkt', '>=', $dateTime->modify("-1 Minutes")->getTimestamp());
         });
         $this->query->orderBy('reminderTimestamp', 'ASC');
         return $this;
