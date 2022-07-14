@@ -100,7 +100,11 @@ class SendNotificationReminder
             $entity = (new \BO\Zmsentities\Notification)->toResolvedEntity($process, $config, $department, 'reminder');
             if ($commit) {
                 $notification = (new \BO\Zmsdb\Notification)->writeInQueue($entity, $this->dateTime);
-                Log::writeLogEntry("Write Reminder (Notification::writeInQueue) $entity ", $process->getId(), "notificationqueue");
+                Log::writeLogEntry(
+                    "Write Reminder (Notification::writeInQueue) $entity ", 
+                    $process->getId(), 
+                    "notificationqueue"
+                );
                 $this->log(
                     "\nINFO: $processCount. Write reminder notification in queue with ID ". $notification->getId() . " 
                     for process id ". $process->getId()
