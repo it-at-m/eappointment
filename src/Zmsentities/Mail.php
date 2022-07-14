@@ -213,8 +213,8 @@ class Mail extends Schema\Entity
     {
         $string = "mail#";
         $string .= $this->id;
-        $string .= " recipient: ".$this->getRecipient();
-        $string .= " process." . $this->getProcessId();
+        $string .= " recipient:". $this->getRecipient();
+        $string .= " process:". $this->getProcessId();
         return $string;
     }
 }
