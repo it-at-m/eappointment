@@ -107,7 +107,7 @@ class SendMailReminder
             $entity = (new \BO\Zmsentities\Mail)->toResolvedEntity($process, $config, 'reminder');
             if ($commit) {
                 $entity = (new \BO\Zmsdb\Mail)->writeInQueue($entity, $this->dateTime);
-                Log::writeLogEntry("Write Reminder (Mail::writeInQueue) $entity ", $process->getId(), "mailqueue");
+                Log::writeLogEntry("Write Reminder (Mail::writeInQueue) $entity ", $process->getId());
                 $this->log(
                     "INFO: $processCount. Write mail in queue with ID ". $entity->getId() ." - ". $entity->subject
                 );
