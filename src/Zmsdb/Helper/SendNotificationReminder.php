@@ -101,8 +101,8 @@ class SendNotificationReminder
             if ($commit) {
                 $notification = (new \BO\Zmsdb\Notification)->writeInQueue($entity, $this->dateTime);
                 Log::writeLogEntry(
-                    "Write Reminder (Notification::writeInQueue) $entity ", 
-                    $process->getId(), 
+                    "Write Reminder (Notification::writeInQueue) $entity ",
+                    $process->getId(),
                     "notificationqueue"
                 );
                 $this->log(
