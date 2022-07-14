@@ -71,6 +71,7 @@ apidoc:
             - composer.lock
             - composer.json
             - src/**/*
+            - tests/**/*.{json,php}
             - routing.php
 
 pages:
