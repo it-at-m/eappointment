@@ -1,7 +1,10 @@
 ## v2.24.09
 
 * #55079 - Spelling for fetching the reminderTimestamp was corrected
-* #31586 - write Log Entry for Mail and Notification Reminder
+* #31586 - Write Log Entry for Mail and Notification Reminder
+* #31586 - Fixed unit tests for the Notification Reminder Helper and the deletion of reminderTimestamp only happens if the argument --commit exists
+* #31586 - Since a minute-by-minute cronjob cannot correspond exactly to the appointment reminder time, the comparison time is extended by 1 minute
+
 ## v2.24.08
 
 * #35877 - The calculation for the waiting time of spontaneous customers was corrected
