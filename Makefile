@@ -1,6 +1,3 @@
-COMPOSER=php -d suhosin.executor.include.whitelist=phar bin/composer.phar
-
-
 .PHONY: help now dev live watch
 
 help: # This help
@@ -10,11 +7,11 @@ help: # This help
 now: # Dummy target
 
 dev: # init development system
-	COMPOSER=composer.json $(COMPOSER) update
+	COMPOSER=composer.json composer update
 	npm install
 
 live: # init live system, delete unnecessary libs
-	$(COMPOSER) install --no-dev --prefer-dist
+	composer install --no-dev --prefer-dist
 
 fix: # run code fixing
 	php vendor/bin/phpcbf --standard=psr2 src/
