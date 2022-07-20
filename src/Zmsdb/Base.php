@@ -2,6 +2,8 @@
 
 namespace BO\Zmsdb;
 
+use \BO\Zmsentities\Collection\GenericList as GenericCollection;
+
 /**
  * @SuppressWarnings(NumberOfChildren)
  * @SuppressWarnings(Public)
@@ -198,6 +200,19 @@ abstract class Base
         return $resultList;
     }
 
+    public function fetchCollection(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity): GenericCollection
+    {
+        $collection = new GenericCollection();
+        $result = $this->fetchList($query, $entity);
+        if (count($result)) {
+            foreach ($result as $tmpEntity) {
+                $loadedEntity = $this->readResolvedReferences($tmpEntity, 1);
+                $collection->addEntity($loadedEntity);
+            }
+        }
+        return $collection;
+    }
+
     /**
      * Write an Item to database - Insert, Update
      *
@@ -250,5 +265,34 @@ abstract class Base
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
         return $entity;
+    }
+
+    /**
+     * This function produces a hash value that contains info for comparison
+     *
+     * @param string $value
+     * @param callable|NULL $c (function to be used for hashing)
+     * @return string
+     */
+    public function hashStringValue(string $value, callable $c = NULL): string
+    {
+        if ($c === null) {
+            $c = 'sha1';
+        }
+
+        if (is_callable($c)) {
+            $hash = $c($value);
+
+            if (is_string($c)) {
+                return $c . ':' . $hash;
+            }
+            if ($c instanceof \Closure) {
+                return 'closure:' . $hash;
+            }
+            // else
+            return 'custom:' . $hash;
+        }
+
+        throw new \InvalidArgumentException('hashStringValue() should be called with a callable as second parameter.');
     }
 }
