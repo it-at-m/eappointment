@@ -59,10 +59,11 @@ class Mail extends Base
         $mail->addMultiPart($multiPart);
         if (1 <= $resolveReferences) {
             $processQuery = new \BO\Zmsdb\Process();
+            $authData = $processQuery->readAuthKeyByProcessId($mail->process['id']);
             $mail->process = $processQuery
                 ->readEntity(
                     $mail->process['id'],
-                    $processQuery->readAuthKeyByProcessId($mail->process['id'])['authKey'],
+                    is_array($authData) ? $authData['authKey'] : null,
                     $resolveReferences - 1
                 );
             $mail->department = (new \BO\Zmsdb\Department())
