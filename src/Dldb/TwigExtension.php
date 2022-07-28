@@ -314,10 +314,14 @@ class TwigExtension extends \Twig_Extension
 
     public function getLocationHintByServiceId($location, $service_id)
     {
-        $service = array_filter($location['services'], function ($item) use ($service_id) {
-            return ($item['service'] == $service_id);
-        });
-        return array_values($service)[0]['hint'];
+        if (isset($location['services'])) {
+            foreach ($location['services'] as $service) {
+                if ($service['service'] == $service_id) {
+                    return $service['hint'];
+                }
+            }
+        }
+        return false;
     }
 
     public function dayIsBookable($dateList, $day)
