@@ -49,8 +49,13 @@ class CallDisplayConfigView extends Component {
     }
 
     buildUrl() {
-        const baseUrl = this.props.config.calldisplay.baseUrl
+        const baseUrl  = this.props.config.calldisplay.baseUrl
+        let parameters = this.buildParameters();
 
+        return `${baseUrl}?${parameters.join('&')}`
+    }
+
+    buildParameters() {
         const collections = this.state.selectedItems.reduce((carry, current) => {
             if (current.type === "cluster") {
                 carry.clusterlist.push(current.id)
@@ -81,6 +86,13 @@ class CallDisplayConfigView extends Component {
         if (this.state.template !== 'default') {
             parameters.push(`template=${this.state.template}`)
         }
+
+        return parameters;
+    }
+
+    getWebcalldisplayUrl() {
+        const baseUrl  = this.props.config.webcalldisplay.baseUrl
+        let parameters = this.buildParameters();
 
         return `${baseUrl}?${parameters.join('&')}`
     }
@@ -161,6 +173,7 @@ class CallDisplayConfigView extends Component {
 
     render() {
         const generatedUrl = this.buildUrl()
+        const webcalldisplayUrl = this.getWebcalldisplayUrl()
 
         const onQueueStatusChange = (_, value) => {
             this.setState({
@@ -220,6 +233,17 @@ class CallDisplayConfigView extends Component {
                 <div className="form-actions">
                     <a href={generatedUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> Aktuelle Konfiguration in einem neuen Fenster öffnen</a>
                 </div>
+                <FormGroup>
+                    <Label attributes={{ "htmlFor": "webcalldisplayUrl" }} value="Webcall Display URL"></Label>
+                    <Controls>
+                        <Inputs.Text
+                            value={webcalldisplayUrl}
+                            attributes={{ readOnly: true, id: "webcalldisplayUrl" }} />
+                    </Controls>
+                </FormGroup>
+                <div className="form-actions">
+                    <a href={webcalldisplayUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> im Webcalldiplay öffnen/a>
+                </div>
             </form>
         )
     }
@@ -229,7 +253,8 @@ CallDisplayConfigView.propTypes = {
     departments: PropTypes.array,
     organisation: PropTypes.object,
     config: PropTypes.shape({
-        calldisplay: PropTypes.object
+        calldisplay: PropTypes.object,
+        webcalldisplay: PropTypes.object
     })
 }
 
