@@ -31,6 +31,14 @@ use \Psr\Http\Message\ResponseInterface;
  \App::$slim->get('/calldisplay/', \BO\Zmsadmin\Calldisplay::class)
      ->setName("calldisplay");
 
+/*
+* ---------------------------------------------------------------------------
+* WebCalldisplay
+* -------------------------------------------------------------------------
+*/
+\App::$slim->get('/aufruf/', \BO\Zmsadmin\Calldisplay::class)
+    ->setName("webcalldisplay");
+
  /*
   * ---------------------------------------------------------------------------
   * Calendar
