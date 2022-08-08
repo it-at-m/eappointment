@@ -77,6 +77,13 @@
 {% block successes %}
 	{% if args.success or success %}
 
+		{% block config_saved %}
+    	{{ block('success_start') }}
+        	Die Config-Einstellungen wurden {{ timeString }} erfolgreich gespeichert.
+        {{ block('success_end') }}
+    	{% endblock %}
+
+
 		{% block cluster_deleted %}
     	{{ block('success_start') }}
         	Der Cluster wurde {{ timeString }} erfolgreich entfernt.
