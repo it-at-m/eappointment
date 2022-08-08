@@ -1,6 +1,7 @@
 ## v2.24.09
 
 * #54954 OpenApi documents are now created automatically. CDN files for displaying the documentation are downloaded via the CI and the checksum of the files is checked
+* #34087 Added API route and controller to configure config properties
 
 ## v2.24.05
 
