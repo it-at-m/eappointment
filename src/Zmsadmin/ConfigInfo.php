@@ -35,7 +35,7 @@ class ConfigInfo extends BaseController
                 $entity
             )->getEntity();
             return \BO\Slim\Render::redirect(
-                'configinfo', 
+                'configinfo',
                 array(
                     'title' => 'Konfiguration System',
                     'workstation' => $workstation,
