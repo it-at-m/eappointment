@@ -18,17 +18,20 @@ class Config extends Base
 
     public function updateEntity(Entity $config)
     {
+        $compareEntity = $this->readEntity();
         $result = false;
         $query = new Query\Config(Query\Base::REPLACE);
         foreach ($config as $key => $item) {
             if (is_array($item)) {
                 foreach ($item as $itemName => $itemValue) {
-                    $query->addValues(array(
-                        'name' => $key .'__'. $itemName,
-                        'value' => $this->getSpecifiedValue($itemValue),
-                        'changeTimestamp' => (new \DateTimeImmutable())->format('Y-m-d H:i:s')
-                    ));
-                    $result = $this->writeItem($query);
+                    if ($itemValue && $compareEntity->getPreference($key, $itemName) != $itemValue) {
+                        $query->addValues(array(
+                            'name' => $key .'__'. $itemName,
+                            'value' => $this->getSpecifiedValue($itemValue),
+                            'changeTimestamp' => (new \DateTimeImmutable())->format('Y-m-d H:i:s')
+                        ));
+                        $result = $this->writeItem($query);
+                    }
                 }
             } else {
                 $query->addValues(array(
