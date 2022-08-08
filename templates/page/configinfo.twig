@@ -6,7 +6,7 @@
 
 {% block content %}
 
-    {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless dayoff-list'} %}
+    {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless config-view', 'data': {'includeurl':includeUrl() }} %}
 
         {% block board_title %}
             Konfiguration System
@@ -23,7 +23,9 @@
                     <h2 class="block__heading">{{group}}</h2>
                     <ul class="list--clean panel--heavy">
                     {% for name, value in settings %}
-                        <li><strong>{{name}}:</strong> {{value}}</li>
+                        <li>
+                            <strong>{{name}}:</strong> {{value}}  {% if workstation.useraccount.rights.superuser == "1" %} <a data-property="{{ name }}" data-value="{{ value }}" data-key="{{ group }}" href="#" class="icon edit" title="Bearbeiten"><i class="fas fa-edit" aria-hidden="true"></i> <span class="aural">Bearbeiten</span></a> {% endif %}
+                        </li>
                     {% endfor %}
                 </ul>
                 </div>

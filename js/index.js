@@ -16,6 +16,7 @@ import EmergencyView from './block/emergency'
 //import DepartmentDaysOffView from './block/department/daysOff'
 //import TicketPrinterConfigView from './block/ticketprinter/config'
 //import CallDisplayConfigView from './block/calldisplay/config'
+import ConfigView from './page/config'
 import CounterView from './page/counter'
 import WorkstationView from './page/workstation'
 import UseraccountView from './page/useraccount'
@@ -98,6 +99,11 @@ $('.useraccount-edit-view').each(function () {
 $('.calendar-weektable').each(function () {
     new WeekCalendarPage(this, getDataAttributes(this));
 })
+
+$('.config-view').each(function () {
+    new ConfigView(this, getDataAttributes(this));
+})
+
 
 $('[data-scope-select-form]').each(function () {
     new LoginScopeSelectView(this, getDataAttributes(this));

@@ -45,7 +45,7 @@ use \Psr\Http\Message\ResponseInterface;
   * Config
   * -------------------------------------------------------------------------
   */
- \App::$slim->get('/config/', \BO\Zmsadmin\ConfigInfo::class)
+ \App::$slim->map(['GET','POST'], '/config/', \BO\Zmsadmin\ConfigInfo::class)
      ->setName("configinfo");
 
  /*
