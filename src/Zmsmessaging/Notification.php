@@ -2,7 +2,6 @@
 /**
  *
 * @package Zmsmessaging
-* @copyright BerlinOnline Stadtportal GmbH & Co. KG
 *
 */
 namespace BO\Zmsmessaging;
@@ -124,20 +123,18 @@ class Notification extends BaseController
         $sender = $entity->getIdentification();
         $from = $sender ? $sender : $entity['department']['email'];
         $this->log("Build Mailer: new PHPMailer() - ". \App::$now->format('c'));
-        $mailer = new PHPMailer(true);
+        $mailer = new Mailer(true);
         $message = trim($entity->getMessage());
         $mailer->CharSet = 'UTF-8';
         $mailer->Encoding = 'base64';
         $mailer->SetLanguage('de');
-        $mailer->SetFrom($from);
+        $mailer->SetFrom($from, $sender);
         $this->log("Build Mailer: addAddress() - ". \App::$now->format('c'));
         $mailer->AddAddress($entity->getRecipient());
         
         $mailer->Subject = $message;
         $mailer->Body = '';
         $mailer->AllowEmpty = true;
-        
-        $mailer->FromName = $sender;
         $mailer->XMailer = \App::IDENTIFIER;
 
         #to test via gmail

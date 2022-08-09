@@ -2,7 +2,6 @@
 /**
  *
  * @package Zmsmessaging
- * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
 namespace BO\Zmsmessaging;
