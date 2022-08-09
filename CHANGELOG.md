@@ -1,3 +1,7 @@
+## v2.24.09
+
+* #55079 Number of maximum characters per line for sending SMS via PHPMailer has been increased
+
 ## v2.24.00
 
 * #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
