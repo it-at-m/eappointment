@@ -193,16 +193,16 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-main",
+            "version": "2.24.08-patch-2",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsentities.git",
-                "reference": "18d6c9966cbbf0543ef3fd101346d92390a059b0"
+                "reference": "dfbe25e9e9dbcd6d34931bea2738f517e1f5f103"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=18d6c9966cbbf0543ef3fd101346d92390a059b0",
-                "reference": "18d6c9966cbbf0543ef3fd101346d92390a059b0",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=dfbe25e9e9dbcd6d34931bea2738f517e1f5f103",
+                "reference": "dfbe25e9e9dbcd6d34931bea2738f517e1f5f103",
                 "shasum": ""
             },
             "require": {
@@ -227,13 +227,7 @@
                 "squizlabs/php_codesniffer": "^3.5.8",
                 "yuloh/json-guard-cli": "^0.3.0"
             },
-            "default-branch": true,
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "2.24.x-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "BO\\Zmsentities\\": "src/Zmsentities/",
@@ -251,15 +245,15 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2022-07-14T15:45:17+00:00"
+            "time": "2022-06-21T08:21:57+00:00"
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-main",
+            "version": "2.24.08",
             "source": {
                 "type": "git",
                 "url": "https://gitlab+deploy-token-1182224:zbGL4n64xnbXxMknYVwj@gitlab.com/eappointment/zmsslim.git",
-                "reference": "31005a265af7f3f95bf581a6fbf53839a6e2c444"
+                "reference": "46f155b8617119a2867924c468efd7d7b36a413c"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -280,13 +274,7 @@
                 "phpunit/phpunit": "^9.5.4",
                 "squizlabs/php_codesniffer": "*"
             },
-            "default-branch": true,
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "2.24.x-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "BO\\Slim\\": "src/Slim/",
@@ -308,7 +296,7 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-            "time": "2022-07-07T15:51:06+00:00"
+            "time": "2022-06-07T12:54:55+00:00"
         },
         {
             "name": "fig/http-message-util",
