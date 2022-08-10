@@ -56,10 +56,5 @@
         "phpmd/phpmd": "^2.3",
         "squizlabs/php_codesniffer": "^2.4",
         "mockery/mockery": "^0.9.4"
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-main": "2.24.x-dev"
-        }
     }
 }
