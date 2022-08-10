@@ -13,6 +13,6 @@ vendor.update
 VERSION
 public/_tests
 package-lock.json
-#composer.*.lock
+composer.lock
 .cache
 .phpunit.*
