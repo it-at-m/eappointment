@@ -322,7 +322,7 @@ class Process extends Base implements MappingInterface
                         self::expression(
                             'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)'
                         ),
-                        '<',
+                        '<=',
                         $now->modify('+ ' . $reminderInSeconds . ' Seconds')->format('Y-m-d H:i:s')
                     )
                     ->andWith(
