@@ -21,7 +21,6 @@ class BaseController
     public function __construct($verbose = false, $maxRunTime = 50)
     {
         $this->verbose = $verbose;
-        \App::$http->setUserInfo(\App::$httpUser, \App::$httpPassword);
         $this->startTime = microtime(true);
         $this->maxRunTime = $maxRunTime;
     }
