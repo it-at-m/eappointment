@@ -10,13 +10,6 @@ class SendNotificationTest extends Base
     {
         $this->setApiCalls([
             [
-                'function' => 'setUserInfo',
-                'parameters' => [
-                    '_system_messenger',
-                    'zmsmessaging'
-                ]
-            ],
-            [
                 'function' => 'readGetResult',
                 'url' => '/notification/',
                 'response' => $this->readFixture("GET_notifications_queue.json")

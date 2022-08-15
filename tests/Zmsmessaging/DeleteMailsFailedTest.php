@@ -10,13 +10,6 @@ class DeleteMailsFailedTest extends Base
     {
         return [
             [
-                'function' => 'setUserInfo',
-                'parameters' => [
-                    '_system_messenger',
-                    'zmsmessaging'
-                ]
-            ],
-            [
                 'function' => 'readGetResult',
                 'url' => '/mails/',
                 'parameters' => [

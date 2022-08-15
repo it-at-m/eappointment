@@ -11,13 +11,6 @@ class SendNotificationsFailedTest extends Base
         $this->setApiCalls(
             [
                 [
-                    'function' => 'setUserInfo',
-                    'parameters' => [
-                        '_system_messenger',
-                        'zmsmessaging'
-                    ]
-                ],
-                [
                     'function' => 'readGetResult',
                     'url' => '/notification/',
                     'response' => $this->readFixture("GET_queue_empty.json")
@@ -38,13 +31,6 @@ class SendNotificationsFailedTest extends Base
         $exception = new \BO\Zmsclient\Exception();
         $this->setApiCalls(
             [
-                [
-                    'function' => 'setUserInfo',
-                    'parameters' => [
-                        '_system_messenger',
-                        'zmsmessaging'
-                    ]
-                ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/notification/',
