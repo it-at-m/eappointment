@@ -1,0 +1,32 @@
+{%  block processes_summary_german %}
+<ul>
+    {% for process in processList %}
+        <li>
+            <strong>Zeit(en):&nbsp;</strong>{% if process.requests|length > 1 %}<br />{% endif %}
+            {% set emptyString = '-<br />' %}
+            {% set changeLink  = 'https://service.berlin.de/terminvereinbarung/termin/manage/?form_validate=1&process=' ~ process.id ~ '&authKey=' ~ process.authKey %}
+            {% for appointment in process.appointments %}
+                {% if appointment.hasTime %}
+                    {% set emptyString = '' %}
+                    &nbsp;&nbsp;am {{ appointment.date|localizeddate("short","none",NULL,NULL,"EEEE, dd. MMMM y") }} um {{ appointment.date|date("H:i") }} Uhr<br />
+                {% endif %}
+            {% endfor %}
+            {{ emptyString }}
+            <p>
+                <strong>Ort:&nbsp;</strong> {{ process.scope.provider.name ~ ", " ~ process.scope.provider.contact.street ~ " "  ~ process.scope.provider.contact.streetNumber ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}<br />
+                <strong>Betreff:&nbsp;</strong>{% if process.requests|length > 1 %}<br />{% endif %}
+                {% for request in process.requests %}
+                    &nbsp;&nbsp;{{ request.name }}<br />
+                {% endfor %}
+                <strong>Teilnehmer:&nbsp;</strong>????<br />
+                <strong>Vorgangsnummer:&nbsp;</strong>{{ process.id }}<br />
+                <strong>Absage-Code:&nbsp;</strong>{{ process.authKey }}<br />
+                <strong>Änderungs-Link:&nbsp;</strong><a href="{{ changeLink }}" target="_blank">{{ changeLink }}</a>
+            </p>
+        </li>
+        <br />
+        Sollten Sie einen dieser Termin nicht mehr wahrnehmen können, möchten wir Sie bitten,<br />
+        diesen abzusagen, so dass dieser anderen zur Verfügung steht.<br />
+    {% endfor %}
+</ul>
+{% endblock %}

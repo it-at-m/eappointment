@@ -13,6 +13,22 @@ class Process extends Schema\Entity
 {
     const PRIMARY = 'id';
 
+    public const STATUS_FREE       = 'free';
+    public const STATUS_RESERVED   = 'reserved';
+    public const STATUS_CONFIRMED  = 'confirmed';
+    public const STATUS_QUEUED     = 'queued';
+    public const STATUS_CALLED     = 'called';
+    public const STATUS_PROCESSING = 'processing';
+    public const STATUS_PENDING    = 'pending';
+    public const STATUS_PICKUP     = 'pickup';
+    public const STATUS_FINISHED   = 'finished';
+    public const STATUS_MISSED     = 'missed';
+    public const STATUS_ARCHIVED   = 'archived';
+    public const STATUS_DELETED    = 'deleted';
+    public const STATUS_ANONYMIZED = 'anonymized';
+    public const STATUS_BLOCKED    = 'blocked';
+    public const STATUS_CONFLICT   = 'conflict';
+
     public static $schema = "process.json";
 
     public function getDefaults()

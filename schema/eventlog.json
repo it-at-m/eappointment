@@ -9,13 +9,13 @@
         "reference": "1",
         "sessionid": null,
         "context": {"workstation.id":"1"},
-        "creationTimestamp": "2022-02-02T12:22:21+01:00",
-        "expirationTimestamp": "9999-12-31T00:00:00+01:00"
+        "creationDateTime": "2022-02-02T12:22:21+01:00",
+        "expirationDateTime": "9999-12-31T00:00:00+01:00"
     },
     "required": [
         "id",
         "name",
-        "creationTimestamp"
+        "creationDateTime"
     ],
     "additionalProperties": false,
     "properties": {
@@ -57,12 +57,12 @@
             "default": {},
             "description": "object containing properties that are related to the process where the event happened"
         },
-        "creationTimestamp": {
+        "creationDateTime": {
             "type": "string",
             "default": "",
             "description": "value representing the date-time when the eventlog entry was created"
         },
-        "expirationTimestamp": {
+        "expirationDateTime": {
             "type": "string",
             "default": "",
             "description": "value representing the date-time when the eventlog entry is becoming irrelevant for processes, analytics or legal"

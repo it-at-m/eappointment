@@ -187,8 +187,9 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
     {
         $entity = $this->getQueueByNumber(self::FAKE_WAITINGNUMBER);
         if (!$entity) {
-            $entity = end($this);
+            $entity = $this->getLast();
         }
+
         return $entity;
     }
 

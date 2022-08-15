@@ -95,12 +95,12 @@ class ProcessFormValidation
     {
         $client = new \BO\Zmsentities\Client();
         foreach ($formData as $key => $item) {
-            if (null !== $item['value'] && $client->offsetExists($key)) {
+            if ($client->offsetExists($key) && null !== $item['value']) {
                 $client[$key] = $item['value'];
             }
         }
-        $process->clients = array();
-        $process->clients[] = $client;
+        $process->clients = [$client];
+
         return $process;
     }
 
