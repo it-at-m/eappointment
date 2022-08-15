@@ -123,7 +123,7 @@ class ProcessTest extends Base
 
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
         $this->assertEquals('Test amendment', $process->amendment);
-        $this->assertEquals(time(), $process->lastChange);
+        self::assertLessThanOrEqual(time() - self::DB_OPERATION_SECONDS_DEFAULT, $process->lastChange);
         $this->assertEquals(151, $process->getScopeId());
 
         $process = $query->updateProcessStatus($process, 'confirmed', $now);
