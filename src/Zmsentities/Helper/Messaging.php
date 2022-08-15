@@ -8,17 +8,12 @@
 namespace BO\Zmsentities\Helper;
 
 use \BO\Zmsentities\Process;
-
 use \BO\Zmsentities\Config;
-
 use \BO\Zmsentities\Helper\Property;
-
+use \BO\Zmsdb\Process as ProcessRepository;
 use Twig\Loader\FilesystemLoader;
-
 use Twig\Environment;
-
 use Twig\Extensions\I18nExtension;
-
 use Twig\Extensions\IntlExtension;
 
 /**
@@ -79,7 +74,7 @@ class Messaging
         )
     );
 
-    protected static function twigView()
+    public static function twigView(): Environment
     {
         $templatePath = TemplateFinder::getTemplatePath();
         $loader = new FilesystemLoader($templatePath);
@@ -104,16 +99,42 @@ class Messaging
             $exception->data = $process;
             throw $exception;
         }
-        $message = self::twigView()->render(
-            'messaging/' . $template,
-            array(
-                'date' => $appointment->toDateTime()->format('U'),
-                'client' => $process->getFirstClient(),
-                'process' => $process,
-                'config' => $config,
-                'initiator' => $initiator
-            )
-        );
+        $parameters = [
+            'date' => $appointment->toDateTime()->format('U'),
+            'client' => $process->getFirstClient(),
+            'process' => $process,
+            'config' => $config,
+            'initiator' => $initiator
+        ];
+
+        if (($status === 'appointment' || $status === 'reminder')
+            && $process->getFirstClient()->hasEmail()
+        ) {
+            $processList = (new ProcessRepository())->readByMailAndStatuses(
+                $process->getFirstClient()->email,
+                [
+                    Process::STATUS_CALLED,
+                    Process::STATUS_CONFIRMED,
+                    Process::STATUS_PENDING,
+                    Process::STATUS_PICKUP,
+                    Process::STATUS_PROCESSING,
+                    Process::STATUS_RESERVED,
+                ]
+            );
+            /** @var Process $process */
+            foreach ($processList as $key => $additionalProcess) {
+                if ($additionalProcess->getId() === $process->getId()) {
+                    unset($processList[$key]);
+                    break;
+                }
+            }
+            if (count($processList) > 0) {
+                $parameters['processList'] = $processList;
+            }
+        }
+
+        $message = self::twigView()->render('messaging/' . $template, $parameters);
+
         return $message;
     }
 

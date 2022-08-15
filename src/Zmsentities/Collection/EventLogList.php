@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace BO\Zmsentities\Collection;
 
-class GenericList extends Base
+class EventLogList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\Schema\Entity';
+    const ENTITY_CLASS = '\BO\Zmsentities\EventLog';
 }

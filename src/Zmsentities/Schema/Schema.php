@@ -115,6 +115,9 @@ class Schema extends \ArrayObject
         if (is_array($value)) {
             $value = $this->toSanitizedList($value, $keepEmpty, $defaults);
         }
+        if ($value instanceof \JsonSerializable) {
+            $value = $value->jsonSerialize();
+        }
         return $value;
     }
 

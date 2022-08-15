@@ -81,6 +81,15 @@ class Mail extends Schema\Entity
         return null;
     }
 
+    public function getClient(): ?Client
+    {
+        if (isset($this['client'])) {
+            return $this['client'];
+        }
+
+        return $this->getFirstClient();
+    }
+
     public function getFirstClient()
     {
         $client = null;
