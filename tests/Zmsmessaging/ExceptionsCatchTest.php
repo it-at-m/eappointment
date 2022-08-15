@@ -9,13 +9,6 @@ class ExceptionsCatchTest extends Base
         $this->setApiCalls(
             [
                 [
-                    'function' => 'setUserInfo',
-                    'parameters' => [
-                        '_system_messenger',
-                        'zmsmessaging'
-                    ]
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/log/process/123456/',
                     'response' => $this->readFixture("POST_log.json"),
@@ -52,13 +45,6 @@ class ExceptionsCatchTest extends Base
         $this->setApiCalls(
             [
                 [
-                    'function' => 'setUserInfo',
-                    'parameters' => [
-                        '_system_messenger',
-                        'zmsmessaging'
-                    ]
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/log/process/123456/',
                     'response' => $this->readFixture("POST_log.json"),
@@ -88,13 +74,6 @@ class ExceptionsCatchTest extends Base
     {
         $this->setApiCalls(
             [
-                [
-                    'function' => 'setUserInfo',
-                    'parameters' => [
-                        '_system_messenger',
-                        'zmsmessaging'
-                    ]
-                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/log/process/123456/',
@@ -134,13 +113,6 @@ class ExceptionsCatchTest extends Base
     {
         $this->setApiCalls(
             [
-                [
-                    'function' => 'setUserInfo',
-                    'parameters' => [
-                        '_system_messenger',
-                        'zmsmessaging'
-                    ]
-                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/log/process/123456/',

@@ -11,13 +11,6 @@ class SendMailTest extends Base
         $this->setApiCalls(
             [
                 [
-                    'function' => 'setUserInfo',
-                    'parameters' => [
-                        '_system_messenger',
-                        'zmsmessaging'
-                    ]
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/log/process/123456/',
                     'response' => $this->readFixture("POST_log.json")
@@ -51,13 +44,6 @@ class SendMailTest extends Base
         $this->setApiCalls(
             [
                 [
-                    'function' => 'setUserInfo',
-                    'parameters' => [
-                        '_system_messenger',
-                        'zmsmessaging'
-                    ]
-                ],
-                [
                     'function' => 'readGetResult',
                     'url' => '/mails/',
                     'parameters' => [
@@ -79,13 +65,6 @@ class SendMailTest extends Base
     {
         $this->setApiCalls(
             [
-                [
-                    'function' => 'setUserInfo',
-                    'parameters' => [
-                        '_system_messenger',
-                        'zmsmessaging'
-                    ]
-                ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/mails/',
