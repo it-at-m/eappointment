@@ -10,6 +10,8 @@ namespace BO\Zmsdb;
 use \BO\Zmsentities\Schema\Entity as BaseEntity;
 use \BO\Zmsentities\EventLog as EventLogEntity;
 use \BO\Zmsentities\Collection\Base as Collection;
+use \BO\Zmsentities\Collection\EventLogList as EventLogCollection;
+use PDO;
 
 class EventLog extends Base
 {
@@ -26,21 +28,27 @@ class EventLog extends Base
             ->addNameComparison($name)
             ->addReferenceComparison($reference);
 
-        return $this->fetchCollection($query, new EventLogEntity());
+        return $this->fetchList($query, new EventLogEntity(), new EventLogCollection());
     }
 
+    /**
+     * @param BaseEntity $entity
+     * @return bool
+     */
     public function writeEntity(BaseEntity $entity)
     {
         $query = new Query\EventLog(Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
+
         return $this->writeItem($query);
     }
 
-    public function deleteOutdated()
+    public function deleteOutdated(): bool
     {
         $deleteQuery = new Query\EventLog(Query\Base::DELETE);
         $deleteQuery->addExpirationCondition();
-        $this->deleteItem($deleteQuery);
+
+        return $this->deleteItem($deleteQuery);
     }
 }

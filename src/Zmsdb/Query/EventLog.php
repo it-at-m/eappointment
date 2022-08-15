@@ -19,7 +19,7 @@ class EventLog extends Base
         parent::__construct($queryType, $prefix, $name, $resolveLevel);
 
         if ($queryType === self::SELECT) {
-            $this->query->orderBy(self::ALIAS . '.creationTimestamp', 'ASC');
+            $this->query->orderBy(self::ALIAS . '.creationDateTime', 'ASC');
         }
     }
     public function getEntityMapping(): array
@@ -32,8 +32,8 @@ class EventLog extends Base
             'reference'           => self::ALIAS . '.reference',
             'sessionid'           => self::ALIAS . '.sessionid',
             'context'             => self::ALIAS . '.contextjson',
-            'creationTimestamp'   => self::ALIAS . '.creationTimestamp',
-            'expirationTimestamp' => self::ALIAS . '.expirationTimestamp',
+            'creationDateTime'    => self::ALIAS . '.creationDateTime',
+            'expirationDateTime'  => self::ALIAS . '.expirationDateTime',
         ];
     }
 
@@ -46,7 +46,7 @@ class EventLog extends Base
             'reference' => $entity->reference,
             'sessionid' => $entity->sessionid,
             'contextjson' => json_encode($entity->context, JSON_FORCE_OBJECT),
-            'expirationTimestamp' => $entity->expirationTimestamp,
+            'expirationDateTime' => $entity->expirationDateTime->format('Y-m-d H:i:s'),
         ];
 
         return array_filter($data, function ($value) {
@@ -60,7 +60,9 @@ class EventLog extends Base
      */
     public function postProcess($data): array
     {
+        $data['id'] = (int) $data['id'];
         $data['context'] = json_decode($data['context'], true);
+        $data['expirationDateTime'] = new \DateTime($data['expirationDateTime']);
         return $data;
     }
 
@@ -80,7 +82,7 @@ class EventLog extends Base
 
     public function addExpirationCondition(): EventLog
     {
-        $this->query->where(self::ALIAS . '.creationTimestamp', '<', (new \DateTime())->format('Y-m-d H:i:s'));
+        $this->query->where(self::ALIAS . '.creationDateTime', '<', (new \DateTime())->format('Y-m-d H:i:s'));
 
         return $this;
     }

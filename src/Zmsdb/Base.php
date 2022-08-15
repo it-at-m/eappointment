@@ -2,8 +2,6 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Collection\GenericList as GenericCollection;
-
 /**
  * @SuppressWarnings(NumberOfChildren)
  * @SuppressWarnings(Public)
@@ -200,23 +198,11 @@ abstract class Base
         return $resultList;
     }
 
-    public function fetchCollection(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity): GenericCollection
-    {
-        $collection = new GenericCollection();
-        $result = $this->fetchList($query, $entity);
-        if (count($result)) {
-            foreach ($result as $tmpEntity) {
-                $loadedEntity = $this->readResolvedReferences($tmpEntity, 1);
-                $collection->addEntity($loadedEntity);
-            }
-        }
-        return $collection;
-    }
-
     /**
      * Write an Item to database - Insert, Update
      *
-     * @return \PDO
+     * @param Query\Base $query
+     * @return bool
      */
     public function writeItem(Query\Base $query)
     {
@@ -229,6 +215,10 @@ abstract class Base
         });
     }
 
+    /**
+     * @param Query\Base $query
+     * @return bool
+     */
     public function deleteItem(Query\Base $query)
     {
         return $this->writeItem($query);
