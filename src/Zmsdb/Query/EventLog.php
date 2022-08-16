@@ -46,6 +46,7 @@ class EventLog extends Base
             'reference' => $entity->reference,
             'sessionid' => $entity->sessionid,
             'contextjson' => json_encode($entity->context, JSON_FORCE_OBJECT),
+            'creationDateTime' => $entity->creationDateTime->format('Y-m-d H:i:s'),
             'expirationDateTime' => $entity->expirationDateTime->format('Y-m-d H:i:s'),
         ];
 
@@ -62,6 +63,7 @@ class EventLog extends Base
     {
         $data['id'] = (int) $data['id'];
         $data['context'] = json_decode($data['context'], true);
+        $data['creationDateTime'] = new \DateTime($data['creationDateTime']);
         $data['expirationDateTime'] = new \DateTime($data['expirationDateTime']);
         return $data;
     }
