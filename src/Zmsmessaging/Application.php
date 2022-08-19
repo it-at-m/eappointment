@@ -31,9 +31,9 @@ class Application
      */
     public static $http = null;
 
-    public static $httpUser = '_system_messenger';
+    public static $httpUser = 'test';
 
-    public static $httpPassword = 'zmsmessaging';
+    public static $httpPassword = 'test';
 
     public static $http_curl_config = array();
 
