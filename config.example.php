@@ -3,6 +3,10 @@
 
 define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://localhost/terminvereinbarung/api/2');
 
+define('ZMS_API_PASSWORD_MESSAGING', getenv('ZMS_API_PASSWORD_MESSAGING')
+    ? getenv('ZMS_API_PASSWORD_MESSAGING')
+    : 'examplepassword');
+
 class App extends \BO\Zmsmessaging\Application
 {
     const APP_PATH = APP_PATH;
@@ -10,19 +14,22 @@ class App extends \BO\Zmsmessaging\Application
     // Uncomment the following lines on debugging
     const DEBUG = false;
 
-    // http curl options
-    public static $http_curl_config = array(
+    /**
+     * HTTP access for api
+     */
+    const HTTP_BASE_URL = ZMS_API_URL;
+
+    public static $httpUser = '_system_messenger';
+
+    public static $httpPassword = ZMS_API_PASSWORD_MESSAGING;
+
+     // http curl options
+     public static $http_curl_config = array(
         CURLOPT_SSL_VERIFYPEER => false, // Internal certificates are self-signed
         CURLOPT_TIMEOUT => 10,
         // CURLOPT_VERBOSE => true
     );
-
-    const HTTP_BASE_URL = ZMS_API_URL;
 }
-
-App::$httpUser = '_system_messenger';
-App::$httpPassword = 'password';
-
 
 // uncomment for testing
 //App::$now = new DateTimeImmutable('2016-04-01 11:55:00', new DateTimeZone('Europe/Berlin'));
