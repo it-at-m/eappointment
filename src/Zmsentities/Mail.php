@@ -2,6 +2,7 @@
 
 namespace BO\Zmsentities;
 
+use ArrayObject;
 use \BO\Zmsentities\Helper\Messaging;
 use \BO\Zmsentities\Helper\Property;
 
@@ -140,14 +141,30 @@ class Mail extends Schema\Entity
         return $entity;
     }
 
-    public function toResolvedEntity(Process $process, Config $config, $status, $initiator = null)
+    /**
+     * @param Process|Process[]|ArrayObject $processes
+     * @param Config $config
+     * @param $status
+     * @param $initiator
+     * @return Mail
+     * @throws Exception\TemplateNotFound
+     */
+    public function toResolvedEntity($processes, Config $config, $status, $initiator = null)
     {
+        if ($processes instanceof Process) {
+            $processes = [$processes];
+        }
+        if (count($processes) === 0) {
+            throw new \RuntimeException('There is no process available to resolve the Mail entity.');
+        }
+
+        $mainProcess = $processes[0];
         $entity = clone $this;
-        $icsRequired = Messaging::isIcsRequired($config, $process, $status);
-        $content = Messaging::getMailContent($process, $config, $initiator, $status);
-        $entity->process = $process;
-        $entity->subject = Messaging::getMailSubject($process, $config, $initiator, $status);
-        $entity->createIP = $process->createIP;
+        $icsRequired = Messaging::isIcsRequired($config, $mainProcess, $status);
+        $content = Messaging::getMailContent($processes, $config, $initiator, $status);
+        $entity->process = $mainProcess;
+        $entity->subject = Messaging::getMailSubject($mainProcess, $config, $initiator, $status);
+        $entity->createIP = $mainProcess->createIP;
 
         if (! isset($entity['client'])) {
             $entity['client'] = $entity->getFirstClient();
@@ -163,10 +180,10 @@ class Mail extends Schema\Entity
             'content' => Messaging::getPlainText($content),
             'base64' => false
         ));
-        if ($icsRequired and $process->getAppointments()->getFirst()->hasTime()) {
+        if ($icsRequired and $mainProcess->getAppointments()->getFirst()->hasTime()) {
             $entity->multipart[] = new Mimepart(array(
                 'mime' => 'text/calendar',
-                'content' => Messaging::getMailIcs($process, $config, $status, $initiator)->getContent(),
+                'content' => Messaging::getMailIcs($mainProcess, $config, $status, $initiator)->getContent(),
                 'base64' => false
             ));
         }

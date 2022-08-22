@@ -74,7 +74,7 @@ class Messaging
         )
     );
 
-    public static function twigView(): Environment
+    protected static function twigView(): Environment
     {
         $templatePath = TemplateFinder::getTemplatePath();
         $loader = new FilesystemLoader($templatePath);
@@ -87,49 +87,36 @@ class Messaging
         return $twig;
     }
 
-    public static function getMailContent(Process $process, Config $config, $initiator = null, $status = 'appointment')
+    public static function getMailContent($processes, Config $config, $initiator = null, $status = 'appointment')
     {
-        $appointment = $process->getFirstAppointment();
+        if ($processes instanceof Process) {
+            $processes = [$processes];
+        }
+        if (count($processes) === 0) {
+            throw new \RuntimeException('There is no process available to resolve the Mail entity.');
+        }
+        $mainProcess = array_shift($processes); // $processes now contains all other processes of the client
+        $appointment = $mainProcess->getFirstAppointment();
         $template = self::getTemplate('mail', $status);
         if ($initiator) {
             $template = self::getTemplate('admin', $status);
         }
         if (!$template) {
-            $exception = new \BO\Zmsentities\Exception\TemplateNotFound("Template for $process not found");
-            $exception->data = $process;
+            $exception = new \BO\Zmsentities\Exception\TemplateNotFound("Template for Process $mainProcess not found");
+            $exception->data = $mainProcess;
             throw $exception;
         }
         $parameters = [
             'date' => $appointment->toDateTime()->format('U'),
-            'client' => $process->getFirstClient(),
-            'process' => $process,
+            'client' => $mainProcess->getFirstClient(),
+            'process' => $mainProcess,
             'config' => $config,
             'initiator' => $initiator
         ];
 
-        if (($status === 'appointment' || $status === 'reminder')
-            && $process->getFirstClient()->hasEmail()
-        ) {
-            $processList = (new ProcessRepository())->readByMailAndStatuses(
-                $process->getFirstClient()->email,
-                [
-                    Process::STATUS_CALLED,
-                    Process::STATUS_CONFIRMED,
-                    Process::STATUS_PENDING,
-                    Process::STATUS_PICKUP,
-                    Process::STATUS_PROCESSING,
-                    Process::STATUS_RESERVED,
-                ]
-            );
-            /** @var Process $process */
-            foreach ($processList as $key => $additionalProcess) {
-                if ($additionalProcess->getId() === $process->getId()) {
-                    unset($processList[$key]);
-                    break;
-                }
-            }
-            if (count($processList) > 0) {
-                $parameters['processList'] = $processList;
+        if (($status === 'appointment' || $status === 'reminder')) {
+            if (count($processes) > 0) {
+                $parameters['additionalProcesses'] = $processes;
             }
         }
 

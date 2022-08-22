@@ -6,10 +6,10 @@
             {% set emptyString = '-<br />' %}
             {% set changeLink  = 'https://service.berlin.de/terminvereinbarung/termin/manage/?form_validate=1&process=' ~ process.id ~ '&authKey=' ~ process.authKey %}
             {% for appointment in process.appointments %}
-                {% if appointment.hasTime %}
-                    {% set emptyString = '' %}
-                    &nbsp;&nbsp;am {{ appointment.date|localizeddate("short","none",NULL,NULL,"EEEE, dd. MMMM y") }} um {{ appointment.date|date("H:i") }} Uhr<br />
-                {% endif %}
+{% if appointment.hasTime %}
+{% set emptyString = '' %}
+am {{ appointment.date|localizeddate("short","none",NULL,NULL,"EEEE, dd. MMMM y") }} um {{ appointment.date|date("H:i") }} Uhr<br />
+{% endif %}
             {% endfor %}
             {{ emptyString }}
             <p>
