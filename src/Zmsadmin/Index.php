@@ -27,9 +27,9 @@ class Index extends BaseController
             $workstation = null;
         }
         $input = $request->getParsedBody();
-
+        
         if(\App::AUTHORIZATION_TYPE === "OPENID"){ //TODO: "OPENID" as Constante
-            //TODO: create new class/Method and move functionality to it
+            //TODO: create new class/Method and move functionality to it?
             $oidc = new OpenIDConnectClient(\App::AUTHORIZATION_PROVIDER_URL,
                                             \App::AUTHORIZATION_CLIENT_ID,
                                             \App::AUTHORIZATION_CLIENT_SECRET);
@@ -38,21 +38,54 @@ class Index extends BaseController
 
             try {
                 $oidc->authenticate();
-                /*$accessTokenPayload = $oidc->getAccessTokenPayload();
-                $userAccount = new \BO\Zmsentities\Useraccount(array(
-                    'id' => $getAccessTokenPayload->preferred_username,
-                    'password' => $getAccessTokenPayload->sid,
-                    'departments' => array('id' => 0) // required in schema validation
-                ));*/
-
+                $accessTokenPayload = $oidc->getAccessTokenPayload();
+                
                 //TODO: check if user exists 
+
+            
                 //TODO: if false create user
+                $userAccount = new \BO\Zmsentities\Useraccount(array(
+                    'id' => "superuser",
+                    'password' => "vorschau",
+                    'departments' => array('id' => 0) // required in schema validation
+                ));
+                
+                $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
+                \BO\Zmsclient\Auth::setKey($workstation->authkey);
+        
+         
+                $newUser = array(
+                    "lastLogin" => 1447926465,
+                    "id" => $accessTokenPayload->preferred_username,
+                    "email" => $accessTokenPayload->email,
+                    "password" => $accessTokenPayload->sid,
+                    "rights" => array(
+                        "scope" => true,
+                        "ticketprinter" => true
+                    ),
+                    "departments" => array(
+                        "id" => 72,
+                    )
+                );
+                error_log("_____TEST___________________________________: " . json_encode($accessTokenPayload));
+                $entity = new Entity($newUser);
+                $entity = $entity->withCleanedUpFormData(true);
+                //TODO: try catch (superuser stays logged in after error)
+                $entity = \App::$http->readPostResult('/useraccount/', $entity)->getEntity();
+                
+                //Logout superuser
+                \App::$http->readDeleteResult('/workstation/login/'. $workstation->useraccount['id'] .'/')->getEntity();
+                
                 //TODO: login with user
+                $workstation = \App::$http->readPostResult('/workstation/login/', $entity)->getEntity();
+                \BO\Zmsclient\Auth::setKey($workstation->authkey);
             } catch (\Jumbojett\OpenIDConnectClientException $e) {
+                //throw $exception;
                 echo $e; //TODO: Logging
             }
             return \BO\Slim\Render::redirect('workstationSelect', array(), array());
         }
+        
         if (is_array($input) && array_key_exists('loginName', $input)) {
             return $this->testLogin($input, $response);
         }
