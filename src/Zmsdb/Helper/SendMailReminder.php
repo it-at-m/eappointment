@@ -2,6 +2,13 @@
 
 namespace BO\Zmsdb\Helper;
 
+use BO\Zmsdb\Config as ConfigRepository;
+use BO\Zmsdb\Department as DepartmentRepository;
+use BO\Zmsdb\Process as ProcessRepository;
+use BO\Zmsdb\Mail as MailRepository;
+use BO\Zmsentities\Mail;
+use BO\Zmsentities\Process;
+
 class SendMailReminder
 {
     protected $datetime;
@@ -64,7 +71,7 @@ class SendMailReminder
     protected function writeMailReminderList($commit)
     {
         $count = $this->writeByCallback($commit, function ($limit, $offset) {
-            $processList = (new \BO\Zmsdb\Process)->readEmailReminderProcessListByInterval(
+            $processList = (new ProcessRepository())->readEmailReminderProcessListByInterval(
                 $this->dateTime,
                 $this->lastRun,
                 $this->reminderInSeconds,
@@ -96,15 +103,33 @@ class SendMailReminder
         return $processCount;
     }
 
-    protected function writeReminder(\BO\Zmsentities\Process $process, $commit, $processCount)
+    protected function writeReminder(Process $process, $commit, $processCount): ?Mail
     {
         $entity = null;
-        $department = (new \BO\Zmsdb\Department())->readByScopeId($process->getScopeId(), 0);
+        $department = (new DepartmentRepository())->readByScopeId($process->getScopeId(), 0);
         if ($process->getFirstClient()->hasEmail() && $department->hasMail()) {
-            $config = (new \BO\Zmsdb\Config)->readEntity();
-            $entity = (new \BO\Zmsentities\Mail)->toResolvedEntity($process, $config, 'reminder');
+            $config = (new ConfigRepository())->readEntity();
+            $additional = (new ProcessRepository())->readByMailAndStatuses(
+                $process->getFirstClient()->email,
+                [
+                    Process::STATUS_CALLED,
+                    Process::STATUS_CONFIRMED,
+                    Process::STATUS_PENDING,
+                    Process::STATUS_PICKUP,
+                    Process::STATUS_PROCESSING,
+                    Process::STATUS_RESERVED,
+                ]
+            );
+            /** @var Process $compared */
+            foreach ($additional as $key => $compared) {
+                if ($compared->getId() === $process->getId()) {
+                    unset($additional[$key]);
+                }
+            }
+            $processes = array_merge([$process], $additional);
+            $entity = (new Mail)->toResolvedEntity($processes, $config, 'reminder');
             if ($commit) {
-                $entity = (new \BO\Zmsdb\Mail)->writeInQueue($entity, $this->dateTime);
+                $entity = (new MailRepository())->writeInQueue($entity, $this->dateTime);
                 $this->log(
                     "INFO: $processCount. Write mail in queue with ID ". $entity->getId() ." - ". $entity->subject
                 );
