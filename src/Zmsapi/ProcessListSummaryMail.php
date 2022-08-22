@@ -10,8 +10,8 @@ namespace BO\Zmsapi;
 use BO\Mellon\ValidMail;
 use BO\Slim\Render;
 use BO\Zmsapi\Helper\Version;
+use BO\Zmsdb\Config as ConfigRepository;
 use BO\Zmsdb\EventLog as EventLogRepository;
-use BO\Zmsdb\Helper\MailHelper;
 use BO\Zmsdb\Mail as Query;
 use BO\Zmsdb\Process as ProcessRepository;
 use BO\Zmsentities\Client;
@@ -19,6 +19,7 @@ use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\EventLog;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Helper\DateTime;
+use BO\Zmsentities\Helper\Mailing;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request as SlimRequest;
@@ -71,7 +72,7 @@ class ProcessListSummaryMail extends BaseController
 
         $lang = $request->getQueryParam('language');
         $lang = $lang && strlen($lang) === 2 ? $lang : 'de';
-        $mail = (new MailHelper())->createProcessListSummaryMail($processes, $client, $lang);
+        $mail = (new Mailing((new ConfigRepository)->readEntity()))->createProcessListSummaryMail($processes, $client, $lang);
         $persisted = (new Query())->writeInQueue($mail, \App::$now);
 
         $message = Response\Message::create($request);
