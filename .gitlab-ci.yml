@@ -57,6 +57,7 @@ apidoc:
         paths:
             - public
     script:
+        - bin/configure
         - npm run build
         - swagger-cli validate ./public/doc/swagger.yaml
         - swagger-cli bundle -r -o ./public/doc/swagger.json ./public/doc/swagger.yaml
