@@ -1,3 +1,7 @@
+## v2.24.10
+
+* #55383 - API access data are now read from the env variable ZMS_API_PASSWORD_MESSAGING
+
 ## v2.24.09
 
 * #55079 Number of maximum characters per line for sending SMS via PHPMailer has been increased
