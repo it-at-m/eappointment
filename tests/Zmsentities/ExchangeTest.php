@@ -54,6 +54,7 @@ class ExchangeTest extends EntityCommonTests
     public function testWithoutCalculatedTotals()
     {
         $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        /** @var \BO\Zmsentities\Exchange $entity */
         $entity = (new $this->entityclass());
         $entity->setPeriod($now, $now);
         $entity->addDictionaryEntry('id', 'number');
@@ -62,7 +63,7 @@ class ExchangeTest extends EntityCommonTests
         $entity->addDictionaryEntry('count', 'number', 'value');
         $entity->addDataSet([1, '2016-04-01', 'Test', 1]);
         $entity->addDataSet([2, '2016-04-02', 'Test', 2]);
-        $this->assertTrue(null === $entity->withCalculatedTotals(['count'])->getCalculatedTotals()[0]);
+        $this->assertTrue(null === $entity->withCalculatedTotals(['count'])->getCalculatedTotals());
     }
 
     public function testGroupedWithMaxByHours()

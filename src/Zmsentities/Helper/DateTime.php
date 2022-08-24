@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities\Helper;
 
-class DateTime extends \DateTimeImmutable
+class DateTime extends \DateTimeImmutable implements \JsonSerializable
 {
     public static function create($time = 'now', \DateTimeZone $timezone = null)
     {
@@ -92,8 +92,13 @@ class DateTime extends \DateTimeImmutable
         return $lastSunday->setTime('03', '00', '00');
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->format('c');
+        return $this->format(DATE_ATOM);
+    }
+
+    public function jsonSerialize(): string
+    {
+        return $this->format(DATE_ATOM);
     }
 }

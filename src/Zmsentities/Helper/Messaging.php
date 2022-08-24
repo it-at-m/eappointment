@@ -8,17 +8,12 @@
 namespace BO\Zmsentities\Helper;
 
 use \BO\Zmsentities\Process;
-
 use \BO\Zmsentities\Config;
-
 use \BO\Zmsentities\Helper\Property;
-
+use \BO\Zmsdb\Process as ProcessRepository;
 use Twig\Loader\FilesystemLoader;
-
 use Twig\Environment;
-
 use Twig\Extensions\I18nExtension;
-
 use Twig\Extensions\IntlExtension;
 
 /**
@@ -79,7 +74,7 @@ class Messaging
         )
     );
 
-    protected static function twigView()
+    protected static function twigView(): Environment
     {
         $templatePath = TemplateFinder::getTemplatePath();
         $loader = new FilesystemLoader($templatePath);
@@ -92,28 +87,41 @@ class Messaging
         return $twig;
     }
 
-    public static function getMailContent(Process $process, Config $config, $initiator = null, $status = 'appointment')
+    public static function getMailContent($processes, Config $config, $initiator = null, $status = 'appointment')
     {
-        $appointment = $process->getFirstAppointment();
+        if ($processes instanceof Process) {
+            $processes = [$processes];
+        }
+        if (count($processes) === 0) {
+            throw new \RuntimeException('There is no process available to resolve the Mail entity.');
+        }
+        $mainProcess = array_shift($processes); // $processes now contains all other processes of the client
+        $appointment = $mainProcess->getFirstAppointment();
         $template = self::getTemplate('mail', $status);
         if ($initiator) {
             $template = self::getTemplate('admin', $status);
         }
         if (!$template) {
-            $exception = new \BO\Zmsentities\Exception\TemplateNotFound("Template for $process not found");
-            $exception->data = $process;
+            $exception = new \BO\Zmsentities\Exception\TemplateNotFound("Template for Process $mainProcess not found");
+            $exception->data = $mainProcess;
             throw $exception;
         }
-        $message = self::twigView()->render(
-            'messaging/' . $template,
-            array(
-                'date' => $appointment->toDateTime()->format('U'),
-                'client' => $process->getFirstClient(),
-                'process' => $process,
-                'config' => $config,
-                'initiator' => $initiator
-            )
-        );
+        $parameters = [
+            'date' => $appointment->toDateTime()->format('U'),
+            'client' => $mainProcess->getFirstClient(),
+            'process' => $mainProcess,
+            'config' => $config,
+            'initiator' => $initiator
+        ];
+
+        if (($status === 'appointment' || $status === 'reminder')) {
+            if (count($processes) > 0) {
+                $parameters['additionalProcesses'] = $processes;
+            }
+        }
+
+        $message = self::twigView()->render('messaging/' . $template, $parameters);
+
         return $message;
     }
 
