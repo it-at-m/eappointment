@@ -1,0 +1,71 @@
+{
+    "type": "object",
+    "description": "representing a log entry for an event",
+    "example": {
+        "id": 123,
+        "name": "WORKSTATION_PROCESS_CALL",
+        "origin": "zmsappointment 1",
+        "referenceType": "process.id",
+        "reference": "1",
+        "sessionid": null,
+        "context": {"workstation.id":"1"},
+        "creationDateTime": "2022-02-02T12:22:21+01:00",
+        "expirationDateTime": "9999-12-31T00:00:00+01:00"
+    },
+    "required": [
+        "id",
+        "name",
+        "creationDateTime"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "id": {
+            "type": "number",
+            "default": 0
+        },
+        "name": {
+            "type": "string",
+            "default": ""
+        },
+        "origin": {
+            "type": "string",
+            "default": "",
+            "description": "a value that identifies the component where the event has been created"
+        },
+        "referenceType": {
+            "type": "string",
+            "default": "",
+            "description": "describing the content of the reference value"
+        },
+        "reference": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "value that identifies an entity or addressee or allows assumptions by equivalence",
+            "default": null
+        },
+        "sessionid": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "default": null
+        },
+        "context": {
+            "type": "object",
+            "default": {},
+            "description": "object containing properties that are related to the process where the event happened"
+        },
+        "creationDateTime": {
+            "type": "string",
+            "default": "",
+            "description": "value representing the date-time when the eventlog entry was created"
+        },
+        "expirationDateTime": {
+            "type": "string",
+            "default": "",
+            "description": "value representing the date-time when the eventlog entry is becoming irrelevant for processes, analytics or legal"
+        }
+    }
+}
