@@ -53,7 +53,9 @@ class Index extends BaseController
         try {
             $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
             if (array_key_exists('authkey', $workstation)) {
+                \BO\Slim\Profiler::add('start set Authkey');
                 \BO\Zmsclient\Auth::setKey($workstation->authkey);
+                \BO\Slim\Profiler::add('end set Authkey');
                 return \BO\Slim\Render::redirect('workstationSelect', array(), array());
             }
         } catch (\BO\Zmsclient\Exception $exception) {

@@ -49,7 +49,12 @@
                         {% include "@zmsentities/messaging/subjects.twig" with {"status": "confirmed"} %}
                     </pre>
                     <pre>
-                        {% include "@zmsentities/messaging/mail_confirmation.twig" with {"process": processExample, "client": processExample.clients|first} %}
+                        {% include "@zmsentities/messaging/mail_confirmation.twig" with {
+                            "date": processExample.getFirstAppointment.date,
+                            "process": processExample, 
+                            "processList": processListExample, 
+                            "client": processExample.clients|first
+                        } %}
                     </pre>
 
                     <pre class="subject">
@@ -57,7 +62,12 @@
                         {% include "@zmsentities/messaging/subjects.twig" with {"status": "reminder"} %}
                     </pre>
                     <pre>
-                        {% include "@zmsentities/messaging/mail_reminder.twig" with {"process": processExample, "client": processExample.clients|first} %}
+                        {% include "@zmsentities/messaging/mail_reminder.twig" with {
+                            "date": processExample.getFirstAppointment.date,
+                            "process": processExample, 
+                            "processList": processListExample, 
+                            "client": processExample.clients|first
+                        } %}
                     </pre>
 
                     <pre class="subject">
@@ -65,7 +75,24 @@
                         {% include "@zmsentities/messaging/subjects.twig" with {"status": "deleted"} %}
                     </pre>
                     <pre>
-                        {% include "@zmsentities/messaging/mail_delete.twig" with {"process": processExample, "client": processExample.clients|first} %}
+                        {% include "@zmsentities/messaging/mail_delete.twig" with {
+                            "date": processExample.getFirstAppointment.date,
+                            "process": processExample, 
+                            "processList": processListExample, 
+                            "client": processExample.clients|first
+                        } %}
+                    </pre>
+
+                    <pre class="subject">
+                        <br />--------------------------------------------------------<br /><br />
+                        {% include "@zmsentities/messaging/subjects.twig" with {"process": processExample, "initiator": "XXX", "status": "overview"} %}
+                    </pre>
+                    <pre class="admin">
+                        {% include "@zmsentities/messaging/mail_processlist_overview.twig" with {
+                            "processList": processListExample, 
+                            "client": (processExample.clients|first),
+                            "initiator": "XXX", 
+                            "status": "overview"} %}
                     </pre>
                     
                     <pre class="subject">
@@ -127,7 +154,6 @@
                     <pre class="admin">
                         {% include "@zmsentities/messaging/mail_survey.twig" with {"process": processExample, "initiator": "XXX"} %}
                     </pre>
-
                 </div>
             </div>
         {% endblock %}
