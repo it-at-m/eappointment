@@ -2,7 +2,12 @@
 
 namespace BO\Zmsdb\Helper;
 
-use BO\Zmsdb\Log;
+use BO\Zmsdb\Config as ConfigRepository;
+use BO\Zmsdb\Department as DepartmentRepository;
+use BO\Zmsdb\Process as ProcessRepository;
+use BO\Zmsdb\Mail as MailRepository;
+use BO\Zmsentities\Mail;
+use BO\Zmsentities\Process;
 
 class SendMailReminder
 {
@@ -66,7 +71,7 @@ class SendMailReminder
     protected function writeMailReminderList($commit)
     {
         $count = $this->writeByCallback($commit, function ($limit, $offset) {
-            $processList = (new \BO\Zmsdb\Process)->readEmailReminderProcessListByInterval(
+            $processList = (new ProcessRepository())->readEmailReminderProcessListByInterval(
                 $this->dateTime,
                 $this->lastRun,
                 $this->reminderInSeconds,
@@ -98,16 +103,15 @@ class SendMailReminder
         return $processCount;
     }
 
-    protected function writeReminder(\BO\Zmsentities\Process $process, $commit, $processCount)
+    protected function writeReminder(Process $process, $commit, $processCount): ?Mail
     {
         $entity = null;
-        $department = (new \BO\Zmsdb\Department())->readByScopeId($process->getScopeId(), 0);
+        $department = (new DepartmentRepository())->readByScopeId($process->getScopeId(), 0);
         if ($process->getFirstClient()->hasEmail() && $department->hasMail()) {
-            $config = (new \BO\Zmsdb\Config)->readEntity();
-            $entity = (new \BO\Zmsentities\Mail)->toResolvedEntity($process, $config, 'reminder');
+            $config = (new ConfigRepository)->readEntity();
+            $entity = (new MailRepository)->toResolvedEntity($process, $config, 'reminder');
             if ($commit) {
-                $entity = (new \BO\Zmsdb\Mail)->writeInQueue($entity, $this->dateTime);
-                Log::writeLogEntry("Write Reminder (Mail::writeInQueue) $entity ", $process->getId());
+                $entity = (new MailRepository())->writeInQueue($entity, $this->dateTime);
                 $this->log(
                     "INFO: $processCount. Write mail in queue with ID ". $entity->getId() ." - ". $entity->subject
                 );

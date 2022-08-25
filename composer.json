@@ -34,6 +34,7 @@
         "bin/deleteTicketprinterData",
         "bin/importTestData",
         "bin/migrate",
+        "bin/removeOldEventLogEntries",
         "bin/resetApiQuota",
         "bin/resetGhostWorkstationCount",
         "bin/resetWorkstations",
