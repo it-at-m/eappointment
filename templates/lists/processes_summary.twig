@@ -1,32 +1,34 @@
 {%  block processes_summary_german %}
-<ul>
-    {% for process in processList %}
-        <li>
-            <strong>Zeit(en):&nbsp;</strong>{% if process.requests|length > 1 %}<br />{% endif %}
-            {% set emptyString = '-<br />' %}
-            {% set changeLink  = 'https://service.berlin.de/terminvereinbarung/termin/manage/?form_validate=1&process=' ~ process.id ~ '&authKey=' ~ process.authKey %}
-            {% for appointment in process.appointments %}
-{% if appointment.hasTime %}
-{% set emptyString = '' %}
-am {{ appointment.date|localizeddate("short","none",NULL,NULL,"EEEE, dd. MMMM y") }} um {{ appointment.date|date("H:i") }} Uhr<br />
+<br />
+<h2>Sie haben folgende Termine geplant:</h2>
+Sollten Sie einen dieser Termin nicht mehr wahrnehmen können, möchten wir Sie bitten,<br />
+diesen abzusagen, so dass dieser anderen zur Verfügung steht.<br /><br />
+{% for process in processList %}
+{% set changeLink  = 'https://service.berlin.de/terminvereinbarung/termin/manage/?process=' ~ process.id ~ '&authKey=' ~ process.authKey %}
+<div style="background: #eeeeee; border: 1px solid #aaaaaa; padding:10px;">
+<strong>Zeit:</strong> am {{ process.getFirstAppointment.date|localizeddate("short","none",NULL,NULL,"EEEE, dd. MMMM y") }} um {{ process.getFirstAppointment.date|date("H:i") }} Uhr<br />
+<strong>Ort:</strong> {{ process.scope.provider.name ~ ", " ~ process.scope.provider.contact.street ~ " "  ~ process.scope.provider.contact.streetNumber ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}<br />
+{% if process.requests|length > 1 %}
+{% set requestalias = "Dienstleistungen" %}
+{% else %}
+{% set requestalias = "Dienstleistung" %}
 {% endif %}
-            {% endfor %}
-            {{ emptyString }}
-            <p>
-                <strong>Ort:&nbsp;</strong> {{ process.scope.provider.name ~ ", " ~ process.scope.provider.contact.street ~ " "  ~ process.scope.provider.contact.streetNumber ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}<br />
-                <strong>Betreff:&nbsp;</strong>{% if process.requests|length > 1 %}<br />{% endif %}
-                {% for request in process.requests %}
-                    &nbsp;&nbsp;{{ request.name }}<br />
-                {% endfor %}
-                <strong>Teilnehmer:&nbsp;</strong>????<br />
-                <strong>Vorgangsnummer:&nbsp;</strong>{{ process.id }}<br />
-                <strong>Absage-Code:&nbsp;</strong>{{ process.authKey }}<br />
-                <strong>Änderungs-Link:&nbsp;</strong><a href="{{ changeLink }}" target="_blank">{{ changeLink }}</a>
-            </p>
-        </li>
-        <br />
-        Sollten Sie einen dieser Termin nicht mehr wahrnehmen können, möchten wir Sie bitten,<br />
-        diesen abzusagen, so dass dieser anderen zur Verfügung steht.<br />
-    {% endfor %}
-</ul>
+{% if process.requests|length == 0 %}
+Sie haben keine Dienstleistungen ausgewählt.
+{% else %}
+<strong>{{ requestalias }}:</strong>
+<br/>
+{% for request in process.requests %}
+- {{ request.name }}<br />
+{% endfor %}
+{% endif %}
+<strong>Teilnehmer:</strong> {{ process.clients|length}}<br />
+<strong>Vorgangsnummer:</strong> {{ process.id }}<br />
+<strong>Absage-Code:</strong> {{ process.authKey }}<br />
+<strong>Änderungs-Link:</strong> <a href="{{ changeLink }}" target="_blank">{{ changeLink }}</a>
+</div>
+<br />
+{% endfor %}
+Sollten Sie einen dieser Termin nicht mehr wahrnehmen können, möchten wir Sie bitten,<br />
+diesen abzusagen, so dass dieser anderen zur Verfügung steht.<br /><br />
 {% endblock %}

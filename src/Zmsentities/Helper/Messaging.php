@@ -8,9 +8,10 @@
 namespace BO\Zmsentities\Helper;
 
 use \BO\Zmsentities\Process;
+use \BO\Zmsentities\Mail;
+use \BO\Zmsentities\Collection\ProcessList;
 use \BO\Zmsentities\Config;
 use \BO\Zmsentities\Helper\Property;
-use \BO\Zmsdb\Process as ProcessRepository;
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
 use Twig\Extensions\I18nExtension;
@@ -61,7 +62,8 @@ class Messaging
             'pickup' => 'mail_pickup.twig',
             'deleted' => 'mail_delete.twig',
             'blocked' => 'mail_delete.twig',
-            'survey' => 'mail_survey.twig'
+            'survey' => 'mail_survey.twig',
+            'overview' => 'mail_processlist_overview.twig'
         ),
         'ics' => array(
             'appointment' => 'icsappointment.twig',
@@ -87,15 +89,14 @@ class Messaging
         return $twig;
     }
 
-    public static function getMailContent($processes, Config $config, $initiator = null, $status = 'appointment')
-    {
-        if ($processes instanceof Process) {
-            $processes = [$processes];
-        }
-        if (count($processes) === 0) {
-            throw new \RuntimeException('There is no process available to resolve the Mail entity.');
-        }
-        $mainProcess = array_shift($processes); // $processes now contains all other processes of the client
+    public static function getMailContent(
+        $processList, 
+        Config $config, 
+        $initiator = null, 
+        $status = 'appointment'
+    ){
+        $processList = Mail::testProcessList($processList, $status);
+        $mainProcess = $processList->getFirst();
         $appointment = $mainProcess->getFirstAppointment();
         $template = self::getTemplate('mail', $status);
         if ($initiator) {
@@ -110,13 +111,14 @@ class Messaging
             'date' => $appointment->toDateTime()->format('U'),
             'client' => $mainProcess->getFirstClient(),
             'process' => $mainProcess,
+            'processList' => $processList,
             'config' => $config,
             'initiator' => $initiator
         ];
 
         if (($status === 'appointment' || $status === 'reminder')) {
-            if (count($processes) > 0) {
-                $parameters['additionalProcesses'] = $processes;
+            if (count($processList) > 0) {
+                $parameters['additionalProcesses'] = $processList;
             }
         }
 

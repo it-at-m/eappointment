@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities;
 
-use ArrayObject;
+use \BO\Zmsentities\Collection\ProcessList;
 use \BO\Zmsentities\Helper\Messaging;
 use \BO\Zmsentities\Helper\Property;
 
@@ -142,26 +142,20 @@ class Mail extends Schema\Entity
     }
 
     /**
-     * @param Process|Process[]|ArrayObject $processes
+     * @param Process|ProcessList Process|ProcessList $processList
      * @param Config $config
      * @param $status
      * @param $initiator
      * @return Mail
      * @throws Exception\TemplateNotFound
      */
-    public function toResolvedEntity($processes, Config $config, $status, $initiator = null)
+    public function toResolvedEntity($processList, Config $config, $status, $initiator = null)
     {
-        if ($processes instanceof Process) {
-            $processes = [$processes];
-        }
-        if (count($processes) === 0) {
-            throw new \RuntimeException('There is no process available to resolve the Mail entity.');
-        }
-
-        $mainProcess = $processes[0];
+        $collection = static::testProcessList($processList, $status);
+        $mainProcess = $collection->getFirst();
         $entity = clone $this;
         $icsRequired = Messaging::isIcsRequired($config, $mainProcess, $status);
-        $content = Messaging::getMailContent($processes, $config, $initiator, $status);
+        $content = Messaging::getMailContent($collection, $config, $initiator, $status);
         $entity->process = $mainProcess;
         $entity->subject = Messaging::getMailSubject($mainProcess, $config, $initiator, $status);
         $entity->createIP = $mainProcess->createIP;
@@ -188,6 +182,25 @@ class Mail extends Schema\Entity
             ));
         }
         return $entity;
+    }
+
+    public static function testProcessList($processList, $status)
+    {
+        $collection = ($processList instanceof Process) ? 
+            (new ProcessList())->addEntity($processList) :
+            $processList;
+
+        if (0 === $collection->count()) {
+            throw new \BO\Zmsentities\Exception\ProcessListEmpty();
+        }
+
+        //mainProcess must be first in Collection
+        $mainProcess = $collection->getFirst();
+        $collection = (1 < $collection->count() && 'overview' != $status) ? 
+            $collection->withOutProcessId($mainProcess->getId()) :
+            $collection;
+        
+        return $collection->sortByAppointmentDate();
     }
 
     public function toScopeAdminProcessList(
