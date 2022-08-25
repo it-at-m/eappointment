@@ -7,9 +7,7 @@ declare(strict_types=1);
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Schema\Entity as BaseEntity;
 use \BO\Zmsentities\EventLog as EventLogEntity;
-use \BO\Zmsentities\Collection\Base as Collection;
 use \BO\Zmsentities\Collection\EventLogList as EventLogCollection;
 use PDO;
 
@@ -18,9 +16,9 @@ class EventLog extends Base
     /**
      * @param string $name
      * @param string $reference
-     * @return Collection
+     * @return EventLogCollection
      */
-    public function readByNameAndRef(string $name, string $reference): Collection
+    public function readByNameAndRef(string $name, string $reference): EventLogCollection
     {
         $query = new Query\EventLog(Query\Base::SELECT);
         $query
@@ -32,10 +30,10 @@ class EventLog extends Base
     }
 
     /**
-     * @param BaseEntity $entity
+     * @param EventLogEntity $entity
      * @return bool
      */
-    public function writeEntity(BaseEntity $entity)
+    public function writeEntity(EventLogEntity $entity)
     {
         $query = new Query\EventLog(Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity);

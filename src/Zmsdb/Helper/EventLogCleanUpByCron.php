@@ -11,7 +11,7 @@ use BO\Zmsdb\EventLog as EventLogRepository;
 
 class EventLogCleanUpByCron
 {
-    public static function exec()
+    public static function startProcessing()
     {
         $eventLogRepo  = new EventLogRepository();
         $eventLogRepo->deleteOutdated();
