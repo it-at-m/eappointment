@@ -3,7 +3,7 @@
 require_once(__DIR__."/script_bootstrap.php");
 
 if (isset($argv[1]) && $argv[1] == '--commit') {
-    \BO\Zmsdb\Helper\EventLogCleanUpByCron::exec();
+    \BO\Zmsdb\Helper\EventLogCleanUpByCron::startProcessing();
 } else {
     echo "Usage: {$argv[0]} --commit\n";
     echo "This application removes eventLog entries that have an expiration time that lies in the past.";
