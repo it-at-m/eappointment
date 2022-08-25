@@ -5,6 +5,8 @@ use \BO\Zmsentities\Helper\Sorter;
 
 use \BO\Zmsentities\Helper\Property;
 
+use \BO\Zmsentities\Process;
+
 /**
  * @SuppressWarnings(Complexity)
  * @SuppressWarnings(Public)
@@ -353,6 +355,27 @@ class ProcessList extends Base
                 $collection->addEntity(clone $conflict);
             }
         }
+        return $collection;
+    }
+
+    public function testProcessListLength($processList)
+    {
+        $collection = ($processList instanceof Process) ?
+            (new self())->addEntity($processList) :
+            $processList;
+
+        if (0 === $collection->count()) {
+            throw new \BO\Zmsentities\Exception\ProcessListEmpty();
+        }
+        return $collection;
+    }
+
+    public function withoutProcessByStatus($process, $status)
+    {
+        $collection = clone $this;
+        $collection = (1 < $collection->count() && 'overview' != $status) ?
+            $collection->withOutProcessId($process->getId()) :
+            $collection;
         return $collection;
     }
 
