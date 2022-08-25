@@ -6,6 +6,10 @@ use \BO\Zmsentities\Collection\ProcessList;
 use \BO\Zmsentities\Helper\Messaging;
 use \BO\Zmsentities\Helper\Property;
 
+/**
+ * @SuppressWarnings(CouplingBetweenObjects)
+ *
+ */
 class Mail extends Schema\Entity
 {
     const PRIMARY = 'id';
