@@ -111,18 +111,16 @@ class ProcessList extends Base
         return $this;
     }
 
-    /* todo: remove if not used anymore
-    public function toProcessListByStatus($selectedDate, array $status)
+    public function toProcessListByStatus(array $statusList)
     {
-        $selectedDateTime = new \DateTimeImmutable($selectedDate);
-        return $this
-            ->toQueueList($selectedDateTime)
-            ->withStatus($status)
-            ->toProcessList()
-            ->sortByArrivalTime()
-            ->sortByEstimatedWaitingTime();
+        $collection = new self();
+        foreach($this as $process) {
+            if (in_array($process->getStatus(), $statusList)) {
+                $collection->addEntity($process);
+            }
+        }
+        return $collection;
     }
-    */
 
     public function toConflictListByDay()
     {
