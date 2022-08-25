@@ -90,11 +90,11 @@ class Messaging
     }
 
     public static function getMailContent(
-        $processList, 
-        Config $config, 
-        $initiator = null, 
+        $processList,
+        Config $config,
+        $initiator = null,
         $status = 'appointment'
-    ){
+    ) {
         $processList = Mail::testProcessList($processList, $status);
         $mainProcess = $processList->getFirst();
         $appointment = $mainProcess->getFirstAppointment();

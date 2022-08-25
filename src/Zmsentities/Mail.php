@@ -186,7 +186,7 @@ class Mail extends Schema\Entity
 
     public static function testProcessList($processList, $status)
     {
-        $collection = ($processList instanceof Process) ? 
+        $collection = ($processList instanceof Process) ?
             (new ProcessList())->addEntity($processList) :
             $processList;
 
@@ -196,7 +196,7 @@ class Mail extends Schema\Entity
 
         //mainProcess must be first in Collection
         $mainProcess = $collection->getFirst();
-        $collection = (1 < $collection->count() && 'overview' != $status) ? 
+        $collection = (1 < $collection->count() && 'overview' != $status) ?
             $collection->withOutProcessId($mainProcess->getId()) :
             $collection;
         
