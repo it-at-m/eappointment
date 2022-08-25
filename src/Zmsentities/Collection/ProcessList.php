@@ -323,6 +323,17 @@ class ProcessList extends Base
         return $processList;
     }
 
+    public function withOutProcessId($processId)
+    {
+        $processList = new static();
+        foreach ($this as $process) {
+            if ($processId != $process->getId()) {
+                $processList[] = clone $process;
+            }
+        }
+        return $processList;
+    }
+
     public function withoutExpiredAppointmentDate(\DateTimeInterface $now)
     {
         $conflictList = new self();

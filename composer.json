@@ -15,7 +15,6 @@
         "ext-json": ">=1.0",
         "ext-pcre": ">=0",
         "eappointment/mellon": "^2.0.1",
-        "eappointment/zmsdb": "dev-main || ^2.0",
         "twig/twig": "^2.14",
         "twig/extensions": "*",
         "league/json-guard": "^1.0",

@@ -38,6 +38,7 @@ Sie haben folgende {{ requestalias }} ausgewählt:
     {% for request in process.requests %}
     <strong><a href="https://service.berlin.de/dienstleistung/{{ request.id }}/standort/{{ process.scope.provider.id }}/">{{ request.name }} am Standort {{ process.scope.provider.name }}</a></strong><br/>
     {% if request.source == "dldb" and request.data %}
+    <br />
     <div style="border-left: 1em solid #ffffff; background: #ffffff;">
     {% include "@zmsentities/detail/service_detail_prerequisites.twig" with {"service":request.data, "headerlevel":"h4"} %}
     {% include "@zmsentities/detail/service_detail_requirements.twig" with {"service":request.data, "headerlevel":"h4"} %}
@@ -45,19 +46,15 @@ Sie haben folgende {{ requestalias }} ausgewählt:
     </div>
     {% endif %}
     {% if process.requests|length > 1 and not loop.last %}
-    <br /><br />
+    <br />
     ----------------------
     <br /><br />
     {% endif %}
     {% endfor %}
 {% endif %}
-<br /><br />
 {% if processList is defined and processList|length > 0 %}
-    Sie haben zusätzlich noch folgende Termine geplant:<br />
     {{ block("processes_summary_german") }}
-    <br />
 {% endif %}
-<br />
 {{ block("sendoff_german") }}
 </div>
 <script type="application/ld+json">
