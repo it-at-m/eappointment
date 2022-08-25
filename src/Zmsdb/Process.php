@@ -527,13 +527,13 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $result['processCount'];
     }
 
-       /**
+    /**
      * Read processList by mail address
      *
      * @return Collection processList
      */
     public function readProcessListByMailAddress(
-        $mailAddress,
+        string $mailAddress,
         $resolveReferences = 0,
         $limit = 2000
     ) : Collection {
@@ -548,6 +548,30 @@ class Process extends Base implements Interfaces\ResolveReferences
         $statement = $this->fetchStatement($query);
         return $this->readList($statement, $resolveReferences);
     }
+
+    /**
+     * Read processList by mail address and statuslist
+     *
+     * @return Collection processList
+     */
+    public function readListByMailAndStatusList(
+        string $mailAddress, 
+        array $statusList, 
+        $resolveReferences = 1,
+        $limit = 300
+    ) : Collection {
+        $query = new Query\Process(Query\Base::SELECT);
+        $query
+            ->addResolvedReferences($resolveReferences)
+            ->addEntityMapping()
+            ->addConditionMail($mailAddress, true)
+            ->addConditionIgnoreSlots()
+            ->addLimit($limit);
+        $statement = $this->fetchStatement($query);
+        $collection = $this->readList($statement, $resolveReferences);
+        return $collection->toProcessListByStatus($statusList);
+    }
+
 
     /**
      * Markiere einen Termin als bestätigt

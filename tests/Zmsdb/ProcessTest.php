@@ -523,6 +523,17 @@ class ProcessTest extends Base
         $this->assertEquals(102, $processList->count(), "Scope 141 Heerstraße should have 105 assigned processes");
     }
 
+    public function testReadListByStatus()
+    {
+        $query = new Query();
+        $processList = $query->readListByMailAndStatusList('zms@service.berlinonline.de', [
+            Entity::STATUS_CONFIRMED,
+            Entity::STATUS_PICKUP
+        ], 0, 5);
+        self::assertEquals('zms@service.berlinonline.de', $processList->getFirst()->getFirstClient()->email);
+        self::assertEquals(5, $processList->count());
+    }
+
     public function testStatusFree()
     {
         $now = new \DateTimeImmutable("2016-05-30 08:00");
