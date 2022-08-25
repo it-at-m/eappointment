@@ -555,8 +555,8 @@ class Process extends Base implements Interfaces\ResolveReferences
      * @return Collection processList
      */
     public function readListByMailAndStatusList(
-        string $mailAddress, 
-        array $statusList, 
+        string $mailAddress,
+        array $statusList,
         $resolveReferences = 1,
         $limit = 300
     ) : Collection {
