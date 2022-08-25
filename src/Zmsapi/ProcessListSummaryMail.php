@@ -20,7 +20,6 @@ use BO\Zmsentities\Process;
 use BO\Zmsentities\Helper\DateTime;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Http\Request as SlimRequest;
 
 class ProcessListSummaryMail extends BaseController
 {
@@ -28,7 +27,9 @@ class ProcessListSummaryMail extends BaseController
 
     /**
      * @SuppressWarnings(Param)
-     * @param RequestInterface|SlimRequest $request
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @param array $args
      */
     public function readResponse(
         RequestInterface $request,

@@ -25,7 +25,7 @@ class ProcessListSummaryMailTest extends Base
     public function testProcessListEmpty()
     {
         $this->expectException('BO\Zmsentities\Exception\ProcessListEmpty');
-        $this->render([], ['mail' => 'test@unit.test'], []);
+        $this->render([], ['mail' => 'test@service.berlinonline.de'], []);
     }
 
     public function testUnvalidMail()
