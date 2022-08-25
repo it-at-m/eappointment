@@ -86,7 +86,9 @@ class ProcessConfirmationMail extends BaseController
                 [
                     Process::STATUS_CONFIRMED,
                     Process::STATUS_PICKUP
-                ]
+                ],
+                1,
+                50
             );
             $collection->addList($processList);
         }

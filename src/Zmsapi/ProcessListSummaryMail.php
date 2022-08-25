@@ -21,6 +21,9 @@ use BO\Zmsentities\Helper\DateTime;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * @SuppressWarnings(Coupling)
+ */
 class ProcessListSummaryMail extends BaseController
 {
     public const PROCESSLIST_SUMMARY_REQUEST_REPETITION_SEC = 600;
