@@ -10,11 +10,12 @@ namespace BO\Zmsentities\Tests\Helper;
 use BO\Zmsentities\Config;
 use BO\Zmsentities\Mail;
 use BO\Zmsentities\Scope;
+use BO\Zmsentities\Provider;
 use BO\Zmsentities\Request;
 use BO\Zmsentities\Process;
+use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Tests\Base;
 use BO\Zmsentities\Helper\Messaging;
-
 
 class MessagingTest extends Base
 {
@@ -61,14 +62,29 @@ class MessagingTest extends Base
         self::assertStringContainsString('am Mittwoch, 18. November 2015 um 18:52 Uhr', $mail->getHtmlPart());
         self::assertStringContainsString('am Mittwoch, 30. Dezember 2015 um 11:55 Uhr', $mail->getHtmlPart());
         self::assertStringContainsString('Bürgeramt 1, Unter den Linden 1, 12345 Berlin', $mail->getHtmlPart());
-        self::assertStringContainsString(
-            'Flughafen Schönefeld, Aufsicht, Zaunstraße 1, 15831 Schönefeld', 
-            $mail->getHtmlPart()
-        );
+        self::assertStringContainsString('Bürgeramt Mitte, Zaunstraße 1, 15831 Schönefeld', $mail->getHtmlPart());
         self::assertStringContainsString('Abmeldung einer Wohnung', $mail->getHtmlPart());
         self::assertStringContainsString('123456', $mail->getHtmlPart());
         self::assertStringContainsString('abcd', $mail->getHtmlPart());
         self::assertStringContainsString('https://service.berlin.de/terminvereinbarung/termin/manage/?process=123456&amp;authKey=abcd', $mail->getHtmlPart());
+    }
+
+    public function testListWithoutMainProcess()
+    {
+        $processList = self::getExampleProcessList();
+        $collection = (new ProcessList)->testProcessListLength($processList);
+        $mainProcess = $collection->getFirst();
+        $collection = $collection->withoutProcessByStatus($mainProcess, 'appointment');
+        self::assertEquals($mainProcess->getId(), '123456');
+        self::assertTrue(1 === $collection->count());
+        self::assertEquals($collection->getFirst()->getId(), '234567');
+    }
+
+    public function testEmptyProcessList()
+    {
+        self::expectException('BO\Zmsentities\Exception\ProcessListEmpty');
+        $processList = new ProcessList();
+        $collection = (new ProcessList)->testProcessListLength($processList);
     }
 
     protected static function getExampleProcessList()
@@ -82,13 +98,15 @@ class MessagingTest extends Base
         $client->status = 'confirmed';
         $dateTime = new \DateTimeImmutable("2015-12-30 11:55:00", new \DateTimeZone('Europe/Berlin'));
         $process2->getFirstAppointment()->setDateTime($dateTime);
-        $scope = Scope::getExample(); 
+        $scope = Scope::getExample();
+        $provider = Provider::getExample();
         $process2->scope = $scope;
+        $process2->scope->provider = $provider;
         $process2->getRequests()->addEntity(Request::getExample());
 
         $processList = new \BO\Zmsentities\Collection\ProcessList();
-        $processList->addEntity($process2);
         $processList->addEntity($mainProcess);
+        $processList->addEntity($process2);
         return $processList;
     }
 }

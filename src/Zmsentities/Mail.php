@@ -155,7 +155,7 @@ class Mail extends Schema\Entity
      */
     public function toResolvedEntity($processList, Config $config, $status, $initiator = null)
     {
-        $collection = static::testProcessList($processList, $status);
+        $collection = (new ProcessList)->testProcessListLength($processList);
         $mainProcess = $collection->getFirst();
         $entity = clone $this;
         $icsRequired = Messaging::isIcsRequired($config, $mainProcess, $status);
@@ -186,25 +186,6 @@ class Mail extends Schema\Entity
             ));
         }
         return $entity;
-    }
-
-    public static function testProcessList($processList, $status)
-    {
-        $collection = ($processList instanceof Process) ?
-            (new ProcessList())->addEntity($processList) :
-            $processList;
-
-        if (0 === $collection->count()) {
-            throw new \BO\Zmsentities\Exception\ProcessListEmpty();
-        }
-
-        //mainProcess must be first in Collection
-        $mainProcess = $collection->getFirst();
-        $collection = (1 < $collection->count() && 'overview' != $status) ?
-            $collection->withOutProcessId($mainProcess->getId()) :
-            $collection;
-        
-        return $collection->sortByAppointmentDate();
     }
 
     public function toScopeAdminProcessList(

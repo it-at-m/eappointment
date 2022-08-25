@@ -95,8 +95,10 @@ class Messaging
         $initiator = null,
         $status = 'appointment'
     ) {
-        $processList = Mail::testProcessList($processList, $status);
-        $mainProcess = $processList->getFirst();
+        $collection = (new ProcessList)->testProcessListLength($processList);
+        $mainProcess = $collection->getFirst();
+        $collection = $collection->withoutProcessByStatus($mainProcess, $status);
+        
         $appointment = $mainProcess->getFirstAppointment();
         $template = self::getTemplate('mail', $status);
         if ($initiator) {
@@ -111,16 +113,10 @@ class Messaging
             'date' => $appointment->toDateTime()->format('U'),
             'client' => $mainProcess->getFirstClient(),
             'process' => $mainProcess,
-            'processList' => $processList,
+            'processList' => $collection->sortByAppointmentDate(),
             'config' => $config,
             'initiator' => $initiator
         ];
-
-        if (($status === 'appointment' || $status === 'reminder')) {
-            if (count($processList) > 0) {
-                $parameters['additionalProcesses'] = $processList;
-            }
-        }
 
         $message = self::twigView()->render('messaging/' . $template, $parameters);
 
