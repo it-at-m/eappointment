@@ -126,4 +126,6 @@ class Application
             'default' => false,
         )
     );
+
+    public static $urlSignatureKey = 'e8dd240a854185c740384d90d771d85c'; // default overwritten with Bootstrap::init()
 }

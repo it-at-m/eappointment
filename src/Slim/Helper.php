@@ -1,6 +1,5 @@
 <?php
 /**
- * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -29,5 +28,29 @@ class Helper
             $pattern
         );
         return $dateFormatter->format($timestamp);
+    }
+
+    public static function hashQueryParameters(array $args, array $parameters, string $hashFunction = 'md5')
+    {
+        $content = '';
+        foreach ($parameters as $parameter) {
+            if (isset($args[$parameter])) {
+                if (is_array($args[$parameter])) {
+                    array_walk_recursive(
+                        $args[$parameter],
+                        function ($v) use (&$flat) {
+                            $flat[] = strval($v);
+                        }
+                    );
+                    $content .= implode('', $flat);
+                } else {
+                    $content .= (string) $args[$parameter];
+                }
+            } else {
+                $content .= 'NULL';
+            }
+        }
+
+        return $hashFunction($content . \App::$urlSignatureKey);
     }
 }
