@@ -114,7 +114,7 @@ class ProcessList extends Base
     public function toProcessListByStatus(array $statusList)
     {
         $collection = new self();
-        foreach($this as $process) {
+        foreach ($this as $process) {
             if (in_array($process->getStatus(), $statusList)) {
                 $collection->addEntity($process);
             }
