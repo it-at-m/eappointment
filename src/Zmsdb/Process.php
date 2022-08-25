@@ -1,7 +1,6 @@
 <?php
 namespace BO\Zmsdb;
 
-use BO\Zmsentities\Collection\ProcessList;
 use \BO\Zmsentities\Process as Entity;
 use \BO\Zmsentities\Collection\ProcessList as Collection;
 use BO\Zmsdb\Helper\ProcessStatus;
@@ -548,28 +547,6 @@ class Process extends Base implements Interfaces\ResolveReferences
             ;
         $statement = $this->fetchStatement($query);
         return $this->readList($statement, $resolveReferences);
-    }
-
-    public function readByMailAndStatuses(string $mailAddress, array $statuses): ProcessList
-    {
-        if (empty($statuses)) {
-            throw new \InvalidArgumentException('The parameter "statuses" must not be empty.');
-        }
-
-        $query = new Query\Process(Query\Base::SELECT);
-        $query->addEntityMapping()->addConditionMail($mailAddress, true);
-        $statement   = $this->fetchStatement($query);
-        $processes   = $this->readList($statement, 0);
-        $collection  = new ProcessList();
-
-        /** @var Entity $process */
-        foreach($processes as $process) {
-            if (in_array($process->getStatus(), $statuses)) {
-                $collection->addEntity($process);
-            }
-        }
-
-        return $collection;
     }
 
     /**

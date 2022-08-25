@@ -95,41 +95,7 @@ class Mail extends Base
         return $this->readEntity($queueId);
     }
 
-    public function writeInQueue(Entity $mail, \DateTimeInterface $dateTime, $count = true): ?Entity
-    {
-        if (isset($mail->process) && $mail->process instanceof ProcessEntity) {
-            return $this->writeInQueueWithProcess($mail, $dateTime, $count);
-        }
-
-        $query = new Query\MailQueue(Query\Base::INSERT);
-        $client = $mail->getClient();
-        if (! $client->hasEmail()) {
-            throw new Exception\Mail\ClientWithoutEmail();
-        }
-
-        $query->addValues(
-            array(
-                'processID' => 0,
-                'departmentID' => 0,
-                'createIP' => '',
-                'createTimestamp' => time(),
-                'subject' => $mail->subject,
-                'clientFamilyName' => $client->familyName,
-                'clientEmail' => $client->email
-            )
-        );
-        $success = $this->writeItem($query);
-
-        if ($success) {
-            $queueId = $this->getWriter()->lastInsertId();
-            $this->writeMimeparts($queueId, $mail->multipart);
-            return $this->readEntity($queueId);
-        }
-
-        return null;
-    }
-
-    public function writeInQueueWithProcess(Entity $mail, \DateTimeInterface $dateTime, $count = true)
+    public function writeInQueue(Entity $mail, \DateTimeInterface $dateTime, $count = true)
     {
         $query = new Query\MailQueue(Query\Base::INSERT);
         $process = new \BO\Zmsentities\Process($mail->process);
