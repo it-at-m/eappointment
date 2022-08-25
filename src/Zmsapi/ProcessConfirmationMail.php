@@ -11,7 +11,8 @@ use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process as ProcessRepository;
 use \BO\Zmsdb\Config;
 use \BO\Zmsdb\Department;
-use BO\Zmsentities\Process;
+use \BO\Zmsentities\Process;
+use \BO\Zmsentities\Collection\ProcessList as Collection;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -48,32 +49,11 @@ class ProcessConfirmationMail extends BaseController
     {
         $config = (new Config)->readEntity();
         $department = (new Department())->readByScopeId($process->scope['id']);
-        $processes  = [$process];
+        $collection = static::getProcessListOverview($process);
+
         $status = ($process->isWithAppointment()) ? 'appointment' : 'queued';
-
-        if ($process->getFirstClient()->hasEmail()) {
-            $additional = (new ProcessRepository())->readByMailAndStatuses(
-                $process->getFirstClient()->email,
-                [
-                    Process::STATUS_CALLED,
-                    Process::STATUS_CONFIRMED,
-                    Process::STATUS_PENDING,
-                    Process::STATUS_PICKUP,
-                    Process::STATUS_PROCESSING,
-                    Process::STATUS_RESERVED,
-                ]
-            );
-            /** @var Process $compared */
-            foreach ($additional as $key => $compared) {
-                if ($compared->getId() === $process->getId()) {
-                    unset($additional[$key]);
-                }
-            }
-            $processes = array_merge($processes, $additional);
-        }
-
         $mail = (new \BO\Zmsentities\Mail)
-            ->toResolvedEntity($processes, $config, $status)
+            ->toResolvedEntity($collection, $config, $status)
             ->withDepartment($department);
         $mail->testValid();
         if ($process->getFirstClient()->hasEmail() && $process->scope->hasEmailFrom()) {
@@ -95,5 +75,21 @@ class ProcessConfirmationMail extends BaseController
         ) {
             throw new Exception\Process\EmailRequired();
         }
+    }
+
+    public static function getProcessListOverview($process)
+    {
+        $collection  = (new Collection())->addEntity($process);
+        if ($process->getFirstClient()->hasEmail()) {
+            $processList = (new ProcessRepository())->readListByMailAndStatusList(
+                $process->getFirstClient()->email,
+                [
+                    Process::STATUS_CONFIRMED,
+                    Process::STATUS_PICKUP
+                ]
+            );
+           $collection->addList($processList);
+        }
+        return $collection;
     }
 }
