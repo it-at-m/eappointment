@@ -1,3 +1,6 @@
+## v2.24.10
+* #55114 A new API route has been added with which all appointments belonging to an email address can be sent via email
+
 ## v2.24.09
 
 * #54954 OpenApi documents are now created automatically. CDN files for displaying the documentation are downloaded via the CI and the checksum of the files is checked
