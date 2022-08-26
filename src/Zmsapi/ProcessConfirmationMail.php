@@ -90,7 +90,8 @@ class ProcessConfirmationMail extends BaseController
                 1,
                 50
             );
-            $collection->addList($processList);
+            //add list of found processes without the main process
+            $collection->addList($processList->withOutProcessId($process->getId()));
         }
         return $collection;
     }
