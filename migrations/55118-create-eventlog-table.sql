@@ -16,4 +16,5 @@ ENGINE = InnoDB
 CHARACTER SET utf8
 COLLATE utf8_unicode_ci;
 
-INSERT INTO `config` SET `name` = "cron__removeOldEventLogEntries", `value` = "prod,stage,dev";
+--set to none to disable at first, can be activated in admin 
+INSERT INTO `config` SET `name` = "cron__removeOldEventLogEntries", `value` = "none";
