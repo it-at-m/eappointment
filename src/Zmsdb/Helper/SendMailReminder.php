@@ -2,10 +2,12 @@
 
 namespace BO\Zmsdb\Helper;
 
-use BO\Zmsdb\Config as ConfigRepository;
-use BO\Zmsdb\Department as DepartmentRepository;
+use BO\Zmsdb\Log;
 use BO\Zmsdb\Process as ProcessRepository;
 use BO\Zmsdb\Mail as MailRepository;
+use BO\Zmsdb\Department as DepartmentRepository;
+use BO\Zmsdb\Config as ConfigRepository;
+use BO\Zmsentities\Collection\ProcessList as Collection;
 use BO\Zmsentities\Mail;
 use BO\Zmsentities\Process;
 
@@ -29,7 +31,7 @@ class SendMailReminder
     {
         $this->dateTime = $now;
         $this->reminderInSeconds = (60 * 60) * $hours;
-        $this->lastRun = (new \BO\Zmsdb\Mail)->readReminderLastRun($now);
+        $this->lastRun = (new MailRepository)->readReminderLastRun($now);
         if ($verbose) {
             $this->verbose = true;
             $this->log("\nINFO: Send email reminder dependent on last run: ". $this->lastRun->format('Y-m-d H:i:s'));
@@ -63,7 +65,7 @@ class SendMailReminder
         $this->writeMailReminderList($commit);
         $this->log("\nINFO: Last run ". $this->dateTime->format('Y-m-d H:i:s'));
         if ($commit) {
-            (new \BO\Zmsdb\Mail)->writeReminderLastRun($this->dateTime);
+            (new MailRepository)->writeReminderLastRun($this->dateTime);
         }
         $this->log("\nSUMMARY: Sent mail reminder: ".$this->count);
     }
@@ -71,7 +73,7 @@ class SendMailReminder
     protected function writeMailReminderList($commit)
     {
         $count = $this->writeByCallback($commit, function ($limit, $offset) {
-            $processList = (new ProcessRepository())->readEmailReminderProcessListByInterval(
+            $processList = (new ProcessRepository)->readEmailReminderProcessListByInterval(
                 $this->dateTime,
                 $this->lastRun,
                 $this->reminderInSeconds,
@@ -103,20 +105,39 @@ class SendMailReminder
         return $processCount;
     }
 
-    protected function writeReminder(Process $process, $commit, $processCount): ?Mail
+    protected function writeReminder(Process $process, $commit, $processCount)
     {
         $entity = null;
         $department = (new DepartmentRepository())->readByScopeId($process->getScopeId(), 0);
         if ($process->getFirstClient()->hasEmail() && $department->hasMail()) {
             $config = (new ConfigRepository)->readEntity();
-            $entity = (new MailRepository)->toResolvedEntity($process, $config, 'reminder');
+            $collection = $this->getProcessListOverview($process);
+            $entity = (new Mail)->toResolvedEntity($collection, $config, 'reminder');
             if ($commit) {
-                $entity = (new MailRepository())->writeInQueue($entity, $this->dateTime);
+                $entity = (new MailRepository)->writeInQueue($entity, $this->dateTime);
+                Log::writeLogEntry("Write Reminder (Mail::writeInQueue) $entity ", $process->getId());
                 $this->log(
                     "INFO: $processCount. Write mail in queue with ID ". $entity->getId() ." - ". $entity->subject
                 );
             }
         }
         return $entity;
+    }
+
+    protected function getProcessListOverview($process)
+    {
+        $collection  = (new Collection())->addEntity($process);
+        $processList = (new ProcessRepository())->readListByMailAndStatusList(
+            $process->getFirstClient()->email,
+            [
+                Process::STATUS_CONFIRMED,
+                Process::STATUS_PICKUP
+            ],
+            2,
+            50
+        );
+        //add list of found processes without the main process
+        $collection->addList($processList->withOutProcessId($process->getId()));
+        return $collection;
     }
 }
