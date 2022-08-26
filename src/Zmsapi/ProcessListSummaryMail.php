@@ -51,7 +51,7 @@ class ProcessListSummaryMail extends BaseController
                 Process::STATUS_CONFIRMED,
                 Process::STATUS_PICKUP
             ],
-            1,
+            2,
             $limit
         );
 

@@ -87,7 +87,7 @@ class ProcessConfirmationMail extends BaseController
                     Process::STATUS_CONFIRMED,
                     Process::STATUS_PICKUP
                 ],
-                1,
+                2,
                 50
             );
             //add list of found processes without the main process
