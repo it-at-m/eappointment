@@ -1,3 +1,7 @@
+## v2.24.10
+
+* #55114 new db queries has been added to collect all appointments that belong to an email address
+
 ## v2.24.09
 
 * #55079 - Spelling for fetching the reminderTimestamp was corrected
