@@ -371,7 +371,7 @@ class ProcessList extends Base
     public function withoutProcessByStatus($process, $status)
     {
         $collection = clone $this;
-        $collection = (1 < $collection->count() && 'overview' != $status) ?
+        $collection = (1 <= $collection->count() && 'overview' != $status) ?
             $collection->withOutProcessId($process->getId()) :
             $collection;
         return $collection;
