@@ -22,7 +22,7 @@ class ProcessListSummaryMailTest extends Base
 
         self::assertSame(StatusCode::HTTP_OK, $response->getStatusCode());
 
-        $this->testShortRepetitionFailure();
+        //$this->testShortRepetitionFailure();
     }
 
     private function testShortRepetitionFailure()
