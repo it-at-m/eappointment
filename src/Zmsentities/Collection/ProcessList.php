@@ -111,16 +111,14 @@ class ProcessList extends Base
         return $this;
     }
 
-    public function toProcessListByStatusList(array $statusList): ProcessList
+    public function toProcessListByStatus(array $statusList)
     {
-        $collection = (new ProcessList());
-        /** @var Process $process */
+        $collection = new self();
         foreach ($this as $process) {
-            if (in_array($process->status, $statusList)) {
+            if (in_array($process->getStatus(), $statusList)) {
                 $collection->addEntity($process);
             }
         }
-
         return $collection;
     }
 
@@ -358,13 +356,13 @@ class ProcessList extends Base
         return $collection;
     }
 
-    public function testProcessListLength($processList, bool $isEmptyAllowed = false): ProcessList
+    public function testProcessListLength($processList)
     {
         $collection = ($processList instanceof Process) ?
             (new self())->addEntity($processList) :
             $processList;
 
-        if (0 === $collection->count() && ! $isEmptyAllowed) {
+        if (0 === $collection->count()) {
             throw new \BO\Zmsentities\Exception\ProcessListEmpty();
         }
         return $collection;
