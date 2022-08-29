@@ -1,6 +1,8 @@
 ## v2.24.10
 
-* #55114 new db queries has been added to collect all appointments that belong to an email address
+* #55114 - new db queries have been added to list appointments that belong to an email address
+* #55114 - new db queries have been added to save and read event log entries
+* #55114 - an executable script has been added to clean up certain event log entries
 
 ## v2.24.09
 

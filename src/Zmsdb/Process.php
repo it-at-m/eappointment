@@ -569,7 +569,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addLimit($limit);
         $statement = $this->fetchStatement($query);
         $collection = $this->readList($statement, $resolveReferences);
-        return $collection->toProcessListByStatus($statusList);
+        return $collection->toProcessListByStatusList($statusList);
     }
 
 

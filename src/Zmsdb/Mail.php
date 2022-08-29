@@ -125,6 +125,36 @@ class Mail extends Base
         return $this->readEntity($queueId);
     }
 
+    public function writeInQueueWithoutProcess(Entity $mail, ?\DateTimeInterface $creationTime = null): ?Entity
+    {
+        $query = new Query\MailQueue(Query\Base::INSERT);
+        $client = $mail->getClient();
+        if (! $client->hasEmail()) {
+            throw new Exception\Mail\ClientWithoutEmail();
+        }
+
+        $query->addValues(
+            array(
+                'processID' => 0,
+                'departmentID' => 0,
+                'createIP' => '',
+                'createTimestamp' => $creationTime !== null ? $creationTime->format('U') : time(),
+                'subject' => $mail->subject,
+                'clientFamilyName' => $client->familyName,
+                'clientEmail' => $client->email
+            )
+        );
+        $success = $this->writeItem($query);
+
+        if ($success) {
+            $queueId = $this->getWriter()->lastInsertId();
+            $this->writeMimeparts($queueId, $mail->multipart);
+            return $this->readEntity($queueId);
+        }
+
+        return null;
+    }
+
     public function writeInQueueWithDailyProcessList(
         \BO\Zmsentities\Scope $scope,
         Entity $mail
