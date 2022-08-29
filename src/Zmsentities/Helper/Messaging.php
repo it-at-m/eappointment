@@ -7,11 +7,10 @@
  */
 namespace BO\Zmsentities\Helper;
 
+use BO\Zmsentities\Client;
 use \BO\Zmsentities\Process;
-use \BO\Zmsentities\Mail;
 use \BO\Zmsentities\Collection\ProcessList;
 use \BO\Zmsentities\Config;
-use \BO\Zmsentities\Helper\Property;
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
 use Twig\Extensions\I18nExtension;
@@ -95,23 +94,28 @@ class Messaging
         $initiator = null,
         $status = 'appointment'
     ) {
-        $collection = (new ProcessList)->testProcessListLength($processList);
+        $collection = (new ProcessList)->testProcessListLength($processList, $status);
         $mainProcess = $collection->getFirst();
-        $collection = $collection->withoutProcessByStatus($mainProcess, $status);
-        
-        $appointment = $mainProcess->getFirstAppointment();
+        $date = (new \DateTimeImmutable())->setTimestamp(0);
+        $client = (new Client());
+        if ($mainProcess) {
+            $collection = $collection->withoutProcessByStatus($mainProcess, $status);
+            $date = $mainProcess->getFirstAppointment()->toDateTime()->format('U');
+            $client = $mainProcess->getFirstClient();
+        }
+
         $template = self::getTemplate('mail', $status);
         if ($initiator) {
             $template = self::getTemplate('admin', $status);
         }
         if (!$template) {
-            $exception = new \BO\Zmsentities\Exception\TemplateNotFound("Template for Process $mainProcess not found");
-            $exception->data = $mainProcess;
+            $exception = new \BO\Zmsentities\Exception\TemplateNotFound("Template for status $status not found");
+            $exception->data = $status;
             throw $exception;
         }
         $parameters = [
-            'date' => $appointment->toDateTime()->format('U'),
-            'client' => $mainProcess->getFirstClient(),
+            'date' => $date,
+            'client' => $client,
             'process' => $mainProcess,
             'processList' => $collection->sortByAppointmentDate(),
             'config' => $config,

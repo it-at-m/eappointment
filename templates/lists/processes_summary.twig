@@ -3,28 +3,28 @@
 <h2>Sie haben folgende Termine geplant:</h2>
 Sollten Sie einen dieser Termin nicht mehr wahrnehmen können, möchten wir Sie bitten,<br />
 diesen abzusagen, so dass dieser anderen zur Verfügung steht.<br /><br />
-{% for process in processList %}
-{% set changeLink  = 'https://service.berlin.de/terminvereinbarung/termin/manage/?process=' ~ process.id ~ '&authKey=' ~ process.authKey %}
+{% for plannedProcess in processList %}
+{% set changeLink  = 'https://service.berlin.de/terminvereinbarung/termin/manage/?process=' ~ plannedProcess.id ~ '&authKey=' ~ plannedProcess.authKey %}
 <div style="background: #eeeeee; border: 1px solid #aaaaaa; padding:10px;">
-<strong>Zeit:</strong> am {{ process.getFirstAppointment.date|localizeddate("short","none",NULL,NULL,"EEEE, dd. MMMM y") }} um {{ process.getFirstAppointment.date|date("H:i") }} Uhr<br />
-<strong>Ort:</strong> {{ process.scope.provider.name ~ ", " ~ process.scope.provider.contact.street ~ " "  ~ process.scope.provider.contact.streetNumber ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}<br />
-{% if process.requests|length > 1 %}
+<strong>Zeit:</strong> am {{ plannedProcess.getFirstAppointment.date|localizeddate("short","none",NULL,NULL,"EEEE, dd. MMMM y") }} um {{ plannedProcess.getFirstAppointment.date|date("H:i") }} Uhr<br />
+<strong>Ort:</strong> {{ plannedProcess.scope.provider.name ~ ", " ~ plannedProcess.scope.provider.contact.street ~ " "  ~ plannedProcess.scope.provider.contact.streetNumber ~", " ~ plannedProcess.scope.provider.contact.postalCode ~ " " ~ plannedProcess.scope.provider.contact.city }}<br />
+{% if plannedProcess.requests|length > 1 %}
 {% set requestalias = "Dienstleistungen" %}
 {% else %}
 {% set requestalias = "Dienstleistung" %}
 {% endif %}
-{% if process.requests|length == 0 %}
+{% if plannedProcess.requests|length == 0 %}
 Sie haben keine Dienstleistungen ausgewählt.
 {% else %}
 <strong>{{ requestalias }}:</strong>
 <br/>
-{% for request in process.requests %}
+{% for request in plannedProcess.requests %}
 - {{ request.name }}<br />
 {% endfor %}
 {% endif %}
-<strong>Teilnehmer:</strong> {{ process.clients|length}}<br />
-<strong>Vorgangsnummer:</strong> {{ process.id }}<br />
-<strong>Absage-Code:</strong> {{ process.authKey }}<br />
+<strong>Teilnehmer:</strong> {{ plannedProcess.clients|length}}<br />
+<strong>Vorgangsnummer:</strong> {{ plannedProcess.id }}<br />
+<strong>Absage-Code:</strong> {{ plannedProcess.authKey }}<br />
 <strong>Änderungs-Link:</strong> <a href="{{ changeLink }}" target="_blank">{{ changeLink }}</a>
 </div>
 <br />

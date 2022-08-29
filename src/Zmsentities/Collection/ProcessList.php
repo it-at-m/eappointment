@@ -111,18 +111,18 @@ class ProcessList extends Base
         return $this;
     }
 
-    /* todo: remove if not used anymore
-    public function toProcessListByStatus($selectedDate, array $status)
+    public function toProcessListByStatusList(array $statusList): ProcessList
     {
-        $selectedDateTime = new \DateTimeImmutable($selectedDate);
-        return $this
-            ->toQueueList($selectedDateTime)
-            ->withStatus($status)
-            ->toProcessList()
-            ->sortByArrivalTime()
-            ->sortByEstimatedWaitingTime();
+        $collection = (new ProcessList());
+        /** @var Process $process */
+        foreach ($this as $process) {
+            if (in_array($process->status, $statusList)) {
+                $collection->addEntity($process);
+            }
+        }
+
+        return $collection;
     }
-    */
 
     public function toConflictListByDay()
     {
@@ -358,13 +358,13 @@ class ProcessList extends Base
         return $collection;
     }
 
-    public function testProcessListLength($processList)
+    public function testProcessListLength($processList, string $status): ProcessList
     {
         $collection = ($processList instanceof Process) ?
             (new self())->addEntity($processList) :
             $processList;
 
-        if (0 === $collection->count()) {
+        if (0 === $collection->count() && $status !== 'overview') {
             throw new \BO\Zmsentities\Exception\ProcessListEmpty();
         }
         return $collection;
