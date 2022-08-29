@@ -1,3 +1,9 @@
+## v2.24.10
+
+* #55114 - new EventLog entity added
+* #55114 - mail templates and mail creation for an appointments overview added
+* #55114 - the mail templates for confirmation, reminding and deletion now contain an appointment overview
+
 ## v2.24.08
 
 * The php function "strftime()" will be deprecated from php version 8. The "IntlDateFormatter" class has now been used to format dates.
