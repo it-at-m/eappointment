@@ -111,7 +111,7 @@ class ProcessList extends Base
         return $this;
     }
 
-    public function toProcessListByStatus(array $statusList)
+    public function toProcessListByStatusList(array $statusList)
     {
         $collection = new self();
         foreach ($this as $process) {
