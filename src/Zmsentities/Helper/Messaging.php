@@ -28,6 +28,10 @@ class Messaging
         'deleted'
     ];
 
+    public static $allowEmptyProcesses = [
+        'overview'
+    ];
+
     public static function isIcsRequired(
         \BO\Zmsentities\Config $config,
         \BO\Zmsentities\Process $process,
@@ -41,7 +45,12 @@ class Messaging
                 return false;
             }
         }
-        return (in_array($status, Messaging::$icsRequiredForStatus));
+        return (in_array($status, self::$icsRequiredForStatus));
+    }
+
+    public static function isEmptyProcessListAllowed($status)
+    {
+        return (in_array($status, self::$allowEmptyProcesses));
     }
 
     protected static $templates = array(
@@ -94,7 +103,7 @@ class Messaging
         $initiator = null,
         $status = 'appointment'
     ) {
-        $collection = (new ProcessList)->testProcessListLength($processList, $status);
+        $collection = (new ProcessList)->testProcessListLength($processList, self::isEmptyProcessListAllowed($status));
         $mainProcess = $collection->getFirst();
         $date = (new \DateTimeImmutable())->setTimestamp(0);
         $client = (new Client());
