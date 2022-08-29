@@ -32,7 +32,7 @@ class KeyCloakAuth
     {
         return static::$provider
             ->getAccessToken(
-                'refresh_token', 
+                'refresh_token',
                 ['refresh_token' => static::$accessToken->getRefreshToken()]
             );
     }
@@ -78,6 +78,4 @@ class KeyCloakAuth
     {
         return static::$provider;
     }
-
-    
 }
