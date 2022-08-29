@@ -264,19 +264,19 @@ abstract class Base
      * @param callable|NULL $c (function to be used for hashing)
      * @return string
      */
-    public function hashStringValue(string $value, callable $c = null): string
+    public function hashStringValue(string $value, callable $callable = null): string
     {
-        if ($c === null) {
-            $c = 'sha1';
+        if ($callable === null) {
+            $callable = 'sha1';
         }
 
-        if (is_callable($c)) {
-            $hash = $c($value);
+        if (is_callable($callable)) {
+            $hash = $callable($value);
 
-            if (is_string($c)) {
-                return $c . ':' . $hash;
+            if (is_string($callable)) {
+                return $callable . ':' . $hash;
             }
-            if ($c instanceof \Closure) {
+            if ($callable instanceof \Closure) {
                 return 'closure:' . $hash;
             }
             // else
