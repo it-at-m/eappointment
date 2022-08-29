@@ -8,9 +8,11 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Process;
+use \BO\Zmsdb\Process as ProcessRepository;
 use \BO\Zmsdb\Config;
 use \BO\Zmsdb\Department;
+use \BO\Zmsentities\Process;
+use \BO\Zmsentities\Collection\ProcessList as Collection;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -29,11 +31,11 @@ class ProcessConfirmationMail extends BaseController
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
 
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $process = new \BO\Zmsentities\Process($input);
+        $process = new Process($input);
         $process->testValid();
         $this->testProcessData($process);
-        $process = (new Process())->readEntity($process->id, $process->authKey);
-    
+        $process = (new ProcessRepository())->readEntity($process->id, $process->authKey);
+
         $mail = $this->writeMail($process);
         $message = Response\Message::create($request);
         $message->data = ($mail->hasId()) ? $mail : null;
@@ -43,13 +45,15 @@ class ProcessConfirmationMail extends BaseController
         return $response;
     }
 
-    protected static function writeMail(\BO\Zmsentities\Process $process)
+    protected static function writeMail(Process $process)
     {
         $config = (new Config)->readEntity();
         $department = (new Department())->readByScopeId($process->scope['id']);
+        $collection = static::getProcessListOverview($process);
+
         $status = ($process->isWithAppointment()) ? 'appointment' : 'queued';
         $mail = (new \BO\Zmsentities\Mail)
-            ->toResolvedEntity($process, $config, $status)
+            ->toResolvedEntity($collection, $config, $status)
             ->withDepartment($department);
         $mail->testValid();
         if ($process->getFirstClient()->hasEmail() && $process->scope->hasEmailFrom()) {
@@ -61,7 +65,7 @@ class ProcessConfirmationMail extends BaseController
 
     protected function testProcessData($process)
     {
-        $authCheck = (new Process())->readAuthKeyByProcessId($process->id);
+        $authCheck = (new ProcessRepository())->readAuthKeyByProcessId($process->id);
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authCheck['authKey'] != $process->authKey && $authCheck['authName'] != $process->authKey) {
@@ -71,5 +75,24 @@ class ProcessConfirmationMail extends BaseController
         ) {
             throw new Exception\Process\EmailRequired();
         }
+    }
+
+    public static function getProcessListOverview($process)
+    {
+        $collection  = (new Collection())->addEntity($process);
+        if ($process->getFirstClient()->hasEmail()) {
+            $processList = (new ProcessRepository())->readListByMailAndStatusList(
+                $process->getFirstClient()->email,
+                [
+                    Process::STATUS_CONFIRMED,
+                    Process::STATUS_PICKUP
+                ],
+                2,
+                50
+            );
+            //add list of found processes without the main process
+            $collection->addList($processList->withOutProcessId($process->getId()));
+        }
+        return $collection;
     }
 }
