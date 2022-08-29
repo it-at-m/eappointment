@@ -20,7 +20,7 @@ class PreferencesTest extends Base
         $status = $query->replaceProperty($entityName, $entityId, $groupName, $name, $value);
         $this->assertTrue($status);
         $timestamp = $query->readChangeDateTime($entityName, $entityId, $groupName, $name);
-        $this->assertTrue((new \DateTime())->getTimestamp() <= $timestamp->getTimestamp());
+        $this->assertTrue((new \DateTime())->getTimestamp() >= $timestamp->getTimestamp());
         $currentValue = $query->readProperty($entityName, $entityId, $groupName, $name);
         $this->assertEquals($currentValue, $value);
         $status = $query->replaceProperty($entityName, $entityId, $groupName, $name, $value);

@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 abstract class Base extends TestCase
 {
+    public const DB_OPERATION_SECONDS_DEFAULT = 1;
     public static $username = 'superuser';
     public static $password = 'vorschau';
     public static $now = null;
