@@ -29,6 +29,7 @@
         "bin/deleteBlacklistedMail",
         "bin/deleteDayoffData",
         "bin/deleteOldAvailabilityData",
+        "bin/deleteOldEventLogEntries",
         "bin/deleteReservedData",
         "bin/deleteSessionData",
         "bin/deleteTicketprinterData",

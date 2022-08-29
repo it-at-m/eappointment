@@ -201,7 +201,8 @@ abstract class Base
     /**
      * Write an Item to database - Insert, Update
      *
-     * @return \PDO
+     * @param Query\Base $query
+     * @return bool
      */
     public function writeItem(Query\Base $query)
     {
@@ -214,6 +215,10 @@ abstract class Base
         });
     }
 
+    /**
+     * @param Query\Base $query
+     * @return bool
+     */
     public function deleteItem(Query\Base $query)
     {
         return $this->writeItem($query);
@@ -250,5 +255,34 @@ abstract class Base
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
         return $entity;
+    }
+
+    /**
+     * This function produces a hash value that contains info for comparison
+     *
+     * @param string $value
+     * @param callable|NULL $c (function to be used for hashing)
+     * @return string
+     */
+    public function hashStringValue(string $value, callable $c = null): string
+    {
+        if ($c === null) {
+            $c = 'sha1';
+        }
+
+        if (is_callable($c)) {
+            $hash = $c($value);
+
+            if (is_string($c)) {
+                return $c . ':' . $hash;
+            }
+            if ($c instanceof \Closure) {
+                return 'closure:' . $hash;
+            }
+            // else
+            return 'custom:' . $hash;
+        }
+
+        throw new \InvalidArgumentException('hashStringValue() should be called with a callable as second parameter.');
     }
 }
