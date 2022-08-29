@@ -1,4 +1,4 @@
-## v2.25.00
+## v2.24.10
 
 * #55114 - new EventLog entity added
 * #55114 - mail templates and mail creation for an appointments overview added

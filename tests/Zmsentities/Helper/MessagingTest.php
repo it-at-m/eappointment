@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace BO\Zmsentities\Tests\Helper;
 
+use BO\Zmsentities\Client;
 use BO\Zmsentities\Config;
 use BO\Zmsentities\Mail;
 use BO\Zmsentities\Scope;
@@ -72,19 +73,70 @@ class MessagingTest extends Base
     public function testListWithoutMainProcess()
     {
         $processList = self::getExampleProcessList();
-        $collection = (new ProcessList)->testProcessListLength($processList, 'appointment');
-        $mainProcess = $collection->getFirst();
-        $collection = $collection->withoutProcessByStatus($mainProcess, 'appointment');
-        self::assertEquals($mainProcess->getId(), '123456');
-        self::assertTrue(1 === $collection->count());
-        self::assertEquals($collection->getFirst()->getId(), '234567');
+        $config  = Config::getExample();
+        $mail = (new Mail())->toResolvedEntity($processList, $config, 'appointment');
+        self::assertStringContainsString('Ihre Vorgangsnummer ist die **"123456"**', $mail->getPlainPart());
+        self::assertStringContainsString('**Vorgangsnummer:** 234567', $mail->getPlainPart());
+        self::assertStringNotContainsString('**Vorgangsnummer:** 123456', $mail->getPlainPart());
+        
+        self::assertTrue(2 === $processList->count());
     }
 
     public function testEmptyProcessList()
     {
         self::expectException('BO\Zmsentities\Exception\ProcessListEmpty');
+        $config  = Config::getExample();
         $processList = new ProcessList();
-        $collection = (new ProcessList)->testProcessListLength($processList, 'appointment');
+        $mail = (new Mail())->toResolvedEntity($processList, $config, 'appointment');
+    }
+
+    public function testEmptyProcessOverview()
+    {
+        $config  = Config::getExample();
+        $processList = new ProcessList();
+        $mail = (new Mail())->toResolvedEntity($processList, $config, 'overview');
+        self::assertStringContainsString('Es wurden keine geplanten Termine gefunden', $mail->getHtmlPart());
+    }
+
+    public function testIcsRequired()
+    {
+        $config = new Config([
+            'notifications' => [
+                'noAttachmentDomains' => 'outlook.,live.,hotmail.'
+            ]
+        ]);
+
+        $process = new Process([
+            "clients" => [new Client([
+                'email' => 'test@berlinonline.de'
+            ])],
+            "status" => "confirmed"
+        ]);
+        $this->assertTrue(
+            Messaging::isIcsRequired($config, $process, 'confirmed'),
+            "confirmed process should contain attachments"
+        );
+
+        $process = new Process([
+            "clients" => [new Client([
+                'email' => 'test@outlook.com'
+            ])],
+            "status" => "confirmed"
+        ]);
+        $this->assertFalse(
+            Messaging::isIcsRequired($config, $process, 'confirmed'),
+            "confirmed process with denied client domain should not contain attachments"
+        );
+
+        $process = new Process([
+            "clients" => [new Client([
+                'email' => 'test@berlinonline.de'
+            ])]
+        ]);
+        $this->assertFalse(
+            Messaging::isIcsRequired($config, $process, 'dummy'),
+            "dummy process should not contain attachments"
+        );
     }
 
     protected static function getExampleProcessList()
