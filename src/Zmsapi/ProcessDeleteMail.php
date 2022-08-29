@@ -34,8 +34,11 @@ class ProcessDeleteMail extends BaseController
 
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $config = (new Config())->readEntity();
-        $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, 'deleted');
+
+        $collection = ProcessConfirmationMail::getProcessListOverview($process);
+        $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($collection, $config, 'deleted');
         $mail = (new \BO\Zmsdb\Mail)->writeInQueue($mail, \App::$now, false);
+
         \App::$log->debug("Send mail", [$mail]);
 
         $message = Response\Message::create($request);
