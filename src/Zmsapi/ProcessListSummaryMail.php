@@ -13,6 +13,7 @@ use BO\Zmsdb\Config as ConfigRepository;
 //use BO\Zmsdb\EventLog as EventLogRepository;
 use BO\Zmsdb\Mail as Query;
 use BO\Zmsdb\Process as ProcessRepository;
+use BO\Zmsentities\Client;
 use BO\Zmsentities\Mail;
 use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\EventLog;
@@ -59,7 +60,12 @@ class ProcessListSummaryMail extends BaseController
         $mail = (new Mail)->toResolvedEntity($collection, $config, 'overview');
         $mail->testValid();
 
-        $persisted = (new Query())->writeInQueue($mail, \App::$now, false);
+        if ($mail->process instanceof Process) {
+            $persisted = (new Query())->writeInQueue($mail, \App::$now, false);
+        } else {
+            $mail->client = (new Client())->addData(['email' => $mailAddress]);
+            $persisted = (new Query())->writeInQueueWithoutProcess($mail, \App::$now);
+        }
 
         $message = Response\Message::create($request);
         $message->data = $persisted;
