@@ -14,7 +14,7 @@ class KeyCloakAuth
     protected static $provider = null;
 
     protected static $accessToken = null;
-
+    /*
     public function __construct()
     {
         static::$provider = $this->setProvider();
@@ -78,4 +78,5 @@ class KeyCloakAuth
     {
         return static::$provider;
     }
+    */
 }
