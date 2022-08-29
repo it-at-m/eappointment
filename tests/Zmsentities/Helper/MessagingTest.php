@@ -72,7 +72,7 @@ class MessagingTest extends Base
     public function testListWithoutMainProcess()
     {
         $processList = self::getExampleProcessList();
-        $collection = (new ProcessList)->testProcessListLength($processList);
+        $collection = (new ProcessList)->testProcessListLength($processList, 'appointment');
         $mainProcess = $collection->getFirst();
         $collection = $collection->withoutProcessByStatus($mainProcess, 'appointment');
         self::assertEquals($mainProcess->getId(), '123456');
@@ -84,7 +84,7 @@ class MessagingTest extends Base
     {
         self::expectException('BO\Zmsentities\Exception\ProcessListEmpty');
         $processList = new ProcessList();
-        $collection = (new ProcessList)->testProcessListLength($processList);
+        $collection = (new ProcessList)->testProcessListLength($processList, 'appointment');
     }
 
     protected static function getExampleProcessList()

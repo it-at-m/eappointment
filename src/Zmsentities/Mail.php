@@ -155,14 +155,21 @@ class Mail extends Schema\Entity
      */
     public function toResolvedEntity($processList, Config $config, $status, $initiator = null)
     {
-        $collection = (new ProcessList)->testProcessListLength($processList);
+        $collection = (new ProcessList)->testProcessListLength($processList, $status);
         $mainProcess = $collection->getFirst();
         $entity = clone $this;
-        $icsRequired = Messaging::isIcsRequired($config, $mainProcess, $status);
+        $icsRequired = !($status === 'overview' || !$mainProcess) && Messaging::isIcsRequired($config, $mainProcess, $status);
         $content = Messaging::getMailContent($collection, $config, $initiator, $status);
-        $entity->process = $mainProcess;
-        $entity->subject = Messaging::getMailSubject($mainProcess, $config, $initiator, $status);
-        $entity->createIP = $mainProcess->createIP;
+
+        if ($mainProcess) {
+            $entity->process  = $mainProcess;
+            $entity->subject  = Messaging::getMailSubject($mainProcess, $config, $initiator, $status);
+            $entity->createIP = $mainProcess->createIP;
+        } else {
+            $entity->subject  = Messaging::getMailSubject((new Process()), $config, $initiator, $status);
+            $entity->createIP = '';
+            $entity->process  = null;
+        }
 
         if (! isset($entity['client'])) {
             $entity['client'] = $entity->getFirstClient();
@@ -178,7 +185,8 @@ class Mail extends Schema\Entity
             'content' => Messaging::getPlainText($content),
             'base64' => false
         ));
-        if ($icsRequired and $mainProcess->getAppointments()->getFirst()->hasTime()) {
+
+        if ($icsRequired && $mainProcess->getAppointments()->getFirst()->hasTime()) {
             $entity->multipart[] = new Mimepart(array(
                 'mime' => 'text/calendar',
                 'content' => Messaging::getMailIcs($mainProcess, $config, $status, $initiator)->getContent(),
