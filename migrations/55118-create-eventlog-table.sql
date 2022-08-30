@@ -6,7 +6,7 @@ CREATE TABLE `eventlog` (
     `referenceType` CHAR(80) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,
     `reference` VARCHAR(128) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL ,
     `sessionid` VARCHAR(64) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL ,
-    `contextjson` TEXT NOT NULL DEFAULT '{}' ,
+    `contextjson` JSON NOT NULL,
     `creationDateTime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ,
     `expirationDateTime` DATETIME NOT NULL DEFAULT '9999-12-23 00:00:00',
 
