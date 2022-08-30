@@ -549,7 +549,6 @@ class ProcessTest extends Base
     {
         $query = new ProcessStatusFree();
         $processList = $query->readReservedProcesses();
-        var_dump($processList);
         $firstProcess = $processList->getFirst();
         $process = $query->readEntity($firstProcess->id, $firstProcess->authKey);
         $this->assertEquals('reserved', $process->getStatus());
