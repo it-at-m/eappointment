@@ -6,10 +6,9 @@ CREATE TABLE `eventlog` (
     `referenceType` CHAR(80) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,
     `reference` VARCHAR(128) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL ,
     `sessionid` VARCHAR(64) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL ,
-    `contextjson` JSON NOT NULL,
+    `contextjson` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '{}' CHECK (JSON_VALID(`contextjson`)),
     `creationDateTime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ,
     `expirationDateTime` DATETIME NOT NULL DEFAULT '9999-12-23 00:00:00',
-
     INDEX (`reference`)
 )
 ENGINE = InnoDB
