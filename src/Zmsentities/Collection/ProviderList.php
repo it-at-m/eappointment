@@ -17,6 +17,17 @@ class ProviderList extends Base
         return $providerFound;
     }
 
+    public function hasProviderStrict($providerIdCsv)
+    {
+        $providerIds = explode(',', $providerIdCsv);
+        foreach ($providerIds as $providerId) {
+            if (! in_array($providerId, $this->getIds())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public function hasRequest($requestIdCsv)
     {
         $requestIds = explode(',', $requestIdCsv);
@@ -28,6 +39,18 @@ class ProviderList extends Base
             }
         }
         return false;
+    }
+
+    public function withMatchingByList($providerIdCsv)
+    {
+        $collection = new self();
+        $providerIds = explode(',', $providerIdCsv);
+        foreach ($providerIds as $providerId) {
+            if (in_array($providerId, $this->getIds())) {
+                $collection->addEntity($this->getEntity($providerId));
+            }
+        }
+        return $collection;
     }
 
     public function withUniqueProvider()
