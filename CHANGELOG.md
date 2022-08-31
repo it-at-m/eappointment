@@ -3,6 +3,7 @@
 * #55114 - new EventLog entity added
 * #55114 - mail templates and mail creation for an appointments overview added
 * #55114 - the mail templates for confirmation, reminding and deletion now contain an appointment overview
+* #55456 - a function has been added that compares one provider list with another and only accepts matches
 
 ## v2.24.08
 
