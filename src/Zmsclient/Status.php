@@ -1,6 +1,9 @@
 <?php
 namespace BO\Zmsclient;
 
+use Slim\Http\StatusCode;
+use Psr\Http\Message\ResponseInterface;
+
 /**
  * Healthcheck concerning the API
  */
@@ -10,7 +13,7 @@ class Status
      * throws exception on critical status variables
      * @SuppressWarnings(Complexity)
      */
-    public static function testStatus($response, $status)
+    public static function testStatus(ResponseInterface $response, $status)
     {
         $result = '';
         if ($status instanceof \Closure) {
@@ -67,8 +70,14 @@ class Status
                 $result = implode('; ', $result);
             }
         }
+
         $response->getBody()->write($result);
         $response = $response->withHeader('Content-Type', 'text/plain');
+
+        if (strpos($result, 'CRIT') !== false || strpos($result, 'FATAL') !== false) {
+            $response = $response->withStatus(StatusCode::HTTP_INTERNAL_SERVER_ERROR, 'The Server is in a bad condition.');
+        }
+
         return $response;
     }
 
