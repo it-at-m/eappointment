@@ -30,7 +30,6 @@ class ProviderTest extends EntityCommonTests
             'Missing new Entity with ID ' . $entity->id . ' in collection, 1 expected (' .
             count($collection) . ' found)'
         );
-        var_dump($collection->getIds());
         $collection = $collection->withMatchingByList("21334, 213343");
         $this->assertTrue($collection->hasProvider("21334"), 'Success to get provider with id 21334 from list');
         $this->assertTrue($collection->hasProvider("21334, 213343"), 'Failed to get provider with id 21334 from list');
