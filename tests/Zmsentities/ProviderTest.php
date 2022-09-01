@@ -42,6 +42,26 @@ class ProviderTest extends EntityCommonTests
         $this->assertTrue($collection->hasRequest(1234), 'Provider list missed request with id 1234');
     }
 
+    public function testSortCollection()
+    {
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $entity2 = $this->getExample();
+        $entity2->id = 21333;
+        $entity3 = $this->getExample();
+        $entity3->id = 21332;
+        $collection->addEntity($entity);
+        $collection->addEntity($entity2);
+        $collection->addEntity($entity3);
+        
+        $this->assertEquals(
+            '21334,21333,21332', $collection->getIdsCsv(), 'Failed to get csv from ids in provider list'
+        );
+        $this->assertEquals(
+            '21332,21333,21334', $collection->sortById()->getIdsCsv(), 'Failed to get csv from ids in provider list'
+        );
+    }
+
     public function testWithUniqueProvider()
     {
         $collection = new $this->collectionclass();
