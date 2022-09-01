@@ -22,13 +22,13 @@ class ProcessListSummaryMailTest extends Base
 
         self::assertSame(StatusCode::HTTP_OK, $response->getStatusCode());
 
-        //$this->testShortRepetitionFailure();
+        $this->testShortRepetitionFailure();
     }
 
     private function testShortRepetitionFailure()
     {
+        $this->expectException('BO\Zmsapi\Exception\Process\ProcessListSummaryTooOften');
         $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 3], []);
-
         self::assertSame(StatusCode::HTTP_TOO_MANY_REQUESTS, $response->getStatusCode());
     }
 

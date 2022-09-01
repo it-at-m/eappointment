@@ -10,7 +10,7 @@ namespace BO\Zmsapi;
 use BO\Slim\Render;
 use BO\Zmsapi\Helper\Version;
 use BO\Zmsdb\Config as ConfigRepository;
-//use BO\Zmsdb\EventLog as EventLogRepository;
+use BO\Zmsdb\EventLog as EventLogRepository;
 use BO\Zmsdb\Mail as Query;
 use BO\Zmsdb\Process as ProcessRepository;
 use BO\Zmsentities\Client;
@@ -43,8 +43,7 @@ class ProcessListSummaryMail extends BaseController
         $validator = $request->getAttribute('validator');
         $mailAddress = $validator->getParameter('mail')->isMail()->hasDNS()->assertValid()->getValue();
         $limit = $validator->getParameter('limit')->isNumber()->setDefault(50)->getValue();
-        //activate this if event logging exists
-        //$this->testEventLogEntries($mailAddress);
+        $this->testEventLogEntries($mailAddress);
 
         $collection = (new ProcessRepository())->readListByMailAndStatusList(
             $mailAddress,
@@ -70,8 +69,7 @@ class ProcessListSummaryMail extends BaseController
         $message = Response\Message::create($request);
         $message->data = $persisted;
 
-        //activate this if event logging exists
-        //$this->writeLogEntry($mailAddress, $collection);
+        $this->writeLogEntry($mailAddress, $collection);
         $response = Render::withLastModified($response, time(), '0');
         return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }

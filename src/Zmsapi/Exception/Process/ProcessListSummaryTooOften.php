@@ -11,5 +11,5 @@ class ProcessListSummaryTooOften extends \Exception
 {
     protected $code = 429;
 
-    protected $message = 'Der letzte Versand der persönlichen Terminübersicht erfolgte vor kurzem. Bitte warten Sie.';
+    protected $message = 'The last mailing of the personal schedule was made recently. Please wait.';
 }
