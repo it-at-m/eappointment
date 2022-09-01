@@ -14,5 +14,3 @@ CREATE TABLE `eventlog` (
 ENGINE = InnoDB
 CHARACTER SET utf8
 COLLATE utf8_unicode_ci;
-
-INSERT INTO `config` SET `name` = "cron__deleteOldEventLogEntries", `value` = "none";
