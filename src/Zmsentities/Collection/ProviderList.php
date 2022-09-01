@@ -81,4 +81,13 @@ class ProviderList extends Base
         }
         return $list;
     }
+
+    public function sortById()
+    {
+        $list = clone $this;
+        $list->uasort(function ($a, $b) {
+            return ($a['id'] - $b['id']);
+        });
+        return (new self())->addList($list);
+    }
 }
