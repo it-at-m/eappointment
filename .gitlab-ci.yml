@@ -13,7 +13,6 @@ test-php-73:
         - rm -rf data
         - ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
         - vendor/bin/importTestData --commit
-        - cp ./composer.lock ./public/
     variables:
       PHP_VERSION: "7.3"
       MYSQL_DATABASE: zmsbo
