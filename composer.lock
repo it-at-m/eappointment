@@ -166,12 +166,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsclient.git",
-                "reference": "2b5d7be9827997b4b50d7b3ab10cb1cb73ce7907"
+                "reference": "470ccc2b575549039b5e33c334af1d89dbc85e63"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=2b5d7be9827997b4b50d7b3ab10cb1cb73ce7907",
-                "reference": "2b5d7be9827997b4b50d7b3ab10cb1cb73ce7907",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=470ccc2b575549039b5e33c334af1d89dbc85e63",
+                "reference": "470ccc2b575549039b5e33c334af1d89dbc85e63",
                 "shasum": ""
             },
             "require": {
@@ -213,7 +213,7 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "time": "2022-09-02T12:11:29+00:00"
+            "time": "2022-09-02T12:43:24+00:00"
         },
         {
             "name": "eappointment/zmsdb",
@@ -221,12 +221,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsdb.git",
-                "reference": "5eb190967d75ec94feeddededd607aa0e0f475ee"
+                "reference": "603f92b1d7703c3793b42fb0e2295c8bde7c6812"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=5eb190967d75ec94feeddededd607aa0e0f475ee",
-                "reference": "5eb190967d75ec94feeddededd607aa0e0f475ee",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=603f92b1d7703c3793b42fb0e2295c8bde7c6812",
+                "reference": "603f92b1d7703c3793b42fb0e2295c8bde7c6812",
                 "shasum": ""
             },
             "require": {
@@ -288,7 +288,7 @@
                 }
             ],
             "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
-            "time": "2022-09-02T12:12:14+00:00"
+            "time": "2022-09-02T13:26:50+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
@@ -349,12 +349,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsentities.git",
-                "reference": "aa2189958adbee2d4b786300a89972669cc4c3e8"
+                "reference": "38142f2566671276b8f254d626f514522a185011"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=aa2189958adbee2d4b786300a89972669cc4c3e8",
-                "reference": "aa2189958adbee2d4b786300a89972669cc4c3e8",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=38142f2566671276b8f254d626f514522a185011",
+                "reference": "38142f2566671276b8f254d626f514522a185011",
                 "shasum": ""
             },
             "require": {
@@ -397,7 +397,7 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2022-09-02T12:13:22+00:00"
+            "time": "2022-09-02T12:35:53+00:00"
         },
         {
             "name": "eappointment/zmsslim",
@@ -405,12 +405,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsslim.git",
-                "reference": "a4701f384108b6b88f5d3d1230d38cfe8d0a60c5"
+                "reference": "d55885adbb05194678ab9a253d123ddd65ab8521"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=a4701f384108b6b88f5d3d1230d38cfe8d0a60c5",
-                "reference": "a4701f384108b6b88f5d3d1230d38cfe8d0a60c5",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=d55885adbb05194678ab9a253d123ddd65ab8521",
+                "reference": "d55885adbb05194678ab9a253d123ddd65ab8521",
                 "shasum": ""
             },
             "require": {
@@ -450,7 +450,7 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-            "time": "2022-09-02T12:14:16+00:00"
+            "time": "2022-09-02T12:36:37+00:00"
         },
         {
             "name": "fig/http-message-util",
