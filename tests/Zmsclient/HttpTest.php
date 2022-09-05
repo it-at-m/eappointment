@@ -36,7 +36,7 @@ class HttpTest extends Base
         $this->createHttpClient(null);
         $result = static::$http_client->readGetResult('/scope/');
         $collection = $result->getCollection();
-        $this->assertStringContainsString('123', $result->getIds());
+        $this->assertStringContainsString('141', $result->getIds());
     }
 
     public function testStatus()
@@ -99,15 +99,26 @@ class HttpTest extends Base
         self::assertSame(StatusCode::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
     }
 
-    public function testStatusShort()
+    public function testStatusOk()
     {
         $result = static::$http_client->readGetResult('/status/', ['includeProcessStats' => 0]);
         $response = new \BO\Zmsclient\Psr7\Response();
         $status = $result->getEntity();
+        $status['mail']['oldestSeconds'] = 0;
+        $status['notification']['oldestSeconds'] = 0;
+        $status['database']['logbin'] = 'ON';
+        $status['database']['clusterStatus'] = 'ON';
+        $status['database']['locks'] = 0;
+        $status['database']['threads'] = 0;
+        $status['database']['nodeConnections'] = 0;
+        $status['processes']['lastCalculate'] = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
         $status['sources']['dldb']['last'] = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
-
+        
         $response = \BO\Zmsclient\Status::testStatus($response, $status);
-        $this->assertStringContainsString('OK - DB=0% Threads=1 Locks=0', (string)$response->getBody());
+        $this->assertEquals(
+            'OK - DB=0% Threads=0 Locks=0', 
+            (string)$response->getBody()
+        );
     }
 
     public function testStatusFailed()
@@ -124,7 +135,7 @@ class HttpTest extends Base
     {
         $result = static::$http_client->readGetResult('/scope/');
         $collection = $result->getCollection();
-        $this->assertStringContainsString('123', $result->getIds());
+        $this->assertStringContainsString('141', $result->getIds());
         $this->assertTrue($collection instanceof \BO\Zmsentities\Collection\Base);
     }
 
