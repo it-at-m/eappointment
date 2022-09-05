@@ -106,12 +106,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsentities.git",
-                "reference": "6c4a741e63d0702848bed726e34408bfaf544fc2"
+                "reference": "d0211383d9660c58c4c7e920e8af2f5cc2ad6dfe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=6c4a741e63d0702848bed726e34408bfaf544fc2",
-                "reference": "6c4a741e63d0702848bed726e34408bfaf544fc2",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=d0211383d9660c58c4c7e920e8af2f5cc2ad6dfe",
+                "reference": "d0211383d9660c58c4c7e920e8af2f5cc2ad6dfe",
                 "shasum": ""
             },
             "require": {
@@ -154,7 +154,7 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2022-09-05T07:22:40+00:00"
+            "time": "2022-09-05T08:56:07+00:00"
         },
         {
             "name": "eappointment/zmsslim",
