@@ -2,6 +2,8 @@
 
 namespace BO\Zmsclient\Tests;
 
+use Slim\Http\StatusCode;
+
 class HttpTest extends Base
 {
 
@@ -58,6 +60,7 @@ class HttpTest extends Base
         $status['processes']['lastCalculate'] = (new \DateTimeImmutable())->modify('- 4 hour')->format('Y-m-d H:i:s');
         $status['sources']['dldb']['last'] = (new \DateTimeImmutable())->modify('- 3 hour')->format('Y-m-d H:i:s');
 
+        $response = new \BO\Zmsclient\Psr7\Response();
         $response = \BO\Zmsclient\Status::testStatus($response, $status);
         $this->assertStringContainsString('Oldest mail with age in seconds: 400s', (string)$response->getBody());
         $this->assertStringContainsString('Oldest sms with age in seconds: 400s', (string)$response->getBody());
@@ -77,19 +80,45 @@ class HttpTest extends Base
         );
         $this->assertStringContainsString('Last DLDB Import is more then 2 hours ago', (string)$response->getBody());
         $this->assertStringContainsString('slot calculation is 14400 seconds old', (string)$response->getBody());
+        self::assertSame(StatusCode::HTTP_OK, $response->getStatusCode());
+    }
+
+    public function testStatusServerError()
+    {
+        $result = static::$http_client->readGetResult('/status/');
+        $response = new \BO\Zmsclient\Psr7\Response();
+        $status = $result->getEntity();
 
         $status['sources']['dldb']['last'] = (new \DateTimeImmutable())->modify('- 6 hour')->format('Y-m-d H:i:s');
         $response = \BO\Zmsclient\Status::testStatus($response, $status);
-        $this->assertStringContainsString('Last DLDB Import is more then 4 hours ago', (string)$response->getBody());
+
+        $this->assertStringContainsString(
+            'CRIT - Last DLDB Import is more then 4 hours ago',
+            (string)$response->getBody()
+        );
+        self::assertSame(StatusCode::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
     }
 
-    public function testStatusShort()
+    public function testStatusOk()
     {
-        $result = static::$http_client->readGetResult('/status/?2');
+        $result = static::$http_client->readGetResult('/status/', ['includeProcessStats' => 0]);
         $response = new \BO\Zmsclient\Psr7\Response();
         $status = $result->getEntity();
+        $status['mail']['oldestSeconds'] = 0;
+        $status['notification']['oldestSeconds'] = 0;
+        $status['database']['logbin'] = 'ON';
+        $status['database']['clusterStatus'] = 'ON';
+        $status['database']['locks'] = 0;
+        $status['database']['threads'] = 0;
+        $status['database']['nodeConnections'] = 0;
+        $status['processes']['lastCalculate'] = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
+        $status['sources']['dldb']['last'] = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
+        
         $response = \BO\Zmsclient\Status::testStatus($response, $status);
-        $this->assertStringContainsString('OK - DB=0% Threads=1 Locks=0', (string)$response->getBody());
+        $this->assertEquals(
+            'OK - DB=0% Threads=0 Locks=0', 
+            (string)$response->getBody()
+        );
     }
 
     public function testStatusFailed()
