@@ -118,12 +118,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsdldb.git",
-                "reference": "65c828e282c0ba717b309ba42dfbe901ff3eaa44"
+                "reference": "aba1df3c88b0d3d5e2a74736fd54573de82b1ddf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdldb/repository/archive.zip?sha=65c828e282c0ba717b309ba42dfbe901ff3eaa44",
-                "reference": "65c828e282c0ba717b309ba42dfbe901ff3eaa44",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdldb/repository/archive.zip?sha=aba1df3c88b0d3d5e2a74736fd54573de82b1ddf",
+                "reference": "aba1df3c88b0d3d5e2a74736fd54573de82b1ddf",
                 "shasum": ""
             },
             "require": {
@@ -163,7 +163,7 @@
                 }
             ],
             "description": "Client for DLDB",
-            "time": "2022-07-28T08:27:26+00:00"
+            "time": "2022-09-05T08:56:15+00:00"
         },
         {
             "name": "eappointment/zmsentities",
@@ -171,12 +171,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsentities.git",
-                "reference": "6c4a741e63d0702848bed726e34408bfaf544fc2"
+                "reference": "d0211383d9660c58c4c7e920e8af2f5cc2ad6dfe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=6c4a741e63d0702848bed726e34408bfaf544fc2",
-                "reference": "6c4a741e63d0702848bed726e34408bfaf544fc2",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=d0211383d9660c58c4c7e920e8af2f5cc2ad6dfe",
+                "reference": "d0211383d9660c58c4c7e920e8af2f5cc2ad6dfe",
                 "shasum": ""
             },
             "require": {
@@ -219,7 +219,7 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2022-09-05T07:22:40+00:00"
+            "time": "2022-09-05T08:56:07+00:00"
         },
         {
             "name": "giggsey/libphonenumber-for-php",
