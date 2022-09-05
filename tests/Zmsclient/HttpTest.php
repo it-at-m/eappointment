@@ -80,18 +80,25 @@ class HttpTest extends Base
         );
         $this->assertStringContainsString('Last DLDB Import is more then 2 hours ago', (string)$response->getBody());
         $this->assertStringContainsString('slot calculation is 14400 seconds old', (string)$response->getBody());
-
         self::assertSame(StatusCode::HTTP_OK, $response->getStatusCode());
-
-        $status['sources']['dldb']['last'] = (new \DateTimeImmutable())->modify('- 6 hour')->format('Y-m-d H:i:s');
-
-        $response = new \BO\Zmsclient\Psr7\Response();
-        $response = \BO\Zmsclient\Status::testStatus($response, $status);
-
-        $this->assertStringContainsString('CRIT - Last DLDB Import is more then 4 hours ago', (string)$response->getBody());
-        self::assertSame(StatusCode::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
     }
 
+    public function testStatusServerError()
+    {
+        $result = static::$http_client->readGetResult('/status/');
+        $response = new \BO\Zmsclient\Psr7\Response();
+        $status = $result->getEntity();
+
+        $status['sources']['dldb']['last'] = (new \DateTimeImmutable())->modify('- 3 hour')->format('Y-m-d H:i:s');
+        $response = \BO\Zmsclient\Status::testStatus($response, $status);
+
+        $this->assertStringContainsString(
+            'CRIT - Last DLDB Import is more then 4 hours ago', 
+            (string)$response->getBody()
+        );
+        self::assertSame(StatusCode::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
+    }
+    
     public function testStatusShort()
     {
         $result = static::$http_client->readGetResult('/status/', ['includeProcessStats' => 0]);
