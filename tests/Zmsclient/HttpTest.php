@@ -93,7 +93,7 @@ class HttpTest extends Base
         $response = \BO\Zmsclient\Status::testStatus($response, $status);
 
         $this->assertStringContainsString(
-            'CRIT - Last DLDB Import is more then 4 hours ago', 
+            'CRIT - Last DLDB Import is more then 4 hours ago',
             (string)$response->getBody()
         );
         self::assertSame(StatusCode::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
