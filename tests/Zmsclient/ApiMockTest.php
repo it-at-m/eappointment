@@ -7,10 +7,11 @@ use BO\Zmsclient\Psr7\Uri;
 
 /**
  * @runTestsInSeparateProcesses
- * 
+ *
  */
 class ApiMockTest extends \BO\Zmsclient\PhpUnit\Base
-{    
+{
+
     public function testRendering()
     {
         $this->setApiCalls(

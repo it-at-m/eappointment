@@ -9,7 +9,8 @@ use BO\Slim\Middleware\Validator;
 use \BO\Zmsclient\GraphQL\GraphQLInterpreter;
 
 class GraphQLTest extends Base
-{    
+{
+
     
     public function testBasic()
     {
@@ -17,7 +18,7 @@ class GraphQLTest extends Base
         $request = new Request('GET', $uri);
         $request = Validator::withValidator($request);
        
-        $validator = $request->getAttribute('validator'); 
+        $validator = $request->getAttribute('validator');
         $gqlString = $validator->getParameter('gql')->isString()->getValue();
         $graphqlInterpreter = new GraphQLInterpreter($gqlString);
 
@@ -31,8 +32,8 @@ class GraphQLTest extends Base
         $response = new \Slim\Http\Response(200, null, $body);
 
         $this->assertStringContainsString('"id":"82252","amendment":""', (string)$response->getBody());
-        $this->assertStringNotContainsString('scope', (string)$response->getBody());     
-        $this->assertStringNotContainsString('status', (string)$response->getBody());        
+        $this->assertStringNotContainsString('scope', (string)$response->getBody());
+        $this->assertStringNotContainsString('status', (string)$response->getBody());
     }
 
     public function testCollection()
@@ -41,7 +42,7 @@ class GraphQLTest extends Base
         $request = new Request('GET', $uri);
         $request = Validator::withValidator($request);
        
-        $validator = $request->getAttribute('validator'); 
+        $validator = $request->getAttribute('validator');
         $gqlString = $validator->getParameter('gql')->isString()->getValue();
         $graphqlInterpreter = new GraphQLInterpreter($gqlString);
 
@@ -55,9 +56,9 @@ class GraphQLTest extends Base
         $response = new \Slim\Http\Response(200, null, $body);
 
         $this->assertStringContainsString('"id":"123"', (string)$response->getBody());
-        $this->assertStringNotContainsString('contact', (string)$response->getBody());   
+        $this->assertStringNotContainsString('contact', (string)$response->getBody());
         $this->assertEquals(
-            '[{"id":"123","$schema":"https:\/\/schema.berlin.de\/queuemanagement\/scope.json"}]', 
+            '[{"id":"123","$schema":"https:\/\/schema.berlin.de\/queuemanagement\/scope.json"}]',
             (string)$graphqlInterpreter
         );
     }
@@ -68,7 +69,7 @@ class GraphQLTest extends Base
         $request = new Request('GET', $uri);
         $request = Validator::withValidator($request);
        
-        $validator = $request->getAttribute('validator'); 
+        $validator = $request->getAttribute('validator');
         $gqlString = $validator->getParameter('gql')->isString()->getValue();
         $graphqlInterpreter = new GraphQLInterpreter($gqlString);
 
@@ -81,7 +82,7 @@ class GraphQLTest extends Base
         $body->write(json_encode($responseData));
         $response = new \Slim\Http\Response(200, null, $body);
 
-        $this->assertStringNotContainsString('amendment', (string)$response->getBody());  
+        $this->assertStringNotContainsString('amendment', (string)$response->getBody());
         $this->assertStringContainsString('"scope":{"id":"141"}', (string)$response->getBody());
     }
 
@@ -93,7 +94,7 @@ class GraphQLTest extends Base
         $request = new Request('GET', $uri);
         $request = Validator::withValidator($request);
        
-        $validator = $request->getAttribute('validator'); 
+        $validator = $request->getAttribute('validator');
         $gqlString = $validator->getParameter('gql')->isString()->getValue();
         $graphqlInterpreter = new GraphQLInterpreter($gqlString);
 
@@ -110,7 +111,7 @@ class GraphQLTest extends Base
         $request = new Request('GET', $uri);
         $request = Validator::withValidator($request);
        
-        $validator = $request->getAttribute('validator'); 
+        $validator = $request->getAttribute('validator');
         $gqlString = $validator->getParameter('gql')->isString()->getValue();
         $graphqlInterpreter = new GraphQLInterpreter($gqlString);
 
@@ -127,7 +128,7 @@ class GraphQLTest extends Base
         $request = new Request('GET', $uri);
         $request = Validator::withValidator($request);
        
-        $validator = $request->getAttribute('validator'); 
+        $validator = $request->getAttribute('validator');
         $gqlString = $validator->getParameter('gql')->isString()->getValue();
         $graphqlInterpreter = new GraphQLInterpreter($gqlString);
 
