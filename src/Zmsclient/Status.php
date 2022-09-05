@@ -75,7 +75,10 @@ class Status
         $response = $response->withHeader('Content-Type', 'text/plain');
 
         if (strpos($result, 'CRIT') !== false || strpos($result, 'FATAL') !== false) {
-            $response = $response->withStatus(StatusCode::HTTP_INTERNAL_SERVER_ERROR, 'The Server is in a bad condition.');
+            $response = $response->withStatus(
+                StatusCode::HTTP_INTERNAL_SERVER_ERROR, 
+                'The Server is in a bad condition.'
+            );
         }
 
         return $response;
