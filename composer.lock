@@ -162,12 +162,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsslim.git",
-                "reference": "d55885adbb05194678ab9a253d123ddd65ab8521"
+                "reference": "e386c25cfc25f8ba77d9ce2d63d48ecf50183403"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=d55885adbb05194678ab9a253d123ddd65ab8521",
-                "reference": "d55885adbb05194678ab9a253d123ddd65ab8521",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=e386c25cfc25f8ba77d9ce2d63d48ecf50183403",
+                "reference": "e386c25cfc25f8ba77d9ce2d63d48ecf50183403",
                 "shasum": ""
             },
             "require": {
@@ -207,7 +207,7 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-            "time": "2022-09-02T12:36:37+00:00"
+            "time": "2022-09-05T07:45:23+00:00"
         },
         {
             "name": "fig/http-message-util",
