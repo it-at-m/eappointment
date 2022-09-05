@@ -89,7 +89,7 @@ class HttpTest extends Base
         $response = new \BO\Zmsclient\Psr7\Response();
         $status = $result->getEntity();
 
-        $status['sources']['dldb']['last'] = (new \DateTimeImmutable())->modify('- 3 hour')->format('Y-m-d H:i:s');
+        $status['sources']['dldb']['last'] = (new \DateTimeImmutable())->modify('- 6 hour')->format('Y-m-d H:i:s');
         $response = \BO\Zmsclient\Status::testStatus($response, $status);
 
         $this->assertStringContainsString(
@@ -98,7 +98,7 @@ class HttpTest extends Base
         );
         self::assertSame(StatusCode::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
     }
-    
+
     public function testStatusShort()
     {
         $result = static::$http_client->readGetResult('/status/', ['includeProcessStats' => 0]);
