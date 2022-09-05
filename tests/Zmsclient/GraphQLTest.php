@@ -38,7 +38,7 @@ class GraphQLTest extends Base
 
     public function testCollection()
     {
-        $uri = new Uri(self::$http_baseurl . '/scope/141/?gql={id}');
+        $uri = new Uri(self::$http_baseurl . '/scope/?gql={id}');
         $request = new Request('GET', $uri);
         $request = Validator::withValidator($request);
        
@@ -55,10 +55,10 @@ class GraphQLTest extends Base
         $body->write(json_encode($responseData));
         $response = new \Slim\Http\Response(200, null, $body);
 
-        $this->assertStringContainsString('"id":"141"', (string)$response->getBody());
+        $this->assertStringContainsString('"id":"123"', (string)$response->getBody());
         $this->assertStringNotContainsString('contact', (string)$response->getBody());
         $this->assertEquals(
-            '{"id":"141","$schema":"https:\/\/schema.berlin.de\/queuemanagement\/scope.json"}',
+            '[{"id":"123","$schema":"https:\/\/schema.berlin.de\/queuemanagement\/scope.json"}]',
             (string)$graphqlInterpreter
         );
     }

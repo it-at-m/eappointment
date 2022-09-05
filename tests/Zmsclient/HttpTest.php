@@ -36,7 +36,7 @@ class HttpTest extends Base
         $this->createHttpClient(null);
         $result = static::$http_client->readGetResult('/scope/');
         $collection = $result->getCollection();
-        $this->assertStringContainsString('141', $result->getIds());
+        $this->assertStringContainsString('123', $result->getIds());
     }
 
     public function testStatus()
@@ -135,7 +135,7 @@ class HttpTest extends Base
     {
         $result = static::$http_client->readGetResult('/scope/');
         $collection = $result->getCollection();
-        $this->assertStringContainsString('141', $result->getIds());
+        $this->assertStringContainsString('123', $result->getIds());
         $this->assertTrue($collection instanceof \BO\Zmsentities\Collection\Base);
     }
 
