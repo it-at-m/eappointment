@@ -5,6 +5,8 @@ use \BO\Zmsentities\Helper\Sorter;
 
 use \BO\Zmsentities\Helper\Property;
 
+use \BO\Zmsentities\Helper\Messaging;
+
 use \BO\Zmsentities\Process;
 
 /**
@@ -371,7 +373,7 @@ class ProcessList extends Base
     public function withoutProcessByStatus($process, $status)
     {
         $collection = clone $this;
-        $collection = (1 < $collection->count() && 'overview' != $status) ?
+        $collection = (1 <= $collection->count() && ! Messaging::isEmptyProcessListAllowed($status)) ?
             $collection->withOutProcessId($process->getId()) :
             $collection;
         return $collection;
