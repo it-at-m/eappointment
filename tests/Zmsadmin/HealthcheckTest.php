@@ -17,14 +17,14 @@ class HealthcheckTest extends Base
                 'function' => 'readGetResult',
                 'url' => '/status/',
                 'parameters' => ['includeProcessStats' => 0],
-                'response' => $this->readFixture("GET_status.json")
+                'response' => $this->readFixture("GET_status_200.json")
             ]
         ];
     }
 
     public function testRendering()
     {
-        $response = parent::testRendering();
-        $this->assertStringContainsString('DB connection without replication log detected', (string)$response->getBody());
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }
