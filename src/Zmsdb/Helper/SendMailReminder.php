@@ -111,7 +111,7 @@ class SendMailReminder
         $department = (new DepartmentRepository())->readByScopeId($process->getScopeId(), 0);
         if ($process->getFirstClient()->hasEmail() && $department->hasMail()) {
             $config = (new ConfigRepository)->readEntity();
-            $collection = $this->getProcessListOverview($process);
+            $collection = $this->getProcessListOverview($process, $config);
             $entity = (new Mail)->toResolvedEntity($collection, $config, 'reminder');
             if ($commit) {
                 $entity = (new MailRepository)->writeInQueue($entity, $this->dateTime);
@@ -124,20 +124,22 @@ class SendMailReminder
         return $entity;
     }
 
-    protected function getProcessListOverview($process)
+    protected function getProcessListOverview($process, $config)
     {
         $collection  = (new Collection())->addEntity($process);
-        $processList = (new ProcessRepository())->readListByMailAndStatusList(
-            $process->getFirstClient()->email,
-            [
-                Process::STATUS_CONFIRMED,
-                Process::STATUS_PICKUP
-            ],
-            2,
-            50
-        );
-        //add list of found processes without the main process
-        $collection->addList($processList->withOutProcessId($process->getId()));
+        if (in_array(getenv('ZMS_ENV'), explode(',', $config->getPreference('appointments', 'enableSummaryByMail')))) {
+            $processList = (new ProcessRepository())->readListByMailAndStatusList(
+                $process->getFirstClient()->email,
+                [
+                    Process::STATUS_CONFIRMED,
+                    Process::STATUS_PICKUP
+                ],
+                2,
+                50
+            );
+            //add list of found processes without the main process
+            $collection->addList($processList->withOutProcessId($process->getId()));
+        }
         return $collection;
     }
 }
