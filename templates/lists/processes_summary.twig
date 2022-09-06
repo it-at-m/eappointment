@@ -1,7 +1,7 @@
 {%  block processes_summary_german %}
 <br />
 <h2>Sie haben folgende Termine geplant:</h2>
-Sollten Sie einen dieser Termin nicht mehr wahrnehmen können, möchten wir Sie bitten,<br />
+Sollten Sie einen dieser Termine nicht mehr wahrnehmen können, möchten wir Sie bitten,<br />
 diesen abzusagen, so dass dieser anderen zur Verfügung steht.<br /><br />
 {% for plannedProcess in processList %}
 {% set changeLink  = 'https://service.berlin.de/terminvereinbarung/termin/manage/?process=' ~ plannedProcess.id ~ '&authKey=' ~ plannedProcess.authKey %}
