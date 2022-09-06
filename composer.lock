@@ -166,12 +166,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsclient.git",
-                "reference": "c1107e7eef880b3f5b9b6bfeef4606a078a76e7a"
+                "reference": "5a5aa744555c1aa1c8e0a7953efcd1fda9d74b42"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=c1107e7eef880b3f5b9b6bfeef4606a078a76e7a",
-                "reference": "c1107e7eef880b3f5b9b6bfeef4606a078a76e7a",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=5a5aa744555c1aa1c8e0a7953efcd1fda9d74b42",
+                "reference": "5a5aa744555c1aa1c8e0a7953efcd1fda9d74b42",
                 "shasum": ""
             },
             "require": {
@@ -213,7 +213,7 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "time": "2022-09-05T12:52:21+00:00"
+            "time": "2022-09-06T12:02:45+00:00"
         },
         {
             "name": "eappointment/zmsdb",
