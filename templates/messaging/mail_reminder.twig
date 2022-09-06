@@ -19,7 +19,10 @@ Für den Fall, dass Sie den Termin nicht wahrnehmen können, sagen Sie ihn bitte
 <br /><br />
 Dies können Sie über unsere Internetbuchungsseite <a href="{{ config.appointments.urlChange }}">{{ config.appointments.urlChange }}</a> unter Angabe Ihrer Vorgangsnummer "{{ process.id }}" und Ihres persönlichen Absage-Codes "{{ process.authKey }}" erledigen.
 <br />
-{% if processList is defined and processList|length > 0 %}
+{% if 
+  processList is defined and 
+  processList|length > 0 
+%}
 {{ block("processes_summary_german") }}
 <br />
 {% endif %}
