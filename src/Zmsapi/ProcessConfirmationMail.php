@@ -49,7 +49,7 @@ class ProcessConfirmationMail extends BaseController
     {
         $config = (new Config)->readEntity();
         $department = (new Department())->readByScopeId($process->scope['id']);
-        $collection = static::getProcessListOverview($process);
+        $collection = static::getProcessListOverview($process, $config);
 
         $status = ($process->isWithAppointment()) ? 'appointment' : 'queued';
         $mail = (new \BO\Zmsentities\Mail)
@@ -77,10 +77,14 @@ class ProcessConfirmationMail extends BaseController
         }
     }
 
-    public static function getProcessListOverview($process)
+    public static function getProcessListOverview($process, $config)
     {
         $collection  = (new Collection())->addEntity($process);
-        if ($process->getFirstClient()->hasEmail()) {
+        if (in_array(
+            getenv('ZMS_ENV'),
+            explode(',', $config->getPreference('appointments', 'enableSummaryByMail'))
+        ) && $process->getFirstClient()->hasEmail()
+        ) {
             $processList = (new ProcessRepository())->readListByMailAndStatusList(
                 $process->getFirstClient()->email,
                 [

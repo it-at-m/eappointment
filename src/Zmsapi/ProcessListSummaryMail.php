@@ -59,12 +59,13 @@ class ProcessListSummaryMail extends BaseController
         $mail = (new Mail)->toResolvedEntity($collection, $config, 'overview');
         $mail->testValid();
 
+        $persisted = null;
         if ($mail->process instanceof Process) {
             $persisted = (new Query())->writeInQueue($mail, \App::$now, false);
-        } else {
+        } /* Todo in Ticket 55127 * else {
             $mail->client = (new Client())->addData(['email' => $mailAddress]);
             $persisted = (new Query())->writeInQueueWithoutProcess($mail, \App::$now);
-        }
+        }*/
 
         $message = Response\Message::create($request);
         $message->data = $persisted;
