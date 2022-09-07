@@ -59,7 +59,7 @@ class Messaging
             'confirmed' => 'notification_confirmation.twig',
             'queued' => 'notification_confirmation.twig',
             'called' => 'notification_headsup.twig',
-            'reminder' => 'notification_headsup.twig',
+            'reminder' => 'notification_reminder.twig',
             'pickup' => 'notification_pickup.twig',
             'deleted' => 'notification_deleted.twig'
         ),
