@@ -1,6 +1,7 @@
 ## v2.24.10
 * #55389 - Keycloak OpenID-Connect as additional login solution tested
 * #55117 - View of mailing configurations has been extended with the appointment overviews
+* #31338 - notification headsup time calculated to selected appointment
 ## v2.24.09
 
 * #55077 Links and holidays that can be assigned to an authority are now checked if they exist
