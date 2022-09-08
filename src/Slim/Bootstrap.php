@@ -31,7 +31,7 @@ class Bootstrap
     protected function configureAppStatics()
     {
         if (getenv('ZMS_URL_SIGNATURE_KEY') !== false) {
-            \App::$urlSignatureKey = getenv('ZMS_URL_SIGNATURE_KEY');
+            \App::$urlSignatureSecret = getenv('ZMS_URL_SIGNATURE_KEY');
         }
     }
 
