@@ -32,11 +32,13 @@ class ProcessListSummaryMailTest extends Base
         self::assertSame(StatusCode::HTTP_TOO_MANY_REQUESTS, $response->getStatusCode());
     }
 
+    /*
     public function testProcessListEmpty()
     {
         $response = $this->render([], ['mail' => 'not.existing@service.berlinonline.de'], []);
         self::assertStringContainsString('Es wurden keine geplanten Termine gefunden.', (string)$response->getBody());
     }
+    */
 
     public function testUnvalidMail()
     {
