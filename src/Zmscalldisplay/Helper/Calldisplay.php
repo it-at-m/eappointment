@@ -29,10 +29,11 @@ class Calldisplay
      */
     public static function getRequestedQueueStatus($request)
     {
+        /** @var Validator $validator */
         $validator = $request->getAttribute('validator');
         $queue = $validator->getParameter('queue')->isArray()->getValue();
-        $status = Validator::value($queue['status'])->isString()->getValue();
-        return ($status) ? explode(',', $status) : static::DEFAULT_STATUS;
+        $status = (is_array($queue) && isset($queue['status'])) ? $queue['status'] : null;
+        return is_string($status) ? explode(',', $status) : static::DEFAULT_STATUS;
     }
 
     public function getEntity($resolveEntity = true)
