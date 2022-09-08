@@ -46,13 +46,20 @@ class Index extends BaseController
         if ($request->getQueryParam('qrcode') && $request->getQueryParam('qrcode') == 1
             && ($request->getQueryParam('collections') || $request->getQueryParam('queue'))
         ) {
+            $uri = $request->getUri();
             $parameters['showQrCode'] = true;
-            $parameters['webcalldisplayUrl'] = $request->getUri()->getScheme() . '://'. $request->getUri()->getHost();
-            $parameters['webcalldisplayUrl'] .= '/terminvereinbarung/aufruf';
-            $parameters['webcalldisplayUrl'] .= urldecode(str_replace('/&', '/?', $request->getUri()->getQuery()));
+            $parameters['webcalldisplayUrl'] = $uri->getScheme() . '://'. $uri->getHost();
+            $parameters['webcalldisplayUrl'] .= $uri->getPort() ? ':' . $uri->getPort() : '';
+            $parameters['webcalldisplayUrl'] .= \App::$webcalldisplayUrl;
+            $parameters['webcalldisplayUrl'] .= str_replace('/&', '/?', $uri->getQuery());
             $parameters['webcalldisplayUrl'] .= '&hmac=' . SlimHelper::hashQueryParameters(
                 ['collections' => $request->getQueryParam('collections'), 'queue' => $request->getQueryParam('queue')],
                 ['collections', 'queue']
+            );
+            $parameters['webcalldisplayUrl'] = str_replace(
+                '&qrcode=' . $request->getQueryParam('qrcode'),
+                '',
+                $parameters['webcalldisplayUrl']
             );
         }
 

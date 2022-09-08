@@ -10,6 +10,7 @@ class App extends \BO\Zmscalldisplay\Application
     const DEBUG = false;
     //const TWIG_CACHE = '/cache/';
     const HTTP_BASE_URL = ZMS_API_URL;
+
     public static $http_curl_config = [
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_TIMEOUT => 9,
@@ -17,6 +18,9 @@ class App extends \BO\Zmscalldisplay\Application
     ];
 }
 
+if (getenv('ZMS_WEBCALL_DISPLAY_URL')) {
+    App::$webcalldisplayUrl = getenv('ZMS_WEBCALL_DISPLAY_URL');
+}
 if (getenv('ZMS_TIMEADJUST')) {
     App::$now = new DateTimeImmutable(date(getenv('ZMS_TIMEADJUST')), new DateTimeZone('Europe/Berlin'));
 }
