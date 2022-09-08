@@ -5,7 +5,7 @@ test-php-73:
     extends: .test-php
     allow_failure: false
     services:
-        - name: mariadb:10.3
+        - name: mariadb:10.1
           alias: mysql
           command: ["mysqld", "--general-log=1", "--general-log-file=/var/log/mysql/general.log"]
     before_script:
@@ -57,11 +57,10 @@ apidoc:
         paths:
             - public
     script:
-        - bin/configure
         - npm run build
         - swagger-cli validate ./public/doc/swagger.yaml
         - swagger-cli bundle -r -o ./public/doc/swagger.json ./public/doc/swagger.yaml
-        - wget -P ./public/doc/assets/ "https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"
+        - wget -P ./public/doc/assets/ "https://rebilly.github.io/ReDoc/releases/v1.22.3/redoc.min.js"
         - wget -P ./public/_test/assets/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-bundle.js"
         - wget -P ./public/_test/assets/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui.css"
         - wget -P ./public/_test/assets/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-standalone-preset.js"
