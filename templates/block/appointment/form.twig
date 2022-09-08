@@ -135,7 +135,13 @@
                             ) }}
                             {% endif %}
                             {% if scope.preferences.appointment.notificationHeadsUpEnabled and department.preferences.notifications.sendReminderEnabled %}
-                                {% set selectedProcessHeadsUpTime = selectedProcess.appointments|first.date - selectedProcess.reminderTimestamp %}
+
+                                {% set selectedProcessHeadsUpTime = 0 %}                            	
+                                {% set minutesToAppointment = selectedDate|date('U') %}
+                                {% if selectedProcess %}
+                                    {% set selectedProcessHeadsUpTime = selectedProcess.appointments|first.date - selectedProcess.reminderTimestamp %}                            	
+                                    {% set minutesToAppointment = (selectedProcess.appointments|first.date - getNow()|date('U')) / 60 %}
+                                {% endif %}
                                 {% set allowedHeadsUpTime = [30,60,120,180,240,1440,2880] %}
                                 {% set headsUpTimeOptions = [{"value": 0, "name": "ohne Erinnerung"}] %}
                                 {% for headsUpTimeValue in allowedHeadsUpTime %}
@@ -153,7 +159,10 @@
                                     {% endif %}
 
                                     {% if headsUpTimeValue * 60 == selectedProcessHeadsUpTime %}{% set selected = "selected"%}{% else %}{% set selected = ""%}{% endif %}
-                                    {% set headsUpTimeOptions = headsUpTimeOptions|merge([{ "value": headsUpTimeValue * 60, "name": label ~ " vorher", "selected": selected }]) %}
+
+                                    {% if headsUpTimeValue <= minutesToAppointment %}
+                                        {% set headsUpTimeOptions = headsUpTimeOptions|merge([{ "value": headsUpTimeValue * 60, "name": label ~ " vorher", "selected": selected }]) %}
+                                    {% endif %}
                                 {% endfor %}
 
                                 {{ formgroup(
