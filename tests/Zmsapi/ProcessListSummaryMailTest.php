@@ -10,6 +10,10 @@ class ProcessListSummaryMailTest extends Base
 
     public function testRendering()
     {
+        $config = (new \BO\Zmsdb\Config())->readEntity();
+        $config->setPreference('mailings', 'noReplyDepartmentId', 74);
+        $entity = (new \BO\Zmsdb\Config())->updateEntity($config);
+
         $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 3], []);
         self::assertStringContainsString('Sie haben folgende Termine geplant', (string)$response->getBody());
         self::assertStringContainsString('10118', (string)$response->getBody());

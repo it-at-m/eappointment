@@ -221,12 +221,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsdb.git",
-                "reference": "a91fc8a41c601671d5448be202003873112cbbc6"
+                "reference": "053979f07c0a39d858bfa438b4773373f2c2e3a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=a91fc8a41c601671d5448be202003873112cbbc6",
-                "reference": "a91fc8a41c601671d5448be202003873112cbbc6",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=053979f07c0a39d858bfa438b4773373f2c2e3a4",
+                "reference": "053979f07c0a39d858bfa438b4773373f2c2e3a4",
                 "shasum": ""
             },
             "require": {
@@ -288,7 +288,7 @@
                 }
             ],
             "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
-            "time": "2022-09-09T15:58:33+00:00"
+            "time": "2022-09-09T16:31:46+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
