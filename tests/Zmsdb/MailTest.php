@@ -78,18 +78,6 @@ class MailTest extends Base
         $this->assertEquals('1', $entity->getFirstClient()->emailSendCount);
     }
 
-    public function testWriteInQueueWithoutProcess()
-    {
-        $now = static::$now;
-        $mailEntity = $this->getTestEntity();
-        $mailEntity->process = null;
-        $query = new Query();
-        $resultEntity = $query->writeInQueueWithoutProcess($mailEntity, $now);
-        $this->assertEntity("\\BO\\Zmsentities\\Mail", $resultEntity);
-
-        self::assertStringContainsString('Das ist ein Plaintext Test', $resultEntity->getPlainPart());
-    }
-
     public function testExceptionWithoutMail()
     {
         $this->expectException('\BO\Zmsdb\Exception\Mail\ClientWithoutEmail');
