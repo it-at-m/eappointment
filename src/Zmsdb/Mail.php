@@ -103,7 +103,7 @@ class Mail extends Base
         if (! $client->hasEmail()) {
             throw new Exception\Mail\ClientWithoutEmail();
         }
-        $department = ($mail->department->hasId()) ?
+        $department = ($mail->department && $mail->department->hasId()) ?
             $mail->department :
             (new Department())->readByScopeId($process->getScopeId(), 0);
         $query->addValues(
