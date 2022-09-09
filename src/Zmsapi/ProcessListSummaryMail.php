@@ -13,6 +13,7 @@ use BO\Zmsdb\Config as ConfigRepository;
 use BO\Zmsdb\EventLog as EventLogRepository;
 use BO\Zmsdb\Mail as Query;
 use BO\Zmsdb\Process as ProcessRepository;
+use BO\Zmsdb\Department as DepartmentRepository;
 use BO\Zmsentities\Client;
 use BO\Zmsentities\Mail;
 use BO\Zmsentities\Collection\ProcessList;
@@ -56,16 +57,17 @@ class ProcessListSummaryMail extends BaseController
         );
 
         $config = (new ConfigRepository)->readEntity();
-        $mail = (new Mail)->toResolvedEntity($collection, $config, 'overview');
+        $department = (new DepartmentRepository())
+            ->readEntity($config->getPreference('mailings', 'noReplyDepartmentId'));
+
+        $mail = (new Mail)->toResolvedEntity($collection, $config, 'overview')->withDepartment($department);
+        $mail = $this->setWithProcessClient($mail, $mailAddress);
         $mail->testValid();
 
         $persisted = null;
-        if ($mail->process instanceof Process) {
+        if ($department) {
             $persisted = (new Query())->writeInQueue($mail, \App::$now, false);
-        } /* Todo in Ticket 55127 * else {
-            $mail->client = (new Client())->addData(['email' => $mailAddress]);
-            $persisted = (new Query())->writeInQueueWithoutProcess($mail, \App::$now);
-        }*/
+        }
 
         $message = Response\Message::create($request);
         $message->data = $persisted;
@@ -73,6 +75,15 @@ class ProcessListSummaryMail extends BaseController
         $this->writeLogEntry($mailAddress, $collection);
         $response = Render::withLastModified($response, time(), '0');
         return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+    }
+
+    protected function setWithProcessClient(Mail $entity, $mailAddress)
+    {
+        $process = new Process();
+        $client = $entity->getClient();
+        $client = ($client->hasEmail()) ? $client : $process->getFirstClient()->email = $mailAddress;
+        $entity->process = $process ;
+        return $entity;
     }
 
     protected function writeLogEntry($mailAddress, ProcessList $collection)
