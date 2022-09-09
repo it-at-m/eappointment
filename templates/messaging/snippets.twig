@@ -5,7 +5,12 @@ Achtung! Dies ist eine automatisch erstellte E-Mail. Bitte antworten Sie nicht a
 {% endblock %}
 
 {% block salutation_german %}
-Sehr geehrte/r Frau oder Herr {{ client.familyName }},<br /><br />
+{% if client.familyName %}
+Sehr geehrte/r Frau oder Herr {{ client.familyName }},
+{% else %}
+Guten Tag,
+{% endif %}
+<br /><br />
 {% endblock %}
 
 {% block sendoff_german %}

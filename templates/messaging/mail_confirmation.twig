@@ -52,10 +52,7 @@ Sie haben folgende {{ requestalias }} ausgewählt:
     {% endif %}
     {% endfor %}
 {% endif %}
-{% if 
-  processList is defined and 
-  processList|length > 0 
-%}
+{% if processList is defined and processList|length > 0 %}
     {{ block("processes_summary_german") }}
 {% endif %}
 {{ block("sendoff_german") }}
