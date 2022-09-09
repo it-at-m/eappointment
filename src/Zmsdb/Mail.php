@@ -99,17 +99,19 @@ class Mail extends Base
     {
         $query = new Query\MailQueue(Query\Base::INSERT);
         $process = new \BO\Zmsentities\Process($mail->process);
-        $client = $process->getFirstClient();
+        $client = $mail->getFirstClient();
         if (! $client->hasEmail()) {
             throw new Exception\Mail\ClientWithoutEmail();
         }
-        $department = (new Department())->readByScopeId($process->getScopeId(), 0);
+        $department = ($mail->department->hasId()) ? 
+            $mail->department : 
+            (new Department())->readByScopeId($process->getScopeId(), 0);
         $query->addValues(
             array(
                 'processID' => $mail->process['id'],
-                'departmentID' => $department->toProperty()->id->get(),
+                'departmentID' => $department->getId(),
                 'createIP' => $mail->createIP,
-                'createTimestamp' => time(),
+                'createTimestamp' => ($dateTime) ? $dateTime->format('U') : time(),
                 'subject' => $mail->subject,
                 'clientFamilyName' => $client->familyName,
                 'clientEmail' => $client->email
@@ -123,36 +125,6 @@ class Mail extends Base
         }
         $this->writeMimeparts($queueId, $mail->multipart);
         return $this->readEntity($queueId);
-    }
-
-    public function writeInQueueWithoutProcess(Entity $mail, ?\DateTimeInterface $creationTime = null): ?Entity
-    {
-        $query = new Query\MailQueue(Query\Base::INSERT);
-        $client = $mail->getClient();
-        if (! $client->hasEmail()) {
-            throw new Exception\Mail\ClientWithoutEmail();
-        }
-
-        $query->addValues(
-            array(
-                'processID' => 0,
-                'departmentID' => 0,
-                'createIP' => '',
-                'createTimestamp' => $creationTime !== null ? $creationTime->format('U') : time(),
-                'subject' => $mail->subject,
-                'clientFamilyName' => $client->familyName,
-                'clientEmail' => $client->email
-            )
-        );
-        $success = $this->writeItem($query);
-
-        if ($success) {
-            $queueId = $this->getWriter()->lastInsertId();
-            $this->writeMimeparts($queueId, $mail->multipart);
-            return $this->readEntity($queueId);
-        }
-
-        return null;
     }
 
     public function writeInQueueWithDailyProcessList(
