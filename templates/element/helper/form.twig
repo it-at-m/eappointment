@@ -462,7 +462,7 @@
     <div class="message message--error" role="alert" aria-describedby="{{ fieldId }}">
     <ul class="list--clean">
         {% for message in messages %}
-        <li>{{ message }}</li>
+        <li>{% trans %}Fehler{% endtrans %}: {{ message }}</li>
         {% endfor %}
     </ul>
     </div>
