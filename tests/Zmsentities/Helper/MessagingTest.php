@@ -58,6 +58,7 @@ class MessagingTest extends Base
         $processList = self::getExampleProcessList();
         $mail = (new Mail())->toResolvedEntity($processList, $config, 'overview');
 
+        self::assertStringContainsString('Sehr geehrte/r Frau oder Herr Max Mustermann,', $mail->getHtmlPart());
         self::assertStringContainsString('Terminübersicht', $mail->subject);
         self::assertStringContainsString('Sie haben folgende Termine geplant:', $mail->getHtmlPart());
         self::assertStringContainsString('am Mittwoch, 18. November 2015 um 18:52 Uhr', $mail->getHtmlPart());
@@ -95,6 +96,7 @@ class MessagingTest extends Base
         $config  = Config::getExample();
         $processList = new ProcessList();
         $mail = (new Mail())->toResolvedEntity($processList, $config, 'overview');
+        self::assertStringContainsString('Guten Tag,', $mail->getHtmlPart());
         self::assertStringContainsString('Es wurden keine geplanten Termine gefunden', $mail->getHtmlPart());
     }
 

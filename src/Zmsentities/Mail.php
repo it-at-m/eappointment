@@ -2,6 +2,7 @@
 
 namespace BO\Zmsentities;
 
+use \BO\Zmsentities\Process;
 use \BO\Zmsentities\Collection\ProcessList;
 use \BO\Zmsentities\Helper\Messaging;
 use \BO\Zmsentities\Helper\Property;
@@ -163,7 +164,7 @@ class Mail extends Schema\Entity
         $entity = clone $this;
         $content = Messaging::getMailContent($collection, $config, $initiator, $status);
 
-        $entity->process = ($mainProcess) ? ($mainProcess) : null;
+        $entity->process = ($mainProcess) ? ($mainProcess) : new Process();
         $entity->subject = ($mainProcess) ?
             Messaging::getMailSubject($mainProcess, $config, $initiator, $status) :
             Messaging::getMailSubject((new Process()), $config, $initiator, $status);

@@ -7,8 +7,8 @@ diese E-Mail wurde Ihnen aufgrund Ihrer Anfrage einer Zusammenfassung ihrer auf 
 {% if processList is defined and processList|length > 0 %}
     {{ block("processes_summary_german") }}
 {% else %}
-<br />
-<h3>Es wurden keine geplanten Termine gefunden.</h3>
+<br /><br />
+<strong>Es wurden keine geplanten Termine gefunden.</strong>
 {% endif %}
 <br /><br />
 {{ block("sendoff_german") }}
