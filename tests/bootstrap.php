@@ -5,6 +5,10 @@ if (!defined('APP_PATH')) {
     define('APP_PATH', realpath(__DIR__));
 }
 
+if (!defined('ZMS_API_URL')) {
+    define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'http://localhost:8083/');
+}
+
 if (file_exists(APP_PATH . '/../vendor/autoload.php')) {
     define('VENDOR_PATH', APP_PATH . '/../vendor');
 } else {
@@ -19,4 +23,4 @@ require(APP_PATH . '/config.php');
     CURLOPT_TIMEOUT => 15,
     //CURLOPT_VERBOSE => true,
 ];
-\BO\Zmsclient\Tests\Base::$http_baseurl = getenv("ZMS_API_URL");
+\BO\Zmsclient\Tests\Base::$http_baseurl = ZMS_API_URL;
