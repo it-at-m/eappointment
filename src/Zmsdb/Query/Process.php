@@ -290,7 +290,7 @@ class Process extends Base implements MappingInterface
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($dateTime) {
             $query
                 ->andWith('process.Erinnerungszeitpunkt', '<=', $dateTime->getTimestamp())
-                ->andWith('process.Erinnerungszeitpunkt', '>=', $dateTime->modify("-1 Minutes")->getTimestamp());
+                ->andWith('process.Erinnerungszeitpunkt', '>=', $dateTime->modify("-5 Minutes")->getTimestamp());
         });
         $this->query->orderBy('reminderTimestamp', 'ASC');
         return $this;
