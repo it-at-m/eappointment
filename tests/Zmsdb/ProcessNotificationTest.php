@@ -14,12 +14,16 @@ class ProcessNotificationTest extends Base
     public function testSendNotificationReminder()
     {
         $query = new Query();
-        $now = new \DateTimeImmutable('2016-04-07 08:00:00');
+        $now = new \DateTimeImmutable('2016-04-07 08:01:00');
         $processList = $query->readNotificationReminderProcessList($now, 10, null, 2);
         $this->assertEquals(1, $processList->count());
         $this->assertEquals(
             '2016-04-08 08:00',
             $processList->getFirst()->getFirstAppointment()->toDateTime()->format('Y-m-d H:i')
+        );
+        $this->assertEquals(
+            '2016-04-07 08:00',
+            $now->setTimestamp($processList->getFirst()->reminderTimestamp)->format('Y-m-d H:i')
         );
         $this->assertTrue($processList->getFirst()->getFirstClient()->hasTelephone());
     }
@@ -32,12 +36,20 @@ class ProcessNotificationTest extends Base
         $this->assertEquals(1, $helper->getCount());
     }
 
-    public function testCronAfter()
+    public function testCronWithDelay()
     {
-        $now = new \DateTimeImmutable('2016-04-07 08:00:50');
+        $now = new \DateTimeImmutable('2016-04-07 08:01:50');
         $helper = new \BO\Zmsdb\Helper\SendNotificationReminder($now, false);
         $helper->startProcessing(true);
         $this->assertEquals(1, $helper->getCount());
+    }
+
+    public function testCronLate()
+    {
+        $now = new \DateTimeImmutable('2016-04-07 08:05:01');
+        $helper = new \BO\Zmsdb\Helper\SendNotificationReminder($now, false);
+        $helper->startProcessing(true);
+        $this->assertEquals(0, $helper->getCount());
     }
 
     public function testCronBefore()
