@@ -5623,6 +5623,40 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/workstation/oauth/":
+ *      post:
+ *          summary: Create a workstation for an username, used to oauth
+ *          tags:
+ *              - workstation
+ *          parameters:
+ *              -   name: useraccount
+ *                  description: useraccount data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/useraccount.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ */
+\App::$slim->post(
+    '/workstation/oauth/',
+    '\BO\Zmsapi\WorkstationOAuth'
+)
+    ->setName("WorkstationOAuth");
+
+
+/**
+ *  @swagger
  *  "/workstation/login/":
  *      post:
  *          summary: Create a workstation for an username, used to login
