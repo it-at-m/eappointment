@@ -27,6 +27,7 @@ class ProcessListSummaryMailTest extends Base
         self::assertSame(StatusCode::HTTP_OK, $response->getStatusCode());
 
         $this->testShortRepetitionFailure();
+        $this->testShortRepetitionSuccess();
     }
 
     private function testShortRepetitionFailure()
@@ -36,13 +37,22 @@ class ProcessListSummaryMailTest extends Base
         self::assertSame(StatusCode::HTTP_TOO_MANY_REQUESTS, $response->getStatusCode());
     }
 
-    /*
+    private function testShortRepetitionSuccess()
+    {
+        \App::$now->modify("+ 10Minutes");
+        $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 3], []);
+        self::assertStringContainsString('Sie haben folgende Termine geplant', (string)$response->getBody());
+    }
+    
     public function testProcessListEmpty()
     {
+        $configRepository = (new \BO\Zmsdb\Config());
+        $config = $configRepository->readEntity();
+        $config->setPreference('mailings', 'noReplyDepartmentId', '74');
+        $config = $configRepository->updateEntity($config);
         $response = $this->render([], ['mail' => 'not.existing@service.berlinonline.de'], []);
         self::assertStringContainsString('Es wurden keine geplanten Termine gefunden.', (string)$response->getBody());
     }
-    */
 
     public function testUnvalidMail()
     {
