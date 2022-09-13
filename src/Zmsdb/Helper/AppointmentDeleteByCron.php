@@ -57,6 +57,21 @@ class AppointmentDeleteByCron
         }
     }
 
+    public function getCount()
+    {
+        return $this->count;
+    }
+
+    public function setLimit($limit)
+    {
+        $this->limit = $limit;
+    }
+
+    public function setLoopCount($loopCount)
+    {
+        $this->loopCount = $loopCount;
+    }
+
     public function startProcessing($commit, $pending = false)
     {
         if ($pending) {

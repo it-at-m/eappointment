@@ -258,14 +258,11 @@ class Process extends Base implements MappingInterface
     {
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($expirationDate) {
             $query->andWith(
-                'process.Datum',
+                self::expression(
+                    'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)'
+                ),
                 '<=',
-                $expirationDate->format('Y-m-d')
-            );
-            $query->andWith(
-                'process.Uhrzeit',
-                '<=',
-                $expirationDate->format('H:i')
+                $expirationDate->format('Y-m-d H:i:s')
             );
         });
         $this->query->orderBy('appointments__0__date', 'ASC');
