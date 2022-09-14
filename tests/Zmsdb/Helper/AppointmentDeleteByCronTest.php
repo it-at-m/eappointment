@@ -26,7 +26,6 @@ class AppointmentDeleteByCronTest extends Base
         $query = new Query();
         $helper->startProcessing(false, false);
         $this->assertEquals(10, $helper->getCount()['confirmed']);
-        $this->assertEquals(2, $helper->getCount()['blocked']);
     }
 
     public function testStartProcessingExpiredExakt()
