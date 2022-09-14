@@ -24,4 +24,7 @@
       <directory>./tests/Zmsclient/</directory>
     </testsuite>
   </testsuites>
+  <php>
+    <env name="ZMS_API_URL" value="http://mockup:8083/" force="true" />
+  </php>
 </phpunit>

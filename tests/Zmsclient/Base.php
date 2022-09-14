@@ -2,6 +2,7 @@
 
 namespace BO\Zmsclient\Tests;
 
+use BO\Zmsclient\Http;
 use PHPUnit\Framework\TestCase;
 
 abstract class Base extends TestCase
@@ -12,6 +13,7 @@ abstract class Base extends TestCase
      */
     public static $http_baseurl = null;
 
+    /** @var Http|null */
     protected static $http_client = null;
 
     public function setUp(): void

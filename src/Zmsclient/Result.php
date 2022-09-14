@@ -153,7 +153,7 @@ class Result
     /**
      * Description
      *
-     * @return \BO\Zmsentities\Schema\Entity
+     * @return \BO\Zmsentities\Collection\Base
      */
     public function getCollection()
     {
@@ -167,6 +167,7 @@ class Result
         }
         return $collection;
     }
+
     /**
      * Description
      *
@@ -203,7 +204,7 @@ class Result
         $data = $this->getData();
         $idList = array();
         foreach ($data as $item) {
-            if (array_key_exists('id', $item)) {
+            if (isset($item['id'])) {
                 $idList[] = $item['id'];
             }
         }
