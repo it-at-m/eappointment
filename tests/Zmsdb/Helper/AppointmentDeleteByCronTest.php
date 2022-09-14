@@ -56,10 +56,10 @@ class AppointmentDeleteByCronTest extends Base
         $process->status = 'finished';
         $queryArchived->writeEntityFinished($process, $now);
 
-        $helper = new AppointmentDeleteByCron(1, $now, false); // verbose
+        $helper = new AppointmentDeleteByCron(0, $now, false); // verbose
 
         $helper->startProcessing(false, false);
-        $this->assertEquals(3, count($query->readProcessListByScopeAndStatus(0, 'blocked', 0, 10, 0)));
+        $this->assertEquals(1, count($query->readProcessListByScopeAndStatus(0, 'blocked', 0, 10, 0)));
      
         $helper->startProcessing(true, false);
         $appointmentUnits = count($query->readProcessListByScopeAndStatus(0, 'blocked', 0, 10, 0));
