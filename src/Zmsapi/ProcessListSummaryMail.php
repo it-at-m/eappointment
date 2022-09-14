@@ -82,6 +82,9 @@ class ProcessListSummaryMail extends BaseController
         $department = (null != $process && null != $process->getScopeId()) ?
             (new DepartmentRepository())->readByScopeId($process->getScopeId(), 0) :
             (new DepartmentRepository())->readEntity($config->getPreference('mailings', 'noReplyDepartmentId'));
+        if (null === $department) {
+            throw new Exception\Mail\MailSenderFromMissing();
+        }
         return $department;
     }
 
