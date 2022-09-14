@@ -14,7 +14,7 @@ services:
   test:
     depends_on:
       - mockup
-    image: registry.gitlab.com/eappointment/php-base:7.3-dev
+    image: registry.gitlab.com/eappointment/php-base:8.0-base
     volumes:
       - type: bind
         source: "."
@@ -23,9 +23,3 @@ services:
     environment:
       ZMS_API_URL: http://mockup:8083/
     working_dir: /app
-    command:
-      - "bash"
-      - "-c"
-      #- "while true;do sleep 5; bin/test; done;"
-      - curl -X POST "http://mockup:8082/api/scenarios/reset_all"
-      - sleep 2 && bin/test;

@@ -3,62 +3,57 @@
 namespace BO\Zmsclient;
 
 /**
+ * Adapter & Decorator Class to use the Psr7\Client
+ *
  * Access api method_exists
  */
 class Http
 {
     /**
-     * @var Psr7\ClientInterface $client
+     * @var Psr7\ClientInterface|null
      */
     protected $client = null;
 
     /**
-     * @var String $http_username
+     * @var string
      */
-    protected $http_username = null;
+    protected $http_baseurl = '';
 
     /**
-     * @var String $http_password
-     */
-    protected $http_password = null;
-
-    /**
-     * @var String $http_baseurl
-     */
-    protected $http_baseurl = null;
-
-    /**
-     * @var Boolean $authEnabled with authentification request if true
+     * @var bool
+     * with authentification request if true
      */
     public static $authEnabled = true;
 
     /**
-     * @var Psr7\Uri $uri
+     * @var Psr7\Uri|null
      */
     protected $uri = null;
 
     /**
-     * @var Boolean $logEnabled Log requests and responses if true
+     * @var bool
+     * Log requests and responses if true
      */
     public static $logEnabled = true;
 
     /**
-     * @var Array $log Contains a list of requests and responses if logging is enabled
+     * @var array
+     * Contains a list of requests and responses if logging is enabled
      */
     public static $log = [];
 
     /**
-     * @var String $apikeyString
+     * @var string|null
      */
     protected $apikeyString = null;
 
     /**
-     * @var String $apikeyString
+     * @var string|null
      */
     protected $workflowkeyString = null;
 
     /**
-     * @var Int $jsonCompressLevel
+     * @var int|null
      */
     public static $jsonCompressLevel = null;
 
@@ -68,10 +63,10 @@ class Http
      */
     public function __construct($baseUrl, Psr7\ClientInterface $client = null)
     {
-        $this->http_baseurl = parse_url($baseUrl, PHP_URL_PATH);
+        $this->http_baseurl = parse_url($baseUrl, PHP_URL_PATH) ?? '';
         $this->uri = new Psr7\Uri();
-        $this->uri = $this->uri->withScheme(parse_url($baseUrl, PHP_URL_SCHEME));
-        $this->uri = $this->uri->withHost(parse_url($baseUrl, PHP_URL_HOST));
+        $this->uri = $this->uri->withScheme(parse_url($baseUrl, PHP_URL_SCHEME) ?? '');
+        $this->uri = $this->uri->withHost(parse_url($baseUrl, PHP_URL_HOST) ?? '');
         $port = parse_url($baseUrl, PHP_URL_PORT);
         if ($port) {
             $this->uri = $this->uri->withPort($port);

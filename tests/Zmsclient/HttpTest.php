@@ -2,6 +2,10 @@
 
 namespace BO\Zmsclient\Tests;
 
+use BO\Zmsclient\Psr7\Response;
+use BO\Zmsclient\Status;
+use BO\Zmsentities\Mail;
+use BO\Zmsentities\Schema\Entity;
 use Slim\Http\StatusCode;
 
 class HttpTest extends Base
@@ -33,7 +37,7 @@ class HttpTest extends Base
     public function testJsonCompressLevel()
     {
         \BO\Zmsclient\HTTP::$jsonCompressLevel = 1;
-        $this->createHttpClient(null);
+        $this->createHttpClient();
         $result = static::$http_client->readGetResult('/scope/');
         $collection = $result->getCollection();
         $this->assertStringContainsString('123', $result->getIds());
@@ -43,10 +47,10 @@ class HttpTest extends Base
     {
         $result = static::$http_client->readGetResult('/status/');
         $this->assertTrue($result->isStatus(200));
-        $response = new \BO\Zmsclient\Psr7\Response();
+        $response = new Response();
         $status = $result->getEntity();
-        $response = \BO\Zmsclient\Status::testStatus($response, $status);
-        $this->assertTrue($status instanceof \BO\Zmsentities\Schema\Entity);
+        $response = Status::testStatus($response, $status);
+        $this->assertTrue($status instanceof Entity);
         $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $result->getResponse());
         $this->assertInstanceOf('\Psr\Http\Message\RequestInterface', $result->getRequest());
 
@@ -60,8 +64,8 @@ class HttpTest extends Base
         $status['processes']['lastCalculate'] = (new \DateTimeImmutable())->modify('- 4 hour')->format('Y-m-d H:i:s');
         $status['sources']['dldb']['last'] = (new \DateTimeImmutable())->modify('- 3 hour')->format('Y-m-d H:i:s');
 
-        $response = new \BO\Zmsclient\Psr7\Response();
-        $response = \BO\Zmsclient\Status::testStatus($response, $status);
+        $response = new Response();
+        $response = Status::testStatus($response, $status);
         $this->assertStringContainsString('Oldest mail with age in seconds: 400s', (string)$response->getBody());
         $this->assertStringContainsString('Oldest sms with age in seconds: 400s', (string)$response->getBody());
         $this->assertStringContainsString(
@@ -86,11 +90,11 @@ class HttpTest extends Base
     public function testStatusServerError()
     {
         $result = static::$http_client->readGetResult('/status/');
-        $response = new \BO\Zmsclient\Psr7\Response();
+        $response = new Response();
         $status = $result->getEntity();
 
         $status['sources']['dldb']['last'] = (new \DateTimeImmutable())->modify('- 6 hour')->format('Y-m-d H:i:s');
-        $response = \BO\Zmsclient\Status::testStatus($response, $status);
+        $response = Status::testStatus($response, $status);
 
         $this->assertStringContainsString(
             'CRIT - Last DLDB Import is more then 4 hours ago',
@@ -102,7 +106,7 @@ class HttpTest extends Base
     public function testStatusOk()
     {
         $result = static::$http_client->readGetResult('/status/', ['includeProcessStats' => 0]);
-        $response = new \BO\Zmsclient\Psr7\Response();
+        $response = new Response();
         $status = $result->getEntity();
         $status['mail']['oldestSeconds'] = 0;
         $status['notification']['oldestSeconds'] = 0;
@@ -114,7 +118,7 @@ class HttpTest extends Base
         $status['processes']['lastCalculate'] = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
         $status['sources']['dldb']['last'] = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
         
-        $response = \BO\Zmsclient\Status::testStatus($response, $status);
+        $response = Status::testStatus($response, $status);
         $this->assertEquals(
             'OK - DB=0% Threads=0 Locks=0', 
             (string)$response->getBody()
@@ -126,8 +130,8 @@ class HttpTest extends Base
         $closure = function () {
             throw new \Exception('Status failed');
         };
-        $response = new \BO\Zmsclient\Psr7\Response();
-        $response = \BO\Zmsclient\Status::testStatus($response, $closure);
+        $response = new Response();
+        $response = Status::testStatus($response, $closure);
         $this->assertStringContainsString('Status failed', (string)$response->getBody());
     }
 
@@ -142,7 +146,7 @@ class HttpTest extends Base
     public function testMails()
     {
         $now = new \DateTimeImmutable('2016-04-01 08:00');
-        $entity = \BO\Zmsentities\Mail::createExample();
+        $entity = Mail::createExample();
         $confirmedProcess = static::$http_client->readGetResult('/scope/141/process/'. $now->format('Y-m-d') .'/')
             ->getCollection()
             ->toQueueList($now)
@@ -150,6 +154,7 @@ class HttpTest extends Base
             ->toProcessList()
             ->getFirst();
 
+        /** @var Mail $entity */
         $entity->process = static::$http_client
             ->readGetResult(
                 '/process/'. $confirmedProcess->getId() .'/'. $confirmedProcess->getAuthKey() .'/',
@@ -158,16 +163,16 @@ class HttpTest extends Base
             
         $result = static::$http_client->readPostResult('/mails/', $entity, ['resolveReferences' => 0]);
         $entity = $result->getEntity();
-        $this->assertTrue($entity instanceof \BO\Zmsentities\Mail);
+        $this->assertTrue($entity instanceof Mail);
         $mailId = $entity->id;
 
         $result = static::$http_client->readGetResult('/mails/');
         $data = $result->getData();
-        $this->assertTrue($data[0] instanceof \BO\Zmsentities\Mail);
+        $this->assertTrue($data[0] instanceof Mail);
 
         $result = static::$http_client->readDeleteResult("/mails/$mailId/", []);
         $entity = $result->getEntity();
-        $this->assertTrue($entity instanceof \BO\Zmsentities\Mail);
+        $this->assertTrue($entity instanceof Mail);
         $this->writeTestLogout(static::$http_client);
     }
 

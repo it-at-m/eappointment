@@ -71,7 +71,7 @@ class SessionHandler implements \SessionHandlerInterface
                 throw $exception;
             }
         }
-        return ($session && array_key_exists('content', $session)) ? serialize($session->getContent()) : '';
+        return ($session && isset($session['content'])) ? serialize($session->getContent()) : '';
     }
 
     public function write($sessionId, $sessionData)
