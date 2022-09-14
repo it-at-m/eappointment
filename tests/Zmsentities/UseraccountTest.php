@@ -146,7 +146,7 @@ class UseraccountTest extends EntityCommonTests
         $entity->save = 'submit';
         $entity->password = '';
         $entity->changePassword = array();
-        $this->assertFalse(array_key_exists('save', $entity->withCleanedUpFormData()));
+        $this->assertArrayNotHasKey('save', (array) $entity->withCleanedUpFormData());
     }
 
     public function testSetPassword()

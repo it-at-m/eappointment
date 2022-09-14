@@ -32,7 +32,7 @@ class ScopeTest extends EntityCommonTests
         $entity = $this->getExample();
         $entity->removeImage = 1;
         $entity->save = 'submit';
-        $this->assertFalse(array_key_exists('save', $entity->withCleanedUpFormData()));
+        $this->assertArrayNotHasKey('save', (array) $entity->withCleanedUpFormData());
     }
 
     public function testProvider()
@@ -141,7 +141,7 @@ class ScopeTest extends EntityCommonTests
         ];
         $this->assertEquals(1, $entity->getDayoffList()->count());
         $this->assertEntityList('\BO\Zmsentities\Dayoff', $entity->getDayoffList());
-        $this->assertTrue(! array_key_exists('dayoff', $entity->withLessData()));
+        $this->assertArrayNotHasKey('dayoff', (array) $entity->withLessData());
     }
 
     public function testNewerThan()
