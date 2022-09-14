@@ -19,6 +19,7 @@ use BO\Zmsentities\Mail;
 use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\EventLog;
 use BO\Zmsentities\Process;
+use BO\Zmsentities\Department;
 use BO\Zmsentities\Helper\DateTime;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -57,8 +58,7 @@ class ProcessListSummaryMail extends BaseController
         );
 
         $config = (new ConfigRepository)->readEntity();
-        $department = (new DepartmentRepository())
-            ->readEntity($config->getPreference('mailings', 'noReplyDepartmentId'));
+        $department = $this->readDepartment($config, $collection->getFirst());
 
         $mail = (new Mail)->toResolvedEntity($collection, $config, 'overview')->withDepartment($department);
         $mail = $this->setWithProcessClient($mail, $mailAddress);
@@ -77,7 +77,15 @@ class ProcessListSummaryMail extends BaseController
         return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }
 
-    protected function setWithProcessClient(Mail $entity, $mailAddress)
+    protected function readDepartment($config, $process = null): Department
+    {
+        $department = (null != $process && null != $process->getScopeId()) ?
+            (new DepartmentRepository())->readByScopeId($process->getScopeId(), 0) :
+            (new DepartmentRepository())->readEntity($config->getPreference('mailings', 'noReplyDepartmentId'));
+        return $department;
+    }
+
+    protected function setWithProcessClient(Mail $entity, $mailAddress): Mail
     {
         $process = new Process();
         $client = $entity->getClient();
