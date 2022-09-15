@@ -35,22 +35,24 @@ class Process extends Base implements MappingInterface
             OR process.istFolgeterminvon = ?
         ";
 
-    const QUERY_CANCELED = "UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
-        SET
-            process.Anmerkung = CONCAT(
-                'Abgesagter Termin gebucht am: ',
-                FROM_UNIXTIME(process.IPTimeStamp,'%d.%m.%Y, %H:%i'),' Uhr | ',
-                IFNULL(process.Anmerkung,'')
-            ),
-            process.Name = '(abgesagt)',
-            process.IPadresse = '',
-            process.IPTimeStamp = FLOOR(UNIX_TIMESTAMP()) + (IFNULL(s.loeschdauer, 15) * 60),
-            process.NutzerID = 0,
-            process.vorlaeufigeBuchung = 1,
-            process.absagecode = RIGHT(MD5(CONCAT(process.absagecode, 'QUERY_CANCELED')), 4)
-        WHERE
-            (process.BuergerID = ? AND process.absagecode = ?)
-            OR process.istFolgeterminvon = ?
+    const QUERY_CANCELED = "
+        SET time_zone='Europe/Berlin';
+        UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
+            SET
+                process.Anmerkung = CONCAT(
+                    'Abgesagter Termin gebucht am: ',
+                    FROM_UNIXTIME(process.IPTimeStamp,'%d.%m.%Y, %H:%i'),' Uhr | ',
+                    IFNULL(process.Anmerkung,'')
+                ),
+                process.Name = '(abgesagt)',
+                process.IPadresse = '',
+                process.IPTimeStamp = :canceledTimestamp + (IFNULL(s.loeschdauer, 15) * 60),
+                process.NutzerID = 0,
+                process.vorlaeufigeBuchung = 1,
+                process.absagecode = RIGHT(MD5(CONCAT(process.absagecode, 'QUERY_CANCELED')), 4)
+            WHERE
+                (process.BuergerID = :processId AND process.absagecode = :authKey)
+                OR process.istFolgeterminvon = :processId
         ";
 
     const QUERY_DELETE = "DELETE FROM `buerger`

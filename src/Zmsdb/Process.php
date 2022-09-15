@@ -644,14 +644,15 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Resource Status
      */
-    public function writeCanceledEntity($processId, $authKey)
+    public function writeCanceledEntity($processId, $authKey, $now = null)
     {
+        $canceledTimestamp = ($now) ? $now->getTimestamp() : (new \DateTimeImmutable())->getTimestamp();
         $query = Query\Process::QUERY_CANCELED;
-        $this->perform($query, array(
-            $processId,
-            $authKey,
-            $processId
-        ));
+        $this->perform($query, [
+            'processId' => $processId,
+            'authKey' => $authKey,
+            'canceledTimestamp' => $canceledTimestamp
+        ]);
         Log::writeLogEntry("DELETE (Process::writeCanceledEntity) $processId ", $processId);
         return $this->readEntity($processId, new Helper\NoAuth(), 0);
     }
@@ -826,6 +827,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function readDeallocateProcessList(
         \DateTimeInterface $now,
         $limit = 500,
+        $offset = null,
         $resolveReferences = 0
     ) {
         $selectQuery = new Query\Process(Query\Base::SELECT);
@@ -834,7 +836,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addResolvedReferences($resolveReferences)
             ->addConditionDeallocate($now)
             ->addConditionIgnoreSlots()
-            ->addLimit($limit);
+            ->addLimit($limit, $offset);
         $statement = $this->fetchStatement($selectQuery);
         return $this->readList($statement, $resolveReferences);
     }
