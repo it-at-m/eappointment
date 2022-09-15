@@ -17,7 +17,13 @@ EOS;
 $verbose = preg_grep('#^--?v(erbose)?$#', $argv);
 $commit = preg_grep('#^--commit$#', $argv);
 
-$job = new \BO\Zmsdb\Helper\ReservedDataDeleteByCron($verbose);
+if (class_exists('\App') && isset(\App::$now)) {
+    $now = \App::$now;
+} else {
+    $now = new \DateTimeImmutable('now');
+}
+
+$job = new \BO\Zmsdb\Helper\ReservedDataDeleteByCron($now, $verbose);
 $job->startProcessing($commit);
 
 if (!$commit) {

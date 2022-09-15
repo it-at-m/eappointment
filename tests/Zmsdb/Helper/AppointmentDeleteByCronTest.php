@@ -12,8 +12,8 @@ class AppointmentDeleteByCronTest extends Base
     public function testConstructor()
     {
         $now = new \DateTimeImmutable('2016-04-02 11:55');
-        $availabilityObject = new AppointmentDeleteByCron(0, $now, false);
-        $this->assertInstanceOf(AppointmentDeleteByCron::class, $availabilityObject);
+        $helper = new AppointmentDeleteByCron(0, $now, false);
+        $this->assertInstanceOf(AppointmentDeleteByCron::class, $helper);
     }
 
     public function testStartProcessingByCron()

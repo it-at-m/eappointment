@@ -43,9 +43,7 @@ class AppointmentDeleteByCron
         $time = new \DateTimeImmutable();
         $this->time = $time->setTimestamp($now->getTimestamp() - $deleteInSeconds);
         if ($verbose) {
-            error_log(
-                "INFO: Deleting appointments older than " . $this->time->format('c')
-            );
+            $this->log("INFO: Deleting appointments older than " . $this->time->format('c'));
             $this->verbose = true;
         }
     }
@@ -143,7 +141,7 @@ class AppointmentDeleteByCron
                 return 1;
             }
         } elseif ($verbose) {
-            error_log("INFO: Keep process $process");
+            $this->log("INFO: Keep process $process");
         }
         return 0;
     }
@@ -164,7 +162,7 @@ class AppointmentDeleteByCron
         $archived = null;
         $archived = $archiver->writeEntityFinished($process, $now);
         if ($archived && $verbose) {
-            error_log("INFO: Archived with Status=$process->status and Id=" . $archived->archiveId);
+            $this->log("INFO: Archived with Status=$process->status and Id=" . $archived->archiveId);
         }
     }
 
@@ -174,11 +172,11 @@ class AppointmentDeleteByCron
         $query = new \BO\Zmsdb\Process();
         if ($query->writeDeletedEntity($process->id)) {
             if ($verbose) {
-                error_log("INFO: Process $process->id successfully removed");
+                $this->log("INFO: Process $process->id successfully removed");
             }
         } else {
             if ($verbose) {
-                error_log("WARN: Could not remove process '$process->id'!");
+                $this->log("WARN: Could not remove process '$process->id'!");
             }
         }
     }
