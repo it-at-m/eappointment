@@ -242,7 +242,7 @@ class Mail extends Schema\Entity
     public function __toString()
     {
         $string = "mail#";
-        $string .= $this->id;
+        $string .= ($this->hasId()) ? $this->getId() : 0;
         $string .= " recipient:". $this->getRecipient();
         $string .= " process:". $this->getProcessId();
         return $string;
