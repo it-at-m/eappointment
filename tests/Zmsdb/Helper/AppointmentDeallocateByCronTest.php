@@ -23,10 +23,8 @@ class AppointmentDeallocateByCronTest extends Base
         $helper = new AppointmentDeallocateByCron($now, false); // verbose
         $helper->setLimit(10);
         $helper->setLoopCount(5);
-        error_log(var_export((new \BO\Zmsdb\Process)->readDeallocateProcessList($now, 10, 0)->getIds(), true));
         $helper->startProcessing(false);
-        error_log(var_export((new \BO\Zmsdb\Process)->readDeallocateProcessList($now, 10, 0)->getIds(), true));
-        $this->assertEquals(0, $helper->getCount()['deallocated']);
+        $this->assertEquals(2, $helper->getCount()['deallocated']);
     }
 
     public function testWithDeallocatedProcess()
@@ -44,13 +42,13 @@ class AppointmentDeallocateByCronTest extends Base
         $helper->setLimit(10);
         $helper->setLoopCount(5);
         $helper->startProcessing(false);
-        $this->assertEquals(1, $helper->getCount()['deallocated']);
+        $this->assertEquals(3, $helper->getCount()['deallocated']);
         $processList = (new \BO\Zmsdb\Process)->readDeallocateProcessList($now, 10, 0);
         $this->assertEquals(
             'Abgesagter Termin gebucht am: 01.04.2016, 11:55 Uhr | ', 
-            $processList->getFirst()->amendment
+            $processList->getLast()->amendment
         );
-        $this->assertEquals(1, $processList->count());
+        $this->assertEquals(3, $processList->count());
         $helper->startProcessing(true);
         $this->assertEquals(0, (new \BO\Zmsdb\Process)->readDeallocateProcessList($now, 10, 0)->count());
     }
@@ -71,8 +69,8 @@ class AppointmentDeallocateByCronTest extends Base
         $helper->setLimit(10);
         $helper->setLoopCount(5);
         $helper->startProcessing(false);
-        $this->assertEquals(0, $helper->getCount()['deallocated']);
-        $this->assertEquals(0, (new \BO\Zmsdb\Process)->readDeallocateProcessList($now, 10, 0)->count());
+        $this->assertEquals(2, $helper->getCount()['deallocated']);
+        $this->assertEquals(2, (new \BO\Zmsdb\Process)->readDeallocateProcessList($now, 10, 0)->count());
     }
 
     /**
