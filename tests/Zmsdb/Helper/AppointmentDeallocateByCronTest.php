@@ -24,6 +24,7 @@ class AppointmentDeallocateByCronTest extends Base
         $helper->setLimit(10);
         $helper->setLoopCount(5);
         $helper->startProcessing(false);
+        error_log(var_export((new \BO\Zmsdb\Process)->readDeallocateProcessList($now, 10, 0), true));
         $this->assertEquals(0, $helper->getCount()['deallocated']);
     }
 
