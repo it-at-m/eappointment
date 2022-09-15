@@ -34,6 +34,5 @@ class EventLogCleanUpByCron
         if ($commit) {
             $eventLogRepo->deleteOutdated();
         }
-        
     }
 }
