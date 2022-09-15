@@ -61,7 +61,6 @@ class ReservedDataDeleteByCron
         foreach ($this->scopeList as $scope) {
             $this->log("\nDelete expired reservations for scope $scope->id: ");
             $count = $this->deleteByCallback($commit, function ($limit, $offset) use ($scope) {
-                $query = new \BO\Zmsdb\Process();
                 $time = clone $this->time;
                 $reservationDuration = $scope->toProperty()->preferences->appointment->reservationDuration->get();
                 $time = $time->setTimestamp($time->getTimestamp() - ($reservationDuration * 60));
