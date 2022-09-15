@@ -576,7 +576,7 @@ class ProcessTest extends Base
         $processList = $query->readDeallocateProcessList($dateTime->modify('+10 minutes'), 500);
         $this->assertEquals(2, $processList->count());
 
-        $job = new \BO\Zmsdb\Helper\AppointmentDeallocateByCron(false, $dateTime->modify('+10 minutes'));
+        $job = new \BO\Zmsdb\Helper\AppointmentDeallocateByCron($dateTime->modify('+10 minutes'), false);
         $job->startProcessing(true);
 
         $processList = $query->readDeallocateProcessList($dateTime->modify('+10 minutes'), 500);
