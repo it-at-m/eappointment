@@ -1,3 +1,6 @@
+## 2.24.11
+* #55586 - refactored cronjob helper to delete expired reservations with limit and offset
+
 ## v2.24.10
 
 * #55114 - new db queries have been added to list appointments that belong to an email address
