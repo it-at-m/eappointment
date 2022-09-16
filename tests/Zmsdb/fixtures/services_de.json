@@ -4591,7 +4591,7 @@
         {
           "location": "122217",
           "appointment": {
-            "slots": "0",
+            "slots": "1",
             "allowed": true
           }
         },
@@ -4922,6 +4922,27 @@
           "appointment": {
             "slots": "0",
             "allowed": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "1120703",
+      "name": "Personalausweis beantragen x2",
+      "relation": {
+        "root_topic": "324835"
+      },
+      "meta": {
+        "url": "https://service.berlin.de/dienstleistung/120703/",
+        "locale": "de",
+        "lastupdate": "2017-12-27T09:40:27+01:00"
+      },
+      "locations": [
+        {
+          "location": "122217",
+          "appointment": {
+            "slots": "2",
+            "allowed": true
           }
         }
       ]
