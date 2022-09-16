@@ -4948,6 +4948,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              200:
  *                  description: "success"
  *                  schema:
+ *                      type: object
  *                      properties:
  *                          meta:
  *                              $ref: "schema/metaresult.json"
