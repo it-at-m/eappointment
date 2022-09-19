@@ -122,10 +122,12 @@ abstract class Base
     public function fetchId($itemId)
     {
         $itemList = $this->getItemList();
-        if (array_key_exists($itemId, $itemList)) {
-            return $itemList[$itemId];
+
+        if (!$itemList instanceof \BO\Dldb\Collection\Base || !$itemList->offsetExists($itemId)) {
+            return false;
         }
-        return false;
+
+        return $itemList[$itemId];
     }
 
     public function setAccessInstance(\BO\Dldb\AbstractAccess $accessInstance)

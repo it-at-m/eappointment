@@ -2,11 +2,11 @@
 
 
 define('FIXTURES', __DIR__ . DIRECTORY_SEPARATOR . 'Dldb' . DIRECTORY_SEPARATOR . 'fixtures');
-define('LOCATION_SINGLE', 12679); // Abgeordnetenhaus von Berlin
+define('LOCATION_SINGLE', 122231); // Abgeordnetenhaus von Berlin
 define('SERVICE_SINGLE', 120703); // Personalausweis
 define('TOPIC_SINGLE', 324801); // Arbeit, Beruf und Soziales
 define('AUTHORITY_SINGLE', 12679); // Abgeordnetenhaus
-define('LOCATION_CSV', '122281,122280'); // Rathaus Spandau, Rathaus Mitte
+define('LOCATION_CSV', '122281,122280,122231'); // Rathaus Spandau, Rathaus Mitte, LOCATION_SINGLE
 define('SERVICE_CSV', '120703,121151'); // Personalausweis, Reisepass
 
 define('LOCATION_JSON', FIXTURES . DIRECTORY_SEPARATOR . 'locations_de.json');
