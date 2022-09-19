@@ -21,9 +21,16 @@ class Authorities extends Base
 
     public function addLocation(\BO\Dldb\Entity\Location $location)
     {
-        if (array_key_exists('authority', $location)
-            && array_key_exists('id', $location['authority'])
-            && array_key_exists('name', $location['authority'])
+        if ($location->offsetExists('authority')
+            && (($location['authority'] instanceof \BO\Dldb\Entity\Base
+                    && $location['authority']->offsetExists('id')
+                    && $location['authority']->offsetExists('authority')
+                ) || (
+                    is_array($location['authority'])
+                    && array_key_exists('id', $location['authority'])
+                    && array_key_exists('name', $location['authority'])
+                )
+            )
             && $location['authority']['id']
         ) {
             $this->addAuthority($location['authority']['id'], $location['authority']['name']);
@@ -41,9 +48,9 @@ class Authorities extends Base
         return $this;
     }
 
-    public function hasAuthority($authority_id)
+    public function hasAuthority($authority_id): bool
     {
-        return array_key_exists($authority_id, $this);
+        return $this->offsetExists($authority_id);
     }
 
     public function readByExtendedService($service)

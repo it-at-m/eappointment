@@ -6,6 +6,7 @@
 
 namespace BO\Dldb\File;
 
+use BO\Dldb\Collection\Settings;
 use \BO\Dldb\Entity\Setting as Entity;
 
 /**
@@ -17,7 +18,7 @@ class Setting extends Base
 
     protected function parseData($data)
     {
-        return $data['data']['settings'];
+        return new Settings($data['data']['settings']);
     }
 
     public function fetchName($name)

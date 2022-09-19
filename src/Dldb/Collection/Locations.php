@@ -17,13 +17,13 @@ class Locations extends Base
     }
 
     /**
-     * @param Int $locationId
+     * @param int $locationId
      *
      * @return Bool
      */
-    public function hasLocationId($locationId)
+    public function hasLocationId($locationId): bool
     {
-        return array_key_exists($locationId, $this);
+        return $this->offsetExists($locationId);
     }
 
     /**

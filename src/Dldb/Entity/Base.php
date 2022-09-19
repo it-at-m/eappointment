@@ -15,7 +15,7 @@ class Base extends \ArrayObject
      */
     public function getId()
     {
-        if (!array_key_exists('id', $this)) {
+        if (!$this->offsetExists('id')) {
             return false;
         }
         return $this['id'];
@@ -36,7 +36,7 @@ class Base extends \ArrayObject
      */
     public function getPath()
     {
-        if (!array_key_exists('path', $this)) {
+        if (!$this->offsetExists('path')) {
             return false;
         }
         return $this['path'];
@@ -44,7 +44,12 @@ class Base extends \ArrayObject
 
     public function getLocale()
     {
-        if (!array_key_exists('locale', $this['meta'])) {
+        $meta = $this['meta'];
+        if ((
+            (is_object($meta) && $meta->offsetExists('locale'))
+                || array_key_exists('locale', $meta)
+            ) === false
+        ) {
             return false;
         }
         return $this['meta']['locale'];
@@ -52,7 +57,7 @@ class Base extends \ArrayObject
 
     public function getLink()
     {
-        if (!array_key_exists('link', $this)) {
+        if (!$this->offsetExists('link')) {
             return false;
         }
         return $this['link'];
@@ -60,7 +65,7 @@ class Base extends \ArrayObject
 
     public function getType()
     {
-        if (!array_key_exists('type', $this)) {
+        if (!$this->offsetExists('type')) {
             return false;
         }
         return $this['type'];

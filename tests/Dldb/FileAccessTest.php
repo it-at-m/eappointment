@@ -8,7 +8,7 @@ namespace BO\Dldb\Tests;
 
 use BO\Dldb\FileAccess;
 
-class FileTest extends \PHPUnit\Framework\TestCase
+class FileAccessTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testIds()
@@ -30,7 +30,7 @@ class FileTest extends \PHPUnit\Framework\TestCase
         
         $this->assertArrayHasKey(SERVICE_SINGLE, $serviceList);
         $locationList = $access->fromLocation()->fetchFromCsv(LOCATION_CSV);
-        $this->assertArrayHasKey(LOCATION_SINGLE, $locationList);
+        $this->assertArrayHasKey(explode(',', LOCATION_CSV)[0], $locationList);
         $results = $access->fromLocation()->readSearchResultList('Spandau', SERVICE_CSV);
         $this->assertTrue(count($results) > 0, "No locations found");
         $results = $access->fromService()->readSearchResultList('Pass', LOCATION_CSV);
