@@ -10,7 +10,7 @@ class ProviderTest extends Base
     {
         $entity = (new Query())->readEntity('dldb', 122280, 1);
         $this->assertEntity("\\BO\\Zmsentities\\Provider", $entity);
-        $this->assertEquals(true, array_key_exists('data', $entity));
+        $this->assertArrayHasKey('data', (array) $entity);
     }
 
     public function testUnknowSource()

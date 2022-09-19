@@ -206,7 +206,7 @@ class Select
     {
         if (null === self::$writeConnection) {
             self::$writeConnection = self::createPdoConnection(self::$writeSourceName);
-            self::$writeProfiler = new \Aura\Sql\Profiler();
+            self::$writeProfiler = new \Aura\Sql\Profiler\Profiler();
             self::$writeProfiler->setActive(self::$enableProfiling);
             self::$writeConnection->setProfiler(self::$writeProfiler);
             if (self::$useTransaction) {
