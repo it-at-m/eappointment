@@ -12,9 +12,9 @@ class ProcessStatusFree extends Process
     public function readFreeProcesses(
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeInterface $now,
-                                 $slotType = 'public',
-                                 $slotsRequired = null,
-                                 $groupData = false
+        $slotType = 'public',
+        $slotsRequired = null,
+        $groupData = false
     ) {
         $calendar = (new Calendar())->readResolvedEntity($calendar, $now, true);
         $dayquery = new Day();
