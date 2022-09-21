@@ -94,22 +94,15 @@ class SendMailReminder
     protected function writeByCallback($commit, \Closure $callback)
     {
         $processCount = 0;
-        $startposition = 0;
         while ($processCount < $this->limit) {
             $this->log("***Stack count***: ".$processCount);
-            $processList = $callback($this->loopCount, $startposition);
+            $processList = $callback($this->loopCount, $processCount);
             if (0 == $processList->count()) {
                 break;
             }
             foreach ($processList as $process) {
-                if (!$this->writeReminder($process, $commit, $processCount)) {
-                    $startposition++;
-                    break;
-                }
+                $this->writeReminder($process, $commit, $processCount);
                 $processCount++;
-                if (! $commit && $this->verbose) {
-                    $startposition = $processCount;
-                }
             }
         }
         return $processCount;
@@ -117,7 +110,6 @@ class SendMailReminder
 
     protected function writeReminder(Process $process, $commit, $processCount)
     {
-        $entity = null;
         $department = (new DepartmentRepository())->readByScopeId($process->getScopeId(), 0);
         if ($process->getFirstClient()->hasEmail() && $department->hasMail()) {
             $config = (new ConfigRepository)->readEntity();
@@ -134,7 +126,6 @@ class SendMailReminder
                 );
             }
         }
-        return $entity;
     }
 
     protected function getProcessListOverview($process, $config)
