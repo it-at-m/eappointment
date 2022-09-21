@@ -66,13 +66,13 @@ class MailTest extends EntityCommonTests
             'Mimepart content is not html'
         );
         $this->assertStringContainsString(
-            'Ihre Vorgangsnummer ist die **"123456"**',
+            '**Vorgangsnummer:** 123456',
             $resolvedEntity->getPlainPart(),
             'Mimepart content is not plain text'
         );
         $this->assertStringContainsString('BEGIN:VCALENDAR', $resolvedEntity->getIcsPart(), 'Mimepart content is not plain text');
         // test if appointment date formatted correct
-        $this->assertStringContainsString('Mittwoch\, 18. November', $resolvedEntity->getIcsPart());
+        $this->assertStringContainsString('2015 um 18:52 Uhr', $resolvedEntity->getIcsPart());
         $this->assertStringContainsString('DTSTART;TZID=Europe/Berlin:20151118T185251', $resolvedEntity->getIcsPart());
     }
 
