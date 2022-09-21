@@ -36,7 +36,6 @@ class Process extends Base implements MappingInterface
         ";
 
     const QUERY_CANCELED = "
-        SET time_zone='Europe/Berlin';
         UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
             SET
                 process.Anmerkung = CONCAT(
