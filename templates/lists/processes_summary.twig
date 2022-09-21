@@ -1,11 +1,14 @@
 {%  block processes_summary_german %}
+{% if not isMainProcess %}
 <br />
-<h4>Sie haben folgende Termine geplant:</h4>
+<h4>Zusätzlich haben Sie folgende Termine gebucht:</h4>
+<br />
 Sollten Sie einen dieser Termine nicht mehr wahrnehmen können, möchten wir Sie bitten,<br />
-diesen abzusagen, so dass dieser anderen zur Verfügung steht.<br /><br />
+diesen <strong>unbedingt</strong> über den Änderungs/Absage-Link abzusagen, damit wir den Termin neu vergeben können.<br /><br />
+{% endif %}
 {% for plannedProcess in processList %}
 {% set changeLink  = config.appointments.urlChange ~ '?process=' ~ plannedProcess.id ~ '&authKey=' ~ plannedProcess.authKey %}
-<div style="background: #eeeeee; border: 1px solid #aaaaaa; padding:10px;">
+<div style="background: #efefef; border: 1px solid #aaaaaa; padding:10px;">
 <strong>Zeit:</strong> am {{ plannedProcess.getFirstAppointment.date|localizeddate("short","none",NULL,NULL,"EEEE, dd. MMMM y") }} um {{ plannedProcess.getFirstAppointment.date|date("H:i") }} Uhr<br />
 <strong>Ort:</strong> {{ plannedProcess.scope.provider.name ~ ", " ~ plannedProcess.scope.provider.contact.street ~ " "  ~ plannedProcess.scope.provider.contact.streetNumber ~", " ~ plannedProcess.scope.provider.contact.postalCode ~ " " ~ plannedProcess.scope.provider.contact.city }}<br />
 {% if plannedProcess.requests|length > 1 %}
@@ -23,9 +26,12 @@ Sie haben keine Dienstleistungen ausgewählt.
 {% endfor %}
 {% endif %}
 {#<strong>Teilnehmer:</strong> {{ plannedProcess.clients|length}}<br />#}
+{% if plannedProcess.scope.hint %}
+<strong>Hinweis: </strong>({{ process.scope.hint }})
+{% endif %}<br />
 <strong>Vorgangsnummer:</strong> {{ plannedProcess.id }}<br />
 <strong>Absage-Code:</strong> {{ plannedProcess.authKey }}<br />
-<strong>Änderungs-Link:</strong> <a href="{{ changeLink }}" target="_blank">{{ changeLink }}</a>
+<strong>Änderungs/Absage-Link:</strong> <a href="{{ changeLink }}" target="_blank">{{ changeLink }}</a>
 </div>
 <br />
 {% endfor %}
