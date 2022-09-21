@@ -21,7 +21,7 @@ class SendMailReminder
 
     protected $verbose = false;
 
-    protected $limit = 10000;
+    protected $limit = 5000;
 
     protected $loopCount = 500;
 
@@ -29,12 +29,17 @@ class SendMailReminder
 
     public function __construct(\DateTimeInterface $now, $hours = 2, $verbose = false)
     {
+        $config = (new ConfigRepository())->readEntity();
+        $configLimit = $config->getPreference('mailings', 'reminderMailLimit');
+        $configBatchSize = $config->getPreference('mailings', 'reminderMailBatchSize');
+        $this->limit = ($configLimit) ? $configLimit : $this->limit;
+        $this->loopCount  = ($configBatchSize) ? $configBatchSize : $this->loopCount;
         $this->dateTime = $now;
         $this->reminderInSeconds = (60 * 60) * $hours;
         $this->lastRun = (new MailRepository)->readReminderLastRun($now);
         if ($verbose) {
             $this->verbose = true;
-            $this->log("\nINFO: Send email reminder dependent on last run: ". $this->lastRun->format('Y-m-d H:i:s'));
+            $this->log("\nINFO: Send email reminder (". $configLimit ."|". $configBatchSize .") dependent on last run: ". $this->lastRun->format('Y-m-d H:i:s'));
         }
     }
 
@@ -91,6 +96,7 @@ class SendMailReminder
         $processCount = 0;
         $startposition = 0;
         while ($processCount < $this->limit) {
+            $this->log("***Stack count***: ".$processCount);
             $processList = $callback($this->loopCount, $startposition);
             if (0 == $processList->count()) {
                 break;
@@ -98,8 +104,12 @@ class SendMailReminder
             foreach ($processList as $process) {
                 if (!$this->writeReminder($process, $commit, $processCount)) {
                     $startposition++;
+                    break;
                 }
                 $processCount++;
+                if (! $commit && $this->verbose) {
+                    $startposition = $processCount;
+                }
             }
         }
         return $processCount;
@@ -113,6 +123,9 @@ class SendMailReminder
             $config = (new ConfigRepository)->readEntity();
             $collection = $this->getProcessListOverview($process, $config);
             $entity = (new Mail)->toResolvedEntity($collection, $config, 'reminder');
+            $this->log(
+                "INFO: $processCount. Create mail with process ". $process->getId() ." - ". $entity->subject
+            );
             if ($commit) {
                 $entity = (new MailRepository)->writeInQueue($entity, $this->dateTime);
                 Log::writeLogEntry("Write Reminder (Mail::writeInQueue) $entity ", $process->getId());
