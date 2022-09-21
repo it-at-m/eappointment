@@ -12,7 +12,7 @@ class AppointmentDeallocateByCronTest extends Base
 
     public function testConstructor()
     {
-        $now = new \DateTimeImmutable('2016-04-02 11:55');
+        $now = new \DateTimeImmutable('2016-04-02 09:55');
         $helper = new AppointmentDeallocateByCron($now, false);
         $this->assertInstanceOf(AppointmentDeallocateByCron::class, $helper);
     }
@@ -45,7 +45,7 @@ class AppointmentDeallocateByCronTest extends Base
         $this->assertEquals(3, $helper->getCount()['deallocated']);
         $processList = (new \BO\Zmsdb\Process)->readDeallocateProcessList($now, 10, 0);
         $this->assertEquals(
-            'Abgesagter Termin gebucht am: 01.04.2016, 11:55 Uhr | ', 
+            'Abgesagter Termin gebucht am: 01.04.2016, 09:55 Uhr | ', 
             $processList->getLast()->amendment
         );
         $this->assertEquals(3, $processList->count());
