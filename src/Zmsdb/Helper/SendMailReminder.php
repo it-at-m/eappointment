@@ -39,7 +39,11 @@ class SendMailReminder
         $this->lastRun = (new MailRepository)->readReminderLastRun($now);
         if ($verbose) {
             $this->verbose = true;
-            $this->log("\nINFO: Send email reminder (". $configLimit ."|". $configBatchSize .") dependent on last run: ". $this->lastRun->format('Y-m-d H:i:s'));
+            $this->log(
+                "\nINFO: Send email reminder (Limits: ". 
+                $configLimit ."|". $configBatchSize .") dependent on last run: ". 
+                $this->lastRun->format('Y-m-d H:i:s')
+            );
         }
     }
 
