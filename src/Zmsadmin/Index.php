@@ -26,12 +26,11 @@ class Index extends BaseController
             $workstation = null;
         }
         
-        error_log("____________________________________OOOOOOO___________________________________: " .  $request->getParam("code")  );
         $input = $request->getParsedBody();
         if ((is_array($input) && array_key_exists('loginName', $input)) ||
             (\App::ZMS_AUTHORIZATION_TYPE === "Keycloak")
         ) {
-            return $this->testLogin($input, $response, $request);
+            return $this->testLogin($input, $response, $request, $workstation);
         }
         $config = (! $workstation)
             ? \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity()
@@ -42,35 +41,48 @@ class Index extends BaseController
             array(
                 'title' => 'Anmeldung',
                 'config' => $config,
-                'workstation' => $workstation
+                'workstation' => $workstation,
+                'showloginform' => true,
             )
         );
     }
 
-    protected function testLogin($input, $response, $request)
+    protected function testLogin($input, $response, $request, $workstation)
     {
-        if(\App::ZMS_AUTHORIZATION_TYPE === "Keycloak"){ 
-            try {
+        $showLoginForm = filter_var($request->getParam("use_local_login"), FILTER_VALIDATE_BOOLEAN);
+
+        try {
+            if(\App::ZMS_AUTHORIZATION_TYPE === "Keycloak" && !$showLoginForm){
                 $oAuth = new OAuth($request);
                 $oAuth->Authorization();
-            } catch (\Exception $workstationexception) {
-                error_log("____________________________________222222___________________________________: ". $workstationexception);
+                if(!$oAuth->checkAccessRight()){
+                    $exceptionData = [
+                        'template' => 'exception/bo/zmsapi/exception/useraccount/keycloakAuthError.twig'
+                    ];
+                    $showLoginForm = false;
+                } else {
+                    if($workstation === null){
+                        $userAccount = $oAuth->getUser();
+                        $workstation = \App::$http->readPostResult('/workstation/oauth/', $userAccount, ['code' => $request->getParam("code")] )->getEntity();
+                    }
+                    if (array_key_exists('authkey', $workstation)) {
+                        \BO\Zmsclient\Auth::setKey($workstation->authkey);
+                        return \BO\Slim\Render::redirect('workstationSelect', array(), array());
+                    }
+                }
+            } else {
+                $userAccount = new \BO\Zmsentities\Useraccount(array(
+                    'id' => $input['loginName'],
+                    'password' => $input['password'],
+                    'departments' => array('id' => 0) // required in schema validation
+                ));
+
+                $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
+                if (array_key_exists('authkey', $workstation)) {
+                    \BO\Zmsclient\Auth::setKey($workstation->authkey);
+                    return \BO\Slim\Render::redirect('workstationSelect', array(), array());
+                }
             }
-            return \BO\Slim\Render::redirect('workstationSelect', array(), array());
-        }
-        
-        try {
-            $userAccount = new \BO\Zmsentities\Useraccount(array(
-                'id' => $input['loginName'],
-                'password' => $input['password'],
-                'departments' => array('id' => 0) // required in schema validation
-            ));
-            
-            $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
-            if (array_key_exists('authkey', $workstation)) {
-                \BO\Zmsclient\Auth::setKey($workstation->authkey);
-                return \BO\Slim\Render::redirect('workstationSelect', array(), array());
-            }  
         } catch (\BO\Zmsclient\Exception $exception) {
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
             if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
@@ -101,6 +113,7 @@ class Index extends BaseController
                 'title' => 'Anmeldung gescheitert',
                 'loginfailed' => true,
                 'workstation' => null,
+                'showloginform' => $showLoginForm?:true,
                 'exception' => $exceptionData
             )
         );
