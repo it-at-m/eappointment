@@ -28,9 +28,7 @@ class WorkstationOAuth extends BaseController
     ) {
         Profiler::add("____________________START WorkstationOAuth___________________");
         $validator = $request->getAttribute('validator');
-        error_log("____________________________________PPPPPPPP___________________________________: " .  $request->getParam("code")  );
-        $resolveReferences = $validator->getParameter('code')->isString()->isSmallerThan(10000)->isBiggerThan(1); //TODO: isBase64()
-        //$resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $resolveReferences = $validator->getParameter('code')->isString()->isSmallerThan(120)->isBiggerThan(100);
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Useraccount($input);
         $entity->testValid();
@@ -39,7 +37,6 @@ class WorkstationOAuth extends BaseController
         Helper\UserAuth::testUseraccountExists($entity->getId());
         
         $useraccount = Helper\UserAuth::getVerifiedUseraccount($entity);
-        //Helper\UserAuth::testPasswordMatching($useraccount, $entity->password);
         
         
         $workstation = (new Helper\User($request, $resolveReferences))->readWorkstation();
