@@ -40,8 +40,8 @@ class SendMailReminder
         if ($verbose) {
             $this->verbose = true;
             $this->log(
-                "\nINFO: Send email reminder (Limits: ". 
-                $configLimit ."|". $configBatchSize .") dependent on last run: ". 
+                "\nINFO: Send email reminder (Limits: ".
+                $configLimit ."|". $configBatchSize .") dependent on last run: ".
                 $this->lastRun->format('Y-m-d H:i:s')
             );
         }
