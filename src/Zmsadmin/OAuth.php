@@ -15,14 +15,15 @@ class OAuth
 {
     private $provider = null;
     private $request = null;
+    private $accessTokenPayload = "";
 
     public function __construct($request)
     {
         $guzzyClient = new Client([
             'defaults' => [
-                \GuzzleHttp\RequestOptions::CONNECT_TIMEOUT => 5,
+                \GuzzleHttp\RequestOptions::CONNECT_TIMEOUT => \App::ZMS_AUTHORIZATION_CONNECT_TIMEOUT,
                 \GuzzleHttp\RequestOptions::ALLOW_REDIRECTS => true],
-                \GuzzleHttp\RequestOptions::VERIFY => false,
+                \GuzzleHttp\RequestOptions::VERIFY => \App::ZMS_AUTHORIZATION_SSL_VERIFY,
         ]);
 
         $this->provider = new Keycloak([
@@ -53,45 +54,20 @@ class OAuth
             try {
                 Profiler::add("start oidc");
                 $token = $this->provider->getAccessToken('authorization_code', [
-                    'code' => $_GET['code']
+                    'code' => $code
                 ]);
                 Profiler::add("end oidc");
-                error_log("____________Profiler________________");
                 error_log(\BO\Slim\Profiler::getList());
             } catch (Exception $e) {
                 exit('Failed to get access token: '.$e->getMessage());
             }
-            error_log("____________________________________GGGGGGGGGGGGGGGGGG___________________________________: ");
-            // Use this to interact with an API on the users behalf
-            $accessTokenPayload = json_decode($this->getAccessTokenPayload($token->getToken()), true);
-            
-            //TODO: double Code from index.php
-            try {
-                $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-            } catch (\Exception $workstationexception) {
-                $workstation = null;
-            }
-            error_log("____________________________________JJJJJJJJ___________________________________: " .  $accessTokenPayload);
-            if($workstation === null){
-                $this->createUser($accessTokenPayload);
-            }
+
+            list($header, $payload, $signature)  = explode('.', $token->getToken());
+            $this->accessTokenPayload = json_decode(base64_decode($payload), true);
         }
     }
 
-    protected function getAccessTokenPayload($jwt_access_token)
-    {
-        $separator = '.';
-
-        if (2 !== substr_count($jwt_access_token, $separator)) {
-            exit('Incorrect access token format.');
-        }
-
-        list($header, $payload, $signature) = explode($separator, $jwt_access_token);
-
-        return base64_decode($payload);
-    }
-
-    protected function createUser($accessTokenPayload)
+    public function getUser()
     {
         try {
             $userAccount = new \BO\Zmsentities\Useraccount(array(
@@ -101,43 +77,33 @@ class OAuth
             ));
             $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
             \BO\Zmsclient\Auth::setKey($workstation->authkey);
-    
-            error_log("____________________________________FFFFFFFFFFFFFFFFFFFF___________________________________: ");
-            $newUser = array(
-                "lastLogin" => 1447926465,
-                "id" => $accessTokenPayload['preferred_username'],
-                "email" => $accessTokenPayload['email'],
-                "password" => $accessTokenPayload['sub'],
-                "rights" => array(
-                    "scope" => true,
-                    "ticketprinter" => true
-                ),
+
+            $user = array(
+                "id" => $this->accessTokenPayload['preferred_username'],
+                "email" => $this->accessTokenPayload['email'],
                 "departments" => array(
-                    "id" => 72,
+                    "id" => 0,
                 )
             );
             
-            $entity = new Entity($newUser);
+            $entity = new Entity($user);
             $entity = $entity->withCleanedUpFormData(true);
-            error_log("____________________________________SSSSSSSSSSSSSSSSSSSS___________________________________: ");
             try {
                 $entity = \App::$http->readPostResult('/useraccount/', $entity)->getEntity();
             } catch (\BO\Zmsclient\Exception $exception) {
+                throw $exception;
             }
-            error_log("____________________________________ZZZZZZZZZZZZZZZZZZZ___________________________________: ");
             //Logout superuser
             \App::$http->readDeleteResult('/workstation/login/'. $workstation->useraccount['id'] .'/')->getEntity();
-            error_log("____________________________________YYYYYYYYYYYYYYY___________________________________: ");
-            $workstation = \App::$http->readPostResult('/workstation/oauth/', $entity)->getEntity();
-            error_log("____________________________________DDDDDDDDDDDDDDDD___________________________________: ");
-            \BO\Zmsclient\Auth::setKey($workstation->authkey);
+
+            return $entity;
         } catch (\Jumbojett\OpenIDConnectClientException $e) {
             throw $exception;
         }
     }
 
-    public function logout(){
-        header('Location: ' . $this->provider->getLogoutUrl());
-        exit;
+    public function checkAccessRight(){
+        $resource_access_roles = $this->accessTokenPayload['resource_access'][\App::ZMS_AUTHORIZATION_CLIENT_ID]['roles'];
+        return in_array( \App::ZMS_AUTHORIZATION_ACCESS_ROLE ,$resource_access_roles );
     }
 }
