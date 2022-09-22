@@ -11,8 +11,8 @@
 @import 'bo-layout-admin-scss/template/body.scss';
 @import 'bo-layout-admin-scss/template/content-wrapper.scss';
 @import 'bo-layout-admin-scss/template/flatpickr.scss';
-//$fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
-//@import 'bo-layout-admin-scss/template/font.scss';
+$fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
+@import 'bo-layout-admin-scss/template/font.scss';
 @import 'bo-layout-admin-scss/template/grids.scss';
 @import 'bo-layout-admin-scss/template/html.scss';
 @import 'bo-layout-admin-scss/template/js-collapse-me.scss';
