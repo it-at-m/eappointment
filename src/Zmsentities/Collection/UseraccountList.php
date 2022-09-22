@@ -1,6 +1,8 @@
 <?php
 namespace BO\Zmsentities\Collection;
 
+use BO\Zmsdb\Useraccount;
+
 class UseraccountList extends Base
 {
     const ENTITY_CLASS = '\BO\Zmsentities\UserAccount';
@@ -24,6 +26,20 @@ class UseraccountList extends Base
                 $collection->addEntity(clone $useraccount);
             }
         }
+        return $collection;
+    }
+
+    public function withoutDepartment()
+    {
+        $collection = new self();
+        foreach ($this as $useraccount) {
+            if ($useraccount->isSuperUser()
+                || count((new Useraccount())->readAssignedDepartmentList($useraccount, 0)) === 0
+            ) {
+                $collection->addEntity(clone $useraccount);
+            }
+        }
+
         return $collection;
     }
 
