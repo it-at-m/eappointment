@@ -81,13 +81,13 @@ class SendMailReminder
 
     protected function writeMailReminderList($commit)
     {
-        $count = $this->writeByCallback($commit, function ($limit, $offset) {
+        $count = $this->writeByCallback($commit, function ($limit) {
             $processList = (new ProcessRepository)->readEmailReminderProcessListByInterval(
                 $this->dateTime,
                 $this->lastRun,
                 $this->reminderInSeconds,
                 $limit,
-                $offset,
+                null,
                 2
             );
             return $processList;
@@ -100,10 +100,11 @@ class SendMailReminder
         $processCount = 0;
         while ($processCount < $this->limit) {
             $this->log("***Stack count***: ".$processCount);
-            $processList = $callback($this->loopCount, $processCount);
+            $processList = $callback($this->loopCount);
             if (0 == $processList->count()) {
                 break;
             }
+            
             foreach ($processList as $process) {
                 $this->writeReminder($process, $commit, $processCount);
                 $processCount++;
@@ -120,14 +121,13 @@ class SendMailReminder
             $collection = $this->getProcessListOverview($process, $config);
             $entity = (new Mail)->toResolvedEntity($collection, $config, 'reminder');
             $this->log(
-                "INFO: $processCount. Create mail with process ". $process->getId() ." - ". $entity->subject
+                "INFO: $processCount. Create mail with process ". $process->getId() .
+                " - ". $entity->subject ." for ". $process->getFirstAppointment()
             );
             if ($commit) {
                 $entity = (new MailRepository)->writeInQueue($entity, $this->dateTime);
                 Log::writeLogEntry("Write Reminder (Mail::writeInQueue) $entity ", $process->getId());
-                $this->log(
-                    "INFO: $processCount. Write mail in queue with ID ". $entity->getId() ." - ". $entity->subject
-                );
+                $this->log("INFO: Mail has been written in queue successfully with ID ". $entity->getId());
             }
         }
     }
