@@ -800,7 +800,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addConditionStatus('confirmed')
             ->addLimit($limit, $offset);
         $statement = $this->fetchStatement($selectQuery);
-        return $this->readList($statement, $resolveReferences);
+        return $this->readList($statement, $resolveReferences)->withDepartmentNotificationEnabled();
     }
 
     public function readEmailReminderProcessListByInterval(
@@ -821,7 +821,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addConditionStatus('confirmed')
             ->addLimit($limit, $offset);
         $statement = $this->fetchStatement($selectQuery);
-        return $this->readList($statement, $resolveReferences);
+        return $this->readList($statement, $resolveReferences)->withDepartmentHasMailFrom();
     }
 
     public function readDeallocateProcessList(

@@ -631,7 +631,8 @@ class ProcessTest extends Base
                         "endInDaysDefault"=>"60",
                         "multipleSlotsEnabled"=>"1",
                         "reservationDuration"=>"5",
-                        "startInDaysDefault"=>"0"
+                        "startInDaysDefault"=>"0",
+                        "notificationHeadsUpEnabled"=>"1"
                     ],
                     "client"=>[
                         "alternateAppointmentUrl"=>"",
@@ -639,7 +640,8 @@ class ProcessTest extends Base
                         "amendmentLabel"=>"",
                         "emailRequired"=>"1",
                         "telephoneActivated"=>"1",
-                        "telephoneRequired"=>"1"
+                        "telephoneRequired"=>"1",
+                        "emailFrom"=>"1"
                     ],
                     "notifications"=>[
                         "confirmationContent"=>"",
