@@ -30,8 +30,8 @@ class SendMailReminder
     public function __construct(\DateTimeInterface $now, $hours = 2, $verbose = false)
     {
         $config = (new ConfigRepository())->readEntity();
-        $configLimit = $config->getPreference('mailings', 'reminderMailLimit');
-        $configBatchSize = $config->getPreference('mailings', 'reminderMailBatchSize');
+        $configLimit = $config->getPreference('mailings', 'sqlMaxLimit');
+        $configBatchSize = $config->getPreference('mailings', 'sqlBatchSize');
         $this->limit = ($configLimit) ? $configLimit : $this->limit;
         $this->loopCount  = ($configBatchSize) ? $configBatchSize : $this->loopCount;
         $this->dateTime = $now;
@@ -81,6 +81,7 @@ class SendMailReminder
 
     protected function writeMailReminderList($commit)
     {
+        // The offset parameter was removed here, because with each loop the processes are searched, which have not been processed yet. An offset leads to the fact that with the renewed search the first results are skipped.
         $count = $this->writeByCallback($commit, function ($limit) {
             $processList = (new ProcessRepository)->readEmailReminderProcessListByInterval(
                 $this->dateTime,
@@ -88,7 +89,7 @@ class SendMailReminder
                 $this->reminderInSeconds,
                 $limit,
                 null,
-                2
+                1
             );
             return $processList;
         });
