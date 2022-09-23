@@ -238,6 +238,32 @@ class ProcessList extends Base
         }
         return $processList;
     }
+
+    public function withDepartmentNotificationEnabled()
+    {
+        $processList = new static();
+        foreach ($this as $process) {
+            if ($process->scope->hasNotificationReminderEnabled()) {
+                $entity = clone $process;
+                $processList->addEntity($entity);
+            }
+        }
+        return $processList;
+    }
+
+    public function withDepartmentHasMailFrom()
+    {
+        $processList = new static();
+        foreach ($this as $process) {
+            if ($process->scope->hasEmailFrom()) {
+                $entity = clone $process;
+                $processList->addEntity($entity);
+            }
+        }
+        return $processList;
+    }
+
+    
     
     public function setConflictAmendment()
     {
