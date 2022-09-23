@@ -108,7 +108,10 @@ class SendNotificationReminder
         if ($commit) {
             $notification = (new \BO\Zmsdb\Notification)->writeInQueue($entity, $this->dateTime);
             Log::writeLogEntry("Write Reminder (Notification::writeInQueue) $entity ", $process->getId());
-            $this->log("INFO: Notification has been written in queue successfully with ID ". $notification->getId());
+            $this->log(
+                "INFO: $processCount Notification has been written in queue successfully with ID ".
+                $notification->getId()
+            );
             $this->deleteReminderTimestamp($process, $notification, $processCount, $commit);
         }
     }
@@ -124,9 +127,11 @@ class SendNotificationReminder
             if ($commit) {
                 $process = (new \BO\Zmsdb\Process)->updateEntity($process, $this->dateTime);
             }
-            $this->log("INFO: Updated $process->id - reminder timestamp removed");
+            $this->log("INFO: $processCount Updated $process->id - reminder timestamp removed");
         } else {
-            $this->log("WARNING: Notification for $process->id not possible - no telephone or not enabled");
+            $this->log(
+                "WARNING: $processCount Notification for $process->id not possible - no telephone or not enabled"
+            );
         }
     }
 }
