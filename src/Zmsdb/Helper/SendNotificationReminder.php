@@ -67,11 +67,12 @@ class SendNotificationReminder
 
     protected function writeNotificationReminderList($commit)
     {
-        // The offset parameter was removed here, because with each loop the processes are searched, which have not been processed yet. An offset leads to the fact that with the renewed search the first results are skipped.
+        // The offset parameter was removed here, because with each loop the processes are searched, which have not 
+        // been processed yet. An offset leads to the fact that with the renewed search the first results are skipped.
         $count = $this->writeByCallback($commit, function ($limit) {
             $processList = (new \BO\Zmsdb\Process)->readNotificationReminderProcessList(
                 $this->dateTime,
-                $limit, 
+                $limit,
                 null,
                 1
             );
