@@ -6,7 +6,7 @@
             Die Vorgangsnummer existiert nicht
         </h2>
         <p>
-            Zu Ihrer Auswahl konnte kein Vorgang gefunden werden. Bitte prüfen Sie die angegebene Vorgangsnummer.
+            {{ errorPrefix }}: {% trans %}Zu Ihrer Auswahl konnte kein Vorgang gefunden werden. Bitte prüfen Sie die angegebene Vorgangsnummer.{% endtrans %}
         </p>
         <div class="form-actions">
             <a class="btn button-cancel button-callback right" href="#">Abbrechen</a>

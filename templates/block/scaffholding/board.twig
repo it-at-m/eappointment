@@ -41,8 +41,12 @@
         {% if messages != "hide" %}
         {% include "element/helper/messageHandler.twig" %}
         {%- endif %}
+        
+        {% set errorPrefix = "Fehler" %}
+        {% with {'errorPrefix': errorPrefix|trans } %}
         {% block board_body -%}
         {%- endblock %}
+        {% endwith %}
     </div>
 
     {% if block('board_footer') is not empty %}

@@ -83,3 +83,6 @@ $fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
 @import 'bo-layout-admin-scss/themes/zms/checkboxselect.scss';
 @import 'bo-layout-admin-scss/themes/zms/lightbox.scss';
 @import 'bo-layout-admin-scss/themes/zms/add-date-picker.scss';
+
+// Inserting CSS styles for accessibility
+@import 'accessibility.scss'

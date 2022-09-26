@@ -42,7 +42,7 @@ class ValidationHandler extends BaseView {
         Object.values(item.messages).forEach((messageElement) => {
             let listItem = document.createElement("li")
             listItem.setAttribute('data-key', key);
-            listItem.appendChild(document.createTextNode(messageElement.message));
+            listItem.appendChild(document.createTextNode("Fehler: " + messageElement.message));
             list.appendChild(listItem)
         })
         return list;
