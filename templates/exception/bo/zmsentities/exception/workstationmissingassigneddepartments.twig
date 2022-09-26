@@ -12,7 +12,7 @@
                     Es ist ein Fehler aufgetreten.
                 </h2>
                 <p>
-                Es konnte keine zugewiesene Behörde gefunden werden oder es wurden keine Standorte für diese Behörden angelegt.
+                {{ errorPrefix }}: {% trans %}Es konnte keine zugewiesene Behörde gefunden werden oder es wurden keine Standorte für diese Behörden angelegt.{% endtrans %}
                 </p>
                 <ul>
                     <li><a href="{{ urlGet('index', {}, {}) }}">Zum Login</a></li>

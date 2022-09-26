@@ -24,36 +24,36 @@
 	{% if args.error or error %}
         {% block login_failed %}
         	{{ block('error_start') }}
-        	Fehler: Die Anmeldung ist leider fehlgeschlagen. Versuchen Sie es bitte erneut.
+        	Die Anmeldung ist leider fehlgeschlagen. Versuchen Sie es bitte erneut.
         	{{ block('error_end') }}
         {% endblock %}
 		{% block unknown_error %}
         	{{ block('error_start') }}
-        	Fehler: Es ist ein unbekannter Fehler aufgetreten.
+        	Es ist ein unbekannter Fehler aufgetreten.Fehler: 
         	{{ block('error_end') }}
         {% endblock %}
 		{% block mail_failed %}
 			{% set errorTitle = "E-Mail Versand gescheitert." %}
 			{{ block('error_start') }}
-				Fehler: Beim Versand der E-Mail ist ein Fehler aufgetreten. Bitte prüfen Sie Ihre Eingaben und versuchen Sie es erneut.
+				Beim Versand der E-Mail ist ein Fehler aufgetreten. Bitte prüfen Sie Ihre Eingaben und versuchen Sie es erneut.
 			{{ block('error_end') }}
 		{% endblock %}
 		{% block notification_failed %}
 			{% set errorTitle = "E-Mail Versand gescheitert." %}
 			{{ block('error_start') }}
-				Fehler: Beim Versand der SMS ist ein Fehler aufgetreten. Bitte prüfen Sie Ihre Eingaben und versuchen Sie es erneut.
+				Beim Versand der SMS ist ein Fehler aufgetreten. Bitte prüfen Sie Ihre Eingaben und versuchen Sie es erneut.
 			{{ block('error_end') }}
 		{% endblock %}
 		{% block has_called_process %}
 			{% set errorTitle = "Es ist schon ein Kunde in Bearbeitung" %}
 			{{ block('error_start') }}
-				Fehler: Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen. Dieser wird weiterhin verwendet.
+				Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen. Dieser wird weiterhin verwendet.
 			{{ block('error_end') }}
 		{% endblock %}
 		{% block has_called_pickup %}
 			{% set errorTitle = "Es ist schon ein Abholer in Bearbeitung" %}
 			{{ block('error_start') }}
-				Fehler: Dieser Arbeitsplatz hat schon einen Abholer aufgerufen.
+				Dieser Arbeitsplatz hat schon einen Abholer aufgerufen.
 				<div class="form-actions">
 					<div class="right">
 						<a class="button" href="{{ urlGet('pickup', {}, {'selectedprocess':workstation.process.id}) }}">Zur Abholerverwaltung</a>

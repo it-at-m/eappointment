@@ -290,7 +290,7 @@ export const accordionTitle = (data) => {
     const availabilityWeekDay = weekDayList.filter(element => availabilityWeekDayList.includes(element.value)
     ).map(item => item.label).join(', ')
     let description = (data.description) ? `: ${data.description}` : "";
-    let type = (availabilityType && availabilityWeekDay) ? ` (${availabilityType.name}, ${availabilityWeekDay})` : "";
-    return `${startDate} - ${endDate}, ${startTime} - ${endTime}${type}${description}`
+    let type = (availabilityType && availabilityWeekDay) ? ` Typ: ${availabilityType.name}, Wochentag: ${availabilityWeekDay}` : "";
+    return `Zeitraum: ${startDate} bis ${endDate}, Uhrzeit: von ${startTime} bis ${endTime}, ${type}${description}`
         
 }

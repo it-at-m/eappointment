@@ -8,8 +8,7 @@
             {{ exception.data.queue.number }} gehört nicht zum Standort
         </h2>
         <p>
-            Diesem Arbeitsplatz ist es nicht erlaubt den Vorgang zu bearbeiten oder zu löschen.
-            Der aufgerufene Vorgang gehört nicht zu diesem Standort.
+            {{ errorPrefix }}: {% trans %}Diesem Arbeitsplatz ist es nicht erlaubt den Vorgang zu bearbeiten oder zu löschen. Der aufgerufene Vorgang gehört nicht zu diesem Standort.{% endtrans %}
         </p>
         <div class="form-actions">
             <a class="btn button-cancel button-callback right" data-callback="onCancelForm" href="{{ urlGet('workstationProcessCancel', {}, {}) }}">Ok</a>

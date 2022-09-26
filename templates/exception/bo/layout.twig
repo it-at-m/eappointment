@@ -34,7 +34,7 @@
             </h3>
             {% endif %}
             <p>
-                {{ message|trans }}
+                {% trans %}Fehler{% endtrans %}: {{ message|trans }}
             </p>
             {% if showlinks or abort %}
             <div class="form-actions" style="margin-top:0;">

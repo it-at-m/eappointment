@@ -6,7 +6,7 @@
             Reservierung gescheitert
         </h2>
         <p>
-            Der Termin konnte nicht reserviert werden, möglicherweise war jemand schneller als Sie.
+            {{ errorPrefix }}: {% trans %}Der Termin konnte nicht reserviert werden, möglicherweise war jemand schneller als Sie.{% endtrans %}
         </p>
     {% endblock %}
 
