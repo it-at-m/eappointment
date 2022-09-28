@@ -17,11 +17,12 @@ class Link extends Base
     public function readSearchResultList($query)
     {
         try {
+            #$query = '+' . implode(' +', explode(' ', $query));
             $sqlArgs = [$this->locale, $query];
             $sql = "SELECT tl.data_json 
             FROM topic_links AS tl
             WHERE 
-            tl.locale = ? AND MATCH (tl.search) AGAINST (? IN NATURAL LANGUAGE MODE)
+            tl.locale = ? AND MATCH (tl.search) AGAINST (? IN BOOLEAN MODE)
             ";
            
             $stm = $this->access()->prepare($sql);
