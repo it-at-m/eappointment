@@ -257,12 +257,13 @@ class Location extends Base
     public function readSearchResultList($query, $service_csv = null)
     {
         try {
+            #$query = '+' . implode(' +', explode(' ', $query));
             $sqlArgs = [$this->locale, $this->locale, $query];
             $sql = "SELECT l.data_json 
             FROM search AS se
             LEFT JOIN location AS l ON l.id = se.object_id AND l.locale = ?
             WHERE 
-                se.locale = ? AND MATCH (search_value) AGAINST (? IN NATURAL LANGUAGE MODE)
+                se.locale = ? AND MATCH (search_value) AGAINST (? IN BOOLEAN MODE)
                 AND (search_type IN ('name', 'keywords', 'address')) AND entity_type='location'
              GROUP BY se.object_id
             ";

@@ -89,12 +89,13 @@ class Topic extends Base
     public function readSearchResultList($query)
     {
         try {
+            #$query = '+' . implode(' +', explode(' ', $query));
             $sqlArgs = [$this->locale, $this->locale, $query];
             $sql = "SELECT t.data_json 
             FROM search AS se
             LEFT JOIN topic AS t ON t.id = se.object_id AND t.locale = ?
             WHERE 
-                se.locale = ? AND MATCH (search_value) AGAINST (? IN NATURAL LANGUAGE MODE)
+                se.locale = ? AND MATCH (search_value) AGAINST (? IN BOOLEAN MODE)
                 AND (search_type IN ('name', 'keywords')) AND entity_type='topic'
              GROUP BY se.object_id
             ";
