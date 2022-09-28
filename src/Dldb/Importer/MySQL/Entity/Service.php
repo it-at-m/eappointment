@@ -58,6 +58,7 @@ class Service extends Base
                 ],
                 'selfAsArray' => true
             ],
+            /*
             'description' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
                 'neededFields' => [
@@ -81,6 +82,7 @@ class Service extends Base
                 ],
                 'selfAsArray' => true
             ],
+            */
             'meta.keywords' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
                 'neededFields' => [

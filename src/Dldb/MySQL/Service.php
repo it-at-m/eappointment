@@ -184,12 +184,13 @@ class Service extends Base
     public function readSearchResultList($query, $service_csv = null)
     {
         try {
+            #$query = '+' . implode(' +', explode(' ', $query));
             $sqlArgs = [$this->locale, $this->locale, $query];
             $sql = "SELECT s.data_json 
             FROM search AS se
             LEFT JOIN service AS s ON s.id = se.object_id AND s.locale = ?
             WHERE 
-                se.locale = ? AND MATCH (search_value) AGAINST (? IN NATURAL LANGUAGE MODE)
+                se.locale = ? AND MATCH (search_value) AGAINST (? IN BOOLEAN MODE)
                 AND (search_type IN ('name', 'keywords')) AND entity_type='service'
             GROUP BY se.object_id
             ";
