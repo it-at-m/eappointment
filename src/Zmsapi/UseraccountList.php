@@ -46,7 +46,8 @@ class UseraccountList extends BaseController
         return $collection;
     }
 
-    protected function hasSystemWideAccess($useraccount) {
+    protected function hasSystemWideAccess($useraccount)
+    {
         $assignedDepartments = (new Useraccount())->readAssignedDepartmentList($useraccount);
         return (0 === $assignedDepartments->count());
     }
