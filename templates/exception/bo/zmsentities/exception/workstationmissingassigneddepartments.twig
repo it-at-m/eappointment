@@ -1,22 +1,10 @@
-{% extends "layout/main.twig" %}
-{% from 'element/helper/snippets.twig' import headline1 %}
-{% block title %}Fehler{% endblock %}
+{%
+    include "exception/bo/layout.twig" with {
+		"message":"Es konnte keine zugewiesene Behörde gefunden werden oder es wurden keine Standorte für diese Behörden angelegt.",
+		"title":"Sie konnten nicht eingeloggt werden",
+    	"showlinks":{
+			'index':'Zum Login',
+        }
+    }
+%}
 
-{% block headline %}
-    {{ headline1("Sie konnten nicht eingeloggt werden.") }}
-{% endblock %}
-{% block content %}
-
-    <div class="textile">
-                <h2>
-                    Es ist ein Fehler aufgetreten.
-                </h2>
-                <p>
-                {{ errorPrefix }}: {% trans %}Es konnte keine zugewiesene Behörde gefunden werden oder es wurden keine Standorte für diese Behörden angelegt.{% endtrans %}
-                </p>
-                <ul>
-                    <li><a href="{{ urlGet('index', {}, {}) }}">Zum Login</a></li>
-                </ul>
-            </div>
-
-{% endblock %}
