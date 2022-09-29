@@ -41,8 +41,14 @@ class ValidationHandler extends BaseView {
         list.setAttribute(`aria-describedby`, labelId)
         Object.values(item.messages).forEach((messageElement) => {
             let listItem = document.createElement("li")
+            let exclamationItem = document.createElement("i")
+            exclamationItem.setAttribute('alt', 'Fehler: ' + messageElement.message);
+            exclamationItem.setAttribute('title', 'Fehler: ' + messageElement.message);
+            exclamationItem.classList.add('fas');
+            exclamationItem.classList.add('fa-exclamation-circle');
             listItem.setAttribute('data-key', key);
-            listItem.appendChild(document.createTextNode("Fehler: " + messageElement.message));
+            listItem.appendChild(exclamationItem);
+            listItem.appendChild(document.createTextNode(' Fehler: ' + messageElement.message));
             list.appendChild(listItem)
         })
         return list;

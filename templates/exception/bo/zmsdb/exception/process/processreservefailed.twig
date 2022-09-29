@@ -6,7 +6,7 @@
             Reservierung gescheitert
         </h2>
         <p>
-            {{ errorPrefix }}: {% trans %}Der Termin konnte nicht reserviert werden, möglicherweise war jemand schneller als Sie.{% endtrans %}
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Der Termin konnte nicht reserviert werden, möglicherweise war jemand schneller als Sie.{% endtrans %}
         </p>
     {% endblock %}
 

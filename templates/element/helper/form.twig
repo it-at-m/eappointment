@@ -462,7 +462,7 @@
     <div class="message message--error" role="alert" aria-describedby="{{ fieldId }}">
     <ul class="list--clean">
         {% for message in messages %}
-        <li>{% trans %}Fehler{% endtrans %}: {{ message }}</li>
+        <li><i alt="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" title="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" class='fas fa-exclamation-circle'></i> {% trans %}Fehler{% endtrans %}: {{ message|trans }}</li>
         {% endfor %}
     </ul>
     </div>

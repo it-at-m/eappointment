@@ -6,7 +6,7 @@
             Zuviele API Abrufe registriert
         </h2>
         <p>
-            {{ errorPrefix }}: {% trans %}Bitte wiederholen sie den Vorgang später noch einmal.{% endtrans %}
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Bitte wiederholen sie den Vorgang später noch einmal.{% endtrans %}
         </p>
         <div class="form-actions">
             <a class="btn button-cancel button-callback right" href="#">Abbrechen</a>

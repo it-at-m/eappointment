@@ -6,7 +6,7 @@
             Datenquelle unbekannt
         </h2>
         <p>
-            {{ errorPrefix }}: {% trans %}Es konnte keine entsprechende Datenquelle gefunden werden.{% endtrans %}
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Es konnte keine entsprechende Datenquelle gefunden werden.{% endtrans %}
         </p>
     {% endblock %}
 
