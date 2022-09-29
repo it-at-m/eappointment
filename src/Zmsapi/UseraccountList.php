@@ -9,6 +9,7 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Useraccount;
+use \BO\Zmsentities\Collection\UseraccountList as Collection;
 
 class UseraccountList extends BaseController
 {
@@ -24,19 +25,25 @@ class UseraccountList extends BaseController
         $validator = $request->getAttribute('validator');
         (new Helper\User($request, 2))->checkRights('useraccount');
         $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $rightRestriction = $validator->getParameter('right')->isString()->getValue();
         $useraccountList = (new Useraccount)->readList($resolveReferences);
-
-        
-        if ($rightRestriction) {
-            $useraccountList = $useraccountList->withRights([$rightRestriction]);
-        }
-        //$useraccountList = $useraccountList->withAccessByWorkstation($workstation);
+        $useraccountList = $this->getAccessedUseraccountList($useraccountList);
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), 200);
         return $response;
+    }
+
+    protected function getAccessedUseraccountList($useraccountList)
+    {
+        $collection = new Collection();
+        foreach ($useraccountList as $useraccount) {
+            $assignedDepartmentList = (new Useraccount())->readAssignedDepartmentList($useraccount);
+            if ($useraccount->isSuperUser() || 0 === $assignedDepartmentList->count()) {
+                $collection->addEntity(clone $useraccount);
+            }
+        }
+        return $collection;
     }
 }
