@@ -39,8 +39,8 @@ class UseraccountList extends BaseController
     {
         $collection = new Collection();
         foreach ($useraccountList as $useraccount) {
-            $assignedDepartmentList = (new Useraccount())->readAssignedDepartmentList($useraccount);
-            if ($useraccount->isSuperUser() || 0 === $assignedDepartmentList->count()) {
+            $assignedDepartments = (new Useraccount())->readAssignedDepartmentList($useraccount);
+            if ($useraccount->isSuperUser() || 0 === $assignedDepartments->count()) {
                 $collection->addEntity(clone $useraccount);
             }
         }
