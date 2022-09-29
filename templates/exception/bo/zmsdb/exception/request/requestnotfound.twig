@@ -6,7 +6,7 @@
             Fehlende Dienstleistung
         </h2>
         <p>
-            {{ errorPrefix }}: {% trans %}Es konnte keine entsprechende Dienstleistung gefunden werden.{% endtrans %}
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Es konnte keine entsprechende Dienstleistung gefunden werden.{% endtrans %}
         </p>
     {% endblock %}
 

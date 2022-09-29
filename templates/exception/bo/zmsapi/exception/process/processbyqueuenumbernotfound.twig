@@ -6,7 +6,7 @@
             Die Wartenummer existiert nicht
         </h2>
         <p>
-            {{ errorPrefix }}: {% trans %}Zu Ihrer Auswahl konnte kein Vorgang gefunden werden. Bitte prüfen Sie die angegebene Wartenummer.{% endtrans %}
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Zu Ihrer Auswahl konnte kein Vorgang gefunden werden. Bitte prüfen Sie die angegebene Wartenummer.{% endtrans %}
         </p>
         <div class="form-actions">
             <a class="btn button-cancel button-callback right" href="#">Abbrechen</a>

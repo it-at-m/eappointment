@@ -43,7 +43,8 @@
         {%- endif %}
         
         {% set errorPrefix = "Fehler" %}
-        {% with {'errorPrefix': errorPrefix|trans } %}
+        {% set exclamationIcon = '<i class="fas fa-exclamation-circle" alt="Wichtiger Hinweis" title="Wichtiger Hinweis"></i>' %}
+        {% with {'errorPrefix': errorPrefix|trans, 'exclamationIcon': exclamationIcon } %}
         {% block board_body -%}
         {%- endblock %}
         {% endwith %}
