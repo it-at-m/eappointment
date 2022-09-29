@@ -26,7 +26,7 @@ class UseraccountList extends BaseController
         (new Helper\User($request, 2))->checkRights('useraccount');
         $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $useraccountList = (new Useraccount)->readList($resolveReferences);
-        $useraccountList = $this->getAccessedUseraccountList($useraccountList);
+        $useraccountList = $this->getUseraccountListWithAccess($useraccountList);
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
 
@@ -35,15 +35,19 @@ class UseraccountList extends BaseController
         return $response;
     }
 
-    protected function getAccessedUseraccountList($useraccountList)
+    protected function getUseraccountListWithAccess($useraccountList)
     {
         $collection = new Collection();
         foreach ($useraccountList as $useraccount) {
-            $assignedDepartments = (new Useraccount())->readAssignedDepartmentList($useraccount);
-            if ($useraccount->isSuperUser() || 0 === $assignedDepartments->count()) {
+            if ($useraccount->isSuperUser() || $this->hasSystemWideAccess($useraccount)) {
                 $collection->addEntity(clone $useraccount);
             }
         }
         return $collection;
+    }
+
+    protected function hasSystemWideAccess($useraccount) {
+        $assignedDepartments = (new Useraccount())->readAssignedDepartmentList($useraccount);
+        return (0 === $assignedDepartments->count());
     }
 }
