@@ -217,16 +217,16 @@
         },
         {
             "name": "eappointment/zmsdb",
-            "version": "2.24.11-rc1",
+            "version": "2.24.11-rc2",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsdb.git",
-                "reference": "e8d13d2b3f609f5b2bbc66ef912c2e68fe082f35"
+                "reference": "5996bf092090d0a50e919018247e282fee4f0758"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=e8d13d2b3f609f5b2bbc66ef912c2e68fe082f35",
-                "reference": "e8d13d2b3f609f5b2bbc66ef912c2e68fe082f35",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=5996bf092090d0a50e919018247e282fee4f0758",
+                "reference": "5996bf092090d0a50e919018247e282fee4f0758",
                 "shasum": ""
             },
             "require": {
@@ -288,7 +288,7 @@
                 }
             ],
             "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
-            "time": "2022-09-23T15:35:44+00:00"
+            "time": "2022-09-30T10:16:14+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
@@ -349,12 +349,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsentities.git",
-                "reference": "964e770ac8138cd4ba0cf6ec990e103d6037b633"
+                "reference": "69e4bdee05f6a7925ec08651d1f5310f80e2dcae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=964e770ac8138cd4ba0cf6ec990e103d6037b633",
-                "reference": "964e770ac8138cd4ba0cf6ec990e103d6037b633",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=69e4bdee05f6a7925ec08651d1f5310f80e2dcae",
+                "reference": "69e4bdee05f6a7925ec08651d1f5310f80e2dcae",
                 "shasum": ""
             },
             "require": {
@@ -397,7 +397,7 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2022-09-30T09:31:17+00:00"
+            "time": "2022-09-30T10:15:19+00:00"
         },
         {
             "name": "eappointment/zmsslim",
