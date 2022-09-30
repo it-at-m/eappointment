@@ -11,7 +11,7 @@ class ProcessListSummaryMailTest extends Base
     public function testRendering()
     {
         $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 3], []);
-        self::assertStringContainsString('Sie haben folgende Termine geplant', (string)$response->getBody());
+        self::assertStringContainsString('haben Sie folgende Termine gebucht', (string)$response->getBody());
         self::assertStringContainsString('10118', (string)$response->getBody());
         self::assertStringContainsString('10114', (string)$response->getBody());
         self::assertStringContainsString('10030', (string)$response->getBody());
@@ -37,7 +37,7 @@ class ProcessListSummaryMailTest extends Base
     {
         \App::$now->modify("+ 10Minutes");
         $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 3], []);
-        self::assertStringContainsString('Sie haben folgende Termine geplant', (string)$response->getBody());
+        self::assertStringContainsString('haben Sie folgende Termine gebucht', (string)$response->getBody());
     }
     
     public function testProcessListEmpty()
@@ -47,7 +47,7 @@ class ProcessListSummaryMailTest extends Base
         $config->setPreference('mailings', 'noReplyDepartmentId', '74');
         $configRepository->updateEntity($config);
         $response = $this->render([], ['mail' => 'not.existing@service.berlinonline.de'], []);
-        self::assertStringContainsString('Es wurden keine geplanten Termine gefunden.', (string)$response->getBody());
+        self::assertStringContainsString('Es wurden keine gebuchten Termine gefunden.', (string)$response->getBody());
     }
 
     public function testUnvalidMail()
