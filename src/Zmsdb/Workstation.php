@@ -141,6 +141,7 @@ class Workstation extends Base
                 array(
                     $authKey,
                     $dateTime->format('Y-m-d'),
+                    $dateTime->format('Y-m-d H:i:s'),
                     $loginName,
                     $password
                 )
