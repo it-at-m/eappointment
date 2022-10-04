@@ -27,18 +27,21 @@ class View extends BaseView {
     updateLists(triggered = false) {
         this.$main.find('.checkboxdeselect input:checkbox').each((index, element) => {
             $(element).prop("checked", false);
-            $(element).closest('label').hide();
+            $(element).closest('li').attr("aria-checked", false);
+            $(element).closest('li').hide();
             if ($.inArray($(element).val(), this.serviceListSelected) !== -1) {
                 $(element).prop("checked", true);
-                $(element).closest('label').show();
+                $(element).closest('li').attr("aria-checked", true);
+                $(element).closest('li').show();
             }
         });
 
         this.$main.find('.checkboxselect input:checkbox').each((index, element) => {
             $(element).prop("checked", false);
-            $(element).closest('label').hide();
+            $(element).closest('li').attr("aria-checked", false);
+            $(element).closest('li').hide();
             if ($.inArray($(element).val(), this.serviceList) !== -1) {
-                $(element).closest('label').show();
+                $(element).closest('li').show();
             }
         });
         if (triggered) {
