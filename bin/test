@@ -9,6 +9,10 @@ EHIGH="\033[49;1;32m"
 EERROR="\033[49;1;31m"
 EEND="\033[00m"
 
+if [ ! -d "$BASE/vendor" ]; then
+  BASE=$ROOT
+fi
+
 echo "Testing application"
 cd $ROOT
 
