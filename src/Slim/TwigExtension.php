@@ -351,12 +351,6 @@ class TwigExtension extends \Twig_Extension
 
     public function dumpAppProfiler()
     {
-        \D::config([
-            "display.show_call_info" => false,
-            "display.show_version" => false,
-            "sorting.arrays" => false,
-            "display.cascade" => [5,10,10],
-        ]);
         $output = '<h2>App Profiles</h2>'
             .' <p>For debugging: This log contains runtime information.
             <strong>DISABLE FOR PRODUCTION!</strong></p><ul>';
@@ -364,8 +358,7 @@ class TwigExtension extends \Twig_Extension
             if ($entry instanceof Profiler) {
                 $output .= "<li>$entry</li>";
             } else {
-                $settings = new \D\DumpSettings(\D::OB);
-                $output .= \D::UMP($entry, $settings);
+                $output .= \Tracy\Debugger::dump($entry, true);
             }
         }
         return $output .'</ul>';
