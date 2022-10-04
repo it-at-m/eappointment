@@ -274,6 +274,9 @@ class TwigExtension extends \Twig_Extension
         foreach ($list as $item) {
             if (!is_scalar($item) && array_key_exists('services', $item)) {
                 $appointment = $this->getAppointmentForService($item, $service_id);
+                if ($appointment === false) {
+                    continue;
+                }
                 if (false === $appointment['external'] && true === $appointment['allowed']) {
                     $propertylist[] = $item['id'];
                 }
