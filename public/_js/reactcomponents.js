@@ -4101,7 +4101,7 @@ module.exports = checkPropTypes;
 
 },{"./lib/ReactPropTypesSecret":"jZTZJ","./lib/has":"fqKuf"}],"hgMhh":[function(require,module,exports) {
 /*!
- * jQuery JavaScript Library v3.6.0
+ * jQuery JavaScript Library v3.6.1
  * https://jquery.com/
  *
  * Includes Sizzle.js
@@ -4111,7 +4111,7 @@ module.exports = checkPropTypes;
  * Released under the MIT license
  * https://jquery.org/license
  *
- * Date: 2021-03-02T17:08Z
+ * Date: 2022-08-26T17:52Z
  */ (function(global, factory) {
     "use strict";
     if (typeof module.exports === "object") // For CommonJS and CommonJS-like environments where a proper `window`
@@ -4120,7 +4120,7 @@ module.exports = checkPropTypes;
     // (such as Node.js), expose a factory as module.exports.
     // This accentuates the need for the creation of a real `window`.
     // e.g. var jQuery = require("jquery")(window);
-    // See ticket #14549 for more info.
+    // See ticket trac-14549 for more info.
     module.exports = global.document ? factory(global, true) : function(w) {
         if (!w.document) throw new Error("jQuery requires a window with a document");
         return factory(w);
@@ -4196,7 +4196,7 @@ module.exports = checkPropTypes;
     }
     /* global Symbol */ // Defining this global in .eslintrc.json would create a danger of using the global
     // unguarded in another place, it seems safer to define global only for this module
-    var version = "3.6.0", // Define a local copy of jQuery
+    var version = "3.6.1", // Define a local copy of jQuery
     jQuery = function(selector, context) {
         // The jQuery object is actually just the init constructor 'enhanced'
         // Need init if jQuery is called (just allow error to be thrown if not included)
@@ -5961,8 +5961,8 @@ module.exports = checkPropTypes;
     // Initialize a jQuery object
     // A central reference to the root jQuery(document)
     var rootjQuery, // A simple way to check for HTML strings
-    // Prioritize #id over <tag> to avoid XSS via location.hash (#9521)
-    // Strict HTML recognition (#11290: must start with <)
+    // Prioritize #id over <tag> to avoid XSS via location.hash (trac-9521)
+    // Strict HTML recognition (trac-11290: must start with <)
     // Shortcut simple #id case for speed
     rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]+))$/, init = jQuery.fn.init = function(selector, context, root) {
         var match, elem;
@@ -6564,7 +6564,7 @@ module.exports = checkPropTypes;
         // Is the DOM ready to be used? Set to true once it occurs.
         isReady: false,
         // A counter to track how many items to wait for before
-        // the ready event fires. See #6781
+        // the ready event fires. See trac-6781
         readyWait: 1,
         // Handle when the DOM is ready
         ready: function(wait) {
@@ -6639,7 +6639,7 @@ module.exports = checkPropTypes;
     }
     // Convert dashed to camelCase; used by the css and data modules
     // Support: IE <=9 - 11, Edge 12 - 15
-    // Microsoft forgot to hump their vendor prefix (#9572)
+    // Microsoft forgot to hump their vendor prefix (trac-9572)
     function camelCase(string) {
         return string.replace(rmsPrefix, "ms-").replace(rdashAlpha, fcamelCase);
     }
@@ -6664,7 +6664,7 @@ module.exports = checkPropTypes;
             if (!value) {
                 value = {};
                 // We can accept data for non-element nodes in modern browsers,
-                // but we should not, see #8335.
+                // but we should not, see trac-8335.
                 // Always return an empty object.
                 if (acceptData(owner)) {
                     // If it is a node unlikely to be stringify-ed or looped over
@@ -6816,7 +6816,7 @@ module.exports = checkPropTypes;
                     if (elem.nodeType === 1 && !dataPriv.get(elem, "hasDataAttrs")) {
                         i = attrs.length;
                         while(i--)// Support: IE 11 only
-                        // The attrs elements can be null (#14894)
+                        // The attrs elements can be null (trac-14894)
                         if (attrs[i]) {
                             name = attrs[i].name;
                             if (name.indexOf("data-") === 0) {
@@ -7090,9 +7090,9 @@ module.exports = checkPropTypes;
     (function() {
         var fragment = document.createDocumentFragment(), div = fragment.appendChild(document.createElement("div")), input = document.createElement("input");
         // Support: Android 4.0 - 4.3 only
-        // Check state lost if the name is set (#11217)
+        // Check state lost if the name is set (trac-11217)
         // Support: Windows Web Apps (WWA)
-        // `name` and `type` must use .setAttribute for WWA (#14901)
+        // `name` and `type` must use .setAttribute for WWA (trac-14901)
         input.setAttribute("type", "radio");
         input.setAttribute("checked", "checked");
         input.setAttribute("name", "t");
@@ -7110,7 +7110,7 @@ module.exports = checkPropTypes;
         div.innerHTML = "<option></option>";
         support.option = !!div.lastChild;
     })();
-    // We have to close these tags to support XHTML (#13200)
+    // We have to close these tags to support XHTML (trac-13200)
     var wrapMap = {
         // XHTML parsers do not magically insert elements in the
         // same way that tag soup parsers do. So we cannot shorten
@@ -7151,7 +7151,7 @@ module.exports = checkPropTypes;
     ];
     function getAll(context, tag) {
         // Support: IE <=9 - 11 only
-        // Use typeof to avoid zero-argument method invocation on host objects (#15151)
+        // Use typeof to avoid zero-argument method invocation on host objects (trac-15151)
         var ret;
         if (typeof context.getElementsByTagName !== "undefined") ret = context.getElementsByTagName(tag || "*");
         else if (typeof context.querySelectorAll !== "undefined") ret = context.querySelectorAll(tag || "*");
@@ -7196,7 +7196,7 @@ module.exports = checkPropTypes;
                     jQuery.merge(nodes, tmp.childNodes);
                     // Remember the top-level container
                     tmp = fragment.firstChild;
-                    // Ensure the created nodes are orphaned (#12392)
+                    // Ensure the created nodes are orphaned (trac-12392)
                     tmp.textContent = "";
                 }
             }
@@ -7454,14 +7454,14 @@ module.exports = checkPropTypes;
             // Support: IE 11 only
             // ...but not arrow key "clicks" of radio inputs, which can have `button` -1 (gh-2343)
             !(event.type === "click" && event.button >= 1)) {
-                for(; cur !== this; cur = cur.parentNode || this)// Don't check non-elements (#13208)
-                // Don't process clicks on disabled elements (#6911, #8165, #11382, #11764)
+                for(; cur !== this; cur = cur.parentNode || this)// Don't check non-elements (trac-13208)
+                // Don't process clicks on disabled elements (trac-6911, trac-8165, trac-11382, trac-11764)
                 if (cur.nodeType === 1 && !(event.type === "click" && cur.disabled === true)) {
                     matchedHandlers = [];
                     matchedSelectors = {};
                     for(i = 0; i < delegateCount; i++){
                         handleObj = handlers[i];
-                        // Don't conflict with Object.prototype properties (#13203)
+                        // Don't conflict with Object.prototype properties (trac-13203)
                         sel = handleObj.selector + " ";
                         if (matchedSelectors[sel] === undefined) matchedSelectors[sel] = handleObj.needsContext ? jQuery(sel, this).index(cur) > -1 : jQuery.find(sel, this, null, [
                             cur
@@ -7630,7 +7630,7 @@ module.exports = checkPropTypes;
             src.returnValue === false ? returnTrue : returnFalse;
             // Create target properties
             // Support: Safari <=6 - 7 only
-            // Target should not be a text node (#504, #13143)
+            // Target should not be a text node (trac-504, trac-13143)
             this.target = src.target && src.target.nodeType === 3 ? src.target.parentNode : src.target;
             this.currentTarget = src.currentTarget;
             this.relatedTarget = src.relatedTarget;
@@ -7722,10 +7722,10 @@ module.exports = checkPropTypes;
                 // Return non-false to allow normal event-path propagation
                 return true;
             },
-            // Suppress native focus or blur as it's already being fired
-            // in leverageNative.
-            _default: function() {
-                return true;
+            // Suppress native focus or blur if we're currently inside
+            // a leveraged native-event stack
+            _default: function(event) {
+                return dataPriv.get(event.target, type);
             },
             delegateType: delegateType
         };
@@ -7795,7 +7795,7 @@ module.exports = checkPropTypes;
     // In IE/Edge using regex groups here causes severe slowdowns.
     // See https://connect.microsoft.com/IE/feedback/details/1736512/
     rnoInnerhtml = /<script|<style|<link/i, // checked="checked" or checked
-    rchecked = /checked\s*(?:[^=]|=\s*.checked.)/i, rcleanScript = /^\s*<!(?:\[CDATA\[|--)|(?:\]\]|--)>\s*$/g;
+    rchecked = /checked\s*(?:[^=]|=\s*.checked.)/i, rcleanScript = /^\s*<!\[CDATA\[|\]\]>\s*$/g;
     // Prefer a tbody over its parent table for containing new rows
     function manipulationTarget(elem, content) {
         if (nodeName(elem, "table") && nodeName(content.nodeType !== 11 ? content : content.firstChild, "tr")) return jQuery(elem).children("tbody")[0] || elem;
@@ -7857,7 +7857,7 @@ module.exports = checkPropTypes;
                 hasScripts = scripts.length;
                 // Use the original fragment for the last item
                 // instead of the first because it can end up
-                // being emptied incorrectly in certain situations (#8070).
+                // being emptied incorrectly in certain situations (trac-8070).
                 for(; i < l; i++){
                     node = fragment;
                     if (i !== iNoClone) {
@@ -7882,7 +7882,12 @@ module.exports = checkPropTypes;
                                 if (jQuery._evalUrl && !node.noModule) jQuery._evalUrl(node.src, {
                                     nonce: node.nonce || node.getAttribute("nonce")
                                 }, doc);
-                            } else DOMEval(node.textContent.replace(rcleanScript, ""), node, doc);
+                            } else // Unwrap a CDATA section containing script contents. This shouldn't be
+                            // needed as in XML documents they're already not visible when
+                            // inspecting element contents and in HTML documents they have no
+                            // meaning but we're preserving that logic for backwards compatibility.
+                            // This will be removed completely in 4.0. See gh-4904.
+                            DOMEval(node.textContent.replace(rcleanScript, ""), node, doc);
                         }
                     }
                 }
@@ -8062,8 +8067,9 @@ module.exports = checkPropTypes;
         };
     });
     var rnumnonpx = new RegExp("^(" + pnum + ")(?!px)[a-z%]+$", "i");
+    var rcustomProp = /^--/;
     var getStyles = function(elem) {
-        // Support: IE <=11 only, Firefox <=30 (#15098, #14150)
+        // Support: IE <=11 only, Firefox <=30 (trac-15098, trac-14150)
         // IE throws on elements created in popups
         // FF meanwhile throws on frame elements through "defaultView.getComputedStyle"
         var view = elem.ownerDocument.defaultView;
@@ -8083,6 +8089,8 @@ module.exports = checkPropTypes;
         return ret;
     };
     var rboxStyle = new RegExp(cssExpand.join("|"), "i");
+    var whitespace = "[\\x20\\t\\r\\n\\f]";
+    var rtrimCSS = new RegExp("^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g");
     (function() {
         // Executing both pixelPosition & boxSizingReliable tests require only one layout
         // so they're executed at the same time to save the second computation.
@@ -8121,7 +8129,7 @@ module.exports = checkPropTypes;
         // Finish early in limited (non-browser) environments
         if (!div.style) return;
         // Support: IE <=9 - 11 only
-        // Style of cloned element affects source element cloned (#8908)
+        // Style of cloned element affects source element cloned (trac-8908)
         div.style.backgroundClip = "content-box";
         div.cloneNode(true).style.backgroundClip = "";
         support.clearCloneStyle = div.style.backgroundClip === "content-box";
@@ -8185,17 +8193,24 @@ module.exports = checkPropTypes;
         });
     })();
     function curCSS(elem, name, computed) {
-        var width, minWidth, maxWidth, ret, // Support: Firefox 51+
+        var width, minWidth, maxWidth, ret, isCustomProp = rcustomProp.test(name), // Support: Firefox 51+
         // Retrieving style before computed somehow
         // fixes an issue with getting wrong values
         // on detached elements
         style = elem.style;
         computed = computed || getStyles(elem);
         // getPropertyValue is needed for:
-        //   .css('filter') (IE 9 only, #12537)
-        //   .css('--customProperty) (#3144)
+        //   .css('filter') (IE 9 only, trac-12537)
+        //   .css('--customProperty) (gh-3144)
         if (computed) {
             ret = computed.getPropertyValue(name) || computed[name];
+            // trim whitespace for custom property (issue gh-4926)
+            if (isCustomProp) // rtrim treats U+000D CARRIAGE RETURN and U+000C FORM FEED
+            // as whitespace while CSS does not, but this is not a problem
+            // because CSS preprocessing replaces them with U+000A LINE FEED
+            // (which *is* CSS whitespace)
+            // https://www.w3.org/TR/css-syntax-3/#input-preprocessing
+            ret = ret.replace(rtrimCSS, "$1");
             if (ret === "" && !isAttached(elem)) ret = jQuery.style(elem, name);
             // A tribute to the "awesome hack by Dean Edwards"
             // Android Browser returns percentage for some values,
@@ -8259,7 +8274,7 @@ module.exports = checkPropTypes;
     var // Swappable if display is none or starts with table
     // except "table", "table-cell", or "table-caption"
     // See here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
-    rdisplayswap = /^(none|table(?!-c[ea]).+)/, rcustomProp = /^--/, cssShow = {
+    rdisplayswap = /^(none|table(?!-c[ea]).+)/, cssShow = {
         position: "absolute",
         visibility: "hidden",
         display: "block"
@@ -8395,13 +8410,13 @@ module.exports = checkPropTypes;
             // Check if we're setting a value
             if (value !== undefined) {
                 type = typeof value;
-                // Convert "+=" or "-=" to relative numbers (#7345)
+                // Convert "+=" or "-=" to relative numbers (trac-7345)
                 if (type === "string" && (ret = rcssNum.exec(value)) && ret[1]) {
                     value = adjustCSS(elem, name, ret);
-                    // Fixes bug #9237
+                    // Fixes bug trac-9237
                     type = "number";
                 }
-                // Make sure that null and NaN values aren't set (#7116)
+                // Make sure that null and NaN values aren't set (trac-7116)
                 if (value == null || value !== value) return;
                 // If a number was passed in, add the unit (except for certain CSS properties)
                 // The isCustomProp check can be removed in jQuery 4.0 when we only auto-append
@@ -8787,7 +8802,7 @@ module.exports = checkPropTypes;
         }), tick = function() {
             if (stopped) return false;
             var currentTime = fxNow || createFxNow(), remaining = Math.max(0, animation.startTime + animation.duration - currentTime), // Support: Android 2.3 only
-            // Archaic crash bug won't allow us to use `1 - ( 0.5 || 0 )` (#12497)
+            // Archaic crash bug won't allow us to use `1 - ( 0.5 || 0 )` (trac-12497)
             temp = remaining / animation.duration || 0, percent = 1 - temp, index = 0, length = animation.tweens.length;
             for(; index < length; index++)animation.tweens[index].run(percent);
             deferred.notifyWith(elem, [
@@ -9053,7 +9068,6 @@ module.exports = checkPropTypes;
         _default: 400
     };
     // Based off of the plugin by Clint Helfers, with permission.
-    // https://web.archive.org/web/20100324014747/http://blindsignals.com/index.php/2009/07/jquery-delay/
     jQuery.fn.delay = function(time, type) {
         time = jQuery.fx ? jQuery.fx.speeds[time] || time : time;
         type = type || "fx";
@@ -9191,8 +9205,7 @@ module.exports = checkPropTypes;
                     // Support: IE <=9 - 11 only
                     // elem.tabIndex doesn't always return the
                     // correct value when it hasn't been explicitly set
-                    // https://web.archive.org/web/20141116233347/http://fluidproject.org/blog/2008/01/09/getting-setting-and-removing-tabindex-values-with-javascript/
-                    // Use proper attribute retrieval(#12072)
+                    // Use proper attribute retrieval (trac-12072)
                     var tabindex = jQuery.find.attr(elem, "tabindex");
                     if (tabindex) return parseInt(tabindex, 10);
                     if (rfocusable.test(elem.nodeName) || rclickable.test(elem.nodeName) && elem.href) return 0;
@@ -9257,62 +9270,67 @@ module.exports = checkPropTypes;
     }
     jQuery.fn.extend({
         addClass: function(value) {
-            var classes, elem, cur, curValue, clazz, j, finalValue, i = 0;
+            var classNames, cur, curValue, className, i, finalValue;
             if (isFunction(value)) return this.each(function(j) {
                 jQuery(this).addClass(value.call(this, j, getClass(this)));
             });
-            classes = classesToArray(value);
-            if (classes.length) while(elem = this[i++]){
-                curValue = getClass(elem);
-                cur = elem.nodeType === 1 && " " + stripAndCollapse(curValue) + " ";
+            classNames = classesToArray(value);
+            if (classNames.length) return this.each(function() {
+                curValue = getClass(this);
+                cur = this.nodeType === 1 && " " + stripAndCollapse(curValue) + " ";
                 if (cur) {
-                    j = 0;
-                    while(clazz = classes[j++])if (cur.indexOf(" " + clazz + " ") < 0) cur += clazz + " ";
+                    for(i = 0; i < classNames.length; i++){
+                        className = classNames[i];
+                        if (cur.indexOf(" " + className + " ") < 0) cur += className + " ";
+                    }
                     // Only assign if different to avoid unneeded rendering.
                     finalValue = stripAndCollapse(cur);
-                    if (curValue !== finalValue) elem.setAttribute("class", finalValue);
+                    if (curValue !== finalValue) this.setAttribute("class", finalValue);
                 }
-            }
+            });
             return this;
         },
         removeClass: function(value) {
-            var classes, elem, cur, curValue, clazz, j, finalValue, i = 0;
+            var classNames, cur, curValue, className, i, finalValue;
             if (isFunction(value)) return this.each(function(j) {
                 jQuery(this).removeClass(value.call(this, j, getClass(this)));
             });
             if (!arguments.length) return this.attr("class", "");
-            classes = classesToArray(value);
-            if (classes.length) while(elem = this[i++]){
-                curValue = getClass(elem);
+            classNames = classesToArray(value);
+            if (classNames.length) return this.each(function() {
+                curValue = getClass(this);
                 // This expression is here for better compressibility (see addClass)
-                cur = elem.nodeType === 1 && " " + stripAndCollapse(curValue) + " ";
+                cur = this.nodeType === 1 && " " + stripAndCollapse(curValue) + " ";
                 if (cur) {
-                    j = 0;
-                    while(clazz = classes[j++])// Remove *all* instances
-                    while(cur.indexOf(" " + clazz + " ") > -1)cur = cur.replace(" " + clazz + " ", " ");
+                    for(i = 0; i < classNames.length; i++){
+                        className = classNames[i];
+                        // Remove *all* instances
+                        while(cur.indexOf(" " + className + " ") > -1)cur = cur.replace(" " + className + " ", " ");
+                    }
                     // Only assign if different to avoid unneeded rendering.
                     finalValue = stripAndCollapse(cur);
-                    if (curValue !== finalValue) elem.setAttribute("class", finalValue);
+                    if (curValue !== finalValue) this.setAttribute("class", finalValue);
                 }
-            }
+            });
             return this;
         },
         toggleClass: function(value, stateVal) {
-            var type = typeof value, isValidValue = type === "string" || Array.isArray(value);
-            if (typeof stateVal === "boolean" && isValidValue) return stateVal ? this.addClass(value) : this.removeClass(value);
+            var classNames, className, i, self, type = typeof value, isValidValue = type === "string" || Array.isArray(value);
             if (isFunction(value)) return this.each(function(i) {
                 jQuery(this).toggleClass(value.call(this, i, getClass(this), stateVal), stateVal);
             });
+            if (typeof stateVal === "boolean" && isValidValue) return stateVal ? this.addClass(value) : this.removeClass(value);
+            classNames = classesToArray(value);
             return this.each(function() {
-                var className, i, self, classNames;
                 if (isValidValue) {
                     // Toggle individual class names
-                    i = 0;
                     self = jQuery(this);
-                    classNames = classesToArray(value);
-                    while(className = classNames[i++])// Check each className given, space separated list
-                    if (self.hasClass(className)) self.removeClass(className);
-                    else self.addClass(className);
+                    for(i = 0; i < classNames.length; i++){
+                        className = classNames[i];
+                        // Check each className given, space separated list
+                        if (self.hasClass(className)) self.removeClass(className);
+                        else self.addClass(className);
+                    }
                 // Toggle whole class name
                 } else if (value === undefined || type === "boolean") {
                     className = getClass(this);
@@ -9375,7 +9393,7 @@ module.exports = checkPropTypes;
                 get: function(elem) {
                     var val = jQuery.find.attr(elem, "value");
                     return val != null ? val : // Support: IE <=10 - 11 only
-                    // option.text throws exceptions (#14686, #14858)
+                    // option.text throws exceptions (trac-14686, trac-14858)
                     // Strip and collapse whitespace
                     // https://html.spec.whatwg.org/#strip-and-collapse-whitespace
                     stripAndCollapse(jQuery.text(elem));
@@ -9390,7 +9408,7 @@ module.exports = checkPropTypes;
                     for(; i < max; i++){
                         option = options[i];
                         // Support: IE <=9 only
-                        // IE8-9 doesn't update selected after form reset (#2551)
+                        // IE8-9 doesn't update selected after form reset (trac-2551)
                         if ((option.selected || i === index) && // Don't return options that are disabled or in a disabled optgroup
                         !option.disabled && (!option.parentNode.disabled || !nodeName(option.parentNode, "optgroup"))) {
                             // Get the specific value for the option
@@ -9470,8 +9488,8 @@ module.exports = checkPropTypes;
             // Allow special events to draw outside the lines
             special = jQuery.event.special[type] || {};
             if (!onlyHandlers && special.trigger && special.trigger.apply(elem, data) === false) return;
-            // Determine event propagation path in advance, per W3C events spec (#9951)
-            // Bubble up to document, then to window; watch for a global ownerDocument var (#9724)
+            // Determine event propagation path in advance, per W3C events spec (trac-9951)
+            // Bubble up to document, then to window; watch for a global ownerDocument var (trac-9724)
             if (!onlyHandlers && !special.noBubble && !isWindow(elem)) {
                 bubbleType = special.delegateType || type;
                 if (!rfocusMorph.test(bubbleType + type)) cur = cur.parentNode;
@@ -9501,7 +9519,7 @@ module.exports = checkPropTypes;
             // If nobody prevented the default action, do it now
             if (!onlyHandlers && !event.isDefaultPrevented()) {
                 if ((!special._default || special._default.apply(eventPath.pop(), data) === false) && acceptData(elem)) // Call a native DOM method on the target with the same name as the event.
-                // Don't do default actions on window, that's where global variables be (#6170)
+                // Don't do default actions on window, that's where global variables be (trac-6170)
                 {
                     if (ontype && isFunction(elem[type]) && !isWindow(elem)) {
                         // Don't re-trigger an onFOO event when we call its FOO() method
@@ -9657,7 +9675,7 @@ module.exports = checkPropTypes;
             }).get();
         }
     });
-    var r20 = /%20/g, rhash = /#.*$/, rantiCache = /([?&])_=[^&]*/, rheaders = /^(.*?):[ \t]*([^\r\n]*)$/mg, // #7653, #8125, #8152: local protocol detection
+    var r20 = /%20/g, rhash = /#.*$/, rantiCache = /([?&])_=[^&]*/, rheaders = /^(.*?):[ \t]*([^\r\n]*)$/mg, // trac-7653, trac-8125, trac-8152: local protocol detection
     rlocalProtocol = /^(?:about|app|app-storage|.+-extension|file|res|widget):$/, rnoContent = /^(?:GET|HEAD)$/, rprotocol = /^\/\//, /* Prefilters
 	 * 1) They are useful to introduce custom dataTypes (see ajax/jsonp.js for an example)
 	 * 2) These are called:
@@ -9670,7 +9688,7 @@ module.exports = checkPropTypes;
 	 * 1) key is the dataType
 	 * 2) the catchall symbol "*" can be used
 	 * 3) selection will start with transport dataType and THEN go to "*" if needed
-	 */ transports = {}, // Avoid comment-prolog char sequence (#10098); must appease lint and evade compression
+	 */ transports = {}, // Avoid comment-prolog char sequence (trac-10098); must appease lint and evade compression
     allTypes = "*/".concat("*"), // Anchor tag for parsing the document origin
     originAnchor = document.createElement("a");
     originAnchor.href = location.href;
@@ -9714,7 +9732,7 @@ module.exports = checkPropTypes;
     }
     // A special extend for ajax options
     // that takes "flat" options (not to be deep extended)
-    // Fixes #9887
+    // Fixes trac-9887
     function ajaxExtend(target, src) {
         var key, deep, flatOptions = jQuery.ajaxSettings.flatOptions || {};
         for(key in src)if (src[key] !== undefined) (flatOptions[key] ? target : deep || (deep = {}))[key] = src[key];
@@ -9973,10 +9991,10 @@ module.exports = checkPropTypes;
             // Attach deferreds
             deferred.promise(jqXHR);
             // Add protocol if not provided (prefilters might expect it)
-            // Handle falsy url in the settings object (#10093: consistency with old signature)
+            // Handle falsy url in the settings object (trac-10093: consistency with old signature)
             // We also use the url parameter if available
             s.url = ((url || s.url || location.href) + "").replace(rprotocol, location.protocol + "//");
-            // Alias method option to type as per ticket #12004
+            // Alias method option to type as per ticket trac-12004
             s.type = options.method || options.type || s.method || s.type;
             // Extract dataTypes list
             s.dataTypes = (s.dataType || "*").toLowerCase().match(rnothtmlwhite) || [
@@ -10007,7 +10025,7 @@ module.exports = checkPropTypes;
             // If request was aborted inside a prefilter, stop there
             if (completed) return jqXHR;
             // We can fire global events as of now if asked to
-            // Don't fire events if jQuery.event is undefined in an AMD-usage scenario (#15118)
+            // Don't fire events if jQuery.event is undefined in an AMD-usage scenario (trac-15118)
             fireGlobals = jQuery.event && s.global;
             // Watch for a new set of requests
             if (fireGlobals && (jQuery.active++) === 0) jQuery.event.trigger("ajaxStart");
@@ -10026,7 +10044,7 @@ module.exports = checkPropTypes;
                 // If data is available and should be processed, append data to url
                 if (s.data && (s.processData || typeof s.data === "string")) {
                     cacheURL += (rquery.test(cacheURL) ? "&" : "?") + s.data;
-                    // #9682: remove data so that it's not used in an eventual retry
+                    // trac-9682: remove data so that it's not used in an eventual retry
                     delete s.data;
                 }
                 // Add or update anti-cache param if needed
@@ -10207,7 +10225,7 @@ module.exports = checkPropTypes;
     jQuery._evalUrl = function(url, options, doc) {
         return jQuery.ajax({
             url: url,
-            // Make this explicit, since user can override this through ajaxSetup (#11264)
+            // Make this explicit, since user can override this through ajaxSetup (trac-11264)
             type: "GET",
             dataType: "script",
             cache: true,
@@ -10278,7 +10296,7 @@ module.exports = checkPropTypes;
         // File protocol always yields status code 0, assume 200
         0: 200,
         // Support: IE <=9 only
-        // #1450: sometimes IE returns 1223 when it should be 204
+        // trac-1450: sometimes IE returns 1223 when it should be 204
         1223: 204
     }, xhrSupported = jQuery.ajaxSettings.xhr();
     support.cors = !!xhrSupported && "withCredentials" in xhrSupported;
@@ -10313,7 +10331,7 @@ module.exports = checkPropTypes;
                                 // On a manual native abort, IE9 throws
                                 // errors on any property access that is not readyState
                                 if (typeof xhr.status !== "number") complete(0, "error");
-                                else complete(// File: protocol always yields status 0; see #8605, #14207
+                                else complete(// File: protocol always yields status 0; see trac-8605, trac-14207
                                 xhr.status, xhr.statusText);
                             } else complete(xhrSuccessStatus[xhr.status] || xhr.status, xhr.statusText, // Support: IE <=9 only
                             // IE9 has no XHR2 but throws on binary (trac-11426)
@@ -10349,7 +10367,7 @@ module.exports = checkPropTypes;
                     // Do send the request (this may raise an exception)
                     xhr.send(options.hasContent && options.data || null);
                 } catch (e) {
-                    // #14683: Only rethrow if this hasn't been notified as an error yet
+                    // trac-14683: Only rethrow if this hasn't been notified as an error yet
                     if (callback) throw e;
                 }
             },
@@ -10760,7 +10778,9 @@ module.exports = checkPropTypes;
     });
     // Support: Android <=4.0 only
     // Make sure we trim BOM and NBSP
-    var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+    // Require that the "whitespace run" starts from a non-whitespace
+    // to avoid O(N^2) behavior when the engine would try matching "\s+$" at each space position.
+    var rtrim = /^[\s\uFEFF\xA0]+|([^\s\uFEFF\xA0])[\s\uFEFF\xA0]+$/g;
     // Bind a function to a context, optionally partially applying any
     // arguments.
     // jQuery.proxy is deprecated to promote standards (specifically Function#bind)
@@ -10807,7 +10827,7 @@ module.exports = checkPropTypes;
         !isNaN(obj - parseFloat(obj));
     };
     jQuery.trim = function(text) {
-        return text == null ? "" : (text + "").replace(rtrim, "");
+        return text == null ? "" : (text + "").replace(rtrim, "$1");
     };
     // Register as a named AMD module, since jQuery can be concatenated with other
     // files that may use define, but not via a proper concatenation script that
@@ -10832,8 +10852,8 @@ module.exports = checkPropTypes;
         return jQuery;
     };
     // Expose jQuery and $ identifiers, even in AMD
-    // (#7102#comment:10, https://github.com/jquery/jquery/pull/557)
-    // and CommonJS for browser emulators (#13566)
+    // (trac-7102#comment:10, https://github.com/jquery/jquery/pull/557)
+    // and CommonJS for browser emulators (trac-13566)
     if (typeof noGlobal === "undefined") window1.jQuery = window1.$ = jQuery;
     return jQuery;
 });
@@ -76140,9 +76160,9 @@ xhr = null // Help gc
 ;
 
 },{}],"47huq":[function(require,module,exports) {
+var global = arguments[3];
 var Buffer = require("buffer").Buffer;
 var process = require("process");
-var global = arguments[3];
 var capability = require("./capability");
 var inherits = require("inherits");
 var stream = require("readable-stream");
@@ -76347,8 +76367,8 @@ exports.pipeline = require("./lib/internal/streams/pipeline.js");
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 "use strict";
-var global = arguments[3];
 var process = require("process");
+var global = arguments[3];
 module.exports = Readable;
 /*<replacement>*/ var Duplex;
 /*</replacement>*/ Readable.ReadableState = ReadableState;
@@ -78099,8 +78119,8 @@ Object.defineProperty(Duplex.prototype, "destroyed", {
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
 // the drain event emission and buffering.
 "use strict";
-var process = require("process");
 var global = arguments[3];
+var process = require("process");
 module.exports = Writable;
 /* <replacement> */ function WriteReq(chunk, encoding, cb) {
     this.chunk = chunk;
@@ -80040,8 +80060,8 @@ module.exports = dereference;
 
 },{"./ref":"cU5Rd","./pointer":"9o4mX","@jsdevtools/ono":"fbnYH","./util/url":"h6uvn"}],"ggAqa":[function(require,module,exports) {
 "use strict";
-var process = require("process");
 var global = arguments[3];
+var process = require("process");
 var next = global.process && process.nextTick || global.setImmediate || function(f) {
     setTimeout(f, 0);
 };
@@ -81289,10 +81309,19 @@ class CallDisplayConfigView extends (0, _react.Component) {
         const itemEnabled = this.state.selectedItems.reduce((carry, current)=>{
             return carry || current.id === item.id && current.type === item.type;
         }, false);
-        return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-            className: "form-check ticketprinter-config__item",
-            children: this.renderCheckbox(itemEnabled, onChange, prefix + text)
-        }, item.id, false, {
+        return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("li", {
+            tabIndex: "-1",
+            role: "option",
+            "aria-checked": itemEnabled,
+            children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                className: "form-check ticketprinter-config__item",
+                children: this.renderCheckbox(itemEnabled, onChange, prefix + text)
+            }, item.id, false, {
+                fileName: "js/block/calldisplay/config/index.js",
+                lineNumber: 125,
+                columnNumber: 17
+            }, this)
+        }, void 0, false, {
             fileName: "js/block/calldisplay/config/index.js",
             lineNumber: 124,
             columnNumber: 13
@@ -81306,14 +81335,23 @@ class CallDisplayConfigView extends (0, _react.Component) {
                     children: "Standorte"
                 }, void 0, false, {
                     fileName: "js/block/calldisplay/config/index.js",
-                    lineNumber: 134,
+                    lineNumber: 136,
                     columnNumber: 21
                 }, this),
-                scopes.map(this.renderItem.bind(this))
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("ul", {
+                    role: "listbox",
+                    "aria-label": "Standortliste",
+                    className: "checkbox-list",
+                    children: scopes.map(this.renderItem.bind(this))
+                }, void 0, false, {
+                    fileName: "js/block/calldisplay/config/index.js",
+                    lineNumber: 137,
+                    columnNumber: 21
+                }, this)
             ]
         }, void 0, true, {
             fileName: "js/block/calldisplay/config/index.js",
-            lineNumber: 133,
+            lineNumber: 135,
             columnNumber: 17
         }, this);
     }
@@ -81325,14 +81363,23 @@ class CallDisplayConfigView extends (0, _react.Component) {
                     children: "Standort\xadgruppe"
                 }, void 0, false, {
                     fileName: "js/block/calldisplay/config/index.js",
-                    lineNumber: 145,
+                    lineNumber: 149,
                     columnNumber: 21
                 }, this),
-                clusters.map(this.renderItem.bind(this))
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("ul", {
+                    role: "listbox",
+                    "aria-label": "Standortclusterliste",
+                    className: "checkbox-list",
+                    children: clusters.map(this.renderItem.bind(this))
+                }, void 0, false, {
+                    fileName: "js/block/calldisplay/config/index.js",
+                    lineNumber: 150,
+                    columnNumber: 21
+                }, this)
             ]
         }, void 0, true, {
             fileName: "js/block/calldisplay/config/index.js",
-            lineNumber: 144,
+            lineNumber: 148,
             columnNumber: 17
         }, this);
     }
@@ -81344,7 +81391,7 @@ class CallDisplayConfigView extends (0, _react.Component) {
                     children: department.name
                 }, void 0, false, {
                     fileName: "js/block/calldisplay/config/index.js",
-                    lineNumber: 155,
+                    lineNumber: 161,
                     columnNumber: 17
                 }, this),
                 this.renderScopes(department.scopes),
@@ -81352,7 +81399,7 @@ class CallDisplayConfigView extends (0, _react.Component) {
             ]
         }, department.id, true, {
             fileName: "js/block/calldisplay/config/index.js",
-            lineNumber: 154,
+            lineNumber: 160,
             columnNumber: 13
         }, this);
     }
@@ -81381,7 +81428,7 @@ class CallDisplayConfigView extends (0, _react.Component) {
                             value: "Angezeigte Aufrufe"
                         }, void 0, false, {
                             fileName: "js/block/calldisplay/config/index.js",
-                            lineNumber: 181,
+                            lineNumber: 187,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Controls, {
@@ -81407,18 +81454,18 @@ class CallDisplayConfigView extends (0, _react.Component) {
                                 onChange: onQueueStatusChange
                             }, void 0, false, {
                                 fileName: "js/block/calldisplay/config/index.js",
-                                lineNumber: 186,
+                                lineNumber: 192,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "js/block/calldisplay/config/index.js",
-                            lineNumber: 185,
+                            lineNumber: 191,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "js/block/calldisplay/config/index.js",
-                    lineNumber: 180,
+                    lineNumber: 186,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(FormGroup, {
@@ -81430,7 +81477,7 @@ class CallDisplayConfigView extends (0, _react.Component) {
                             value: "Layout"
                         }, void 0, false, {
                             fileName: "js/block/calldisplay/config/index.js",
-                            lineNumber: 194,
+                            lineNumber: 200,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Controls, {
@@ -81476,18 +81523,18 @@ class CallDisplayConfigView extends (0, _react.Component) {
                                 onChange: onTemplateStatusChange
                             }, void 0, false, {
                                 fileName: "js/block/calldisplay/config/index.js",
-                                lineNumber: 196,
+                                lineNumber: 202,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "js/block/calldisplay/config/index.js",
-                            lineNumber: 195,
+                            lineNumber: 201,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "js/block/calldisplay/config/index.js",
-                    lineNumber: 193,
+                    lineNumber: 199,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(FormGroup, {
@@ -81499,7 +81546,7 @@ class CallDisplayConfigView extends (0, _react.Component) {
                             value: "URL"
                         }, void 0, false, {
                             fileName: "js/block/calldisplay/config/index.js",
-                            lineNumber: 213,
+                            lineNumber: 219,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Controls, {
@@ -81511,18 +81558,18 @@ class CallDisplayConfigView extends (0, _react.Component) {
                                 }
                             }, void 0, false, {
                                 fileName: "js/block/calldisplay/config/index.js",
-                                lineNumber: 215,
+                                lineNumber: 221,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "js/block/calldisplay/config/index.js",
-                            lineNumber: 214,
+                            lineNumber: 220,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "js/block/calldisplay/config/index.js",
-                    lineNumber: 212,
+                    lineNumber: 218,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -81538,25 +81585,25 @@ class CallDisplayConfigView extends (0, _react.Component) {
                                 "aria-hidden": "true"
                             }, void 0, false, {
                                 fileName: "js/block/calldisplay/config/index.js",
-                                lineNumber: 221,
+                                lineNumber: 227,
                                 columnNumber: 119
                             }, this),
                             " Aktuelle Konfiguration in einem neuen Fenster \xf6ffnen"
                         ]
                     }, void 0, true, {
                         fileName: "js/block/calldisplay/config/index.js",
-                        lineNumber: 221,
+                        lineNumber: 227,
                         columnNumber: 21
                     }, this)
                 }, void 0, false, {
                     fileName: "js/block/calldisplay/config/index.js",
-                    lineNumber: 220,
+                    lineNumber: 226,
                     columnNumber: 17
                 }, this)
             ]
         }, void 0, true, {
             fileName: "js/block/calldisplay/config/index.js",
-            lineNumber: 178,
+            lineNumber: 184,
             columnNumber: 13
         }, this);
     }
