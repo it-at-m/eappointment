@@ -19,6 +19,7 @@ class Workstation extends Base implements MappingInterface
         SET
             `SessionID`=?,
             `Datum`=?,
+            `lastUpdate`=?,
             `Arbeitsplatznr`="",
             `aufrufzusatz`="",
             `StandortID`=0

@@ -11,7 +11,7 @@ class AvailabilityTest extends Base
     public function testBasic()
     {
         $query = new Query();
-        $entity = $query->readEntity(21202, 0); //check without cache
+        $entity = $query->readEntity(21202, 0, true); //entity is not loaded -> no cache usage
         $this->assertEntity("\\BO\\Zmsentities\\Availability", $entity);
         $this->assertTrue((bool)$entity->weekday['saturday']);
 
