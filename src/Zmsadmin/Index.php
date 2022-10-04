@@ -51,8 +51,9 @@ class Index extends BaseController
             'departments' => array('id' => 0) // required in schema validation
         ));
         try {
+            /** @var \BO\Zmsentities\Workstation $workstation */
             $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
-            if (array_key_exists('authkey', $workstation)) {
+            if ($workstation->offsetExists('authkey')) {
                 \BO\Slim\Profiler::add('start set Authkey');
                 \BO\Zmsclient\Auth::setKey($workstation->authkey);
                 \BO\Slim\Profiler::add('end set Authkey');
