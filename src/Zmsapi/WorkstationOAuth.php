@@ -26,7 +26,6 @@ class WorkstationOAuth extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        Profiler::add("____________________START WorkstationOAuth___________________");
         $validator = $request->getAttribute('validator');
         $resolveReferences = $validator->getParameter('code')->isString()->isSmallerThan(120)->isBiggerThan(100);
         $input = Validator::input()->isJson()->assertValid()->getValue();
@@ -66,7 +65,6 @@ class WorkstationOAuth extends BaseController
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
-        Profiler::add("_____END WorkstationOAuth_____");
         return $response;
     }
 }
