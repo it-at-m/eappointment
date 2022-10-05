@@ -126,8 +126,8 @@ class OAuthMiddleware
     {
         try {
             $userAccount = new \BO\Zmsentities\Useraccount(array(
-                'id' => "oauth",
-                'password' => "49zs,x/o?h",
+                'id' => \App::ZMS_AUTHORIZATION_SUPERUSER_USERNAME,
+                'password' => \App::ZMS_AUTHORIZATION_SUPERUSER_PASSWORD,
                 'departments' => array('id' => 0) // required in schema validation
             ));
             $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
