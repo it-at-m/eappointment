@@ -1,5 +1,6 @@
 ## v2.24.11
 * #55538, ##55534, #55561 - Adaptations for accessibility, headings added, contrast display revised, error messages clearly marked as errors
+* #55531 - Set the focus on the first error message in the form and revise the label semantic with included error messages
 
 ## v2.24.10
 * #55389 - Keycloak OpenID-Connect as additional login solution tested
