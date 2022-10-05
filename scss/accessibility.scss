@@ -1,0 +1,24 @@
+/***************************************************
+ *
+ *   Accessibility adjustments
+ *
+ */
+
+#{$namespace}.navigation-primary {
+    border: 1px solid #f5f5f5;
+}
+
+#{$namespace}#page-header {
+    border: 1px solid #33445e;
+}
+
+#{$namespace}#page-footer {
+    border: 1px solid #ddd;
+}
+
+#{$namespace}ul.checkbox-list {
+    list-style:none;
+    padding-left:0px;
+}
+
+

@@ -284,45 +284,50 @@
 
 {% macro _checkboxselectinner(args) %}
     {% import _self as self %}
-    <div class="inner"{% if args.height %} style="height:{{args.height}}; overflow: auto;"{% endif %}>             
+    <ul role="listbox" aria-label="{{ args.ariaLabel|default('Liste') }}" class="checkbox-list inner"{% if args.height %} style="height:{{args.height}}; overflow: auto;"{% endif %}>             
     {% for item in args.options %}
         {% if item.options is iterable %}
-        <div class="form-check group">
+        <ul role="listbox" class="form-check group checkbox-list" aria-label="{{ args.ariaLabel|default('Liste') }}">
             <h4>{{ item.name }}</h4>
-            
             {% for option in item.options %}
-            <label {% if item.class %}class="form-check-label {{ item.class }}"{% endif %} >
-                <input
-                    {% if option.selected %}checked="checked"{% endif %}
-                    class="form-check-input"
-                    type="checkbox"
-                    name="{{ args.name }}"
-                    value="{{ option.value }}"
-                    id="service-box"
-                    {% if item.data %}{ self.getDataAttributes(item.data) }}{% endif %}
-                >
-                <span>{{ option.name }}</span>
-            </label>
+            <li tabindex="-1" role="option" aria-checked="{% if option.selected %}checked{% endif %}">
+                <div class="form-check">
+                    <label {% if item.class %}class="form-check-label {{ item.class }}"{% endif %} >
+                        <input
+                            {% if option.selected %}checked="checked"{% endif %}
+                            class="form-check-input"
+                            type="checkbox"
+                            name="{{ args.name }}"
+                            value="{{ option.value }}"
+                            id="service-box"
+                            {% if item.data %}{ self.getDataAttributes(item.data) }}{% endif %}
+                        >
+                        <span>{{ option.name }}</span>
+                    </label>
+                </div>
+            </li>
             {% endfor %}
-        </div>
+        </ul>
         {% else %}
-        <div class="form-check">
-        <label {% if item.class %}class="form-check-label {{ item.class }}"{% endif %}>
-            <input
-                {% if item.selected %}checked="checked"{% endif %}
-                class="form-check-input"
-                type="checkbox"
-                tabindex="{{ args.tabindex|default(0) }}"
-                name="{{ args.name }}"
-                value="{{ item.value }}"
-                {% if item.data %}{{ self.getDataAttributes(item.data) }}{% endif %}
-            >
-            <span>{{ item.name }}</span>
-        </label>
-        </div>
+        <li tabindex="-1" role="option" aria-checked="{% if item.selected %}true{% else %}false{% endif %}">
+            <div class="form-check">
+                <label {% if item.class %}class="form-check-label {{ item.class }}"{% endif %}>
+                    <input
+                        {% if item.selected %}checked="checked"{% endif %}
+                        class="form-check-input"
+                        type="checkbox"
+                        tabindex="{{ args.tabindex|default(0) }}"
+                        name="{{ args.name }}"
+                        value="{{ item.value }}"
+                        {% if item.data %}{{ self.getDataAttributes(item.data) }}{% endif %}
+                    >
+                    <span>{{ item.name }}</span>
+                </label>
+            </div>
+        </li>
         {% endif %}
     {% endfor %}
-    </div>
+    </ul>
 {% endmacro %}
 
 {% macro textareafield(args, fieldId, description) %}
@@ -462,7 +467,7 @@
     <div class="message message--error" role="alert" aria-describedby="{{ fieldId }}">
     <ul class="list--clean">
         {% for message in messages %}
-        <li>{{ message }}</li>
+        <li><i alt="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" title="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" class='fas fa-exclamation-circle'></i> {% trans %}Fehler{% endtrans %}: {{ message|trans }}</li>
         {% endfor %}
     </ul>
     </div>

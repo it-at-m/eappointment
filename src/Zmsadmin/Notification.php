@@ -66,7 +66,7 @@ class Notification extends BaseController
                 'process' => $process,
                 'success' => $success,
                 'error' => $error,
-                'status' => $input['submit'],
+                'status' => $input['submit'] ?? null,
                 'dialog' => $dialog,
                 'form' => $formResponse,
                 'redirect' => $workstation->getVariantName()

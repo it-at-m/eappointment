@@ -273,7 +273,7 @@ class View extends BaseView {
                 this.loadQueueInfo();
             this.loadQueueTable();
             this.loadCalendar();
-            hideSpinner();
+            hideSpinner(scope.$main);
         });
     }
 

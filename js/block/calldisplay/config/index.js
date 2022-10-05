@@ -121,9 +121,11 @@ class CallDisplayConfigView extends Component {
             return carry || (current.id === item.id && current.type === item.type)
         }, false)
         return (
-            <div key={item.id} className="form-check ticketprinter-config__item">
-                {this.renderCheckbox(itemEnabled, onChange, prefix + text)}
-            </div>
+            <li tabIndex="-1" role="option" aria-checked={itemEnabled}>
+                <div key={item.id} className="form-check ticketprinter-config__item">
+                    {this.renderCheckbox(itemEnabled, onChange, prefix + text)}
+                </div>
+            </li>
         )
     }
 
@@ -132,7 +134,9 @@ class CallDisplayConfigView extends Component {
             return (
                 <fieldset>
                     <legend className="label">Standorte</legend>
+                    <ul role="listbox" aria-label="Standortliste" className="checkbox-list">
                     {scopes.map(this.renderItem.bind(this))}
+                    </ul>
                 </fieldset>
             )
         }
@@ -143,7 +147,9 @@ class CallDisplayConfigView extends Component {
             return (
                 <fieldset>
                     <legend className="label">Standort­gruppe</legend>
+                    <ul role="listbox" aria-label="Standortclusterliste" className="checkbox-list">
                     {clusters.map(this.renderItem.bind(this))}
+                    </ul>
                 </fieldset>
             )
         }
