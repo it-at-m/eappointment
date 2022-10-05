@@ -5,7 +5,7 @@
 
 {%- macro formgroup(groupargs, elements) %}
   {% import _self as self %}
-    
+
     {#  
         Accessability: we need a unique "id" and "for" to link the input with its label.
         So if there is no id, we build a random id.
@@ -24,85 +24,38 @@
         {% set fieldId = null %}
     {% endif %}
     <{{ groupargs.groupTag|default('div') }} class="form-group{% if groupargs.errors %} has-error {% endif %}{% if groupargs.class %} {{groupargs.class}} {% endif %}">
-        {% if groupargs.label -%}
-            <label{{ fieldId?(' for="' ~ fieldId ~ '"')|raw }}{{ groupargs.labelClass?(' class="' ~ groupargs.labelClass ~ '"')|raw }}>{{ groupargs.label }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}</label>
-        {% elseif groupargs.divlabel -%}
-            <div class="label">{{ groupargs.divlabel }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}</div>
-        {% elseif groupargs.legend -%}
-            <legend class="label">{{ groupargs.legend }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}</legend>   
-        {% endif -%}
         <div class="controls {{ groupargs.controlgroupclass }}">
-        {% for element in elements -%}
-
-            {%- if element.type == "select" -%}
-                {{- self.selectfield(element.parameter, fieldId, groupargs.description) -}}
-            {% endif -%}
-
-            {%- if element.type == "checkboxSelect" -%}
-                {{- self.checkboxselectfield(element.parameter, fieldId) -}}
-            {% endif -%}
-
-            {%- if element.type == "checkboxDeselect" -%}
-                {{- self.checkboxdeselectfield(element.parameter, fieldId) -}}
-            {% endif -%}
-
-            {%- if element.parameter.prepend %}
-                <span class="prepend">
-                {{ element.parameter.prepend }}
-                </span>
-            {% endif -%}
-
-            {%- if element.type == "input" -%}
-                {{ self.inputfield(element.parameter, fieldId, groupargs.description) -}}
-            {% endif -%}
-
-            {%- if element.type == "checkbox" -%}
-                {{- self.checkboxfield(element.parameter) -}}
-            {% endif -%}
-
-            {%- if element.type == "radio" -%}
-                {{ self.radiobuttonfield(element.parameter) -}}
-            {% endif -%}
-
-            {%- if element.type == "textarea" -%}
-                {{ self.textareafield(element.parameter, fieldId, groupargs.description) -}}
-            {% endif -%}
-
-            {%- if element.type == "datepicker" -%}
-                {{ self.datepickerfield(element.parameter, fieldId, groupargs.description) -}}
-            {% endif -%}
-
-            {%- if element.type == "file" -%}
-                {{ self.filefield(element.parameter, fieldId, groupargs.description) -}}
-            {% endif -%}
-
-            {%- if element.type == "prepend" -%}
-                {{ self.prepend(element.parameter) -}}
-            {% endif -%}
-
-            {%- if element.type == "append" -%}
-                {{ self.append(element.parameter) -}}
-            {% endif -%}
-
-            {%- if element.type == "counter" -%}
-                {{ self.counterfield(element.parameter, fieldId) -}}
-            {% endif -%}
-
-            {%-  if element.type == "custom" -%}
-                {{ element.parameter }}
-            {% endif -%}
-
-            {%- if element.parameter.append %}
-                <small class="formgroup__help">{{ element.parameter.append }}</small>
-            {% endif -%}
-
-        {% endfor -%}
+        {% if groupargs.label -%}
+            <label{{ fieldId?(' for="' ~ fieldId ~ '"')|raw }}{{ groupargs.labelClass?(' class="' ~ groupargs.labelClass ~ '"')|raw }}>{{ groupargs.label }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}
+            {{  self.formelements(elements, fieldId, groupargs) -}}
+            {% if groupargs.errors -%}
+                {{  self.errormessage(groupargs.errors, fieldId,) -}}
+            {% endif %}
+            </label>
+        {% elseif groupargs.divlabel -%}
+            <div class="label">{{ groupargs.divlabel }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}
+            {{  self.formelements(elements, fieldId, groupargs) -}}
+            {% if groupargs.errors -%}
+                {{  self.errormessage(groupargs.errors, fieldId) -}}
+            {% endif %}
+            </div>
+        {% elseif groupargs.legend -%}
+            <legend class="label">{{ groupargs.legend }}
+                {% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}
+                {{  self.formelements(elements, fieldId, groupargs) -}}
+                {% if groupargs.errors -%}
+                    {{  self.errormessage(groupargs.errors, fieldId,) -}}
+                {% endif %}
+            </legend>   
+        {% else %}
+            {{  self.formelements(elements, fieldId, groupargs) -}}
+            {% if groupargs.errors -%}
+                {{  self.errormessage(groupargs.errors, fieldId,) -}}
+            {% endif %}
+        {% endif -%}
         {% if groupargs.description -%}
             {{ self.groupdescription(groupargs.description, groupargs.descriptionId?groupargs.descriptionId:fieldId) -}}
         {% endif -%}
-        {% if groupargs.errors -%}
-            {{  self.errormessage(groupargs.errors, fieldId) -}}
-        {% endif %}
         </div>
     </{{ groupargs.groupTag|default('div') }}>
 {% endmacro -%}
@@ -112,6 +65,73 @@
 {#
 ############## FORM ELEMENT MACROS ##############
 #}
+
+{% macro formelements(elements, fieldId, groupargs) %}
+    {% import _self as self %}
+    {% for element in elements -%}
+        {%- if element.type == "select" -%}
+            {{- self.selectfield(element.parameter, fieldId, groupargs.description) -}}
+        {% endif -%}
+
+        {%- if element.type == "checkboxSelect" -%}
+            {{- self.checkboxselectfield(element.parameter, fieldId) -}}
+        {% endif -%}
+
+        {%- if element.type == "checkboxDeselect" -%}
+            {{- self.checkboxdeselectfield(element.parameter, fieldId) -}}
+        {% endif -%}
+
+        {%- if element.parameter.prepend %}
+            <span class="prepend">
+            {{ element.parameter.prepend }}
+            </span>
+        {% endif -%}
+
+        {%- if element.type == "input" -%}
+            {{ self.inputfield(element.parameter, fieldId, groupargs.description) -}}
+        {% endif -%}
+
+        {%- if element.type == "checkbox" -%}
+            {{- self.checkboxfield(element.parameter) -}}
+        {% endif -%}
+
+        {%- if element.type == "radio" -%}
+            {{ self.radiobuttonfield(element.parameter) -}}
+        {% endif -%}
+
+        {%- if element.type == "textarea" -%}
+            {{ self.textareafield(element.parameter, fieldId, groupargs.description) -}}
+        {% endif -%}
+
+        {%- if element.type == "datepicker" -%}
+            {{ self.datepickerfield(element.parameter, fieldId, groupargs.description) -}}
+        {% endif -%}
+
+        {%- if element.type == "file" -%}
+            {{ self.filefield(element.parameter, fieldId, groupargs.description) -}}
+        {% endif -%}
+
+        {%- if element.type == "prepend" -%}
+            {{ self.prepend(element.parameter) -}}
+        {% endif -%}
+
+        {%- if element.type == "append" -%}
+            {{ self.append(element.parameter) -}}
+        {% endif -%}
+
+        {%- if element.type == "counter" -%}
+            {{ self.counterfield(element.parameter, fieldId) -}}
+        {% endif -%}
+
+        {%-  if element.type == "custom" -%}
+            {{ element.parameter }}
+        {% endif -%}
+
+        {%- if element.parameter.append %}
+            <small class="formgroup__help">{{ element.parameter.append }}</small>
+        {% endif -%}
+    {% endfor -%}
+{% endmacro %}
 
 
 {% macro inputfield(args, fieldId, description) %}
