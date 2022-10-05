@@ -35,11 +35,11 @@
         <div class="grid__item one-half">
             {% include "block/index/welcome.twig" %}
         </div>
-        {% if showloginform %}
-            <div class="grid__item one-half">
-                {% include "block/index/loginform.twig" %}
-            </div>
-        {% endif %}
+            {% if showloginform %}
+                <div class="grid__item one-half">
+                    {% include "block/index/loginform.twig" %}
+                </div>
+            {% endif %}
         {% endif %}
     </div>
     {% include "block/index/versioninfo.twig" %}

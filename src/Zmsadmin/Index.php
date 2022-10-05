@@ -27,9 +27,7 @@ class Index extends BaseController
         }
         
         $input = $request->getParsedBody();
-        if ((is_array($input) && array_key_exists('loginName', $input)) ||
-            (\App::ZMS_AUTHORIZATION_TYPE === "Keycloak")
-        ) {
+        if ((is_array($input) && array_key_exists('loginName', $input))) {
             return $this->testLogin($input, $response, $request, $workstation);
         }
         $config = (! $workstation)
@@ -42,46 +40,24 @@ class Index extends BaseController
                 'title' => 'Anmeldung',
                 'config' => $config,
                 'workstation' => $workstation,
-                'showloginform' => true,
+                'showloginform' => true
             )
         );
     }
 
     protected function testLogin($input, $response, $request, $workstation)
     {
-        $showLoginForm = filter_var($request->getParam("use_local_login"), FILTER_VALIDATE_BOOLEAN);
-
         try {
-            if(\App::ZMS_AUTHORIZATION_TYPE === "Keycloak" && !$showLoginForm){
-                $oAuth = new OAuth($request);
-                $oAuth->Authorization();
-                if(!$oAuth->checkAccessRight()){
-                    $exceptionData = [
-                        'template' => 'exception/bo/zmsapi/exception/useraccount/keycloakAuthError.twig'
-                    ];
-                    $showLoginForm = false;
-                } else {
-                    if($workstation === null){
-                        $userAccount = $oAuth->getUser();
-                        $workstation = \App::$http->readPostResult('/workstation/oauth/', $userAccount, ['code' => $request->getParam("code")] )->getEntity();
-                    }
-                    if (array_key_exists('authkey', $workstation)) {
-                        \BO\Zmsclient\Auth::setKey($workstation->authkey);
-                        return \BO\Slim\Render::redirect('workstationSelect', array(), array());
-                    }
-                }
-            } else {
-                $userAccount = new \BO\Zmsentities\Useraccount(array(
-                    'id' => $input['loginName'],
-                    'password' => $input['password'],
-                    'departments' => array('id' => 0) // required in schema validation
-                ));
+            $userAccount = new \BO\Zmsentities\Useraccount(array(
+                'id' => $input['loginName'],
+                'password' => $input['password'],
+                'departments' => array('id' => 0) // required in schema validation
+            ));
 
-                $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
-                if (array_key_exists('authkey', $workstation)) {
-                    \BO\Zmsclient\Auth::setKey($workstation->authkey);
-                    return \BO\Slim\Render::redirect('workstationSelect', array(), array());
-                }
+            $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
+            if (array_key_exists('authkey', $workstation)) {
+                \BO\Zmsclient\Auth::setKey($workstation->authkey);
+                return \BO\Slim\Render::redirect('workstationSelect', array(), array());
             }
         } catch (\BO\Zmsclient\Exception $exception) {
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
@@ -113,8 +89,8 @@ class Index extends BaseController
                 'title' => 'Anmeldung gescheitert',
                 'loginfailed' => true,
                 'workstation' => null,
-                'showloginform' => $showLoginForm?:true,
-                'exception' => $exceptionData
+                'exception' => $exceptionData,
+                'showloginform' => true
             )
         );
     }
