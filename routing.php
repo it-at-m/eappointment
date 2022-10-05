@@ -336,10 +336,10 @@ use \Psr\Http\Message\ResponseInterface;
     ->setName("workstationStatus");
 
 \App::$slim->get('/workstation/oauth/{loginName}/', \BO\Zmsadmin\WorkstationOAuth::class)
-->setName("workstationOAuth");
+    ->setName("workstationOAuth");
 
 \App::$slim->get('/workstation/{loginName}/', \BO\Zmsadmin\WorkstationLogin::class)
-->setName("workstationLogin");
+    ->setName("workstationLogin");
 
 \App::$slim->get('/workstation/process/next/', \BO\Zmsadmin\WorkstationProcessNext::class)
     ->setName("workstationProcessNext");

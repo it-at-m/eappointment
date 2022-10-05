@@ -28,7 +28,7 @@ class Index extends BaseController
         
         $input = $request->getParsedBody();
         if ((is_array($input) && array_key_exists('loginName', $input))) {
-            return $this->testLogin($input, $response, $request, $workstation);
+            return $this->testLogin($input, $response);
         }
         $config = (! $workstation)
             ? \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity()
@@ -45,15 +45,14 @@ class Index extends BaseController
         );
     }
 
-    protected function testLogin($input, $response, $request, $workstation)
+    protected function testLogin($input, $response)
     {
+        $userAccount = new \BO\Zmsentities\Useraccount(array(
+            'id' => $input['loginName'],
+            'password' => $input['password'],
+            'departments' => array('id' => 0) // required in schema validation
+        ));
         try {
-            $userAccount = new \BO\Zmsentities\Useraccount(array(
-                'id' => $input['loginName'],
-                'password' => $input['password'],
-                'departments' => array('id' => 0) // required in schema validation
-            ));
-
             $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
             if (array_key_exists('authkey', $workstation)) {
                 \BO\Zmsclient\Auth::setKey($workstation->authkey);
