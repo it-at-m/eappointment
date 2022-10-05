@@ -2,6 +2,7 @@
 
 * #55077 Links and holidays that can be assigned to an authority are now checked if they exist
 * #55078 A separate SMS message is now sent for spontaneous customers when their transaction is canceled
+* #34087 Config variables can now be changed by superuser
 
 
 ## v2.24.05
