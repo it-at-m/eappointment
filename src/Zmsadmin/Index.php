@@ -25,7 +25,6 @@ class Index extends BaseController
         } catch (\Exception $workstationexception) {
             $workstation = null;
         }
-        
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('loginName', $input)) {
             return $this->testLogin($input, $response);
