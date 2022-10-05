@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import BaseView from './baseview'
+import focusFirstErrorElement from '../element/form/focusFirstErrorElement'
 
 class ValidationHandler extends BaseView {
 
@@ -24,10 +25,11 @@ class ValidationHandler extends BaseView {
                     return false;
                 }
                 $(element).closest('.form-group').addClass('has-error')
-                $(element).closest('.controls').append(this.createDomList(this.errors[key], key, element))
+                $(element).closest('label').append(this.createDomList(this.errors[key], key, element))
             })
         })
         this.scope.bindEvents()
+        focusFirstErrorElement(this.$main);
     }
 
     createDomList(item, key, element) {

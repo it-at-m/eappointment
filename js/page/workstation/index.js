@@ -85,12 +85,12 @@ class View extends BaseView {
             //console.log("lost Focus");
             clearTimeout(this.reloadTimer);
         }
-        this.$main.find('[data-queue-table]').mouseenter(() => {
-            //console.log("stop Reload on mouse enter");
+        this.$main.find('[data-queue-table]').on("mouseenter", () => {
+            console.log("stop Reload on mouse enter");
             clearTimeout(this.reloadTimer);
         });
-        this.$main.find('[data-queue-table]').mouseleave(() => {
-            //console.log("start reload on mouse leave");
+        this.$main.find('[data-queue-table]').on("mouseleave", () => {
+            console.log("start reload on mouse leave");
             this.setReloadTimer();
         });
     }

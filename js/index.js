@@ -34,6 +34,7 @@ import printWaitingNumber from './page/waitingnumber/print'
 import { getDataAttributes, forceHttps } from './lib/utils'
 
 import preventFormResubmit from './element/form/preventFormResubmit'
+import focusFirstErrorElement from './element/form/focusFirstErrorElement'
 import maxChars from './element/form/maxChars'
 import DialogHandler from './lib/dialogHandler'
 
@@ -127,6 +128,7 @@ $('.client-processed').each(function () {
 
 $('form').each(function () {
     preventFormResubmit(this);
+    focusFirstErrorElement(this);
 })
 
 $('textarea.maxchars').each(function () {

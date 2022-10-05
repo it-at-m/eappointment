@@ -21,4 +21,19 @@
     padding-left:0px;
 }
 
+#{$namespace} form .form-group {
+    display:flex;
+    flex-direction: column;
+    margin-bottom:1em;
+}
+#{$namespace} form .form-group .controls {
+    display:flex;
+    flex-direction: column;
+}
+#{$namespace} form .form-group .controls .message--error{
+    font-weight:normal;
+    margin-bottom:0px;
+    padding:0.5em;
+}
+
 
