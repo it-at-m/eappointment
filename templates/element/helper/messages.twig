@@ -29,7 +29,7 @@
         {% endblock %}
 		{% block unknown_error %}
         	{{ block('error_start') }}
-        	Es ist ein unbekannter Fehler aufgetreten.
+        	Es ist ein unbekannter Fehler aufgetreten.Fehler: 
         	{{ block('error_end') }}
         {% endblock %}
 		{% block mail_failed %}
@@ -289,7 +289,7 @@
     	{% endblock %}
 
 		{% block process_queued %}
-			{% set successTitle = "Wartenummer drucken" %}
+			{% set successTitle = "Wartenummer wurde hinzugefügt" %}
 			{{ block('success_start') }}
 				<dl>
 					<dt>Die Wartenummer {% if selectedprocess.clients|first.familyName %}für "{{ selectedprocess.clients|first.familyName|raw }}"{% endif %} lautet: {{ selectedprocess.queue.number }}</dt>
@@ -298,7 +298,7 @@
 				</dl>
 				<div class="form-actions">
 		            <div class="right">
-		                <button type="button" class="btn button button-submit button-ok" accesskey="q">Ok</button>
+		                <button type="button" class="btn button button-submit button-ok" accesskey="q">Schließen</button>
 		                <button type="button" class="btn button button-submit button-callback" data-callback="onPrintWaitingNumber" name="printWaitingNumber" data-id={{ selectedprocess.id }} accesskey="u">Wartenummer drucken</button>
 		            </div>
 		        </div>

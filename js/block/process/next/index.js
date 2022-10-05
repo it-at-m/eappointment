@@ -162,7 +162,7 @@ class View extends BaseView {
         var temp = hour;
         if (second % 2) temp += ((minute < 10) ? ":0" : ":") + minute;
         else temp += ((minute < 10) ? " 0" : " ") + minute;
-        $('.currentTime').text(temp);
+        $('.currentTime').text(temp + " Uhr");
         this.refreshCurrentTime = setTimeout(() => {
             this.setCurrentTime()
         }, 1000);

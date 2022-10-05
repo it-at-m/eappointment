@@ -10,21 +10,35 @@ class HealthcheckTest extends Base
 
     protected $classname = "Healthcheck";
 
-    protected function getApiCalls()
-    {
-        return [
-            [
-                'function' => 'readGetResult',
-                'url' => '/status/',
-                'parameters' => ['includeProcessStats' => 0],
-                'response' => $this->readFixture("GET_status.json")
-            ]
-        ];
-    }
-
     public function testRendering()
     {
-        $response = parent::testRendering();
-        $this->assertStringContainsString('DB connection without replication log detected', (string)$response->getBody());
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/status/',
+                    'parameters' => ['includeProcessStats' => 0],
+                    'response' => $this->readFixture("GET_status_200.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function test500()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/status/',
+                    'parameters' => ['includeProcessStats' => 0],
+                    'response' => $this->readFixture("GET_status.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertEquals(500, $response->getStatusCode());
     }
 }

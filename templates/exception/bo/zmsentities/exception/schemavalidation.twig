@@ -6,7 +6,7 @@
     {% block board_title %}{% trans %}Formulareingabefehler{% endtrans %}{% endblock %}
     {% block board_body %}
         <p>
-            {% trans %}Bei der Eingabe der Daten scheint Ihnen ein Fehler unterlaufen zu sein. Bitte prüfen Sie die Hinweise an den markierten Formularfeldern.{% endtrans %}
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Bei der Eingabe der Daten scheint Ihnen ein Fehler unterlaufen zu sein. Bitte prüfen Sie die Hinweise an den markierten Formularfeldern.{% endtrans %}
         </p>
         <dl>
         {% for pointer, item in data %}

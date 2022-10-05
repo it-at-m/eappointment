@@ -6,7 +6,7 @@
             Invalide Eingabe
         </h2>
         <p>
-            Die übertragenden Daten sind unvollständig. Bitte versuchen Sie es erneut.
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Die übertragenden Daten sind unvollständig. Bitte versuchen Sie es erneut.{% endtrans %}
         </p>
     {% endblock %}
 

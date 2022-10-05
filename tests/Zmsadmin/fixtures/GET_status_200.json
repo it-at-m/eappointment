@@ -1,0 +1,47 @@
+{
+  "$schema": "https://stg.service.berlin.de/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2022-09-06T14:48:59+02:00",
+    "server": "Zmsapi-ENV (2.24.10-rc9)"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/status.json",
+    "database": {
+      "nodeConnections": 0,
+      "clusterStatus": "ON",
+      "logbin": "ON",
+      "problems": "tmp_table_size should be at least 32MB; max_heap_table_size should be at least 32MB",
+      "locks": "0",
+      "threads": "1"
+    },
+    "processes": {
+      "blocked": "7",
+      "confirmed": "227347",
+      "pending": "47716",
+      "deleted": "1",
+      "missed": "13",
+      "reserved": "1",
+      "sincemidnight": "19",
+      "last7days": "31766",
+      "lastInsert": "2022-09-06 15:09:38",
+      "outdated": "0",
+      "freeSlots": "919413",
+      "lastCalculate": "2022-09-06 14:45:05"
+    },
+    "mail": {
+      "queueCount": "2",
+      "oldestSeconds": "479",
+      "newestSeconds": "446"
+    },
+    "notification": {
+      "queueCount": "0"
+    },
+    "version": {
+      "major": "2",
+      "minor": "24",
+      "patch": "10-rc9"
+    }
+  }
+}
