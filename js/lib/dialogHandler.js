@@ -56,9 +56,8 @@ class DialogHandler {
             this.callback = this.parent[callback];
             this.callback(ev);
         }).on('keydown', (ev) => {
-            var key = ev.keyCode || ev.which;
-            switch(key) {
-            case 27: // ESC    
+            switch(ev.key) {
+            case 'Escape': // ESC    
                 ev.preventDefault();
                 ev.stopPropagation();
                 this.abortCallback(ev);

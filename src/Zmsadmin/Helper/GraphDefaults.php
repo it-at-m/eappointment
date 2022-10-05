@@ -119,12 +119,7 @@ EOS;
     dayoff {
         date
     }
-    preferences {
-        appointment
-        client
-        queue
-        ticketprinter
-    }
+    preferences
     provider {
         id
         contact 

@@ -6,6 +6,8 @@
 
 namespace BO\Zmsadmin;
 
+use \BO\Zmsentities\Config as Entity;
+
 class ConfigInfo extends BaseController
 {
     /**
@@ -22,6 +24,31 @@ class ConfigInfo extends BaseController
         $processExample = ((new \BO\Zmsentities\Process)->getExample());
         $processExample->scope = ((new \BO\Zmsentities\Scope)->getExample());
         $processExample->requests[] = (new \BO\Zmsentities\Request())->getExample();
+        $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
+
+        if ($request->isPost()) {
+            $input = $request->getParsedBody();
+            $entity = clone $config;
+            $entity->setPreference($input['key'], $input['property'], $input['value']);
+            $entity = \App::$http->readPostResult(
+                '/config/',
+                $entity
+            )->getEntity();
+            return \BO\Slim\Render::redirect(
+                'configinfo',
+                array(
+                    'title' => 'Konfiguration System',
+                    'workstation' => $workstation,
+                    'config' => $config,
+                    'processExample' => $processExample,
+                    'menuActive' => 'configinfo'
+                ),
+                array(
+                    'success' => 'config_saved'
+                )
+            );
+        }
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/configinfo.twig',
@@ -30,7 +57,8 @@ class ConfigInfo extends BaseController
                 'workstation' => $workstation,
                 'config' => $config,
                 'processExample' => $processExample,
-                'menuActive' => 'configinfo'
+                'menuActive' => 'configinfo',
+                'success' => $success
             )
         );
     }
