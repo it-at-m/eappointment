@@ -23,36 +23,26 @@
     {% else %}
         {% set fieldId = null %}
     {% endif %}
-    <{{ groupargs.groupTag|default('div') }} class="form-group{% if groupargs.errors %} has-error {% endif %}{% if groupargs.class %} {{groupargs.class}} {% endif %}">
+    <{{ groupargs.groupTag|default('div') }} class="form-group{% if groupargs.errors %} has-error is-invalid {% endif %}{% if groupargs.class %} {{groupargs.class}} {% endif %}">
         <div class="controls {{ groupargs.controlgroupclass }}">
         {% if groupargs.label -%}
             <label{{ fieldId?(' for="' ~ fieldId ~ '"')|raw }}{{ groupargs.labelClass?(' class="' ~ groupargs.labelClass ~ '"')|raw }}>{{ groupargs.label }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}
-            {{  self.formelements(elements, fieldId, groupargs) -}}
-            {% if groupargs.errors -%}
-                {{  self.errormessage(groupargs.errors, fieldId,) -}}
-            {% endif %}
             </label>
         {% elseif groupargs.divlabel -%}
             <div class="label">{{ groupargs.divlabel }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}
-            {{  self.formelements(elements, fieldId, groupargs) -}}
-            {% if groupargs.errors -%}
-                {{  self.errormessage(groupargs.errors, fieldId) -}}
-            {% endif %}
             </div>
         {% elseif groupargs.legend -%}
             <legend class="label">{{ groupargs.legend }}
                 {% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}
-                {{  self.formelements(elements, fieldId, groupargs) -}}
-                {% if groupargs.errors -%}
-                    {{  self.errormessage(groupargs.errors, fieldId,) -}}
-                {% endif %}
             </legend>   
-        {% else %}
-            {{  self.formelements(elements, fieldId, groupargs) -}}
-            {% if groupargs.errors -%}
+        {% endif -%}
+
+        {{  self.formelements(elements, fieldId, groupargs) -}}
+
+        {% if groupargs.errors -%}
                 {{  self.errormessage(groupargs.errors, fieldId,) -}}
             {% endif %}
-        {% endif -%}
+
         {% if groupargs.description -%}
             {{ self.groupdescription(groupargs.description, groupargs.descriptionId?groupargs.descriptionId:fieldId) -}}
         {% endif -%}
@@ -70,15 +60,15 @@
     {% import _self as self %}
     {% for element in elements -%}
         {%- if element.type == "select" -%}
-            {{- self.selectfield(element.parameter, fieldId, groupargs.description) -}}
+            {{- self.selectfield(element.parameter, fieldId, groupargs) -}}
         {% endif -%}
 
         {%- if element.type == "checkboxSelect" -%}
-            {{- self.checkboxselectfield(element.parameter, fieldId) -}}
+            {{- self.checkboxselectfield(element.parameter, fieldId, groupargs) -}}
         {% endif -%}
 
         {%- if element.type == "checkboxDeselect" -%}
-            {{- self.checkboxdeselectfield(element.parameter, fieldId) -}}
+            {{- self.checkboxdeselectfield(element.parameter, fieldId, groupargs) -}}
         {% endif -%}
 
         {%- if element.parameter.prepend %}
@@ -88,27 +78,27 @@
         {% endif -%}
 
         {%- if element.type == "input" -%}
-            {{ self.inputfield(element.parameter, fieldId, groupargs.description) -}}
+            {{ self.inputfield(element.parameter, fieldId, groupargs) -}}
         {% endif -%}
 
         {%- if element.type == "checkbox" -%}
-            {{- self.checkboxfield(element.parameter) -}}
+            {{- self.checkboxfield(element.parameter, groupargs) -}}
         {% endif -%}
 
         {%- if element.type == "radio" -%}
-            {{ self.radiobuttonfield(element.parameter) -}}
+            {{ self.radiobuttonfield(element.parameter, groupargs) -}}
         {% endif -%}
 
         {%- if element.type == "textarea" -%}
-            {{ self.textareafield(element.parameter, fieldId, groupargs.description) -}}
+            {{ self.textareafield(element.parameter, fieldId, groupargs) -}}
         {% endif -%}
 
         {%- if element.type == "datepicker" -%}
-            {{ self.datepickerfield(element.parameter, fieldId, groupargs.description) -}}
+            {{ self.datepickerfield(element.parameter, fieldId, groupargs) -}}
         {% endif -%}
 
         {%- if element.type == "file" -%}
-            {{ self.filefield(element.parameter, fieldId, groupargs.description) -}}
+            {{ self.filefield(element.parameter, fieldId, groupargs) -}}
         {% endif -%}
 
         {%- if element.type == "prepend" -%}
@@ -134,7 +124,7 @@
 {% endmacro %}
 
 
-{% macro inputfield(args, fieldId, description) %}
+{% macro inputfield(args, fieldId, groupargs) %}
     {% import _self as self %}
     <input
         type="{{ args.type|default('text') }}" 
@@ -149,25 +139,16 @@
         {% if args.placeholder %}placeholder="{{ args.placeholder }}"{% endif %}
         class="form-control {% if args.class %}{{ args.class }} {% endif %}form-input{% if args.width %} input--size-{{ args.width }}{% endif %}"
         {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
-        {% if args.id %} 
-            id="{{ args.id }}"
-            {% if description %}
-            aria-describedby="help_{{ args.id }}"
-            {% endif %}
-        {% elseif fieldId %} 
-            id="{{ fieldId }}"
-            {% if description %}
-            aria-describedby="help_{{ fieldId }}"
-            {% endif %}
-        {% endif %}
+        {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
     >
 {% endmacro %}
 
 
-{% macro filefield(args, fieldId, description) %}
-{% if args.file.type == 'image' and args.file.data %}
-    <img alt="{{ args.file.alt }}" width="60" src="data:image/{{ args.file.data.mime }};base64,{{ args.file.data.content }}" class="thumbnail" />
-{% endif %}
+{% macro filefield(args, fieldId, groupargs) %}
+    {% import _self as self %}
+    {% if args.file.type == 'image' and args.file.data %}
+        <img alt="{{ args.file.alt }}" width="60" src="data:image/{{ args.file.data.mime }};base64,{{ args.file.data.content }}" class="thumbnail" />
+    {% endif %}
     <input
         type="file"
         {% if args.autofocus %}autofocus{% endif %}
@@ -179,18 +160,7 @@
         placeholder="{{ args.placeholder }}"{% endif %}
         class="form-control {% if args.class %}{{ args.class }} {% endif %}button-file{% if args.width %} input--size-{{ args.width }}{% endif %}"
         {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
-        {% if args.id %} 
-            id="{{ args.id }}"
-            {% if description %}
-            aria-describedby="help_{{ args.id }}"
-            {% endif %}
-        {% elseif fieldId %} 
-            id="{{ fieldId }}"
-            {% if description %}
-            aria-describedby="help_{{ fieldId }}"
-            {% endif %}
-        {% endif %}
-        
+        {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
     >
 {% endmacro %}
 
@@ -206,7 +176,8 @@
     >
 {% endmacro %}
 
-{% macro datepickerfield(args, fieldId, description) %}
+{% macro datepickerfield(args, fieldId, groupargs) %}
+    {% import _self as self %}
     <div class="add-date-picker">
         <input
             type="text"
@@ -218,23 +189,13 @@
             class="form-control {% if args.class %}{{ args.class }} {% endif %}form-input{% if args.width %} input--size-{{ args.width }}{% endif %}"
             {% if args.readonly %} readonly="readonly"{% endif %}
             {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
-            {% if args.id %} 
-                id="{{ args.id }}"
-                {% if description %}
-                aria-describedby="help_{{ args.id }}"
-                {% endif %}
-            {% elseif fieldId %} 
-                id="{{ fieldId }}"
-                {% if description %}
-                aria-describedby="help_{{ fieldId }}"
-                {% endif %}
-            {% endif %}
+            {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
         >
     </div>
 {% endmacro %}
 
 
-{% macro selectfield(args, fieldId, description) %}
+{% macro selectfield(args, fieldId, groupargs) %}
     {% import _self as self %}
 	<select
         name="{{ args.name }}"
@@ -244,17 +205,7 @@
         class="form-control {% if args.class %}{{ args.class }} {% endif %}{{ args.width? ' input--size-'~args.width }}"
         {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
         {% if args.disabled %} disabled="disabled"{% endif %}
-        {% if args.id %} 
-            id="{{ args.id }}"
-            {% if description %}
-            aria-describedby="help_{{ args.id }}"
-            {% endif %}
-        {% elseif fieldId %} 
-            id="{{ fieldId }}"
-            {% if description %}
-            aria-describedby="help_{{ fieldId }}"
-            {% endif %}
-        {% endif %}
+        {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
     >
     {% for item in args.options %}
         {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
@@ -287,14 +238,14 @@
     {% endfor %}
 {% endmacro %}
 
-{% macro checkboxselectfield(args, fieldId) %}
+{% macro checkboxselectfield(args, fieldId, groupargs) %}
     {% import _self as self %}
         <div class="checkboxselect" {% if fieldId %} id="{{ fieldId }}" {% endif %} {% if args.accesskey %} accesskey="{{ args.accesskey }}" {% endif %}>
             {{- self._checkboxselectinner(args) -}}
         </div>
 {% endmacro %}
 
-{% macro checkboxdeselectfield(args, fieldId) %}
+{% macro checkboxdeselectfield(args, fieldId, groupargs) %}
     {% import _self as self %}
         <div class="checkboxdeselect" {% if fieldId %} id="{{ fieldId }}" {% endif %} {% if args.accesskey %} accesskey="{{ args.accesskey }}" {% endif %}>
             {{- self._checkboxselectinner(args) -}}
@@ -350,7 +301,8 @@
     </ul>
 {% endmacro %}
 
-{% macro textareafield(args, fieldId, description) %}
+{% macro textareafield(args, fieldId, groupargs) %}
+    {% import _self as self %}
     <textarea
         tabindex="{{ args.tabindex|default(0)}}"
         class="form-control {% if args.class %}{{ args.class }} {% endif %} maxchars"
@@ -358,17 +310,7 @@
         rows="{{ args.rows|default(3) }}"
         {% if args.maxlength %} maxlength="{{ args.maxlength }}"{% endif %}
         {% if args.accesskey %} accesskey="{{ args.accesskey }}" {% endif %}
-        {% if args.id %} 
-            id="{{ args.id }}"
-            {% if description %}
-            aria-describedby="help_{{ args.id }}"
-            {% endif %}
-        {% elseif fieldId %} 
-            id="{{ fieldId }}"
-            {% if description %}
-            aria-describedby="help_{{ fieldId }}"
-            {% endif %}
-        {% endif %}
+        {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
     >{{ args.value|raw }}</textarea>
 
     <div class="formgroup__help maxcharsleft">
@@ -380,8 +322,20 @@
     </div>
 {% endmacro %}
 
+{% macro ariaDescribedBy(args, fieldId, groupargs) %}
+    {% set describeId = args.id %}
+    {% if fieldId %} 
+        {% set describeId = fieldId %}        
+    {% endif %}
+    id="{{ describeId }}"
+    {% if groupargs.errors %}
+        aria-describedby="error_{{ describeId }}"
+    {% elseif groupargs.description %}
+        aria-describedby="help_{{ describeId }}"
+    {% endif %}
+{% endmacro %}
 
-{% macro checkboxfield(args) %}
+{% macro checkboxfield(args, groupargs) %}
     {% if args.inline %}
     {% else %}
     {% endif %}
@@ -411,7 +365,7 @@
     </div>
 {% endmacro %}
 
-{% macro radiobuttonfield(args) %}
+{% macro radiobuttonfield(args, groupargs) %}
     <div class="form-check form-check-inline">
         <label class="form-check-label radio-label{% if args.inline %} radio-inline{% endif %}">
             <input
@@ -484,7 +438,7 @@
 {% endmacro %}
 
 {% macro errormessage(messages, fieldId) %}
-    <div class="message message--error" role="alert" aria-describedby="{{ fieldId }}">
+    <div id="error_{{ fieldId }}" class="message message--error" role="alert">
     <ul class="list--clean">
         {% for message in messages %}
         <li><i alt="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" title="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" class='fas fa-exclamation-circle'></i> {% trans %}Fehler{% endtrans %}: {{ message|trans }}</li>
