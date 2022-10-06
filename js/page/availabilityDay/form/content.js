@@ -139,7 +139,7 @@ const FormContent = (props) => {
                                     attributes={{ placeholder: data.scope.preferences.appointment.endInDaysDefault, "id": "AvDayOpento", "aria-describedby": "help_AvDayOpenfromto" }}
                                     {...{ onChange }}
                                 />
-                                <span aria-hidden="true">Tage im voraus</span>
+                                <span aria-hidden="true"> Tage im voraus</span>
                             </Controls>
                             <Description attributes={{ "id": "help_AvDayOpenfromto" }}>Tage im voraus (Keine Eingabe bedeutet die Einstellungen vom Standort zu übernehmen).</Description>
                         </FormGroup>
