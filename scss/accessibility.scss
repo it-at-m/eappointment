@@ -36,4 +36,13 @@
     padding:0.5em;
 }
 
+#{$namespace} fieldset .table-action-link {
+    margin:10px 0px;
+}
+
+#{$namespace} fieldset .table--base {
+    margin-bottom:0;
+}
+
+
 
