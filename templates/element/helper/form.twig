@@ -24,7 +24,6 @@
         {% set fieldId = null %}
     {% endif %}
     <{{ groupargs.groupTag|default('div') }} class="form-group{% if groupargs.errors %} has-error is-invalid {% endif %}{% if groupargs.class %} {{groupargs.class}} {% endif %}">
-        <div class="controls {{ groupargs.controlgroupclass }}">
         {% if groupargs.label -%}
             <label{{ fieldId?(' for="' ~ fieldId ~ '"')|raw }}{{ groupargs.labelClass?(' class="' ~ groupargs.labelClass ~ '"')|raw }}>{{ groupargs.label }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}
             </label>
@@ -36,8 +35,10 @@
                 {% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}
             </legend>   
         {% endif -%}
-
+        
+        <div class="controls {{ groupargs.controlgroupclass }}">
         {{  self.formelements(elements, fieldId, groupargs) -}}
+        </div>
 
         {% if groupargs.errors -%}
                 {{  self.errormessage(groupargs.errors, fieldId,) -}}
@@ -46,7 +47,6 @@
         {% if groupargs.description -%}
             {{ self.groupdescription(groupargs.description, groupargs.descriptionId?groupargs.descriptionId:fieldId) -}}
         {% endif -%}
-        </div>
     </{{ groupargs.groupTag|default('div') }}>
 {% endmacro -%}
 
