@@ -146,6 +146,11 @@ class LinksView extends Component {
 
         return (
             <div className="department-links__list table-responsive-wrapper">
+                <div className="table-action-link">
+                    <button className="link button-default" onClick={onNewClick} >
+                        <i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer Link
+                    </button>
+                </div>
                 <table className="table--base clean">
                     <thead>
                         <tr>
@@ -158,7 +163,7 @@ class LinksView extends Component {
                         {this.state.links.map((link, index) => renderLink(this.state.organisation, link, index, onChange, onDeleteClick))}
                     </tbody>
                 </table>
-                <div className="table-actions">
+                <div className="table-action-link">
                     <button className="link button-default" onClick={onNewClick} >
                         <i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer Link
                     </button>

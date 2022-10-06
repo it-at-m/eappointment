@@ -100,6 +100,11 @@ class DaysOffView extends Component {
 
         return (
             <div className="daysoff table-responsive-wrapper">
+                <div className="table-action-link">
+                    <button className="link button-default" onClick={onNewClick} >
+                        <i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer freier Tag
+                    </button>
+                </div>
                 <table className="table--base clean">
                     <thead>
                         <tr>
@@ -112,7 +117,7 @@ class DaysOffView extends Component {
                         {this.state.days.map((day, index) => renderDay(day, index, onChange, onDeleteClick))}
                     </tbody>
                 </table>
-                <div className="table-actions">
+                <div className="table-action-link">
                     <button className="link button-default" onClick={onNewClick} >
                         <i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer freier Tag
                     </button>
