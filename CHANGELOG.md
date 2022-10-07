@@ -1,3 +1,7 @@
+## v2.24.11
+
+* #55625 - Revising the presentation of services in emails and making adjustments to the spontaneous customer confirmation email
+
 ## v2.24.10
 
 * #55114 - new EventLog entity added
