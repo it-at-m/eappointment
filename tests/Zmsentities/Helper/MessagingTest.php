@@ -27,9 +27,9 @@ class MessagingTest extends Base
 
         $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'queued'));
         self::assertStringContainsString('hiermit bestätigen wir Ihre Wartenummer', $result);
-        self::assertStringContainsString('Ihre Wartenummer ist die "123"', $result);
-        self::assertStringContainsString('Ort: Bürgeramt 1 Unter den Linden 1, 12345 Berlin', $result);
-        self::assertStringContainsString('Name der Dienstleistung', $result);
+        self::assertStringContainsString('Wartenummer: 123', $result);
+        self::assertStringContainsString('Ort: Bürgeramt 1, Unter den Linden 1, 12345 Berlin', $result);
+        self::assertStringContainsString('Abmeldung einer Wohnung', $result);
 
         $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'appointment'));
         self::assertStringContainsString('hiermit bestätigen wir Ihnen Ihren gebuchten Termin:', $result);
@@ -44,8 +44,14 @@ class MessagingTest extends Base
         self::assertStringContainsString('Absage-Code: abcd', $result);
 
         $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'pickup'));
-        self::assertStringContainsString('Ihr Dokument (Name der Dienstleistung) ist fertig und liegt zur Abholung bereit.', $result);
-        self::assertStringContainsString('Die Adresse lautet: Bürgeramt 1 Unter den Linden 1, 12345 Berlin.', $result);
+        self::assertStringContainsString(
+            'Ihr Dokument (Abmeldung einer Wohnung) ist fertig und liegt zur Abholung bereit.', 
+            $result
+        );
+        self::assertStringContainsString(
+            'Die Adresse lautet: Bürgeramt 1 Unter den Linden 1, 12345 Berlin.', 
+            $result
+        );
 
         $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'deleted'));
         self::assertStringContainsString('Ihre Vorgangsnummer 123456 ist nun ungültig.', $result);
