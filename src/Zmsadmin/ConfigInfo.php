@@ -26,10 +26,10 @@ class ConfigInfo extends BaseController
         $mainProcessExample->id = 987654;
         $dateTime = new \DateTimeImmutable("2015-10-23 08:00:00", new \DateTimeZone('Europe/Berlin'));
         $mainProcessExample->getFirstAppointment()->setDateTime($dateTime);
+        $mainProcessExample->requests[] = (new \BO\Zmsentities\Request())->getExample();
 
         $processExample = ((new \BO\Zmsentities\Process)->getExample());
         $processExample->scope = ((new \BO\Zmsentities\Scope)->getExample());
-        $processExample->requests[] = (new \BO\Zmsentities\Request())->getExample();
         $processExample2 = clone $processExample;
         $dateTime = new \DateTimeImmutable("2015-12-30 11:55:00", new \DateTimeZone('Europe/Berlin'));
         $processExample2->getFirstAppointment()->setDateTime($dateTime);

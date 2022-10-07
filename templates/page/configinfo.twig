@@ -36,124 +36,199 @@
                 {% endif %}
             {% endfor %}
 
-            <div class="block">
+            <div class="block mail--templates">
                 <h2 class="block__heading">email templates</h2>
-                <div class="panel--light">
-                    <div class="legend">
-                        <div class="pre subject"></div><small>Betreffzeile</small>
-                        <div class="pre admin"></div><small>E-Mail an Admin, wenn Admin-Email vorhanden</small>
-                        <div class="pre"></div><small>E-Mail an Kunden</small>
-                    </div>
-                    <pre class="subject">
-                        <br />--------------------------------------------------------<br /><br />
-                        {% include "@zmsentities/messaging/subjects.twig" with {"status": "confirmed"} %}
-                    </pre>
-                    <pre>
-                        {% include "@zmsentities/messaging/mail_confirmation.twig" with {
-                            "date": processExample.getFirstAppointment.date,
-                            "process": processExample, 
-                            "processList": processListExample, 
-                            "client": processExample.clients|first
-                        } %}
-                    </pre>
+                <div class="panel--heavy">
 
-                    <pre class="subject">
-                        <br />--------------------------------------------------------<br /><br />
-                        {% include "@zmsentities/messaging/subjects.twig" with {"status": "reminder"} %}
-                    </pre>
-                    <pre>
-                        {% include "@zmsentities/messaging/mail_reminder.twig" with {
-                            "date": processExample.getFirstAppointment.date,
-                            "process": processExample, 
-                            "processList": processListExample, 
-                            "client": processExample.clients|first
-                        } %}
-                    </pre>
+                    <fieldset>
+                        <div class="panel--light">
+                            <h3>Betreff: {% include "@zmsentities/messaging/subjects.twig" with {
+                                "status": "confirmed"
+                            } %}</h3>
+                            <pre>
+                                {% include "@zmsentities/messaging/mail_confirmation.twig" with {
+                                    "date": processExample.getFirstAppointment.date,
+                                    "process": processExample, 
+                                    "processList": processListExample, 
+                                    "client": processExample.clients|first
+                                } %}
+                            </pre>
+                        </div>
+                    </fieldset>
 
-                    <pre class="subject">
-                        <br />--------------------------------------------------------<br /><br />
-                        {% include "@zmsentities/messaging/subjects.twig" with {"status": "deleted"} %}
-                    </pre>
-                    <pre>
-                        {% include "@zmsentities/messaging/mail_delete.twig" with {
-                            "date": processExample.getFirstAppointment.date,
-                            "process": processExample, 
-                            "processList": processListExample, 
-                            "client": processExample.clients|first
-                        } %}
-                    </pre>
+                    <fieldset>
+                        <div class="panel--light">
+                            <h3>Betreff: {% include "@zmsentities/messaging/subjects.twig" with {
+                                "status": "reminder"
+                            } %}</h3>
+                            <pre>
+                                {% include "@zmsentities/messaging/mail_reminder.twig" with {
+                                    "date": processExample.getFirstAppointment.date,
+                                    "process": processExample, 
+                                    "processList": processListExample, 
+                                    "client": processExample.clients|first
+                                } %}
+                            </pre>
+                        </div>
+                    </fieldset>
 
-                    <pre class="subject">
-                        <br />--------------------------------------------------------<br /><br />
-                        {% include "@zmsentities/messaging/subjects.twig" with {"process": processExample, "initiator": "XXX", "status": "overview"} %}
-                    </pre>
-                    <pre class="admin">
-                        {% include "@zmsentities/messaging/mail_processlist_overview.twig" with {
-                            "processList": processListExample, 
-                            "client": (processExample.clients|first),
-                            "initiator": "XXX", 
-                            "status": "overview"} %}
-                    </pre>
+                    <fieldset>
+                        <div class="panel--light">
+                            <h3>Betreff: {% include "@zmsentities/messaging/subjects.twig" with {
+                                "status": "deleted"
+                            } %}</h3>
+                            <pre>
+                                {% include "@zmsentities/messaging/mail_delete.twig" with {
+                                    "date": processExample.getFirstAppointment.date,
+                                    "process": processExample, 
+                                    "processList": processListExample, 
+                                    "client": processExample.clients|first
+                                } %}
+                            </pre>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="panel--light">
+                            <h3>Betreff: {% include "@zmsentities/messaging/subjects.twig" with {
+                                "process": processExample, 
+                                "initiator": "XXX", 
+                                "status": "overview"
+                            } %}</h3>
+                            <pre class="admin">
+                                {% include "@zmsentities/messaging/mail_processlist_overview.twig" with {
+                                    "processList": processListExample, 
+                                    "client": (processExample.clients|first),
+                                    "initiator": "XXX", 
+                                    "status": "overview"} %}
+                            </pre>
+                        </div>
+                    </fieldset>
                     
-                    <pre class="subject">
-                        <br />--------------------------------------------------------<br /><br />
-                        {% include "@zmsentities/messaging/subjects.twig" with {"status": "pickup", "process": {"requests": processExample.requests}} %}
-                    </pre>
-                    <pre>
-                        {% include "@zmsentities/messaging/mail_pickup.twig" with {"process": processExample, "client": processExample.clients|first} %}
-                    </pre>
+                    <fieldset>
+                        <div class="panel--light">
+                            <h3>Betreff: {% include "@zmsentities/messaging/subjects.twig" with {
+                                "status": "pickup", 
+                                "process": {"requests": processExample.requests}
+                            } %}</h3>
+                            <pre>
+                                {% include "@zmsentities/messaging/mail_pickup.twig" with {"process": processExample, "client": processExample.clients|first} %}
+                            </pre>
+                        </div>
+                    </fieldset>
 
-                    <pre class="subject">
-                        <br />--------------------------------------------------------<br /><br />
-                        {% include "@zmsentities/messaging/subjects.twig" with {"status": "queued"} %}
-                    </pre>
-                    <pre>
-                        {% include "@zmsentities/messaging/mail_queued.twig" with {"process": processExample, "client": processExample.clients|first} %}
-                    </pre>
+                    <fieldset>
+                        <div class="panel--light">
+                            <h3>Betreff: {% include "@zmsentities/messaging/subjects.twig" with {
+                                "status": "queued"
+                            } %}</h3>
+                            <pre>
+                                {% include "@zmsentities/messaging/mail_queued.twig" with {
+                                    "date": processExample.getFirstAppointment.date,
+                                    "process": processExample, 
+                                    "processList": processListExample, 
+                                    "client": processExample.clients|first
+                                } %}
+                            </pre>
+                        </div>
+                    </fieldset>
 
-                    <pre class="subject">
-                        <br />--------------------------------------------------------<br /><br />
-                        {% include "@zmsentities/messaging/subjects.twig" with {"status": "deleted", "initiator": "XXX"} %}
-                    </pre>
-                    <pre class="admin">
-                        {% include "@zmsentities/messaging/mail_admin_delete.twig" with {"process": processExample, "initiator": "XXX"} %}
-                    </pre>
-                    <pre class="admin">
-                        {% include "@zmsentities/messaging/mail_admin_delete.twig" with {"process": {
-                            "queue": {"number": 123456},
-                            "scope": processExample.scope,
-                        }, "initiator": "XXX"} %}
-                    </pre>
+                    <fieldset>
+                        <div class="panel--light">
+                            <h3>Betreff: {% include "@zmsentities/messaging/subjects.twig" with {
+                                "status": "deleted", 
+                                "initiator": "XXX"
+                            } %}</h3>
+                            <pre class="admin">
+                                {% include "@zmsentities/messaging/mail_admin_delete.twig" with {
+                                    "process": processExample, 
+                                    "initiator": "XXX"
+                                } %}
+                            </pre>
+                        </div>
+                    </fieldset>
 
-                    <pre class="subject">
-                        <br />--------------------------------------------------------<br /><br />
-                        {% include "@zmsentities/messaging/subjects.twig" with {"status": "updated", "initiator": "XXX"} %}
-                    </pre>
-                    <pre class="admin">
-                        {% include "@zmsentities/messaging/mail_admin_update.twig" with {"process": processExample, "initiator": "XXX"} %}
-                    </pre>
-                    <pre class="admin">
-                        {% include "@zmsentities/messaging/mail_admin_update.twig" with {"process": {
-                            "queue": {"number": 123456},
-                            "scope": processExample.scope,
-                        }, "initiator": "XXX"} %}
-                    </pre>
+                    <fieldset>
+                        <div class="panel--light">
+                            <h3>Betreff: {% include "@zmsentities/messaging/subjects.twig" with {
+                                "status": "deleted", 
+                                "initiator": "XXX"
+                            } %}</h3>
+                            <pre class="admin">
+                                {% include "@zmsentities/messaging/mail_admin_delete.twig" with {"process": {
+                                    "queue": {"number": 123456},
+                                    "scope": processExample.scope,
+                                }, "initiator": "XXX"} %}
+                            </pre>
+                        </div>
+                    </fieldset>
 
-                    <pre class="subject">
-                        <br />--------------------------------------------------------<br /><br />
-                        {% include "@zmsentities/messaging/subjects.twig" with {"process": {"clients": [{"surveyAccepted": 1}], "scope": {"contact":{"name": "Test"}}}, "initiator": "XXX", "status": "survey"} %}
-                    </pre>
-                    <pre class="admin">
-                        {% include "@zmsentities/messaging/mail_survey.twig" with {"process": processExample, "client": (processExample.clients|first), "initiator": "XXX"} %}
-                    </pre>
+                    <fieldset>
+                        <div class="panel--light">
+                            <h3>Betreff: {% include "@zmsentities/messaging/subjects.twig" with {
+                                "status": "updated", 
+                                "initiator": "XXX"
+                            } %}</h3>
+                            <pre class="admin">
+                                {% include "@zmsentities/messaging/mail_admin_update.twig" with {"process": processExample, "initiator": "XXX"} %}
+                            </pre>
+                        </div>
+                    </fieldset>
 
-                    <pre class="subject">
-                        <br />--------------------------------------------------------<br /><br />
-                        {% include "@zmsentities/messaging/subjects.twig" with {"process": {"clients": [{"surveyAccepted": 1}], "scope": {"contact":{"name": "Test"}}}, "initiator": "XXX", "status": "survey"} %} (ohne Kundennamen)
-                    </pre>
-                    <pre class="admin">
-                        {% include "@zmsentities/messaging/mail_survey.twig" with {"process": processExample, "initiator": "XXX"} %}
-                    </pre>
+                    <fieldset>
+                        <div class="panel--light">
+                            <h3>Betreff: {% include "@zmsentities/messaging/subjects.twig" with {
+                                "status": "updated", 
+                                "initiator": "XXX"
+                            } %}</h3>
+                            <pre class="admin">
+                                {% include "@zmsentities/messaging/mail_admin_update.twig" with {
+                                    "process": {
+                                        "queue": {"number": 123456},
+                                        "scope": processExample.scope,
+                                    }, 
+                                    "initiator": "XXX"
+                                } %}
+                            </pre>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="panel--light">
+                            <h3>Betreff: {% include "@zmsentities/messaging/subjects.twig" with {
+                                "process": {
+                                    "clients": [{"surveyAccepted": 1}],
+                                    "scope": processExample.scope
+                                },
+                                "initiator": "XXX", 
+                                "status": "survey"
+                            } %}</h3>
+                            <pre class="admin">
+                                {% include "@zmsentities/messaging/mail_survey.twig" with {
+                                    "process": processExample,
+                                    "client": processExample.clients|first
+                                } %}
+                            </pre>
+                            </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <div class="panel--light">
+                            <h3>ohne Kundennamen</h3>
+                            <h3>Betreff: {% include "@zmsentities/messaging/subjects.twig" with {
+                                "process": {
+                                    "clients": [{"surveyAccepted": 1}],
+                                    "scope": processExample.scope
+                                },
+                                "status": "survey"
+                            } %}</h3>
+                            <pre class="admin">
+                                {% include "@zmsentities/messaging/mail_survey.twig" with {
+                                    "process": processExample
+                                } %}
+                            </pre>
+                            </div>
+                    </fieldset>
                 </div>
             </div>
         {% endblock %}
