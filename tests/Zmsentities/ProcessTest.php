@@ -133,7 +133,7 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals('confirmed', $entity->status);
 
         $entity->status = 'called';
-        $entity->queue['callCount'] = 1;
+        $entity->queue['callCount'] = 4;
         $entity->setStatusBySettings();
         $this->assertEquals('missed', $entity->status);
 
@@ -384,7 +384,7 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals('Anton Beta', $collection->sortByClientName()->getFirst()->getFirstClient()['familyName']);
 
         $this->assertEquals(1, $collection->getRequestList()->count());
-        $this->assertEquals(123456, $collection->getRequestList()->getFirst()->getId());
+        $this->assertEquals(120335, $collection->getRequestList()->getFirst()->getId());
 
         $this->assertEquals('0', $collection->sortByEstimatedWaitingTime()->getFirst()->queue['waitingTimeEstimate']);
         $this->assertEquals('60', $collection->sortByEstimatedWaitingTime()->getLast()->queue['waitingTimeEstimate']);
@@ -423,7 +423,7 @@ class ProcessTest extends EntityCommonTests
         $entity2 = $this->getExample();
         $entity2->requests = new \BO\Zmsentities\Collection\RequestList();
         $collection->addEntity($entity2);
-        $list = $collection->withRequest(123456);
+        $list = $collection->withRequest(120335);
         $this->assertCount(1, $list);
     }
 

@@ -9,7 +9,7 @@ hiermit erinnern wir Sie an Ihren Termin:<br /><br />
 {% with {'processList': {process}, 'isMainProcess': true} %}
 {{ block("processes_summary_german") }}
 {% endwith %}
-Wenn Sie den Termin wahrnehmen möchten, so brauchen Sie nichts weiter zu tun und können diese Nachricht ignorieren. Für den Fall, dass Sie den Termin nicht wahrnehmen können, sagen Sie ihn bitte <strong>unbedingt</strong> ab, damit wir den Termin neu vergeben können. Dies können Sie einfach über unsere über den oben angegebenen <strong><a href="{{ changeLink }}" target="_blank">Änderungs/Absage-Link</a></strong> erledigen.<br />
+Wenn Sie den Termin wahrnehmen möchten, so brauchen Sie nichts weiter zu tun und können diese Nachricht ignorieren. Für den Fall, dass Sie den Termin nicht wahrnehmen können, sagen Sie ihn bitte <strong>unbedingt</strong> ab, damit wir den Termin neu vergeben können. Dies können Sie einfach über den oben angegebenen <strong><a href="{{ changeLink }}" target="_blank">Änderungs/Absage-Link</a></strong> erledigen.<br />
 {% if 
   processList is defined and 
   processList|length > 0 
