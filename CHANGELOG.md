@@ -1,3 +1,6 @@
+## v2.24.11
+* #55684 - removed berlin logo from background graphics
+
 ## v2.23.05
 
 * #44659 Anzahl der wartenden Kunden bei leerer Warteschlange wurde korrigiert
