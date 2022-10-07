@@ -1,3 +1,7 @@
+## v2.24.11
+
+* #55684 - removed berlin logo from background graphics
+
 ## v2.24.05
 
 * #53565 Performance: Separate call to the API for calculating the queue length and the waiting time. 
