@@ -5,12 +5,8 @@
  **/
 namespace BO\Dldb\MySQL;
 
-use \BO\Dldb\MySQL\Entity\Authority as Entity;
-use \BO\Dldb\MySQL\Entity\Location as LocationEntity;
 use \BO\Dldb\MySQL\Collection\Authorities as Collection;
 use \BO\Dldb\Elastic\Authority as Base;
-use \BO\Dldb\MySQL\Location as LocationAccess
-;
 
 /**
  */
