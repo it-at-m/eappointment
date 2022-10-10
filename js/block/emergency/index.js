@@ -30,9 +30,9 @@ class View extends BaseView {
         this.$.find('.emergency__button-hide').on('click', this.minimize)
         this.$.find('.emergency__button-show').on('click', this.show)
         this.$.on('keydown', function exitKeyEventListener (ev){
-            var key = ev.keyCode || ev.which;
+            var key = ev.key;
             switch(key) {
-            case 27: // ESC   
+                case 'Escape': // ESC
                 console.log('ESC'); 
                 this.minimize; // ToDo: Don't work yet
                 break;
