@@ -3,6 +3,7 @@
 * #55531 - Set the focus on the first error message in the form and revise the label semantic with included error messages
 * #55526 - Table actions are now also placed above the tables to avoid long scrolling
 * #55625 - Revising the presentation of email templates in system configuration
+* #55509 - Checkboxes and radionbuttons now have a unique ID, the dialog lightboxes now have a focus trap and when closing the lightbox the previous element is focused 
 
 ## v2.24.10
 * #55389 - Keycloak OpenID-Connect as additional login solution tested
