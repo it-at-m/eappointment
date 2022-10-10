@@ -37,14 +37,13 @@ class Authority extends Base
                 array_push($sqlArgs, ...$servicelist);
                
                 $stm = $this->access()->prepare($sql);
-                $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Authority');
                 $stm->execute($sqlArgs);
-
-                $authorities = $stm->fetchAll();
-                foreach ($authorities as $authority) {
+                $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($authorityList) {
+                    $authority = new \BO\Dldb\MySQL\Entity\Authority();
+                    $authority->offsetSet('data_json', $data_json);
                     $authorityList[$authority['id']] = $authority;
                     $authority->clearLocations();
-                }
+                });
 
                 $sqlArgs = [$this->locale];
                 $questionMarks = array_fill(0, count($servicelist), '?');
@@ -75,19 +74,18 @@ class Authority extends Base
                 foreach ($locations as $location) {
                     $authorityList[$location['authority']['id']]->addLocation($location);
                 }
-
-                #echo '<pre>' . print_r([$authorityList],1).'</pre>';exit;
             } else {
                 $sqlArgs = ['de'];
                 $sql = 'SELECT data_json FROM authority WHERE locale = ?';
                 $stm = $this->access()->prepare($sql);
-                $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Authority');
                 $stm->execute($sqlArgs);
-                $authorities = $stm->fetchAll();
-                foreach ($authorities as $authority) {
+                $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($authorityList) {
+                    $authority = new \BO\Dldb\MySQL\Entity\Authority();
+                    $authority->offsetSet('data_json', $data_json);
                     $authorityList[$authority['id']] = $authority;
                     $authority->clearLocations();
-                }
+                });
+
                 $locations = $this->access()->fromLocation($this->locale)->fetchList(false, true);
                 
                 foreach ($locations as $location) {
@@ -111,12 +109,10 @@ class Authority extends Base
             $sqlArgs = [$this->locale, $authorityid];
             $sqlArgs = ['de', $authorityid];
             
-            
             $sql = 'SELECT data_json FROM authority WHERE locale = ? AND id = ?';
             $stm = $this->access()->prepare($sql);
             $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Authority');
             $stm->execute($sqlArgs);
-
 
             $stm->execute($sqlArgs);
             if (!$stm || ($stm && $stm->rowCount() == 0)) {
@@ -142,9 +138,6 @@ class Authority extends Base
         foreach ($locations as $location) {
             $authorityList->addLocation($location);
         }
-        
-        #echo '<pre>' . print_r($authorityList,1) . '</pre>';exit;
-
 
         return $authorityList;
     }
