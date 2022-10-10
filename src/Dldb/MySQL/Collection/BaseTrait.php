@@ -5,8 +5,6 @@
  **/
 namespace BO\Dldb\MySQL\Collection;
 
-use \BO\Dldb\MySQL\Entity\Service as Entity;
-
 trait BaseTrait
 {
 

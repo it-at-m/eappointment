@@ -5,7 +5,6 @@
  **/
 namespace BO\Dldb\MySQL;
 
-use \BO\Dldb\MySQL\Entity\Link as Entity;
 use \BO\Dldb\MySQL\Collection\Links as Collection;
 use \BO\Dldb\Elastic\Link as Base;
 

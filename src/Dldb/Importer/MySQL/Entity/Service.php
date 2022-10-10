@@ -44,13 +44,11 @@ class Service extends Base
                     'entity_type' => static::getTableName(),
                     'search_type' => 'name'
                 ],
-                
                 'multiple' => false,
                 'clearFields' => [
                     'entity_type' => static::getTableName(),
                     'locale' => $this->get('meta.locale')
                 ],
-                
                 'deleteFields' => [
                     'object_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
