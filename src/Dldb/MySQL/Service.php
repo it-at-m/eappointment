@@ -34,7 +34,6 @@ class Service extends Base
                     return false;
                 }
                 $service = $stm->fetch();
-                #echo '<pre>' . print_r($service,1) . '</pre>';exit;
                 return $service;
             }
             return false;
@@ -84,16 +83,17 @@ class Service extends Base
 
             #echo '<pre>' . print_r([$sql, $sqlArgs],1) . '</pre>';exit;
 
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Service');
-            $stm->execute($sqlArgs);
-            
-            $services = $stm->fetchAll();
             $serviceList = new Collection();
-            foreach ($services as $service) {
+
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($serviceList) {
+                $service = new \BO\Dldb\MySQL\Entity\Service();
+                $service->offsetSet('data_json', $data_json);
+                
                 $serviceList[$service['id']] = $service;
-            }
-            #echo '<pre>' . print_r($serviceList,1) . '</pre>';exit;
+            });
+
             return $serviceList;
         } catch (\Exception $e) {
             throw $e;
@@ -131,23 +131,23 @@ class Service extends Base
 
             $sql .= " " . implode(' ', $join);
             $sql .= " WHERE " . implode(' AND ', $where);
-            
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Service');
-            $stm->execute($sqlArgs);
-            
-            $services = $stm->fetchAll();
 
             $serviceList = new Collection();
-            foreach ($services as $service) {
+
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($serviceList) {
+                $service = new \BO\Dldb\MySQL\Entity\Service();
+                $service->offsetSet('data_json', $data_json);
+                
                 $serviceList[$service['id']] = $service;
-            }
+            });
+
             return $serviceList;
         } catch (\Exception $e) {
             throw $e;
         }
     }
-
 
     public function fetchListRelated($service_id)
     {
@@ -167,16 +167,17 @@ class Service extends Base
             
             $sql = 'SELECT data_json FROM service WHERE locale = ? AND leika != ? AND leika LIKE ?';
 
+            $serviceList = new Collection();
+
             $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Service');
             $stm->execute($sqlArgs);
-
-            $services = $stm->fetchAll();
-
-            
-            foreach ($services as $service) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($serviceList) {
+                $service = new \BO\Dldb\MySQL\Entity\Service();
+                $service->offsetSet('data_json', $data_json);
+                
                 $serviceList[$service['id']] = $service;
-            }
+            });
+           
             return $serviceList;
         } catch (\Exception $e) {
             throw $e;
@@ -205,17 +206,16 @@ class Service extends Base
             }
             #print_r($sql);exit;
 
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Service');
-
-            $stm->execute($sqlArgs);
-            
-            $services = $stm->fetchAll();
-
             $serviceList = new Collection();
-            foreach ($services as $service) {
+
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($serviceList) {
+                $service = new \BO\Dldb\MySQL\Entity\Service();
+                $service->offsetSet('data_json', $data_json);
+                
                 $serviceList[$service['id']] = $service;
-            }
+            });
 
             return $serviceList;
         } catch (\Exception $e) {
