@@ -6,7 +6,6 @@
 namespace BO\Dldb\MySQL\Entity;
 
 use \BO\Dldb\Entity\Service as Base;
-use \BO\Dldb\MySQL\Collection\Services as Collection;
 
 /**
  * @SuppressWarnings(Coupling)

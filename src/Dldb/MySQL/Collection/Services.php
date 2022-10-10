@@ -5,7 +5,6 @@
  **/
 namespace BO\Dldb\MySQL\Collection;
 
-use \BO\Dldb\MySQL\Entity\Service as Entity;
 use \BO\Dldb\Collection\Services as Base;
 
 /**

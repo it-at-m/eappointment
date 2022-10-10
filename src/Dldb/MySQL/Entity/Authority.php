@@ -6,7 +6,6 @@
 namespace BO\Dldb\MySQL\Entity;
 
 use \BO\Dldb\Entity\Authority as Base;
-use \BO\Dldb\MySQL\Collection\Authorities as Collection;
 
 /**
  * @SuppressWarnings(Coupling)

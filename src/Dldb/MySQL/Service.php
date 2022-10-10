@@ -49,6 +49,8 @@ class Service extends Base
      */
     public function fetchList($location_csv = false, $mixLanguages = false)
     {
+        #--IF(s2.id, s2.data_json, s.data_json)  AS data_json
+        # COALESCE(s2.data_json, s.data_json) AS data_json
         try {
             $sqlArgs = [$this->locale];
             $where = [];
@@ -60,7 +62,7 @@ class Service extends Base
             } else {
                 $where[] = "s.locale='de'";
                 $sql = "SELECT 
-                IF(s2.id, s2.data_json, s.data_json) AS data_json
+                COALESCE(s2.data_json, s.data_json) AS data_json
                 FROM service AS s
                 LEFT JOIN service AS s2 ON s2.id = s.id AND s2.locale = ?
                 ";
@@ -115,7 +117,7 @@ class Service extends Base
             } else {
                 $where[] = "s.locale='de'";
                 $sql = "SELECT 
-                IF(s2.id, s2.data_json, s.data_json) AS data_json
+                COALESCE(s2.data_json, s.data_json) AS data_json
                 FROM service AS s
                 LEFT JOIN service AS s2 ON s2.id = s.id AND s2.locale = ?
                 ";
