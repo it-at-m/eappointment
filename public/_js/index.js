@@ -21816,19 +21816,19 @@ class MessageHandler {
         this.$main.off().on("click", ".button-ok", (ev)=>{
             ev.preventDefault();
             ev.stopPropagation();
-            this.removeFocusTrap(this.$main, ev);
+            this.removeFocusTrap(this.$main);
             this.callback();
         }).on("click", ".button-abort", (ev)=>{
             ev.preventDefault();
             ev.stopPropagation();
-            this.removeFocusTrap(this.$main, ev);
+            this.removeFocusTrap(this.$main);
             this.handleLightbox();
         }).on("click", ".button-callback", (ev)=>{
             ev.preventDefault();
             ev.stopPropagation();
             var callback = (0, _jqueryDefault.default)(ev.target).data("callback");
             this.callback = this.parent[callback];
-            this.removeFocusTrap(this.$main, ev);
+            this.removeFocusTrap(this.$main);
             this.callback(ev);
             this.handleLightbox();
         }).on("keydown", (ev)=>{
@@ -21836,7 +21836,7 @@ class MessageHandler {
                 case "Escape":
                     ev.preventDefault();
                     ev.stopPropagation();
-                    this.removeFocusTrap(this.$main, ev);
+                    this.removeFocusTrap(this.$main);
                     this.callback();
                     break;
             }
@@ -21897,7 +21897,6 @@ class DialogHandler {
         this.loader = options.loader || (()=>{});
         this.bindEvents();
         this.render();
-        this.addFocusTrap(this.$main);
     //console.log('dialogHandler.js');
     }
     render() {
@@ -21905,12 +21904,16 @@ class DialogHandler {
         var content = (0, _jqueryDefault.default)(this.response).filter(".dialog");
         if (content.length == 0) {
             var message = (0, _jqueryDefault.default)(this.response).find(".dialog");
-            if (message.length > 0) content = message.get(0).outerHTML;
+            if (message.length > 0) content = message;
         }
         if (content.length == 0) new (0, _exceptionHandlerDefault.default)(this.$main, {
-            "message": this.response
+            "message": this.message,
+            "callback": this.callback
         });
-        else this.$main.html(content);
+        else {
+            this.$main.html(content);
+            this.addFocusTrap(this.$main);
+        }
         (0, _jqueryDefault.default)("textarea.maxchars").each(function() {
             (0, _maxCharsDefault.default)(this);
         });
@@ -21959,6 +21962,7 @@ class DialogHandler {
     addFocusTrap(elem) {
         // Get all focusable elements inside our trap container
         var tabbable = elem.find('select, input, textarea, button, a, *[role="button"]');
+        console.log(elem);
         // Focus the first element
         if (tabbable.length) tabbable.filter(":visible").first().focus();
         tabbable.bind("keydown", function(e) {
@@ -26224,11 +26228,11 @@ class View extends (0, _workstationDefault.default) {
             //console.log("lost Focus");
             clearTimeout(this.reloadTimer);
         };
-        this.$main.find("[data-queue-table], [data-queue-info]").mouseenter(()=>{
+        this.$main.find("[data-queue-table], [data-queue-info]").on("mouseenter", ()=>{
             //console.log("stop Reload on mouse enter");
             clearTimeout(this.reloadTimer);
         });
-        this.$main.find("[data-queue-table], [data-queue-info]").mouseleave(()=>{
+        this.$main.find("[data-queue-table], [data-queue-info]").on("mouseleave", ()=>{
             //console.log("start reload on mouse leave");
             this.setReloadTimer();
         });
@@ -26316,11 +26320,11 @@ class View extends (0, _baseviewDefault.default) {
             clearTimeout(this.reloadTimer);
         };
         this.$main.find("[data-queue-table]").on("mouseenter", ()=>{
-            console.log("stop Reload on mouse enter");
+            //console.log("stop Reload on mouse enter");
             clearTimeout(this.reloadTimer);
         });
         this.$main.find("[data-queue-table]").on("mouseleave", ()=>{
-            console.log("start reload on mouse leave");
+            //console.log("start reload on mouse leave");
             this.setReloadTimer();
         });
     }
