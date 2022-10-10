@@ -132,7 +132,6 @@ class View extends BaseView {
 
     onSelectDateWithOverlay(event) {
         const container = $.find('[data-calendar]');
-        var returnTarget = $(event.currentTarget);
         $(container).find('.calendar')
             .addClass('lightbox__content')
             .attr('role', 'dialog')
@@ -140,14 +139,14 @@ class View extends BaseView {
         $(container).addClass('lightbox').on('click', () => {
             $(container).removeClass('lightbox');
             $(container).removeClass('lightbox__content');
-            returnTarget.focus();
+            event.currentTarget.focus();
         }).on('keydown', (ev) => {
-            var key = ev.keyCode || ev.which;
+            var key = ev.key;
             switch (key) {
-                case 27: // ESC    
+                case 'ESCAPE': // ESC    
                     $(container).removeClass('lightbox');
                     $(container).removeClass('lightbox__content');
-                    returnTarget.focus();
+                    event.currentTarget.focus();
                     break;
             }
         });
