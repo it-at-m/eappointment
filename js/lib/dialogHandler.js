@@ -16,7 +16,6 @@ class DialogHandler {
         this.loader = options.loader || (() => { });
         this.bindEvents();
         this.render();
-        this.addFocusTrap(this.$main);
         //console.log('dialogHandler.js');
     }
 
@@ -26,13 +25,14 @@ class DialogHandler {
         if (content.length == 0) {
             var message = $(this.response).find('.dialog');
             if (message.length > 0) {
-                content = message.get(0).outerHTML;
+                content = message;
             }
         }
         if (content.length == 0) {
-            new ExceptionHandler(this.$main, { 'message': this.response });
+            new ExceptionHandler(this.$main, { 'message': this.message, 'callback': this.callback });
         } else {
             this.$main.html(content);
+            this.addFocusTrap(this.$main);
         }
 
         $('textarea.maxchars').each(function () {
@@ -90,6 +90,8 @@ class DialogHandler {
     addFocusTrap(elem) {
         // Get all focusable elements inside our trap container
         var tabbable = elem.find('select, input, textarea, button, a, *[role="button"]');
+        console.log(elem)
+
         // Focus the first element
         if (tabbable.length ) {
             tabbable.filter(':visible').first().focus();
