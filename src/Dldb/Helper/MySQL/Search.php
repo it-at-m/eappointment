@@ -6,6 +6,7 @@ namespace BO\Dldb\Helper\MySQL;
 use \BO\Dldb\MySQLAccess;
 use \BO\Dldb\Entity\SearchResult;
 use \BO\Dldb\Collection\SearchResults;
+use Error;
 
 class Search
 {
@@ -88,9 +89,10 @@ class Search
             $sql = "SELECT 
                 object_id, locale, entity_type 
             FROM 
-                search
+                search 
             WHERE
-            MATCH (search_value) AGAINST (? IN BOOLEAN MODE)";
+                MATCH (search_value) AGAINST (? IN BOOLEAN MODE)
+            ";
 
             if (!empty($this->entityTypes)) {
                 $sql .= " AND entity_type ";
@@ -103,6 +105,8 @@ class Search
                     array_push($sqlArgs, ...$this->entityTypes);
                 }
             }
+            $sql .= ' GROUP BY object_id, entity_type, locale';
+
             $stm = $this->mysqlAccess->prepare($sql);
             
             $stm->execute($sqlArgs);
