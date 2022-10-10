@@ -1,0 +1,104 @@
+#!/usr/bin/env php
+<?php
+
+$localInclude = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .  'vendor';
+$modulInclude = __DIR__ . str_repeat(DIRECTORY_SEPARATOR . '..', 3);
+set_include_path(get_include_path() . PATH_SEPARATOR . $localInclude . PATH_SEPARATOR . $modulInclude);
+require('autoload.php');
+
+
+use Garden\Cli\Cli;
+use \BO\Dldb\MySQLAccess; 
+
+
+$cli = new Cli();
+
+$cli->description("Recreate mysql search index.")
+    ->opt('host:h', 'Mysql host', true)
+    ->opt('user:u', 'Mysql user', true)
+    ->opt('password:p', 'Mysql password', true)
+    ->opt('database:d', 'Mysql database', true)
+    ->opt('port:o', 'Mysql port', true)
+;
+$args = $cli->parse($argv, true);
+
+
+$mysqlAccess = new MySQLAccess([
+    'host' => $args->getOpt('host'), 
+    'user' => $args->getOpt('user'), 
+    'password' => $args->getOpt('password'),
+    'port' => $args->getOpt('port'),
+    'database' => $args->getOpt('database')
+]);
+
+try {
+    $mysqlAccess->beginTransaction();
+
+    $mysqlAccess->exec("DELETE FROM search");
+
+    $sql = 'SELECT data_json FROM service';
+           
+    $stm = $mysqlAccess->query($sql);
+    $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json)  use ($mysqlAccess) {
+        $importEntity = new \BO\Dldb\Importer\MySQL\Entity\Service($mysqlAccess, json_decode($data_json, true), false);
+        $importEntity->setupFields();
+        $mapping = $importEntity->getReferenceMapping(true);
+
+        foreach ($mapping as $field => $data) {
+            if ('BO\\Dldb\\Importer\\MySQL\\Entity\\Search' == ltrim($data['class'], '\\')) {
+                $searchData = $data['addFields'];
+                foreach ($data['neededFields'] as $key => $mapKey) {
+                    $searchData[$mapKey] = $importEntity->get($key);
+                }
+                $searchEntity = new \BO\Dldb\Importer\MySQL\Entity\Search($mysqlAccess, $searchData);
+                $searchEntity->save();
+            }
+        }
+    });
+
+    $sql = 'SELECT data_json FROM location';
+           
+    $stm = $mysqlAccess->query($sql);
+    $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($mysqlAccess) {
+        $importEntity = new \BO\Dldb\Importer\MySQL\Entity\Location($mysqlAccess, json_decode($data_json, true), false);
+        $importEntity->setupFields();
+        $mapping = $importEntity->getReferenceMapping(true);
+
+        foreach ($mapping as $field => $data) {
+            if ('BO\\Dldb\\Importer\\MySQL\\Entity\\Search' == ltrim($data['class'], '\\')) {
+                $searchData = $data['addFields'];
+                foreach ($data['neededFields'] as $key => $mapKey) {
+                    $searchData[$mapKey] = $importEntity->get($key);
+                }
+                $searchEntity = new \BO\Dldb\Importer\MySQL\Entity\Search($mysqlAccess, $searchData);
+                $searchEntity->save();
+            }
+        }
+    });
+
+    $sql = 'SELECT data_json FROM topic';
+
+    $stm = $mysqlAccess->query($sql);
+    $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($mysqlAccess) {
+        $importEntity = new \BO\Dldb\Importer\MySQL\Entity\Topic($mysqlAccess, json_decode($data_json, true), false);
+        $importEntity->setupFields();
+        $mapping = $importEntity->getReferenceMapping(true);
+
+        foreach ($mapping as $field => $data) {
+            if ('BO\\Dldb\\Importer\\MySQL\\Entity\\Search' == ltrim($data['class'], '\\')) {
+                $searchData = $data['addFields'];
+                foreach ($data['neededFields'] as $key => $mapKey) {
+                    $searchData[$mapKey] = $importEntity->get($key);
+                }
+                $searchEntity = new \BO\Dldb\Importer\MySQL\Entity\Search($mysqlAccess, $searchData);
+                $searchEntity->save();
+            }
+        }
+    });
+
+    $mysqlAccess->commit();
+}
+catch (\Exception $e) {
+    $mysqlAccess->rollBack();
+    error_log('Import faild - ' . $e->getMessage());
+}

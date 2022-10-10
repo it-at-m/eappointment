@@ -92,8 +92,7 @@ class Topic extends Base
                 'neededFields' => [
                     'id' => 'object_id',
                     'meta.locale' => 'locale',
-                    'meta.titles' => 'search_value',
-                    'type' => 'entity_type',
+                    'meta.titles' => 'search_value'
                 ],
                 'addFields' => [
                     'entity_type' => static::getTableName(),

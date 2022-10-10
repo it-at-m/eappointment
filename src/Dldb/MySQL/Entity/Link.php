@@ -6,7 +6,6 @@
 namespace BO\Dldb\MySQL\Entity;
 
 use \BO\Dldb\Entity\Link as Base;
-use \BO\Dldb\MySQL\Collection\Links as Collection;
 
 /**
  * @SuppressWarnings(Coupling)
