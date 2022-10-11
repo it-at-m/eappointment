@@ -298,39 +298,39 @@ class Location extends Base
 
     public function fetchLocationsForCompilation($authoritys = [], $locations = [])
     {
-        $limit = 1000;
+        try {
+            $sqlArgs = [$this->locale];
 
-        $localeFilter = new \Elastica\Query\Term(array(
-            'meta.locale' => $this->locale
-        ));
+            $sql = "SELECT 
+                l.data_json
+            FROM location AS l
+            ";
+            $where = ['l.locale = ?'];
 
-        $boolquery = new \Elastica\Query\BoolQuery();
-        $boolquery->addMust($localeFilter);
+            if (!empty($authoritys)) {
+                $where[] = 'l.authority_id IN (' . implode(',', $authoritys) . ')';
+            }
 
-        if (!empty($authoritys)) {
-            $authorityFilter = new \Elastica\Query\Terms('authority.id', $authoritys);
-            $boolquery->addMust($authorityFilter);
+            if (!empty($locations)) {
+                $where[] = 'l.id IN (' . implode(',', $locations) . ')';
+            }
+
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+
+            $locationList = new Collection();
+
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($locationList) {
+                $location = new \BO\Dldb\MySQL\Entity\Location();
+                $location->offsetSet('data_json', $data_json);
+                
+                $locationList[$location['id']] = $location;
+            });
+
+            return $locationList;
+        } catch (\Exception $e) {
+            throw $e;
         }
-        if (!empty($locations)) {
-            $locationFilter = new \Elastica\Query\Terms('id', $locations);
-            $boolquery->addMust($locationFilter);
-        }
-
-        $query = \Elastica\Query::create($boolquery);
-        $query->addSort(['sort' => 'asc']);
-        #print_r(json_encode($query->toArray()));exit;
-        $resultList = $this
-            ->access()
-            ->getIndex()
-            ->getType('location')
-            ->search($query, $limit)
-        ;
-
-        $locationList = new Collection();
-        foreach ($resultList as $result) {
-            $location = new Entity($result->getData());
-            $locationList[$location['id']] = $location;
-        }
-        return $locationList;
     }
 }

@@ -222,4 +222,52 @@ class Service extends Base
             throw $e;
         }
     }
+
+    public function fetchServicesForCompilation($authoritys = [], $locations = [], $services = [])
+    {
+        try {
+            $sqlArgs = [$this->locale];
+
+            $sql = "SELECT 
+                s.data_json
+            FROM service AS s
+            ";
+            $where = ['s.locale = ?'];
+            $join = [];
+
+            if (!empty($authoritys)) {
+                $sqlArgs[] = $this->locale;
+                $join[] = 'authority_service AS a_s ON a_s.service_id = s.id AND a_s.locale = ?';
+                $where[] = 'a_s.authority_id IN (' . implode(',', $authoritys) . ')';
+            }
+            if (!empty($locations)) {
+                $sqlArgs[] = $this->locale;
+                $join[] = 'location_service AS ls ON ls.service_id = s.id AND ls.locale = ?';
+                $where[] = 'ls.location_id IN (' . implode(',', $locations) . ')';
+            }
+
+            if (!empty($services)) {
+                $where[] = 's.id IN (' . implode(',', $services) . ')';
+            }
+            if (!empty($join)) {
+                $sql .= ' LEFT JOIN ' . implode(' LEFT JOIN ', $join);
+            }
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+
+            $serviceList = new Collection();
+
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($serviceList) {
+                $service = new \BO\Dldb\MySQL\Entity\Service();
+                $service->offsetSet('data_json', $data_json);
+                    
+                $serviceList[$service['id']] = $service;
+            });
+
+            return $serviceList;
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
 }
