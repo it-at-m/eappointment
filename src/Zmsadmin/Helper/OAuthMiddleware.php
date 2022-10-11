@@ -40,8 +40,7 @@ class OAuthMiddleware
             $this->Authorization($request);
 
             if($this->checkAccessRight()){
-                $userAccount = $this->getUser();
-                $workstation = \App::$http->readPostResult('/workstation/oauth/', $userAccount, ['code' => $request->getParam("code")] )->getEntity();
+                $workstation = \App::$http->readPostResult('/workstation/oauth/', $this->accessTokenPayload, ['code' => $request->getParam("code")] )->getEntity();
 
                 if (array_key_exists('authkey', $workstation)) {
                     \BO\Zmsclient\Auth::setKey($workstation->authkey);
@@ -105,13 +104,13 @@ class OAuthMiddleware
     }
 
     private function setProvider(){
-        $guzzyClient = new Client([
+        /*$guzzyClient = new Client([
             'defaults' => [
                 \GuzzleHttp\RequestOptions::CONNECT_TIMEOUT => \App::ZMS_AUTHORIZATION_CONNECT_TIMEOUT,
                 \GuzzleHttp\RequestOptions::ALLOW_REDIRECTS => true],
                 \GuzzleHttp\RequestOptions::VERIFY => \App::ZMS_AUTHORIZATION_SSL_VERIFY,
-        ]);
-
+        ]);*/
+        \App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL); \BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
         $this->provider = new Keycloak([
             'authServerUrl'         => \App::ZMS_AUTHORIZATION_AUTHSERVERURL,
             'realm'                 => \App::ZMS_AUTHORIZATION_REALM,
@@ -119,51 +118,6 @@ class OAuthMiddleware
             'clientSecret'          => \App::ZMS_AUTHORIZATION_CLIENT_SECRET,
             'redirectUri'           => \App::ZMS_AUTHORIZATION_REDIRECTURI,
         ]);
-        $this->provider->setHttpClient($guzzyClient);
-    }
-
-    public function getUser()
-    {
-        try {
-            $userAccount = new \BO\Zmsentities\Useraccount(array(
-                'id' => \App::ZMS_AUTHORIZATION_SUPERUSER_USERNAME,
-                'password' => \App::ZMS_AUTHORIZATION_SUPERUSER_PASSWORD,
-                'departments' => array('id' => 0) // required in schema validation
-            ));
-            $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
-            \BO\Zmsclient\Auth::setKey($workstation->authkey);
-
-
-            $user = array(
-                "id" => $this->accessTokenPayload['preferred_username'],
-                "email" => $this->accessTokenPayload['email'],
-                "departments" => array(
-                    "id" => 0,
-                )
-            );
-            $entity = new Entity($user);
-            $entity = $entity->withCleanedUpFormData(true);
-
-            try {
-                $entity = \App::$http->readPostResult('/useraccount/', $entity)->getEntity();
-            } catch (\BO\Zmsclient\Exception $exception) {
-                $this->logoutSuperuser($workstation);
-
-                if ('BO\Zmsapi\Exception\Useraccount\UseraccountAlreadyExists' == $exception->template) {
-                    return $user;
-                }
-
-                throw $exception;
-            }
-
-            $this->logoutSuperuser($workstation);
-            return $entity;
-        } catch (\Jumbojett\OpenIDConnectClientException $e) {
-            throw $exception;
-        }
-    }
-
-    private function logoutSuperuser($workstation){
-        \App::$http->readDeleteResult('/workstation/login/'. $workstation->useraccount['id'] .'/')->getEntity();
+        //$this->provider->setHttpClient($guzzyClient);
     }
 }

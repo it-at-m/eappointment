@@ -335,9 +335,6 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/workstation/status/', \BO\Zmsadmin\WorkstationStatus::class)
     ->setName("workstationStatus");
 
-\App::$slim->get('/workstation/oauth/{loginName}/', \BO\Zmsadmin\WorkstationOAuth::class)
-    ->setName("workstationOAuth");
-
 \App::$slim->get('/workstation/{loginName}/', \BO\Zmsadmin\WorkstationLogin::class)
     ->setName("workstationLogin");
 
