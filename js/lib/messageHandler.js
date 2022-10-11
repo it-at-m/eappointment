@@ -13,7 +13,6 @@ class MessageHandler {
         this.handleLightbox = options.handleLightbox || (() => { });
         this.bindEvents();
         this.render()
-        this.addFocusTrap();
         //console.log('messageHandler.js');
     }
 
@@ -31,6 +30,7 @@ class MessageHandler {
             DialogHandler.hideMessages(true);
             if ($(this.$main.get(0)).hasClass('lightbox__content')) {
                 this.$main.html(content.get(0).outerHTML);
+                this.addFocusTrap(this.$main);
             } else {
                 this.$main.find('.body').prepend(content.get(0).outerHTML);
             }
@@ -41,54 +41,62 @@ class MessageHandler {
         this.$main.off().on('click', '.button-ok', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
+            this.removeFocusTrap(this.$main);
             this.callback();
         }).on('click', '.button-abort', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
+            this.removeFocusTrap(this.$main);
             this.handleLightbox();
         }).on('click', '.button-callback', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             var callback = $(ev.target).data('callback');
             this.callback = this.parent[callback];
+            this.removeFocusTrap(this.$main);
             this.callback(ev);
             this.handleLightbox();
         }).on('keydown', (ev) => {
-            var key = ev.code;
-            switch(key) {
-            case 27: // ESC    
+            switch(ev.key) {
+                case 'Escape': // ESC    
                 ev.preventDefault();
                 ev.stopPropagation();
+                this.removeFocusTrap(this.$main);
                 this.callback();
                 break;
             }
         });
     }
 
-    addFocusTrap() {
+    removeFocusTrap(elem) {
+        var tabbable = elem.find('select, input, textarea, button, a, *[role="button"]');
+        tabbable.unbind('keydown');
+    }
+
+    addFocusTrap(elem) {
         // Get all focusable elements inside our trap container
-        var tabbable = this.$main.find('select, input, textarea, button, a, *[role="button"]');
+        var tabbable = elem.find('select, input, textarea, button, a, *[role="button"]');
         // Focus the first element
         if (tabbable.length ) {
-            tabbable.filter(':visible').first().trigger('focus');
+            tabbable.filter(':visible').first().focus();
             //console.log(tabbable.filter(':visible').first());
         }
-        tabbable.on('keydown', function (event) {
-            if (event.code === 9) { // TAB pressed
+        tabbable.bind('keydown', function (e) {
+            if (e.keyCode === 9) { // TAB pressed
                 // we need to update the visible last and first focusable elements everytime tab is pressed,
                 // because elements can change their visibility
                 var firstVisible = tabbable.filter(':visible').first();
                 var lastVisible = tabbable.filter(':visible').last();
                 if (firstVisible && lastVisible) {
-                    if (event.shiftKey && ( $(firstVisible)[0] === $(this)[0] ) ) {
+                    if (e.shiftKey && ( $(firstVisible)[0] === $(this)[0] ) ) {
                         // TAB + SHIFT pressed on first visible element
-                        event.preventDefault();
-                        lastVisible.trigger('focus');
+                        e.preventDefault();
+                        lastVisible.focus();
                     } 
-                    else if (!event.shiftKey && ( $(lastVisible)[0] === $(this)[0] ) ) {
+                    else if (!e.shiftKey && ( $(lastVisible)[0] === $(this)[0] ) ) {
                         // TAB pressed pressed on last visible element
-                        event.preventDefault();
-                        firstVisible.trigger('focus');
+                        e.preventDefault();
+                        firstVisible.focus();
                     }
                 }
             }

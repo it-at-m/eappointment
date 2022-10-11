@@ -14,11 +14,7 @@
         {% set fieldId = elements[0].parameter.id %}
     {% elseif groupargs.id %}
         {% set fieldId = groupargs.id %}
-    {% elseif ( elements[0].type != 'checkboxSelect' 
-                and elements[0].type != 'checkboxDeselect'
-                and elements[0].type != 'checkbox'
-                and elements[0].type != 'radio'
-              )%}
+    {% elseif ( elements[0].type != 'checkboxSelect' and elements[0].type != 'checkboxDeselect')%}
         {% set fieldId = 'randomid'~random(100000) %}
     {% else %}
         {% set fieldId = null %}
@@ -82,11 +78,11 @@
         {% endif -%}
 
         {%- if element.type == "checkbox" -%}
-            {{- self.checkboxfield(element.parameter, groupargs) -}}
+            {{- self.checkboxfield(element.parameter, fieldId, groupargs) -}}
         {% endif -%}
 
         {%- if element.type == "radio" -%}
-            {{ self.radiobuttonfield(element.parameter, groupargs) -}}
+            {{ self.radiobuttonfield(element.parameter, fieldId, groupargs) -}}
         {% endif -%}
 
         {%- if element.type == "textarea" -%}
@@ -335,15 +331,20 @@
     {% endif %}
 {% endmacro %}
 
-{% macro checkboxfield(args, groupargs) %}
+{% macro checkboxfield(args, fieldId, groupargs) %}
     {% if args.inline %}
     {% else %}
     {% endif %}
     <div class="form-check">
-        {% if args.title %}
-        <label title="{{ args.title|trans }}" class="form-check-label" {% if args.id %} for="{{ args.id }}"{% endif %}>
+        {% if args.title and not args.label %}
+        <label title="{{ args.title|trans }}" class="form-check-label" for="{{ fieldId }}">
         {% endif %}
-            <input type="hidden" name="{{ args.name }}" value="{% if args.value == 0 %}1{% else %}0{% endif %}" />
+            <input 
+                type="hidden" 
+                name="{{ args.name }}" 
+                value="{% if args.value == 0 %}1{% else %}0{% endif %}" 
+                id="{{ fieldId }}"
+            >
             <input
                 class="form-check-input"
                 type="checkbox"
@@ -351,21 +352,26 @@
                 name="{{ args.name }}"
                 {% if args.checked %}checked="checked"{% endif %}
                 value="{{ args.value|default(0) }}"
-                {% if args.id %} id="{{ args.id }}"{% endif %}
+                id="{{ fieldId }}"
                 {% if args.disabled %} disabled="disabled"{% endif %}
                 {% if args.accesskey %} accesskey="{{ args.accesskey }}" {% endif %}
             >
-            {{ args.label? args.label : ('<span class="aural">Checkbox</span>')|raw }}            
+            {% if args.label %}
+                <label title="{{ args.label|trans }}" class="form-check-label" for="{{ fieldId }}">{{ args.label|trans }}</label>
+            {% else %}
+                <span class="aural">Checkbox</span>
+            {% endif %}
+
             {% if args.required -%}
                 <span class="required-symbol">*</span>
             {%- endif %}
-        {% if args.title %}
+        {% if args.title and not args.label %}
         </label>
         {% endif %}
     </div>
 {% endmacro %}
 
-{% macro radiobuttonfield(args, groupargs) %}
+{% macro radiobuttonfield(args, fieldId, groupargs) %}
     <div class="form-check form-check-inline">
         <label class="form-check-label radio-label{% if args.inline %} radio-inline{% endif %}">
             <input
@@ -376,7 +382,7 @@
                 {% if args.checked %}checked="checked"{% endif %}
                 {% if args.describedby %}aria-describedby="{{args.describedby}}"{% endif %}
                 value="{{ args.value|default(0) }}"
-                {% if args.id %} id="{{ args.id }}"{% endif %}
+                id="{{ fieldId }}"
                 {% if args.disabled %} disabled="disabled"{% endif %}
             >
             {{ args.label|raw }}
