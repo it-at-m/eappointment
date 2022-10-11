@@ -14,8 +14,8 @@ class DialogHandler {
         this.returnTarget = options.returnTarget;
         this.parent = options.parent;
         this.loader = options.loader || (() => { });
-        this.bindEvents();
         this.render();
+        this.bindEvents();
         //console.log('dialogHandler.js');
     }
 
@@ -90,8 +90,6 @@ class DialogHandler {
     addFocusTrap(elem) {
         // Get all focusable elements inside our trap container
         var tabbable = elem.find('select, input, textarea, button, a, *[role="button"]');
-        console.log(elem)
-
         // Focus the first element
         if (tabbable.length ) {
             tabbable.filter(':visible').first().focus();
