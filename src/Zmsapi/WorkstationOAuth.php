@@ -10,13 +10,13 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Workstation;
 use \BO\Zmsdb\Useraccount;
-use \BO\Slim\Profiler as Profiler;
 
 /**
  * @SuppressWarnings(Coupling)
  */
 class WorkstationOAuth extends BaseController
 {
+    private $resolveReferences;
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -27,18 +27,12 @@ class WorkstationOAuth extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $resolveReferences = $validator->getParameter('code')->isString()->isSmallerThan(120)->isBiggerThan(100);
-        $input = Validator::input()->isJson()->assertValid()->getValue();
-        $entity = new \BO\Zmsentities\Useraccount($input);
-        $entity->testValid();
+        $this->resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $oAuthCode  = $validator->getParameter('code')->isString()->isSmallerThan(120)->isBiggerThan(100);
+        $accessTokenPayload = Validator::input()->isJson()->assertValid()->getValue();
+        $useraccount = $this->getUseraccount($accessTokenPayload);
 
-        \BO\Zmsdb\Connection\Select::getWriteConnection();
-        Helper\UserAuth::testUseraccountExists($entity->getId());
-        
-        $useraccount = Helper\UserAuth::getVerifiedUseraccount($entity);
-        
-        
-        $workstation = (new Helper\User($request, $resolveReferences))->readWorkstation();
+        $workstation = (new Helper\User($request, $this->resolveReferences))->readWorkstation();
         Helper\User::testWorkstationIsOveraged($workstation);
 
         $logInHash = (new Workstation)->readLoggedInHashByName($useraccount->id);
@@ -46,7 +40,7 @@ class WorkstationOAuth extends BaseController
             $useraccount->id,
             $useraccount->password,
             \App::getNow(),
-            $resolveReferences
+            $this->resolveReferences
         );
 
         if (null !== $logInHash) {
@@ -66,5 +60,50 @@ class WorkstationOAuth extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
+    }
+
+    private function logoutSuperuser($superuserAccountId){
+        (new Workstation)->writeEntityLogoutByName($superuserAccountId, $this->resolveReferences);
+    }
+
+    private function loginSuperuser(){
+        $superuserAccount = new \BO\Zmsentities\Useraccount(array(
+            'id' => \App::ZMS_AUTHORIZATION_SUPERUSER_USERNAME,
+            'password' => \App::ZMS_AUTHORIZATION_SUPERUSER_PASSWORD,
+            'departments' => array('id' => 0) // required in schema validation
+        ));
+
+        $superuserAccount = Helper\UserAuth::getVerifiedUseraccount($superuserAccount);
+        (new Workstation)->writeEntityLoginByName(
+            $superuserAccount->id,
+            $superuserAccount->password,
+            \App::getNow()
+        );
+
+        return $superuserAccount->id;
+    }
+
+    private function getUseraccount($accessTokenPayload){
+        $userAccount = array(
+            "id" => $accessTokenPayload['preferred_username'],
+            "email" => $accessTokenPayload['email'],
+            "departments" => array(
+                "id" => 0,
+            )
+        );
+
+        if (!(new Useraccount)->readIsUserExisting($userAccount->id)) {
+            $superuserAccountId = $this->loginSuperuser();
+            $userAccount = $this->addUseraccount($userAccount);
+            $this->logoutSuperuser($superuserAccountId);
+        }
+
+        return Helper\UserAuth::getVerifiedUseraccount($userAccount);
+    }
+
+    private function addUseraccount($user){
+        $entity = new \BO\Zmsentities\Useraccount($user);
+        $entity->password = $entity->getHash($entity->password);
+        return (new Useraccount)->writeEntity($entity, $this->resolveReferences);
     }
 }
