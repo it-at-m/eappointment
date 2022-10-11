@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-
 import * as Inputs from '../../../lib/inputs'
+import QrCodeView from "../qrCode";
+
 const { FormGroup, Label, Controls, Select } = Inputs
 
 const readPropsCluster = cluster => {
@@ -44,18 +45,18 @@ class CallDisplayConfigView extends Component {
             }),
             queueStatus: 'all',
             template: 'defaultplatz',
-            generatedUrl: ""
+            showQrCode: false
         }
     }
 
-    buildUrl() {
+    buildCalldisplayUrl() {
         const baseUrl  = this.props.config.calldisplay.baseUrl
-        let parameters = this.buildParameters();
+        let parameters = this.buildParameters(false);
 
         return `${baseUrl}?${parameters.join('&')}`
     }
 
-    buildParameters() {
+    buildParameters(hashParameters) {
         const collections = this.state.selectedItems.reduce((carry, current) => {
             if (current.type === "cluster") {
                 carry.clusterlist.push(current.id)
@@ -70,31 +71,46 @@ class CallDisplayConfigView extends Component {
         })
 
         let parameters = []
+        let paramValues = '';
 
         if (collections.scopelist.length > 0) {
             parameters.push(`collections[scopelist]=${collections.scopelist.join(",")}`)
+            paramValues += collections.scopelist.join(",")
         }
 
         if (collections.clusterlist.length > 0) {
             parameters.push(`collections[clusterlist]=${collections.clusterlist.join(",")}`)
+            paramValues += collections.clusterlist.join(",")
         }
 
         if (this.state.queueStatus !== 'all') {
             parameters.push(`queue[status]=${this.state.queueStatus}`)
+            paramValues += this.state.queueStatus
         }
 
         if (this.state.template !== 'default') {
             parameters.push(`template=${this.state.template}`)
         }
 
-        return parameters;
+        if (hashParameters) {
+            let hmac = 'get-the-hash-with-a-get-request'
+            parameters.push(`hmac=${hmac}`)
+        }
+
+        return parameters
     }
 
-    getWebcalldisplayUrl() {
+    buildWebcalldisplayUrl() {
         const baseUrl  = this.props.config.webcalldisplay.baseUrl
-        let parameters = this.buildParameters();
+        let parameters = this.buildParameters(true);
 
         return `${baseUrl}?${parameters.join('&')}`
+    }
+
+    toggleQrCodeView() {
+        this.setState({
+            showQrCode: !this.state.showQrCode
+        });
     }
 
     renderCheckbox(enabled, onShowChange, label) {
@@ -172,8 +188,8 @@ class CallDisplayConfigView extends Component {
     }
 
     render() {
-        const generatedUrl = this.buildUrl()
-        const webcalldisplayUrl = this.getWebcalldisplayUrl()
+        const calldisplayUrl = this.buildCalldisplayUrl()
+        const webcalldisplayUrl = this.buildWebcalldisplayUrl()
 
         const onQueueStatusChange = (_, value) => {
             this.setState({
@@ -226,12 +242,12 @@ class CallDisplayConfigView extends Component {
                     <Label attributes={{ "htmlFor": "calldisplayUrl" }} value="URL"></Label>
                     <Controls>
                         <Inputs.Text
-                            value={generatedUrl}
+                            value={calldisplayUrl}
                             attributes={{ readOnly: true, id: "calldisplayUrl" }} />
                     </Controls>
                 </FormGroup>
                 <div className="form-actions">
-                    <a href={generatedUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> Aktuelle Konfiguration in einem neuen Fenster öffnen</a>
+                    <a href={calldisplayUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> Aktuelle Konfiguration in einem neuen Fenster öffnen</a>
                 </div>
                 <FormGroup>
                     <Label attributes={{ "htmlFor": "webcalldisplayUrl" }} value="Webcall Display URL"></Label>
@@ -242,8 +258,10 @@ class CallDisplayConfigView extends Component {
                     </Controls>
                 </FormGroup>
                 <div className="form-actions">
-                    <a href={webcalldisplayUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> im Webcalldiplay öffnen/a>
+                    <button className="button" aria-hidden="true" onClick={(event) => {event.preventDefault(); this.toggleQrCodeView();}}>QR-Code anzeigen / drucken</button>
+                    <a href={webcalldisplayUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> in der mobilen Anzeige öffnen</a>
                 </div>
+                { this.state.showQrCode ? <QrCodeView text='QrCode für die mobile Ansicht des Aufrufsystems' targetUrl={webcalldisplayUrl} togglePopup={this.toggleQrCodeView.bind(this)} /> : null }
             </form>
         )
     }
