@@ -48,25 +48,24 @@ class Search
         try {
             $resultList = new SearchResults();
 
-            foreach ($this->objectTypesClasses as $type => $class) {
-                $sql = "SELECT data_json FROM " . $type . " WHERE ";
-                $where = [];
-
+            foreach ($this->objectTypesClasses as $type => $entityClass) {
                 if (isset($this->entityIds[$type])) {
+                    $sql = "SELECT data_json FROM " . $type . " WHERE ";
+                    $where = [];
+
                     foreach ($this->entityIds[$type] as $locale => $ids) {
                         $where[] = "(locale = '" . $locale ."' AND id IN (" . implode(',', $ids) . "))";
                     }
                     $sql .= implode(' OR ', $where);
 
                     $stm = $this->mysqlAccess->prepare($sql);
-                    $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, $class);
                     $stm->execute();
-                
-                    $items = $stm->fetchAll();
-
-                    foreach ($items as $item) {
-                        $resultList[] = SearchResult::create($item);
-                    }
+                    $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($entityClass, $resultList) {
+                        $entity = new $entityClass();
+                        $entity->offsetSet('data_json', $data_json);
+                        
+                        $resultList[] = SearchResult::create($entity);
+                    });
                 }
             }
             $links = $this->mysqlAccess->fromLink()->readSearchResultList($query);

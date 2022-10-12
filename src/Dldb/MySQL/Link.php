@@ -12,7 +12,6 @@ use \BO\Dldb\Elastic\Link as Base;
  */
 class Link extends Base
 {
-
     public function readSearchResultList($query)
     {
         try {
@@ -23,19 +22,17 @@ class Link extends Base
             WHERE 
             tl.locale = ? AND MATCH (tl.search) AGAINST (? IN BOOLEAN MODE)
             ";
-           
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Link');
-            $stm->execute($sqlArgs);
-            
-            $links = $stm->fetchAll();
-            
+
             $linklist = new Collection();
-            
-            foreach ($links as $link) {
+
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($linklist) {
+                $link = new \BO\Dldb\MySQL\Entity\Link();
+                $link->offsetSet('data_json', $data_json);
                 $linklist[$link['link']] = $link;
-            }
-            
+            });
+
             return $linklist;
         } catch (\Exception $e) {
             throw $e;
