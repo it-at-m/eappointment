@@ -71,17 +71,17 @@ class Location extends Base
             $sql .= " WHERE " . implode(' AND ', $where);
             $sql .= " " . $groupBy;
 
-            #echo '<pre>' . print_r([$sql, $sqlArgs],1) . '</pre>';exit;
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
-            $stm->execute($sqlArgs);
-            
-            $locations = $stm->fetchAll();
             $locationList = new Collection();
-            foreach ($locations as $location) {
+
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($locationList) {
+                $location = new \BO\Dldb\MySQL\Entity\Location();
+                $location->offsetSet('data_json', $data_json);
+                
                 $locationList[$location['id']] = $location;
-            }
-            #echo '<pre>' . print_r($locationList,1) . '</pre>';exit;
+            });
+
             return $locationList;
         } catch (\Exception $e) {
             throw $e;
@@ -114,17 +114,16 @@ class Location extends Base
             
             $sql .= " " . $groupBy;
 
-            #echo '<pre>' . print_r([$sql, $sqlArgs],1) . '</pre>';exit;
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
-            $stm->execute($sqlArgs);
-            
-            $locations = $stm->fetchAll();
             $locationList = new Collection();
-            foreach ($locations as $location) {
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($locationList) {
+                $location = new \BO\Dldb\MySQL\Entity\Location();
+                $location->offsetSet('data_json', $data_json);
+                
                 $locationList[$location['id']] = $location;
-            }
-            #echo '<pre>' . print_r($locationList,1) . '</pre>';exit;
+            });
+
             return $locationList;
         } catch (\Exception $e) {
             throw $e;
@@ -153,8 +152,6 @@ class Location extends Base
                 ";
             }
 
-            #$sql = 'SELECT data_json FROM location WHERE locale = ?';
-
             $ids = explode(',', $location_csv);
             $questionMarks = array_fill(0, count($ids), '?');
             $where[] = 'l.id IN (' . implode(', ', $questionMarks) . ')';
@@ -163,15 +160,17 @@ class Location extends Base
             $sql .= " " . implode(' ', $join);
             $sql .= " WHERE " . implode(' AND ', $where);
 
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
-            $stm->execute($sqlArgs);
-            
-            $locations = $stm->fetchAll();
             $locationList = new Collection();
-            foreach ($locations as $location) {
+
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($locationList) {
+                $location = new \BO\Dldb\MySQL\Entity\Location();
+                $location->offsetSet('data_json', $data_json);
+                
                 $locationList[$location['id']] = $location;
-            }
+            });
+
             return $locationList;
         } catch (\Exception $e) {
             throw $e;
@@ -200,24 +199,18 @@ class Location extends Base
             }
             $sql .= ' ORDER BY l.category_identifier, l.name';
             
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
-            $stm->execute($sqlArgs);
-            
             $locationList = new Collection();
-            
-            while ($location = $stm->fetch()) {
-                $locationList[$location['id']] = $location;
-            }
-            return $locationList;
-            
-            #$locations = $stm->fetchAll();
 
-            #foreach ($locations as $location) {
-            #    $locationList[$location['id']] = $location;
-            #}
-            
-            #return $locationList;
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($locationList) {
+                $location = new \BO\Dldb\MySQL\Entity\Location();
+                $location->offsetSet('data_json', $data_json);
+                
+                $locationList[$location['id']] = $location;
+            });
+
+            return $locationList;
         } catch (\Exception $e) {
             throw $e;
         }
@@ -278,18 +271,17 @@ class Location extends Base
             }*/
             #print_r($sql);exit;
 
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
-
-            $stm->execute($sqlArgs);
-            
-            $locations = $stm->fetchAll();
-
             $locationList = new Collection();
-            foreach ($locations as $location) {
+
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($locationList) {
+                $location = new \BO\Dldb\MySQL\Entity\Location();
+                $location->offsetSet('data_json', $data_json);
+                
                 $locationList[$location['id']] = $location;
-            }
-            #echo '<pre>' . print_r($locationList,1) . '</pre>';exit;
+            });
+
             return $locationList;
         } catch (\Exception $e) {
             throw $e;
