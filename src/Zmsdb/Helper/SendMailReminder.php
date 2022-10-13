@@ -71,11 +71,11 @@ class SendMailReminder
 
     public function startProcessing($commit)
     {
-        $this->writeMailReminderList($commit);
-        $this->log("\nINFO: Last run ". $this->dateTime->format('Y-m-d H:i:s'));
         if ($commit) {
             (new MailRepository)->writeReminderLastRun($this->dateTime);
         }
+        $this->writeMailReminderList($commit);
+        $this->log("\nINFO: Last run ". $this->dateTime->format('Y-m-d H:i:s'));
         $this->log("\nSUMMARY: Sent mail reminder: ".$this->count);
     }
 
