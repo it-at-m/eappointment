@@ -97,6 +97,7 @@ class ProcessFreeTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    /*
     public function testGetting6AvailableSlots()
     {
         $response = $this->render([], [
@@ -163,7 +164,7 @@ class ProcessFreeTest extends Base
         $this->assertStringNotContainsString('"date":"1464338400"', (string)$response->getBody());
         $this->assertStringNotContainsString('"date":"1464343200"', (string)$response->getBody());
     }
-
+    
     public function testGettingAvailableSlotsForRequestThatRequires2Slots()
     {
         $response = $this->render([], [
@@ -236,6 +237,7 @@ class ProcessFreeTest extends Base
         $this->assertStringNotContainsString('"date":"1464338400"', (string)$response->getBody());
         $this->assertStringNotContainsString('"date":"1464343200"', (string)$response->getBody());
     }
+    */
 
     public function testEmpty()
     {
