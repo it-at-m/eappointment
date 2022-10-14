@@ -33,5 +33,19 @@
     margin-bottom:1em;
 }
 
+/**
+* Datepicker accessibility 
+*/
+
+.add-date-picker {
+    display:flex;
+}
+.calender-placment {
+    height: auto;
+    margin-left: 5px;
+    font-size: 1.65em;
+    cursor:pointer;
+}
+
 
 
