@@ -204,7 +204,6 @@
         {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
     >
     {% for item in args.options %}
-        {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
         {% if item.options is iterable %}
         <optgroup label="{{ item.name }}">
             {% for option in item.options %}
@@ -343,7 +342,6 @@
                 type="hidden" 
                 name="{{ args.name }}" 
                 value="{% if args.value == 0 %}1{% else %}0{% endif %}" 
-                id="{{ fieldId }}"
             >
             <input
                 class="form-check-input"

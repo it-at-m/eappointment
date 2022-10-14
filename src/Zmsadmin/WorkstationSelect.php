@@ -20,6 +20,7 @@ class WorkstationSelect extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        /** @var \BO\Zmsentities\Workstation $workstation */
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect('index', array('error' => 'login_failed'));
