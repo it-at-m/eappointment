@@ -71,7 +71,6 @@ class ScopeAvailabilityMonth extends BaseController
                 'scope' => $scope,
                 'menuActive' => 'owner',
                 'title' => 'Behörden und Standorte - Öffnungszeiten',
-                'today' => $dateTime->format('Y-m-d'),
                 'workstation' => $workstation,
                 'baseMonthString' => $startDate->format('m'),
                 'baseYearString' => $endDate->format('Y'),

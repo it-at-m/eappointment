@@ -81,5 +81,5 @@
 {% endmacro %}
 
 {% macro openingCalendarIcon(char, color, size, title) %}
-    <span class="icon-char-circle {{ color|default('disabled') }} size-{{ size|default('1') }}" role="img" aria-label="{{ title|raw }}" title="{{ title|raw }}"><strong class="char">{{ char|default('') }}</strong></span>
+    <span class="icon-char-circle {{ color|default('disabled') }} size-{{ size|default('1') }}" role="img" aria-label="{{ title|raw }}" title="{{ title|raw }}"><strong class="char" aria-hidden="true">{{ char|default('') }}</strong></span>
 {% endmacro %}

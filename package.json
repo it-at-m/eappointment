@@ -48,13 +48,14 @@
     "react": "^18.0.2",
     "react-datepicker": "^4.2.1",
     "react-dom": "^18.0.2",
+    "react-icons": "^4.6.0",
     "redux-json-schema": "^1.0.0",
     "stream-http": "^3.2.0",
     "url": "^0.11.0",
-    "util": "^0.12.4"
+    "util": "^0.12.5"
   },
   "dependencies": {
-    "bo-layout-admin-scss": "https://gitlab.com/eappointment/includes/layout-admin-scss.git",
+    "bo-layout-admin-scss": "https://gitlab.com/eappointment/includes/layout-admin-scss.git#70b4ff81",
     "bo-layout-admin-js": "https://gitlab.com/eappointment/includes/layout-admin-js.git",
     "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities.git"
   }

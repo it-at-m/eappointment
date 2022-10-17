@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { getEntity } from '../../../lib/schema'
 import * as Inputs from '../../../lib/inputs'
+import Datepicker from '../../../lib/inputs/date'
 
 const renderDay = (day, index, onChange, onDeleteClick) => {
     const formName = `dayoff[${index}]`
@@ -25,7 +26,7 @@ const renderDay = (day, index, onChange, onDeleteClick) => {
                 />
             </td>
             <td className="daysoff-item__date">
-                <Inputs.Date
+                <Datepicker
                     name={`${formName}[date]`}
                     value={day.date}
                     onChange={onChangeDate}
