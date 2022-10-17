@@ -53,6 +53,7 @@ class Index extends BaseController
             $parameters['webcalldisplayUrl'] .= \App::$webcalldisplayUrl;
             $parameters['webcalldisplayUrl'] .= str_replace('/&', '/?', $uri->getQuery());
             $parameters['webcalldisplayUrl'] .= '&hmac=' . SlimHelper::hashQueryParameters(
+                'webcalldisplay',
                 ['collections' => $request->getQueryParam('collections'), 'queue' => $request->getQueryParam('queue')],
                 ['collections', 'queue']
             );
