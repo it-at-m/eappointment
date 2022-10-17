@@ -54,11 +54,9 @@
     "util": "^0.12.4"
   },
   "dependencies": {
-    "blueimp-md5": "^2.19.0",
     "bo-layout-admin-js": "https://gitlab.com/eappointment/includes/layout-admin-js.git",
     "bo-layout-admin-scss": "https://gitlab.com/eappointment/includes/layout-admin-scss.git",
     "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities.git",
-    "md5": "^2.3.0",
     "qrcode-generator": "^1.4.4"
   }
 }
