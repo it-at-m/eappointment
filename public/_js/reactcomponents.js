@@ -33022,7 +33022,6 @@ exports.default = TimePicker;
 },{"react/jsx-dev-runtime":"iTorj","react":"21dqq","prop-types":"7wKI2","moment":"jwcsj","../lib/utils":"hrKrV","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8Egoy":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Date", ()=>Date);
 var _jsxDevRuntime = require("react/jsx-dev-runtime");
 /* eslint-disable react/prop-types */ var _react = require("react");
 var _reactDefault = parcelHelpers.interopDefault(_react);
@@ -33033,65 +33032,105 @@ var _reactDatepickerDefault = parcelHelpers.interopDefault(_reactDatepicker);
 var _de = require("date-fns/locale/de");
 var _deDefault = parcelHelpers.interopDefault(_de);
 (0, _reactDatepicker.registerLocale)("de", (0, _deDefault.default));
-const Date = ({ name , value , onChange , attributes ={}  })=>{
-    const datepickerRef = (0, _react.useRef)(null);
-    const onPick = (date)=>{
-        onChange(name, (0, _momentDefault.default)(date, "X").unix());
-    };
-    const onFocus = ()=>{
-        const datepickerElement = datepickerRef.current;
-        console.log(datepickerElement);
-        datepickerElement.setState({
-            open: false
+class Datepicker extends (0, _reactDefault.default).Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            startDate: (0, _momentDefault.default).unix(props.value).toDate(),
+            datePickerIsOpen: false
+        };
+        this.handleChange = this.handleChange.bind(this);
+        this.openDatePicker = this.openDatePicker.bind(this);
+        this.closeDatePicker = this.closeDatePicker.bind(this);
+        this.escHandler = this.escHandler.bind(this);
+        this.keyDownHandler = this.keyDownHandler.bind(this);
+        this.handleIcon = this.handleIcon.bind(this);
+    }
+    componentDidMount() {
+        document.addEventListener("keydown", this.escHandler, false);
+    }
+    escHandler(event) {
+        if (event.key === "Escape") this.closeDatePicker();
+    }
+    keyDownHandler(event) {
+        event.preventDefault;
+        if (event.key === "Enter") this.openDatePicker();
+    }
+    handleIcon() {
+        this.openDatePicker();
+        this.datepicker.input.focus();
+    }
+    handleChange(date) {
+        this.setState({
+            startDate: date
         });
-    };
-    const handleClickCalendarIcon = ()=>{
-        const datepickerElement = datepickerRef.current;
-        datepickerElement.setFocus(true);
-    };
-    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-        className: "add-date-picker",
-        ...attributes,
-        children: [
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _reactDatepickerDefault.default), {
-                locale: "de",
-                className: "form-control form-input",
-                dateFormat: "dd.MM.yyyy",
-                selected: (0, _momentDefault.default).unix(value).toDate(),
-                onChange: onPick,
-                name,
-                onFocus: onFocus,
-                strictParsing: true,
-                ref: datepickerRef
-            }, void 0, false, {
-                fileName: "js/lib/inputs/date.js",
-                lineNumber: 29,
-                columnNumber: 13
-            }, undefined),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                className: "calender-placment",
-                onClick: ()=>handleClickCalendarIcon(),
-                children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("i", {
-                    className: "far fa-calendar-alt"
+        this.props.onChange(this.props.name, (0, _momentDefault.default)(date, "X").unix());
+        this.closeDatePicker();
+    }
+    openDatePicker() {
+        this.setState({
+            datePickerIsOpen: true
+        });
+    }
+    closeDatePicker() {
+        this.setState({
+            datePickerIsOpen: false
+        });
+    }
+    render() {
+        return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+            className: "add-date-picker",
+            ...this.props.attributes,
+            children: [
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _reactDatepickerDefault.default), {
+                    locale: "de",
+                    className: "form-control form-input",
+                    dateFormat: "dd.MM.yyyy",
+                    selected: this.state.startDate,
+                    onChange: this.handleChange,
+                    ...this.props.name,
+                    onInputClick: this.openDatePicker,
+                    onKeyDown: this.keyDownHandler,
+                    onClickOutside: this.closeDatePicker,
+                    strictParsing: true,
+                    open: this.state.datePickerIsOpen,
+                    ref: (datepicker)=>{
+                        this.datepicker = datepicker;
+                    }
                 }, void 0, false, {
                     fileName: "js/lib/inputs/date.js",
-                    lineNumber: 40,
+                    lineNumber: 68,
                     columnNumber: 17
-                }, undefined)
-            }, void 0, false, {
-                fileName: "js/lib/inputs/date.js",
-                lineNumber: 39,
-                columnNumber: 13
-            }, undefined)
-        ]
-    }, void 0, true, {
-        fileName: "js/lib/inputs/date.js",
-        lineNumber: 28,
-        columnNumber: 9
-    }, undefined);
-};
+                }, this),
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("a", {
+                    href: "#",
+                    className: "calender-placment icon",
+                    title: "Kalender \xf6ffnen",
+                    onClick: this.handleIcon,
+                    children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("i", {
+                        className: "far fa-calendar-alt",
+                        "aria-hidden": "true"
+                    }, void 0, false, {
+                        fileName: "js/lib/inputs/date.js",
+                        lineNumber: 82,
+                        columnNumber: 21
+                    }, this)
+                }, void 0, false, {
+                    fileName: "js/lib/inputs/date.js",
+                    lineNumber: 81,
+                    columnNumber: 17
+                }, this)
+            ]
+        }, void 0, true, {
+            fileName: "js/lib/inputs/date.js",
+            lineNumber: 67,
+            columnNumber: 13
+        }, this);
+    }
+}
+exports.default = Datepicker;
 
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","react-datepicker":"dQTBp","date-fns/locale/de":"eSYPb","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","moment":"jwcsj"}],"dQTBp":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","react-datepicker":"dQTBp","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","moment":"jwcsj","date-fns/locale/de":"eSYPb"}],"dQTBp":[function(require,module,exports) {
 !function(e, t) {
     t(exports, require("react"), require("prop-types"), require("classnames"), require("date-fns/isDate"), require("date-fns/isValid"), require("date-fns/format"), require("date-fns/addMinutes"), require("date-fns/addHours"), require("date-fns/addDays"), require("date-fns/addWeeks"), require("date-fns/addMonths"), require("date-fns/addYears"), require("date-fns/subMinutes"), require("date-fns/subHours"), require("date-fns/subDays"), require("date-fns/subWeeks"), require("date-fns/subMonths"), require("date-fns/subYears"), require("date-fns/getSeconds"), require("date-fns/getMinutes"), require("date-fns/getHours"), require("date-fns/getDay"), require("date-fns/getDate"), require("date-fns/getISOWeek"), require("date-fns/getMonth"), require("date-fns/getQuarter"), require("date-fns/getYear"), require("date-fns/getTime"), require("date-fns/setSeconds"), require("date-fns/setMinutes"), require("date-fns/setHours"), require("date-fns/setMonth"), require("date-fns/setQuarter"), require("date-fns/setYear"), require("date-fns/min"), require("date-fns/max"), require("date-fns/differenceInCalendarDays"), require("date-fns/differenceInCalendarMonths"), require("date-fns/differenceInCalendarWeeks"), require("date-fns/differenceInCalendarYears"), require("date-fns/startOfDay"), require("date-fns/startOfWeek"), require("date-fns/startOfMonth"), require("date-fns/startOfQuarter"), require("date-fns/startOfYear"), require("date-fns/endOfDay"), require("date-fns/endOfWeek"), require("date-fns/endOfMonth"), require("date-fns/isEqual"), require("date-fns/isSameDay"), require("date-fns/isSameMonth"), require("date-fns/isSameYear"), require("date-fns/isSameQuarter"), require("date-fns/isAfter"), require("date-fns/isBefore"), require("date-fns/isWithinInterval"), require("date-fns/toDate"), require("date-fns/parse"), require("date-fns/parseISO"), require("react-onclickoutside"), require("react-dom"), require("react-popper"));
 }(this, function(e, t, r, a, n, o, s, i, p, l, d, c, u, f, h, m, y, D, v, w, g, k, b, S, C, _, M, P, E, N, x, O, Y, I, T, L, R, F, A, q, W, B, K, H, j, Q, V, U, $, z, G, J, X, Z, ee, te, re, ae, ne, oe, se, ie, pe) {
@@ -66569,6 +66608,8 @@ var _propTypes = require("prop-types");
 var _propTypesDefault = parcelHelpers.interopDefault(_propTypes);
 var _schema = require("../../../lib/schema");
 var _inputs = require("../../../lib/inputs");
+var _date = require("../../../lib/inputs/date");
+var _dateDefault = parcelHelpers.interopDefault(_date);
 const renderDay = (day, index, onChange, onDeleteClick)=>{
     const formName = `dayoff[${index}]`;
     const onChangeName = (_, value)=>onChange(index, "name", value);
@@ -66592,17 +66633,17 @@ const renderDay = (day, index, onChange, onDeleteClick)=>{
                     }
                 }, void 0, false, {
                     fileName: "js/block/department/daysOff/index.js",
-                    lineNumber: 19,
+                    lineNumber: 20,
                     columnNumber: 17
                 }, undefined)
             }, void 0, false, {
                 fileName: "js/block/department/daysOff/index.js",
-                lineNumber: 18,
+                lineNumber: 19,
                 columnNumber: 13
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
                 className: "daysoff-item__date",
-                children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(_inputs.Date, {
+                children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _dateDefault.default), {
                     name: `${formName}[date]`,
                     value: day.date,
                     onChange: onChangeDate,
@@ -66611,12 +66652,12 @@ const renderDay = (day, index, onChange, onDeleteClick)=>{
                     }
                 }, void 0, false, {
                     fileName: "js/block/department/daysOff/index.js",
-                    lineNumber: 28,
+                    lineNumber: 29,
                     columnNumber: 17
                 }, undefined)
             }, void 0, false, {
                 fileName: "js/block/department/daysOff/index.js",
-                lineNumber: 27,
+                lineNumber: 28,
                 columnNumber: 13
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
@@ -66633,28 +66674,28 @@ const renderDay = (day, index, onChange, onDeleteClick)=>{
                             "aria-hidden": "true"
                         }, void 0, false, {
                             fileName: "js/block/department/daysOff/index.js",
-                            lineNumber: 38,
+                            lineNumber: 39,
                             columnNumber: 25
                         }, undefined)
                     }, void 0, false, {
                         fileName: "js/block/department/daysOff/index.js",
-                        lineNumber: 37,
+                        lineNumber: 38,
                         columnNumber: 21
                     }, undefined)
                 }, void 0, false, {
                     fileName: "js/block/department/daysOff/index.js",
-                    lineNumber: 36,
+                    lineNumber: 37,
                     columnNumber: 17
                 }, undefined)
             }, void 0, false, {
                 fileName: "js/block/department/daysOff/index.js",
-                lineNumber: 35,
+                lineNumber: 36,
                 columnNumber: 13
             }, undefined)
         ]
     }, index, true, {
         fileName: "js/block/department/daysOff/index.js",
-        lineNumber: 17,
+        lineNumber: 18,
         columnNumber: 9
     }, undefined);
 };
@@ -66729,19 +66770,19 @@ class DaysOffView extends (0, _react.Component) {
                                 "aria-hidden": "true"
                             }, void 0, false, {
                                 fileName: "js/block/department/daysOff/index.js",
-                                lineNumber: 105,
+                                lineNumber: 106,
                                 columnNumber: 25
                             }, this),
                             " Neuer freier Tag"
                         ]
                     }, void 0, true, {
                         fileName: "js/block/department/daysOff/index.js",
-                        lineNumber: 104,
+                        lineNumber: 105,
                         columnNumber: 21
                     }, this)
                 }, void 0, false, {
                     fileName: "js/block/department/daysOff/index.js",
-                    lineNumber: 103,
+                    lineNumber: 104,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("table", {
@@ -66754,45 +66795,45 @@ class DaysOffView extends (0, _react.Component) {
                                         children: "Bezeichnung"
                                     }, void 0, false, {
                                         fileName: "js/block/department/daysOff/index.js",
-                                        lineNumber: 111,
+                                        lineNumber: 112,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
                                         children: "Datum"
                                     }, void 0, false, {
                                         fileName: "js/block/department/daysOff/index.js",
-                                        lineNumber: 112,
+                                        lineNumber: 113,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("th", {
                                         children: "L\xf6schen"
                                     }, void 0, false, {
                                         fileName: "js/block/department/daysOff/index.js",
-                                        lineNumber: 113,
+                                        lineNumber: 114,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "js/block/department/daysOff/index.js",
-                                lineNumber: 110,
+                                lineNumber: 111,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "js/block/department/daysOff/index.js",
-                            lineNumber: 109,
+                            lineNumber: 110,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("tbody", {
                             children: this.state.days.map((day, index)=>renderDay(day, index, onChange, onDeleteClick))
                         }, void 0, false, {
                             fileName: "js/block/department/daysOff/index.js",
-                            lineNumber: 116,
+                            lineNumber: 117,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "js/block/department/daysOff/index.js",
-                    lineNumber: 108,
+                    lineNumber: 109,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -66806,25 +66847,25 @@ class DaysOffView extends (0, _react.Component) {
                                 "aria-hidden": "true"
                             }, void 0, false, {
                                 fileName: "js/block/department/daysOff/index.js",
-                                lineNumber: 122,
+                                lineNumber: 123,
                                 columnNumber: 25
                             }, this),
                             " Neuer freier Tag"
                         ]
                     }, void 0, true, {
                         fileName: "js/block/department/daysOff/index.js",
-                        lineNumber: 121,
+                        lineNumber: 122,
                         columnNumber: 21
                     }, this)
                 }, void 0, false, {
                     fileName: "js/block/department/daysOff/index.js",
-                    lineNumber: 120,
+                    lineNumber: 121,
                     columnNumber: 17
                 }, this)
             ]
         }, void 0, true, {
             fileName: "js/block/department/daysOff/index.js",
-            lineNumber: 102,
+            lineNumber: 103,
             columnNumber: 13
         }, this);
     }
@@ -66838,7 +66879,7 @@ DaysOffView.propTypes = {
 };
 exports.default = DaysOffView;
 
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","prop-types":"7wKI2","../../../lib/schema":"aLFYU","../../../lib/inputs":"hrCEf","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"aLFYU":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","prop-types":"7wKI2","../../../lib/schema":"aLFYU","../../../lib/inputs":"hrCEf","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../../../lib/inputs/date":"8Egoy"}],"aLFYU":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "getEntity", ()=>getEntity);
