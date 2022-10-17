@@ -57,7 +57,7 @@
 
                         {% set dayString = day.year~"-"~day.month~"-"~day.day %}
                         {% set myDataArray = attribute(data_days, dayString) %}
-                        {% set isToday = (( today == dayString|date('Y-m-d')) ? true : false) %}
+                        {% set isToday = (( getNow()|date("Y-m-d") == dayString|date('Y-m-d')) ? true : false) %}
 
                         {% if day.status == 'notBookable' %}
                             {% set bookableState="closed" %}
