@@ -30,14 +30,20 @@ class Helper
         return $dateFormatter->format($timestamp);
     }
 
-    public static function hashQueryParameters(array $queryVariables, array $parameters, string $hashFunction = 'md5')
-    {
-        $content = '';
+    public static function hashQueryParameters(
+        string $section,
+        array $queryVariables,
+        array $parameters,
+        string $hashFunction = 'md5'
+    ) {
+        $content = $section;
         foreach ($parameters as $parameter) {
             if (isset($queryVariables[$parameter])) {
                 if (is_array($queryVariables[$parameter])) {
+                    $parameterArray = $queryVariables[$parameter];
+                    ksort($parameterArray);
                     array_walk_recursive(
-                        $queryVariables[$parameter],
+                        $parameterArray,
                         function ($value) use (&$flat) {
                             $flat[] = strval($value);
                         }
