@@ -78,7 +78,7 @@ class Datepicker extends React.Component {
                     open={this.state.datePickerIsOpen}
                     ref={(datepicker) => { this.datepicker = datepicker }} 
                 />
-                <a href="#" className="calender-placment icon" title="Kalender öffnen" onClick={this.handleIcon}>
+                <a href="#" className="calendar-placement icon" title="Kalender öffnen" onClick={this.handleIcon}>
                     <i className="far fa-calendar-alt" aria-hidden="true" />
                 </a>
             </div>
