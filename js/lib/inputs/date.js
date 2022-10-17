@@ -5,15 +5,86 @@ import DatePicker, { registerLocale } from 'react-datepicker'
 import de from 'date-fns/locale/de'
 registerLocale('de', de)
 
-export const Date = ({name, value, onChange, attributes = {}}) => { 
-    const onPick = (date) => {
-        onChange(name, moment(date, 'X').unix())
+class Datepicker extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            startDate: moment.unix(props.value).toDate(),
+            datePickerIsOpen: false,
+        };
+        this.handleChange = this.handleChange.bind(this);
+        this.openDatePicker = this.openDatePicker.bind(this);
+        this.closeDatePicker = this.closeDatePicker.bind(this);
+        this.escHandler = this.escHandler.bind(this);
+        this.keyDownHandler = this.keyDownHandler.bind(this);
+        this.handleIcon = this.handleIcon.bind(this);
     }
 
-    return (
-        <div className="add-date-picker" {...attributes}>
-            <DatePicker locale="de" className="form-control form-input" dateFormat="dd.MM.yyyy" selected={moment.unix(value).toDate()} onChange={onPick} {...{ name }} />
-        </div>
-    )
+    componentDidMount(){
+        document.addEventListener("keydown", this.escHandler, false);
+      }
+
+    escHandler(event) {
+        if (event.key === "Escape") {
+            this.closeDatePicker();
+        }
+    }
+
+    keyDownHandler(event) {
+        event.preventDefault 
+        if (event.key === 'Enter') {
+          this.openDatePicker() 
+        }
+    }
+
+    handleIcon() {
+        this.openDatePicker()
+        this.datepicker.input.focus();
+    }
+
+    handleChange(date) {
+        this.setState({
+            startDate: date
+        });
+        this.props.onChange(this.props.name, moment(date, 'X').unix())
+        this.closeDatePicker();
+    }
+    
+    openDatePicker() {
+        this.setState({
+            datePickerIsOpen: true,
+        });
+    }
+
+    closeDatePicker() {
+        this.setState({
+            datePickerIsOpen: false,
+        });
+    }
+
+    render () {
+        return (
+            <div className="add-date-picker" {...this.props.attributes}>
+                <DatePicker 
+                    locale="de" 
+                    className="form-control form-input" 
+                    dateFormat="dd.MM.yyyy" 
+                    selected={this.state.startDate}
+                    onChange={this.handleChange} {...this.props.name } 
+                    onInputClick={this.openDatePicker}
+                    onKeyDown={this.keyDownHandler}
+                    onClickOutside={this.closeDatePicker}
+                    strictParsing={true}
+                    open={this.state.datePickerIsOpen}
+                    ref={(datepicker) => { this.datepicker = datepicker }} 
+                />
+                <a href="#" className="calendar-placement icon" title="Kalender öffnen" onClick={this.handleIcon}>
+                    <i className="far fa-calendar-alt" aria-hidden="true" />
+                </a>
+            </div>
+            
+        )
+    }
 }
 
+export default Datepicker;
