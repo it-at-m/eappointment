@@ -33104,7 +33104,7 @@ class Datepicker extends (0, _reactDefault.default).Component {
                 }, this),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("a", {
                     href: "#",
-                    className: "calender-placment icon",
+                    className: "calendar-placement icon",
                     title: "Kalender \xf6ffnen",
                     onClick: this.handleIcon,
                     children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("i", {
@@ -69530,7 +69530,7 @@ function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
             if (str.indexOf("\n") > -1) {
                 if (array) str = str.split("\n").map(function(line) {
                     return "  " + line;
-                }).join("\n").substr(2);
+                }).join("\n").slice(2);
                 else str = "\n" + str.split("\n").map(function(line) {
                     return "   " + line;
                 }).join("\n");
@@ -69541,7 +69541,7 @@ function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
         if (array && key.match(/^\d+$/)) return str;
         name = JSON.stringify("" + key);
         if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
-            name = name.substr(1, name.length - 2);
+            name = name.slice(1, -1);
             name = ctx.stylize(name, "name");
         } else {
             name = name.replace(/'/g, "\\'").replace(/\\"/g, '"').replace(/(^"|"$)/g, "'");
@@ -75958,8 +75958,8 @@ http.METHODS = [
 ];
 
 },{"./lib/request":"csW06","./lib/response":"47huq","xtend":"93zjj","builtin-status-codes":"iqSVp","url":"7qjc7"}],"csW06":[function(require,module,exports) {
-var process = require("process");
 var global = arguments[3];
+var process = require("process");
 var Buffer = require("buffer").Buffer;
 var capability = require("./capability");
 var inherits = require("inherits");
@@ -76278,9 +76278,9 @@ xhr = null // Help gc
 ;
 
 },{}],"47huq":[function(require,module,exports) {
+var Buffer = require("buffer").Buffer;
 var global = arguments[3];
 var process = require("process");
-var Buffer = require("buffer").Buffer;
 var capability = require("./capability");
 var inherits = require("inherits");
 var stream = require("readable-stream");
@@ -78237,8 +78237,8 @@ Object.defineProperty(Duplex.prototype, "destroyed", {
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
 // the drain event emission and buffering.
 "use strict";
-var process = require("process");
 var global = arguments[3];
+var process = require("process");
 module.exports = Writable;
 /* <replacement> */ function WriteReq(chunk, encoding, cb) {
     this.chunk = chunk;
