@@ -5,6 +5,8 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsclient\Http;
+
 class Application extends \BO\Slim\Application
 {
     /**
@@ -54,9 +56,10 @@ class Application extends \BO\Slim\Application
     */
     const CONFIG_SECURE_TOKEN = 'a9b215f1-e460-490c-8a0b-6d42c274d5e4';
 
-    /*
+    /**
      * -----------------------------------------------------------------------
      * ZMS API access
+     * @var Http $http
      */
     public static $http = null;
 
