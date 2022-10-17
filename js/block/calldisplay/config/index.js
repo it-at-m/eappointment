@@ -45,19 +45,15 @@ class CallDisplayConfigView extends Component {
             }),
             queueStatus: 'all',
             template: 'defaultplatz',
+            hmac: '',
             showQrCode: false
         }
+
+        this.signParameters(this.state)
     }
 
-    buildCalldisplayUrl() {
-        const baseUrl  = this.props.config.calldisplay.baseUrl
-        let parameters = this.buildParameters(false);
-
-        return `${baseUrl}?${parameters.join('&')}`
-    }
-
-    buildParameters(hashParameters) {
-        const collections = this.state.selectedItems.reduce((carry, current) => {
+    getSelectedItemsCollection(state) {
+        return state.selectedItems.reduce((carry, current) => {
             if (current.type === "cluster") {
                 carry.clusterlist.push(current.id)
             } else if (current.type === "scope") {
@@ -69,35 +65,40 @@ class CallDisplayConfigView extends Component {
             scopelist: [],
             clusterlist: []
         })
+    }
 
-        let parameters = []
-        let paramValues = '';
+    buildCalldisplayUrl() {
+        const baseUrl  = this.props.config.calldisplay.baseUrl
+        let parameters = this.buildParameters(false);
+
+        return `${baseUrl}?${parameters.join('&')}`
+    }
+
+    buildParameters(hashParameters) {
+        const collections = this.getSelectedItemsCollection(this.state)
+        let queryParts = []
 
         if (collections.scopelist.length > 0) {
-            parameters.push(`collections[scopelist]=${collections.scopelist.join(",")}`)
-            paramValues += collections.scopelist.join(",")
+            queryParts.push(`collections[scopelist]=${collections.scopelist.join(",")}`)
         }
 
         if (collections.clusterlist.length > 0) {
-            parameters.push(`collections[clusterlist]=${collections.clusterlist.join(",")}`)
-            paramValues += collections.clusterlist.join(",")
+            queryParts.push(`collections[clusterlist]=${collections.clusterlist.join(",")}`)
         }
 
         if (this.state.queueStatus !== 'all') {
-            parameters.push(`queue[status]=${this.state.queueStatus}`)
-            paramValues += this.state.queueStatus
+            queryParts.push(`queue[status]=${this.state.queueStatus}`)
         }
 
         if (this.state.template !== 'default') {
-            parameters.push(`template=${this.state.template}`)
+            queryParts.push(`template=${this.state.template}`)
         }
 
         if (hashParameters) {
-            let hmac = 'get-the-hash-with-a-get-request'
-            parameters.push(`hmac=${hmac}`)
+            queryParts.push(`hmac=${this.state.hmac}`)
         }
 
-        return parameters
+        return queryParts
     }
 
     buildWebcalldisplayUrl() {
@@ -105,6 +106,46 @@ class CallDisplayConfigView extends Component {
         let parameters = this.buildParameters(true);
 
         return `${baseUrl}?${parameters.join('&')}`
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.selectedItems !== this.state.selectedItems
+            || prevState.queueStatus !== this.state.queueStatus
+        ) {
+            this.signParameters(this.state)
+        }
+    }
+
+    signParameters(state) {
+        const collections = this.getSelectedItemsCollection(state)
+
+        let signingData = {
+            'section': 'webcalldisplay',
+            'parameters': {
+                'collections': {},
+                'queue': {}
+            }
+        }
+
+        if (collections.scopelist.length > 0) {
+            signingData.parameters.collections.scopelist = collections.scopelist.join(",")
+        }
+        if (collections.clusterlist.length > 0) {
+            signingData.parameters.collections.clusterlist = collections.clusterlist.join(",")
+        }
+        if (this.state.queueStatus !== 'all') {
+            signingData.parameters.queue.status = this.state.queueStatus
+        }
+
+        fetch(
+            '/admin/sign/parameters/',
+            {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+                body: JSON.stringify(signingData)
+            }
+        ).then(response => response.json()).then(data => this.setState({ hmac: data.hmac }))
     }
 
     toggleQrCodeView() {
