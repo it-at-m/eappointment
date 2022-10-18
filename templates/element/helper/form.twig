@@ -135,6 +135,7 @@
         {% if args.placeholder %}placeholder="{{ args.placeholder }}"{% endif %}
         class="form-control {% if args.class %}{{ args.class }} {% endif %}form-input{% if args.width %} input--size-{{ args.width }}{% endif %}"
         {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
+        {% if groupargs.required or args.required %} aria-required="true"{% endif %}
         {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
     >
 {% endmacro %}
