@@ -24,27 +24,14 @@
             {% endif %}
             <div class="appointmentForm-input-fields" {% if not scope and not selectedProcess %}style="display:none"{% endif %}>
                 <div class="grid">
-                    <div class="grid__item one-half DATUM">
-                        {{ formgroup(
-                            {"label": "Datum"},
-                            [{
-                                "type": "datepicker",
-                                "parameter": {
-                                    "id":"process_date",
-                                    "value": selectedDate|date('d.m.Y'),
-                                    "readonly": 1,
-                                    "accesskey":"m"
-                                }
-                            }]
-                        ) }}
-                        {{ inputfield({
-                            "id":"process_selected_date",
-                            "type":"hidden",
-                            "name":"selecteddate",
-                            "value":selectedDate|date('Y-m-d'),
-                        }) }}
+                    <div class="grid__item one-half">
+                        <div class="form-group">
+                            <label class="label">{% trans %}Datum{% endtrans %}</label>
+                            <div class="controls">
+                                <div id="appointment-datepicker"></div>
+                            </div>
+                        </div>
                     </div>
-
                     <div class="grid__item one-half SLOTCNT">
                         {% if scope.preferences.appointment.multipleSlotsEnabled or selectedProcess.scope.preferences.appointment.multipleSlotsEnabled %}
                             {% set slotCountOptions = [] %}
