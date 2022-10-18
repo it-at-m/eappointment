@@ -1,5 +1,5 @@
 [![pipeline status](https://gitlab.berlinonline.net/land-intranet/zmsticketprinter/badges/master/pipeline.svg)](https://gitlab.berlinonline.net/land-intranet/zmsticketprinter/-/commits/master)
-[![coverage report](https://gitlab.berlinonline.net/land-intranet/zmsticketprinter/badges/master/coverage.svg)](https://gitlab.berlinonline.net/land-intranet/zmsticketprinter/-/commits/master)
+[![coverage report](https://gitlab.berlinonline.net/land-intranet/zmsticketprinter/badges/master/coverage.svg)](https://land-intranet.static.berlinonline.net/zmsticketprinter/_tests/coverage/)
 
 # ZMS Ticketprinter
 
