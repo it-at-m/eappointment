@@ -92,15 +92,15 @@ class View extends RequestView {
 
     loadDatePicker() {
         const calendarElement = createRoot(document.getElementById('appointment-datepicker'));
-        const onChangeDate = (_, value) => this.onDatePick(moment.unix(value).format('YYYY-MM-DD'))
+        const onChangeDate = (value) => this.onDatePick(value)
         return (
             calendarElement.render(
                 <Datepicker
-                    name='selecteddate'
+                    id="process_date"
+                    accessKey="m"
                     value={new Date(this.selectedDate).getTime() / 1000}
                     onChange={onChangeDate}
                     attributes={{ "aria-label": "Datum"}}
-                    accesskey='m'
                 />
             )
         );
@@ -109,11 +109,9 @@ class View extends RequestView {
     assigneMainFormValues() {
         this.$main.find('.add-date-picker input#process_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('DD.MM.YYYY'));
         this.$main.find('input#process_selected_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD'));
-        //this.$main.find('[name="familyName"]').focus(); // -> nicht barrierefrei
         this.$main.find('textarea.maxchars').each(function () {
             maxChars(this);
         })
-        //this.$main.find('[name="familyName"]').focus(); // -> nicht barrierefrei
     }
 
     loadFreeProcessList() {
