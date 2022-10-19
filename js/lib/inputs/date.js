@@ -21,6 +21,7 @@ class Datepicker extends React.Component {
     }
 
     componentDidMount(){
+        this.datepicker.input.accessKey = "m";
         document.addEventListener("keydown", this.escHandler, false);
       }
 
@@ -67,6 +68,7 @@ class Datepicker extends React.Component {
             <div className="add-date-picker" {...this.props.attributes}>
                 <DatePicker 
                     locale="de" 
+                    accessKey={this.props.accesskey}
                     className="form-control form-input" 
                     dateFormat="dd.MM.yyyy" 
                     selected={this.state.startDate}

@@ -99,7 +99,8 @@ class View extends RequestView {
                     name='selecteddate'
                     value={new Date(this.selectedDate).getTime() / 1000}
                     onChange={onChangeDate}
-                    attributes={{ "aria-label": "Datum" }}
+                    attributes={{ "aria-label": "Datum"}}
+                    accesskey='m'
                 />
             )
         );
