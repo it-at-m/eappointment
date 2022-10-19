@@ -291,7 +291,7 @@ class AppointmentFormTest extends Base
         );
         $response = $this->render([], ['selecteddate' => '2016-05-27']);
         $this->assertStringContainsString('Terminvereinbarung Neu', (string)$response->getBody());
-        $this->assertStringContainsString('27.05.2016', (string)$response->getBody());
+        $this->assertStringContainsString('2016-05-27', (string)$response->getBody());
         $this->assertStringNotContainsString('slotCount', (string)$response->getBody());
     }
 
