@@ -26891,7 +26891,8 @@ class View extends (0, _requestsDefault.default) {
             onChange: onChangeDate,
             attributes: {
                 "aria-label": "Datum"
-            }
+            },
+            accesskey: "m"
         }, void 0, false, {
             fileName: "js/block/appointment/index.js",
             lineNumber: 98,
@@ -29880,6 +29881,7 @@ class Datepicker extends (0, _reactDefault.default).Component {
         this.handleIcon = this.handleIcon.bind(this);
     }
     componentDidMount() {
+        this.datepicker.input.accessKey = "m";
         document.addEventListener("keydown", this.escHandler, false);
     }
     escHandler(event) {
@@ -29917,6 +29919,7 @@ class Datepicker extends (0, _reactDefault.default).Component {
             children: [
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _reactDatepickerDefault.default), {
                     locale: "de",
+                    accessKey: this.props.accesskey,
                     className: "form-control form-input",
                     dateFormat: "dd.MM.yyyy",
                     selected: this.state.startDate,
@@ -29932,7 +29935,7 @@ class Datepicker extends (0, _reactDefault.default).Component {
                     }
                 }, void 0, false, {
                     fileName: "js/lib/inputs/date.js",
-                    lineNumber: 68,
+                    lineNumber: 69,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("a", {
@@ -29945,18 +29948,18 @@ class Datepicker extends (0, _reactDefault.default).Component {
                         "aria-hidden": "true"
                     }, void 0, false, {
                         fileName: "js/lib/inputs/date.js",
-                        lineNumber: 82,
+                        lineNumber: 84,
                         columnNumber: 21
                     }, this)
                 }, void 0, false, {
                     fileName: "js/lib/inputs/date.js",
-                    lineNumber: 81,
+                    lineNumber: 83,
                     columnNumber: 17
                 }, this)
             ]
         }, void 0, true, {
             fileName: "js/lib/inputs/date.js",
-            lineNumber: 67,
+            lineNumber: 68,
             columnNumber: 13
         }, this);
     }
