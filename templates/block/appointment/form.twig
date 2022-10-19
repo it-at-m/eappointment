@@ -26,9 +26,15 @@
                 <div class="grid">
                     <div class="grid__item one-half">
                         <div class="form-group">
-                            <label class="label">{% trans %}Datum{% endtrans %}</label>
+                            <label for="process_date">{% trans %}Datum{% endtrans %}</label>
                             <div class="controls">
                                 <div id="appointment-datepicker"></div>
+                                {{ inputfield({
+                                    "id":"process_selected_date",
+                                    "type":"hidden",
+                                    "name":"selecteddate",
+                                    "value":selectedDate|date('Y-m-d'),
+                                }) }}
                             </div>
                         </div>
                     </div>
