@@ -16,7 +16,6 @@ use \BO\Zmsdb\Useraccount;
  */
 class WorkstationOAuth extends BaseController
 {
-    private $resolveReferences;
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -27,20 +26,19 @@ class WorkstationOAuth extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $this->resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $oAuthCode  = $validator->getParameter('code')->isString()->isSmallerThan(120)->isBiggerThan(100);
         $accessTokenPayload = Validator::input()->isJson()->assertValid()->getValue();
         $useraccount = $this->getUseraccount($accessTokenPayload);
 
-        $workstation = (new Helper\User($request, $this->resolveReferences))->readWorkstation();
+        $workstation = (new Helper\User($request, $resolveReferences))->readWorkstation();
         Helper\User::testWorkstationIsOveraged($workstation);
 
         $logInHash = (new Workstation)->readLoggedInHashByName($useraccount->id);
         $workstation = (new Workstation)->writeEntityLoginByName(
             $useraccount->id,
             $useraccount->password,
-            \App::getNow(),
-            $this->resolveReferences
+            \App::getNow()
         );
 
         if (null !== $logInHash) {
@@ -63,7 +61,7 @@ class WorkstationOAuth extends BaseController
     }
 
     private function logoutSuperuser($superuserAccountId){
-        (new Workstation)->writeEntityLogoutByName($superuserAccountId, $this->resolveReferences);
+        (new Workstation)->writeEntityLogoutByName($superuserAccountId);
     }
 
     private function loginSuperuser(){
@@ -104,6 +102,6 @@ class WorkstationOAuth extends BaseController
     private function addUseraccount($user){
         $entity = new \BO\Zmsentities\Useraccount($user);
         $entity->password = $entity->getHash($entity->password);
-        return (new Useraccount)->writeEntity($entity, $this->resolveReferences);
+        return (new Useraccount)->writeEntity($entity);
     }
 }
