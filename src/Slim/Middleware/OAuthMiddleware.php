@@ -1,9 +1,4 @@
 <?php
-/**
- * @package Zmsadmin
- * @copyright BerlinOnline Stadtportal GmbH & Co. KG
- **/
-
 namespace BO\Slim\Middleware;
 
 use \Psr\Http\Message\ServerRequestInterface;
