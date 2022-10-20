@@ -183,7 +183,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         Log::writeLogEntry("UPDATE (Process::writeEntityWithNewAppointment) $process ", $processNew->getId());
         
         $status = ($keepReserved) ? Entity::STATUS_RESERVED : ENTITY::STATUS_CONFIRMED;
-        return $this->updateProcessStatus($processNew, $status, $now);
+        return $this->updateProcessStatus($processNew, $status, $now, $resolveReferences);
     }
 
     /**
