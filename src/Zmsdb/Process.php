@@ -73,23 +73,6 @@ class Process extends Base implements Interfaces\ResolveReferences
     }
 
     /**
-     * Update a process attribute by name
-     *
-     * @param $name
-     * @param $value
-     * 
-     */
-    public function updateAttribute($processId, $name, $value) {
-        $query = new Query\Process(Query\Base::UPDATE);
-        $query->addConditionProcessId($processId);
-        $query->addValuesUpdateAttribute($name, $value);
-        if ($this->perform($query->getLockProcessId(), ['processId' => $processId])) {
-            $result = $this->writeItem($query);
-        }
-        return $result;
-    }
-
-    /**
      * Update a process with overbooked slots
      *
      * @param \BO\Zmsentities\Process $process
