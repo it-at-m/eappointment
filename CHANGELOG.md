@@ -1,3 +1,6 @@
+## 2.24.12
+* #55778 - Updating a process without the possibility to change the appointment time and location 
+
 ## 2.24.11
 * #55586 - refactored cronjob helper to delete expired reservations with limit and offset
 
