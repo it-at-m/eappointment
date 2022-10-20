@@ -62,7 +62,7 @@ class Slot extends Base implements MappingInterface
 
 
     const QUERY_INSERT_SLOT_PROCESS_ID = '
-        INSERT INTO slot_process
+        REPLACE INTO slot_process
         SELECT 
           s.slotID,
           b.BuergerID,

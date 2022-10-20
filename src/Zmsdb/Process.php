@@ -45,6 +45,10 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $process;
     }
 
+        
+    /**
+     * Update a process without changing appointment or scope
+     */
     public function updateEntity(\BO\Zmsentities\Process $process, \DateTimeInterface $now, $resolveReferences = 0)
     {
         $query = new Query\Process(Query\Base::UPDATE);
@@ -64,10 +68,25 @@ class Process extends Base implements Interfaces\ResolveReferences
             'reserved' => ($process->status == 'reserved') ? 1 : 0,
             'processID' => $process->getId(),
         ]);
-        (new Slot())->deleteSlotProcessMappingFor($process->id);
-        (new Slot())->writeSlotProcessMappingFor($process->id);
         Log::writeLogEntry("UPDATE (Process::updateEntity) $process ", $process->getId());
         return $process;
+    }
+
+    /**
+     * Update a process attribute by name
+     *
+     * @param $name
+     * @param $value
+     * 
+     */
+    public function updateAttribute($processId, $name, $value) {
+        $query = new Query\Process(Query\Base::UPDATE);
+        $query->addConditionProcessId($processId);
+        $query->addValuesUpdateAttribute($name, $value);
+        if ($this->perform($query->getLockProcessId(), ['processId' => $processId])) {
+            $result = $this->writeItem($query);
+        }
+        return $result;
     }
 
     /**
@@ -171,7 +190,6 @@ class Process extends Base implements Interfaces\ResolveReferences
 
         // reassign credentials of new process with credentials of old process
         $processNew->withReassignedCredentials($process);
-        ($keepReserved) ? $processNew->setStatus('reserved') : $processNew->setStatus('confirmed');
 
         // update new process with old credentials, also assigned requests and following slots
         $this->updateFollowingProcesses($processTempNewId, $processNew);
@@ -181,7 +199,8 @@ class Process extends Base implements Interfaces\ResolveReferences
         (new Slot())->deleteSlotProcessMappingFor($processTempNewId);
         Log::writeLogEntry("UPDATE (Process::writeEntityWithNewAppointment) $process ", $processNew->getId());
         
-        return $this->updateEntity($processNew, $now, $resolveReferences);
+        $status = ($keepReserved) ? Entity::STATUS_RESERVED : ENTITY::STATUS_CONFIRMED;
+        return $this->updateProcessStatus($processNew, $status, $now);
     }
 
     /**
@@ -240,6 +259,8 @@ class Process extends Base implements Interfaces\ResolveReferences
         $process->setRandomAuthKey();
         $process->createTimestamp = $dateTime->getTimestamp();
         $query->addValuesNewProcess($process, $parentProcess, $childProcessCount);
+        $query->addValuesScopeData($process);
+        $query->addValuesAppointmentData($process);
         $query->addValuesUpdateProcess($process, $dateTime, $parentProcess);
         try {
             $this->writeItem($query);
