@@ -33,14 +33,15 @@
         {% endif -%}
         
         <div class="controls {{ groupargs.controlgroupclass }}">
-        {{  self.formelements(elements, fieldId, groupargs) -}}
-        </div>
-
-        {% if groupargs.errors -%}
+            <div class="formelements">
+                {{  self.formelements(elements, fieldId, groupargs) -}}
+            </div>
+            {% if groupargs.errors -%}
                 {{  self.errormessage(groupargs.errors, fieldId,) -}}
             {% endif %}
+        </div>
 
-        {% if groupargs.description -%}
+        {% if groupargs.description is defined %}
             {{ self.groupdescription(groupargs.description, groupargs.descriptionId?groupargs.descriptionId:fieldId) -}}
         {% endif -%}
     </{{ groupargs.groupTag|default('div') }}>
@@ -135,6 +136,7 @@
         {% if args.placeholder %}placeholder="{{ args.placeholder }}"{% endif %}
         class="form-control {% if args.class %}{{ args.class }} {% endif %}form-input{% if args.width %} input--size-{{ args.width }}{% endif %}"
         {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
+        {% if groupargs.required or args.required %} aria-required="true"{% endif %}
         {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
     >
 {% endmacro %}
@@ -325,8 +327,12 @@
     id="{{ describeId }}"
     {% if groupargs.errors %}
         aria-describedby="error_{{ describeId }}"
-    {% elseif groupargs.description %}
-        aria-describedby="help_{{ describeId }}"
+    {% elseif groupargs.description is defined %}
+        {% if groupargs.description is iterable %}
+            aria-describedby="{% for key, entry in groupargs.description %}help_{{ describeId ~ '_' ~ key }} {% endfor %}"
+        {% else %}
+            aria-describedby="help_{{ describeId }}"
+        {% endif %}
     {% endif %}
 {% endmacro %}
 
@@ -445,7 +451,9 @@
     <div id="error_{{ fieldId }}" class="message message--error" role="alert">
     <ul class="list--clean">
         {% for message in messages %}
-        <li><i alt="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" title="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" class='fas fa-exclamation-circle'></i> {% trans %}Fehler{% endtrans %}: {{ message|trans }}</li>
+            <li><i alt="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" title="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" class='fas fa-exclamation-circle'
+                ></i> {% trans %}Fehler{% endtrans %}: {{ message|trans }}
+            </li>
         {% endfor %}
     </ul>
     </div>
@@ -453,9 +461,17 @@
 
 
 {% macro groupdescription(description, fieldId) %}
+    {% if description is iterable %}
+        {% for key, entry in description %}
+            <p class="formgroup__help" {{ fieldId? ('id="help_' ~ fieldId ~ '_' ~ key ~ '"')|raw }}>
+                {{ entry | raw }}
+            </p>
+        {% endfor %}
+    {% else %}
         <p class="formgroup__help" {{ fieldId? ('id="help_' ~ fieldId ~ '"')|raw }}>
             {{ description | raw }}
         </p>
+    {% endif %}
 {% endmacro %}
 
 {% macro providername(scope) %}
