@@ -16,7 +16,7 @@
         {{ formgroup(
             {
                 "label": "Nutzername:",
-                "description": metadata.properties.id.description,
+                "description": metadata.id.description,
                 "required": true,
                 "errors": exception.data.id.messages
             },
@@ -34,7 +34,7 @@
         {{ formgroup(
             {
                 "label": "E-Mail:",
-                "description": metadata.properties.email.description,
+                "description": metadata.email.description,
                 "required": true,
                 "errors": exception.data.email.messages
             },
@@ -51,7 +51,7 @@
         {{ formgroup(
             {
                 "label": "Passwort:",
-                "description": metadata.properties.changePassword.description,
+                "description": metadata.password.description + metadata.changePassword.description,
                 "required": passwordRequired,
                 "errors": exception.data.changePassword.messages
             },
@@ -68,7 +68,7 @@
         {{ formgroup(
             {
                 "label": "Passwortwiederholung:",
-                "description": metadata.properties.changePassword.description,
+                "description": metadata.password.description + metadata.changePassword.description,
                 "required": passwordRequired,
                 "errors":exception.data.changePassword.messages
             },
@@ -118,7 +118,7 @@
                 {
                     "label": "Behörde:",
                     "errors": (exception and not exception.data.input.departments) ? ["Es muss mindestens eine Behörde ausgewählt sein."] : [],
-                    "description": metadata.properties.departments.description
+                    "description": metadata.departments.description
                 },
                 [{
                     "type":"select",

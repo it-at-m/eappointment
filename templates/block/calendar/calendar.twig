@@ -63,7 +63,7 @@
                     {% endif %}
                     
                     <td>
-                        <div data-date="{{ dayString }}" title="{{ dayString|localizeddate("short","none",NULL,NULL,"EE dd. MMMM y") }} - {{ freeAppointmentsTitle }}" class="calendar__tile {% if isToday %}today {% endif %}{{ class }}{{ holidayDate }}{{ setSelectedDate }}{{ sundayDate }}">
+                        <div data-date="{{ dayString }}" title="{{ dayString|localizeddate("short","none",NULL,NULL,"EE dd. MMMM y") }} - {{ freeAppointmentsTitle }}" class="calendar__tile {% if isToday %}today small {% endif %}{{ class }}{{ holidayDate }}{{ setSelectedDate }}{{ sundayDate }}">
                             {% if ((dow == 6 and item.status != "bookable") or item.status == "restricted" or dayString|date("U") <= getNow()|date("U")) and not isToday %}
                                 <span class="day">{{ item.day }}</span>
                             {% else %}
