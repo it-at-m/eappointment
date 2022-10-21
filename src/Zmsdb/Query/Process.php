@@ -706,20 +706,20 @@ class Process extends Base implements MappingInterface
     {
         $data = array();
         $client = $process->getFirstClient();
-        if ($client->familyName) {
+        if ($client &&$client->offsetExists('familyName')) {
             $data['Name'] = $client->familyName;
         }
-        if ($client->email) {
+        if ($client && $client->offsetExists('email')) {
             $data['EMail'] = $client->email;
         }
-        if ($client->telephone) {
+        if ($client && $client->offsetExists('telephone')) {
             $data['telefonnummer_fuer_rueckfragen'] = $client->telephone;
             $data['Telefonnummer'] = $client->telephone; // to stay compatible with ZMS1
         }
-        if ($client->emailSendCount) {
+        if ($client && $client->offsetExists('emailSendCount')) {
             $data['EMailverschickt'] = ('-1' == $client->emailSendCount) ? 0 : $client->emailSendCount;
         }
-        if ($client->notificationsSendCount) {
+        if ($client && $client->offsetExists('notificationsSendCount')) {
             $data['SMSverschickt'] = ('-1' == $client->notificationsSendCount) ? 0 : $client->notificationsSendCount;
         }
         if ($process->getAmendment()) {
