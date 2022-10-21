@@ -8,13 +8,22 @@
 <form action="./" method="post" class="form--base">
     <div class="fieldset">
         <div class="panel--heavy">
+        {% set passwordRequired = false %}
+        {% if action == "add" %}
+            {% set passwordRequired = true %}
+        {% endif %}
+
         {{ formgroup(
-            {"label": "Nutzername:", "errors": exception.data.id.messages},
+            {
+                "label": "Nutzername:",
+                "description": metadata.properties.id.description,
+                "required": true,
+                "errors": exception.data.id.messages
+            },
             [{
                 "type":"input",
                 "parameter": {
                     "name": "id",
-                    "required": true,
                     "value": userAccount.id,
                     "maxlength": 40,
                     "readonly": readonly
@@ -23,12 +32,16 @@
         ) }}
 
         {{ formgroup(
-            {"label": "E-Mail:", "errors": exception.data.email.messages},
+            {
+                "label": "E-Mail:",
+                "description": metadata.properties.email.description,
+                "required": true,
+                "errors": exception.data.email.messages
+            },
             [{
                 "type":"input",
                 "parameter": {
                     "name": "email",
-                    "required": true,
                     "value": userAccount.email,
                     "maxlength": 100
                 }
@@ -36,25 +49,33 @@
         ) }}
 
         {{ formgroup(
-            {"label": "Passwort:","description": "Pflichtangabe bei Neueinträgen", "errors": exception.data.changePassword.messages},
+            {
+                "label": "Passwort:",
+                "description": metadata.properties.changePassword.description,
+                "required": passwordRequired,
+                "errors": exception.data.changePassword.messages
+            },
             [{
                 "type":"input",
                 "parameter": {
                     "type": "password",
                     "name": "changePassword[]",
-                    "required": true,
                     "maxlength": 40
                 }
             }]
         ) }}
 
         {{ formgroup(
-            {"label": "Passwortwiederholung:","description": "Pflichtangabe bei Neueinträgen", "errors":exception.data.changePassword.messages},
+            {
+                "label": "Passwortwiederholung:",
+                "description": metadata.properties.changePassword.description,
+                "required": passwordRequired,
+                "errors":exception.data.changePassword.messages
+            },
             [{
                 "type":"input",
                 "parameter": {
                     "type": "password",
-                    "required": true,
                     "name": "changePassword[]",
                     "maxlength": 40
                 }
@@ -94,7 +115,11 @@
                 {% endfor %}
             {% endfor %}
             {{ formgroup(
-                {"label": "Behörde:", "errors": (exception and not exception.data.input.departments) ? ["Es muss mindestens eine Behörde ausgewählt sein."] : []},
+                {
+                    "label": "Behörde:",
+                    "errors": (exception and not exception.data.input.departments) ? ["Es muss mindestens eine Behörde ausgewählt sein."] : [],
+                    "description": metadata.properties.departments.description
+                },
                 [{
                     "type":"select",
                     "parameter": {
@@ -257,6 +282,7 @@
             ]) %}
         {% endif %}
 
+            <small>*) Felder mit einem Stern müssen ausgefüllt werden.</small>
         
         </div>
     </div>
