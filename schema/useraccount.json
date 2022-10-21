@@ -178,8 +178,17 @@
     "departments": {
       "type": "array",
       "description": "list of assigned departments",
+      "minItems": 1,
       "items": {
         "$ref": "department.json"
+      },
+      "x-locale": {
+        "de_DE": {
+          "pointer": "Behördenauswahl",
+          "messages": {
+            "minItems": "Wählen sie mindestens eine Behörde aus."
+          }
+        }
       }
     }
   }
