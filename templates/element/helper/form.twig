@@ -33,12 +33,13 @@
         {% endif -%}
         
         <div class="controls {{ groupargs.controlgroupclass }}">
-        {{  self.formelements(elements, fieldId, groupargs) -}}
-        </div>
-
-        {% if groupargs.errors -%}
+            <div class="formelements">
+                {{  self.formelements(elements, fieldId, groupargs) -}}
+            </div>
+            {% if groupargs.errors -%}
                 {{  self.errormessage(groupargs.errors, fieldId,) -}}
             {% endif %}
+        </div>
 
         {% if groupargs.description is defined %}
             {{ self.groupdescription(groupargs.description, groupargs.descriptionId?groupargs.descriptionId:fieldId) -}}
