@@ -139,7 +139,6 @@ class Process extends Base implements MappingInterface
             'scope.StandortID'
         );
         $joinQuery = new Scope($this, $this->getPrefixed('scope__'));
-        //error_log(var_export($joinQuery, 1));
         return $joinQuery;
     }
 
@@ -623,9 +622,9 @@ class Process extends Base implements MappingInterface
         $parentProcess = 0
     ) {
         $this->addValuesIPAdress($process);
-        $this->addValuesFollowingProcessData($process);
+        $this->addValuesFollowingProcessData($process, $parentProcess);
         $this->addValuesStatusData($process, $dateTime);
-        if (0 == $parentProcess) {
+        if (0 === $parentProcess) {
             $this->addValuesClientData($process);
             $this->addValuesQueueData($process);
             $this->addValuesWaitingTimeData($process);
@@ -639,14 +638,16 @@ class Process extends Base implements MappingInterface
         $this->addValues($data);
     }
 
-    public function addValuesFollowingProcessData($process)
+    public function addValuesFollowingProcessData($process, $parentProcess)
     {
         $data = array();
-        $data['Name'] = '(Folgetermin)';
-        $data['AnzahlPersonen'] = $process->getClients()->count();
-        $data['hatFolgetermine'] = (1 <= $process->getFirstAppointment()->getSlotCount()) ?
-            $process->getFirstAppointment()->getSlotCount() - 1 :
-            0;
+        if (0 === $parentProcess) {
+            $data['hatFolgetermine'] = (1 <= $process->getFirstAppointment()->getSlotCount()) ?
+                $process->getFirstAppointment()->getSlotCount() - 1 :
+                0;
+        } else {
+            $data['Name'] = '(Folgetermin)';
+        }
         $this->addValues($data);
     }
 
@@ -705,12 +706,15 @@ class Process extends Base implements MappingInterface
     {
         $data = array();
         $client = $process->getFirstClient();
-        if (null !== $client) {
+        if ($client->familyName) {
             $data['Name'] = $client->familyName;
+        }
+        if ($client->email) {
             $data['EMail'] = $client->email;
+        }
+        if ($client->telephone) {
             $data['telefonnummer_fuer_rueckfragen'] = $client->telephone;
             $data['Telefonnummer'] = $client->telephone; // to stay compatible with ZMS1
-            $data['zustimmung_kundenbefragung'] = ($client->surveyAccepted) ? 1 : 0;
         }
         if ($client->emailSendCount) {
             $data['EMailverschickt'] = ('-1' == $client->emailSendCount) ? 0 : $client->emailSendCount;
@@ -718,8 +722,12 @@ class Process extends Base implements MappingInterface
         if ($client->notificationsSendCount) {
             $data['SMSverschickt'] = ('-1' == $client->notificationsSendCount) ? 0 : $client->notificationsSendCount;
         }
+        if ($process->getAmendment()) {
+            $data['Anmerkung'] = $process->getAmendment();
+        }
+        $data['zustimmung_kundenbefragung'] = ($client->surveyAccepted) ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
-        $data['Anmerkung'] = $process->getAmendment();
+        $data['AnzahlPersonen'] = $process->getClients()->count();
         $this->addValues($data);
     }
 
