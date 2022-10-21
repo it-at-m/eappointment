@@ -59,6 +59,7 @@ class ProcessUpdate extends BaseController
             $entity->apiclient = $apiClient;
             $process = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
         } else {
+            $entity = $entity->withoutPersonalData();
             $process = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
         }
        
