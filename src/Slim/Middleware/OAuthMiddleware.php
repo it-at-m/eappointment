@@ -51,10 +51,10 @@ class OAuthMiddleware
 
     private function loginUser($request){
         $oauth = new OAuth();
-        $oauth->Authorization($request->getParam("code"), $request->getParam("state"));
+        $oauth->setAccessTokenPayload($request->getParam("code"), $request->getParam("state"));
 
-        if($oauth->checkAccessRight()){
-            $workstation = \App::$http->readPostResult('/workstation/oauth/', $oauth->getAccessTokenPayload(), ['code' => $request->getParam("code")] )->getEntity();
+        if($oauth->testAccessRight()){
+            $workstation = \App::$http->readPostResult('/workstation/oauth/', $oauth->getUserData(), ['code' => $request->getParam("code")] )->getEntity();
 
             if (array_key_exists('authkey', $workstation)) {
                 \BO\Zmsclient\Auth::setKey($workstation->authkey);
