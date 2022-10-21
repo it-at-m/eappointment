@@ -33,12 +33,13 @@
         {% endif -%}
         
         <div class="controls {{ groupargs.controlgroupclass }}">
-            {{  self.formelements(elements, fieldId, groupargs) -}}
+            <div class="formelements">
+                {{  self.formelements(elements, fieldId, groupargs) -}}
+            </div>
+            {% if groupargs.errors -%}
+                {{  self.errormessage(groupargs.errors, fieldId,) -}}
+            {% endif %}
         </div>
-
-        {% if groupargs.errors -%}
-            {{  self.errormessage(groupargs.errors, fieldId,) -}}
-        {% endif %}
 
         {% if groupargs.description is defined %}
             {{ self.groupdescription(groupargs.description, groupargs.descriptionId?groupargs.descriptionId:fieldId) -}}
@@ -450,10 +451,9 @@
     <div id="error_{{ fieldId }}" class="message message--error" role="alert">
     <ul class="list--clean">
         {% for message in messages %}
-            <li>
-                <i alt="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" title="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" class='fas fa-exclamation-circle'
-                ></i> {% trans %}Fehler{% endtrans %}: {{ message|trans }}
-            </li>
+            <li><i alt="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" title="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" class='fas fa-exclamation-circle'
+                ></i><span id="">{% trans %}Fehler{% endtrans %}: {{ message|trans }}</span
+            ></li>
         {% endfor %}
     </ul>
     </div>
