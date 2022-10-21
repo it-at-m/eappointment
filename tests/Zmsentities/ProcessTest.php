@@ -146,8 +146,8 @@ class ProcessTest extends EntityCommonTests
     {
         $entity = $this->getExample();
         $entity = $entity->withoutPersonalData();
-        $this->assertFalse($entity->toProperty()->clients->isAvailable());
-        $this->assertFalse($entity->toProperty()->appointments->isAvailable());
+        $this->assertFalse($entity->getFirstClient()->toProperty()->familyName->isAvailable());
+        $this->assertFalse($entity->getFirstClient()->toProperty()->email->isAvailable());
     }
 
     public function testGetWaitedSeconds()
