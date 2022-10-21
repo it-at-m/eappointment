@@ -8,8 +8,10 @@
  */
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Schema\Loader;
 use BO\Zmsentities\Useraccount as Entity;
 use BO\Mellon\Validator;
+use BO\Zmsentities\Schema\Validator as SchemaValidator;
 
 class UseraccountEdit extends BaseController
 {
@@ -44,15 +46,16 @@ class UseraccountEdit extends BaseController
         return \BO\Slim\Render::withHtml(
             $response,
             'page/useraccountEdit.twig',
-            array(
+            [
                 'debug' => \App::DEBUG,
                 'userAccount' => $userAccount,
                 'success' => $confirmSuccess,
                 'ownerList' => $ownerList ? $ownerList->toDepartmentListByOrganisationName() : [],
                 'workstation' => $workstation,
                 'title' => 'Nutzer: Einrichtung und Administration','menuActive' => 'useraccount',
-                'exception' => (isset($result)) ? $result : null
-            )
+                'exception' => (isset($result)) ? $result : null,
+                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
+            ]
         );
     }
 
