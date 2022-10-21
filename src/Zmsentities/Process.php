@@ -406,9 +406,6 @@ class Process extends Schema\Entity
             unset($client['familyName']);
             unset($client['email']);
         }
-        if ($this->toProperty()->appointments->isAvailable()) {
-            unset($entity['appointments']);
-        }
         return $entity;
     }
 
