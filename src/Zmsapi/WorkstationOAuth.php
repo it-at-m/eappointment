@@ -1,8 +1,4 @@
 <?php
-/**
- * @package ZMS API
- * @copyright BerlinOnline Stadtportal GmbH & Co. KG
- **/
 
 namespace BO\Zmsapi;
 
@@ -28,8 +24,8 @@ class WorkstationOAuth extends BaseController
         $validator = $request->getAttribute('validator');
         $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $oAuthCode  = $validator->getParameter('code')->isString()->isSmallerThan(120)->isBiggerThan(100);
-        $accessTokenPayload = Validator::input()->isJson()->assertValid()->getValue();
-        $useraccount = $this->getUseraccount($accessTokenPayload);
+        $userData = Validator::input()->isJson()->getValue();
+        $useraccount = $this->getUseraccount($userData);
 
         $workstation = (new Helper\User($request, $resolveReferences))->readWorkstation();
         Helper\User::testWorkstationIsOveraged($workstation);
@@ -81,10 +77,10 @@ class WorkstationOAuth extends BaseController
         return $superuserAccount->id;
     }
 
-    private function getUseraccount($accessTokenPayload){
+    private function getUseraccount($userData){
         $userAccount = array(
-            "id" => $accessTokenPayload['preferred_username'],
-            "email" => $accessTokenPayload['email'],
+            "id" => $userData['preferred_username'],
+            "email" => $userData['email'],
             "departments" => array(
                 "id" => 0,
             )
