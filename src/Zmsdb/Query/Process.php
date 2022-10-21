@@ -139,7 +139,6 @@ class Process extends Base implements MappingInterface
             'scope.StandortID'
         );
         $joinQuery = new Scope($this, $this->getPrefixed('scope__'));
-        //error_log(var_export($joinQuery, 1));
         return $joinQuery;
     }
 
@@ -622,42 +621,60 @@ class Process extends Base implements MappingInterface
         \DateTimeInterface $dateTime,
         $parentProcess = 0
     ) {
-        $data = array();
-        $data['Name'] = '(Folgetermin)';
-        $data['StandortID'] = $process->getScopeId();
-        $data['IPAdresse'] = $process['createIP'];
-        $data['AnzahlPersonen'] = $process->getClients()->count();
-        // - 1 vor following processes count
-        $data['hatFolgetermine'] = (1 <= $process->getFirstAppointment()->getSlotCount()) ?
-            $process->getFirstAppointment()->getSlotCount() - 1 :
-            0;
-        $data = $this->readAppointmentData($data, $process);
-        $data = $this->readStatusData($data, $process, $dateTime);
-        if (0 == $parentProcess) {
-            $data['Anmerkung'] = $process->getAmendment();
-            $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
-            $data['AnzahlAufrufe'] = $process->queue['callCount'];
-            $data = $this->readClientData($data, $process);
-            $data = $this->readProcessTimeValuesData($data, $process);
-            $data = $this->readWaitingTime($data, $process);
-            $data = $this->readSendCount($data, $process);
+        $this->addValuesIPAdress($process);
+        $this->addValuesFollowingProcessData($process, $parentProcess);
+        $this->addValuesStatusData($process, $dateTime);
+        if (0 === $parentProcess) {
+            $this->addValuesClientData($process);
+            $this->addValuesQueueData($process);
+            $this->addValuesWaitingTimeData($process);
         }
-        $data = $this->readFilteredData($data);
+    }
+
+    public function addValuesIPAdress($process)
+    {
+        $data = array();
+        $data['IPAdresse'] = $process['createIP'];
         $this->addValues($data);
     }
 
-    protected function readFilteredData($data)
+    public function addValuesFollowingProcessData($process, $parentProcess)
     {
-        return array_filter(
-            $data,
-            function ($value) {
-                return ($value !== null && $value !== false);
-            }
-        );
+        $data = array();
+        if (0 === $parentProcess) {
+            $data['hatFolgetermine'] = (1 <= $process->getFirstAppointment()->getSlotCount()) ?
+                $process->getFirstAppointment()->getSlotCount() - 1 :
+                0;
+        } else {
+            $data['Name'] = '(Folgetermin)';
+        }
+        $this->addValues($data);
     }
 
-    protected function readStatusData($data, $process, \DateTimeInterface $dateTime)
+    public function addValuesAppointmentData(
+        \BO\Zmsentities\Process $process
+    ) {
+        $data = array();
+        $appointment = $process->getFirstAppointment();
+        if (null !== $appointment) {
+            $datetime = $appointment->toDateTime();
+            $data['Datum'] = $datetime->format('Y-m-d');
+            $data['Uhrzeit'] = $datetime->format('H:i:s');
+        }
+        $this->addValues($data);
+    }
+
+    public function addValuesScopeData(
+        \BO\Zmsentities\Process $process
+    ) {
+        $data = array();
+        $data['StandortID'] = $process->getScopeId();
+        $this->addValues($data);
+    }
+
+    public function addValuesStatusData($process, \DateTimeInterface $dateTime)
     {
+        $data = array();
         $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
         $data['aufruferfolgreich'] = ($process['status'] == 'processing') ? 1 : 0;
         if ($process->status == 'pending') {
@@ -682,47 +699,46 @@ class Process extends Base implements MappingInterface
         if ($process->status == 'missed') {
             $data['nicht_erschienen'] = 1;
         }
-        return $data;
+        $this->addValues($data);
     }
 
-    protected function readAppointmentData($data, $process)
+    protected function addValuesClientData($process)
     {
-        $appointment = $process->getFirstAppointment();
-        if (null !== $appointment) {
-            $datetime = $appointment->toDateTime();
-            $data['Datum'] = $datetime->format('Y-m-d');
-            $data['Uhrzeit'] = $datetime->format('H:i:s');
-        }
-        return $data;
-    }
-
-    protected function readClientData($data, $process)
-    {
+        $data = array();
         $client = $process->getFirstClient();
-        if (null !== $client) {
+        if ($client &&$client->offsetExists('familyName')) {
             $data['Name'] = $client->familyName;
+        }
+        if ($client && $client->offsetExists('email')) {
             $data['EMail'] = $client->email;
+        }
+        if ($client && $client->offsetExists('telephone')) {
             $data['telefonnummer_fuer_rueckfragen'] = $client->telephone;
             $data['Telefonnummer'] = $client->telephone; // to stay compatible with ZMS1
-            $data['zustimmung_kundenbefragung'] = $client->surveyAccepted;
         }
-        return $data;
-    }
-
-    protected function readSendCount($data, $process)
-    {
-        $client = $process->getFirstClient();
-        if ($client->emailSendCount) {
+        if ($client && $client->offsetExists('emailSendCount')) {
             $data['EMailverschickt'] = ('-1' == $client->emailSendCount) ? 0 : $client->emailSendCount;
         }
-        if ($client->notificationsSendCount) {
+        if ($client && $client->offsetExists('notificationsSendCount')) {
             $data['SMSverschickt'] = ('-1' == $client->notificationsSendCount) ? 0 : $client->notificationsSendCount;
         }
-        return $data;
+        if ($process->getAmendment()) {
+            $data['Anmerkung'] = $process->getAmendment();
+        }
+        $data['zustimmung_kundenbefragung'] = ($client->surveyAccepted) ? 1 : 0;
+        $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
+        $data['AnzahlPersonen'] = $process->getClients()->count();
+        $this->addValues($data);
     }
 
-    protected function readProcessTimeValuesData($data, $process)
+    protected function addValuesQueueData($process)
     {
+        $data = array();
+        $appointmentTime=$process->getFirstAppointment()->toDateTime()->format('H:i:s');
+
+        if (isset($process->queue['callCount']) && $process->queue['callCount']) {
+            $data['AnzahlAufrufe'] = $process->queue['callCount'];
+        }
         if (isset($process->queue['callTime']) && $process->queue['callTime']) {
             $data['aufrufzeit'] = (new \DateTimeImmutable())
                 ->setTimestamp($process->queue['callTime'])->format('H:i:s');
@@ -735,20 +751,21 @@ class Process extends Base implements MappingInterface
             $data['wsm_aufnahmezeit'] = (new \DateTimeImmutable())
                 ->setTimestamp($process->queue['arrivalTime'])->format('H:i:s');
         }
-        if (isset($data['wsm_aufnahmezeit']) && $data['wsm_aufnahmezeit'] == $data['Uhrzeit']) {
+        if (isset($data['wsm_aufnahmezeit']) && $data['wsm_aufnahmezeit'] == $appointmentTime) {
             // Do not save arrivalTime if it is an appointment
             $data['wsm_aufnahmezeit'] = 0;
         }
-        return $data;
+        $this->addValues($data);
     }
 
-    protected function readWaitingTime($data, $process)
+    protected function addValuesWaitingTimeData($process)
     {
+        $data = array();
         if ($process['status'] == 'processing') {
             $wartezeit = $process->getWaitedMinutes();
             $data['wartezeit'] = $wartezeit > 0 ? $wartezeit : 0;
         }
-        return $data;
+        $this->addValues($data);
     }
 
     public function postProcess($data)

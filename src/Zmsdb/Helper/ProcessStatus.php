@@ -17,19 +17,12 @@ class ProcessStatus extends \BO\Zmsdb\Process
         $query->addConditionAuthKey($process['authKey']);
 
         $statusList = [
-            'reserved' => 'createReservedProcessEntity',
-            'confirmed' => 'createConfirmedProcessEntity',
-            'queued' => 'createQueuedProcessEntity',
-            'called' => 'createCalledProcessEntity',
-            'processing' => 'createProcessingProcessEntity',
-            'pending' => 'createPendingProcessEntity',
-            'missed' => 'createMissedProcessEntity',
-            'blocked' => 'createBlockedProcessEntity',
-            'deleted' => 'createDeletedProcessEntity',
+            'reserved' => 'setStatusReserved',
+            'confirmed' => 'setStatusConfirmed'
         ];
 
         $entity = call_user_func_array(array($this, $statusList[$status]), array($process));
-        $query->addValuesUpdateProcess($entity, $dateTime);
+        $query->addValuesStatusData($entity, $dateTime);
         
         $checksum = ($userAccount) ? sha1($process->id . '-' . $userAccount->getId()) : '';
         Log::writeLogEntry("UPDATE (ProcessStatus::writeUpdatedStatus) $process $checksum ", $process->id);
@@ -81,46 +74,15 @@ class ProcessStatus extends \BO\Zmsdb\Process
         return $status;
     }
 
-
-    /**
-     * get the current process status from given Id and authKey
-     * removed 2017-06-13 from TK, not in use
-     * @return String
-     */
-     /*
-    public function readQueueStatus($processId, $authKey)
+    protected function setStatusConfirmed($process)
     {
-        $status = '';
-        $processData = $this->getReader()->fetchOne(
-            'SELECT
-            *
-            FROM buerger AS b
-            WHERE
-                b.BuergerID = "' . $processId . '"
-                AND b.absagecode = "' . $authKey . '"
-            LIMIT 1
-            '
-        );
-        $statusList = [
-            'queued' => $this->isQueuedProcess($processData),
-            'confirmed' => $this->isConfirmedProcess($processData),
-            'called' => $this->isCalledProcess($processData),
-            'processing' => $this->isProcessingProcess($processData),
-            'pending' => $this->isPendingProcess($processData),
-            'missed' => $this->isMissedProcess($processData)
-        ];
-        foreach ($statusList as $statusType => $statusCheck) {
-            if ($statusCheck) {
-                $status = $statusType;
-            }
-        }
-        return $status;
+        $process['status'] = $process::STATUS_CONFIRMED;
+        return $process;
     }
-    */
 
-    protected function createConfirmedProcessEntity($process)
+    protected function setStatusReserved($process)
     {
-        $process['status'] = 'confirmed';
+        $process['status'] = $process::STATUS_RESERVED;
         return $process;
     }
 
