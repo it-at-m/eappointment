@@ -6,9 +6,7 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Schema\Loader;
 use BO\Zmsentities\Useraccount as Entity;
-use BO\Mellon\Validator;
 
 class UseraccountAdd extends BaseController
 {
@@ -43,6 +41,27 @@ class UseraccountAdd extends BaseController
             }
         }
 
+        // die locals der schema properties passen als Fehlermeldung aber nicht als Beschreibung
+        // oder sind unvollständig z.B. aussagekräftiger Nutzername -> länger als 4 Zeichen
+        // oder sind unnötig als Beschreibung z.B. 'valide Email im Format ..'
+        // außerdem fehlen Beschreibungen wie bei departements
+        $metadata['properties'] = [
+            'id' => [ 'description' => [
+                'minLength' => 'Es muss ein aussagekräftiger Nutzername eingegeben werden; länger als 4 Buchstaben.',
+                'maxLength' => 'Der Nutzername sollte 40 Zeichen nicht überschreiten.',
+            ]],
+            'email' => [ 'description' => [
+                'minLength' => 'Es muss eine E-Mail-Adresse angegeben werden.',
+            ]],
+            'changePassword' => [ 'description' => [
+                'minLength' => 'Die Länge des Passwortes muss mindestens 6 Zeichen betragen.',
+                'sameValues' => 'Die Passwortwiederholung muss identisch zum Passwort sein.',
+            ]],
+            'departments' => [ 'description' => [
+                'choice' => 'Wählen sie mindestens eine Behörde aus.',
+            ]]
+        ];
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/useraccountEdit.twig',
@@ -52,11 +71,11 @@ class UseraccountAdd extends BaseController
                 'success' => $confirmSuccess,
                 'action' => 'add',
                 'title' => 'Nutzer: Einrichtung und Administration',
+                'metadata' => $metadata,
                 'menuActive' => 'useraccount',
                 'exception' => (isset($result)) ? $result : null,
                 'userAccount' => (isset($result)) ? $input : null,
                 'selectedDepartment' => $selectedDepartment,
-                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema))
             ]
         );
     }
