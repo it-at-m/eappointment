@@ -8,7 +8,6 @@ namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Schema\Loader;
 use BO\Zmsentities\Useraccount as Entity;
-use BO\Mellon\Validator;
 
 class UseraccountAdd extends BaseController
 {
