@@ -35,7 +35,7 @@
         "de_DE": {
           "pointer": "Benutzername",
           "messages": {
-            "minLength": "Es muss ein aussagekräftiger Nutzername eingegeben werden",
+            "minLength": "Es muss ein aussagekräftiger Nutzername eingegeben werden; mindestens 4 Buchstaben.",
             "maxLength": "Der Nutzername sollte 40 Zeichen nicht überschreiten"
           }
         }
@@ -50,8 +50,8 @@
         "de_DE": {
           "pointer": "Nutzer E-Mail",
           "messages": {
-            "minLength": "Es muss eine E-Mail-Adresse angegeben werden",
-            "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
+            "minLength": "Es muss eine E-Mail-Adresse angegeben werden.",
+            "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein."
           }
         }
       }
@@ -65,8 +65,8 @@
         "de_DE": {
           "pointer": "Passwort",
           "messages": {
-            "minLength": "Die Länge des Passwortes muss mindestens 6 Zeichen betragen",
-            "maxLength": "Die Länge des Passwortes darf maximal 60 Zeichen betragen"
+            "minLength": "Die Länge des Passwortes muss mindestens 6 Zeichen betragen.",
+            "maxLength": "Die Länge des Passwortes darf maximal 60 Zeichen betragen."
           }
         }
       }
@@ -81,8 +81,8 @@
           "de_DE": {
             "pointer": "Passwortwiederholung",
             "messages": {
-              "minLength": "Die Länge des Passwortes muss mindestens 6 Zeichen betragen",
-              "maxLength": "Die Länge des Passwortes darf maximal 40 Zeichen betragen"
+              "minLength": "Die Länge des Passwortes muss mindestens 6 Zeichen betragen.",
+              "maxLength": "Die Länge des Passwortes darf maximal 40 Zeichen betragen."
             }
           }
         }
@@ -95,7 +95,7 @@
         "de_DE": {
           "pointer": "Passwortwiederholung",
           "messages": {
-            "format": "Die beiden Passwörter müssen identisch sein"
+            "format": "Die Passwortwiederholung muss identisch zum Passwort sein."
           }
         }
       }
