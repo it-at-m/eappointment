@@ -15,9 +15,9 @@
             {% else %}
                 <div class="table-action-link">
                 {% if department.id %}
-                    {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-plus-square color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
+                    {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
                 {% else %}
-                    {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {}), "label":'<i class="fa fa-plus-square color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
+                    {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
                 {% endif %}
                 </div>
                 <table class="table--base">
@@ -34,7 +34,7 @@
                             <td><a href="{{ urlGet('useraccountEdit', {'loginname':useraccount.id}, {}) }}">{{ useraccount.id }}</a></td>
                             <td>{% if useraccount.lastLogin %}{{ useraccount.lastLogin|date("Y-m-d") }}{% endif %}</td>
                             <td>
-                                {{ custombutton({ "type":"edit", "class":"link" ,"target": urlGet('useraccountEdit', {'loginname':useraccount.id}, {}), "label":'<i class="fas fa-edit" aria-hidden="true"></i> bearbeiten' }) }}
+                                {{ custombutton({ "type":"edit", "class":"link" ,"target": urlGet('useraccountEdit', {'loginname':useraccount.id}, {}), "label":'<i class="fas fa-user-edit" aria-hidden="true"></i> bearbeiten' }) }}
                             </td>
                         </tr>
                     {% endfor %}
@@ -43,9 +43,9 @@
             {% endif %}
                 <div class="table-action-link">
                 {% if department.id %}
-                    {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-plus-square color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
+                    {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
                 {% else %}
-                    {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {}), "label":'<i class="fa fa-plus-square color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
+                    {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
                 {% endif %}
                 </div>
             </fieldset>
