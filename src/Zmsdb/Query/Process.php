@@ -706,10 +706,10 @@ class Process extends Base implements MappingInterface
     {
         $data = array();
         $client = $process->getFirstClient();
-        if ($client &&$client->offsetExists('familyName')) {
+        if ($client && $client->hasFamilyName()) {
             $data['Name'] = $client->familyName;
         }
-        if ($client && $client->offsetExists('email')) {
+        if ($client && $client->hasEmail()) {
             $data['EMail'] = $client->email;
         }
         if ($client && $client->offsetExists('telephone')) {
