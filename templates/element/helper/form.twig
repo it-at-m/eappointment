@@ -41,7 +41,7 @@
             {% endif %}
         </div>
 
-        {% if groupargs.description is defined %}
+        {% if groupargs.description %}
             {{ self.groupdescription(groupargs.description, groupargs.descriptionId?groupargs.descriptionId:fieldId) -}}
         {% endif -%}
     </{{ groupargs.groupTag|default('div') }}>
@@ -138,6 +138,7 @@
         {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
         {% if groupargs.required or args.required %} aria-required="true"{% endif %}
         {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
+        {{ self.eventHandler(args, fieldId, groupargs) }}
     >
 {% endmacro %}
 
@@ -159,6 +160,7 @@
         class="form-control {% if args.class %}{{ args.class }} {% endif %}button-file{% if args.width %} input--size-{{ args.width }}{% endif %}"
         {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
         {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
+        {{ self.eventHandler(args, fieldId, groupargs) }}
     >
 {% endmacro %}
 
@@ -188,6 +190,7 @@
             {% if args.readonly %} readonly="readonly"{% endif %}
             {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
             {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
+            {{ self.eventHandler(args, fieldId, groupargs) }}
         >
     </div>
 {% endmacro %}
@@ -204,6 +207,7 @@
         {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
         {% if args.disabled %} disabled="disabled"{% endif %}
         {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
+        {{ self.eventHandler(args, fieldId, groupargs) }}
     >
     {% for item in args.options %}
         {% if item.options is iterable %}
@@ -308,6 +312,7 @@
         {% if args.maxlength %} maxlength="{{ args.maxlength }}"{% endif %}
         {% if args.accesskey %} accesskey="{{ args.accesskey }}" {% endif %}
         {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
+        {{ self.eventHandler(args, fieldId, groupargs) }}
     >{{ args.value|raw }}</textarea>
 
     <div class="formgroup__help maxcharsleft">
@@ -325,15 +330,32 @@
         {% set describeId = fieldId %}        
     {% endif %}
     id="{{ describeId }}"
-    {% if groupargs.errors %}
-        aria-describedby="error_{{ describeId }}"
-    {% elseif groupargs.description is defined %}
-        {% if groupargs.description is iterable %}
-            aria-describedby="{% for key, entry in groupargs.description %}help_{{ describeId ~ '_' ~ key }} {% endfor %}"
-        {% else %}
-            aria-describedby="help_{{ describeId }}"
+
+    {% if groupargs.errors or groupargs.description %}
+aria-describedby="{%
+    if groupargs.errors %}error_{{ describeId }} {% endif
+    %}{% if groupargs.description
+        %}{% if groupargs.description is iterable
+            %}{% for key, entry in groupargs.description %}help_{{ describeId ~ '_' ~ key }} {% endfor
+        %}{% else %}help_{{ describeId }} {% endif
+    %}{% endif %}"
+{% endif %}
+{% endmacro %}
+
+{% macro eventHandler(args, fieldId, groupargs) %}
+    {% set domEvents = ['blur', 'change', 'click', 'dblclick', 'focus', 'input', 'keydown', 'keypress', 'keyup',
+        'mousedown', 'mousemove', 'mouseout', 'mouseover', 'mouseup', 'wheel',
+        'drag', 'dragend', 'dragenter', 'dragleave', 'dragover', 'dragstart', 'drop',
+        'copy', 'cut', 'paste', 'scroll','select']
+    %}
+    {% for key, handler in args %}
+        {% if key in domEvents or (key[:2] == 'on' and key[2:] in domEvents) %}
+            {% if key[:2] != 'on' %}
+                {% set key = 'on' ~ key %}
+            {% endif %}
+                {{ key }}="{{ handler }}"
         {% endif %}
-    {% endif %}
+    {% endfor %}
 {% endmacro %}
 
 {% macro checkboxfield(args, fieldId, groupargs) %}
@@ -452,8 +474,7 @@
     <ul class="list--clean">
         {% for message in messages %}
             <li><i alt="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" title="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" class='fas fa-exclamation-circle'
-                ></i> {% trans %}Fehler{% endtrans %}: {{ message|trans }}
-            </li>
+                ></i> {% trans %}Fehler{% endtrans %}: {{ message|trans }}</li>
         {% endfor %}
     </ul>
     </div>

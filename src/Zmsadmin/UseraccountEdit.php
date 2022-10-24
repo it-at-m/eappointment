@@ -11,7 +11,6 @@ namespace BO\Zmsadmin;
 use BO\Zmsentities\Schema\Loader;
 use BO\Zmsentities\Useraccount as Entity;
 use BO\Mellon\Validator;
-use BO\Zmsentities\Schema\Validator as SchemaValidator;
 
 class UseraccountEdit extends BaseController
 {

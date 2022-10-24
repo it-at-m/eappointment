@@ -36,9 +36,11 @@ abstract class BaseController extends \BO\Slim\Controller
         $list = [];
         $locale = \App::$language->getLocale();
         foreach ($schema->properties as $key => $property) {
-            $constraints = $property['x-locale'][$locale];
-            if ($constraints) {
-                $list[$key]['description'] = $constraints['messages'];
+            if (isset($property['x-locale'])) {
+                $constraints = $property['x-locale'][$locale];
+                if ($constraints) {
+                    $list[$key]['description'] = $constraints['messages'];
+                }
             }
         }        
         return $list;
