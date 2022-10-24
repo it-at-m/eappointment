@@ -139,7 +139,6 @@ class Location extends Base
         try {
             $sqlArgs = [$this->locale];
             $where = [];
-            $join = [];
             if (false === $mixLanguages) {
                 $where[] = 'l.locale = ?';
                 $sql = 'SELECT data_json FROM location AS l';
@@ -157,7 +156,6 @@ class Location extends Base
             $where[] = 'l.id IN (' . implode(', ', $questionMarks) . ')';
             array_push($sqlArgs, ...$ids);
 
-            $sql .= " " . implode(' ', $join);
             $sql .= " WHERE " . implode(' AND ', $where);
 
             $locationList = new Collection();
@@ -203,9 +201,20 @@ class Location extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($locationList) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function(
+                $id, $name, $authority_name, $category_json, 
+                $contact_json, $address_json, $geo_json,
+                $meta__url
+            ) use ($locationList) {
                 $location = new \BO\Dldb\MySQL\Entity\Location();
-                $location->offsetSet('data_json', $data_json);
+                $location->offsetSet('id', $id);
+                $location->offsetSet('name', $name);
+                $location->offsetSet('authority_name', $authority_name);
+                $location->offsetSet('category_json', $category_json);
+                $location->offsetSet('contact_json', $contact_json);
+                $location->offsetSet('address_json', $address_json);
+                $location->offsetSet('geo_json', $geo_json);
+                $location->offsetSet('meta__url', $meta__url);
                 
                 $locationList[$location['id']] = $location;
             });
