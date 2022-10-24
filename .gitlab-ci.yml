@@ -58,3 +58,5 @@ pages:
         name: analytics
         url: https://eappointment.gitlab.io/zmsadmin
 
+build-docker:
+    extends: .build-docker
