@@ -32,11 +32,10 @@
                 }
             }]
         ) }}
-
         {{ formgroup(
             {
                 "label": "E-Mail:",
-                "description": metadata.email.description,
+                "description": metadata.email.description|filter((v, k) => k != 'pattern'),
                 "required": true,
                 "errors": exception.data.email.messages
             },
@@ -52,10 +51,11 @@
             }]
         ) }}
 
+        {% set passwordDescription = metadata.password.description + metadata.changePassword.description %}
         {{ formgroup(
             {
                 "label": "Passwort:",
-                "description": metadata.password.description + metadata.changePassword.description,
+                "description": passwordDescription|filter((v, k) => (k == 'minLength')),
                 "required": passwordRequired,
                 "errors": exception.data.changePassword.messages
             },
@@ -74,7 +74,7 @@
         {{ formgroup(
             {
                 "label": "Passwortwiederholung:",
-                "description": metadata.password.description + metadata.changePassword.description,
+                "description": passwordDescription|filter((v, k) => k != 'maxLength'),
                 "required": passwordRequired,
                 "errors":exception.data.changePassword.messages
             },
@@ -125,8 +125,8 @@
             {{ formgroup(
                 {
                     "label": "Behörde:",
-                    "errors": (exception and not exception.data.input.departments) ? ["Es muss mindestens eine Behörde ausgewählt sein."] : [],
-                    "description": metadata.departments.description
+                    "description": metadata.departments.description,
+                    "errors": exception.data.departments.messages
                 },
                 [{
                     "type":"select",
@@ -293,7 +293,7 @@
         {% endif %}
 
             <small>*) Felder mit einem Stern müssen ausgefüllt werden.</small>
-
+        
             <script type="text/javascript">
                 function highlightDescription(event, shouldBeHighlighted) {
                     let myElement = event.target;
@@ -310,6 +310,7 @@
                     }
                 }
             </script>
+
         </div>
     </div>
     
