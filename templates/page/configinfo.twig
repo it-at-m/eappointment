@@ -104,6 +104,23 @@
                             </pre>
                         </div>
                     </fieldset>
+
+                    <fieldset>
+                        <div class="panel--light">
+                            <h3>Betreff: {% include "@zmsentities/messaging/subjects.twig" with {
+                                "process": processExample, 
+                                "initiator": "XXX", 
+                                "status": "overview"
+                            } %}</h3>
+                            <pre class="admin">
+                                {% include "@zmsentities/messaging/mail_processlist_overview.twig" with {
+                                    "processList": [], 
+                                    "client": (processExample.clients|first),
+                                    "initiator": "XXX", 
+                                    "status": "overview"} %}
+                            </pre>
+                        </div>
+                    </fieldset>
                     
                     <fieldset>
                         <div class="panel--light">

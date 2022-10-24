@@ -193,16 +193,16 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "2.24.12-rc1",
+            "version": "2.24.12-rc2",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsentities.git",
-                "reference": "8e4281f3d3ef483b763c54352e79a0a5da86fd34"
+                "reference": "fb23adaa3c7b022b17503752a96628094e768f4e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=8e4281f3d3ef483b763c54352e79a0a5da86fd34",
-                "reference": "8e4281f3d3ef483b763c54352e79a0a5da86fd34",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=fb23adaa3c7b022b17503752a96628094e768f4e",
+                "reference": "fb23adaa3c7b022b17503752a96628094e768f4e",
                 "shasum": ""
             },
             "require": {
@@ -245,7 +245,7 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2022-10-21T14:32:27+00:00"
+            "time": "2022-10-24T14:14:13+00:00"
         },
         {
             "name": "eappointment/zmsslim",
