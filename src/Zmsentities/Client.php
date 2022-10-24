@@ -18,6 +18,11 @@ class Client extends Schema\Entity
         ];
     }
 
+    public function hasFamilyName()
+    {
+        return ($this->toProperty()->familyName->get()) ? true : false;
+    }
+
     public function hasEmail()
     {
         return ($this->toProperty()->email->get()) ? true : false;
