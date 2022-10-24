@@ -6,8 +6,9 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Schema\Loader;
+
 use BO\Zmsentities\Useraccount as Entity;
-use BO\Mellon\Validator;
 
 class Profile extends BaseController
 {
@@ -43,7 +44,8 @@ class Profile extends BaseController
                 'workstation' => $workstation,
                 'useraccount' => $entity->getArrayCopy(),
                 'success' => $confirmSuccess,
-                'exception' => (isset($result)) ? $result : null
+                'exception' => (isset($result)) ? $result : null,
+                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema))
             )
         );
     }

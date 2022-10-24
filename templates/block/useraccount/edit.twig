@@ -16,7 +16,7 @@
         {{ formgroup(
             {
                 "label": "Nutzername:",
-                "description": metadata.id.description,
+                "description": not readonly ? metadata.id.description : "",
                 "required": true,
                 "errors": exception.data.id.messages
             },
@@ -26,9 +26,7 @@
                     "name": "id",
                     "value": userAccount.id,
                     "maxlength": 40,
-                    "readonly": readonly,
-                    "onfocus": "highlightDescription(event, true)",
-                    "onblur": "highlightDescription(event, false)"
+                    "readonly": readonly
                 }
             }]
         ) }}
@@ -44,9 +42,7 @@
                 "parameter": {
                     "name": "email",
                     "value": userAccount.email,
-                    "maxlength": 100,
-                    "onfocus": "highlightDescription(event, true)",
-                    "onblur": "highlightDescription(event, false)"
+                    "maxlength": 100
                 }
             }]
         ) }}
@@ -64,9 +60,7 @@
                 "parameter": {
                     "type": "password",
                     "name": "changePassword[]",
-                    "maxlength": 40,
-                    "onfocus": "highlightDescription(event, true)",
-                    "onblur": "highlightDescription(event, false)"
+                    "maxlength": 40
                 }
             }]
         ) }}
@@ -83,9 +77,7 @@
                 "parameter": {
                     "type": "password",
                     "name": "changePassword[]",
-                    "maxlength": 40,
-                    "onfocus": "highlightDescription(event, true)",
-                    "onblur": "highlightDescription(event, false)"
+                    "maxlength": 40
                 }
             }]
         ) }}
@@ -133,9 +125,7 @@
                     "parameter": {
                         "name": "departments[][id]",
                         "multiple": 1,
-                        "options": departmentOptionsGroup,
-                        "onfocus": "highlightDescription(event, true)",
-                        "onblur": "highlightDescription(event, false)"
+                        "options": departmentOptionsGroup
                     }
                 }]
             ) }}
@@ -293,24 +283,6 @@
         {% endif %}
 
             <small>*) Felder mit einem Stern müssen ausgefüllt werden.</small>
-        
-            <script type="text/javascript">
-                function highlightDescription(event, shouldBeHighlighted) {
-                    let myElement = event.target;
-                    let descriptions = myElement.getAttribute('aria-describedby');
-                    descriptions = descriptions.trim();
-                    let elementIds = descriptions.split(' ');
-                    for (let offset in elementIds) {
-                        let highlightedElement = document.getElementById(elementIds[offset]);
-                        if (shouldBeHighlighted) {
-                            highlightedElement.classList.add('highlighted');
-                        } else {
-                            highlightedElement.classList.remove('highlighted');
-                        }
-                    }
-                }
-            </script>
-
         </div>
     </div>
     
