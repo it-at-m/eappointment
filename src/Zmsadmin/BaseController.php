@@ -42,7 +42,7 @@ abstract class BaseController extends \BO\Slim\Controller
                     $list[$key]['description'] = $constraints['messages'];
                 }
             }
-        }        
+        }
         return $list;
     }
 }
