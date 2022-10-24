@@ -50,3 +50,5 @@ pages:
         name: analytics
         url: https://eappointment.gitlab.io/zmscalldisplay
 
+build-docker:
+    extends: .build-docker
