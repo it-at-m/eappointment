@@ -10,7 +10,7 @@ hiermit bestätigen wir Ihnen Ihren gebuchten Termin:<br /><br />
 {% with {'processList': {process}, 'isMainProcess': true} %}
 {{ block("processes_summary_german") }}
 {% endwith %}
-Sollten Sie den Termin nicht wahrnehmen können, sagen Sie ihn bitte <strong>unbedingt</strong> ab, damit wir den Termin neu vergeben können. Dies können Sie einfach über den oben angegebenen <strong><a href="{{ changeLink }}" target="_blank">Änderungs/Absage-Link</a></strong> erledigen.<br />
+Sollten Sie den Termin nicht wahrnehmen können, sagen Sie ihn bitte <strong>unbedingt</strong> ab, damit wir den Termin neu vergeben können. Dies können Sie einfach über den oben angegebenen Änderungs/Absage-Link erledigen.<br />
 {% if config.appointments.sms.telephone %}
 Oder schicken Sie eine SMS mit dem Inhalt "{{ config.appointments.sms.textCancel }}\{{ process.id }}" an die Rufnummer {{ config.appointments.sms.telephone }}.
 "Hierbei ist die Groß- und Kleinschreibung von "{{ config.appointments.sms.textCancel }}" nicht wichtig. Bei Absage per SMS erhalten Sie zu Ihrer Sicherheit eine Bestätigungs-SMS Ihrer Absage.<br />
@@ -22,7 +22,7 @@ Zahlungshinweis: {{ process.scope.provider.data.payment }}<br /><br />
 {% endif %}
 {{ block("requestlist") }}
 {% if processList is defined and processList|length > 0 %}
-    {{ block("processes_summary_german") }}
+<br />{{ block("processes_summary_german") }}
 {% endif %}<br />
 {{ block("sendoff_german") }}
 </div>
