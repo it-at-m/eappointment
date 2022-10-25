@@ -164,18 +164,27 @@ class View extends RequestView {
 
     onClearRequestList() {
         this.cleanLists();
+        this.auralMessage('Die Auswahl der Dientsleistungen wurde zurückgesetzt');
     }
 
     onAddRequest(event) {
         this.addServiceToList($(event.currentTarget), 'serviceListSelected');
         this.removeServiceFromList($(event.currentTarget), 'serviceList');
         this.updateLists(true);
+        this.auralMessage(
+            'Die folgende Dientsleistung wurde zur Liste der ausgewählten Dienstleistungen hinzugefügt: ' +
+            $(event.currentTarget).parent().find('span').text()
+        );
     }
 
     onRemoveRequest(event) {
         this.removeServiceFromList($(event.currentTarget), 'serviceListSelected');
         this.addServiceToList($(event.currentTarget), 'serviceList');
         this.updateLists(true);
+        this.auralMessage(
+            'Die folgende Dientsleistung ist nicht mehr ausgewählt: '
+            + $(event.currentTarget).parent().find('span').text()
+        );
     }
 
     onChangeSlotCount(event) {
@@ -210,6 +219,16 @@ class View extends RequestView {
         });
 
         this.$.find('input[name=sendMailConfirmation]').prop('checked', hasFreeAppointments)
+    }
+
+    auralMessage(message) {
+        let infoNode  = document.createTextNode(message);
+        let paragraph = document.createElement('p');
+        paragraph.appendChild(infoNode);
+
+        let messageContainer = this.$.find('#auralmessage');
+        messageContainer.find('p').remove();
+        messageContainer.append(paragraph);
     }
 }
 
