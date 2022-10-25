@@ -1,8 +1,11 @@
+import React from 'react';
+import {createRoot} from 'react-dom/client';
 import RequestView from "./requests"
 import FreeProcessView from './free-process-list'
 import FormButtons from './form-buttons'
 import $ from "jquery"
 import maxChars from '../../element/form/maxChars'
+import Datepicker from '../../lib/inputs/date'
 import moment from 'moment'
 
 class View extends RequestView {
@@ -54,7 +57,6 @@ class View extends RequestView {
         this.onDatePick = this.options.onDatePick;
         this.onAbortMessage = this.options.onAbortMessage;
         this.onPrintWaitingNumber = this.options.onPrintWaitingNumber;
-        this.onSelectDateWithOverlay = this.options.onSelectDateWithOverlay;
         this.onChangeSlotCountCallback = this.options.onChangeSlotCount;
     }
 
@@ -67,6 +69,7 @@ class View extends RequestView {
                     this.initRequestView();
                     this.bindEvents();
                     this.$main.find('select#process_time').trigger('change');
+                    this.loadDatePicker();
                 });
             });
     }
@@ -79,6 +82,7 @@ class View extends RequestView {
             this.$main.find('select#process_time').trigger('change');
         }).then(() => {
             if (this.selectedScope || this.selectedDate) {
+                this.loadDatePicker();
                 this.loadFreeProcessList().loadList().then(() => {
                     this.bindEvents();
                 });
@@ -86,14 +90,28 @@ class View extends RequestView {
         });
     }
 
+    loadDatePicker() {
+        const calendarElement = createRoot(document.getElementById('appointment-datepicker'));
+        const onChangeDate = (value) => this.onDatePick(value)
+        return (
+            calendarElement.render(
+                <Datepicker
+                    id="process_date"
+                    accessKey="m"
+                    value={new Date(this.selectedDate).getTime() / 1000}
+                    onChange={onChangeDate}
+                    attributes={{ "aria-label": "Datum"}}
+                />
+            )
+        );
+    }
+
     assigneMainFormValues() {
         this.$main.find('.add-date-picker input#process_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('DD.MM.YYYY'));
         this.$main.find('input#process_selected_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD'));
-        //this.$main.find('[name="familyName"]').focus(); // -> nicht barrierefrei
         this.$main.find('textarea.maxchars').each(function () {
             maxChars(this);
         })
-        //this.$main.find('[name="familyName"]').focus(); // -> nicht barrierefrei
     }
 
     loadFreeProcessList() {
@@ -117,15 +135,6 @@ class View extends RequestView {
             this.onClearRequestList();
         }).on('change', '#appointmentForm_slotCount', (event) => {
             this.onChangeSlotCount(event);
-        }).on('click', '.add-date-picker input', (event) => {
-            this.onSelectDateWithOverlay(event);
-        }).on('keydown', '.add-date-picker input', (event) => {
-            var key = event.keyCode || event.which;
-            switch(key) {
-            case 13: // ENTER    
-                this.onSelectDateWithOverlay(event);
-                break;
-            }
         }).on('change', '.appointment-form .switchcluster select', (event) => {
             this.onChangeScope(event);
         }).on('change', 'select#process_time', (event) => {

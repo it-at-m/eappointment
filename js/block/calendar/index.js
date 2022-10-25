@@ -29,11 +29,11 @@ class View extends BaseView {
 
     bindEvents() {
         this.$main.on('click', '.calendar-page table a', (ev) => {
-            this.onDatePick(this.$main, ev);
+            this.onDatePick($(ev.currentTarget).attr('data-date'));
         }).on('click', '.calendar-navigation a.pagemonthlink', (ev) => {
-            this.onDatePick(this.$main, ev);
+            this.onDatePick($(ev.currentTarget).attr('data-date'));
         }).on('click', '.calendar-navigation .today', (ev) => {
-            this.onDateToday(this.$main, ev);
+            this.onDateToday($(ev.currentTarget).attr('data-date'));
         })
     }
 }

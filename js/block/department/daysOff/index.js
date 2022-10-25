@@ -6,7 +6,6 @@ import Datepicker from '../../../lib/inputs/date'
 
 const renderDay = (day, index, onChange, onDeleteClick) => {
     const formName = `dayoff[${index}]`
-
     const onChangeName = (_, value) => onChange(index, 'name', value)
     const onChangeDate = (_, value) => onChange(index, 'date', value)
     const onDelete = ev => {

@@ -8,8 +8,18 @@
 <form action="./" method="post" class="form--base">
     <div class="fieldset">
         <div class="panel--heavy">
+        {% set passwordRequired = false %}
+        {% if action == "add" %}
+            {% set passwordRequired = true %}
+        {% endif %}
+
         {{ formgroup(
-            {"label": "Nutzername:", "errors": exception.data.id.messages},
+            {
+                "label": "Nutzername:",
+                "description": not readonly ? metadata.id.description : "",
+                "required": true,
+                "errors": exception.data.id.messages
+            },
             [{
                 "type":"input",
                 "parameter": {
@@ -20,9 +30,13 @@
                 }
             }]
         ) }}
-
         {{ formgroup(
-            {"label": "E-Mail:", "errors": exception.data.email.messages},
+            {
+                "label": "E-Mail:",
+                "description": metadata.email.description|filter((v, k) => k != 'pattern'),
+                "required": true,
+                "errors": exception.data.email.messages
+            },
             [{
                 "type":"input",
                 "parameter": {
@@ -33,8 +47,14 @@
             }]
         ) }}
 
+        {% set passwordDescription = metadata.password.description + metadata.changePassword.description %}
         {{ formgroup(
-            {"label": "Passwort:","description": "Pflichtangabe bei Neueinträgen", "errors": exception.data.changePassword.messages},
+            {
+                "label": "Passwort:",
+                "description": passwordDescription|filter((v, k) => (k == 'minLength')),
+                "required": passwordRequired,
+                "errors": exception.data.changePassword.messages
+            },
             [{
                 "type":"input",
                 "parameter": {
@@ -46,7 +66,12 @@
         ) }}
 
         {{ formgroup(
-            {"label": "Passwortwiederholung:","description": "Pflichtangabe bei Neueinträgen", "errors":exception.data.changePassword.messages},
+            {
+                "label": "Passwortwiederholung:",
+                "description": passwordDescription|filter((v, k) => k != 'maxLength'),
+                "required": passwordRequired,
+                "errors":exception.data.changePassword.messages
+            },
             [{
                 "type":"input",
                 "parameter": {
@@ -90,7 +115,11 @@
                 {% endfor %}
             {% endfor %}
             {{ formgroup(
-                {"label": "Behörde:", "errors": (exception and not exception.data.input.departments) ? ["Es muss mindestens eine Behörde ausgewählt sein."] : []},
+                {
+                    "label": "Behörde:",
+                    "description": metadata.departments.description,
+                    "errors": exception.data.departments.messages
+                },
                 [{
                     "type":"select",
                     "parameter": {
@@ -253,7 +282,7 @@
             ]) %}
         {% endif %}
 
-        
+            <small>*) Felder mit einem Stern müssen ausgefüllt werden.</small>
         </div>
     </div>
     

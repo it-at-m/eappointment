@@ -21,6 +21,9 @@ class Datepicker extends React.Component {
     }
 
     componentDidMount(){
+        this.datepicker.input.accessKey = this.props.accessKey;
+        this.datepicker.input.ariaLive = "polite";
+
         document.addEventListener("keydown", this.escHandler, false);
       }
 
@@ -46,7 +49,7 @@ class Datepicker extends React.Component {
         this.setState({
             startDate: date
         });
-        this.props.onChange(this.props.name, moment(date, 'X').unix())
+        this.props.onChange(moment(date, 'X').format('YYYY-MM-DD'))
         this.closeDatePicker();
     }
     
@@ -67,8 +70,9 @@ class Datepicker extends React.Component {
             <div className="add-date-picker" {...this.props.attributes}>
                 <DatePicker 
                     locale="de" 
+                    id={this.props.id}
                     className="form-control form-input" 
-                    dateFormat="dd.MM.yyyy" 
+                    dateFormat="dd.MM.yyyy"
                     selected={this.state.startDate}
                     onChange={this.handleChange} {...this.props.name } 
                     onInputClick={this.openDatePicker}
@@ -79,7 +83,7 @@ class Datepicker extends React.Component {
                     ref={(datepicker) => { this.datepicker = datepicker }} 
                 />
                 <a href="#" className="calendar-placement icon" title="Kalender öffnen" onClick={this.handleIcon}>
-                    <i className="far fa-calendar-alt" aria-hidden="true" />
+                    <i className="far fa-calendar-alt" alt="Kalender öffnen" />
                 </a>
             </div>
             
