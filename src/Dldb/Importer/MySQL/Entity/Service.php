@@ -286,6 +286,11 @@ class Service extends Base
             $fields = $this->get(['id', 'meta.locale', 'meta.hash']);
             $fields[] = static::getTableName();
             
+            if (is_array($fields[2])) {
+                error_log(print_r($fields[2]));
+            }
+            #error_log(print_r($fields[2]));
+
             $this->setStatus(static::STATUS_OLD);
             if ($this->itemNeedsUpdate(...array_values($fields))) {
                 $this->setStatus(static::STATUS_NEW);
