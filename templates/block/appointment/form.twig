@@ -13,6 +13,7 @@
     {% block board_body %}
         {% include "element/helper/messageHandler.twig" %}
         <form data-formData="{{ formData|json_encode }}" data-saved-process="{{ selectedProcess.id }}">
+            <div class="aural" id="auralmessage" aria-live="polite"></div>
             <label class="label">{% trans %}Standort{% endtrans %}</label>
             {% include 'block/cluster/scopeSelect.twig' with {'source': 'appointmentForm'} %}
             {% if not scope %}
@@ -288,7 +289,6 @@
                                     [{
                                         "type": "checkboxSelect",
                                         "parameter": {
-                                            "ariaLive": "polite",
                                             "ariaLabel": "Dienstleistungen Auswahlliste",
                                             "accesskey":"g",
                                             "height": "10em",
@@ -318,7 +318,6 @@
                                 [{
                                     "type": "checkboxDeselect",
                                     "parameter": {
-                                        "ariaLive": "polite",
                                         "ariaLabel": "Dienstleistungen Abwahlliste",
                                         "accesskey":"h",
                                         "height": "auto",
