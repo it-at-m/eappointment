@@ -46,7 +46,7 @@ class Scope extends BaseController
         $department = \App::$http->readGetResult('/scope/' . $entityId . '/department/')->getEntity();
         $callDisplayImage = \App::$http->readGetResult('/scope/'. $entityId .'/imagedata/calldisplay/')->getEntity();
         $input = $request->getParsedBody();
-        if (is_array($input) && array_key_exists('save', $input)) {
+        if ($request->isPost()) {
             $result = $this->testUpdateEntity($input, $entityId);
             if ($result instanceof Entity) {
                 $this->writeUploadedImage($request, $entityId, $input);

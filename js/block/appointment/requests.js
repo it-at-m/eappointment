@@ -26,23 +26,29 @@ class View extends BaseView {
      */
     updateLists(triggered = false) {
         this.$main.find('.checkboxdeselect input:checkbox').each((index, element) => {
-            $(element).prop("checked", false);
-            $(element).closest('li').attr("aria-checked", false);
-            $(element).closest('li').hide();
             if ($.inArray($(element).val(), this.serviceListSelected) !== -1) {
                 $(element).prop("checked", true);
-                $(element).closest('li').attr("aria-checked", true);
+                $(element).attr("aria-checked", true);
                 $(element).closest('li').show();
+            } else {
+                $("#requests__selected_aria-live").text($("#requests__selected_aria-live").data("request-remove"));
+                $(element).prop("checked", false);
+                $(element).attr("aria-checked", false);
+                $(element).closest('li').hide();    
             }
         });
 
         this.$main.find('.checkboxselect input:checkbox').each((index, element) => {
-            $(element).prop("checked", false);
-            $(element).closest('li').attr("aria-checked", false);
-            $(element).closest('li').hide();
             if ($.inArray($(element).val(), this.serviceList) !== -1) {
+                $(element).attr("aria-checked", false);
                 $(element).closest('li').show();
+            } else {
+                $("#requests__selected_aria-live").text($("#requests__selected_aria-live").data("request-add"));
+                $(element).prop("checked", false);
+                $(element).attr("aria-checked", true);
+                $(element).closest('li').hide();
             }
+            
         });
         if (triggered) {
             this.calculateSlotCount();
