@@ -22,6 +22,8 @@ class Datepicker extends React.Component {
 
     componentDidMount(){
         this.datepicker.input.accessKey = this.props.accessKey;
+        this.datepicker.input.ariaLive = "polite";
+
         document.addEventListener("keydown", this.escHandler, false);
       }
 
