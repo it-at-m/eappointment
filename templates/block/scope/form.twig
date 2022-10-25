@@ -54,8 +54,8 @@
                     data-includeurl="{{ includeUrl() }}"    
                 >
                 </div>
-
-                {#
+                {{ inputfield({ "name": "id", "type":"hidden", "value":scope.id }) }}
+               {#
                 <fieldset>
                     <div class="panel--heavy">
                         {{ inputfield({ "name": "id", "type":"hidden", "value":scope.id }) }}
