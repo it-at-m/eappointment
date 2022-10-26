@@ -56,7 +56,7 @@ class RequestRelationList extends Base
         $list = new self();
         foreach ($requestList as $request) {
             foreach ($this as $item) {
-                if ($request->getId() == $item['request']['id'] && 
+                if ($request->getId() == $item['request']['id'] &&
                     $providerList->hasProvider($item['provider']['id'])
                 ) {
                     $list->addEntity($item);
