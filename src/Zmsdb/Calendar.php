@@ -133,18 +133,13 @@ class Calendar extends Base
 
     public function readRequiredSlots(\BO\Zmsentities\Calendar $calendar)
     {
-        $slotCount = 0;
-        $requestIds = $calendar->getRequestList()->getIds();
-        $scope = $calendar->getScopeList()->getFirst();
-        $requestRelationList = (new RequestRelation())
-            ->readListByProviderId($scope->getProviderId(), $scope->getSource());
-
-        foreach ($requestRelationList as $requestRelation) {
-            if (in_array($requestRelation->getRequest()->getId(), $requestIds)) {
-                $slotCount += $requestRelation->getSlotCount();
-            }
-        }
-
-        return round($slotCount, 0);
+        $requestList = $calendar->getRequestList();
+        $providerList = $calendar->getProviderList();
+        $source = $calendar->getScopeList()->getFirst()->getSource();
+        $slotCount = (new RequestRelation())
+            ->readListBySource($source)
+            ->getFilteredByRequestAndProvider($requestList, $providerList)
+            ->getSlotcount();
+        return $slotCount;
     }
 }
