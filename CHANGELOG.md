@@ -1,6 +1,7 @@
 ## 2.24.12
 * #55778 - Updating a process without the possibility to change the appointment time and location
 * #55778 - Revision of the assignment of appointment data and follow-up appointments 
+* #55910 - Correction of unit tests after changes in the test data for the revision of the slot calculation
 
 ## 2.24.11
 * #55586 - refactored cronjob helper to delete expired reservations with limit and offset
