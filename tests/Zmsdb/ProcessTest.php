@@ -267,7 +267,7 @@ class ProcessTest extends Base
             "scope"=>[
                 "id"=>"141"
             ],
-            "slotCount"=>"2"
+            "slotCount"=>"6"
         ]);
 
         // get old process and clone to new process with id = 0 and new appointment to reserve

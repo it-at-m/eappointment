@@ -20,7 +20,7 @@ class ProcessStatusFree extends Process
         $dayquery = new Day();
 
         $requiredSlots = ($slotsRequired === null || $slotsRequired < 1)
-            ? (new Calendar())->readRequiredSlots($calendar)
+            ? max(1, (new Calendar())->readRequiredSlots($calendar))
             : intval($slotsRequired);
         $dayquery->writeTemporaryScopeList($calendar, $slotsRequired);
         $selectedDate = $calendar->getFirstDay();
