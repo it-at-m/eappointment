@@ -18,8 +18,8 @@ return array (
     'allAppointments' => 
     array (
       'public' => '36',
-      'callcenter' => '36',
       'intern' => '36',
+      'callcenter' => '36',
       'type' => 'free',
     ),
   ),
@@ -39,8 +39,8 @@ return array (
     'allAppointments' => 
     array (
       'public' => '36',
-      'callcenter' => '36',
       'intern' => '36',
+      'callcenter' => '36',
       'type' => 'free',
     ),
   ),

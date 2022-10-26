@@ -135,7 +135,6 @@ class Calendar extends Base
     {
         $slotCount = 0;
         $requestIds = $calendar->getRequestList()->getIds();
-
         $scope = $calendar->getScopeList()->getFirst();
         $requestRelationList = (new RequestRelation())
             ->readListByProviderId($scope->getProviderId(), $scope->getSource());
@@ -146,6 +145,6 @@ class Calendar extends Base
             }
         }
 
-        return max(1, round($slotCount, 0));
+        return round($slotCount, 0);
     }
 }
