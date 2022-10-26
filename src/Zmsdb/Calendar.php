@@ -130,4 +130,22 @@ class Calendar extends Base
         }
         return $calendar;
     }
+
+    public function readRequiredSlots(\BO\Zmsentities\Calendar $calendar)
+    {
+        $slotCount = 0;
+        $requestIds = $calendar->getRequestList()->getIds();
+
+        $scope = $calendar->getScopeList()->getFirst();
+        $requestRelationList = (new RequestRelation())
+            ->readListByProviderId($scope->getProviderId(), $scope->getSource());
+
+        foreach ($requestRelationList as $requestRelation) {
+            if (in_array($requestRelation->getRequest()->getId(), $requestIds)) {
+                $slotCount += $requestRelation->getSlotCount();
+            }
+        }
+
+        return max(1, round($slotCount, 0));
+    }
 }
