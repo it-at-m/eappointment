@@ -18,6 +18,10 @@ class ProcessStatusFree extends Process
     ) {
         $calendar = (new Calendar())->readResolvedEntity($calendar, $now, true);
         $dayquery = new Day();
+
+        $requiredSlots = ($slotsRequired === null || $slotsRequired < 1)
+            ? $this->getRequiredSlots($calendar)
+            : intval($slotsRequired);
         $dayquery->writeTemporaryScopeList($calendar, $slotsRequired);
         $selectedDate = $calendar->getFirstDay();
         $processList = new Collection();
@@ -29,8 +33,7 @@ class ProcessStatusFree extends Process
                 'month' => $selectedDate->format('m'),
                 'day' => $selectedDate->format('d'),
                 'slotType' => $slotType,
-                'forceRequiredSlots' =>
-                    ($slotsRequired === null || $slotsRequired < 1) ? 1 : intval($slotsRequired),
+                'forceRequiredSlots' => $requiredSlots,
             ]
         );
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
@@ -50,6 +53,19 @@ class ProcessStatusFree extends Process
         return $processList;
     }
 
+    private function getRequiredSlots(\BO\Zmsentities\Calendar $calendar)
+    {
+        $slots = 0;
+        $requestIds = $calendar->getRequestList()->getIds();
+        $provider = $calendar->getScopeList()->getFirst()->getProvider();
+
+        foreach ($requestIds as $requestId) {
+            $requestRelation = (new RequestRelation)->readEntity($requestId, $provider->getId());
+            $slots += (int) $requestRelation->getSlotCount();
+        }
+
+        return max($slots, 1);
+    }
 
     public function readReservedProcesses($resolveReferences = 2)
     {
