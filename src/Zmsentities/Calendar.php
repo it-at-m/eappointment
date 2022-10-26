@@ -168,11 +168,12 @@ class Calendar extends Schema\Entity
      */
     public function getProviderList()
     {
-        $list = array();
+        $providerList = new \BO\Zmsentities\Collection\ProviderList();
         foreach ($this->providers as $provider) {
-            $list[] = $provider['id'];
+            $entity = new Provider($provider);
+            $providerList->addEntity($entity);
         }
-        return $list;
+        return $providerList;
     }
 
     public function getDayList()
