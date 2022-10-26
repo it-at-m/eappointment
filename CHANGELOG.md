@@ -1,30 +1,33 @@
-## v2.24.10
+## 2.24.12
+* #55778 - Change of appointment date and location no longer allowed during an update
+
+## 2.24.10
 * #55114 A new API route has been added with which all appointments belonging to an email address can be sent via email
 
-## v2.24.09
+## 2.24.09
 
 * #54954 OpenApi documents are now created automatically. CDN files for displaying the documentation are downloaded via the CI and the checksum of the files is checked
 * #34087 Added API route and controller to configure config properties
 
-## v2.24.05
+## 2.24.05
 
 * #53262 An additional route and controller was created to obtain the scope list for a service.
 
-## v2.24.04
+## 2.24.04
 
 * #48987 Bugfix: Beim Aktualisieren eines Vorgangs wird nun geprüft ob dem Standort die angegebene Dienstleistung zugeordnet ist.
 
-## v2.24.03
+## 2.24.03
 
 * #52508 - Sollte bei der Reservierung schon eine Vorgangsnummer existieren wird nun eine eindeutige Exception ausgegeben
 
-## v2.24.02
+## 2.24.02
 
 * #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
 * #49020 Die Maillist Route hat nun einen limit Parameter über den bestimmt wird wie viele Mails aus der Datenbank gelesen werden.
 * #49077 Aktualisierung eines Termins ohne Änderung der ID ist nun auch per clientkey möglich und es wird geprüft ob die gewählten Dienstleistungen vom Standort angeboten werden
 
-## v2.23.10
+## 2.23.10
 
 * #38901 Unit-Tests erweitert
 
