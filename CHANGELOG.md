@@ -1,3 +1,7 @@
+## v2.24.12
+* #55539 - aria live describing service list changes
+* #55539 - aria-live attribute only to selected regions
+
 ## v2.24.11
 * #55538, ##55534, #55561 - Adaptations for accessibility, headings added, contrast display revised, error messages clearly marked as errors
 * #55531 - Set the focus on the first error message in the form and revise the label semantic with included error messages
