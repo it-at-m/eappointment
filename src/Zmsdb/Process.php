@@ -178,7 +178,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $this->updateFollowingProcesses($processTempNewId, $processNew);
         $this->updateReassignedRequests($processTempNewId, $processNew->getId());
 
-        //delete slot mapping for temp process id 
+        //delete slot mapping for temp process id
         (new Slot())->deleteSlotProcessMappingFor($processTempNewId);
         //write new slot mapping for changed process with old credentials because new appointment data
         (new Slot())->writeSlotProcessMappingFor($processNew->getId());
