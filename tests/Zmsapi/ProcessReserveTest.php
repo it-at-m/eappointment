@@ -47,7 +47,7 @@ class ProcessReserveTest extends Base
         $process = $processList->getFirst();
         $response = $this->render([], [
             '__body' => json_encode($process),
-            'slotsRequired' => 2,
+            'slotsRequired' => 6,
             'slotType' => 'intern'
         ], []);
     }
