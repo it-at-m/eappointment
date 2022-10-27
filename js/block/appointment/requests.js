@@ -1,4 +1,5 @@
 import BaseView from "../../lib/baseview"
+import { getDataAttributes } from '../../lib/utils'
 import $ from "jquery"
 
 class View extends BaseView {
@@ -9,12 +10,13 @@ class View extends BaseView {
         this.selectedProcess = options.selectedProcess;
         this.selectedTime = options.selectedTime;
         this.slotsRequired = options.slotsRequired;
-        this.serviceList = [];
+        this.serviceList = []
         this.serviceListSelected = [];
         //console.log('Component: RequestList actions', this, options);
     }
 
     initRequestView(keepSelected = false) {
+        this.auralMessages = getDataAttributes(this.$main.find('[data-aural]').get('0')).aural
         if (this.selectedProcess || keepSelected === true)
             this.readList()
         else
