@@ -35,4 +35,10 @@ class MailQueue extends Base
         $this->query->where('mailQueue.id', '=', $itemId);
         return $this;
     }
+
+    public function addOrderBy($parameter, $order = 'ASC')
+    {
+        $this->query->orderBy('mailQueue.'. $parameter, $order);
+        return $this;
+    }
 }
