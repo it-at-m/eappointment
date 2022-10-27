@@ -13,13 +13,24 @@ class MailTest extends Base
         $now = static::$now;
         $input = $this->getTestEntity();
         $query = new Query();
-        $entity = $query->writeInQueue($input, $now);
+        $query->writeInQueue($input, $now);
+        $query->writeInQueue($input, $now->modify('+ 5 Minutes'));
 
+        $collection = $query->readList(2, 2);
+        $entity = $collection->getFirst();
         $this->assertEntity("\\BO\\Zmsentities\\Mail", $entity);
         $this->assertEquals('Das ist ein Plaintext Test', $entity->getPlainPart());
         $this->assertEquals("D54643264", $entity->getFirstClient()['familyName']);
 
-        $collection = $query->readList(2);
+        $firstIn = $collection->getFirst()->createTimestamp;
+        $secondIn = $collection->getLast()->createTimestamp;
+        $this->assertTrue($firstIn < $secondIn);
+
+        $collection = $query->readList(2, 2, 'DESC');
+        $firstIn = $collection->getFirst()->createTimestamp;
+        $secondIn = $collection->getLast()->createTimestamp;
+        $this->assertFalse($firstIn < $secondIn);
+
         $collection->addEntity($input);
         $this->assertEntityList("\\BO\\Zmsentities\\Mail", $collection);
         $this->assertEquals(true, $collection->hasEntity('1234')); //Test Entity exists
