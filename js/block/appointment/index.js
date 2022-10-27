@@ -1,11 +1,12 @@
 import React from 'react';
-import {createRoot} from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import RequestView from "./requests"
 import FreeProcessView from './free-process-list'
 import FormButtons from './form-buttons'
 import $ from "jquery"
 import maxChars from '../../element/form/maxChars'
 import Datepicker from '../../lib/inputs/date'
+import { getDataAttributes } from '../../lib/utils'
 import moment from 'moment'
 
 class View extends RequestView {
@@ -27,6 +28,7 @@ class View extends RequestView {
         $('textarea.maxchars').each(function () { maxChars(this) });
         //this.$main.find('[name="familyName"]').focus(); // -> nicht barrierefrei
         //console.log('Component: AppointmentView', this, options);
+        this.hasSlotCountEnabled = this.$main.find('#appointmentForm_slotCount').length;
     }
 
     setOptions() {
@@ -64,6 +66,7 @@ class View extends RequestView {
         const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}&selectedtime=${this.selectedTime}&selectedprocess=${this.selectedProcess}&selectedscope=${this.selectedScope}`
         return this.loadContent(url, 'GET', null, null, this.showLoader)
             .then(() => {
+                this.auralMessages = getDataAttributes($('#auralmessage').get('0')).aural
                 this.assigneMainFormValues();
                 this.loadPromise.then(() => {
                     this.initRequestView();
@@ -75,6 +78,7 @@ class View extends RequestView {
     }
 
     loadPartials() {
+        this.auralMessages = getDataAttributes($('#auralmessage').get('0')).aural
         this.assigneMainFormValues();
         this.loadPromise.then(() => {
             this.initRequestView(true);
@@ -92,7 +96,11 @@ class View extends RequestView {
 
     loadDatePicker() {
         const calendarElement = createRoot(document.getElementById('appointment-datepicker'));
-        const onChangeDate = (value) => this.onDatePick(value)
+        const onChangeDate = (value) => {
+            if (this.hasSlotCountEnabled && this.serviceListSelected.length == 0)
+                this.auralMessage(this.auralMessages.chooseRequestFirst)
+            this.onDatePick(value)
+        }
         return (
             calendarElement.render(
                 <Datepicker
@@ -100,7 +108,6 @@ class View extends RequestView {
                     accessKey="m"
                     value={new Date(this.selectedDate).getTime() / 1000}
                     onChange={onChangeDate}
-                    attributes={{ "aria-label": "Datum"}}
                 />
             )
         );
@@ -195,10 +202,12 @@ class View extends RequestView {
     onChangeScope(event) {
         this.selectedScope = $(event.currentTarget).val();
         this.onChangeScopeCallback(event);
-       
+
     }
 
     onChangeProcessTime(event) {
+        if (this.hasSlotCountEnabled && this.serviceListSelected.length == 0)
+                this.auralMessage(this.auralMessages.chooseRequestFirst)
         this.selectedTime = $(event.currentTarget).val();
         var hasFreeAppointments = (1 <= $(event.currentTarget).length && '00-00' != this.selectedTime);
         this.$main.data('selected-time', this.selectedTime);
@@ -216,7 +225,7 @@ class View extends RequestView {
     }
 
     auralMessage(message) {
-        let infoNode  = document.createTextNode(message);
+        let infoNode = document.createTextNode(message);
         let paragraph = document.createElement('p');
         paragraph.appendChild(infoNode);
 

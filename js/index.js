@@ -9,7 +9,7 @@ import $ from "jquery";
 import moment from 'moment/min/moment-with-locales';
 
 // Import Views
-import AccessKeyView from './page/accesskeys'
+//import AccessKeyView from './page/accesskeys'
 import EmergencyView from './block/emergency'
 //import LoginFormView from './block/index/loginform'
 //import DepartmentLinksView from './block/department/links'
@@ -73,7 +73,7 @@ moment.locale('de')
 forceHttps();
 
 // Init Views
-new AccessKeyView(document);
+//new AccessKeyView(document);
 
 loadResources();
 

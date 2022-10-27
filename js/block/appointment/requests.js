@@ -1,5 +1,4 @@
 import BaseView from "../../lib/baseview"
-import { getDataAttributes } from '../../lib/utils'
 import $ from "jquery"
 
 class View extends BaseView {
@@ -16,7 +15,6 @@ class View extends BaseView {
     }
 
     initRequestView(keepSelected = false) {
-        this.auralMessages = getDataAttributes(this.$main.find('[data-aural]').get('0')).aural
         if (this.selectedProcess || keepSelected === true)
             this.readList()
         else

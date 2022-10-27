@@ -222,8 +222,7 @@
             {% endfor %}
         </optgroup>
 		{% else %}
-        <option title="{{ item.name }}" {% if item.selected or args.value == item.value %}selected="selected"{% endif %}
-        {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
+        <option title="{{ item.name }}" {% if item.selected or args.value == item.value %}selected="selected" aria-selected="true"{% endif %}
         {% if item.data %}
             {{ self.getDataAttributes(item.data) }}
         {% endif %}
@@ -242,14 +241,14 @@
 
 {% macro checkboxselectfield(args, fieldId, groupargs) %}
     {% import _self as self %}
-        <div{% if args.ariaLive %} aria-live="{{ args.ariaLive }}"{% endif %} class="checkboxselect" {% if fieldId %} id="{{ fieldId }}" {% endif %} {% if args.accesskey %} accesskey="{{ args.accesskey }}" {% endif %}>
+        <div{% if args.ariaLive %} aria-live="{{ args.ariaLive }}"{% endif %} class="checkboxselect" {% if fieldId %} id="{{ fieldId }}" {% endif %}>
             {{- self._checkboxselectinner(args) -}}
         </div>
 {% endmacro %}
 
 {% macro checkboxdeselectfield(args, fieldId, groupargs) %}
     {% import _self as self %}
-        <div{% if args.ariaLive %} aria-live="{{ args.ariaLive }}"{% endif %} class="checkboxdeselect" {% if fieldId %} id="{{ fieldId }}" {% endif %} {% if args.accesskey %} accesskey="{{ args.accesskey }}" {% endif %}>
+        <div{% if args.ariaLive %} aria-live="{{ args.ariaLive }}"{% endif %} class="checkboxdeselect" {% if fieldId %} id="{{ fieldId }}" {% endif %}>
             {{- self._checkboxselectinner(args) -}}
             <button type="button" class="link clear-list" name="clear-list" accesskey="l">Liste leeren</button>
         </div>

@@ -35,6 +35,7 @@ class Datepicker extends React.Component {
 
     keyDownHandler(event) {
         event.preventDefault 
+        console.log(event.key)
         if (event.key === 'Enter') {
           this.openDatePicker() 
         }
@@ -71,6 +72,7 @@ class Datepicker extends React.Component {
                 <DatePicker 
                     locale="de" 
                     id={this.props.id}
+                    disabled={this.props.disabled}
                     className="form-control form-input" 
                     dateFormat="dd.MM.yyyy"
                     selected={this.state.startDate}
@@ -82,7 +84,7 @@ class Datepicker extends React.Component {
                     open={this.state.datePickerIsOpen}
                     ref={(datepicker) => { this.datepicker = datepicker }} 
                 />
-                <a href="#" className="calendar-placement icon" title="Kalender öffnen" onClick={this.handleIcon}>
+                <a href="#" className="calendar-placement icon" title="Kalender öffnen" onClick={this.handleIcon} onKeyDown={this.keyDownHandler}>
                     <i className="far fa-calendar-alt" alt="Kalender öffnen" />
                 </a>
             </div>
