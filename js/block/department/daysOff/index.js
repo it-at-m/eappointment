@@ -12,6 +12,11 @@ const renderDay = (day, index, onChange, onDeleteClick) => {
         ev.preventDefault()
         onDeleteClick(index)
     };
+
+    const tdStyle = {
+        verticalAlign: "middle",
+        height: "0"
+      };
     
     return (
         <tr className="daysoff-item" key={index}>
@@ -32,10 +37,10 @@ const renderDay = (day, index, onChange, onDeleteClick) => {
                     attributes={{ "aria-label": "Datum" }}
                 />
             </td>
-            <td className="daysoff-item__delete">
-                <div className="form-check">
+            <td className="daysoff-item__delete" style={tdStyle}>
+                <div>
                     <a href="#" className="icon" title="Tag entfernen" onClick={onDelete}>
-                        <i className="far fa-trash-alt" aria-hidden="true"></i>
+                        <i className="far fa-trash-alt" aria-hidden="true"></i> 
                     </a>
                 </div>
             </td>
