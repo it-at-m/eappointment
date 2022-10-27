@@ -12,8 +12,14 @@
 
     {% block board_body %}
         {% include "element/helper/messageHandler.twig" %}
+
+        {% set addRequestAuralMessage = "Die folgende Dientsleistung wurde zur Liste der ausgewählten Dienstleistungen hinzugefügt" %}
+        {% set cleanupRequestAuralMessage = "Die Auswahl der Dientsleistungen wurde zurückgesetzt" %}
+        {% set removeRequestAuralMessage = "Die folgende Dientsleistung ist nicht mehr ausgewählt" %}
+        {% set chooseRequestFirst = "Wählen Sie bitte zuerst die Dienstleistungen und die Anzahl der Slots aus bevor Sie das Datum (Zugriffschlüssel m) und die Uhrzeit (Zugriffschlüssel z) auswählen." %}
+
         <form data-formData="{{ formData|json_encode }}" data-saved-process="{{ selectedProcess.id }}">
-            <div class="aural" id="auralmessage" aria-live="polite"></div>
+            <div class="aural" id="auralmessage" aria-live="polite" data-aural='{"clean":"{{ cleanupRequestAuralMessage|trans }}", "add":"{{ addRequestAuralMessage|trans }}","remove":"{{ removeRequestAuralMessage|trans }}", "chooseRequestFirst":"{{ chooseRequestFirst|trans }}"}'></div>
             <label class="label">{% trans %}Standort{% endtrans %}</label>
             {% include 'block/cluster/scopeSelect.twig' with {'source': 'appointmentForm'} %}
             {% if not scope %}
@@ -251,12 +257,8 @@
                             }]
                         ) }}
                     </div>
-                    
-                    {% set addRequestAuralMessage = "Die folgende Dientsleistung wurde zur Liste der ausgewählten Dienstleistungen hinzugefügt" %}
-                    {% set cleanupRequestAuralMessage = "Die Auswahl der Dientsleistungen wurde zurückgesetzt" %}
-                    {% set removeRequestAuralMessage = "Die folgende Dientsleistung ist nicht mehr ausgewählt" %}
 
-                    <div id="requests_checkboxlist" class="grid__item one-half" data-aural='{"clean":"{{ cleanupRequestAuralMessage|trans }}", "add":"{{ addRequestAuralMessage|trans }}","remove":"{{ removeRequestAuralMessage|trans }}"}'>
+                    <div id="requests_checkboxlist" class="grid__item one-half">
                         <div>
                             {% set selectedRequests = [] %}
                             {% if selectedProcess %}
