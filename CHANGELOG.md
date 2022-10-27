@@ -1,6 +1,7 @@
 ## v2.24.12
 * #55539 - aria live describing service list changes
 * #55539 - aria-live attribute only to selected regions
+* #55530 - Accessibility for appointment selection with activated multiple slot option established
 
 ## v2.24.11
 * #55538, ##55534, #55561 - Adaptations for accessibility, headings added, contrast display revised, error messages clearly marked as errors
