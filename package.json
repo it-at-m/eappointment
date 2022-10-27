@@ -11,11 +11,13 @@
     "lint": "eslint js/",
     "fix": "eslint --fix js/",
     "css": "parcel build scss/admin.scss --log-level verbose --detailed-report --target css",
-    "js": "parcel build js/index.js --log-level verbose --detailed-report --target js",
+    "js": "npm run reactjs && npm run commonjs",
+    "commonjs": "parcel build js/index.js --log-level verbose --detailed-report --target js",
     "reactjs": "parcel build js/reactcomponents.js --log-level verbose --detailed-report --target js",
     "csswatch": "parcel watch scss/admin.scss --log-level verbose  --target css",
-    "jswatch": "parcel watch js/index.js --log-level verbose --no-hmr --target js",
+    "commonjswatch": "parcel watch js/index.js --log-level verbose --no-hmr --target js",
     "reactwatch": "parcel watch js/reactcomponents.js --log-level verbose --no-hmr --target js",
+    "jswatch": "npm run reactwatch && npm run commonjswatch",
     "watch": "npm run jswatch & npm run csswatch &"
   },
   "targets": {
@@ -55,7 +57,7 @@
     "util": "^0.12.5"
   },
   "dependencies": {
-    "bo-layout-admin-scss": "https://gitlab.com/eappointment/includes/layout-admin-scss.git#9590a2b6",
+    "bo-layout-admin-scss": "https://gitlab.com/eappointment/includes/layout-admin-scss.git#cd1fb7ae",
     "bo-layout-admin-js": "https://gitlab.com/eappointment/includes/layout-admin-js.git#2.24.11",
     "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities.git#2.24.11"
   }
