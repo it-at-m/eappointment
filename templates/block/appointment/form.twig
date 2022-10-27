@@ -251,8 +251,12 @@
                             }]
                         ) }}
                     </div>
+                    
+                    {% set addRequestAuralMessage = "Die folgende Dientsleistung wurde zur Liste der ausgewählten Dienstleistungen hinzugefügt" %}
+                    {% set cleanupRequestAuralMessage = "Die Auswahl der Dientsleistungen wurde zurückgesetzt" %}
+                    {% set removeRequestAuralMessage = "Die folgende Dientsleistung ist nicht mehr ausgewählt" %}
 
-                    <div class="grid__item one-half" data-request-list>
+                    <div id="requests_checkboxlist" class="grid__item one-half" data-aural='{"clean":"{{ cleanupRequestAuralMessage|trans }}", "add":"{{ addRequestAuralMessage|trans }}","remove":"{{ removeRequestAuralMessage|trans }}"}'>
                         <div>
                             {% set selectedRequests = [] %}
                             {% if selectedProcess %}
