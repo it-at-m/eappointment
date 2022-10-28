@@ -52,8 +52,9 @@ const FormContent = (props) => {
                 </fieldset>
                 <fieldset>
                     <div className="panel--heavy">
+                        <legend className="label">Serie und Wochentage</legend>
                         <FormGroup>
-                            <Label attributes={{"htmlFor": "AvDaySeries"}}>Serie</Label>
+                            <Label attributes={{"htmlFor": "AvDaySeries", "className": "light"}}>Serie</Label>
                             <Controls>
                                 <Inputs.Select 
                                     name="repeat"
@@ -62,8 +63,8 @@ const FormContent = (props) => {
                                     options={availabilitySeries} />
                             </Controls>
                         </FormGroup>
-                        <legend className="label">Wochentage</legend>
                         <FormGroup>
+                            <Label attributes={{"className": "light"}}>Wochentage</Label>
                             <Controls>
                                 <Inputs.CheckboxGroup name="weekday"
                                     value={data.weekday}
@@ -94,8 +95,9 @@ const FormContent = (props) => {
                                 <Inputs.Checkbox name="multipleSlotsAllowed"
                                     checked={"1" == data.multipleSlotsAllowed} {...{ onChange }} 
                                     value="1"
+                                    attributes={{ "id": "AvDayMultipleSlots" }}
                                 />
-                                <Label>Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen</Label>
+                                <Label attributes={{"htmlFor": "AvDayMultipleSlots", "className": "light"}}>Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen</Label>
                             </Controls>
                         </FormGroup>
                     </div>
@@ -162,9 +164,11 @@ const FormContent = (props) => {
                                             attributes={{"id": "WsCountIntern"}}
                                             {...{ onChange }}
                                             options={range(0, 50).map(n => {
+                                                let workstation = (n == 1) ? "Arbeitsplatz" : "Arbeitsplätze";
                                                 return {
+                                                    title: `${n} ${workstation}`,
                                                     value: `${n}`,
-                                                    name: `${n}`
+                                                    name: `${n} ${workstation}`
                                                 }
                                             })} />
                                     </Controls>
@@ -178,9 +182,11 @@ const FormContent = (props) => {
                                             attributes={{"id": "WsCountCallcenter", "aria-describedby": "help_WsCountCallcenter"}}
                                             {...{ onChange }}
                                             options={range(0, data.workstationCount_intern).map(n => {
+                                                let workstation = (n == 1) ? "Arbeitsplatz" : "Arbeitsplätze";
                                                 return {
+                                                    title: `${n} ${workstation}`,
                                                     value: `${n}`,
-                                                    name: `${n}`
+                                                    name: `${n} ${workstation}`
                                                 }
                                             })} />
                                         <Description attributes={{"id": "help_WsCountCallcenter"}}>Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Callcenter zur Verfügung gestellt werden.</Description>
@@ -195,9 +201,11 @@ const FormContent = (props) => {
                                             attributes={{"id": "WsCountPublic", "aria-describedby": "help_WsCountPublic"}}
                                             {...{ onChange }}
                                             options={range(0, data.workstationCount_intern).map(n => {
+                                                let workstation = (n == 1) ? "Arbeitsplatz" : "Arbeitsplätze";
                                                 return {
+                                                    title: `${n} ${workstation}`,
                                                     value: `${n}`,
-                                                    name: `${n}`
+                                                    name: `${n} ${workstation}`
                                                 }
                                             })} />
                                         <Description attributes={{"htmlFor": "help_WsCountPublic"}}>Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Internet zur Verfügung gestellt werden.</Description>

@@ -3,9 +3,9 @@ import React from 'react'
 
 const noOp = () => { }
 
-const SelectOption = ({ name, value }) => {
+const SelectOption = ({ name, value, title }) => {
     return (
-        <option {...{ value }}>{name || value}</option>
+        <option {...{ value }} {...{ title }}>{name || value}</option>
     )
 }
 
