@@ -120,13 +120,13 @@ export const availabilityTypes = [
 ]
 
 export const weekDayList=[
-    { value: "monday", label: "Mo" },
-    { value: "tuesday", label: "Di" },
-    { value: "wednesday", label: "Mi" },
-    { value: "thursday", label: "Do" },
-    { value: "friday", label: "Fr" },
-    { value: "saturday", label: "Sa" },
-    { value: "sunday", label: "So" }
+    { value: "monday", label: "Montag" },
+    { value: "tuesday", label: "Dienstag" },
+    { value: "wednesday", label: "Mittwoch" },
+    { value: "thursday", label: "Donnerstag" },
+    { value: "friday", label: "Freitag" },
+    { value: "saturday", label: "Samstag" },
+    { value: "sunday", label: "Sonntag" }
 ]
 
 export const availabilitySeries=[

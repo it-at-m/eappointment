@@ -291,8 +291,8 @@ class AvailabilityDatePicker extends Component
                                 ref={(datepicker) => { this.datepicker = datepicker }} 
 
                             />
-                            <a href="#" className="calendar-placement icon" title="Kalender öffnen" onClick={this.handleCalendarIcon} onKeyDown={this.dpKeyDownHandler}>
-                                <i className="far fa-calendar-alt" alt="Kalender öffnen" />
+                            <a href="#" className="calendar-placement icon" title={"startDate" == this.props.name ? "Kalender Datum von öffnen" : "Kalender Datum bis öffnen"} onClick={this.handleCalendarIcon} onKeyDown={this.dpKeyDownHandler}>
+                                <i className="far fa-calendar-alt" alt={"startDate" == this.props.name ? "Kalender Datum von öffnen" : "Kalender Datum bis öffnen"} />
                             </a>
                         </div>
                     </div>
@@ -329,7 +329,7 @@ class AvailabilityDatePicker extends Component
                                 open={this.state.timePickerIsOpen}
                                 ref={(timepicker) => { this.timepicker = timepicker }} 
                             />
-                            <a href="#" className="calendar-placement icon" title="Uhrzeitauswahl öffnen" onClick={this.handleClockIcon} onKeyDown={this.tpKeyDownHandler}>
+                            <a href="#" className="calendar-placement icon" title={"startDate" == this.props.name ? "Uhrzeit von wählen" : "Uhrzeit bis wählen"} onClick={this.handleClockIcon} onKeyDown={this.tpKeyDownHandler}>
                                 <i className="far fa-clock" alt="Uhrzeitauswahl öffnen" />
                             </a>
                         </div>
