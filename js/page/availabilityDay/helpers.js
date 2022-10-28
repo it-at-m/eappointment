@@ -64,7 +64,7 @@ export const getInitialState = (props) => Object.assign({}, {
     formTitle: null,
     lastSave: null,
     stateChanged: false,
-    selectedTab: 'graph',
+    selectedTab: 'table',
 }, getStateFromProps(props))
 
 export const getNewAvailability = (timestamp, tempId, scope) => {

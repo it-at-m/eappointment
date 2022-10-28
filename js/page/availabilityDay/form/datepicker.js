@@ -17,23 +17,41 @@ class AvailabilityDatePicker extends Component
     constructor(props) {
         super(props);
         this.state = {
-            focused: this.props.attributes.id,
             availability: this.props.attributes.availability,
             availabilityList: this.props.attributes.availabilitylist,
             minDate: moment.unix(this.props.attributes.availability.startDate).toDate(),
             minTime: setHours(setMinutes(new Date(), 1), 0),
-            maxTime: setHours(setMinutes(new Date(), 59), 23)
+            maxTime: setHours(setMinutes(new Date(), 59), 23),
+            datePickerIsOpen: false,
+            timPickerIsOpen: false
         }
+        this.escHandler = this.escHandler.bind(this);
+        //datepicker
+        this.openDatePicker = this.openDatePicker.bind(this);
+        this.closeDatePicker = this.closeDatePicker.bind(this);
+        this.dpKeyDownHandler = this.dpKeyDownHandler.bind(this);
+        this.handleCalendarIcon = this.handleCalendarIcon.bind(this);
+        //timepicker
+        this.openTimePicker = this.openTimePicker.bind(this);
+        this.closeTimePicker = this.closeTimePicker.bind(this);
+        this.tpKeyDownHandler = this.tpKeyDownHandler.bind(this);
+        this.handleClockIcon = this.handleClockIcon.bind(this);
+
+
+
+    }
+
+    componentDidMount() {
+        document.addEventListener("keydown", this.escHandler, false);
+        this.datepicker.input.ariaLive = "polite";
+        this.timepicker.input.ariaLive = "polite";
+        this.updateState()
     }
 
     componentDidUpdate(prevProps) {
-        if (
-            this.state.availability && 
-            prevProps.attributes.availability !== this.props.attributes.availability
-        ) {
+        if (this.props.attributes.availability !== prevProps.attributes.availability) {
             this.updateState()
         }
-        
     }
 
     updateState(name, date) {
@@ -41,7 +59,6 @@ class AvailabilityDatePicker extends Component
         let startDate = moment.unix(this.props.attributes.availability.startDate)
             .set({"h": startTime.hours(), "m": startTime.minutes()})
             .toDate()
-
         let endTime = moment(this.props.attributes.availability.endTime, 'HH:mm');
         let endDate = moment.unix(this.props.attributes.availability.endDate)
             .set({"h": endTime.hours(), "m": endTime.minutes()})
@@ -138,19 +155,88 @@ class AvailabilityDatePicker extends Component
             if (this.state.availability.startDate != moment(date).startOf('day').unix()) {
                 this.props.onChange("startDate", moment(date).unix());
             }
-            if (this.state.availability.startTime != moment(date).format('HH:mm')) {
-                this.props.onChange("startTime", moment(date).format('HH:mm'));
-            }
         }
         if ('endDate' == name) {
             if (this.state.availability.endDate != moment(date).startOf('day').unix()) {
                 this.props.onChange("endDate", moment(date).unix());
             }
+        }   
+    }
+
+    handleTimeChange(name, date) {
+        if ('startDate' == name) {
+            if (this.state.availability.startTime != moment(date).format('HH:mm')) {
+                this.props.onChange("startTime", moment(date).format('HH:mm'));
+            }
+        }
+        if ('endDate' == name) {
             if (this.state.availability.endTime != moment(date).format('HH:mm')) {
                 this.props.onChange("endTime", moment(date).format('HH:mm'));
             }
-        } 
-       
+        }   
+    }
+
+    escHandler(event) {
+        if (event.key === "Escape") {
+            this.closeDatePicker();
+            this.closeTimePicker();
+        }
+    }
+
+    dpKeyDownHandler(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault()
+            this.openDatePicker() 
+        }
+    }
+
+    tpKeyDownHandler(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault()
+            this.openTimePicker() 
+        }
+    }
+
+    handleCalendarIcon(event) {
+        event.preventDefault();
+        this.openDatePicker()
+        console.log(this.datepicker.input)
+        this.datepicker.input.focus();
+    }
+
+    handleClockIcon(event) {
+        event.preventDefault();
+        this.openTimePicker()
+        this.timepicker.input.focus();
+    }
+
+    openDatePicker() {
+        if (!this.props.attributes.disabled) {
+            this.setState({
+                datePickerIsOpen: true,
+            });
+        }
+    }
+
+    openTimePicker() {
+        if (!this.props.attributes.disabled) {
+            this.setState({
+                timePickerIsOpen: true,
+            });
+        }
+        
+    }
+
+    closeDatePicker() {
+        this.setState({
+            datePickerIsOpen: false,
+        });
+    }
+
+    closeTimePicker() {
+        this.setState({
+            timePickerIsOpen: false,
+        });
     }
 
     render() {
@@ -161,6 +247,12 @@ class AvailabilityDatePicker extends Component
         }
 
         /*
+        const filterPassedTime = (time) => {
+            const currentDate = this.state.selectedDate;
+            const selectedDate = new Date(time);
+            return currentDate.getTime() < selectedDate.getTime();
+          };
+        
         const isWeekday = date => {
             const day = date.getDay();
             return day !== 0 && day !== 6;
@@ -168,36 +260,81 @@ class AvailabilityDatePicker extends Component
         */
 
         return (
-            <div className="add-date-picker">
-                <Label attributes={{"htmlFor": this.props.attributes.id, "className": "light"}} value={"startDate" == this.props.name ? "von" : "bis" }></Label> 
-                <DatePicker 
-                    locale="de" 
-                    className="form-control form-input" 
-                    id={this.props.attributes.id}
-                    name={this.props.name}
-                    dateFormat="dd.MM.yyyy HH:mm" 
-                    selected={this.state.selectedDate}
-                    onChange={date => {this.handleChange(this.props.name, date)}}
-                    minDate={this.state.minDate}
-                    maxDate={repeat(this.state.availability.repeat) == 0 ? this.state.selectedDate : null}
-                    //filterDate={isWeekday}
-                    //excludeDates={this.state.excludeDateList}
-                
-                    showTimeSelect
-                    timeFormat="HH:mm"
-                    timeIntervals={this.state.availability.slotTimeInMinutes || 10}
-                    timeCaption="Uhrzeit"
-                    minTime={this.state.minTime}
-                    maxTime={this.state.maxTime}
-                    excludeTimes={this.state.excludeTimeList}
-                    
-                    dayClassName={dayClassName}
-                    //disabledKeyboardNavigation
-                    showDisabledMonthNavigation
-                    disabled={this.props.attributes.disabled}
-                />
-                {/*<div className="react-datepicker__day react-datepicker__day--disabled day__appointment">x</div>Vorhandene Terminkunden-Öffnungszeit<br />
-                <div className="react-datepicker__day react-datepicker__day--disabled day__openinghours">x</div>Vorhandene Spontankunden-Öffnungszeit*/}
+            <div className="grid">
+                <div className="grid__item one-half">
+                    <div className="form-group">
+                        <Label 
+                            attributes={{"htmlFor": this.props.attributes.id, "className": "light"}} 
+                            value={"startDate" == this.props.name ? "Datum von" : "Datum bis" }>
+                        </Label>    
+                        <div className="controls add-date-picker">
+                            <DatePicker 
+                                todayButton="Heute"
+                                locale="de" 
+                                className="form-control form-input" 
+                                id={this.props.attributes.id}
+                                name={this.props.name}
+                                dateFormat="dd.MM.yyyy" 
+                                selected={this.state.selectedDate}
+                                onChange={date => {this.handleChange(this.props.name, date)}}
+                                minDate={this.state.minDate}
+                                //maxDate={repeat(this.state.availability.repeat) == 0 ? this.state.selectedDate : null}
+                                //filterDate={isWeekday}
+                                //excludeDates={this.state.excludeDateList}                   
+                                dayClassName={dayClassName}
+                                disabled={this.props.attributes.disabled}
+                                onInputClick={this.openDatePicker}
+                                onKeyDown={this.dpKeyDownHandler}
+                                onClickOutside={this.closeDatePicker}
+                                strictParsing={true}
+                                open={this.state.datePickerIsOpen}
+                                ref={(datepicker) => { this.datepicker = datepicker }} 
+
+                            />
+                            <a href="#" className="calendar-placement icon" title="Kalender öffnen" onClick={this.handleCalendarIcon} onKeyDown={this.dpKeyDownHandler}>
+                                <i className="far fa-calendar-alt" alt="Kalender öffnen" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div className="grid__item one-half">
+                    <div className="form-group">
+                        <Label 
+                            attributes={{"htmlFor": this.props.attributes.id + "_time", "className": "light"}} 
+                            value={"startDate" == this.props.name ? "Uhrzeit von" : "Uhrzeit bis" }>
+                        </Label> 
+                        <div className="controls add-date-picker">
+                            <DatePicker
+                                name={this.props.name + "_time"}
+                                locale="de"
+                                className="form-control form-input" 
+                                id={this.props.attributes.id + "_time"}
+                                selected={this.state.selectedDate}
+                                onChange={date => {this.handleTimeChange(this.props.name, date)}}
+                                showTimeSelect
+                                showTimeSelectOnly
+                                dateFormat="HH:mm"
+                                timeFormat="HH:mm"
+                                timeIntervals={this.state.availability.slotTimeInMinutes || 10}
+                                timeCaption="Uhrzeit"
+                                minTime={this.state.minTime}
+                                maxTime={this.state.maxTime}
+                                excludeTimes={this.state.excludeTimeList}
+                                //filterTime={filterPassedTime}
+                                disabled={this.props.attributes.disabled}
+                                onInputClick={this.openTimePicker}
+                                onKeyDown={this.tpKeyDownHandler}
+                                onClickOutside={this.closeTimePicker}
+                                strictParsing={true}
+                                open={this.state.timePickerIsOpen}
+                                ref={(timepicker) => { this.timepicker = timepicker }} 
+                            />
+                            <a href="#" className="calendar-placement icon" title="Uhrzeitauswahl öffnen" onClick={this.handleClockIcon} onKeyDown={this.tpKeyDownHandler}>
+                                <i className="far fa-clock" alt="Uhrzeitauswahl öffnen" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         )
     }

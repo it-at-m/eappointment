@@ -21,8 +21,10 @@ class Datepicker extends React.Component {
     }
 
     componentDidMount(){
-        this.datepicker.input.accessKey = this.props.accessKey;
-        this.datepicker.input.ariaLive = "polite";
+        if (this.props.accessKey)
+            this.datepicker.input.accessKey = this.props.accessKey;
+        if (this.props.ariaLive)
+            this.datepicker.input.ariaLive = "polite";
 
         document.addEventListener("keydown", this.escHandler, false);
       }
@@ -34,14 +36,14 @@ class Datepicker extends React.Component {
     }
 
     keyDownHandler(event) {
-        event.preventDefault 
-        console.log(event.key)
         if (event.key === 'Enter') {
-          this.openDatePicker() 
+            event.preventDefault()
+            this.openDatePicker() 
         }
     }
 
-    handleIcon() {
+    handleIcon(event) {
+        event.preventDefault();
         this.openDatePicker()
         this.datepicker.input.focus();
     }

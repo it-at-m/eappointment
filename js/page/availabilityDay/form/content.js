@@ -23,41 +23,45 @@ const FormContent = (props) => {
         <div>
             <ErrorBar errorList={errorList} conflictList={conflictList} setErrorRef={setErrorRef} />
             <form className="form--base">
-                    <FormGroup>
-                        <Label attributes={{"htmlFor": "AvDayDescription"}}>Anmerkung</Label> 
-                        <Controls>
-                            <Inputs.Text 
-                                attributes={{ "id": "AvDayDescription", "aria-describedby": "help_AvDayDescription" }}
-                                name="description" 
-                                value={data.description} 
-                                {...{ onChange }} 
-                            />
-                            <Description attributes={{ "id": "help_AvDayDescription" }} value="Optionale Angabe zur Kennzeichnung des Termins.">
-                                {data.id ? " Die ID der Öffnungszeit ist " + data.id : " Die Öffnungszeit hat noch keine ID"}
-                            </Description>
-                        </Controls>
-                    </FormGroup>
-                    <FormGroup>
-                        <Label attributes={{"htmlFor": "AvDayType"}}>Typ</Label>
-                        <Controls>
-                            <Inputs.Select name="type"
-                                attributes={{ disabled: data.id ? 'disabled' : null, "id": "AvDayType" }}
-                                value={data.type ? data.type : 0} {...{ onChange }}
-                                options={availabilityTypes} />
-                        </Controls>
-                    </FormGroup>
-                    <FormGroup>
-                        <Label attributes={{"htmlFor": "AvDaySeries"}}>Serie</Label>
-                        <Controls>
-                            <Inputs.Select 
-                                name="repeat"
-                                attributes={{ "id": "AvDaySeries" }} 
-                                value={data.repeat} {...{ onChange }}
-                                options={availabilitySeries} />
-                        </Controls>
-                    </FormGroup>
-
-                    <fieldset>
+                <fieldset>
+                    <div className="panel--heavy">
+                        <FormGroup>
+                            <Label attributes={{"htmlFor": "AvDayDescription"}}>Anmerkung</Label> 
+                            <Controls>
+                                <Inputs.Text 
+                                    attributes={{ "id": "AvDayDescription", "aria-describedby": "help_AvDayDescription" }}
+                                    name="description" 
+                                    value={data.description} 
+                                    {...{ onChange }} 
+                                />
+                                <Description attributes={{ "id": "help_AvDayDescription" }} value="Optionale Angabe zur Kennzeichnung des Termins.">
+                                    {data.id ? " Die ID der Öffnungszeit ist " + data.id : " Die Öffnungszeit hat noch keine ID"}
+                                </Description>
+                            </Controls>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label attributes={{"htmlFor": "AvDayType"}}>Typ</Label>
+                            <Controls>
+                                <Inputs.Select name="type"
+                                    attributes={{ disabled: data.id ? 'disabled' : null, "id": "AvDayType" }}
+                                    value={data.type ? data.type : 0} {...{ onChange }}
+                                    options={availabilityTypes} />
+                            </Controls>
+                        </FormGroup>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <div className="panel--heavy">
+                        <FormGroup>
+                            <Label attributes={{"htmlFor": "AvDaySeries"}}>Serie</Label>
+                            <Controls>
+                                <Inputs.Select 
+                                    name="repeat"
+                                    attributes={{ "id": "AvDaySeries" }} 
+                                    value={data.repeat} {...{ onChange }}
+                                    options={availabilitySeries} />
+                            </Controls>
+                        </FormGroup>
                         <legend className="label">Wochentage</legend>
                         <FormGroup>
                             <Controls>
@@ -70,9 +74,10 @@ const FormContent = (props) => {
                                 />
                             </Controls>
                         </FormGroup>
-                    </fieldset>
-
-                    <fieldset>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <div className="panel--heavy">
                         <legend className="label">Terminabstand</legend>
                         <FormGroup inline={true}>    
                             <Controls>
@@ -93,33 +98,31 @@ const FormContent = (props) => {
                                 <Label>Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen</Label>
                             </Controls>
                         </FormGroup>
-                    </fieldset>
-                    
-                    <fieldset>
-                    <legend className="label">Öffnungszeit</legend>
-                        <FormGroup inline={true}>
-                            <Controls>
-                                <AvailabilityDatePicker attributes={{
-                                    "id": "AvDatesStart", 
-                                    "availabilitylist": availabilityList,
-                                    "availability": getDataValuesFromForm(data, data.scope),
-                                    "today": today,
-                                    "disabled": calenderDisabled
-                                }} name="startDate" {...{ onChange }} />
-                            </Controls>
-                            <Controls>
-                                <AvailabilityDatePicker attributes={{
-                                    "id": "AvDatesEnd", 
-                                    "availabilitylist": availabilityList,
-                                    "availability": getDataValuesFromForm(data, data.scope),
-                                    "today": today,
-                                    "disabled": calenderDisabled
-                                }} name="endDate" {...{ onChange }} />
-                            </Controls>
-                        </FormGroup> 
-                    </fieldset>
+                    </div>
+                </fieldset>
+                
+                <fieldset>
+                    <div className="panel--heavy">
+                        <legend className="label">Öffnungszeit</legend>
+                        <AvailabilityDatePicker attributes={{
+                            "id": "AvDatesStart", 
+                            "availabilitylist": availabilityList,
+                            "availability": getDataValuesFromForm(data, data.scope),
+                            "today": today,
+                            "disabled": calenderDisabled
+                        }} name="startDate" {...{ onChange }} />
+                        <AvailabilityDatePicker attributes={{
+                            "id": "AvDatesEnd", 
+                            "availabilitylist": availabilityList,
+                            "availability": getDataValuesFromForm(data, data.scope),
+                            "today": today,
+                            "disabled": calenderDisabled
+                        }} name="endDate" {...{ onChange }} />
+                    </div>
+                </fieldset>
 
-                    <fieldset>
+                <fieldset>
+                    <div className="panel--heavy">
                         <legend className="label">Buchbar</legend>
                         <FormGroup inline={true}>
                             <Controls>
@@ -143,65 +146,67 @@ const FormContent = (props) => {
                             </Controls>
                             <Description attributes={{ "id": "help_AvDayOpenfromto" }}>Tage im voraus (Keine Eingabe bedeutet die Einstellungen vom Standort zu übernehmen).</Description>
                         </FormGroup>
-                        
-                    </fieldset>
+                    </div>
+                </fieldset>
 
                 <fieldset>
-                    {data.type !== 'openinghours' ? <legend>Terminarbeitsplätze</legend> : null}
-                    {data.type !== 'openinghours' ?
-                        <div>
-                            <FormGroup>
-                                <Label attributes={{"htmlFor": "WsCountIntern"}}>Insgesamt</Label>
-                                <Controls>
-                                    <Inputs.Select name="workstationCount_intern"
-                                        value={data.workstationCount_intern}
-                                        attributes={{"id": "WsCountIntern"}}
-                                        {...{ onChange }}
-                                        options={range(0, 50).map(n => {
-                                            return {
-                                                value: `${n}`,
-                                                name: `${n}`
-                                            }
-                                        })} />
-                                </Controls>
-                            </FormGroup>
+                    <div className="panel--heavy">
+                        {data.type !== 'openinghours' ? <legend>Terminarbeitsplätze</legend> : null}
+                        {data.type !== 'openinghours' ?
+                            <div>
+                                <FormGroup>
+                                    <Label attributes={{"htmlFor": "WsCountIntern"}}>Insgesamt</Label>
+                                    <Controls>
+                                        <Inputs.Select name="workstationCount_intern"
+                                            value={data.workstationCount_intern}
+                                            attributes={{"id": "WsCountIntern"}}
+                                            {...{ onChange }}
+                                            options={range(0, 50).map(n => {
+                                                return {
+                                                    value: `${n}`,
+                                                    name: `${n}`
+                                                }
+                                            })} />
+                                    </Controls>
+                                </FormGroup>
 
-                            <FormGroup>
-                                <Label attributes={{"htmlFor": "WsCountCallcenter"}}>Callcenter</Label>
-                                <Controls>
-                                    <Inputs.Select name="workstationCount_callcenter"
-                                        value={data.workstationCount_callcenter}
-                                        attributes={{"id": "WsCountCallcenter", "aria-describedby": "help_WsCountCallcenter"}}
-                                        {...{ onChange }}
-                                        options={range(0, data.workstationCount_intern).map(n => {
-                                            return {
-                                                value: `${n}`,
-                                                name: `${n}`
-                                            }
-                                        })} />
-                                    <Description attributes={{"id": "help_WsCountCallcenter"}}>Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Callcenter zur Verfügung gestellt werden.</Description>
-                                </Controls>
-                            </FormGroup>
+                                <FormGroup>
+                                    <Label attributes={{"htmlFor": "WsCountCallcenter"}}>Callcenter</Label>
+                                    <Controls>
+                                        <Inputs.Select name="workstationCount_callcenter"
+                                            value={data.workstationCount_callcenter}
+                                            attributes={{"id": "WsCountCallcenter", "aria-describedby": "help_WsCountCallcenter"}}
+                                            {...{ onChange }}
+                                            options={range(0, data.workstationCount_intern).map(n => {
+                                                return {
+                                                    value: `${n}`,
+                                                    name: `${n}`
+                                                }
+                                            })} />
+                                        <Description attributes={{"id": "help_WsCountCallcenter"}}>Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Callcenter zur Verfügung gestellt werden.</Description>
+                                    </Controls>
+                                </FormGroup>
 
-                            <FormGroup>
-                                <Label attributes={{"htmlFor": "WsCountPublic"}}>Internet</Label>
-                                <Controls>
-                                    <Inputs.Select name="workstationCount_public"
-                                        value={data.workstationCount_public}
-                                        attributes={{"id": "WsCountPublic", "aria-describedby": "help_WsCountPublic"}}
-                                        {...{ onChange }}
-                                        options={range(0, data.workstationCount_intern).map(n => {
-                                            return {
-                                                value: `${n}`,
-                                                name: `${n}`
-                                            }
-                                        })} />
-                                    <Description attributes={{"htmlFor": "help_WsCountPublic"}}>Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Internet zur Verfügung gestellt werden.</Description>
-                                </Controls>
-                            </FormGroup>
+                                <FormGroup>
+                                    <Label attributes={{"htmlFor": "WsCountPublic"}}>Internet</Label>
+                                    <Controls>
+                                        <Inputs.Select name="workstationCount_public"
+                                            value={data.workstationCount_public}
+                                            attributes={{"id": "WsCountPublic", "aria-describedby": "help_WsCountPublic"}}
+                                            {...{ onChange }}
+                                            options={range(0, data.workstationCount_intern).map(n => {
+                                                return {
+                                                    value: `${n}`,
+                                                    name: `${n}`
+                                                }
+                                            })} />
+                                        <Description attributes={{"htmlFor": "help_WsCountPublic"}}>Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Internet zur Verfügung gestellt werden.</Description>
+                                    </Controls>
+                                </FormGroup>
+                            </div>
+                            : null}
                         </div>
-                        : null}
-                </fieldset>
+                    </fieldset>
             </form>
         </div>
     )
