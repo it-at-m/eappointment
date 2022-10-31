@@ -23,9 +23,18 @@ class WorkstationOAuth extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $oAuthCode  = $validator->getParameter('code')->isString()->isSmallerThan(120)->isBiggerThan(100);
+        $xAuthkey  = $validator->getParameter('X-Authkey')->isString()->getValue();
         $userData = Validator::input()->isJson()->getValue();
         $useraccount = $this->getUseraccount($userData);
+
+        //TODO: funktioniert nicht
+        /*
+        error_log("_____________11111111111_______________" . \BO\Zmsclient\Auth::getKey() );
+        error_log("_____________22222222222_______________" .  $xAuthkey );
+        if(\BO\Zmsclient\Auth::getKey() != $xAuthkey){
+            throw new \BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn();
+        }
+        */
 
         $workstation = (new Helper\User($request, $resolveReferences))->readWorkstation();
         Helper\User::testWorkstationIsOveraged($workstation);
