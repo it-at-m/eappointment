@@ -102,9 +102,14 @@ class QrCodeView extends Component {
     }
 
     render() {
+        const styles = {
+            border: '0px', 
+        };
         return (
-            <div className="qrCodeOverlay">
-                <iframe className="qrCodeView" />
+            <div className="lightbox">
+                <div className="lightbox__content" role="dialog" aria-modal="true">
+                    <iframe className="qrCodeView" width="405" height="450" style={styles} />
+                </div>
             </div>
         )
     }
