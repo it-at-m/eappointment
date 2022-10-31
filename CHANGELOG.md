@@ -4,6 +4,7 @@
 * #55530 - Accessibility for appointment selection with activated multiple slot option established
 * #55510 - The processing of opening hours has been improved and made more accessible. The selection of the date and time now works in the usual way
 * #55510 - Added some improvements for screen readers in opening hours
+* #55510 - add aria-describedby attribute to date and timepicker input fields
 
 ## v2.24.11
 * #55538, ##55534, #55561 - Adaptations for accessibility, headings added, contrast display revised, error messages clearly marked as errors
