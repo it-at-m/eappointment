@@ -1,6 +1,5 @@
 <?php
 /**
- * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -29,5 +28,46 @@ class Helper
             $pattern
         );
         return $dateFormatter->format($timestamp);
+    }
+
+    public static function hashQueryParameters(
+        string $section,
+        array $queryVariables,
+        array $parameters,
+        string $hashFunction = 'md5'
+    ) {
+        $content = $section;
+        foreach ($parameters as $parameter) {
+            if (isset($queryVariables[$parameter])) {
+                if (is_array($queryVariables[$parameter])) {
+                    $parameterArray = $queryVariables[$parameter];
+                    ksort($parameterArray);
+                    array_walk_recursive(
+                        $parameterArray,
+                        function ($value) use (&$flat) {
+                            $flat[] = strval($value);
+                        }
+                    );
+                    $content .= implode('', $flat);
+                } else {
+                    $content .= (string) $queryVariables[$parameter];
+                }
+            } else {
+                $content .= 'NULL';
+            }
+        }
+
+        $hashString = $hashFunction($content . \App::$urlSignatureSecret);
+        $firstHalf  = substr($hashString, 0, floor(strlen($hashString) / 2));
+        $secondHalf = substr($hashString, strlen($firstHalf));
+        $alphabet   = '0123456789' . implode(range('A', 'Z')) . implode(range('a', 'z'));
+        $rotation   = 31;
+        // reducing the hash to half its length by combining first half and second half
+        for ($i = 0; $i < strlen($firstHalf); $i++) {
+            $rotation = (strpos($alphabet, $firstHalf[$i]) + ord($secondHalf[$i]) + $rotation) % strlen($alphabet);
+            $firstHalf[$i] = $alphabet[$rotation];
+        }
+
+        return $firstHalf;
     }
 }
