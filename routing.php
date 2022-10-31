@@ -5593,10 +5593,10 @@ use \Psr\Http\Message\ResponseInterface;
  *          tags:
  *              - workstation
  *          parameters:
- *              -   name: code
- *                  description: Authorization code is used for exchanging for access token
+ *              -   name: X-Authkey
  *                  required: true
- *                  in: query
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
  *                  type: string
  *              -   name: resolveReferences
  *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
