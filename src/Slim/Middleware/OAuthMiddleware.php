@@ -54,9 +54,10 @@ class OAuthMiddleware
         $oauth->setAccessTokenPayload($request->getParam("code"), $request->getParam("state"));
 
         if($oauth->testAccessRight()){
-            $workstation = \App::$http->readPostResult('/workstation/oauth/', $oauth->getUserData(), ['code' => $request->getParam("code")] )->getEntity();
+            \BO\Zmsclient\Auth::setKey($request->getParam("code"));
+            $workstation = \App::$http->readPostResult('/workstation/oauth/', $oauth->getUserData(), ['X-Authkey' => \BO\Zmsclient\Auth::getKey()] )->getEntity();
 
-            if (array_key_exists('authkey', $workstation)) {
+            if ($workstation->offsetExists('authkey')) {
                 \BO\Zmsclient\Auth::setKey($workstation->authkey);
                 return true;
             }
