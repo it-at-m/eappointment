@@ -117,6 +117,7 @@ class QrCodeView extends Component {
 
 QrCodeView.propTypes = {
     targetUrl: PropTypes.string,
+    togglePopup: PropTypes.func
 }
 
 export default QrCodeView
