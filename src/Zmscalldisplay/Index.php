@@ -32,9 +32,24 @@ class Index extends BaseController
             ->isPath()
             ->setDefault('defaultplatz')
             ->getValue();
+        
         $calldisplayHelper = (new Helper\Calldisplay($request));
+        $parameters = $this->getDefaultParamters($request, $calldisplayHelper);
+        $parameters = $this->getHashedUrlParameter($request, $parameters);
+
         $calldisplay = $calldisplayHelper->getEntity();
-        $parameters  = [
+        $template = (new Helper\TemplateFinder($defaultTemplate))->setCustomizedTemplate($calldisplay);
+        return \BO\Slim\Render::withHtml(
+            $response,
+            $template->getTemplate(),
+            $parameters
+        );
+    }
+
+    protected function getDefaultParamters(RequestInterface $request, $calldisplayHelper)
+    {
+        $calldisplay = $calldisplayHelper->getEntity();
+        return [
             'debug' => \App::DEBUG,
             'queueStatusRequested' => implode(',', $calldisplayHelper::getRequestedQueueStatus($request)),
             'scopeList' => $calldisplay->getFullScopeList()->getIdsCsv(),
@@ -42,7 +57,10 @@ class Index extends BaseController
             'calldisplay' => $calldisplay,
             'showQrCode' => false,
         ];
+    }
 
+    protected function getHashedUrlParameter(RequestInterface $request, array $parameters)
+    {
         if ($request->getQueryParam('qrcode') && $request->getQueryParam('qrcode') == 1
             && ($request->getQueryParam('collections') || $request->getQueryParam('queue'))
         ) {
@@ -54,8 +72,13 @@ class Index extends BaseController
             $parameters['webcalldisplayUrl'] .= str_replace('/&', '/?', $uri->getQuery());
             $parameters['webcalldisplayUrl'] .= '&hmac=' . SlimHelper::hashQueryParameters(
                 'webcalldisplay',
-                ['collections' => $request->getQueryParam('collections'), 'queue' => $request->getQueryParam('queue')],
-                ['collections', 'queue']
+                [
+                    'collections' => $request->getQueryParam('collections'), 
+                    'queue' => $request->getQueryParam('queue')
+                ],
+                [   'collections', 
+                    'queue'
+                ]
             );
             $parameters['webcalldisplayUrl'] = str_replace(
                 '&qrcode=' . $request->getQueryParam('qrcode'),
@@ -63,12 +86,6 @@ class Index extends BaseController
                 $parameters['webcalldisplayUrl']
             );
         }
-
-        $template = (new Helper\TemplateFinder($defaultTemplate))->setCustomizedTemplate($calldisplay);
-        return \BO\Slim\Render::withHtml(
-            $response,
-            $template->getTemplate(),
-            $parameters
-        );
+        return $parameters;
     }
 }
