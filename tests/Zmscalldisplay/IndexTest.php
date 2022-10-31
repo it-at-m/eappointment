@@ -2,6 +2,8 @@
 
 namespace BO\Zmscalldisplay\Tests;
 
+use BO\Slim\Helper as SlimHelper;
+
 class IndexTest extends Base
 {
     protected $classname = "Index";
@@ -30,5 +32,34 @@ class IndexTest extends Base
             ]
         ], [ ]);
         $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        $this->assertStringNotContainsString('webcallUrlCode', (string) $response->getBody());
+
+    }
+
+    public function testWithQrCode()
+    {
+        $hash = SlimHelper::hashQueryParameters(
+            'webcalldisplay',
+            [
+                'collections' => [
+                    'scopelist' => '141',
+                    'clusterlist' => '110'
+                ],
+                'queue' => NULL
+            ],
+            [   
+                'collections',
+                'queue'
+            ]
+        );
+        $response = $this->render([ ], [
+            'collections' => [
+                'scopelist' => '141',
+                'clusterlist' => '110'
+            ],
+            'qrcode' => 1
+        ], [ ]);
+        $this->assertStringContainsString('webcallUrlCode', (string) $response->getBody());
+        $this->assertStringContainsString('&hmac='. $hash, (string) $response->getBody());
     }
 }
