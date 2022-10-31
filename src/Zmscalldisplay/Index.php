@@ -38,6 +38,7 @@ class Index extends BaseController
         $parameters = $this->getHashedUrlParameter($request, $parameters);
 
         $calldisplay = $calldisplayHelper->getEntity();
+
         $template = (new Helper\TemplateFinder($defaultTemplate))->setCustomizedTemplate($calldisplay);
         return \BO\Slim\Render::withHtml(
             $response,
@@ -61,15 +62,18 @@ class Index extends BaseController
 
     protected function getHashedUrlParameter(RequestInterface $request, array $parameters)
     {
-        if ($request->getQueryParam('qrcode') && $request->getQueryParam('qrcode') == 1
-            && ($request->getQueryParam('collections') || $request->getQueryParam('queue'))
+        if (
+            $request->getQueryParam('qrcode') && 
+            $request->getQueryParam('qrcode') == 1 && 
+            ($request->getQueryParam('collections') || $request->getQueryParam('queue'))
         ) {
+            $queryString = $this->getQueryString($request);
             $uri = $request->getUri();
             $parameters['showQrCode'] = true;
             $parameters['webcalldisplayUrl'] = $uri->getScheme() . '://'. $uri->getHost();
             $parameters['webcalldisplayUrl'] .= $uri->getPort() ? ':' . $uri->getPort() : '';
             $parameters['webcalldisplayUrl'] .= \App::$webcalldisplayUrl;
-            $parameters['webcalldisplayUrl'] .= str_replace('/&', '/?', $uri->getQuery());
+            $parameters['webcalldisplayUrl'] .= str_replace('/&', '/?', $queryString);
             $parameters['webcalldisplayUrl'] .= '&hmac=' . SlimHelper::hashQueryParameters(
                 'webcalldisplay',
                 [
@@ -87,5 +91,14 @@ class Index extends BaseController
             );
         }
         return $parameters;
+    }
+
+    // get full querystring also for unit tests
+    protected function getQueryString(RequestInterface $request)
+    {
+        $queryString = ($request->getUri()->getQuery()) ? 
+            $request->getUri()->getQuery() : 
+            '?'. http_build_query($request->getQueryParams());
+        return $queryString;
     }
 }
