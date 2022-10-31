@@ -15,6 +15,7 @@ class Bootstrap
     {
         Profiler::init();
         $bootstrap = self::getInstance();
+        $bootstrap->configureAppStatics();
         $bootstrap->configureSlim();
         $bootstrap->configureLocale();
         $bootstrap->configureLogger();
@@ -25,6 +26,13 @@ class Bootstrap
     {
         self::$instance = (self::$instance instanceof Bootstrap) ? self::$instance : new self();
         return self::$instance;
+    }
+
+    protected function configureAppStatics()
+    {
+        if (getenv('ZMS_URL_SIGNATURE_KEY') !== false) {
+            \App::$urlSignatureSecret = getenv('ZMS_URL_SIGNATURE_KEY');
+        }
     }
 
     protected function configureLocale(
