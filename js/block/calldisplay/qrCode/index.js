@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import $ from 'jquery'
 import qrGenerator from "qrcode-generator"
 
@@ -107,6 +108,10 @@ class QrCodeView extends Component {
             </div>
         )
     }
+}
+
+QrCodeView.propTypes = {
+    targetUrl: PropTypes.string,
 }
 
 export default QrCodeView
