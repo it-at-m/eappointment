@@ -7,7 +7,7 @@ import setMinutes from "date-fns/setMinutes";
 import DatePicker, { registerLocale } from 'react-datepicker'
 import {weekDayList, repeat} from '../helpers'
 import * as Inputs from '../../../lib/inputs'
-const { Label } = Inputs
+const { Label, Description } = Inputs
 import de from 'date-fns/locale/de';
 //import {formatTimestampDate} from "../helpers"
 registerLocale('de', de)
@@ -45,6 +45,7 @@ class AvailabilityDatePicker extends Component
         document.addEventListener("keydown", this.escHandler, false);
         this.datepicker.input.ariaLive = "polite";
         this.timepicker.input.ariaLive = "polite";
+
         this.updateState()
     }
 
@@ -273,6 +274,7 @@ class AvailabilityDatePicker extends Component
                                 locale="de" 
                                 className="form-control form-input" 
                                 id={this.props.attributes.id}
+                                ariaDescribedBy={"help_" + this.props.attributes.id}
                                 name={this.props.name}
                                 dateFormat="dd.MM.yyyy" 
                                 selected={this.state.selectedDate}
@@ -291,10 +293,11 @@ class AvailabilityDatePicker extends Component
                                 ref={(datepicker) => { this.datepicker = datepicker }} 
 
                             />
-                            <a href="#" className="calendar-placement icon" title={"startDate" == this.props.name ? "Kalender Datum von öffnen" : "Kalender Datum bis öffnen"} onClick={this.handleCalendarIcon} onKeyDown={this.dpKeyDownHandler}>
+                            <a aria-describedby={"help_" + this.props.attributes.id} href="#" className="calendar-placement icon" title={"startDate" == this.props.name ? "Kalender Datum von öffnen" : "Kalender Datum bis öffnen"} onClick={this.handleCalendarIcon} onKeyDown={this.dpKeyDownHandler}>
                                 <i className="far fa-calendar-alt" alt={"startDate" == this.props.name ? "Kalender Datum von öffnen" : "Kalender Datum bis öffnen"} />
                             </a>
                         </div>
+                        <Description attributes={{ "id": "help_" + this.props.attributes.id }} value="Eingabe des Datums im Format TT.MM.YYYY"></Description>
                     </div>
                 </div>
                 <div className="grid__item one-half">
@@ -308,6 +311,7 @@ class AvailabilityDatePicker extends Component
                                 name={this.props.name + "_time"}
                                 locale="de"
                                 className="form-control form-input" 
+                                ariaDescribedBy={"help_" + this.props.attributes.id + "_time"}
                                 id={this.props.attributes.id + "_time"}
                                 selected={this.state.selectedDate}
                                 onChange={date => {this.handleTimeChange(this.props.name, date)}}
@@ -329,10 +333,11 @@ class AvailabilityDatePicker extends Component
                                 open={this.state.timePickerIsOpen}
                                 ref={(timepicker) => { this.timepicker = timepicker }} 
                             />
-                            <a href="#" className="calendar-placement icon" title={"startDate" == this.props.name ? "Uhrzeit von wählen" : "Uhrzeit bis wählen"} onClick={this.handleClockIcon} onKeyDown={this.tpKeyDownHandler}>
+                            <a href="#" aria-describedby={"help_" + this.props.attributes.id + "_time"} className="calendar-placement icon" title={"startDate" == this.props.name ? "Uhrzeit von wählen" : "Uhrzeit bis wählen"} onClick={this.handleClockIcon} onKeyDown={this.tpKeyDownHandler}>
                                 <i className="far fa-clock" alt="Uhrzeitauswahl öffnen" />
                             </a>
                         </div>
+                        <Description attributes={{ "id": "help_" + this.props.attributes.id + "_time" }} value="Eingabe der Uhrzeit im Format HH:MM"></Description>
                     </div>
                 </div>
             </div>
