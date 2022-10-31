@@ -1,3 +1,6 @@
+## v2.24.12
+* #54692 - QR code initialization to call the webcalldisplay URL and Index class cleaned up and structured by separate functions
+
 ## v2.24.05
 
 * #53565 Performance: Separate call to the API for calculating the queue length and the waiting time. 
