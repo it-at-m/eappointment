@@ -1,4 +1,4 @@
-import { render } from 'react-dom'
+import {createRoot} from 'react-dom/client';
 import React from 'react'
 import { getDataAttributes } from '../lib/utils'
 
@@ -7,9 +7,10 @@ export default (selector, Component) => {
 
     if (elements) {
         elements.forEach(element => {
+            const root = createRoot(element);
             const props = getDataAttributes(element)
 
-            render(<Component {...props} />, element)
+            root.render(<Component {...props} />)
         })
     }
 }

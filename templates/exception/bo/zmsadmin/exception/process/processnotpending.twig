@@ -6,7 +6,7 @@
             Vorgang ist kein Abholer
         </h2>
         <p>
-            Der gewählte Vorgang ist noch nicht als Abholer markiert und kann nicht aufgerufen werden.
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Der gewählte Vorgang ist noch nicht als Abholer markiert und kann nicht aufgerufen werden.{% endtrans %}
         </p>
         <div class="form-actions">
             <a class="btn button-cancel button-callback right" href="#">Abbrechen</a>

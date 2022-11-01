@@ -1,7 +1,29 @@
+## v2.24.12
+* #55539 - aria live describing service list changes
+* #55539 - aria-live attribute only to selected regions
+* #55530 - Accessibility for appointment selection with activated multiple slot option established
+* #55510 - The processing of opening hours has been improved and made more accessible. The selection of the date and time now works in the usual way
+* #55510 - Added some improvements for screen readers in opening hours
+* #55510 - add aria-describedby attribute to date and timepicker input fields
+
+## v2.24.11
+* #55538, ##55534, #55561 - Adaptations for accessibility, headings added, contrast display revised, error messages clearly marked as errors
+* #55531 - Set the focus on the first error message in the form and revise the label semantic with included error messages
+* #55526 - Table actions are now also placed above the tables to avoid long scrolling
+* #55625 - Revising the presentation of email templates in system configuration
+* #55509 - Checkboxes and radionbuttons now have a unique ID, the dialog lightboxes now have a focus trap and when closing the lightbox the previous element is focused 
+* #55525 - Datepicker React component reworked with an additional calendar icon
+
+## v2.24.10
+* #55389 - Keycloak OpenID-Connect as additional login solution tested
+* #55117 - View of mailing configurations has been extended with the appointment overviews
+* #31338 - notification headsup time calculated to selected appointment
+
 ## v2.24.09
 
 * #55077 Links and holidays that can be assigned to an authority are now checked if they exist
 * #55078 A separate SMS message is now sent for spontaneous customers when their transaction is canceled
+* #34087 Config variables can now be changed by superuser
 
 
 ## v2.24.05

@@ -21,6 +21,9 @@ class View extends BaseView {
         this.bindPublicMethods('cleanInstance', 'bindEvents', 'loadClientNext', 'setTimeSinceCall', 'loadCalled', 'loadProcessing');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
+        $(() => {
+            this.setCurrentTime();
+        });
         //console.log('Component: Client', this, options);
         if (this.processId)
             this.loadCall();
@@ -150,7 +153,6 @@ class View extends BaseView {
     cleanInstance() {
         clearTimeout(window.refreshCounter);
         clearTimeout(this.refreshCurrentTime);
-        this.setCurrentTime();
         this.calledProcess = 0;
     }
 
@@ -158,11 +160,8 @@ class View extends BaseView {
         var time = new Date();
         var hour = time.getHours();
         var minute = time.getMinutes();
-        var second = time.getSeconds();
-        var temp = hour;
-        if (second % 2) temp += ((minute < 10) ? ":0" : ":") + minute;
-        else temp += ((minute < 10) ? " 0" : " ") + minute;
-        $('.currentTime').text(temp);
+        var temp = hour + ((minute < 10) ? ":0" : ":") + minute;
+        $('.currentTime').text(temp + " Uhr");
         this.refreshCurrentTime = setTimeout(() => {
             this.setCurrentTime()
         }, 1000);

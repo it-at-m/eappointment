@@ -12,16 +12,16 @@
 
 {% for date,item in freeProcessList %}
     {% if (selectedTime and selectedTime == date|date("H-i")) or selectedProcessTime == date|date("H-i") %}
-        {% set selected = "selected" %}
+        {% set selected = true %}
     {% else %}
-        {% set selected = "" %}
+        {% set selected = false %}
     {% endif %}
 
     {% set freeLength = item|length %}
     {% if freeLength > 0 and selectedProcessTime == date|date("H-i") and selectedProcessDate == date|date("Y-m-d") %}
         {% set freeLength = freeLength - 1 %}
     {% endif %}
-    {% set timeSlotOptions = timeSlotOptions|merge([{"data": {"scope": item|first.scope.id, "free": freeLength}, "value": date|date("H-i"), "name": date|date("H:i") ~ " (noch " ~ freeLength ~ " frei)", "selected": selected }]) %}
+    {% set timeSlotOptions = timeSlotOptions|merge([{"data": {"scope": item|first.scope.id, "free": freeLength}, "value": date|date("H-i"), "name": date|date("H:i") ~ " (noch " ~ freeLength ~ " frei)", "selected": selected}]) %}
 {% endfor %}
 
 {% set disabled = "" %}
@@ -35,6 +35,7 @@
         "type": "select",
         "parameter": {
             "accesskey":"z",
+            "arialive": "polite",
             "disabled":disabled,
             "id": "process_time",
             "name": "selectedtime",

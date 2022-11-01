@@ -34,7 +34,7 @@
                         {% set freeAppointmentsTitle = "noch bis zu %d Termine frei"|format(item.freeAppointments.intern) %}
                     {% endif %}
 
-                    {% set class = "mark mark--positive" %}
+                    {% set class = "mark" %}
                     {% set sundayDate = "" %}
                     {% set setSelectedDate = "" %}
                     {% set holidayDate = "" %}
@@ -48,7 +48,7 @@
                     {% endif %}
 
                     {% if item.status == 'notBookable' %}
-                        {% set class = "disabled closed" %}
+                        {% set class = "closed" %}
                         {% set freeAppointmentsTitle = "an diesem Tag sind keine Termine möglich" %}
                     {% elseif item.status == 'full' %}
                         {% set class = "mark mark--destructive" %}
@@ -62,12 +62,14 @@
                         {% set sundayDate = " sunday" %}
                     {% endif %}
                     
-                    <td data-date="{{ dayString }}" title="{{ dayString|localizeddate("short","none",NULL,NULL,"EE dd. MMMM y") }} - {{ freeAppointmentsTitle }}" class="calendar__tile {% if isToday %}today {% endif %}{{ class }}{{ holidayDate }}{{ setSelectedDate }}{{ sundayDate }}">
-                        {% if ((dow == 6 and item.status != "bookable") or item.status == "restricted" or dayString|date("U") <= getNow()|date("U")) and not isToday %}
-                            {{ item.day }}
-                        {% else %}
-                            <a href="#" data-date="{{dayString}}" title="{{ dayString|localizeddate("short","none",NULL,NULL,"EE dd. MMMM y") }} - {{ freeAppointmentsTitle }}">{{ item.day }}</a>
-                        {% endif %}
+                    <td>
+                        <div data-date="{{ dayString }}" title="{{ dayString|localizeddate("short","none",NULL,NULL,"EE dd. MMMM y") }} - {{ freeAppointmentsTitle }}" class="calendar__tile {% if isToday %}today small {% endif %}{{ class }}{{ holidayDate }}{{ setSelectedDate }}{{ sundayDate }}">
+                            {% if ((dow == 6 and item.status != "bookable") or item.status == "restricted" or dayString|date("U") <= getNow()|date("U")) and not isToday %}
+                                <span class="day">{{ item.day }}</span>
+                            {% else %}
+                                <a class="day" href="#" data-date="{{dayString}}" title="{{ dayString|localizeddate("short","none",NULL,NULL,"EE dd. MMMM y") }} - {{ freeAppointmentsTitle }}">{{ item.day }}</a>
+                            {% endif %}
+                        </div>
                     </td>
 
                     {% if loop.last and dow != 6 %}

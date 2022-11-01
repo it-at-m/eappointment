@@ -9,13 +9,14 @@ import $ from "jquery";
 import moment from 'moment/min/moment-with-locales';
 
 // Import Views
-import AccessKeyView from './page/accesskeys'
+//import AccessKeyView from './page/accesskeys'
 import EmergencyView from './block/emergency'
 //import LoginFormView from './block/index/loginform'
 //import DepartmentLinksView from './block/department/links'
 //import DepartmentDaysOffView from './block/department/daysOff'
 //import TicketPrinterConfigView from './block/ticketprinter/config'
 //import CallDisplayConfigView from './block/calldisplay/config'
+import ConfigView from './page/config'
 import CounterView from './page/counter'
 import WorkstationView from './page/workstation'
 import UseraccountView from './page/useraccount'
@@ -33,6 +34,7 @@ import printWaitingNumber from './page/waitingnumber/print'
 import { getDataAttributes, forceHttps } from './lib/utils'
 
 import preventFormResubmit from './element/form/preventFormResubmit'
+import focusFirstErrorElement from './element/form/focusFirstErrorElement'
 import maxChars from './element/form/maxChars'
 import DialogHandler from './lib/dialogHandler'
 
@@ -71,7 +73,7 @@ moment.locale('de')
 forceHttps();
 
 // Init Views
-new AccessKeyView(document);
+//new AccessKeyView(document);
 
 loadResources();
 
@@ -99,6 +101,11 @@ $('.calendar-weektable').each(function () {
     new WeekCalendarPage(this, getDataAttributes(this));
 })
 
+$('.config-view').each(function () {
+    new ConfigView(this, getDataAttributes(this));
+})
+
+
 $('[data-scope-select-form]').each(function () {
     new LoginScopeSelectView(this, getDataAttributes(this));
 })
@@ -121,6 +128,7 @@ $('.client-processed').each(function () {
 
 $('form').each(function () {
     preventFormResubmit(this);
+    focusFirstErrorElement(this);
 })
 
 $('textarea.maxchars').each(function () {
