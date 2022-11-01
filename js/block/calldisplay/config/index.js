@@ -29,7 +29,7 @@ const readPropsScope = scope => {
 class CallDisplayConfigView extends Component {
     constructor(props) {
         super(props)
-
+        this.includeurl = props.includeurl || "";
         //console.log('CallDisplayConfigView::constructor', props)
 
         this.state = {
@@ -141,9 +141,9 @@ class CallDisplayConfigView extends Component {
         if (this.state.queueStatus !== 'all') {
             signingData.parameters.queue.status = this.state.queueStatus
         }
-
+        const signParametersUrl = this.includeurl + '/sign/parameters/'
         fetch(
-            '/admin/sign/parameters/',
+            signParametersUrl,
             {
                 method: 'POST',
                 cache: 'no-cache',
@@ -337,6 +337,7 @@ class CallDisplayConfigView extends Component {
 }
 
 CallDisplayConfigView.propTypes = {
+    includeurl: PropTypes.string,
     departments: PropTypes.array,
     organisation: PropTypes.object,
     config: PropTypes.shape({
