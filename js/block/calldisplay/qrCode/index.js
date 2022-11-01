@@ -2,27 +2,49 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import $ from 'jquery'
 import qrGenerator from "qrcode-generator"
+import FocusTrap from 'focus-trap-react'
 
 class QrCodeView extends Component {
     constructor(props) {
         super(props)
+        this.ref = React.createRef();
+        this.handleTogglePopup = this.handleTogglePopup.bind(this);
+        this.handleClickOutside = this.handleClickOutside.bind(this);
+        this.keyDownHandler = this.keyDownHandler.bind(this);
+    }
 
-        window.setTimeout(() => {
-            this.initQrCode(props.targetUrl)
-        }, 1000)
+    componentDidMount() {
+        this.initQrCode(this.props.targetUrl)
+        document.addEventListener("keydown", this.keyDownHandler, true);
+        document.addEventListener("mousedown", this.handleClickOutside);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.keyDownHandler, true);
+        document.removeEventListener("mousedown", this.handleClickOutside);
+    }
+
+    handleClickOutside(event) {
+        if (this.ref && !this.ref.current.contains(event.target)) {
+            this.handleTogglePopup(event);
+        }
+      }
+
+    handleTogglePopup(event) {
+        event.preventDefault()
+        this.props.togglePopup()
+    }
+
+    keyDownHandler(event) {
+        if (event.key === "Escape") {
+            this.handleTogglePopup(event);
+        }
     }
 
     initQrCode(targetUrl) {
         let frameDocument = $('iframe.qrCodeView')[0].contentWindow.document
         let frameHead = frameDocument.getElementsByTagName('head')[0]
         let frameBody = frameDocument.getElementsByTagName('body')[0]
-
-        let linkElement = frameDocument.createElement('link')
-        linkElement.type = 'text/css'
-        linkElement.rel = 'stylesheet'
-        linkElement.href = '/admin/_css/admin.css'
-
-        frameHead.appendChild(linkElement)
 
         let styleElement = frameDocument.createElement('style')
         styleElement.appendChild(frameDocument.createTextNode(
@@ -34,28 +56,7 @@ class QrCodeView extends Component {
         qrCodeCanvas.className = 'qrCode'
         qrCodeCanvas.width = '400'
         qrCodeCanvas.height = '400'
-        qrCodeCanvas.style = 'position: absolute; top: 46px; left: 4px;'
 
-        let printButton = frameDocument.createElement('button')
-        printButton.style = 'position: absolute; top: 10px; left: 10px; height:24px; min-height: 0; padding:2px;'
-        printButton.className = 'button no-print'
-        printButton.innerHTML = 'Drucken'
-        printButton.onclick = (event) => {
-            event.preventDefault()
-            $('iframe.qrCodeView')[0].contentWindow.print()
-        }
-
-        let closeButton = frameDocument.createElement('button')
-        closeButton.style = 'position: absolute; top: 10px; right: 10px; width: 24px; height:24px; min-height: 0; padding:2px;'
-        closeButton.className = 'button button--destructive no-print'
-        closeButton.innerHTML = '&#10005;'
-        closeButton.onclick = (event) => {
-            event.preventDefault()
-            this.props.togglePopup()
-        }
-
-        frameBody.append(printButton);
-        frameBody.append(closeButton);
         frameBody.append(qrCodeCanvas);
 
         let options = {
@@ -103,14 +104,26 @@ class QrCodeView extends Component {
 
     render() {
         const styles = {
-            border: '0px', 
+            border: '0px',
+            marginLeft: '-8px'
+        };
+        const headerstyles = {
+            backgroundColor: '#cccccc', 
+            padding: '5px',
+            marginBottom: '-8px'
         };
         return (
             <div className="lightbox">
-                <div className="lightbox__content" role="dialog" aria-modal="true">
-                    <iframe className="qrCodeView" width="405" height="450" style={styles} />
-                </div>
-            </div>
+                <FocusTrap>
+                    <div className="lightbox__content trap" role="dialog" aria-modal="true" ref={this.ref}>
+                        <div className="form-actions" style={headerstyles}>
+                            <button className="button no-print" onClick={(event) => {event.preventDefault(); $('iframe.qrCodeView')[0].contentWindow.print()}}>Drucken</button>
+                            <button className="button button--destructive no-print" onClick={(event) => {this.handleTogglePopup(event);}}>X</button>
+                        </div>
+                        <iframe className="qrCodeView" width="400" height="400" style={styles} />
+                    </div>
+                </FocusTrap>
+            </div>       
         )
     }
 }
