@@ -62,6 +62,7 @@ class Index extends BaseController
 
     protected function getHashedUrlParameter(RequestInterface $request, array $parameters)
     {
+        $config = \App::$http->readGetResult('/config/')->getEntity();
         if ($request->getQueryParam('qrcode') &&
             $request->getQueryParam('qrcode') == 1 &&
             ($request->getQueryParam('collections') || $request->getQueryParam('queue'))
@@ -71,8 +72,8 @@ class Index extends BaseController
             $parameters['showQrCode'] = true;
             $parameters['webcalldisplayUrl'] = $uri->getScheme() . '://'. $uri->getHost();
             $parameters['webcalldisplayUrl'] .= $uri->getPort() ? ':' . $uri->getPort() : '';
-            $parameters['webcalldisplayUrl'] .= \App::$webcalldisplayUrl;
-            $parameters['webcalldisplayUrl'] .= str_replace('/&', '/?', $queryString);
+            $parameters['webcalldisplayUrl'] .= $config->toProperty()->webcalldisplay->baseUrl->get();
+            $parameters['webcalldisplayUrl'] .= str_replace('/&', '?', $queryString);
             $parameters['webcalldisplayUrl'] .= '&hmac=' . SlimHelper::hashQueryParameters(
                 'webcalldisplay',
                 [

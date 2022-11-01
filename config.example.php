@@ -18,9 +18,6 @@ class App extends \BO\Zmscalldisplay\Application
     ];
 }
 
-if (getenv('ZMS_WEBCALL_DISPLAY_URL')) {
-    App::$webcalldisplayUrl = getenv('ZMS_WEBCALL_DISPLAY_URL');
-}
 if (getenv('ZMS_TIMEADJUST')) {
     App::$now = new DateTimeImmutable(date(getenv('ZMS_TIMEADJUST')), new DateTimeZone('Europe/Berlin'));
 }

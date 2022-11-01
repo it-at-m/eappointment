@@ -18,6 +18,11 @@ class IndexCustomizedClusterTest extends Base
                 'function' => 'readPostResult',
                 'url' => '/calldisplay/',
                 'response' => $this->readFixture("GET_calldisplay_cluster_118.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/config/',
+                'response' => $this->readFixture("GET_config.json")
             ]
         ];
     }
