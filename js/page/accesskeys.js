@@ -33,7 +33,7 @@ class View extends BaseView {
             var $elms = $main.find(selectors).filter(':visible');//.first();
             console.log($elms);
             if ($elms.length) {
-                $elms.first().focus();
+                $elms.first().trigger('focus');
                 return true; 
             }
             return false;
@@ -43,6 +43,8 @@ class View extends BaseView {
         };
 
 		$main.off().on('keydown', ':not(input, textarea, select)', (keyEvent) => {
+
+            console.log(keyEvent)
             
 			var isModifierKey = !!keyEvent.metaKey || !!keyEvent.ctrlKey || !!keyEvent.shiftKey;
 			var key = keyEvent.key;
@@ -54,7 +56,7 @@ class View extends BaseView {
 			if (!targetIsInputElement && !isModifierKey && !isReturnKey && keySelectorMap[key]) {
 				if (focusKey(key)) {
 					if (key === 'm') {
-						$('#process_date').click();
+						$('#process_date').trigger('click');
 					}   
 					console.log('default prevented');
 					keyEvent.preventDefault();

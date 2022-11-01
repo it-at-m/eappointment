@@ -14,9 +14,8 @@ class DialogHandler {
         this.returnTarget = options.returnTarget;
         this.parent = options.parent;
         this.loader = options.loader || (() => { });
-        this.bindEvents();
         this.render();
-        this.addFocusTrap();
+        this.bindEvents();
         //console.log('dialogHandler.js');
     }
 
@@ -26,13 +25,14 @@ class DialogHandler {
         if (content.length == 0) {
             var message = $(this.response).find('.dialog');
             if (message.length > 0) {
-                content = message.get(0).outerHTML;
+                content = message;
             }
         }
         if (content.length == 0) {
-            new ExceptionHandler(this.$main, { 'message': this.response });
+            new ExceptionHandler(this.$main, { 'message': this.message, 'callback': this.callback });
         } else {
             this.$main.html(content);
+            this.addFocusTrap(this.$main);
         }
 
         $('textarea.maxchars').each(function () {
@@ -45,23 +45,26 @@ class DialogHandler {
             ev.preventDefault();
             ev.stopPropagation();
             this.callback(ev);
+            this.removeFocusTrap(this.$main);
         }).on('click', '.button-abort', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.abortCallback(ev);
+            this.removeFocusTrap(this.$main);
         }).on('click', '.button-callback', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             var callback = $(ev.target).data('callback');
             this.callback = this.parent[callback];
             this.callback(ev);
+            this.removeFocusTrap(this.$main);
         }).on('keydown', (ev) => {
-            var key = ev.keyCode || ev.which;
-            switch(key) {
-            case 27: // ESC    
+            switch(ev.key) {
+            case 'Escape': // ESC    
                 ev.preventDefault();
                 ev.stopPropagation();
                 this.abortCallback(ev);
+                this.removeFocusTrap(this.$main);
                 break;
             }
         });
@@ -79,12 +82,18 @@ class DialogHandler {
         }
     }
 
-    addFocusTrap() {
+    removeFocusTrap(elem) {
+        var tabbable = elem.find('select, input, textarea, button, a, *[role="button"]');
+        tabbable.unbind('keydown');
+    }
+
+    addFocusTrap(elem) {
         // Get all focusable elements inside our trap container
-        var tabbable = this.$main.find('select, input, textarea, button, a, *[role="button"]');
+        var tabbable = elem.find('select, input, textarea, button, a, *[role="button"]');
         // Focus the first element
         if (tabbable.length ) {
             tabbable.filter(':visible').first().focus();
+            //console.log(tabbable.filter(':visible').first());
         }
         tabbable.bind('keydown', function (e) {
             if (e.keyCode === 9) { // TAB pressed

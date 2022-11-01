@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import BaseView from './baseview'
+import focusFirstErrorElement from '../element/form/focusFirstErrorElement'
 
 class ValidationHandler extends BaseView {
 
@@ -24,14 +25,17 @@ class ValidationHandler extends BaseView {
                     return false;
                 }
                 $(element).closest('.form-group').addClass('has-error')
+                $(element).closest('.form-group').addClass('is-invalid')
                 $(element).closest('.controls').append(this.createDomList(this.errors[key], key, element))
             })
         })
         this.scope.bindEvents()
+        focusFirstErrorElement(this.$main);
     }
 
     createDomList(item, key, element) {
-        let labelId = element.getAttribute('id') || (key == 'requests') ? 'deselect-' + key : key ;
+        let labelId = element.getAttribute('id');
+        labelId = (key == 'requests') ? 'deselect-' + key : labelId; 
         let list = document.createElement("ul");
         list.classList.add(`error-list`);
         list.classList.add(`list--clean`);
@@ -41,8 +45,14 @@ class ValidationHandler extends BaseView {
         list.setAttribute(`aria-describedby`, labelId)
         Object.values(item.messages).forEach((messageElement) => {
             let listItem = document.createElement("li")
+            let exclamationItem = document.createElement("i")
+            exclamationItem.setAttribute('alt', 'Fehler: ' + messageElement.message);
+            exclamationItem.setAttribute('title', 'Fehler: ' + messageElement.message);
+            exclamationItem.classList.add('fas');
+            exclamationItem.classList.add('fa-exclamation-circle');
             listItem.setAttribute('data-key', key);
-            listItem.appendChild(document.createTextNode(messageElement.message));
+            listItem.appendChild(exclamationItem);
+            listItem.appendChild(document.createTextNode(' Fehler: ' + messageElement.message));
             list.appendChild(listItem)
         })
         return list;
@@ -51,6 +61,7 @@ class ValidationHandler extends BaseView {
     getValidationErrorList() {
         $("ul.error-list").remove();
         $(".has-error").removeClass("has-error");
+        $(".is-invalid").removeClass("is-invalid");
         Object.entries(this.response).forEach((item) => {
             if (item[1].failed) {
                 Object.assign(this.errors, { [item[0]]: item[1] });

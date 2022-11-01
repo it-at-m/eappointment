@@ -31,6 +31,7 @@
                             "type":"textarea",
                             "parameter": {
                                 "name": "message",
+                                "required": true,
                                 "rows": "6",
                                 "maxlength": 160,
                             }
@@ -81,8 +82,10 @@
                     {{ inputfield({ "name": "selectedprocess", "type":"hidden", "value":process.id }) }}
 
                     <div class="form-actions">
-                        <a class="button button--diamond button-abort" href="{{ urlGet(redirect, {}, {}) }}">schließen</a>
-                        <a class="button button--default button-ok button-submit" href="{{ urlGet(redirect, {}, {}) }}">abschicken</a>
+                        <div class="right">
+                            <button type="button" class="button button--diamond button-abort">schließen</button>
+                            <button type="button" class="button button--default button-ok button-submit">abschicken</button>
+                        </div>
                     </div>
                 {% endif %}
             </form>

@@ -1,6 +1,6 @@
-<p aria-live="off" aria-label="Aktuelle Uhrzeit">
-    <span class="currentTime" id="currentTime">{{ now|date("H:i") }}</span> Uhr
-</p>
+<time datetime="{{ getNow()|date("c") }}">
+   <abbr class="currentTime" id="currentTime" aria-live="off" role="timer" aria-label="Aktuelle Uhrzeit">{{ getNow()|date("H:i") }} Uhr</abbr>
+</time>
 
 {% if workstationInfo.waitingTimeEstimate %}
     | Wartezeit:

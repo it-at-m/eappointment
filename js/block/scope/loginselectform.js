@@ -1,4 +1,5 @@
 import BaseView from "../../lib/baseview"
+import $ from 'jquery'
 
 class View extends BaseView {
 
@@ -6,7 +7,7 @@ class View extends BaseView {
         super(element, options);
         this.includeUrl = options.includeurl
         this.today = this.options.today
-        this.$.ready(() => {
+        $(() => {
             this.scopeId = this.$main.find('select[name=scope]').val() || null;
             this.bindEvents();
             this.update();

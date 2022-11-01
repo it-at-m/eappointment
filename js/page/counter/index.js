@@ -23,11 +23,11 @@ class View extends Workstation {
             //console.log("lost Focus");
             clearTimeout(this.reloadTimer);
         }
-        this.$main.find('[data-queue-table], [data-queue-info]').mouseenter(() => {
+        this.$main.find('[data-queue-table], [data-queue-info]').on("mouseenter", () => {
             //console.log("stop Reload on mouse enter");
             clearTimeout(this.reloadTimer);
         });
-        this.$main.find('[data-queue-table], [data-queue-info]').mouseleave(() => {
+        this.$main.find('[data-queue-table], [data-queue-info]').on("mouseleave", () => {
             //console.log("start reload on mouse leave");
             this.setReloadTimer();
         });

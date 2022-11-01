@@ -59,10 +59,8 @@
             <ul class="nav__list">
             {% for link in workstation.linkList %}
                 <li class="nav__link">
-                    <a class="{% if link.target %}extern{% endif %}" href="{{link.url}}" {% if link.target %}target="_blank"{% endif %}>
-                    {% if link.public %}<i>{% endif %}
+                    <a class="{% if link.target %}extern{% endif %} {% if link.public %}public{% endif %}" href="{{link.url}}" {% if link.target %}target="_blank"{% endif %}>
                     {{link.name}}
-                    {% if link.public %}</i>{% endif %}
                     </a>
                 </li>
             {% endfor %}

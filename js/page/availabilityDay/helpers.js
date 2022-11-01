@@ -64,7 +64,7 @@ export const getInitialState = (props) => Object.assign({}, {
     formTitle: null,
     lastSave: null,
     stateChanged: false,
-    selectedTab: 'graph',
+    selectedTab: 'table',
 }, getStateFromProps(props))
 
 export const getNewAvailability = (timestamp, tempId, scope) => {
@@ -120,13 +120,13 @@ export const availabilityTypes = [
 ]
 
 export const weekDayList=[
-    { value: "monday", label: "Mo" },
-    { value: "tuesday", label: "Di" },
-    { value: "wednesday", label: "Mi" },
-    { value: "thursday", label: "Do" },
-    { value: "friday", label: "Fr" },
-    { value: "saturday", label: "Sa" },
-    { value: "sunday", label: "So" }
+    { value: "monday", label: "Montag" },
+    { value: "tuesday", label: "Dienstag" },
+    { value: "wednesday", label: "Mittwoch" },
+    { value: "thursday", label: "Donnerstag" },
+    { value: "friday", label: "Freitag" },
+    { value: "saturday", label: "Samstag" },
+    { value: "sunday", label: "Sonntag" }
 ]
 
 export const availabilitySeries=[
@@ -290,7 +290,7 @@ export const accordionTitle = (data) => {
     const availabilityWeekDay = weekDayList.filter(element => availabilityWeekDayList.includes(element.value)
     ).map(item => item.label).join(', ')
     let description = (data.description) ? `: ${data.description}` : "";
-    let type = (availabilityType && availabilityWeekDay) ? ` (${availabilityType.name}, ${availabilityWeekDay})` : "";
-    return `${startDate} - ${endDate}, ${startTime} - ${endTime}${type}${description}`
+    let type = (availabilityType && availabilityWeekDay) ? ` Typ: ${availabilityType.name}, Wochentag: ${availabilityWeekDay}` : "";
+    return `Zeitraum: ${startDate} bis ${endDate}, Uhrzeit: von ${startTime} bis ${endTime}, ${type}${description}`
         
 }

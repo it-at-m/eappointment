@@ -25,16 +25,7 @@ class Useraccount extends BaseController
         // API call to ownerlist is already restricted to user rights
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
         if ($workstation->hasSuperUseraccount()) {
-            $collection = \App::$http
-                ->readGetResult(
-                    "/useraccount/",
-                    [
-                        "resolveReferences" => 0,
-                        "right" => "superuser",
-                    ]
-                )
-                ->getCollection()
-                ;
+            $collection = \App::$http->readGetResult("/useraccount/", ["resolveReferences" => 0])->getCollection();
         } else {
             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
             $departmentList = $workstation->getUseraccount()->getDepartmentList();

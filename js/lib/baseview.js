@@ -115,7 +115,8 @@ class BaseView extends ErrorHandler {
         if (!$container) {
             $container = this.$main;
         }
-        $container.find('.form-actions').hide();
+        
+        //$container.find('.form-actions').hide();
         const { lightboxContentElement, destroyLightbox } = lightbox($container, () => {
             destroyLightbox();
             returnTarget.focus();

@@ -17,14 +17,14 @@
     >
         <div class="grid">
             <div class="grid__item three-twelfths">
-                <div data-queue-info aria-live="polite" id="liveregionInfoContainer">
+                <div data-queue-info id="liveregionInfoContainer">
                  {% include "block/queue/infoContainer.twig" %}
                 </div>
                 <div data-appointment-times aria-live="polite" id="liveregionTimes">
                  {% include "block/appointment/times.twig" %}
                 </div>
             </div>
-            <div class="grid__item six-twelfths" aria-live="polite" id="liveregionAppointmentForm" data-appointment-form>
+            <div class="grid__item six-twelfths" id="liveregionAppointmentForm" data-appointment-form>
             {% include "block/appointment/formContainer.twig" %}
             </div>
             <div class="grid__item three-twelfths" aria-live="off" id="liveregionCalendarBox" data-calendar-box>

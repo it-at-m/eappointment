@@ -41,7 +41,7 @@ const Conflicts = (props) => {
     })
     return (
         conflicts.length ? 
-        <div className="message message--error" role="alert">
+        <div className="message message--error" role="alert" aria-live="polite">
             <h3>Folgende Zeiten führen mit der aktuellen Auswahl zu Konflikten:</h3>
             {renderConflictList(conflicts)}
         </div> : null
