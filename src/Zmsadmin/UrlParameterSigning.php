@@ -19,6 +19,7 @@ use BO\Zmsentities\Helper\Property;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request as SlimRequest;
+
 /**
  * returning Signatures for signing requests
  */
