@@ -213,7 +213,7 @@ class CallDisplayConfigView extends Component {
             <fieldset>
                 <legend className="label">QR-Code für Aufrufanzeige</legend>
                 <div key="qrcodeEnabled" className="form-check ticketprinter-config__item">
-                    {this.renderCheckbox(false, onChange, "QR-Code anzeigen")}
+                    {this.renderCheckbox(this.state.enableQrCode, onChange, "QR-Code anzeigen")}
                 </div>
             </fieldset>
         )
