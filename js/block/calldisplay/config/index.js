@@ -46,6 +46,7 @@ class CallDisplayConfigView extends Component {
             queueStatus: 'all',
             template: 'defaultplatz',
             hmac: '',
+            enableQrCode: false,
             showQrCode: false
         }
 
@@ -92,6 +93,10 @@ class CallDisplayConfigView extends Component {
 
         if (this.state.template !== 'default') {
             queryParts.push(`template=${this.state.template}`)
+        }
+
+        if (! hashParameters && this.state.enableQrCode) {
+            queryParts.push(`qrcode=1`)
         }
 
         if (hashParameters) {
@@ -196,6 +201,22 @@ class CallDisplayConfigView extends Component {
         )
     }
 
+    renderQrCodeEnabled() {
+        const onChange = () => {
+            this.setState({
+                enableQrCode: !this.state.enableQrCode
+            });
+        }
+        return (
+            <fieldset>
+                <legend className="label">QR-Code für Aufrufanzeige</legend>
+                <div key="qrcodeEnabled" className="form-check ticketprinter-config__item">
+                    {this.renderCheckbox(false, onChange, "QR-Code anzeigen")}
+                </div>
+            </fieldset>
+        )
+    }
+
     renderScopes(scopes) {
         if (scopes.length > 0) {
             return (
@@ -247,6 +268,7 @@ class CallDisplayConfigView extends Component {
         return (
             <form className="form--base form-group calldisplay-config">
                 {this.state.departments.map(this.renderDepartment.bind(this))}
+                {this.renderQrCodeEnabled()}
                 <FormGroup>
                     <Label 
                         attributes={{ "htmlFor": "visibleCalls" }} 
