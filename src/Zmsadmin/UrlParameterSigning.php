@@ -60,7 +60,6 @@ class UrlParameterSigning extends BaseController
         }
 
         $data['hmac'] = Helper::hashQueryParameters($data['section'], $data['parameters'], ['collections', 'queue']);
-        error_log(var_export($data,true));
         return Render::withJson($response, $data);
     }
 
