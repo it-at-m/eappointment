@@ -112,7 +112,7 @@
 
 
 /* ----------------------------------------------
-    Text & Logo
+    Text & Logo|QrCode
 ---------------------------------------------- */
 .aufrufanzeige .aufrufanzeige_text
 {
@@ -126,4 +126,10 @@
     left: 1087px;
     top:89px;
     width: 234px;
+}
+
+.aufrufanzeige_text .qrContainer
+{
+    width: 100%;
+    text-align: center;
 }
