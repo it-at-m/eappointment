@@ -49,8 +49,6 @@
     "react-datepicker": "^4.2.1",
     "react-dom": "^18.0.2",
     "react-icons": "^4.6.0",
-    "react-aria-live": "2.0.5",
-    "react-a11y-announcer": "2.0.0",
     "focus-trap-react": "10.0.0",
     "redux-json-schema": "^1.0.0",
     "qrcode-generator": "^1.4.4",
