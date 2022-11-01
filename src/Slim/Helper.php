@@ -42,6 +42,7 @@ class Helper
                 if (is_array($queryVariables[$parameter])) {
                     $parameterArray = $queryVariables[$parameter];
                     ksort($parameterArray);
+                    $flat = [];
                     array_walk_recursive(
                         $parameterArray,
                         function ($value) use (&$flat) {
