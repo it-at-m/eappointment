@@ -45,7 +45,7 @@ class UrlParameterSigning extends BaseController
         $hasScopeList = (isset($collections['scopelist']) && strlen($collections['scopelist']) > 0);
         $hasClusterList = (isset($collections['clusterlist']) && strlen($collections['clusterlist']) > 0);
         $hasValidScopeId = (
-            isset($workstation['scope']['id']) && 
+            isset($workstation['scope']['id']) &&
             !Validator::value($workstation['scope']['id'])->isNumber()->hasFailed()
         );
 
