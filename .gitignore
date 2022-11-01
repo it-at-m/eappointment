@@ -12,7 +12,7 @@ cache
 .DS_Store
 vendor.old
 vendor.update
-composer.*.lock
+#composer.*.lock
 .cache
 .parcel-cache
 .phpunit.result.cache
