@@ -249,11 +249,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "2.24.12-rc1",
+            "version": "2.24.12-rc2",
             "source": {
                 "type": "git",
                 "url": "https://gitlab+deploy-token-1182224:zbGL4n64xnbXxMknYVwj@gitlab.com/eappointment/zmsslim.git",
-                "reference": "1d7c449ec3c7b7fa98a501056a14d3c5d86a838a"
+                "reference": "95d2224104a414e5919689e3741667539525f66d"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -296,7 +296,7 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-            "time": "2022-10-31T10:58:12+00:00"
+            "time": "2022-11-01T12:52:32+00:00"
         },
         {
             "name": "fig/http-message-util",
