@@ -16,5 +16,13 @@ export default {
         'showOnlyNumeric':false
     },
     'reloadInterval': 10,
-    'animationEnd': 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend'
+    'animationEnd': 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
+    "qrCode": {
+        version: 10,
+        ecLevel: 'M',
+        fillColor: '#000',
+        backgroundColor: '#fff',
+        text: 'no text',
+        quiet: 5,
+    }
 };

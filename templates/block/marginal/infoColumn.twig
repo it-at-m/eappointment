@@ -1,7 +1,15 @@
 {% block infoColumn %}
 <!--Logo und Text-->
 <div align="center">
-   	<img src="data:image/{{ calldisplay.image.mime }};base64,{{ calldisplay.image.data }}" width="200" border="0" alt="">
+	{% if showQrCode and webcalldisplayUrl is defined %}
+		<div class="qrContainer">
+			<canvas id="webcallUrlCode" class="qrCode" width="200" height="200"
+				data-text="{{ webcalldisplayUrl|raw }}">
+			</canvas>
+		</div>
+	{% else %}
+   		<img src="data:image/{{ calldisplay.image.mime }};base64,{{ calldisplay.image.data }}" width="200" border="0" alt="">
+	{% endif %}
 	<br><br>
 	{% if calldisplay.clusters|length == 1 and calldisplay.clusters|first.callDisplayText %}
 	{{ calldisplay.clusters|first.callDisplayText|raw|nl2br }}

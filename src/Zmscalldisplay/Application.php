@@ -47,6 +47,8 @@ class Application extends \BO\Slim\Application
 
     public static $http_curl_config = array();
 
+    public static $webcalldisplayUrl = '/terminvereinbarung/aufruf';
+
     const JSON_COMPRESS_LEVEL = 1;
 
     /**
