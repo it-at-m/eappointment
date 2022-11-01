@@ -126,21 +126,22 @@ class CallDisplayConfigView extends Component {
 
         let signingData = {
             'section': 'webcalldisplay',
-            'parameters': {
-                'collections': {},
-                'queue': {}
-            }
+            'parameters': {}
         }
 
         if (collections.scopelist.length > 0) {
+            signingData.parameters.collections = signingData.parameters.collections || {}
             signingData.parameters.collections.scopelist = collections.scopelist.join(",")
         }
         if (collections.clusterlist.length > 0) {
+            signingData.parameters.collections = signingData.parameters.collections || {}
             signingData.parameters.collections.clusterlist = collections.clusterlist.join(",")
         }
         if (this.state.queueStatus !== 'all') {
+            signingData.parameters.queue = {}
             signingData.parameters.queue.status = this.state.queueStatus
         }
+
         const signParametersUrl = this.includeurl + '/sign/parameters/'
         fetch(
             signParametersUrl,
