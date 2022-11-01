@@ -1,5 +1,9 @@
 ## 2.24.12
+
 * #54692 - QR code initialization to call the webcalldisplay URL and Index class cleaned up and structured by separate functions
+## v2.24.11
+
+* #55684 - removed berlin logo from background graphics
 
 ## 2.24.05
 
