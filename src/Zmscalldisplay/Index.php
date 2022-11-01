@@ -62,9 +62,8 @@ class Index extends BaseController
 
     protected function getHashedUrlParameter(RequestInterface $request, array $parameters)
     {
-        if (
-            $request->getQueryParam('qrcode') && 
-            $request->getQueryParam('qrcode') == 1 && 
+        if ($request->getQueryParam('qrcode') &&
+            $request->getQueryParam('qrcode') == 1 &&
             ($request->getQueryParam('collections') || $request->getQueryParam('queue'))
         ) {
             $queryString = $this->getQueryString($request);
@@ -96,8 +95,8 @@ class Index extends BaseController
     // get full querystring also for unit tests
     protected function getQueryString(RequestInterface $request)
     {
-        $queryString = ($request->getUri()->getQuery()) ? 
-            $request->getUri()->getQuery() : 
+        $queryString = ($request->getUri()->getQuery()) ?
+            $request->getUri()->getQuery() :
             '?'. http_build_query($request->getQueryParams());
         return $queryString;
     }
