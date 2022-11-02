@@ -9,7 +9,7 @@ const ErrorBar = (props) => {
         <div ref={props.setErrorRef} id="errorRef">
             <Errors {...{ errorList }} />
             <Conflicts {...{ conflictList }} />
-        </div>
+       </div>
     )
 }
 

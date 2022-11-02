@@ -6,7 +6,7 @@ const FormButtons = (props) => {
     const disabled = (data && (! data.id || data.__modified === true));
     return (
         <div>
-            <div className="form-actions" style={{"marginTop": "-45px"}}>
+            <div className="form-actions">
                 <button onClick={onDelete}
                     title="Ausgewählte Öffnungszeit löschen"
                     className="button button--destructive button-delete" disabled={disabled}>Löschen</button>

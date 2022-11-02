@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-
 import * as Inputs from '../../../lib/inputs'
+import QrCodeView from "../qrCode";
+
 const { FormGroup, Label, Controls, Select } = Inputs
 
 const readPropsCluster = cluster => {
@@ -28,7 +29,7 @@ const readPropsScope = scope => {
 class CallDisplayConfigView extends Component {
     constructor(props) {
         super(props)
-
+        this.includeurl = props.includeurl || "";
         //console.log('CallDisplayConfigView::constructor', props)
 
         this.state = {
@@ -44,14 +45,16 @@ class CallDisplayConfigView extends Component {
             }),
             queueStatus: 'all',
             template: 'defaultplatz',
-            generatedUrl: ""
+            hmac: '',
+            enableQrCode: false,
+            showQrCode: false
         }
+
+        this.signParameters(this.state)
     }
 
-    buildUrl() {
-        const baseUrl = this.props.config.calldisplay.baseUrl
-
-        const collections = this.state.selectedItems.reduce((carry, current) => {
+    getSelectedItemsCollection(state) {
+        return state.selectedItems.reduce((carry, current) => {
             if (current.type === "cluster") {
                 carry.clusterlist.push(current.id)
             } else if (current.type === "scope") {
@@ -63,26 +66,98 @@ class CallDisplayConfigView extends Component {
             scopelist: [],
             clusterlist: []
         })
+    }
 
-        let parameters = []
+    buildCalldisplayUrl() {
+        const baseUrl  = this.props.config.calldisplay.baseUrl
+        let parameters = this.buildParameters(false);
+
+        return `${baseUrl}?${parameters.join('&')}`
+    }
+
+    buildParameters(hashParameters) {
+        const collections = this.getSelectedItemsCollection(this.state)
+        let queryParts = []
 
         if (collections.scopelist.length > 0) {
-            parameters.push(`collections[scopelist]=${collections.scopelist.join(",")}`)
+            queryParts.push(`collections[scopelist]=${collections.scopelist.join(",")}`)
         }
 
         if (collections.clusterlist.length > 0) {
-            parameters.push(`collections[clusterlist]=${collections.clusterlist.join(",")}`)
+            queryParts.push(`collections[clusterlist]=${collections.clusterlist.join(",")}`)
         }
 
         if (this.state.queueStatus !== 'all') {
-            parameters.push(`queue[status]=${this.state.queueStatus}`)
+            queryParts.push(`queue[status]=${this.state.queueStatus}`)
         }
 
         if (this.state.template !== 'default') {
-            parameters.push(`template=${this.state.template}`)
+            queryParts.push(`template=${this.state.template}`)
         }
 
+        if (! hashParameters && this.state.enableQrCode) {
+            queryParts.push(`qrcode=1`)
+        }
+
+        if (hashParameters) {
+            queryParts.push(`hmac=${this.state.hmac}`)
+        }
+
+        return queryParts
+    }
+
+    buildWebcalldisplayUrl() {
+        const baseUrl  = this.props.config.webcalldisplay.baseUrl
+        let parameters = this.buildParameters(true);
+
         return `${baseUrl}?${parameters.join('&')}`
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.selectedItems !== this.state.selectedItems
+            || prevState.queueStatus !== this.state.queueStatus
+        ) {
+            this.signParameters(this.state)
+        }
+    }
+
+    signParameters(state) {
+        const collections = this.getSelectedItemsCollection(state)
+
+        let signingData = {
+            'section': 'webcalldisplay',
+            'parameters': {}
+        }
+
+        if (collections.scopelist.length > 0) {
+            signingData.parameters.collections = signingData.parameters.collections || {}
+            signingData.parameters.collections.scopelist = collections.scopelist.join(",")
+        }
+        if (collections.clusterlist.length > 0) {
+            signingData.parameters.collections = signingData.parameters.collections || {}
+            signingData.parameters.collections.clusterlist = collections.clusterlist.join(",")
+        }
+        if (this.state.queueStatus !== 'all') {
+            signingData.parameters.queue = {}
+            signingData.parameters.queue.status = this.state.queueStatus
+        }
+
+        const signParametersUrl = this.includeurl + '/sign/parameters/'
+        fetch(
+            signParametersUrl,
+            {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+                body: JSON.stringify(signingData)
+            }
+        ).then(response => response.json()).then(data => this.setState({ hmac: data.hmac }))
+    }
+
+    toggleQrCodeView() {
+        this.setState({
+            showQrCode: !this.state.showQrCode
+        });
     }
 
     renderCheckbox(enabled, onShowChange, label) {
@@ -129,6 +204,22 @@ class CallDisplayConfigView extends Component {
         )
     }
 
+    renderQrCodeEnabled() {
+        const onChange = () => {
+            this.setState({
+                enableQrCode: !this.state.enableQrCode
+            });
+        }
+        return (
+            <fieldset>
+                <legend className="label">QR-Code für Aufrufanzeige</legend>
+                <div key="qrcodeEnabled" className="form-check ticketprinter-config__item">
+                    {this.renderCheckbox(this.state.enableQrCode, onChange, "QR-Code anzeigen")}
+                </div>
+            </fieldset>
+        )
+    }
+
     renderScopes(scopes) {
         if (scopes.length > 0) {
             return (
@@ -166,7 +257,8 @@ class CallDisplayConfigView extends Component {
     }
 
     render() {
-        const generatedUrl = this.buildUrl()
+        const calldisplayUrl = this.buildCalldisplayUrl()
+        const webcalldisplayUrl = this.buildWebcalldisplayUrl()
 
         const onQueueStatusChange = (_, value) => {
             this.setState({
@@ -183,6 +275,7 @@ class CallDisplayConfigView extends Component {
         return (
             <form className="form--base form-group calldisplay-config">
                 {this.state.departments.map(this.renderDepartment.bind(this))}
+                {this.renderQrCodeEnabled()}
                 <FormGroup>
                     <Label 
                         attributes={{ "htmlFor": "visibleCalls" }} 
@@ -219,23 +312,38 @@ class CallDisplayConfigView extends Component {
                     <Label attributes={{ "htmlFor": "calldisplayUrl" }} value="URL"></Label>
                     <Controls>
                         <Inputs.Text
-                            value={generatedUrl}
+                            value={calldisplayUrl}
                             attributes={{ readOnly: true, id: "calldisplayUrl" }} />
                     </Controls>
                 </FormGroup>
                 <div className="form-actions">
-                    <a href={generatedUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> Aktuelle Konfiguration in einem neuen Fenster öffnen</a>
+                    <a href={calldisplayUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> Aktuelle Konfiguration in einem neuen Fenster öffnen</a>
                 </div>
+                <FormGroup>
+                    <Label attributes={{ "htmlFor": "webcalldisplayUrl" }} value="Webcall Display URL"></Label>
+                    <Controls>
+                        <Inputs.Text
+                            value={webcalldisplayUrl}
+                            attributes={{ readOnly: true, id: "webcalldisplayUrl" }} />
+                    </Controls>
+                </FormGroup>
+                <div className="form-actions">
+                    <button className="button" aria-hidden="true" onClick={(event) => {event.preventDefault(); this.toggleQrCodeView();}}>QR-Code anzeigen / drucken</button>
+                    <a href={webcalldisplayUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> in der mobilen Anzeige öffnen</a>
+                </div>
+                { this.state.showQrCode ? <QrCodeView text='QrCode für die mobile Ansicht des Aufrufsystems' targetUrl={webcalldisplayUrl} togglePopup={this.toggleQrCodeView.bind(this)} /> : null }
             </form>
         )
     }
 }
 
 CallDisplayConfigView.propTypes = {
+    includeurl: PropTypes.string,
     departments: PropTypes.array,
     organisation: PropTypes.object,
     config: PropTypes.shape({
-        calldisplay: PropTypes.object
+        calldisplay: PropTypes.object,
+        webcalldisplay: PropTypes.object
     })
 }
 

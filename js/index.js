@@ -9,7 +9,7 @@ import $ from "jquery";
 import moment from 'moment/min/moment-with-locales';
 
 // Import Views
-import AccessKeyView from './page/accesskeys'
+//import AccessKeyView from './page/accesskeys'
 import EmergencyView from './block/emergency'
 //import LoginFormView from './block/index/loginform'
 //import DepartmentLinksView from './block/department/links'
@@ -34,6 +34,7 @@ import printWaitingNumber from './page/waitingnumber/print'
 import { getDataAttributes, forceHttps } from './lib/utils'
 
 import preventFormResubmit from './element/form/preventFormResubmit'
+import focusFirstErrorElement from './element/form/focusFirstErrorElement'
 import maxChars from './element/form/maxChars'
 import DialogHandler from './lib/dialogHandler'
 
@@ -72,7 +73,7 @@ moment.locale('de')
 forceHttps();
 
 // Init Views
-new AccessKeyView(document);
+//new AccessKeyView(document);
 
 loadResources();
 
@@ -127,6 +128,7 @@ $('.client-processed').each(function () {
 
 $('form').each(function () {
     preventFormResubmit(this);
+    focusFirstErrorElement(this);
 })
 
 $('textarea.maxchars').each(function () {

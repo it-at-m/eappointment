@@ -1,8 +1,12 @@
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 import RequestView from "./requests"
 import FreeProcessView from './free-process-list'
 import FormButtons from './form-buttons'
 import $ from "jquery"
 import maxChars from '../../element/form/maxChars'
+import Datepicker from '../../lib/inputs/date'
+import { getDataAttributes } from '../../lib/utils'
 import moment from 'moment'
 
 class View extends RequestView {
@@ -24,6 +28,7 @@ class View extends RequestView {
         $('textarea.maxchars').each(function () { maxChars(this) });
         //this.$main.find('[name="familyName"]').focus(); // -> nicht barrierefrei
         //console.log('Component: AppointmentView', this, options);
+        this.hasSlotCountEnabled = this.$main.find('#appointmentForm_slotCount').length;
     }
 
     setOptions() {
@@ -54,7 +59,6 @@ class View extends RequestView {
         this.onDatePick = this.options.onDatePick;
         this.onAbortMessage = this.options.onAbortMessage;
         this.onPrintWaitingNumber = this.options.onPrintWaitingNumber;
-        this.onSelectDateWithOverlay = this.options.onSelectDateWithOverlay;
         this.onChangeSlotCountCallback = this.options.onChangeSlotCount;
     }
 
@@ -62,16 +66,19 @@ class View extends RequestView {
         const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}&selectedtime=${this.selectedTime}&selectedprocess=${this.selectedProcess}&selectedscope=${this.selectedScope}`
         return this.loadContent(url, 'GET', null, null, this.showLoader)
             .then(() => {
+                this.auralMessages = getDataAttributes($('#auralmessage').get('0')).aural
                 this.assigneMainFormValues();
                 this.loadPromise.then(() => {
                     this.initRequestView();
                     this.bindEvents();
                     this.$main.find('select#process_time').trigger('change');
+                    this.loadDatePicker();
                 });
             });
     }
 
     loadPartials() {
+        this.auralMessages = getDataAttributes($('#auralmessage').get('0')).aural
         this.assigneMainFormValues();
         this.loadPromise.then(() => {
             this.initRequestView(true);
@@ -79,6 +86,7 @@ class View extends RequestView {
             this.$main.find('select#process_time').trigger('change');
         }).then(() => {
             if (this.selectedScope || this.selectedDate) {
+                this.loadDatePicker();
                 this.loadFreeProcessList().loadList().then(() => {
                     this.bindEvents();
                 });
@@ -86,14 +94,31 @@ class View extends RequestView {
         });
     }
 
+    loadDatePicker() {
+        const calendarElement = createRoot(document.getElementById('appointment-datepicker'));
+        const onChangeDate = (value) => {
+            if (this.hasSlotCountEnabled && this.serviceListSelected.length == 0)
+                this.auralMessage(this.auralMessages.chooseRequestFirst)
+            this.onDatePick(value)
+        }
+        return (
+            calendarElement.render(
+                <Datepicker
+                    id="process_date"
+                    accessKey="m"
+                    value={new Date(this.selectedDate).getTime() / 1000}
+                    onChange={onChangeDate}
+                />
+            )
+        );
+    }
+
     assigneMainFormValues() {
         this.$main.find('.add-date-picker input#process_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('DD.MM.YYYY'));
         this.$main.find('input#process_selected_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD'));
-        //this.$main.find('[name="familyName"]').focus(); // -> nicht barrierefrei
         this.$main.find('textarea.maxchars').each(function () {
             maxChars(this);
         })
-        //this.$main.find('[name="familyName"]').focus(); // -> nicht barrierefrei
     }
 
     loadFreeProcessList() {
@@ -117,15 +142,6 @@ class View extends RequestView {
             this.onClearRequestList();
         }).on('change', '#appointmentForm_slotCount', (event) => {
             this.onChangeSlotCount(event);
-        }).on('click', '.add-date-picker input', (event) => {
-            this.onSelectDateWithOverlay(event);
-        }).on('keydown', '.add-date-picker input', (event) => {
-            var key = event.keyCode || event.which;
-            switch(key) {
-            case 13: // ENTER    
-                this.onSelectDateWithOverlay(event);
-                break;
-            }
         }).on('change', '.appointment-form .switchcluster select', (event) => {
             this.onChangeScope(event);
         }).on('change', 'select#process_time', (event) => {
@@ -155,18 +171,21 @@ class View extends RequestView {
 
     onClearRequestList() {
         this.cleanLists();
+        this.auralMessage(this.auralMessages.clean);
     }
 
     onAddRequest(event) {
         this.addServiceToList($(event.currentTarget), 'serviceListSelected');
         this.removeServiceFromList($(event.currentTarget), 'serviceList');
         this.updateLists(true);
+        this.auralMessage(this.auralMessages.add + ': ' + $(event.currentTarget).parent().find('span').text());
     }
 
     onRemoveRequest(event) {
         this.removeServiceFromList($(event.currentTarget), 'serviceListSelected');
         this.addServiceToList($(event.currentTarget), 'serviceList');
         this.updateLists(true);
+        this.auralMessage(this.auralMessages.remove + ': ' + $(event.currentTarget).parent().find('span').text());
     }
 
     onChangeSlotCount(event) {
@@ -183,10 +202,12 @@ class View extends RequestView {
     onChangeScope(event) {
         this.selectedScope = $(event.currentTarget).val();
         this.onChangeScopeCallback(event);
-       
+
     }
 
     onChangeProcessTime(event) {
+        if (this.hasSlotCountEnabled && this.serviceListSelected.length == 0)
+                this.auralMessage(this.auralMessages.chooseRequestFirst)
         this.selectedTime = $(event.currentTarget).val();
         var hasFreeAppointments = (1 <= $(event.currentTarget).length && '00-00' != this.selectedTime);
         this.$main.data('selected-time', this.selectedTime);
@@ -201,6 +222,16 @@ class View extends RequestView {
         });
 
         this.$.find('input[name=sendMailConfirmation]').prop('checked', hasFreeAppointments)
+    }
+
+    auralMessage(message) {
+        let infoNode = document.createTextNode(message);
+        let paragraph = document.createElement('p');
+        paragraph.appendChild(infoNode);
+
+        let messageContainer = this.$.find('#auralmessage');
+        messageContainer.find('p').remove();
+        messageContainer.append(paragraph);
     }
 }
 

@@ -57,17 +57,18 @@
 
                         {% set dayString = day.year~"-"~day.month~"-"~day.day %}
                         {% set myDataArray = attribute(data_days, dayString) %}
-                        {% set isToday = (( today == dayString|date('Y-m-d')) ? true : false) %}
+                        {% set isToday = (( getNow()|date("Y-m-d") == dayString|date('Y-m-d')) ? true : false) %}
 
                         {% if day.status == 'notBookable' %}
-                            {% set bookableState="closed disabled" %}
+                            {% set bookableState="closed" %}
                         {% elseif day.freeAppointments.intern > 0 or day.freeAppointments.callcenter > 0 or day.freeAppointments.public > 0  %}
-                            {% set bookableState="mark mark--positive" %}
+                            {% set bookableState="mark" %}
                         {% elseif day.freeAppointments.intern <= 0 and day.freeAppointments.callcenter <= 0 and day.freeAppointments.public <= 0 %}
                             {% set bookableState="mark mark--destructive" %}
                         {% endif %}
-                        <td class="calendar__tile {{ bookableState }}{% if dayoffList.hasEntityByDate(day.toDateTime()) %} mark mark--dayoff{% endif %}{% if isToday %} today{% endif %}">
-                            <a class="month-item" href="{{ urlGet('scopeAvailabilityDay', {'id': scope.id, 'date': dayString}, {}) }}" {% if myDataArray.holiday == true %} title="Ein Feiertag"{% endif %}>
+                        <td>
+                        <div class="calendar__tile {{ bookableState }}{% if dayoffList.hasEntityByDate(day.toDateTime()) %} mark mark--dayoff{% endif %}{% if isToday %} today{% endif %}">
+                            <a class="month-item" href="{{ urlGet('scopeAvailabilityDay', {'id': scope.id, 'date': dayString}, {}) }}" {% if myDataArray.holiday == true %} title="Ein Feiertag"{% endif %} aria-label="{{ ('Zur Detailansicht')|trans }}">
                                 <span class="day">
                                     {{ day.day }}
                                 </span>
@@ -98,6 +99,7 @@
                                     {% endif %}
                                 </div>
                             </a>
+                        </div>
                         </td>
                         {% if loop.last and row != 6 %}
                             <td class="out-of-range last" colspan="{{ 6 - row }}">&nbsp;</td>
@@ -123,13 +125,13 @@
         <section class="block calendar-legend" aria-hidden="true">
             <h2 class="block__heading">Legende</h2>
             <ul class="list--clean">
-                <li><span class="square today"></span> Heute</li>
-                <li><span class="square disabled"></span> Geschlossen</li>
+                <li><span class="day square today">1</span> Heute</li>
+                <li><span class="day square closed">1</span> Geschlossen</li>
             </ul>
             <ul class="list--clean">
-                <li><span class="rectangle mark mark--positive"></span> Freie Termine</li>
-                <li><span class="rectangle mark mark--destructive"></span> Keine freien Termine</li>
-                <li><span class="rectangle mark mark--dayoff"></span> Freier Tag</li>
+                <li><span class="day rectangle mark">1</span> Freie Termine</li>
+                <li><span class="day rectangle mark mark--destructive">1</span> Keine freien Termine</li>
+                <li><span class="day rectangle mark mark--dayoff">1</span> Freier Tag</li>
             </ul>
             <ul class="list--clean">
                 <li>{{ openingCalendarIcon('K','red', 1, 'Konflikt') }} Konflikt</li>

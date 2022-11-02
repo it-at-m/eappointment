@@ -12,7 +12,14 @@
 
     {% block board_body %}
         {% include "element/helper/messageHandler.twig" %}
+
+        {% set addRequestAuralMessage = "Die folgende Dientsleistung wurde zur Liste der ausgewählten Dienstleistungen hinzugefügt" %}
+        {% set cleanupRequestAuralMessage = "Die Auswahl der Dientsleistungen wurde zurückgesetzt" %}
+        {% set removeRequestAuralMessage = "Die folgende Dientsleistung ist nicht mehr ausgewählt" %}
+        {% set chooseRequestFirst = "Wählen Sie bitte zuerst die Dienstleistungen und die Anzahl der Slots aus bevor Sie das Datum (Zugriffschlüssel m) und die Uhrzeit (Zugriffschlüssel z) auswählen." %}
+
         <form data-formData="{{ formData|json_encode }}" data-saved-process="{{ selectedProcess.id }}">
+            <div class="aural" id="auralmessage" aria-live="polite" data-aural='{"clean":"{{ cleanupRequestAuralMessage|trans }}", "add":"{{ addRequestAuralMessage|trans }}","remove":"{{ removeRequestAuralMessage|trans }}", "chooseRequestFirst":"{{ chooseRequestFirst|trans }}"}'></div>
             <label class="label">{% trans %}Standort{% endtrans %}</label>
             {% include 'block/cluster/scopeSelect.twig' with {'source': 'appointmentForm'} %}
             {% if not scope %}
@@ -24,27 +31,20 @@
             {% endif %}
             <div class="appointmentForm-input-fields" {% if not scope and not selectedProcess %}style="display:none"{% endif %}>
                 <div class="grid">
-                    <div class="grid__item one-half DATUM">
-                        {{ formgroup(
-                            {"label": "Datum"},
-                            [{
-                                "type": "datepicker",
-                                "parameter": {
-                                    "id":"process_date",
-                                    "value": selectedDate|date('d.m.Y'),
-                                    "readonly": 1,
-                                    "accesskey":"m"
-                                }
-                            }]
-                        ) }}
-                        {{ inputfield({
-                            "id":"process_selected_date",
-                            "type":"hidden",
-                            "name":"selecteddate",
-                            "value":selectedDate|date('Y-m-d'),
-                        }) }}
+                    <div class="grid__item one-half">
+                        <div class="form-group">
+                            <label for="process_date">{% trans %}Datum{% endtrans %}</label>
+                            <div class="controls">
+                                <div id="appointment-datepicker"></div>
+                                {{ inputfield({
+                                    "id":"process_selected_date",
+                                    "type":"hidden",
+                                    "name":"selecteddate",
+                                    "value":selectedDate|date('Y-m-d'),
+                                }) }}
+                            </div>
+                        </div>
                     </div>
-
                     <div class="grid__item one-half SLOTCNT">
                         {% if scope.preferences.appointment.multipleSlotsEnabled or selectedProcess.scope.preferences.appointment.multipleSlotsEnabled %}
                             {% set slotCountOptions = [] %}
@@ -181,6 +181,7 @@
                             {% endif %}
 
                             {% if scope.preferences.client.emailRequired or scope.preferences.client.emailFrom %}
+                            <div id="email">
                             {% set email = selectedProcess.clients|first.email %}
                             {% if formData.email._unvalidated %}
                                 {% set email = formData.email._unvalidated %}
@@ -213,7 +214,7 @@
                                     }
                                 }]
                             ) }}
-
+                            </div>
                             {% if scope.preferences.survey.enabled %}
                             {% set defaultLabel = 'Zustimmung Kundenbefragung' %}
                             {{ formgroup(
@@ -257,85 +258,87 @@
                         ) }}
                     </div>
 
-                    <div class="grid__item one-half" data-request-list>
-                        {% set selectedRequests = [] %}
-                        {% if selectedProcess %}
-                            {% for request in selectedProcess.requests %}
-                                {% set selectedRequests = selectedRequests|merge([ request.id ]) %}
-                            {% endfor %}
-                        {% endif %}
+                    <div id="requests_checkboxlist" class="grid__item one-half">
+                        <div>
+                            {% set selectedRequests = [] %}
+                            {% if selectedProcess %}
+                                {% for request in selectedProcess.requests %}
+                                    {% set selectedRequests = selectedRequests|merge([ request.id ]) %}
+                                {% endfor %}
+                            {% endif %}
 
-                        {% if formData.requests._unvalidated %}
-                            {% set selectedRequests = formData.requests._unvalidated %}
-                        {% endif %}
-                        {% if requestList|length > 0 %}
+                            {% if formData.requests._unvalidated %}
+                                {% set selectedRequests = formData.requests._unvalidated %}
+                            {% endif %}
+                            {% if requestList|length > 0 %}
+                                {% set requestsOptions = [] %}
+                                {% for request in requestList %}
+                                    {% if request.id in selectedRequests %}
+                                        {% set checked = "1" %}
+                                    {% else %}
+                                        {% set checked = "0" %}
+                                    {% endif %}
+
+                                    {% set requestName = request.name %}
+                                    {% if scope.preferences.appointment.multipleSlotsEnabled or selectedProcess.scope.preferences.appointment.multipleSlotsEnabled %}
+                                        {% set requestName = request.name ~ " (" ~ request.timeSlotCount ~ ")" %}
+                                    {% endif %}
+                                    {% set requestsOptions = requestsOptions|merge([{ "value": request.id, "name": requestName, "class": "service-checkbox", "data": {'slots': request.timeSlotCount}, "selected": checked }]) %}
+                                {% endfor %}
+                                {{ formgroup(
+                                    {
+                                        "groupTag": "fieldset",
+                                        "legend": "Dienstleistung",
+                                        "errors": formData.requests.messages,
+                                        "id": "select-requests"
+                                    },
+                                    [{
+                                        "type": "checkboxSelect",
+                                        "parameter": {
+                                            "ariaLabel": "Dienstleistungen Auswahlliste",
+                                            "accesskey":"g",
+                                            "height": "10em",
+                                            "options": requestsOptions
+                                        }
+                                    }]
+                                ) }}
+                        </div>
+                        <div>
                             {% set requestsOptions = [] %}
                             {% for request in requestList %}
+                                {% set slotCount = request.timeSlotCount %}
+                                {% if request.timeSlotCount == 0 %}{% set slotCount = 1 %}{% endif %}
                                 {% if request.id in selectedRequests %}
                                     {% set checked = "1" %}
                                 {% else %}
                                     {% set checked = "0" %}
                                 {% endif %}
-
-                                {% set requestName = request.name %}
-                                {% if scope.preferences.appointment.multipleSlotsEnabled or selectedProcess.scope.preferences.appointment.multipleSlotsEnabled %}
-                                    {% set requestName = request.name ~ " (" ~ request.timeSlotCount ~ ")" %}
-                                {% endif %}
-                                {% set requestsOptions = requestsOptions|merge([{ "value": request.id, "name": requestName, "class": "service-checkbox", "data": {'slots': request.timeSlotCount}, "selected": checked }]) %}
+                                {% set requestsOptions = requestsOptions|merge([{ "value": request.id, "name": request.name, "data": {'slots': slotCount}, "selected": checked }]) %}
                             {% endfor %}
                             {{ formgroup(
                                 {
                                     "groupTag": "fieldset",
-                                    "legend": "Dienstleistung",
-                                    "errors": formData.requests.messages,
-                                    "id": "select-requests"
+                                    "legend": "Ausgewählte Dienstleistungen",
+                                    "id": "deselect-requests"
                                 },
                                 [{
-                                    "type": "checkboxSelect",
+                                    "type": "checkboxDeselect",
                                     "parameter": {
-                                        "ariaLabel": "Dienstleistungen Auswahlliste",
-                                        "accesskey":"g",
-                                        "height": "10em",
-                                        "options": requestsOptions
+                                        "ariaLabel": "Dienstleistungen Abwahlliste",
+                                        "accesskey":"h",
+                                        "height": "auto",
+                                        "min-height": "5em",
+                                        "max-height": "20em",
+                                        "name": "requests[]",
+                                        "options": requestsOptions,
                                     }
                                 }]
                             ) }}
-
-                            <div class="controls">
-                                <div data-form-validate="requests">
-                                    {% set requestsOptions = [] %}
-                                    {% for request in requestList %}
-                                        {% set slotCount = request.timeSlotCount %}
-                                        {% if request.timeSlotCount == 0 %}{% set slotCount = 1 %}{% endif %}
-                                        {% if request.id in selectedRequests %}
-                                            {% set checked = "1" %}
-                                        {% else %}
-                                            {% set checked = "0" %}
-                                        {% endif %}
-                                        {% set requestsOptions = requestsOptions|merge([{ "value": request.id, "name": request.name, "data": {'slots': slotCount}, "selected": checked }]) %}
-                                    {% endfor %}
-                                    {{ formgroup(
-                                        {
-                                            "groupTag": "fieldset",
-                                            "legend": "Ausgewählte Dienstleistungen",
-                                            "id": "deselect-requests"
-                                        },
-                                        [{
-                                            "type": "checkboxDeselect",
-                                            "parameter": {
-                                                "ariaLabel": "Dienstleistungen Abwahlliste",
-                                                "accesskey":"h",
-                                                "height": "auto",
-                                                "min-height": "5em",
-                                                "max-height": "20em",
-                                                "name": "requests[]",
-                                                "options": requestsOptions,
-                                            }
-                                        }]
-                                    ) }}
-                                </div>
+                        </div>
                         {% else %}
-                        <div class="message-info">Dem ausgewählten Standort sind keine Dienstleistungen zugeordnet.</div>
+                        <div class="message-info">
+                            Dem ausgewählten Standort sind keine Dienstleistungen zugeordnet.
+                        </div>
                         {% endif %}
                     </div>
                 </div>
