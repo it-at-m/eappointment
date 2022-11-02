@@ -67,13 +67,11 @@ class Index extends BaseController
             $request->getQueryParam('qrcode') == 1 &&
             ($request->getQueryParam('collections') || $request->getQueryParam('queue'))
         ) {
-            $queryString = $this->getQueryString($request);
             $uri = $request->getUri();
             $parameters['showQrCode'] = true;
-            $parameters['webcalldisplayUrl'] = $uri->getScheme() . '://'. $uri->getHost();
-            $parameters['webcalldisplayUrl'] .= $uri->getPort() ? ':' . $uri->getPort() : '';
+            $parameters['webcalldisplayUrl'] = '';
             $parameters['webcalldisplayUrl'] .= $config->toProperty()->webcalldisplay->baseUrl->get();
-            $parameters['webcalldisplayUrl'] .= str_replace('/&', '?', $queryString);
+            $parameters['webcalldisplayUrl'] .= str_replace('/&', '/?', $request->getUri()->getQuery());
             $parameters['webcalldisplayUrl'] .= '&hmac=' . SlimHelper::hashQueryParameters(
                 'webcalldisplay',
                 [
@@ -91,14 +89,5 @@ class Index extends BaseController
             );
         }
         return $parameters;
-    }
-
-    // get full querystring also for unit tests
-    protected function getQueryString(RequestInterface $request)
-    {
-        $queryString = ($request->getUri()->getQuery()) ?
-            $request->getUri()->getQuery() :
-            '?'. http_build_query($request->getQueryParams());
-        return $queryString;
     }
 }

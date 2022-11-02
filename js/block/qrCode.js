@@ -25,7 +25,7 @@ class View extends BaseView {
             }
 
             options.size = Math.min(element.offsetWidth, element.offsetHeight);
-            options.text = $(element).data('text');
+            options.text = window.location.origin + $(element).data('text');
 
             instance.drawQrCode(element, options);
         });
