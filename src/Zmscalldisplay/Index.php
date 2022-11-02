@@ -67,7 +67,6 @@ class Index extends BaseController
             $request->getQueryParam('qrcode') == 1 &&
             ($request->getQueryParam('collections') || $request->getQueryParam('queue'))
         ) {
-            $uri = $request->getUri();
             $parameters['showQrCode'] = true;
             $parameters['webcalldisplayUrl'] = '';
             $parameters['webcalldisplayUrl'] .= $config->toProperty()->webcalldisplay->baseUrl->get();
