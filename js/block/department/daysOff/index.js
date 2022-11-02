@@ -2,16 +2,21 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { getEntity } from '../../../lib/schema'
 import * as Inputs from '../../../lib/inputs'
+import Datepicker from '../../../lib/inputs/date'
 
 const renderDay = (day, index, onChange, onDeleteClick) => {
     const formName = `dayoff[${index}]`
-
     const onChangeName = (_, value) => onChange(index, 'name', value)
     const onChangeDate = (_, value) => onChange(index, 'date', value)
     const onDelete = ev => {
         ev.preventDefault()
         onDeleteClick(index)
     };
+
+    const tdStyle = {
+        verticalAlign: "middle",
+        height: "0"
+      };
     
     return (
         <tr className="daysoff-item" key={index}>
@@ -25,17 +30,17 @@ const renderDay = (day, index, onChange, onDeleteClick) => {
                 />
             </td>
             <td className="daysoff-item__date">
-                <Inputs.Date
+                <Datepicker
                     name={`${formName}[date]`}
                     value={day.date}
                     onChange={onChangeDate}
                     attributes={{ "aria-label": "Datum" }}
                 />
             </td>
-            <td className="daysoff-item__delete">
-                <div className="form-check">
+            <td className="daysoff-item__delete" style={tdStyle}>
+                <div>
                     <a href="#" className="icon" title="Tag entfernen" onClick={onDelete}>
-                        <i className="far fa-trash-alt" aria-hidden="true"></i>
+                        <i className="far fa-trash-alt" aria-hidden="true"></i> 
                     </a>
                 </div>
             </td>
@@ -100,6 +105,11 @@ class DaysOffView extends Component {
 
         return (
             <div className="daysoff table-responsive-wrapper">
+                <div className="table-action-link">
+                    <button className="link button-default" onClick={onNewClick} >
+                        <i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer freier Tag
+                    </button>
+                </div>
                 <table className="table--base clean">
                     <thead>
                         <tr>
@@ -112,7 +122,7 @@ class DaysOffView extends Component {
                         {this.state.days.map((day, index) => renderDay(day, index, onChange, onDeleteClick))}
                     </tbody>
                 </table>
-                <div className="table-actions">
+                <div className="table-action-link">
                     <button className="link button-default" onClick={onNewClick} >
                         <i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer freier Tag
                     </button>

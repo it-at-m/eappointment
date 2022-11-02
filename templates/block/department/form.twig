@@ -23,6 +23,7 @@
                     "type":"input",
                     "parameter": {
                         "name": "name",
+                        "required": true,
                         "value": department.name,
                     }
                 }]
@@ -136,14 +137,16 @@
     
     <fieldset class="department-links">
         <legend>Favoriten</legend>  
-        <div class="links" data-department-links data-organisation="{{organisation.id}}" data-links="{{department.links|default([])|json_encode()}}">
+        <div class="links panel--heavy" data-department-links data-organisation="{{organisation.id}}" data-links="{{department.links|default([])|json_encode()}}">
         </div>
     </fieldset>
     
     <fieldset>        
         <legend>Freie Tage</legend>  
-        <div class="message message--info"><p>Beachten Sie, dass Öffnungszeiten für einen einzelnen Tag (z.B. Ausnahmen) die Einstellung von freien Tagen ignorieren.</p></div>
-        <div class="daysoff" data-department-daysoff data-days="{{department.dayoff|default([])|json_encode()}}">
+        <div class="panel--heavy">
+            <div class="message message--info"><p><i class="fas fa-exclamation-circle" alt="Wichtiger Hinweis" title="Wichtiger Hinweis"></i> <strong>Hinweis</strong>: Beachten Sie, dass Öffnungszeiten für einen einzelnen Tag (z.B. Ausnahmen) die Einstellung von freien Tagen ignorieren.</p></div>
+            <div class="daysoff" data-department-daysoff data-days="{{department.dayoff|default([])|json_encode()}}">
+            </div>
         </div>
     </fieldset>
         

@@ -9,7 +9,7 @@ class View extends BaseView {
         this.selectedProcess = options.selectedProcess;
         this.selectedTime = options.selectedTime;
         this.slotsRequired = options.slotsRequired;
-        this.serviceList = [];
+        this.serviceList = []
         this.serviceListSelected = [];
         //console.log('Component: RequestList actions', this, options);
     }
@@ -26,23 +26,27 @@ class View extends BaseView {
      */
     updateLists(triggered = false) {
         this.$main.find('.checkboxdeselect input:checkbox').each((index, element) => {
-            $(element).prop("checked", false);
-            $(element).closest('li').attr("aria-checked", false);
-            $(element).closest('li').hide();
             if ($.inArray($(element).val(), this.serviceListSelected) !== -1) {
                 $(element).prop("checked", true);
                 $(element).closest('li').attr("aria-checked", true);
                 $(element).closest('li').show();
+            } else {
+                $(element).prop("checked", false);
+                $(element).closest('li').attr("aria-checked", false);
+                $(element).closest('li').hide();    
             }
         });
 
         this.$main.find('.checkboxselect input:checkbox').each((index, element) => {
-            $(element).prop("checked", false);
-            $(element).closest('li').attr("aria-checked", false);
-            $(element).closest('li').hide();
             if ($.inArray($(element).val(), this.serviceList) !== -1) {
+                $(element).prop("checked", false);
+                $(element).closest('li').attr("aria-checked", false);
                 $(element).closest('li').show();
+            } else {
+                $(element).closest('li').attr("aria-checked", true);
+                $(element).closest('li').hide();
             }
+            
         });
         if (triggered) {
             this.calculateSlotCount();

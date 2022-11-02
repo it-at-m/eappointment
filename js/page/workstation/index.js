@@ -11,6 +11,7 @@ import QueueInfoView from '../../block/queue/info'
 import AppointmentTimesView from '../../block/appointment/times'
 import ValidationHandler from '../../lib/validationHandler'
 
+
 class View extends BaseView {
     constructor(element, options) {
         super(element);
@@ -37,7 +38,6 @@ class View extends BaseView {
             'onPrintWaitingNumber',
             'onDatePick',
             'onDateToday',
-            'onSelectDateWithOverlay',
             'addFocusTrap',
             'onNextProcess',
             'onCallNextProcess',
@@ -85,11 +85,11 @@ class View extends BaseView {
             //console.log("lost Focus");
             clearTimeout(this.reloadTimer);
         }
-        this.$main.find('[data-queue-table]').mouseenter(() => {
+        this.$main.find('[data-queue-table]').on("mouseenter", () => {
             //console.log("stop Reload on mouse enter");
             clearTimeout(this.reloadTimer);
         });
-        this.$main.find('[data-queue-table]').mouseleave(() => {
+        this.$main.find('[data-queue-table]').on("mouseleave", () => {
             //console.log("start reload on mouse leave");
             this.setReloadTimer();
         });
@@ -112,47 +112,14 @@ class View extends BaseView {
         }, 1000);
     }
 
-    onDatePick($container, event) {
-        // use ev.currentTarget instead of ev.target to get 
-        // the original a element and not the inner (icon) element
-        // see: https://developer.mozilla.org/en-US/docs/Web/API/Event/currentTarget
-        // Alternative with CSS: a * { pointer-events: none; }
-        stopEvent(event);
-        this.selectedDate = $(event.currentTarget).attr('data-date');
-        $container.removeClass('lightbox');
-        $container.removeClass('lightbox__content');
-        $container.data('selecteddate', this.selectedDate);
+    onDatePick(date) {
+        this.selectedDate = date;
         this.loadCalendar();
         this.loadClientNext();
         if ('counter' == this.page)
             this.loadQueueInfo();
         this.loadQueueTable();
         this.loadAppointmentForm(true, true);
-    }
-
-    onSelectDateWithOverlay(event) {
-        const container = $.find('[data-calendar]');
-        var returnTarget = $(event.currentTarget);
-        $(container).find('.calendar')
-            .addClass('lightbox__content')
-            .attr('role', 'dialog')
-            .attr('aria-modal', 'true');
-        $(container).addClass('lightbox').on('click', () => {
-            $(container).removeClass('lightbox');
-            $(container).removeClass('lightbox__content');
-            returnTarget.focus();
-        }).on('keydown', (ev) => {
-            var key = ev.keyCode || ev.which;
-            switch (key) {
-                case 27: // ESC    
-                    $(container).removeClass('lightbox');
-                    $(container).removeClass('lightbox__content');
-                    returnTarget.focus();
-                    break;
-            }
-        });
-        this.addFocusTrap($(container));
-
     }
 
     addFocusTrap(elem) {
@@ -219,8 +186,8 @@ class View extends BaseView {
         });
     }
 
-    onDateToday($container, event) {
-        this.onDatePick($container, event)
+    onDateToday(date) {
+        this.onDatePick(date)
     }
 
     onQueueProcess(scope, event, isCopy = false) {
@@ -591,7 +558,6 @@ class View extends BaseView {
             onCancelAppointmentForm: this.onCancelAppointmentForm,
             onPrintWaitingNumber: this.onPrintWaitingNumber,
             onAbortMessage: this.onAbortMessage,
-            onSelectDateWithOverlay: this.onSelectDateWithOverlay,
             onChangeSlotCount: this.onChangeSlotCount,
             onConfirm: this.onConfirm,
             showLoader: showLoader,
