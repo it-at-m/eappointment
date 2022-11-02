@@ -161,7 +161,8 @@ class AvailabilityDatePicker extends Component
             if (this.state.availability.endDate != moment(date).startOf('day').unix()) {
                 this.props.onChange("endDate", moment(date).unix());
             }
-        }   
+        }
+        this.closeDatePicker();
     }
 
     handleTimeChange(name, date) {
@@ -174,7 +175,8 @@ class AvailabilityDatePicker extends Component
             if (this.state.availability.endTime != moment(date).format('HH:mm')) {
                 this.props.onChange("endTime", moment(date).format('HH:mm'));
             }
-        }   
+        }
+        this.closeTimePicker();
     }
 
     escHandler(event) {

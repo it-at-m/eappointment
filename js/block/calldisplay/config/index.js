@@ -68,11 +68,22 @@ class CallDisplayConfigView extends Component {
         })
     }
 
+    buildHost() {
+        return document.location.origin;
+    }
+
     buildCalldisplayUrl() {
         const baseUrl  = this.props.config.calldisplay.baseUrl
         let parameters = this.buildParameters(false);
 
-        return `${baseUrl}?${parameters.join('&')}`
+        return `${this.buildHost()}${baseUrl}?${parameters.join('&')}`
+    }
+
+    buildWebcalldisplayUrl() {
+        const baseUrl  = this.props.config.webcalldisplay.baseUrl
+        let parameters = this.buildParameters(true);
+
+        return `${this.buildHost()}${baseUrl}?${parameters.join('&')}`
     }
 
     buildParameters(hashParameters) {
@@ -104,13 +115,6 @@ class CallDisplayConfigView extends Component {
         }
 
         return queryParts
-    }
-
-    buildWebcalldisplayUrl() {
-        const baseUrl  = this.props.config.webcalldisplay.baseUrl
-        let parameters = this.buildParameters(true);
-
-        return `${baseUrl}?${parameters.join('&')}`
     }
 
     componentDidUpdate(prevProps, prevState) {
