@@ -307,7 +307,6 @@
                             {% set requestsOptions = [] %}
                             {% for request in requestList %}
                                 {% set slotCount = request.timeSlotCount %}
-                                {% if request.timeSlotCount == 0 %}{% set slotCount = 1 %}{% endif %}
                                 {% if request.id in selectedRequests %}
                                     {% set checked = "1" %}
                                 {% else %}

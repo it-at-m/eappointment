@@ -95,7 +95,7 @@ class View extends BaseView {
                 return partial_sum + count;
             });
         }
-
+        slotCount = slotCount == 0 ? 1 : slotCount;
         $('#appointmentForm_slotCount').val(Math.ceil(slotCount)).trigger('change');
     }
 }
