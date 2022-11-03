@@ -217,16 +217,16 @@
         },
         {
             "name": "eappointment/zmsdb",
-            "version": "2.24.12-rc4",
+            "version": "2.24.12-rc5",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsdb.git",
-                "reference": "b54a903f6d6d102e97e39487ca1b503ac2749dea"
+                "reference": "ec0722ca5654c0f6f62aa84693e94106dd7d5aa3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=b54a903f6d6d102e97e39487ca1b503ac2749dea",
-                "reference": "b54a903f6d6d102e97e39487ca1b503ac2749dea",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=ec0722ca5654c0f6f62aa84693e94106dd7d5aa3",
+                "reference": "ec0722ca5654c0f6f62aa84693e94106dd7d5aa3",
                 "shasum": ""
             },
             "require": {
@@ -288,7 +288,7 @@
                 }
             ],
             "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
-            "time": "2022-10-31T15:00:16+00:00"
+            "time": "2022-11-03T11:06:18+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
@@ -401,16 +401,16 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "2.24.12-rc2",
+            "version": "2.24.12-rc3",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsslim.git",
-                "reference": "95d2224104a414e5919689e3741667539525f66d"
+                "reference": "698f15bbde2017dddb4a424a793b2544937e1c2d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=95d2224104a414e5919689e3741667539525f66d",
-                "reference": "95d2224104a414e5919689e3741667539525f66d",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=698f15bbde2017dddb4a424a793b2544937e1c2d",
+                "reference": "698f15bbde2017dddb4a424a793b2544937e1c2d",
                 "shasum": ""
             },
             "require": {
@@ -450,7 +450,7 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-            "time": "2022-11-01T12:52:32+00:00"
+            "time": "2022-11-02T10:03:18+00:00"
         },
         {
             "name": "fig/http-message-util",
@@ -1314,12 +1314,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "6ca121cb3bf9f5d33016bfd4a175b0732cf174c4"
+                "reference": "45470fe91508b361778c84cb492d17826c04bbd7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/6ca121cb3bf9f5d33016bfd4a175b0732cf174c4",
-                "reference": "6ca121cb3bf9f5d33016bfd4a175b0732cf174c4",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/45470fe91508b361778c84cb492d17826c04bbd7",
+                "reference": "45470fe91508b361778c84cb492d17826c04bbd7",
                 "shasum": ""
             },
             "conflict": {
@@ -1336,6 +1336,7 @@
                 "amphp/http-client": ">=4,<4.4",
                 "anchorcms/anchor-cms": "<=0.12.7",
                 "andreapollastri/cipi": "<=3.1.15",
+                "apereo/phpcas": "<1.6",
                 "api-platform/core": ">=2.2,<2.2.10|>=2.3,<2.3.6",
                 "appwrite/server-ce": "<0.11.1|>=0.12,<0.12.2",
                 "area17/twill": "<1.2.5|>=2,<2.5.3",
@@ -1486,7 +1487,7 @@
                 "illuminate/encryption": ">=4,<=4.0.11|>=4.1,<=4.1.31|>=4.2,<=4.2.22|>=5,<=5.0.35|>=5.1,<=5.1.46|>=5.2,<=5.2.45|>=5.3,<=5.3.31|>=5.4,<=5.4.36|>=5.5,<5.5.40|>=5.6,<5.6.15",
                 "illuminate/view": "<6.20.42|>=7,<7.30.6|>=8,<8.75",
                 "impresscms/impresscms": "<=1.4.3",
-                "in2code/femanager": "<5.5.1|>=6,<6.3.1",
+                "in2code/femanager": "<5.5.2|>=6,<6.3.3|>=7,<7.0.1",
                 "in2code/lux": "<17.6.1|>=18,<24.0.2",
                 "intelliants/subrion": "<=4.2.1",
                 "islandora/islandora": ">=2,<2.4.1",
@@ -1617,6 +1618,7 @@
                 "prestashop/ps_facetedsearch": "<3.4.1",
                 "prestashop/ps_linklist": "<3.1",
                 "privatebin/privatebin": "<1.4",
+                "processwire/processwire": "<=3.0.200",
                 "propel/propel": ">=2-alpha.1,<=2-alpha.7",
                 "propel/propel1": ">=1,<=1.7.1",
                 "pterodactyl/panel": "<1.7",
@@ -1728,6 +1730,7 @@
                 "thorsten/phpmyfaq": "<3.1.8",
                 "tinymce/tinymce": "<5.10",
                 "titon/framework": ">=0,<9.9.99",
+                "tobiasbg/tablepress": "<= 2.0-RC1",
                 "topthink/framework": "<=6.0.13",
                 "topthink/think": "<=6.0.9",
                 "topthink/thinkphp": "<=3.2.3",
@@ -1837,7 +1840,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-10-31T20:04:42+00:00"
+            "time": "2022-11-03T10:04:41+00:00"
         },
         {
             "name": "seld/cli-prompt",
