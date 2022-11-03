@@ -622,12 +622,14 @@ class Process extends Base implements MappingInterface
         $parentProcess = 0
     ) {
         $this->addValuesIPAdress($process);
-        $this->addValuesFollowingProcessData($process, $parentProcess);
         $this->addValuesStatusData($process, $dateTime);
         if (0 === $parentProcess) {
             $this->addValuesClientData($process);
             $this->addValuesQueueData($process);
             $this->addValuesWaitingTimeData($process);
+        }
+        if ($process->isWithAppointment()) {
+            $this->addValuesFollowingProcessData($process, $parentProcess);
         }
     }
 
