@@ -1023,6 +1023,46 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/config/":
+ *      post:
+ *          summary: update config properties
+ *          tags:
+ *              - config
+ *          parameters:
+ *              -   name: X-Token
+ *                  description: Secure Token
+ *                  required: true
+ *                  in: header
+ *                  type: string
+ *              -   name: config
+ *                  description: config data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/config.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/config.json"
+ *              401:
+ *                  description: "authentification failed"
+ */
+\App::$slim->post(
+    '/config/',
+    '\BO\Zmsapi\ConfigUpdate'
+)
+    ->setName("ConfigUpdate");
+
+/**
+ *  @swagger
  *  "/dayoff/{year}/":
  *      get:
  *          summary: Get a list of common free days for a given year
@@ -4059,6 +4099,40 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/client/processlist/summarymail/":
+ *      get:
+ *          summary: request a summary of open processes belonging to an email
+ *          tags:
+ *              - process
+ *              - mail
+ *          parameters:
+ *              -   name: mail
+ *                  description: "email address for which all planned processes have to be send by mail"
+ *                  in: query
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/mail.json"
+ *              429:
+ *                  description: "request repeated to often"
+ */
+\App::$slim->get(
+    '/client/processlist/summarymail/',
+    '\BO\Zmsapi\ProcessListSummaryMail'
+)
+    ->setName("ProcessListSummaryMail");
+    
+/**
+ *  @swagger
  *  "/scope/{id}/emergency/":
  *      post:
  *          summary: Trigger an emergency
@@ -4874,6 +4948,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              200:
  *                  description: "success"
  *                  schema:
+ *                      type: object
  *                      properties:
  *                          meta:
  *                              $ref: "schema/metaresult.json"
@@ -5796,6 +5871,7 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\WorkstationProcessDelete'
 )
     ->setName("WorkstationProcessDelete");
+
 
 /* ---------------------------------------------------------------------------
  * maintenance

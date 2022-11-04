@@ -173,8 +173,9 @@ class UseraccountUpdateTest extends Base
 
     public function testNoDepartments()
     {
-        $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountNoDepartments');
-        $this->expectExceptionCode(404);
+        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
+        $this->expectExceptionMessage('Behördenauswahl');
+        $this->expectExceptionCode(400);
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
         $response = $this->render(['loginname' => 'testadmin'], [
             '__body' => '{

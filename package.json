@@ -5,20 +5,21 @@
   "main": "index.js",
   "private": true,
   "scripts": {
+    "preinstall": "npm i --location=global @apidevtools/swagger-cli",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "doc": "node ./bin/build_swagger.js"
+    "build": "node ./bin/build_swagger.js"
   },
   "keywords": [
     "eappointment"
   ],
   "author": "BerlinOnline GmbH & Co. KG",
   "license": "SEE LICENSE IN LICENSE FILE",
-  "dependencies": {},
+  "dependencies": {
+  },
   "devDependencies": {
     "swagger-jsdoc": "^6.1.0",
     "swagger-parser": "^10.0.0",
     "openapi-types": "^10.0.0",
-    "@apidevtools/swagger-cli": "^4.0.4",
     "js-yaml": "^4.1.0"
   }
 }

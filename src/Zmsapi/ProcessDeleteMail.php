@@ -10,7 +10,9 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Mail as Query;
 use \BO\Zmsdb\Config;
-use \BO\Zmsdb\Process;
+use \BO\Zmsdb\Process as ProcessRepository;
+use \BO\Zmsdb\Department as DepartmentRepository;
+use \BO\Zmsentities\Process;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -27,16 +29,14 @@ class ProcessDeleteMail extends BaseController
         array $args
     ) {
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $process = new \BO\Zmsentities\Process($input);
+        $process = new Process($input);
         
         $process->testValid();
         $this->testProcessData($process);
 
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        $config = (new Config())->readEntity();
-        $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, 'deleted');
-        $mail = (new \BO\Zmsdb\Mail)->writeInQueue($mail, \App::$now, false);
-        \App::$log->debug("Send mail", [$mail]);
+
+        $mail = $this->writeMail($process);
 
         $message = Response\Message::create($request);
         $message->data = $mail;
@@ -46,9 +46,26 @@ class ProcessDeleteMail extends BaseController
         return $response;
     }
 
+    protected static function writeMail(Process $process)
+    {
+        $config = (new Config())->readEntity();
+        $department = (new DepartmentRepository())->readByScopeId($process->scope['id']);
+        $collection = ProcessConfirmationMail::getProcessListOverview($process, $config);
+
+        $mail = (new \BO\Zmsentities\Mail)
+            ->toResolvedEntity($collection, $config, 'deleted')
+            ->withDepartment($department);
+        $mail->testValid();
+        if ($process->getFirstClient()->hasEmail() && $process->scope->hasEmailFrom()) {
+            $mail = (new \BO\Zmsdb\Mail)->writeInQueue($mail, \App::$now, false);
+            \App::$log->debug("Send mail", [$mail]);
+        }
+        return $mail;
+    }
+
     protected function testProcessData($process)
     {
-        $authCheck = (new Process())->readAuthKeyByProcessId($process->getId());
+        $authCheck = (new ProcessRepository())->readAuthKeyByProcessId($process->getId());
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
         } elseif ($process->toProperty()->scope->preferences->client->emailRequired->get() &&
