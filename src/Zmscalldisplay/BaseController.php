@@ -16,7 +16,7 @@ use BO\Slim\Helper as SlimHelper;
  */
 abstract class BaseController extends \BO\Slim\Controller
 {
-    static $hashParameter = ['webcalldisplay' => ['collections', 'queue']];
+    protected static $hashParameter = ['webcalldisplay' => ['collections', 'queue']];
 
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
