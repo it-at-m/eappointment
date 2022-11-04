@@ -1,7 +1,7 @@
 info:
   title: ZMS (human waiting queue management) API
   x-logo:
-    url: "/terminvereinbarung/api/2/doc/logo.png"
+    url: "./logo.png"
   description: |
       The ZMS system is intended to manage human waiting queues. It has the following features:
 

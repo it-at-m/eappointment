@@ -39,7 +39,7 @@ class ScopeEmergencyRespondTest extends Base
     {
         $this->setWorkstation();
         $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNoAccess');
-        $this->expectExceptionCode(404);
+        $this->expectExceptionCode(403);
         $this->render(['id' => 141], [
             '__body' => '',
         ], []);

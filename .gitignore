@@ -5,9 +5,15 @@ config.php
 tags
 .DS_Store
 public/_tests
+public/doc/assets/redoc.min.js
+public/doc/swagger.*
+public/_test/assets/swagger-ui-bundle.js
+public/_test/assets/swagger-ui.css
+public/_test/assets/swagger-ui-standalone-preset.js
 cache
 vendor.old
 vendor.update
+#composer.lock
 VERSION
-composer.*.lock
+package-lock.json
 .phpunit.result.cache

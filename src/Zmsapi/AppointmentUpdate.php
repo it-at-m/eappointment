@@ -10,6 +10,9 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process;
 
+/**
+ * @SuppressWarnings(Coupling)
+ */
 class AppointmentUpdate extends BaseController
 {
 

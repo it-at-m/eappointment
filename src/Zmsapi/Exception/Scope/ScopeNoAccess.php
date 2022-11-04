@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Scope;
  */
 class ScopeNoAccess extends \Exception
 {
-    protected $code = 404;
+    protected $code = 403;
 
     protected $message = 'Ihre aktuelle Anmeldung hat keine Rechte diesen Standort zu ändern.';
 }
