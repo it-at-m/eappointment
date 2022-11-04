@@ -54,4 +54,9 @@ class Application extends \BO\Slim\Application
      */
     const HTTP_BASE_URL = 'http://user:pass@host.tdl';
     const SECURE_TOKEN = 'a9b215f1-e460-490c-8a0b-6d42c274d5e4';
+
+     /**
+     * signature key for url signature to save query paramter with hash
+     */
+    public static $urlSignatureSecret = 'a9b215f1-e460-490c-8a0b-6d42c274d5e4';
 }
