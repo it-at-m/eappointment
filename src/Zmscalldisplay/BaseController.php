@@ -29,11 +29,11 @@ abstract class BaseController extends \BO\Slim\Controller
     {
         $firstKey = array_key_first(static::$hashParameter);
         $queryArr = [];
-        foreach(array_values(static::$hashParameter[$firstKey]) as $parameter) {
+        foreach (array_values(static::$hashParameter[$firstKey]) as $parameter) {
             if ($request->getQueryParam($parameter)) {
                 $queryArr[$parameter] = $request->getQueryParam($parameter);
             }
-        }        
+        }
         if ($request->getQueryParam('template')) {
             $queryArr['template'] = $request->getQueryParam('template');
         }
@@ -45,7 +45,7 @@ abstract class BaseController extends \BO\Slim\Controller
     {
         $firstKey = array_key_first(static::$hashParameter);
         $paramsToHash = [];
-        foreach(array_values(static::$hashParameter[$firstKey]) as $parameter) {
+        foreach (array_values(static::$hashParameter[$firstKey]) as $parameter) {
             if ($request->getQueryParam($parameter)) {
                 $paramsToHash[$parameter] = $request->getQueryParam($parameter);
             }
@@ -67,5 +67,4 @@ abstract class BaseController extends \BO\Slim\Controller
         $parameters[$urlParamName] .= '?'. $this->buildQuery($request);
         return $parameters;
     }
-
 }
