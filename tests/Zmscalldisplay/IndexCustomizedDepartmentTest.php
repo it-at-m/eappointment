@@ -17,11 +17,6 @@ class IndexCustomizedDepartmentTest extends Base
                 'function' => 'readPostResult',
                 'url' => '/calldisplay/',
                 'response' => $this->readFixture("GET_calldisplay_department_76.json")
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/config/',
-                'response' => $this->readFixture("GET_config.json")
             ]
         ];
     }

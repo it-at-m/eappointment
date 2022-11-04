@@ -12,24 +12,17 @@ class IndexTest extends Base
 
     protected $parameters = [ ];
 
-    protected function getApiCalls()
-    {
-        return [
-            [
-                'function' => 'readPostResult',
-                'url' => '/calldisplay/',
-                'response' => $this->readFixture("GET_calldisplay.json")
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/config/',
-                'response' => $this->readFixture("GET_config.json")
-            ]
-        ];
-    }
-
     public function testRendering()
     {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/calldisplay/',
+                    'response' => $this->readFixture("GET_calldisplay.json")
+                ]
+            ]
+        );
         $response = $this->render([ ], [
             'collections' => [
                 'scopelist' => '141',
@@ -43,6 +36,20 @@ class IndexTest extends Base
 
     public function testWithHash()
     {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/calldisplay/',
+                    'response' => $this->readFixture("GET_calldisplay.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'response' => $this->readFixture("GET_config.json")
+                ]
+            ]
+        );
         $hash = SlimHelper::hashQueryParameters(
             'webcalldisplay',
             [
