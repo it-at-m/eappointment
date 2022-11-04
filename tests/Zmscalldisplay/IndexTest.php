@@ -41,7 +41,7 @@ class IndexTest extends Base
 
     }
 
-    public function testWithQrCode()
+    public function testWithHash()
     {
         $hash = SlimHelper::hashQueryParameters(
             'webcalldisplay',
@@ -65,6 +65,10 @@ class IndexTest extends Base
             'qrcode' => 1
         ], [ ]);
         $this->assertStringContainsString('webcallUrlCode', (string) $response->getBody());
-        $this->assertStringContainsString('hmac='. $hash, (string) $response->getBody());
+        $this->assertStringContainsString(
+            'aufruf/?collections%5Bscopelist%5D=141', 
+            (string) $response->getBody()
+        );
+        $this->assertStringContainsString('&hmac='. $hash, (string) $response->getBody());
     }
 }
