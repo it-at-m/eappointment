@@ -41,7 +41,7 @@ class Auth
     {
         if (array_key_exists(self::getCookieName(), $_COOKIE)) {
             unset($_COOKIE[self::getCookieName()]);
-            setcookie(self::getCookieName(), '', time() - 3600);
+            setcookie(self::getCookieName(), '', time() - 3600, '/');
         }
     }
 
