@@ -36,6 +36,6 @@
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "^3.5.8",
         "helmich/phpunit-psr7-assert": "^4.3.0",
-        "eappointment/zmsslim": "dev-feature/openid"
+        "eappointment/zmsslim": "dev-main || ^2.0"
     }
 }
