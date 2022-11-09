@@ -6,6 +6,7 @@
 
 namespace BO\Zmsadmin;
 
+use \BO\Zmsentities\Workstation;
 use \BO\Zmsadmin\Helper\LoginForm;
 use \BO\Mellon\Validator;
 
@@ -26,8 +27,24 @@ class Index extends BaseController
             $workstation = null;
         }
         $input = $request->getParsedBody();
-        if (is_array($input) && array_key_exists('loginName', $input)) {
-            return $this->testLogin($input, $response);
+        $oidclogin = $request->getAttribute('validator')->getParameter('oidclogin')->isString()->getValue();
+        if ($request->isPost()) {
+            $loginData = $this->testLogin($input, $response);
+            if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
+                \BO\Zmsclient\Auth::setKey($loginData->authkey);
+                return \BO\Slim\Render::redirect('workstationSelect', array(), array());
+            }
+            \BO\Slim\Render::withHtml(
+            $response,
+            'page/index.twig',
+            array(
+                'title' => 'Anmeldung gescheitert',
+                'loginfailed' => true,
+                'workstation' => null,
+                'exception' => $loginData,
+                'showloginform' => true
+            )
+        );
         }
         $config = (! $workstation)
             ? \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity()
@@ -36,10 +53,11 @@ class Index extends BaseController
             $response,
             'page/index.twig',
             array(
-                'title' => 'Anmeldung',
+                'title' => ($oidclogin) ? 'OpenID Anmeldung' : 'Anmeldung',
                 'config' => $config,
                 'workstation' => $workstation,
-                'showloginform' => true
+                'oidclogin' => $oidclogin,
+                'showloginform' => (! $oidclogin)
             )
         );
     }
@@ -54,12 +72,7 @@ class Index extends BaseController
         try {
             /** @var \BO\Zmsentities\Workstation $workstation */
             $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
-            if ($workstation->offsetExists('authkey')) {
-                \BO\Slim\Profiler::add('start set Authkey');
-                \BO\Zmsclient\Auth::setKey($workstation->authkey);
-                \BO\Slim\Profiler::add('end set Authkey');
-                return \BO\Slim\Render::redirect('workstationSelect', array(), array());
-            }
+            return $workstation;
         } catch (\BO\Zmsclient\Exception $exception) {
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
             if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
@@ -83,16 +96,6 @@ class Index extends BaseController
                 throw $exception;
             }
         }
-        return \BO\Slim\Render::withHtml(
-            $response,
-            'page/index.twig',
-            array(
-                'title' => 'Anmeldung gescheitert',
-                'loginfailed' => true,
-                'workstation' => null,
-                'exception' => $exceptionData,
-                'showloginform' => true
-            )
-        );
+        return $exceptionData;
     }
 }

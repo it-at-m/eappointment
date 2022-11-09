@@ -23,6 +23,7 @@ class Profile extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $confirmSuccess = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
+        $error = $request->getAttribute('validator')->getParameter('error')->isString()->getValue();
         $entity = new Entity($workstation->useraccount);
 
         if ($request->isPost()) {
@@ -44,6 +45,7 @@ class Profile extends BaseController
                 'workstation' => $workstation,
                 'useraccount' => $entity->getArrayCopy(),
                 'success' => $confirmSuccess,
+                'error' => $error,
                 'exception' => (isset($result)) ? $result : null,
                 'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema))
             )
