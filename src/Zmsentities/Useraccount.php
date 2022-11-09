@@ -262,4 +262,17 @@ class Useraccount extends Schema\Entity
         $hash = password_hash($string, PASSWORD_DEFAULT);
         return $hash;
     }
+
+    public function createFromOpenidData($data)
+    {
+        $entity = new self();
+        $entity->id = $data->toArray()['preferred_username'];
+        $entity->email = $data->getEmail();
+        $department = new Department(['id' => 0]);
+        $entity->addDepartment($department);
+        //$password = substr( str_shuffle( $entity->id . $entity->email ), 0, 8 );
+        $password = '123456';
+        $entity->password = $this->getHash($password);
+        return $entity;
+    }
 }
