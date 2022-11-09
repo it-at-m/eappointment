@@ -54,12 +54,13 @@ class SessionHandler implements \SessionHandlerInterface
         return true;
     }
 
-    public function read($sessionId)
+    public function read($sessionId, $params = [])
     {
+        $params['sync'] = static::$useSyncFlag;
         try {
             $session = $this->http->readGetResult(
                 '/session/' . $this->sessionName . '/' . $sessionId . '/',
-                ['sync' => static::$useSyncFlag]
+                $params
             )
             ->getEntity();
         } catch (Exception\ApiFailed $exception) {
@@ -70,6 +71,9 @@ class SessionHandler implements \SessionHandlerInterface
             } else {
                 throw $exception;
             }
+        }
+        if (isset($params['oidc']) && 1 == $params['oidc'] && $session) {
+            $session = $session->withOidcDataOnly();
         }
         return ($session && array_key_exists('content', $session)) ? serialize($session->getContent()) : '';
     }
