@@ -3128,16 +3128,16 @@
     "packages-dev": [
         {
             "name": "composer/pcre",
-            "version": "2.0.0",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/pcre.git",
-                "reference": "c8e9d27cfc5ed22643c19c160455b473ffd8aabe"
+                "reference": "36d3086c793f32a9a9e853a0abe8e19ec9d936fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/pcre/zipball/c8e9d27cfc5ed22643c19c160455b473ffd8aabe",
-                "reference": "c8e9d27cfc5ed22643c19c160455b473ffd8aabe",
+                "url": "https://api.github.com/repos/composer/pcre/zipball/36d3086c793f32a9a9e853a0abe8e19ec9d936fa",
+                "reference": "36d3086c793f32a9a9e853a0abe8e19ec9d936fa",
                 "shasum": ""
             },
             "require": {
@@ -3179,7 +3179,7 @@
             ],
             "support": {
                 "issues": "https://github.com/composer/pcre/issues",
-                "source": "https://github.com/composer/pcre/tree/2.0.0"
+                "source": "https://github.com/composer/pcre/tree/2.0.2"
             },
             "funding": [
                 {
@@ -3195,7 +3195,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-02-25T20:05:29+00:00"
+            "time": "2022-11-03T20:20:28+00:00"
         },
         {
             "name": "composer/xdebug-handler",
