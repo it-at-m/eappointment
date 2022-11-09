@@ -1,5 +1,5 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'loginform loginform-view'} %}
-        {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield %}
+        {% from 'element/helper/form.twig' import formgroup, custombutton, formbutton, inputfield %}
 
         {% block board_title %}
             {{ title }}
@@ -37,6 +37,7 @@
                 </fieldset>
                 {{ inputfield({ "name":"login_form_validate", "type":"hidden", "value":"1" }) }}
                 <div class="form-actions">
+                    {{ custombutton({ "type":"new", "class": "button button-default","target": urlGet('oidc', {}, {}), "label":"OIDC Login", "title":("Login via OIDC")|trans}) }}
                     {{ formbutton({ "type":"login", "label":"Anmelden", "value": "Anmelden", "accesskey":"a"}) }}
                 </div>
             </form>

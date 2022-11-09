@@ -33,9 +33,7 @@ require(APP_PATH . '/config.php');
 
 // add slim middleware
 \App::$slim->add(new \BO\Slim\Middleware\TrailingSlash());
-
-//\BO\Slim\Middleware\OAuth\OAuth::$client = new \BO\Zmsclient\PSR7\Client();
-//\App::$slim->add(new \BO\Slim\Middleware\OAuthMiddleware());
+\App::$slim->add(new \BO\Slim\Middleware\OAuthMiddleware());
 
 // load routing
 \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');

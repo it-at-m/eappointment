@@ -115,6 +115,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/workstation/quicklogin/', \BO\Zmsadmin\QuickLogin::class)
     ->setName("quickLogin");
 
+\App::$slim->get('/oidc/', \BO\Zmsadmin\Oidc::class)
+    ->setName("oidc");
+
 /*
  * ---------------------------------------------------------------------------
  * Logout

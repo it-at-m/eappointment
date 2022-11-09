@@ -27,13 +27,13 @@ class Logout extends BaseController
                 throw $exception;
             }
         }
-
-        return \BO\Slim\Render::redirect(
-            'index',
+        \BO\Zmsclient\Auth::removeKey();
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'page/logout.twig',
             array(
-                'title' => 'Anmeldung'
-            ),
-            array()
+                'title' => 'Erfolgreich abgemeldet'
+            )
         );
     }
 }
