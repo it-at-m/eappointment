@@ -3,7 +3,7 @@ namespace BO\Slim\Middleware;
 
 use \Psr\Http\Message\ServerRequestInterface;
 use \Psr\Http\Message\ResponseInterface;
-use \BO\Slim\Middleware\OAuth\OAuth;
+use \BO\Slim\Middleware\OAuth\KeycloakAuth;
 
 class OAuthMiddleware
 {
@@ -12,57 +12,37 @@ class OAuthMiddleware
         ResponseInterface $response,
         callable $next
     ) {
-        if(\App::ZMS_AUTHORIZATION_TYPE === "Keycloak"){
-            if ($this->checkUserLoggedIn() || $this->loginUser($request)) {
-                return $next($request, $response);
-            } else {
-                $exceptionData = [
-                    'template' => 'exception/bo/zmsapi/exception/useraccount/keycloakAuthError.twig'
-                ];
-                return \BO\Slim\Render::withHtml(
-                    $response,
-                    'page/index.twig',
-                    array(
-                        'title' => 'Anmeldung gescheitert',
-                        'loginfailed' => true,
-                        'workstation' => null,
-                        'exception' => $exceptionData,
-                        'showloginform' => false,
-                    )
-                );
-            }
+        if ("Keycloak" === \App::ZMS_AUTHORIZATION_TYPE){
+            $response = $this->handleKeycloakInstance($request, $response);
         }
-
+        if ("Gitlab" === \App::ZMS_AUTHORIZATION_TYPE){
+            $response = $this->handleGitlabInstance($request, $response);
+        }
         return $next($request, $response);
     }
 
-    private function checkUserLoggedIn(){
-        try {
-            $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-            if ($workstation->getUseraccount()->hasId()) {
-                return true;
-            }
-        } catch (\Exception $workstationexception) {
-            $workstation = null;
+    protected function handleKeycloakInstance(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $instance = new KeycloakAuth();
+        if ('logout/' === $request->getUri()->getPath()) {
+            return $instance->doLogout($request, $response);
         }
-
-        return false;
+        if ('oidc/' === $request->getUri()->getPath()) {
+            if (! $request->getParam("code") && '' == \BO\Zmsclient\Auth::getKey()) {
+                $authUrl = $instance->getProvider()->getAuthorizationUrl();
+                \BO\Zmsclient\Auth::setKey($instance->getProvider()->getState());
+                return $response->withRedirect($authUrl, 301);
+            }
+            elseif ($request->getParam("state") !== \BO\Zmsclient\Auth::getKey()) {
+                \BO\Zmsclient\Auth::removeKey();   
+            }
+            return $instance->doLogin($request, $response);
+        }
+        return $response;
     }
 
-    private function loginUser($request){
-        $oauth = new OAuth();
-        $oauth->setAccessTokenPayload($request->getParam("code"), $request->getParam("state"));
-
-        if($oauth->testAccessRight()){
-            \BO\Zmsclient\Auth::setKey($request->getParam("code"));
-            $workstation = \App::$http->readPostResult('/workstation/oauth/', $oauth->getUserData(), ['X-Authkey' => \BO\Zmsclient\Auth::getKey()] )->getEntity();
-
-            if ($workstation->offsetExists('authkey')) {
-                \BO\Zmsclient\Auth::setKey($workstation->authkey);
-                return true;
-            }
-        }
-
-        return false;
+    protected function handleGitlabInstance(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        return $response;
     }
 }
