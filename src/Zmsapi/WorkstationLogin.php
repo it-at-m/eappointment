@@ -32,39 +32,43 @@ class WorkstationLogin extends BaseController
         $entity->testValid();
 
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        Helper\UserAuth::testUseraccountExists($entity->getId());
+        $workstation = self::getLoggedInWorkstation($request, $entity, $resolveReferences);
+        \BO\Zmsdb\Connection\Select::writeCommit(); // @codeCoverageIgnore
         
-        $useraccount = Helper\UserAuth::getVerifiedUseraccount($entity);
-        Helper\UserAuth::testPasswordMatching($useraccount, $entity->password);
-        
-        
-        $workstation = (new Helper\User($request, $resolveReferences))->readWorkstation();
-        Helper\User::testWorkstationIsOveraged($workstation);
-
-        $logInHash = (new Workstation)->readLoggedInHashByName($useraccount->id);
-        $workstation = (new Workstation)->writeEntityLoginByName(
-            $useraccount->id,
-            $useraccount->password,
-            \App::getNow(),
-            $resolveReferences
-        );
-
-        if (null !== $logInHash) {
-            //to avoid commit on unit tests, is there a better solution?
-            $noCommit = $validator->getParameter('nocommit')->isNumber()->setDefault(0)->getValue();
-            if (!$noCommit) {
-                \BO\Zmsdb\Connection\Select::writeCommit(); // @codeCoverageIgnore
-            }
-            $exception = new \BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn();
-            $exception->data = $workstation;
-            throw $exception;
-        }
-
         $message = Response\Message::create($request);
         $message->data = $workstation;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
+    }
+
+    public static function getLoggedInWorkstation($request, $entity, $resolveReferences, $oidcLogin = false)
+    {
+        Helper\UserAuth::testUseraccountExists($entity->getId());
+        $useraccount = Helper\UserAuth::getVerifiedUseraccount($entity);
+        Helper\UserAuth::testPasswordMatching($useraccount, $entity->password);
+        
+        $workstation = (new Helper\User($request, $resolveReferences))->readWorkstation();
+        Helper\User::testWorkstationIsOveraged($workstation);
+        
+        static::testLoginHash($workstation);
+        $workstation = (new Workstation)->writeEntityLoginByName(
+            $useraccount->id,
+            $useraccount->password,
+            \App::getNow(),
+            $resolveReferences
+        );
+        return $workstation;
+    }
+
+    public static function testLoginHash($workstation)
+    {
+        $logInHash = (new Workstation)->readLoggedInHashByName($workstation->getUseraccount()->id);
+        if (null !== $logInHash) {
+            $exception = new \BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn();
+            $exception->data = $workstation;
+            throw $exception;
+        }
     }
 }

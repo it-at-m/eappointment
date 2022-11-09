@@ -1,10 +1,6 @@
 <?php
 // @codingStandardsIgnoreFile
 
-// Allow configuration by ENVIRONMENT variables
-define('ZMS_AUTHORIZATION_SUPERUSER_USERNAME', getenv('ZMS_AUTHORIZATION_SUPERUSER_USERNAME') ? getenv('ZMS_AUTHORIZATION_SUPERUSER_USERNAME') : '');
-define('ZMS_AUTHORIZATION_SUPERUSER_PASSWORD', getenv('ZMS_AUTHORIZATION_SUPERUSER_PASSWORD') ? getenv('ZMS_AUTHORIZATION_SUPERUSER_PASSWORD') : '');
-
 // MYSQL_USER with access to DB
 if (!defined('MYSQL_USER')) {
     define('MYSQL_USER', getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root');
@@ -55,9 +51,6 @@ class App extends \BO\Zmsapi\Application
     const IDENTIFIER = 'Zmsapi-ENV';
     const DEBUG = false;
     const DB_ENABLE_WSREPSYNCWAIT = true;
-    const ZMS_AUTHORIZATION_SUPERUSER_USERNAME = ZMS_AUTHORIZATION_SUPERUSER_USERNAME;
-    const ZMS_AUTHORIZATION_SUPERUSER_PASSWORD = ZMS_AUTHORIZATION_SUPERUSER_PASSWORD;
-
     /**
      * @var String DB_DSN_READONLY
      */
