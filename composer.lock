@@ -57,10 +57,16 @@
         {
             "name": "eappointment/mellon",
             "version": "v2.06.00",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab.com/eappointment/mellon.git",
+                "reference": "dbc7c67407aa76887c94e29b76d5659ae221f4a9"
+            },
             "dist": {
-                "type": "path",
-                "url": "/zmslocaldev/repos/mellon",
-                "reference": "13001b1922336226e8460af6e7c026e9ca2405b6"
+                "type": "zip",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fmellon/repository/archive.zip?sha=dbc7c67407aa76887c94e29b76d5659ae221f4a9",
+                "reference": "dbc7c67407aa76887c94e29b76d5659ae221f4a9",
+                "shasum": ""
             },
             "require": {
                 "ext-json": ">=0",
@@ -78,14 +84,7 @@
                     "BO\\Mellon\\": "src/Mellon/"
                 }
             },
-            "scripts": {
-                "test": [
-                    "php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html coverage/"
-                ],
-                "command": [
-                    "bin/configure"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -96,10 +95,10 @@
                 }
             ],
             "description": "Validator for parameters and validation helper",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://gitlab.com/api/v4/projects/32828983/issues"
+            },
+            "time": "2022-01-14T16:16:00+00:00"
         },
         {
             "name": "firebase/php-jwt",
@@ -372,16 +371,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "2.4.1",
+            "version": "2.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "69568e4293f4fa993f3b0e51c9723e1e17c41379"
+                "reference": "67c26b443f348a51926030c83481b85718457d3d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/69568e4293f4fa993f3b0e51c9723e1e17c41379",
-                "reference": "69568e4293f4fa993f3b0e51c9723e1e17c41379",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/67c26b443f348a51926030c83481b85718457d3d",
+                "reference": "67c26b443f348a51926030c83481b85718457d3d",
                 "shasum": ""
             },
             "require": {
@@ -471,7 +470,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/2.4.1"
+                "source": "https://github.com/guzzle/psr7/tree/2.4.3"
             },
             "funding": [
                 {
@@ -487,7 +486,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-08-28T14:45:39+00:00"
+            "time": "2022-10-26T14:07:24+00:00"
         },
         {
             "name": "league/oauth2-client",
@@ -2186,16 +2185,16 @@
     "packages-dev": [
         {
             "name": "composer/pcre",
-            "version": "2.0.0",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/pcre.git",
-                "reference": "c8e9d27cfc5ed22643c19c160455b473ffd8aabe"
+                "reference": "36d3086c793f32a9a9e853a0abe8e19ec9d936fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/pcre/zipball/c8e9d27cfc5ed22643c19c160455b473ffd8aabe",
-                "reference": "c8e9d27cfc5ed22643c19c160455b473ffd8aabe",
+                "url": "https://api.github.com/repos/composer/pcre/zipball/36d3086c793f32a9a9e853a0abe8e19ec9d936fa",
+                "reference": "36d3086c793f32a9a9e853a0abe8e19ec9d936fa",
                 "shasum": ""
             },
             "require": {
@@ -2237,7 +2236,7 @@
             ],
             "support": {
                 "issues": "https://github.com/composer/pcre/issues",
-                "source": "https://github.com/composer/pcre/tree/2.0.0"
+                "source": "https://github.com/composer/pcre/tree/2.0.2"
             },
             "funding": [
                 {
@@ -2253,7 +2252,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-02-25T20:05:29+00:00"
+            "time": "2022-11-03T20:20:28+00:00"
         },
         {
             "name": "composer/xdebug-handler",
@@ -2946,16 +2945,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "9.2.17",
+            "version": "9.2.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "aa94dc41e8661fe90c7316849907cba3007b10d8"
+                "reference": "12fddc491826940cf9b7e88ad9664cf51f0f6d0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/aa94dc41e8661fe90c7316849907cba3007b10d8",
-                "reference": "aa94dc41e8661fe90c7316849907cba3007b10d8",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/12fddc491826940cf9b7e88ad9664cf51f0f6d0a",
+                "reference": "12fddc491826940cf9b7e88ad9664cf51f0f6d0a",
                 "shasum": ""
             },
             "require": {
@@ -3011,7 +3010,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.17"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.18"
             },
             "funding": [
                 {
@@ -3019,7 +3018,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-08-30T12:24:04+00:00"
+            "time": "2022-10-27T13:35:33+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -3264,16 +3263,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.5.25",
+            "version": "9.5.26",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "3e6f90ca7e3d02025b1d147bd8d4a89fd4ca8a1d"
+                "reference": "851867efcbb6a1b992ec515c71cdcf20d895e9d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/3e6f90ca7e3d02025b1d147bd8d4a89fd4ca8a1d",
-                "reference": "3e6f90ca7e3d02025b1d147bd8d4a89fd4ca8a1d",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/851867efcbb6a1b992ec515c71cdcf20d895e9d2",
+                "reference": "851867efcbb6a1b992ec515c71cdcf20d895e9d2",
                 "shasum": ""
             },
             "require": {
@@ -3346,7 +3345,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.25"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.26"
             },
             "funding": [
                 {
@@ -3362,7 +3361,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-09-25T03:44:45+00:00"
+            "time": "2022-10-28T06:00:21+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -4909,5 +4908,5 @@
         "php": ">=7.3.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
