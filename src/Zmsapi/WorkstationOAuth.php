@@ -6,6 +6,7 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Workstation;
 use \BO\Zmsdb\Useraccount;
+use \BO\Zmsentities\Useraccount as UseraccountEntity;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -22,40 +23,22 @@ class WorkstationOAuth extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $xAuthkey  = $validator->getParameter('X-Authkey')->isString()->getValue();
-        $userData = Validator::input()->isJson()->getValue();
-        $useraccount = $this->getUseraccount($userData);
+        $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(2)->getValue();
+        $state  = $validator->getParameter('state')->isString()->isSmallerThan(40)->isBiggerThan(30)->getValue();
+        $input = Validator::input()->isJson()->assertValid()->getValue();
+        $entity = new \BO\Zmsentities\Useraccount($input);
+        $entity->testValid();
 
-        //TODO: funktioniert nicht
-        /*
-        error_log("_____________11111111111_______________" . \BO\Zmsclient\Auth::getKey() );
-        error_log("_____________22222222222_______________" .  $xAuthkey );
-        if(\BO\Zmsclient\Auth::getKey() != $xAuthkey){
-            throw new \BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn();
+        if (null === $state || $request->getHeaderLine('X-Authkey') !== $state) {
+            throw new \BO\Zmsapi\Exception\Workstation\WorkstationAuthFailed();
         }
-        */
-
-        $workstation = (new Helper\User($request, $resolveReferences))->readWorkstation();
-        Helper\User::testWorkstationIsOveraged($workstation);
-
-        $logInHash = (new Workstation)->readLoggedInHashByName($useraccount->id);
-        $workstation = (new Workstation)->writeEntityLoginByName(
-            $useraccount->id,
-            $useraccount->password,
-            \App::getNow()
-        );
-
-        if (null !== $logInHash) {
-            //to avoid commit on unit tests, is there a better solution?
-            $noCommit = $validator->getParameter('nocommit')->isNumber()->setDefault(0)->getValue();
-            if (!$noCommit) {
-                \BO\Zmsdb\Connection\Select::writeCommit(); // @codeCoverageIgnore
-            }
-            $exception = new \BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn();
-            $exception->data = $workstation;
-            throw $exception;
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
+        if ((new Useraccount())->readIsUserExisting($entity->getId())) {
+            $workstation = $this->getLoggedInWorkstationByOidc($request, $entity, $resolveReferences);
+        } else {
+            $workstation = $this->writeOAuthWorkstation($entity, $state, $resolveReferences);
         }
+        \BO\Zmsdb\Connection\Select::writeCommit();
 
         $message = Response\Message::create($request);
         $message->data = $workstation;
@@ -65,48 +48,69 @@ class WorkstationOAuth extends BaseController
         return $response;
     }
 
-    private function logoutSuperuser($superuserAccountId){
-        (new Workstation)->writeEntityLogoutByName($superuserAccountId);
+    protected function getLoggedInWorkstationByOidc($request, $entity, $resolveReferences)
+    {
+        Helper\UserAuth::testUseraccountExists($entity->getId());
+        
+        $workstation = (new Helper\User($request, $resolveReferences))->readWorkstation();
+        Helper\User::testWorkstationIsOveraged($workstation);
+        
+        WorkstationLogin::testLoginHash($workstation);
+        $workstation = (new Workstation)->writeEntityLoginByOidc(
+            $entity->id,
+            $request->getHeaderLine('X-Authkey'),
+            \App::getNow(),
+            $resolveReferences
+        );
+        return $workstation;
     }
 
-    private function loginSuperuser(){
-        $superuserAccount = new \BO\Zmsentities\Useraccount(array(
-            'id' => \App::ZMS_AUTHORIZATION_SUPERUSER_USERNAME,
-            'password' => \App::ZMS_AUTHORIZATION_SUPERUSER_PASSWORD,
-            'departments' => array('id' => 0) // required in schema validation
-        ));
+    protected function writeOAuthWorkstation(UseraccountEntity $entity, $state, $resolveReferences)
+    {
+        $useraccount = $entity;
 
-        $superuserAccount = Helper\UserAuth::getVerifiedUseraccount($superuserAccount);
-        (new Workstation)->writeEntityLoginByName(
-            $superuserAccount->id,
-            $superuserAccount->password,
-            \App::getNow()
-        );
-
-        return $superuserAccount->id;
-    }
-
-    private function getUseraccount($userData){
-        $userAccount = array(
-            "id" => $userData['preferred_username'],
-            "email" => $userData['email'],
-            "departments" => array(
-                "id" => 0,
-            )
-        );
-
-        if (!(new Useraccount)->readIsUserExisting($userAccount->id)) {
-            $superuserAccountId = $this->loginSuperuser();
-            $userAccount = $this->addUseraccount($userAccount);
-            $this->logoutSuperuser($superuserAccountId);
+        if (! (new Useraccount())->readIsUserExisting($entity->getId())) {
+            //$this->loginSuperuser($resolveReferences);
+            //$useraccount = $this->writeNewUseraccount($entity, $resolveReferences);
+            //$this->logoutSuperuser();
+            $useraccount = (new Useraccount)->writeEntity($entity);
         }
-
-        return Helper\UserAuth::getVerifiedUseraccount($userAccount);
+        $query = new Workstation();
+        $workstation = $query->writeEntityLoginByName(
+            $useraccount->getId(),
+            $entity->password,
+            \App::getNow(),
+            $resolveReferences
+        );
+        $workstation = $query->updateEntityAuthkey(
+            $useraccount->getId(),
+            $entity->password,
+            $state,
+            $resolveReferences
+        );
+        return $workstation;
     }
 
-    private function addUseraccount($user){
-        $entity = new \BO\Zmsentities\Useraccount($user);
-        $entity->password = $entity->getHash($entity->password);
-        return (new Useraccount)->writeEntity($entity);
+    /*
+    private function writeNewUseraccount(UseraccountEntity $entity, $resolveReferences)
+    {
+        Helper\User::checkRights('useraccount');
+        Helper\User::testWorkstationAccessRights($entity);
+        $useraccount = (new Useraccount)->writeEntity($entity);
+        return $useraccount;
     }
+
+    private function loginSuperuser($resolveReferences){
+        Helper\User::$workstation = (new Workstation)->writeEntityLoginByName(
+            \App::ZMS_AUTHORIZATION_SUPERUSER_USERNAME,
+            \App::ZMS_AUTHORIZATION_SUPERUSER_PASSWORD,
+            \App::getNow(),
+            $resolveReferences
+        );
+    }
+
+    private function logoutSuperuser(){
+        (new Workstation)->writeEntityLogoutByName(\App::ZMS_AUTHORIZATION_SUPERUSER_USERNAME);
+    }
+    */
 }

@@ -23,8 +23,12 @@ class SessionUpdate extends BaseController
     ) {
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $session = new \BO\Zmsentities\Session($input);
+        //overwrite sessions content without frontend parameter like basket and human
+        if (Validator::param('oidc')->isBool()->setDefault(false)->getValue()) {
+            $session->content = $input['content'];
+        }
         $session->testValid();
-        if ('isDifferent' != $session->getContent()['error']) {
+        if (isset($session->getContent()['error']) && 'isDifferent' != $session->getContent()['error']) {
             $this->testMatching($session);
         }
 
