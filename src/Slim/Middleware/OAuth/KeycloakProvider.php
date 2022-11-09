@@ -18,6 +18,7 @@ class KeycloakProvider extends Keycloak
     public function setHttpClient($client)
     {
         $this->httpClient = $client;
+
         return $this;
     }
 }
