@@ -8,6 +8,7 @@ use \BO\Zmsclient\PSR7\Client;
 use \BO\Zmsclient\PSR7\ClientInterface;
 use \BO\Zmsentities\Useraccount as UseraccountEntity;
 use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
+use League\OAuth2\Client\Token\AccessToken;
 
 class KeycloakAuth
 {
@@ -21,15 +22,57 @@ class KeycloakAuth
         return $this;
     }
 
+    public function getProvider()
+    {
+        return $this->provider;
+    }
+
     public function getUseraccount($code){
         $ownerData = $this->getAccessTokenOwnerData($code);
         $useraccount = (new UseraccountEntity())->createFromOpenIdData($ownerData);
         return $useraccount;
     }
 
-    public function getProvider()
+    public function doLogin(ServerRequestInterface $request, ResponseInterface $response){
+        $useraccount = $this->getUseraccount($request->getParam("code"));
+        try {
+            \App::$http
+                ->readPostResult('/workstation/oauth/', $useraccount, ['state' => \BO\Zmsclient\Auth::getKey()])->getEntity();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            \BO\Zmsclient\Auth::removeKey();
+            throw $exception;
+        }
+        return $response;
+    }
+
+    public function doLogout(ResponseInterface $response) {
+        $this->writeDeleteSession();
+        $logoutUrl = $this->provider->getLogoutUrl(['redirect_uri' => \App::ZMS_LOGOUT_REDIRECTURI]);
+        return $response->withRedirect($logoutUrl, 301);
+    }
+
+    public function writeNewAccessTokenIfExpired(ResponseInterface $response)
+    {   
+        try {
+            $accessTokenData = $this->readTokenDataFromSession();
+            $accessTokenData = (is_array($accessTokenData)) ? $accessTokenData : [];
+            $existingAccessToken = new AccessToken($accessTokenData);
+            if ($existingAccessToken->hasExpired()) {
+                $newAccessToken = $this->provider->getAccessToken('refresh_token', [
+                    'refresh_token' => $existingAccessToken->getRefreshToken()
+                ]);
+                $this->writeDeleteSession();
+                $this->writeTokenToSession($newAccessToken);
+            }
+        } catch (\Exception $exception) {
+            return $this->doLogout($response);
+        }
+        return $response;
+    }
+
+    public function getToken()
     {
-        return $this->provider;
+        return $this->token;
     }
 
     private function setProvider($client = null)
@@ -71,26 +114,10 @@ class KeycloakAuth
         $sessionHandler->destroy(\BO\Zmsclient\Auth::getKey());
     }
 
-    public function getToken()
+    private function readTokenDataFromSession()
     {
-        return $this->token;
-    }
-
-    public function doLogin(ServerRequestInterface $request, ResponseInterface $response){
-        $useraccount = $this->getUseraccount($request->getParam("code"));
-        try {
-            \App::$http
-                ->readPostResult('/workstation/oauth/', $useraccount, ['state' => \BO\Zmsclient\Auth::getKey()])->getEntity();
-        } catch (\BO\Zmsclient\Exception $exception) {
-            \BO\Zmsclient\Auth::removeKey();
-            throw $exception;
-        }
-        return $response;
-    }
-
-    public function doLogout(ServerRequestInterface $request, ResponseInterface $response) {
-        $this->writeDeleteSession();
-        $logoutUrl = $this->provider->getLogoutUrl(['redirect_uri' => \App::ZMS_LOGOUT_REDIRECTURI]);
-        return $response->withRedirect($logoutUrl, 301);
+        $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
+        $sessionHandler->open('/'. \App::ZMS_AUTHORIZATION_REALM . '/', \App::ZMS_AUTHORIZATION_CLIENT_ID);
+        return unserialize($sessionHandler->read(\BO\Zmsclient\Auth::getKey(), ['oidc' => true]));
     }
 }
