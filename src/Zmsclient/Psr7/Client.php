@@ -4,6 +4,8 @@ namespace BO\Zmsclient\Psr7;
 
 use Jgut\Spiral\Client as Transport;
 use Jgut\Spiral\Transport\Curl as Curl;
+use \Psr\Http\Message\RequestInterface;
+use \Psr\Http\Message\ResponseInterface;
 
 class Client implements ClientInterface
 {
@@ -16,12 +18,12 @@ class Client implements ClientInterface
     protected static $curlClient = null;
 
     /**
-     * @param \Psr\Http\Message\RequestInterface $request
+     * @param RequestInterface $request
      * @param Array $curlopts Additional or special curl options
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      */
-    public static function readResponse(\Psr\Http\Message\RequestInterface $request, array $curlopts = array())
+    public static function readResponse(RequestInterface $request, array $curlopts = array())
     {
         $transport = static::getClient($curlopts);
         try {
@@ -45,5 +47,9 @@ class Client implements ClientInterface
             static::$curlClient = $transport;
         }
         return static::$curlClient;
+    }
+
+    public function send(RequestInterface $request) {
+        return static::readResponse($request);
     }
 }
