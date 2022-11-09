@@ -25,7 +25,7 @@ class OAuthMiddleware
     {
         $instance = new KeycloakAuth();
         if ('logout/' === $request->getUri()->getPath()) {
-            return $instance->doLogout($request, $response);
+            return $instance->doLogout($response);
         }
         if ('oidc/' === $request->getUri()->getPath()) {
             if (! $request->getParam("code") && '' == \BO\Zmsclient\Auth::getKey()) {
@@ -37,6 +37,9 @@ class OAuthMiddleware
                 \BO\Zmsclient\Auth::removeKey();   
             }
             return $instance->doLogin($request, $response);
+        }
+        if ('workstation/' === $request->getUri()->getPath() || 'counter/' === $request->getUri()->getPath()) {
+            $response = $instance->writeNewAccessTokenIfExpired($response);
         }
         return $response;
     }
