@@ -15,7 +15,7 @@
         "ext-json": ">=1.0",
         "ext-pcre": ">=0",
         "eappointment/zmsentities": "dev-main || ^2.0",
-        "eappointment/zmsslim": "dev-main || ^2.0",
+        "eappointment/zmsslim": "dev-feature/openid",
         "eappointment/mellon": "^2.0.1",
         "psr/http-message": "^1.0",
         "aronduby/dump" : "^0.9",

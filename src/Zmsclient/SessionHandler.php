@@ -74,7 +74,7 @@ class SessionHandler implements \SessionHandlerInterface
         return ($session && array_key_exists('content', $session)) ? serialize($session->getContent()) : '';
     }
 
-    public function write($sessionId, $sessionData)
+    public function write($sessionId, $sessionData, $params = [])
     {
         $entity = new \BO\Zmsentities\Session();
         $entity->id = $sessionId;
@@ -82,7 +82,7 @@ class SessionHandler implements \SessionHandlerInterface
         $entity->content = unserialize($sessionData);
 
         try {
-            $session = $this->http->readPostResult('/session/', $entity)
+            $session = $this->http->readPostResult('/session/', $entity, $params)
                 ->getEntity();
         } catch (Exception $exception) {
             if ($exception->getCode() == 404) {
