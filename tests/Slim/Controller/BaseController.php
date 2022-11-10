@@ -19,6 +19,13 @@ abstract class BaseController extends \BO\Slim\Controller
         return $this->readResponse($request, $noCacheResponse, $args);
     }
 
+    /**
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @param array $args
+     *
+     * @return ResponseInterface
+     */
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
         return parent::__invoke($request, $response, $args);

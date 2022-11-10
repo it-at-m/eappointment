@@ -8,16 +8,15 @@ namespace BO\Slim\Tests\Controller;
 
 class Get extends BaseController
 {
-
     /**
-     * @return String
+     * {@inheritDoc}
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $message = $request->getparam('message');
+        $message = $request->getParam('message');
         return \BO\Slim\Render::withHtml(
             $response,
             'unittest.twig',

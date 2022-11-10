@@ -15,9 +15,9 @@ class TwigExtensionsAndFilter extends TwigExtension
     public function getFilters()
     {
         return array(
-            new \Twig_SimpleFilter('msort', array($this, 'msort')),
-            new \Twig_SimpleFilter('getObjectName', array($this, 'getObjectName')),
-            new \Twig_SimpleFilter('decodeEntities', array($this, 'decodeEntities'))
+            new \Twig\TwigFilter('msort', array($this, 'msort')),
+            new \Twig\TwigFilter('getObjectName', array($this, 'getObjectName')),
+            new \Twig\TwigFilter('decodeEntities', array($this, 'decodeEntities'))
         );
     }
 

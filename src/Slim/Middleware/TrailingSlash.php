@@ -5,12 +5,13 @@
 
 namespace BO\Slim\Middleware;
 
-use Psr\Http\Message\RequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use Fig\Http\Message\StatusCodeInterface;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class TrailingSlash
 {
-    public function __invoke(Request $request, Response $response, callable $next)
+    public function __invoke(Request $request, RequestHandlerInterface $next)
     {
         $uri = $request->getUri();
         $path = $uri->getPath();
@@ -22,10 +23,16 @@ class TrailingSlash
                 $uri = $uri->withScheme('https');
                 $uriString = (string)$uri;
             } else {
-                $uriString = preg_replace('#^https?:#', '', (string)$uri); //Do not force protocoll
+                $uriString = preg_replace('#^https?:#', '', (string)$uri); //Do not force protocol
             }
-            return $response->withRedirect($uriString, 301);
+
+            return \App::$slim->redirect(
+                (string) $request->getUri(),
+                $uriString,
+                StatusCodeInterface::STATUS_MOVED_PERMANENTLY
+            );
         }
-        return $next($request, $response);
+
+        return $next->handle($request);
     }
 }

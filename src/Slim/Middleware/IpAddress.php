@@ -8,6 +8,8 @@ namespace BO\Slim\Middleware;
 
 use \Psr\Http\Message\ServerRequestInterface;
 use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use Slim\Psr7\Factory\ResponseFactory;
 
 class IpAddress
 {
@@ -28,7 +30,7 @@ class IpAddress
      * in order for the proxy headers to be looked at.
      * If TRUE then trust every proxy
      *
-     * @var array
+     * @var array|true
      */
     protected $trustedProxies;
 
@@ -87,16 +89,16 @@ class IpAddress
      *
      * @return ResponseInterface
      */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
+    public function __invoke(ServerRequestInterface $request, ?RequestHandlerInterface $next)
     {
         if (!$next) {
-            return $response;
+            return (new ResponseFactory())->createResponse();
         }
 
         $ipAddress = $this->determineClientIpAddress($request);
         $request = $request->withAttribute($this->attributeName, $ipAddress);
 
-        return $response = $next($request, $response);
+        return $next->handle($request);
     }
 
     /**

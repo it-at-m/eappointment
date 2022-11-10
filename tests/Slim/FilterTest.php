@@ -2,6 +2,9 @@
 
 namespace BO\Slim\Tests;
 
+use BO\Slim\Bootstrap;
+use Twig\TwigFilter;
+
 class FilterTest extends Base
 {
 
@@ -15,10 +18,10 @@ class FilterTest extends Base
 
     public function testRendering()
     {
-        $filter = new \Twig_SimpleFilter('stripslashes', function ($string) {
+        $filter = new TwigFilter('stripslashes', function ($string) {
             return stripslashes($string);
         });
-        \BO\Slim\Bootstrap::addTwigFilter($filter);
+        Bootstrap::addTwigFilter($filter);
         $response = $this->render($this->arguments, $this->parameters, $this->sessionData);
         $this->assertStringContainsString('filter test: Das ist ein Test mit Slashes', (string) $response->getBody());
     }

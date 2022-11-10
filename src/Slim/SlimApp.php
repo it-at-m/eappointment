@@ -2,13 +2,15 @@
 
 namespace BO\Slim;
 
-use Psr\Http\Message\RequestInterface;
+use Slim\Interfaces\RouteCollectorInterface;
+use Slim\Routing\RouteParser;
 
 class SlimApp extends \Slim\App
 {
-    public function urlFor($name, $params = array())
+    public function urlFor(string $name, array $params = []): string
     {
-        $routePath = $this->getContainer()->router->pathFor($name, $params);
-        return $routePath;
+        /** @var RouteCollectorInterface $router */
+        $router = $this->getContainer()->get('router');
+        return $router->getRouteParser()->urlFor($name, $params);
     }
 }

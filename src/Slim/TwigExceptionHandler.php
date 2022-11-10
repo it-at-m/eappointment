@@ -32,9 +32,6 @@ class TwigExceptionHandler
         $status = 500
     ) {
         try {
-            if ($exception instanceof \Slim\Exception\Stop) {
-                return true;
-            }
             $request = Controller::prepareRequest($request);
             if ($exception->getCode() >= 200) {
                 $status = $exception->getCode();
@@ -97,7 +94,7 @@ class TwigExceptionHandler
 
     public static function getExceptionTemplate(\Throwable $exception)
     {
-        $twig = \App::$slim->getContainer()->view;
+        $twig = \App::$slim->getContainer()->get('view');
         $loader = $twig->getLoader();
         if (isset($exception->template)) {
             $classname = $exception->template;
@@ -127,7 +124,7 @@ class TwigExceptionHandler
 
     public static function getExtendedExceptionInfo(\Throwable $exception, RequestInterface $request)
     {
-        $servertime = Helper::getFormatedDates((new \DateTimeImmutable())->getTimestamp(), 'yyyy-MM-dd H:mm:ss');
+        $servertime = Helper::getFormatedDates((new \DateTimeImmutable())->getTimestamp(), 'yyyy-MM-dd HH:mm:ss');
         $exceptionclass = get_class($exception);
         if (isset($exception->template)) {
             $exceptionclass = $exception->template;
@@ -147,7 +144,7 @@ class TwigExceptionHandler
         }
         $route = $request->getAttribute('route');
         $routename = '';
-        if ($route && $route instanceof \Slim\Route) {
+        if ($route && $route instanceof \Slim\Routing\Route) {
             $routename = $route->getName();
         }
 

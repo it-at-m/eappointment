@@ -15,10 +15,14 @@ class Application
     const IDENTIFIER = 'unnamed slim project';
 
     /**
-     * Flag to enable debugging mode for application
+     * Flag to enable debugging mode for application,
+     * if debug is enabled, an exception is shown with a backtrace
      */
     const DEBUG = false;
     const DEBUGLEVEL = 'WARNING';
+
+    const LOG_ERRORS = true;
+    const LOG_DETAILS = true;
 
     /**
      * Settings for region
@@ -44,19 +48,10 @@ class Application
     /**
      * Slim singleton instance
      *
-     * @var \Slim\Slim $slim
+     * @var \BO\Slim\SlimApp $slim
      */
     public static $slim;
 
-    /**
-     * Log level for Slim
-     */
-    //const SLIM_LOGLEVEL = \Slim\Log::ERROR;
-
-    /**
-     * if debug is enabled, an exception is shown with a backtrace
-     */
-    const SLIM_DEBUG = false;
 
     /**
      * Define the path for the templates relative to APP_PATH
