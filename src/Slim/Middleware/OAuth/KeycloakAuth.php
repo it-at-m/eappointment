@@ -4,8 +4,6 @@ namespace BO\Slim\Middleware\OAuth;
 
 use \Psr\Http\Message\ServerRequestInterface;
 use \Psr\Http\Message\ResponseInterface;
-use \BO\Zmsclient\PSR7\Client;
-use \BO\Zmsclient\PSR7\ClientInterface;
 use \BO\Zmsentities\Useraccount as UseraccountEntity;
 use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
 use League\OAuth2\Client\Token\AccessToken;
@@ -13,12 +11,10 @@ use League\OAuth2\Client\Token\AccessToken;
 class KeycloakAuth
 {
     protected $provider = null;
-    protected $token = '';
 
-    public function __construct(ClientInterface $client = null)
+    public function __construct()
     {
-        $client = ((null === $client)) ? new Client() : $client;
-        $this->setProvider($client);
+        $this->provider = new KeycloakProvider();
         return $this;
     }
 
@@ -27,15 +23,11 @@ class KeycloakAuth
         return $this->provider;
     }
 
-    public function getUseraccount($code){
-        $ownerData = $this->getAccessTokenOwnerData($code);
-        $useraccount = (new UseraccountEntity())->createFromOpenIdData($ownerData);
-        return $useraccount;
-    }
-
     public function doLogin(ServerRequestInterface $request, ResponseInterface $response){
-        $useraccount = $this->getUseraccount($request->getParam("code"));
+        $accessToken = $this->getAccessToken($request->getParam("code"));
+        $useraccount = $this->getUseraccountByAccessToken($accessToken);
         try {
+            $this->writeTokenToSession($accessToken);
             \App::$http
                 ->readPostResult('/workstation/oauth/', $useraccount, ['state' => \BO\Zmsclient\Auth::getKey()])->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
@@ -47,7 +39,8 @@ class KeycloakAuth
 
     public function doLogout(ResponseInterface $response) {
         $this->writeDeleteSession();
-        $logoutUrl = $this->provider->getLogoutUrl(['redirect_uri' => \App::ZMS_LOGOUT_REDIRECTURI]);
+        $realmData = $this->provider::getBasicOptionsFromJsonFile();
+        $logoutUrl = $this->provider->getLogoutUrl(['redirect_uri' => $realmData['logoutUri']]);
         return $response->withRedirect($logoutUrl, 301);
     }
 
@@ -57,7 +50,7 @@ class KeycloakAuth
             $accessTokenData = $this->readTokenDataFromSession();
             $accessTokenData = (is_array($accessTokenData)) ? $accessTokenData : [];
             $existingAccessToken = new AccessToken($accessTokenData);
-            if ($existingAccessToken->hasExpired()) {
+            if ($existingAccessToken && $existingAccessToken->hasExpired()) {
                 $newAccessToken = $this->provider->getAccessToken('refresh_token', [
                     'refresh_token' => $existingAccessToken->getRefreshToken()
                 ]);
@@ -65,59 +58,53 @@ class KeycloakAuth
                 $this->writeTokenToSession($newAccessToken);
             }
         } catch (\Exception $exception) {
-            return $this->doLogout($response);
+            return false;
         }
-        return $response;
+        return true;
     }
 
-    public function getToken()
-    {
-        return $this->token;
+    private function getUseraccountByAccessToken($accessToken){
+        $ownerData = $this->provider->getResourceOwner($accessToken);
+        $useraccount = (new UseraccountEntity())->createFromOpenIdData($ownerData);
+        return $useraccount;
     }
 
-    private function setProvider($client = null)
-    {
-        $this->provider = new KeycloakProvider([
-            'authServerUrl'         => \App::ZMS_AUTHORIZATION_AUTHSERVERURL,
-            'realm'                 => \App::ZMS_AUTHORIZATION_REALM,
-            'clientId'              => \App::ZMS_AUTHORIZATION_CLIENT_ID,
-            'clientSecret'          => \App::ZMS_AUTHORIZATION_CLIENT_SECRET,
-            'redirectUri'           => \App::ZMS_AUTHORIZATION_REDIRECTURI,
-        ], ['httpClient' => $client]);
-    }
-
-    private function getAccessTokenOwnerData($code)
+    private function getAccessToken($code)
     {
         try {
-            $token = $this->provider->getAccessToken('authorization_code', ['code' => $code]);
-            $this->token = $token->getToken();
-            $this->writeTokenToSession($token);
-        } catch (Exception $exception) {
+            $accessToken = $this->provider->getAccessToken('authorization_code', ['code' => $code]);
+        } catch (\Exception $exception) {
+            if ('League\OAuth2\Client\Provider\Exception\IdentityProviderException' === get_class($exception)) {
+                throw new \BO\Slim\Exception\OAuthFailed();
+            }
             throw $exception;
         }
-        $accessTokenOwner = $this->provider->getResourceOwner($token);
-        return $accessTokenOwner;
+        return $accessToken;
     }
 
     private function writeTokenToSession($token)
     {
+        $realmData = $this->provider::getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
-        $sessionHandler->open('/'. \App::ZMS_AUTHORIZATION_REALM . '/', \App::ZMS_AUTHORIZATION_CLIENT_ID);
+        $sessionHandler->open('/'. $realmData['realm'] . '/', $realmData['clientId']);
         $sessionHandler->write(\BO\Zmsclient\Auth::getKey(), serialize($token), ['oidc' => true]);
         return $sessionHandler->close();
     }
 
     private function writeDeleteSession()
     {
+        $realmData = $this->provider::getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
-        $sessionHandler->open('/'. \App::ZMS_AUTHORIZATION_REALM . '/', \App::ZMS_AUTHORIZATION_CLIENT_ID);
+        $sessionHandler->open('/'. $realmData['realm'] . '/', $realmData['clientId']);
         $sessionHandler->destroy(\BO\Zmsclient\Auth::getKey());
     }
 
     private function readTokenDataFromSession()
     {
+        $realmData = $this->provider::getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
-        $sessionHandler->open('/'. \App::ZMS_AUTHORIZATION_REALM . '/', \App::ZMS_AUTHORIZATION_CLIENT_ID);
-        return unserialize($sessionHandler->read(\BO\Zmsclient\Auth::getKey(), ['oidc' => true]));
+        $sessionHandler->open('/'. $realmData['realm'] . '/', $realmData['clientId']);
+        $tokenData = unserialize($sessionHandler->read(\BO\Zmsclient\Auth::getKey(), ['oidc' => true]));
+        return $tokenData;
     }
 }
