@@ -105,16 +105,16 @@ class Language
     }
 
     // Detect current language based on request URI or Parameter
-    protected function getLanguageFromRequest($request = null)
+    protected function getLanguageFromRequest(RequestInterface $request)
     {
         $language = $this->getLanguageFromUri($request);
-        if (null !== $request) {
-            $route = $request->getAttribute('route');
-            if ($route && $route instanceof \Slim\Route) {
-                $lang = $route->getArgument('lang');
-                $language = (!empty($lang)) ? $lang : $language;
-            }
+        $route = $request->getAttribute('route');
+
+        if ($route instanceof \Slim\Routing\Route) {
+            $lang = $route->getArgument('lang');
+            $language = (!empty($lang)) ? $lang : $language;
         }
+
         return $language;
     }
 

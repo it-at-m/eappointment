@@ -8,9 +8,8 @@ namespace BO\Slim\Tests\Controller;
 
 class Post extends BaseController
 {
-
     /**
-     * @return String
+     * {@inheritDoc}
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
@@ -19,7 +18,7 @@ class Post extends BaseController
     ) {
 
         $input = 'failed';
-        if ($request->isPost()) {
+        if ($request->getMethod() === 'POST') {
             $input = (string)$request->getBody();
             $input = json_decode($input, 1);
         }
