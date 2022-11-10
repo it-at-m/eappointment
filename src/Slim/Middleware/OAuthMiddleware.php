@@ -32,16 +32,10 @@ class OAuthMiddleware
             }
             return $instance->doLogin($request, $response);
         } elseif ('workstation/status/' !== $request->getUri()->getPath() && '/' !== $request->getUri()->getPath()) {
-            error_log($request->getUri()->getPath());
-            if (! $instance->writeNewAccessTokenIfExpired($response)) {
+            if (! $instance->writeNewAccessTokenIfExpired()) {
                 return $instance->doLogout($response);
             }
         }
-        return $response;
-    }
-
-    protected function handleGitlabInstance(ServerRequestInterface $request, ResponseInterface $response)
-    {
         return $response;
     }
 }

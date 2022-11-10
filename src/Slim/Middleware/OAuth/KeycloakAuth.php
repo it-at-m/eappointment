@@ -47,13 +47,12 @@ class KeycloakAuth
         return $response->withRedirect($logoutUrl, 301);
     }
 
-    public function writeNewAccessTokenIfExpired(ResponseInterface $response)
+    public function writeNewAccessTokenIfExpired()
     {
         try {
             $accessTokenData = $this->readTokenDataFromSession();
             $accessTokenData = (is_array($accessTokenData)) ? $accessTokenData : [];
             $existingAccessToken = new AccessToken($accessTokenData);
-            error_log(var_export($existingAccessToken->hasExpired(), 1));
             if ($existingAccessToken && $existingAccessToken->hasExpired()) {
                 $newAccessToken = $this->provider->getAccessToken('refresh_token', [
                     'refresh_token' => $existingAccessToken->getRefreshToken()
