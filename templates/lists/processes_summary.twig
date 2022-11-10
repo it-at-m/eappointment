@@ -6,7 +6,7 @@ diesen abzusagen, so dass dieser anderen zur Verfügung steht.<br /><br />
 {% for plannedProcess in processList %}
 {% set changeLink  = config.appointments.urlChange ~ '?process=' ~ plannedProcess.id ~ '&authKey=' ~ plannedProcess.authKey %}
 <div style="background: #eeeeee; border: 1px solid #aaaaaa; padding:10px;">
-<strong>Zeit:</strong> am {{ plannedProcess.getFirstAppointment.date|localizeddate("short","none",NULL,NULL,"EEEE, dd. MMMM y") }} um {{ plannedProcess.getFirstAppointment.date|date("H:i") }} Uhr<br />
+<strong>Zeit:</strong> am {{ plannedProcess.getFirstAppointment.date|format_datetime("short","none","EEEE, dd. MMMM y") }} um {{ plannedProcess.getFirstAppointment.date|date("H:i") }} Uhr<br />
 <strong>Ort:</strong> {{ plannedProcess.scope.provider.name ~ ", " ~ plannedProcess.scope.provider.contact.street ~ " "  ~ plannedProcess.scope.provider.contact.streetNumber ~", " ~ plannedProcess.scope.provider.contact.postalCode ~ " " ~ plannedProcess.scope.provider.contact.city }}<br />
 {% if plannedProcess.requests|length > 1 %}
 {% set requestalias = "Dienstleistungen" %}
