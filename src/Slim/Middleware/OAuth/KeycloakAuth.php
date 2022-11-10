@@ -23,7 +23,8 @@ class KeycloakAuth
         return $this->provider;
     }
 
-    public function doLogin(ServerRequestInterface $request, ResponseInterface $response){
+    public function doLogin(ServerRequestInterface $request, ResponseInterface $response)
+    {
         $accessToken = $this->getAccessToken($request->getParam("code"));
         $useraccount = $this->getUseraccountByAccessToken($accessToken);
         try {
@@ -37,7 +38,8 @@ class KeycloakAuth
         return $response;
     }
 
-    public function doLogout(ResponseInterface $response) {
+    public function doLogout(ResponseInterface $response)
+    {
         $this->writeDeleteSession();
         $realmData = $this->provider::getBasicOptionsFromJsonFile();
         $logoutUrl = $this->provider->getLogoutUrl(['redirect_uri' => $realmData['logoutUri']]);
@@ -45,11 +47,12 @@ class KeycloakAuth
     }
 
     public function writeNewAccessTokenIfExpired(ResponseInterface $response)
-    {   
+    {
         try {
             $accessTokenData = $this->readTokenDataFromSession();
             $accessTokenData = (is_array($accessTokenData)) ? $accessTokenData : [];
             $existingAccessToken = new AccessToken($accessTokenData);
+            error_log(var_export($existingAccessToken->hasExpired(), 1));
             if ($existingAccessToken && $existingAccessToken->hasExpired()) {
                 $newAccessToken = $this->provider->getAccessToken('refresh_token', [
                     'refresh_token' => $existingAccessToken->getRefreshToken()
@@ -63,7 +66,8 @@ class KeycloakAuth
         return true;
     }
 
-    private function getUseraccountByAccessToken($accessToken){
+    private function getUseraccountByAccessToken($accessToken)
+    {
         $ownerData = $this->provider->getResourceOwner($accessToken);
         $useraccount = (new UseraccountEntity())->createFromOpenIdData($ownerData);
         return $useraccount;
