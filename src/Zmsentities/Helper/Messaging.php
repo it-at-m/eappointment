@@ -13,8 +13,8 @@ use \BO\Zmsentities\Collection\ProcessList;
 use \BO\Zmsentities\Config;
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
-use Twig\Extensions\I18nExtension;
-use Twig\Extensions\IntlExtension;
+use Symfony\Bridge\Twig\Extension\TranslationExtension;
+use Twig\Extra\Intl\IntlExtension;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -92,7 +92,7 @@ class Messaging
         $twig = new Environment($loader, array(
             //'cache' => '/cache/',
         ));
-        $twig->addExtension(new I18nExtension());
+        $twig->addExtension(new TranslationExtension());
         $twig->addExtension(new IntlExtension());
         return $twig;
     }
