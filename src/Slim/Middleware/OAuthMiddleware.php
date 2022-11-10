@@ -12,10 +12,10 @@ class OAuthMiddleware
         ResponseInterface $response,
         callable $next
     ) {
-        if ("Keycloak" === \App::ZMS_AUTHORIZATION_TYPE){
+        if ("keycloak" === \App::OIDC_AUTHORIZATION_TYPE){
             $response = $this->handleKeycloakInstance($request, $response);
         }
-        if ("Gitlab" === \App::ZMS_AUTHORIZATION_TYPE){
+        if ("gitlab" === \App::OIDC_AUTHORIZATION_TYPE){
             $response = $this->handleGitlabInstance($request, $response);
         }
         return $next($request, $response);
@@ -38,8 +38,10 @@ class OAuthMiddleware
             }
             return $instance->doLogin($request, $response);
         }
-        if ('workstation/' === $request->getUri()->getPath() || 'counter/' === $request->getUri()->getPath()) {
-            $response = $instance->writeNewAccessTokenIfExpired($response);
+        elseif ('workstation/' === $request->getUri()->getPath()) {
+            if (! $instance->writeNewAccessTokenIfExpired($response)) {
+                return $instance->doLogout($response);
+            }
         }
         return $response;
     }
