@@ -30,7 +30,8 @@ class KeycloakAuth
         try {
             $this->writeTokenToSession($accessToken);
             \App::$http
-                ->readPostResult('/workstation/oauth/', $useraccount, ['state' => \BO\Zmsclient\Auth::getKey()])->getEntity();
+                ->readPostResult('/workstation/oauth/', $useraccount, ['state' => \BO\Zmsclient\Auth::getKey()])
+                ->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             \BO\Zmsclient\Auth::removeKey();
             throw $exception;
