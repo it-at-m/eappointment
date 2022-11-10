@@ -37,7 +37,10 @@
                 </fieldset>
                 {{ inputfield({ "name":"login_form_validate", "type":"hidden", "value":"1" }) }}
                 <div class="form-actions">
-                    {{ custombutton({ "type":"new", "class": "button button-default","target": urlGet('oidc', {}, {}), "label":"OIDC Login", "title":("Login via OIDC")|trans}) }}
+                    {% if authtype %}
+                    {% set label = "Über " ~ authtype ~ " anmelden" %}
+                    {{ custombutton({ "type":"new", "class": "button button-default","target": urlGet('oidc', {}, {}), "label":label|trans, "title":label|trans}) }}
+                    {% endif %}
                     {{ formbutton({ "type":"login", "label":"Anmelden", "value": "Anmelden", "accesskey":"a"}) }}
                 </div>
             </form>

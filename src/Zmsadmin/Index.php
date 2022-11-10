@@ -57,7 +57,8 @@ class Index extends BaseController
                 'config' => $config,
                 'workstation' => $workstation,
                 'oidclogin' => $oidclogin,
-                'showloginform' => (! $oidclogin)
+                'showloginform' => (! $oidclogin),
+                'authtype' => \App::OIDC_AUTHORIZATION_TYPE
             )
         );
     }
