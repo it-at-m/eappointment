@@ -26,7 +26,7 @@ class WorkstationOAuth extends BaseController
         $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $state  = $validator->getParameter('state')->isString()->isSmallerThan(40)->isBiggerThan(30)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $entity = new \BO\Zmsentities\Useraccount($input);
+        $entity = (new UseraccountEntity)->createFromOpenIdData($input);
         $entity->testValid();
 
         if (null === $state || $request->getHeaderLine('X-Authkey') !== $state) {
