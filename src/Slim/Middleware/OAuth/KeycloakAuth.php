@@ -4,7 +4,6 @@ namespace BO\Slim\Middleware\OAuth;
 
 use \Psr\Http\Message\ServerRequestInterface;
 use \Psr\Http\Message\ResponseInterface;
-use \BO\Zmsentities\Useraccount as UseraccountEntity;
 use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
 use League\OAuth2\Client\Token\AccessToken;
 
@@ -26,11 +25,11 @@ class KeycloakAuth
     public function doLogin(ServerRequestInterface $request, ResponseInterface $response)
     {
         $accessToken = $this->getAccessToken($request->getParam("code"));
-        $useraccount = $this->getUseraccountByAccessToken($accessToken);
+        $ownerInputData = $this->provider->getResourceOwner($accessToken)->toArray();
         try {
             $this->writeTokenToSession($accessToken);
             \App::$http
-                ->readPostResult('/workstation/oauth/', $useraccount, ['state' => \BO\Zmsclient\Auth::getKey()])
+                ->readPostResult('/workstation/oauth/', $ownerInputData, ['state' => \BO\Zmsclient\Auth::getKey()])
                 ->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             \BO\Zmsclient\Auth::removeKey();
@@ -64,13 +63,6 @@ class KeycloakAuth
             return false;
         }
         return true;
-    }
-
-    private function getUseraccountByAccessToken($accessToken)
-    {
-        $ownerData = $this->provider->getResourceOwner($accessToken);
-        $useraccount = (new UseraccountEntity())->createFromOpenIdData($ownerData);
-        return $useraccount;
     }
 
     private function getAccessToken($code)
