@@ -1,3 +1,4 @@
+```mermaid
 sequenceDiagram
     actor User
     participant Client as Zmsadmin
@@ -89,3 +90,4 @@ sequenceDiagram
         Client ->> API: requesting to logout workstation   
         API -->> DB: logout workstation by removing x-Authkey
     end
+    ```
