@@ -6,7 +6,7 @@ use BO\Zmsclient\Psr7\Response;
 use BO\Zmsclient\Status;
 use BO\Zmsentities\Mail;
 use BO\Zmsentities\Schema\Entity;
-use Slim\Http\StatusCode;
+use Fig\Http\Message\StatusCodeInterface;
 
 class HttpTest extends Base
 {
@@ -84,7 +84,7 @@ class HttpTest extends Base
         );
         $this->assertStringContainsString('Last DLDB Import is more then 2 hours ago', (string)$response->getBody());
         $this->assertStringContainsString('slot calculation is 14400 seconds old', (string)$response->getBody());
-        self::assertSame(StatusCode::HTTP_OK, $response->getStatusCode());
+        self::assertSame(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
     }
 
     public function testStatusServerError()
@@ -100,7 +100,7 @@ class HttpTest extends Base
             'CRIT - Last DLDB Import is more then 4 hours ago',
             (string)$response->getBody()
         );
-        self::assertSame(StatusCode::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
+        self::assertSame(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR, $response->getStatusCode());
     }
 
     public function testStatusOk()

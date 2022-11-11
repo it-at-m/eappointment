@@ -2,9 +2,11 @@
 
 namespace BO\Zmsclient\Psr7;
 
+use BO\Slim\Response as SlimResponse;
+
 /**
  * Layer to change PSR7 implementation if necessary
  */
-class Response extends \Slim\Http\Response implements \Psr\Http\Message\ResponseInterface
+class Response extends SlimResponse implements \Psr\Http\Message\ResponseInterface
 {
 }

@@ -7,6 +7,7 @@
 namespace BO\Zmsclient;
 
 use \BO\Mellon\Validator;
+use Psr\Container\ContainerInterface;
 
 /**
   * Extension for Twig and Slim
@@ -17,7 +18,7 @@ use \BO\Mellon\Validator;
 class TwigExtension extends \Twig_Extension
 {
     /**
-     * @var \Slim\Http\Container
+     * @var ContainerInterface
      */
     private $container;
 
