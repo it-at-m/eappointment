@@ -1,3 +1,8 @@
+# Request Flows for a client with openId connection
+
+The following explains the process of login an user into client zmsadmin via an open id connection. We distinguish between the login of a new user, the login of an existing user, the update of an access token with a refresh token, as well as the logout of the OIDC provider and the client itself.
+
+```mermaid
 sequenceDiagram
     actor User
     participant Client as Zmsadmin
@@ -76,7 +81,7 @@ sequenceDiagram
     end
 
     %% logout sequence
-    rect rgb(191, 223, 255)
+    rect rgb(201, 223, 255)
     User ->> Client: Would like to logout
         Client ->> API: Remove Session
         API -->> DB: delete session with access token data
@@ -89,3 +94,4 @@ sequenceDiagram
         Client ->> API: requesting to logout workstation   
         API -->> DB: logout workstation by removing x-Authkey
     end
+    ```
