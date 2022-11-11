@@ -12,8 +12,9 @@ class OAuthMiddleware
         ResponseInterface $response,
         callable $next
     ) {
-        $methodName = 'handle'. \App::OIDC_AUTHORIZATION_TYPE . 'Instance';
-        $response = $this->$methodName($request, $response);
+        if ("Keycloak" === \App::OIDC_AUTHORIZATION_TYPE){
+            $response = $this->handleKeycloakInstance($request, $response);
+        }
         return $next($request, $response);
     }
 
