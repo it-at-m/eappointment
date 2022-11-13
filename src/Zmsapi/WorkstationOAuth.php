@@ -66,14 +66,7 @@ class WorkstationOAuth extends BaseController
     }
 
     protected function writeOAuthWorkstation(UseraccountEntity $entity, $state, $resolveReferences){
-        $useraccount = $entity;
-
-        if (! (new Useraccount())->readIsUserExisting($entity->getId())) {
-            //$this->loginSuperuser($resolveReferences);
-            //$useraccount = $this->writeNewUseraccount($entity, $resolveReferences);
-            //$this->logoutSuperuser(); 
-            $useraccount = (new Useraccount)->writeEntity($entity);
-        }
+        $useraccount = (new Useraccount)->writeEntity($entity);
         $query = new Workstation();
         $workstation = $query->writeEntityLoginByName(
             $useraccount->getId(),
