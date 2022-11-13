@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Slim\Middleware\OAuth;
+namespace BO\Slim\Middleware\OAuth\Keycloak;
 
 use \Stevenmaguire\OAuth2\Client\Provider\Keycloak;
 use \BO\Zmsclient\Psr7\ClientInterface as HttpClientInterface;
@@ -8,7 +8,7 @@ use \BO\Zmsclient\PSR7\Client;
 use \Psr\Http\Message\ServerRequestInterface;
 use \Psr\Http\Message\ResponseInterface;
 
-class KeycloakProvider extends Keycloak
+class Provider extends Keycloak
 {
     /**
      * Sets the config options for keycloak access from json file.
@@ -24,6 +24,7 @@ class KeycloakProvider extends Keycloak
         $options = $this->getOptionsFromJsonFile();
         return parent::__construct($options, ['httpClient' => $client]);
     }
+    
     /**
      * Sets the HTTP client instance.
      *

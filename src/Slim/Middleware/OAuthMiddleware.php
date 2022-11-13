@@ -3,39 +3,102 @@ namespace BO\Slim\Middleware;
 
 use \Psr\Http\Message\ServerRequestInterface;
 use \Psr\Http\Message\ResponseInterface;
-use \BO\Slim\Middleware\OAuth\KeycloakAuth;
 
 class OAuthMiddleware
 {
+    /**
+     * List of authentification types to init specific instance
+     *
+     * @var array
+     */
+    public static $authInstances = [
+        'keycloak' => '\BO\Slim\Middleware\OAuth\KeycloakInstance',
+        'gitlab' => '\BO\Slim\Middleware\OAuth\GitlabInstance',
+        'google' => '\BO\Slim\Middleware\OAuth\GoogleInstance'
+    ];
+
+    /**
+     * List of request pathes with assigned handler in oidc instance
+     *
+     * @var array
+     */
+    protected $handlerList = [
+        'login' => 'handleLogin',
+        'logout' => 'handleLogout',
+        'refresh' => 'handleRefreshToken'
+    ];
+
+    protected $handlerCall = '';
+
+    protected $authentificationHandler = '';
+
+    public function __construct($handler = 'login')
+    {
+        $this->authentificationHandler = $handler;
+        $this->handlerCall = $this->handlerList[$handler];
+    }
+
+    /**
+     * Set the authorizsationType attribute to request and init authorization method 
+     *
+     * @param ServerRequestInterface $request PSR7 request
+     * @param ResponseInterface $response     PSR7 response
+     * @param callable $next                  Next middleware
+     *
+     * @return ResponseInterface
+     */
     public function __invoke(
         ServerRequestInterface $request,
         ResponseInterface $response,
         callable $next
     ) {
-        if ("Keycloak" === \App::OIDC_AUTHORIZATION_TYPE){
-            $response = $this->handleKeycloakInstance($request, $response);
+        $request = $request->withAttribute('authentificationHandler', $this->authentificationHandler);
+        $oidcProviderName = ($request->getParam('provider')) ? 
+            $request->getParam('provider') : 
+            \BO\Zmsclient\Auth::getOidcProvider();
+        if ($oidcProviderName) {
+            $oidcInstance = static::$authInstances[$oidcProviderName];
+            $instance = new $oidcInstance();
+            $response = $this->{$this->handlerCall}($request, $response, $instance);
         }
         return $next($request, $response);
     }
 
-    protected function handleKeycloakInstance(ServerRequestInterface $request, ResponseInterface $response)
+    private function handleLogin(ServerRequestInterface $request, ResponseInterface $response, $instance)
     {
-        $instance = new KeycloakAuth();
-        if ('logout/' === $request->getUri()->getPath()) {
-            return $instance->doLogout($response);
-        } elseif ('oidc/' === $request->getUri()->getPath()) {
-            if (! $request->getParam("code") && '' == \BO\Zmsclient\Auth::getKey()) {
-                $authUrl = $instance->getProvider()->getAuthorizationUrl();
-                \BO\Zmsclient\Auth::setKey($instance->getProvider()->getState());
-                return $response->withRedirect($authUrl, 301);
-            } elseif ($request->getParam("state") !== \BO\Zmsclient\Auth::getKey()) {
-                \BO\Zmsclient\Auth::removeKey();
-            }
+        if (! $request->getParam("code") && '' == \BO\Zmsclient\Auth::getKey()) {
+            $authUrl = $instance->getProvider()->getAuthorizationUrl();
+            \BO\Zmsclient\Auth::setOidcProvider($request->getParam('provider'));
+            \BO\Zmsclient\Auth::setKey($instance->getProvider()->getState());
+            return $response->withRedirect($authUrl, 301);
+        } elseif ($request->getParam("state") !== \BO\Zmsclient\Auth::getKey()) {
+            \BO\Zmsclient\Auth::removeKey();
+            \BO\Zmsclient\Auth::removeOidcProvider();
+        }
+        if ('login' == $request->getAttribute('authentificationHandler')) {
             return $instance->doLogin($request, $response);
-        } elseif ('workstation/status/' !== $request->getUri()->getPath() && '/' !== $request->getUri()->getPath()) {
-            if (! $instance->writeNewAccessTokenIfExpired()) {
-                return $instance->doLogout($response);
-            }
+        }
+        return $response;
+    }
+
+    private function handleLogout(ServerRequestInterface $request, ResponseInterface $response, $instance)
+    {
+        if (
+            'logout' == $request->getAttribute('authentificationHandler') && 
+            ! $request->getParam('state')
+        ) {
+            return $instance->doLogout($response);
+        }
+        return $response;
+    }
+
+    private function handleRefreshToken(ServerRequestInterface $request, ResponseInterface $response, $instance)
+    {
+        if (
+            'refresh' == $request->getAttribute('authentificationHandler') && 
+            ! $instance->writeNewAccessTokenIfExpired($lastLogin)
+        ) {
+            return $instance->doLogout($response);
         }
         return $response;
     }
