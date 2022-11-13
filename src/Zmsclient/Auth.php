@@ -49,4 +49,48 @@ class Auth
     {
         return 'Zmsclient';
     }
+
+    protected static function getOidcName()
+    {
+        return 'OIDC';
+    }
+
+    /**
+     *
+     * @SuppressWarnings(Superglobals)
+     *
+     */
+    public static function setOidcProvider($provider)
+    {
+        $_COOKIE[self::getOidcName()] = $provider; // for access in the same process
+        if (!headers_sent()) {
+            setcookie(self::getOidcName(), $provider, 0, '/', null, true, true);
+        }
+    }
+
+     /**
+     *
+     * @SuppressWarnings(Superglobals)
+     *
+     */
+    public static function getOidcProvider()
+    {
+        if (array_key_exists(self::getOidcName(), $_COOKIE)) {
+            return $_COOKIE[self::getOidcName()];
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @SuppressWarnings(Superglobals)
+     *
+     */
+    public static function removeOidcProvider()
+    {
+        if (array_key_exists(self::getOidcName(), $_COOKIE)) {
+            unset($_COOKIE[self::getOidcName()]);
+            setcookie(self::getOidcName(), '', time() - 3600, '/');
+        }
+    }
 }
