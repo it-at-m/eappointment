@@ -1,0 +1,11 @@
+{
+    "realm": "zms",
+    "auth-server-url": "https://gitlab.com/oauth/authorize",
+    "auth-redirect-url": "https://localhostd/admin/oidc/?provider=gitlab",
+    "logout-redirect-url": "https://localhostd/admin/logout/?provider=gitlab",
+    "clientId": "ressourceid",
+    "clientName": "ressourcename",
+    "credentials": {
+      "secret": "secret123456"
+    }
+  }

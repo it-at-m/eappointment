@@ -53,12 +53,12 @@ class Index extends BaseController
             $response,
             'page/index.twig',
             array(
-                'title' => ($oidclogin) ? 'OpenID Anmeldung' : 'Anmeldung',
+                'title' => 'Anmeldung',
                 'config' => $config,
                 'workstation' => $workstation,
+                'oidcproviderlist' => $this->getProviderList(),
                 'oidclogin' => $oidclogin,
-                'showloginform' => (! $oidclogin),
-                'authtype' => \App::OIDC_AUTHORIZATION_TYPE
+                'showloginform' => (! $oidclogin)
             )
         );
     }
@@ -98,5 +98,16 @@ class Index extends BaseController
             }
         }
         return $exceptionData;
+    }
+
+    private function getProviderList()
+    {
+        $oidcproviderlist = [];
+        foreach(\BO\Slim\Middleware\OAuthMiddleware::$authInstances as $provider => $authInstance) {
+            if (class_exists($authInstance)) {
+                $oidcproviderlist[] = $provider;
+            }
+        }
+       return $oidcproviderlist;
     }
 }
