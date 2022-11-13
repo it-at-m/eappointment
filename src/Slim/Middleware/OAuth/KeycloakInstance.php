@@ -4,16 +4,15 @@ namespace BO\Slim\Middleware\OAuth;
 
 use \Psr\Http\Message\ServerRequestInterface;
 use \Psr\Http\Message\ResponseInterface;
-use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
 use League\OAuth2\Client\Token\AccessToken;
 
-class KeycloakAuth
+class KeycloakInstance
 {
     protected $provider = null;
 
     public function __construct()
     {
-        $this->provider = new KeycloakProvider();
+        $this->provider = new Keycloak\Provider();
         return $this;
     }
 
@@ -33,6 +32,7 @@ class KeycloakAuth
                 ->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             \BO\Zmsclient\Auth::removeKey();
+            \BO\Zmsclient\Auth::removeOidcProvider();
             throw $exception;
         }
         return $response;
@@ -46,7 +46,7 @@ class KeycloakAuth
         return $response->withRedirect($logoutUrl, 301);
     }
 
-    public function writeNewAccessTokenIfExpired()
+    public function writeNewAccessTokenIfExpired($lastLogin)
     {
         try {
             $accessTokenData = $this->readTokenDataFromSession();
