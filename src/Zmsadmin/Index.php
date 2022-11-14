@@ -104,7 +104,7 @@ class Index extends BaseController
     {
         $oidcproviderlist = [];
         foreach(\BO\Slim\Middleware\OAuthMiddleware::$authInstances as $provider => $authInstance) {
-            if (class_exists($authInstance)) {
+            if (class_exists($authInstance) && in_array($provider, \App::$allowedOidcProvider)) {
                 $oidcproviderlist[] = $provider;
             }
         }
