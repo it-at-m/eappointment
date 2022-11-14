@@ -7,9 +7,12 @@ use \BO\Zmsclient\Psr7\ClientInterface as HttpClientInterface;
 use \BO\Zmsclient\PSR7\Client;
 use \Psr\Http\Message\ServerRequestInterface;
 use \Psr\Http\Message\ResponseInterface;
+use League\OAuth2\Client\Token\AccessToken;
 
 class Provider extends Keycloak
 {
+    const PROVIDERNAME = 'keycloak';
+    
     /**
      * Sets the config options for keycloak access from json file.
      *
@@ -37,50 +40,55 @@ class Provider extends Keycloak
         return $this;
     }
 
-    public static function getBasicOptionsFromJsonFile()
+    /**
+     * Generate a user object from a successful user details request.
+     *
+     * @param array $response
+     * @param AccessToken $token
+     * @return ResourceOwner
+     */
+    protected function createResourceOwner(array $response, AccessToken $token)
     {
-        $config_data = file_get_contents(\App::APP_PATH . '/keycloak.json');
-        if (gettype($config_data) === 'string') {
-            $config_data = json_decode($config_data, true);
-        }
-        $realmData['realm'] = $config_data['realm'];
-        $realmData['clientId'] = array_key_exists('resource', $config_data) ?
-            $config_data['resource'] :
-            $config_data['client_id'];
-        $realmData['redirectUri'] = $config_data['auth-redirect-url'] ?
-            $config_data['auth-redirect-url'] :
-            'http://localhost';
-        $realmData['logoutUri'] = $config_data['logout-redirect-url'] ?
-            $config_data['logout-redirect-url'] :
-            'http://localhost';
-        return $realmData;
+        return new ResourceOwner($response);
+    }
+
+    /**
+     * Requests and returns the resource owner data of given access token.
+     *
+     * @param  AccessToken $token
+     * @return Array
+     */
+    public function getResourceOwnerData(AccessToken $token)
+    {
+        $resourceOwner = $this->getResourceOwner($token);
+        $ownerData['username'] = $resourceOwner->getName();
+        $ownerData['email'] = $resourceOwner->getEmail();
+        return $ownerData;
     }
 
     private function getOptionsFromJsonFile()
     {
-        $config_data = file_get_contents(\App::APP_PATH . '/keycloak.json');
+        $config_data = file_get_contents(\App::APP_PATH . '/'. static::PROVIDERNAME .'.json');
+        if (gettype($config_data) === 'string') {
+            $config_data = json_decode($config_data, true);
+        }
+        $realmData = $this->getBasicOptionsFromJsonFile();
+        $realmData['clientSecret'] = $config_data['credentials']['secret'];
+        $realmData['authServerUrl'] = $config_data['auth-server-url'];
+        return $realmData;
+    }
+
+    public function getBasicOptionsFromJsonFile()
+    {
+        $config_data = file_get_contents(\App::APP_PATH . '/'. static::PROVIDERNAME .'.json');
         if (gettype($config_data) === 'string') {
             $config_data = json_decode($config_data, true);
         }
         $realmData['realm'] = $config_data['realm'];
-        $realmData['clientId'] = array_key_exists('resource', $config_data) ?
-            $config_data['resource'] :
-            $config_data['client_id'];
-        $realmData['clientSecret'] = array_key_exists('credentials', $config_data) ?
-            $config_data['credentials']['secret'] :
-            (array_key_exists('secret', $config_data) ?
-                $config_data['secret'] :
-                null
-            );
-        $realmData['authServerUrl'] = $config_data['auth-server-url'] ?
-            $config_data['auth-server-url'] :
-            'http://localhost';
-        $realmData['redirectUri'] = $config_data['auth-redirect-url'] ?
-            $config_data['auth-redirect-url'] :
-            'http://localhost';
-        $realmData['logoutUri'] = $config_data['logout-redirect-url'] ?
-            $config_data['logout-redirect-url'] :
-            'http://localhost';
+        $realmData['clientId'] = $config_data['clientId'];
+        $realmData['clientName'] = $config_data['clientName'];
+        $realmData['redirectUri'] = $config_data['auth-redirect-url'];
+        $realmData['logoutUri'] = $config_data['logout-redirect-url'];
         return $realmData;
     }
 }
