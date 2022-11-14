@@ -1,10 +1,10 @@
 <?php
 
-namespace BO\Slim\Middleware\OAuth\Gitlab;
+namespace BO\Slim\Middleware\OAuth\Keycloak;
 
-use League\OAuth2\Client\Provider\ResourceOwnerInterface;
+use Stevenmaguire\OAuth2\Client\Provider\KeycloakResourceOwner;
 
-class ResourceOwner implements ResourceOwnerInterface
+class ResourceOwner extends KeycloakResourceOwner
 {
     /**
      * Raw response
@@ -50,7 +50,7 @@ class ResourceOwner implements ResourceOwnerInterface
      */
     public function getName()
     {
-        return \array_key_exists('nickname', $this->response) ? $this->response['nickname'] : null;
+        return \array_key_exists('preferred_username', $this->response) ? $this->response['preferred_username'] : null;
     }
 
     /**
