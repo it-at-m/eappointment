@@ -30,7 +30,7 @@ class ResourceOwner implements ResourceOwnerInterface
      */
     public function getId()
     {
-        return \array_key_exists('id', $this->response) ? $this->response['id'] : null;
+        return \array_key_exists('sub', $this->response) ? $this->response['sub'] : null;
     }
 
     /**
@@ -50,7 +50,7 @@ class ResourceOwner implements ResourceOwnerInterface
      */
     public function getName()
     {
-        return \array_key_exists('username', $this->response) ? $this->response['username'] : null;
+        return \array_key_exists('nickname', $this->response) ? $this->response['nickname'] : null;
     }
 
     /**

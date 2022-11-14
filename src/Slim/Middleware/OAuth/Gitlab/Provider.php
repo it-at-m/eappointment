@@ -4,18 +4,20 @@ namespace BO\Slim\Middleware\OAuth\Gitlab;
 
 use \BO\Zmsclient\Psr7\ClientInterface as HttpClientInterface;
 use \BO\Zmsclient\Psr7\Client;
-use \BO\Zmsclient\Psr7\Request;
-use Exception;
+use League\OAuth2\Client\Tool\Request;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 use Psr\Http\Message\ResponseInterface;
 use UnexpectedValueException;
+use Exception;
 
 class Provider extends AbstractProvider
 {
     use BearerAuthorizationTrait;
+
+    const PROVIDERNAME = 'gitlab';
 
     /**
      * auth URL, eg. http://localhost:8080/auth.
@@ -25,7 +27,7 @@ class Provider extends AbstractProvider
     public $authServerUrl = null;
 
     /**
-     * Sets the config options for keycloak access from json file.
+     * Sets the config options for gitlab access from json file.
      *
      * @param array $options An array of options to set on this provider.
      *     Options include `clientId`, `clientSecret`, `redirectUri`, `authServerurl` and `realm`.
@@ -36,6 +38,7 @@ class Provider extends AbstractProvider
     {
         $client = ((null === $client)) ? new Client() : $client;
         $options = $this->getOptionsFromJsonFile();
+        $this->authServerUrl = $options['authServerUrl'];
         return parent::__construct($options, ['httpClient' => $client]);
     }
 
@@ -58,7 +61,7 @@ class Provider extends AbstractProvider
      */
     public function getBaseAuthorizationUrl()
     {
-        return $this->getBaseUrl();
+        return $this->getBaseUrl() . '/authorize';
     }
 
     /**
@@ -70,19 +73,119 @@ class Provider extends AbstractProvider
      */
     public function getBaseAccessTokenUrl(array $params)
     {
-        return 'https://www.gitlab.com/oauth/token';
+        return $this->getBaseUrl() . '/token';
     }
 
     /**
-     * Requests and returns the resource owner of given access token.
+     * Get authorization url to begin OAuth flow
+     *
+     * @return string
+     */
+    public function getBaseLogoutUrl()
+    {
+        return $this->getBaseUrl() . '/revoke';
+    }
+
+    /**
+     * Builds the revoke URL.
+     *
+     * @param AccessToken $token
+     * @return ResponseInterface $response
+     */
+    public function getRevokeResponse($token)
+    {
+        $url = $this->getBaseLogoutUrl();
+        $options = $this->getPostAuthOptions($token);
+        $request = $this->getAuthenticatedRequest(self::METHOD_POST, $url, $token, $options);
+        $response = $this->getResponse($request);
+        return $response;
+    }
+
+    /**
+     * get post body for authentification on revoke endpoint
+     *
+     * @param AccessToken $token
+     * @return array $options
+     */
+    public function getPostAuthOptions($token)
+    {
+        $realmData = $this->getOptionsFromJsonFile();
+        $options['client_secret'] = $realmData['clientSecret'];
+        $options['client_id'] = $realmData['clientId'];
+        $options['token'] = $realmData[$token->getToken()];
+        return $options;
+    }
+
+    /**
+     * Creates base url from provider configuration.
+     *
+     * @return string
+     */
+    protected function getBaseUrl()
+    {
+        return $this->authServerUrl;
+    }
+
+    private function getOptionsFromJsonFile()
+    {
+        $config_data = file_get_contents(\App::APP_PATH . '/'. static::PROVIDERNAME .'.json');
+        if (gettype($config_data) === 'string') {
+            $config_data = json_decode($config_data, true);
+        }
+        $realmData = $this->getBasicOptionsFromJsonFile();
+        $realmData['clientSecret'] = $config_data['credentials']['secret'];
+        $realmData['authServerUrl'] = $config_data['auth-server-url'];
+        return $realmData;
+    }
+
+    public function getBasicOptionsFromJsonFile()
+    {
+        $config_data = file_get_contents(\App::APP_PATH . '/'. static::PROVIDERNAME .'.json');
+        if (gettype($config_data) === 'string') {
+            $config_data = json_decode($config_data, true);
+        }
+        $realmData['realm'] = $config_data['realm'];
+        $realmData['clientId'] = $config_data['clientId'];
+        $realmData['clientName'] = $config_data['clientName'];
+        $realmData['redirectUri'] = $config_data['auth-redirect-url'];
+        $realmData['logoutUri'] = $config_data['logout-redirect-url'];
+        return $realmData;
+    }
+
+    /**
+     * Get provider url to fetch user details
      *
      * @param  AccessToken $token
-     * @return ResourceOwner
+     *
+     * @return string
      */
-    public function getResourceOwner(AccessToken $token)
+    public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-        $response = $this->fetchResourceOwnerDetails($token);
-        return $this->createResourceOwner($response, $token);
+        return $this->getBaseUrl().'/userinfo';
+    }
+
+    /**
+     * Get the default scopes used by this provider.
+     *
+     * This should not be a complete list of all scopes, but the minimum
+     * required for the provider user interface!
+     *
+     * @return string[]
+     */
+    protected function getDefaultScopes()
+    {
+        return ['profile', 'email', 'read_user', 'openid'];
+    }
+
+    /**
+     * Returns the string that should be used to separate scopes when building
+     * the URL for requesting an access token.
+     *
+     * @return string Scope separator, defaults to ','
+     */
+    protected function getScopeSeparator()
+    {
+        return ' ';
     }
 
     /**
@@ -97,19 +200,37 @@ class Provider extends AbstractProvider
         return new ResourceOwner($response);
     }
 
-    /**
-     * Get provider url to fetch user details
+     /**
+     * Requests and returns the resource owner data of given access token.
      *
      * @param  AccessToken $token
-     *
-     * @return string
+     * @return Array
      */
-    public function getResourceOwnerDetailsUrl(AccessToken $token)
+    public function getResourceOwnerData(AccessToken $token)
     {
-        return 'https://www.gitlab.com/api/v4/user';
+        $resourceOwner = $this->getResourceOwner($token);
+        $ownerData['username'] = $resourceOwner->getName();
+        $ownerData['email'] = $resourceOwner->getEmail();
+        return $ownerData;
     }
 
-     /**
+    /**
+     * Requests and returns the resource owner of given access token.
+     *
+     * @param  AccessToken $token
+     * @return ResourceOwner
+     * @throws EncryptionConfigurationException
+     */
+    public function getResourceOwner(AccessToken $token)
+    {
+        $response = $this->fetchResourceOwnerDetails($token);
+        if (array_key_exists('jwt', $response)) {
+            $response = $response['jwt'];
+        }
+        return $this->createResourceOwner($response, $token);
+    }
+
+    /**
      * Requests resource owner details.
      *
      * @param  AccessToken $token
@@ -117,7 +238,7 @@ class Provider extends AbstractProvider
      */
     protected function fetchResourceOwnerDetails(AccessToken $token)
     {
-        $url = $this->getResourceOwnerDetailsUrl($token).'/?token='.$token->getToken();
+        $url = $this->getResourceOwnerDetailsUrl($token);
         $request = $this->getAuthenticatedRequest(self::METHOD_GET, $url, $token);
         $response = $this->getParsedResponse($request);
         if (false === is_array($response)) {
@@ -125,67 +246,9 @@ class Provider extends AbstractProvider
                 'Invalid response received from Authorization Server. Expected JSON.'
             );
         }
+
         return $response;
     }
-
-    /**
-     * Builds the logout URL.
-     *
-     * @param array $options
-     * @return string Authorization URL
-     */
-    public function getLogoutUrl(array $options = [])
-    {
-        $base = $this->getBaseLogoutUrl();
-        $params = $this->getAuthorizationParameters($options);
-        $query = $this->getAuthorizationQuery($params);
-        return $this->appendQuery($base, $query);
-    }
-
-    /**
-     * Get logout url to logout of session token
-     *
-     * @return string
-     */
-    private function getBaseLogoutUrl()
-    {
-        return $this->getBaseUrl() . '/logout';
-    }
-
-    /**
-     * Creates base url from provider configuration.
-     *
-     * @return string
-     */
-    protected function getBaseUrl()
-    {
-        return $this->authServerUrl;
-    }
-
-    /**
-     * Get the default scopes used by this provider.
-     *
-     * This should not be a complete list of all scopes, but the minimum
-     * required for the provider user interface!
-     *
-     * @return string[]
-     */
-    protected function getDefaultScopes()
-    {
-        return ['profile', 'email'];
-    }
-
-    /**
-     * Returns the string that should be used to separate scopes when building
-     * the URL for requesting an access token.
-     *
-     * @return string Scope separator, defaults to ','
-     */
-    protected function getScopeSeparator()
-    {
-        return ' ';
-    }
-
 
     /**
      * Check a provider response for errors.
@@ -215,34 +278,20 @@ class Provider extends AbstractProvider
      */
     protected function parseResponse(ResponseInterface $response)
     {
+        // We have a problem with keycloak when the userinfo responses
+        // with a jwt token
+        // Because it just return a jwt as string with the header
+        // application/jwt
+        // This can't be parsed to a array
+        // Dont know why this function only allow an array as return value...
         $content = (string) $response->getBody();
-        error_log($content);
+        $type = $this->getContentType($response);
+
+        if (strpos($type, 'jwt') !== false) {
+            // Here we make the temporary array
+            return ['jwt' => $content];
+        }
+
         return parent::parseResponse($response);
-    }
-
-    private function getOptionsFromJsonFile()
-    {
-        $config_data = file_get_contents(\App::APP_PATH . '/gitlab.json');
-        if (gettype($config_data) === 'string') {
-            $config_data = json_decode($config_data, true);
-        }
-        $realmData = $this->getBasicOptionsFromJsonFile();
-        $realmData['clientSecret'] = $config_data['credentials']['secret'];
-        $realmData['authServerUrl'] = $config_data['auth-server-url'];
-        return $realmData;
-    }
-
-    public function getBasicOptionsFromJsonFile()
-    {
-        $config_data = file_get_contents(\App::APP_PATH . '/gitlab.json');
-        if (gettype($config_data) === 'string') {
-            $config_data = json_decode($config_data, true);
-        }
-        $realmData['realm'] = $config_data['realm'];
-        $realmData['clientId'] = $config_data['clientId'];
-        $realmData['clientName'] = $config_data['clientName'];
-        $realmData['redirectUri'] = $config_data['auth-redirect-url'];
-        $realmData['logoutUri'] = $config_data['logout-redirect-url'];
-        return $realmData;
     }
 }
