@@ -24,7 +24,7 @@ class KeycloakInstance
     public function doLogin(ServerRequestInterface $request, ResponseInterface $response)
     {
         $accessToken = $this->getAccessToken($request->getParam("code"));
-        $ownerInputData = $this->provider->getResourceOwner($accessToken)->toArray();
+        $ownerInputData = $this->provider->getResourceOwnerData($accessToken);
         try {
             $this->writeTokenToSession($accessToken);
             \App::$http

@@ -4,12 +4,9 @@ namespace BO\Slim\Middleware\OAuth;
 
 use \Psr\Http\Message\ServerRequestInterface;
 use \Psr\Http\Message\ResponseInterface;
-use \BO\Zmsclient\Psr7\ClientInterface as HttpClientInterface;
-use \BO\Zmsclient\PSR7\Client;
 use League\OAuth2\Client\Token\AccessToken;
-use League\OAuth2\Client\Provider\GenericProvider;
 
-class GitlabInstance extends GenericProvider
+class GitlabInstance
 {
     protected $provider = null;
 
@@ -27,7 +24,7 @@ class GitlabInstance extends GenericProvider
     public function doLogin(ServerRequestInterface $request, ResponseInterface $response)
     {
         $accessToken = $this->getProviderAccessToken($request->getParam("code"));
-        $ownerInputData = $this->provider->getResourceOwner($accessToken)->toArray();
+        $ownerInputData = $this->provider->getResourceOwnerData($accessToken);
         try {
             $this->writeTokenToSession($accessToken);
             \App::$http
@@ -43,10 +40,13 @@ class GitlabInstance extends GenericProvider
 
     public function doLogout(ResponseInterface $response)
     {
-        $this->writeDeleteSession();
-        $realmData = $this->provider::getOptionsFromJsonFile();
-        $logoutUrl = $this->provider->getLogoutUrl(['redirect_uri' => $realmData['logoutUri']]);
-        return $response->withRedirect($logoutUrl, 301);
+        $accessTokenData = $this->readTokenDataFromSession();
+        $accessTokenData = (is_array($accessTokenData)) ? $accessTokenData : [];
+        $accessToken = new AccessToken($accessTokenData);
+        if (200 == $this->provider->getRevokeResponse($accessToken)->getStatusCode()) {
+            $this->writeDeleteSession();
+        }
+        return $response;
     }
 
     public function writeNewAccessTokenIfExpired($lastLogin)
