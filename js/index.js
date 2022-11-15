@@ -11,7 +11,6 @@ import moment from 'moment/min/moment-with-locales';
 // Import Views
 //import AccessKeyView from './page/accesskeys'
 import EmergencyView from './block/emergency'
-import OidcRefresh from './block/oidc/refresh'
 //import LoginFormView from './block/index/loginform'
 //import DepartmentLinksView from './block/department/links'
 //import DepartmentDaysOffView from './block/department/daysOff'
@@ -79,8 +78,11 @@ forceHttps();
 loadResources();
 
 $('.emergency').each(function () {
-    new OidcRefresh(this, getDataAttributes(this));
     new EmergencyView(this, getDataAttributes(this));
+})
+
+$('.metalinks').each(function () {
+    //new MetaLinksView(this, getDataAttributes(this));
 })
 
 $('.counter-view').each(function () {
@@ -139,3 +141,12 @@ DialogHandler.hideMessages();
 
 // Say hello
 console.log("Welcome to the ZMS admin interface...");
+
+
+// hook up react components
+//bindReact('.availabilityDayRoot', AvailabilityDayPage)
+//bindReact('[data-department-daysoff]', DepartmentDaysOffView)
+//bindReact('[data-ticketprinter-config]', TicketPrinterConfigView)
+//bindReact('[data-calldisplay-config]', CallDisplayConfigView)
+
+
