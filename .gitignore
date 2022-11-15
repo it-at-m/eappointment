@@ -16,3 +16,5 @@ package-lock.json
 #composer.lock
 .cache
 .phpunit.*
+keycloak.json
+gitlab.json
