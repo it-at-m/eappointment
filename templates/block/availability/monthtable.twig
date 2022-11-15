@@ -119,30 +119,7 @@
 
 {% endembed %}
 
-
-        {% from 'element/helper/snippets.twig' import openingCalendarIcon %}
-
-        <section class="block calendar-legend" aria-hidden="true">
-            <h2 class="block__heading">Legende</h2>
-            <ul class="list--clean">
-                <li><span class="day square today">1</span> Heute</li>
-                <li><span class="day square closed">1</span> Geschlossen</li>
-            </ul>
-            <ul class="list--clean">
-                <li><span class="day rectangle mark">1</span> Freie Termine</li>
-                <li><span class="day rectangle mark mark--destructive">1</span> Keine freien Termine</li>
-                <li><span class="day rectangle mark mark--dayoff">1</span> Freier Tag</li>
-            </ul>
-            <ul class="list--clean">
-                <li>{{ openingCalendarIcon('K','red', 1, 'Konflikt') }} Konflikt</li>
-                <li>{{ openingCalendarIcon('S','green', 1, 'Offen für Spontankunden') }} Offen für Spontankunden</li>
-                <li>{{ openingCalendarIcon('T','blue', 1, 'Offen für Terminkunden') }} Offen für Terminkunden</li>
-            </ul>
-            <ul class="list--clean">
-                <li><i class="fas fa-globe" aria-hidden="true"></i> Buchbar per Internet</li>
-                <li><i class="fas fa-phone" aria-hidden="true"></i> Buchbar per Callcenter</li>
-            </ul>
-        </section>
+    {% include "block/calendar/legend.twig" %}
 
 
     {% set monthSecondsIntern = 0 %}
