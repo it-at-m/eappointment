@@ -13,8 +13,7 @@ class OAuthMiddleware
      */
     public static $authInstances = [
         'keycloak' => '\BO\Slim\Middleware\OAuth\KeycloakInstance',
-        'gitlab' => '\BO\Slim\Middleware\OAuth\GitlabInstance',
-        'google' => '\BO\Slim\Middleware\OAuth\GoogleInstance'
+        'gitlab' => '\BO\Slim\Middleware\OAuth\GitlabInstance'
     ];
 
     /**
@@ -74,6 +73,7 @@ class OAuthMiddleware
         } elseif ($request->getParam("state") !== \BO\Zmsclient\Auth::getKey()) {
             \BO\Zmsclient\Auth::removeKey();
             \BO\Zmsclient\Auth::removeOidcProvider();
+            throw new \BO\Slim\Exception\OAuthInvalid();
         }
         if ('login' == $request->getAttribute('authentificationHandler')) {
             return $instance->doLogin($request, $response);
@@ -96,7 +96,7 @@ class OAuthMiddleware
     {
         if (
             'refresh' == $request->getAttribute('authentificationHandler') && 
-            ! $instance->writeNewAccessTokenIfExpired($lastLogin)
+            ! $instance->writeNewAccessTokenIfExpired()
         ) {
             return $instance->doLogout($response);
         }

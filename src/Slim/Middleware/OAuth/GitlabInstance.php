@@ -23,7 +23,7 @@ class GitlabInstance
 
     public function doLogin(ServerRequestInterface $request, ResponseInterface $response)
     {
-        $accessToken = $this->getProviderAccessToken($request->getParam("code"));
+        $accessToken = $this->getAccessToken($request->getParam("code"));
         $ownerInputData = $this->provider->getResourceOwnerData($accessToken);
         try {
             $this->writeTokenToSession($accessToken);
@@ -49,7 +49,7 @@ class GitlabInstance
         return $response;
     }
 
-    public function writeNewAccessTokenIfExpired($lastLogin)
+    public function writeNewAccessTokenIfExpired()
     {
         try {
             $accessTokenData = $this->readTokenDataFromSession();
@@ -68,7 +68,7 @@ class GitlabInstance
         return true;
     }
 
-    private function getProviderAccessToken($code)
+    private function getAccessToken($code)
     {
         try {
             $accessToken = $this->provider->getAccessToken('authorization_code', ['code' => $code]);
