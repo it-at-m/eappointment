@@ -26,11 +26,15 @@ class KeycloakInstance
         $accessToken = $this->getAccessToken($request->getParam("code"));
         $ownerInputData = $this->provider->getResourceOwnerData($accessToken);
         try {
+            if (\BO\Zmsclient\Auth::getKey()) {
+                $this->writeDeleteSession();
+            }
             $this->writeTokenToSession($accessToken);
             \App::$http
                 ->readPostResult('/workstation/oauth/', $ownerInputData, ['state' => \BO\Zmsclient\Auth::getKey()])
                 ->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
+            $this->writeDeleteSession();
             \BO\Zmsclient\Auth::removeKey();
             \BO\Zmsclient\Auth::removeOidcProvider();
             throw $exception;
@@ -46,7 +50,7 @@ class KeycloakInstance
         return $response->withRedirect($logoutUrl, 301);
     }
 
-    public function writeNewAccessTokenIfExpired($lastLogin)
+    public function writeNewAccessTokenIfExpired()
     {
         try {
             $accessTokenData = $this->readTokenDataFromSession();
