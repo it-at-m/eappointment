@@ -118,6 +118,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->map(['GET','POST'], '/oidc/', \BO\Zmsadmin\Oidc::class)
     ->setName("oidc")->add(new \BO\Slim\Middleware\OAuthMiddleware('login'));
 
+\App::$slim->map(['GET','POST'], '/oidc/refresh/', \BO\Zmsadmin\OidcRefresh::class)
+    ->setName("oidcrefresh")->add(new \BO\Slim\Middleware\OAuthMiddleware('refresh'));
+
 /*
  * ---------------------------------------------------------------------------
  * Logout
