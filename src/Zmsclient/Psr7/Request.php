@@ -16,7 +16,7 @@ class Request extends SlimRequest implements \Psr\Http\Message\ServerRequestInte
     public function __construct($method = null, $uri = null, $body = 'php://memory', $headers = array())
     {
         $cookies = [];
-        $serverParams = [];
+        $serverParams = $_SERVER;
         $uploadedFiles = [];
         if (!$uri instanceof UriInterface) {
             $uri = new Uri($uri);
@@ -39,5 +39,20 @@ class Request extends SlimRequest implements \Psr\Http\Message\ServerRequestInte
             $body,
             $uploadedFiles
         );
+    }
+
+    public function getBasePath(): string
+    {
+        $basePath = '/';
+        $serverParams = $this->getServerParams();
+
+        if (!isset($serverParams['REQUEST_URI']) || !isset($serverParams['SCRIPT_NAME'])) {
+            return $basePath;
+        }
+        while (strncmp($serverParams['REQUEST_URI'], $serverParams['SCRIPT_NAME'], strlen($basePath) + 1) === 0) {
+            $basePath = substr($serverParams['REQUEST_URI'], 0, strlen($basePath) + 1);
+        }
+
+        return $basePath;
     }
 }

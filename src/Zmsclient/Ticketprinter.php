@@ -10,10 +10,9 @@ class Ticketprinter
     const HOME_URL_COOKIE_NAME = 'Ticketprinter_Homeurl';
 
     /**
-     *
      * @SuppressWarnings(Superglobals)
-     * @getBasePath() see https://www.slimframework.com/docs/v3/objects/request.html#the-request-method
-     *
+     * @param string $hash
+     * @param \BO\Zmsclient\Psr7\Request $request
      */
     public static function setHash($hash, $request)
     {
@@ -23,7 +22,7 @@ class Ticketprinter
                 self::HASH_COOKIE_NAME,
                 $hash,
                 time() + (60*60*24*365*10),
-                $request->getUri()->getBasePath(),
+                $request->getBasePath(),
                 null,
                 false
             );
@@ -53,7 +52,7 @@ class Ticketprinter
     {
         $_COOKIE[self::HOME_URL_COOKIE_NAME] = $url;
         if (!headers_sent()) {
-            setcookie(self::HOME_URL_COOKIE_NAME, $url, 0, $request->getUri()->getBasePath(), null, false, true);
+            setcookie(self::HOME_URL_COOKIE_NAME, $url, 0, $request->getBasePath(), null, false, true);
         }
     }
 
