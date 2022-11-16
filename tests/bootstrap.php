@@ -6,7 +6,7 @@ if (!defined('APP_PATH')) {
 }
 
 if (!defined('ZMS_API_URL')) {
-    define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'http://localhost:8083/');
+    define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'http://mockup:8083');
 }
 
 if (file_exists(APP_PATH . '/../vendor/autoload.php')) {

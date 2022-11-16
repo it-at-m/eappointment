@@ -15,7 +15,7 @@ use Psr\Container\ContainerInterface;
   *  @SuppressWarnings(PublicMethod)
   *  @SuppressWarnings(TooManyMethods)
   */
-class TwigExtension extends \Twig_Extension
+class TwigExtension extends \Twig\Extension\AbstractExtension
 {
     /**
      * @var ContainerInterface
@@ -36,7 +36,7 @@ class TwigExtension extends \Twig_Extension
     {
         $safe = array('is_safe' => array('html'));
         return array(
-            new \Twig_SimpleFunction('dumpHttpLog', array($this, 'dumpHttpLog'), $safe),
+            new \Twig\TwigFilter('dumpHttpLog', array($this, 'dumpHttpLog'), $safe),
         );
     }
 

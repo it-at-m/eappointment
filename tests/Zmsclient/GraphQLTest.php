@@ -2,6 +2,7 @@
 
 namespace BO\Zmsclient\Tests;
 
+use BO\Zmsclient\Http;
 use BO\Zmsclient\Psr7\Client;
 use BO\Zmsclient\Psr7\Request;
 use BO\Zmsclient\Psr7\Uri;
@@ -16,7 +17,7 @@ class GraphQLTest extends Base
     public function testBasic()
     {
         $uri = new Uri(self::$http_baseurl . '/process/82252/12a2/?gql={id,amendment}');
-        $request = new Request('GET', $uri);
+        $request = Http::createRequest('GET', $uri);
         $request = Validator::withValidator($request);
        
         $validator = $request->getAttribute('validator');
@@ -40,7 +41,7 @@ class GraphQLTest extends Base
     public function testCollection()
     {
         $uri = new Uri(self::$http_baseurl . '/scope/?gql={id}');
-        $request = new Request('GET', $uri);
+        $request = Http::createRequest('GET', $uri);
         $request = Validator::withValidator($request);
        
         $validator = $request->getAttribute('validator');
@@ -67,7 +68,7 @@ class GraphQLTest extends Base
     public function testSubNode()
     {
         $uri = new Uri(self::$http_baseurl . '/process/82252/12a2/?gql={scope{id}}');
-        $request = new Request('GET', $uri);
+        $request = Http::createRequest('GET', $uri);
         $request = Validator::withValidator($request);
        
         $validator = $request->getAttribute('validator');
@@ -92,7 +93,7 @@ class GraphQLTest extends Base
         $this->expectException('\BO\Zmsclient\GraphQL\GraphQLException');
         $this->expectExceptionMessage('No valid graphql');
         $uri = new Uri(self::$http_baseurl . '/process/82252/12a2/?gql={');
-        $request = new Request('GET', $uri);
+        $request = Http::createRequest('GET', $uri);
         $request = Validator::withValidator($request);
        
         $validator = $request->getAttribute('validator');
@@ -109,7 +110,7 @@ class GraphQLTest extends Base
         $this->expectException('\BO\Zmsclient\GraphQL\GraphQLException');
         $this->expectExceptionMessage('No content for graph');
         $uri = new Uri(self::$http_baseurl . '/process/82252/12a2/?gql=');
-        $request = new Request('GET', $uri);
+        $request = Http::createRequest('GET', $uri);
         $request = Validator::withValidator($request);
        
         $validator = $request->getAttribute('validator');
@@ -126,7 +127,7 @@ class GraphQLTest extends Base
         $this->expectException('\BO\Zmsclient\GraphQL\GraphQLException');
         $this->expectExceptionMessage('Curly bracket match problem, too many closing brackets');
         $uri = new Uri(self::$http_baseurl . '/process/82252/12a2/?gql={scope{id}}}');
-        $request = new Request('GET', $uri);
+        $request = Http::createRequest('GET', $uri);
         $request = Validator::withValidator($request);
        
         $validator = $request->getAttribute('validator');

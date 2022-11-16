@@ -48,6 +48,6 @@ abstract class Base extends TestCase
 
     protected function createTwigMockup()
     {
-        return new \Twig_Environment($this->getMockBuilder('Twig_LoaderInterface')->getMock());
+        return new \Twig\Environment($this->getMockBuilder(\Twig\Loader\LoaderInterface::class)->getMock());
     }
 }
