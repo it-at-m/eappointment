@@ -21,7 +21,7 @@ test-php-73:
     allow_failure: false
     variables:
         PHP_VERSION: "7.3"
-        ZMS_API_URL: http://mockupserver:8083/
+        ZMS_API_URL: http://mockupserver:8083
     services:
         - name: $MOCKUP_IMAGE
           alias: mockupserver

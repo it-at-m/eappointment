@@ -21,7 +21,8 @@
         "roave/security-advisories": "dev-master",
         "php-http/curl-client": "^2.2",
         "slim/psr7": "^1.5",
-        "tracy/tracy": "^2.9"
+        "tracy/tracy": "^2.9",
+        "twig/twig": "3.*"
     },
     "scripts": {
         "command": "bin/configure"
