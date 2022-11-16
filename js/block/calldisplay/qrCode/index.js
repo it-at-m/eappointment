@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import $ from 'jquery'
 import qrGenerator from "qrcode-generator"
@@ -14,7 +14,6 @@ class QrCodeView extends Component {
     }
 
     componentDidMount() {
-        this.initQrCode(this.props.targetUrl)
         document.addEventListener("keydown", this.keyDownHandler, true);
         document.addEventListener("mousedown", this.handleClickOutside);
     }
@@ -28,7 +27,7 @@ class QrCodeView extends Component {
         if (this.ref && !this.ref.current.contains(event.target)) {
             this.handleTogglePopup(event);
         }
-      }
+    }
 
     handleTogglePopup(event) {
         event.preventDefault()
@@ -41,38 +40,8 @@ class QrCodeView extends Component {
         }
     }
 
-    initQrCode(targetUrl) {
-        let frameDocument = $('iframe.qrCodeView')[0].contentWindow.document
-        let frameHead = frameDocument.getElementsByTagName('head')[0]
-        let frameBody = frameDocument.getElementsByTagName('body')[0]
-
-        let styleElement = frameDocument.createElement('style')
-        styleElement.appendChild(frameDocument.createTextNode(
-            'html { overflow: hidden; }'
-        ))
-        frameHead.appendChild(styleElement);
-
-        let qrCodeCanvas = frameDocument.createElement('canvas')
-        qrCodeCanvas.className = 'qrCode'
-        qrCodeCanvas.width = '400'
-        qrCodeCanvas.height = '400'
-
-        frameBody.append(qrCodeCanvas);
-
-        let options = {
-            version: 10,
-            ecLevel: 'M',
-            fillColor: '#000',
-            backgroundColor: '#fff',
-            quiet: 5,
-            size: 400,
-            text: targetUrl
-        }
-
-        this.drawQrCode(qrCodeCanvas, options)
-    }
-
     drawQrCode(canvas, options) {
+        console.log(canvas)
         qrGenerator.stringToBytes = qrGenerator.stringToBytesFuncs['UTF-8']
         const codeObj = qrGenerator(options.version, options.ecLevel)
         codeObj.addData(options.text)
@@ -82,15 +51,15 @@ class QrCodeView extends Component {
         ctx.fillStyle = options.backgroundColor
         ctx.fillRect(0, 0, options.size, options.size)
 
-        const gridSize  = codeObj.getModuleCount()
+        const gridSize = codeObj.getModuleCount()
         const blockSize = options.size / (gridSize + 2 * options.quiet)
-        const offset    = options.quiet * blockSize
+        const offset = options.quiet * blockSize
 
         ctx.beginPath()
         ctx.fillStyle = options.fillColor
         for (let row = 0; row < gridSize; row += 1) {
             for (let col = 0; col < gridSize; col += 1) {
-                let top  = offset + row * blockSize
+                let top = offset + row * blockSize
                 let left = offset + col * blockSize
 
                 if (codeObj.isDark(row, col)) {
@@ -103,27 +72,43 @@ class QrCodeView extends Component {
     }
 
     render() {
-        const styles = {
-            border: '0px',
-            marginLeft: '-8px'
-        };
         const headerstyles = {
-            backgroundColor: '#cccccc', 
-            padding: '5px',
-            marginBottom: '-8px'
+            backgroundColor: '#cccccc',
+            padding: '5px'
         };
+        const Canvas = props => {
+            const canvasRef = useRef(null)
+
+            useEffect(() => {
+                this.drawQrCode(canvasRef.current, options)
+              }, [])
+
+            const options = {
+                version: 10,
+                ecLevel: 'M',
+                fillColor: '#000',
+                backgroundColor: '#fff',
+                quiet: 5,
+                size: 400,
+                text: this.props.targetUrl
+            }
+            
+            return <canvas ref={canvasRef} {...props} />
+        }
         return (
             <div className="lightbox">
                 <FocusTrap>
                     <div className="lightbox__content trap" role="dialog" aria-modal="true" ref={this.ref}>
-                        <div className="form-actions" style={headerstyles}>
-                            <button className="button no-print" onClick={(event) => {event.preventDefault(); $('iframe.qrCodeView')[0].contentWindow.print()}}>Drucken</button>
-                            <button className="button button--destructive no-print" onClick={(event) => {this.handleTogglePopup(event);}}>X</button>
+                        <div className="form-actions no-print" style={headerstyles}>
+                            <button className="button" onClick={(event) => { event.preventDefault(); window.print() }}>Drucken</button>
+                            <button className="button button--destructive" onClick={(event) => { this.handleTogglePopup(event); }}>X</button>
                         </div>
-                        <iframe className="qrCodeView" width="400" height="400" style={styles} />
+                        <div className="qrCodeView">
+                            <Canvas width="400" height="400" className="qrCode"></Canvas>
+                        </div>
                     </div>
                 </FocusTrap>
-            </div>       
+            </div>
         )
     }
 }
