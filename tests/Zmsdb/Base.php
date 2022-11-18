@@ -10,8 +10,8 @@ abstract class Base extends TestCase
     public static $username = 'superuser';
     public static $password = 'vorschau';
     public static $now = null;
-    public static $requestRelationCount = 2531;
-    public static $requestCount = 307;
+    public static $requestRelationCount = 2532;
+    public static $requestCount = 308;
 
     public function setUp(): void
     {

@@ -34,8 +34,8 @@ class AppointmentDeallocateByCronTest extends Base
         $input = $this->getTestProcessEntity();
         $process = (new ProcessStatusFree())->writeEntityReserved($input, $now);
         $process = (new ProcessRepository())->writeCanceledEntity(
-            $process->getId(), 
-            $process->getAuthKey(), 
+            $process->getId(),
+            $process->getAuthKey(),
             $deallocateDate
         );
         $helper = new AppointmentDeallocateByCron($now, false); // verbose
@@ -45,7 +45,7 @@ class AppointmentDeallocateByCronTest extends Base
         $this->assertEquals(3, $helper->getCount()['deallocated']);
         $processList = (new \BO\Zmsdb\Process)->readDeallocateProcessList($now, 10, 0);
         $this->assertEquals(
-            'Abgesagter Termin gebucht am: 01.04.2016, 09:55 Uhr | ', 
+            'Abgesagter Termin gebucht am: 01.04.2016, 09:55 Uhr | ',
             $processList->getLast()->amendment
         );
         $this->assertEquals(3, $processList->count());
@@ -60,8 +60,8 @@ class AppointmentDeallocateByCronTest extends Base
         $input = $this->getTestProcessEntity();
         $process = (new ProcessStatusFree())->writeEntityReserved($input, $deallocateDate);
         $process = (new ProcessRepository())->writeCanceledEntity(
-            $process->getId(), 
-            $process->getAuthKey(), 
+            $process->getId(),
+            $process->getAuthKey(),
             $deallocateDate
         );
 
