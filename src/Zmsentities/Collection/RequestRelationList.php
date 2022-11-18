@@ -65,13 +65,4 @@ class RequestRelationList extends Base
         }
         return $list;
     }
-
-    public function getSlotCount()
-    {
-        $slotCount = 0;
-        foreach ($this as $requestRelation) {
-            $slotCount += $requestRelation->getSlotCount();
-        }
-        return round($slotCount, 0);
-    }
 }
