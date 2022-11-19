@@ -130,16 +130,4 @@ class Calendar extends Base
         }
         return $calendar;
     }
-
-    public function readRequiredSlots(\BO\Zmsentities\Calendar $calendar)
-    {
-        $requestList = $calendar->getRequestList();
-        $providerList = $calendar->getProviderList();
-        $source = $calendar->getScopeList()->getFirst()->getSource();
-        $slotCount = (new RequestRelation())
-            ->readListBySource($source)
-            ->getFilteredByRequestAndProvider($requestList, $providerList)
-            ->getSlotcount();
-        return $slotCount;
-    }
 }

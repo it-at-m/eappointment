@@ -18,10 +18,6 @@ class ProcessStatusFree extends Process
     ) {
         $calendar = (new Calendar())->readResolvedEntity($calendar, $now, true);
         $dayquery = new Day();
-
-        $requiredSlots = ($slotsRequired === null || $slotsRequired < 1)
-            ? max(1, (new Calendar())->readRequiredSlots($calendar))
-            : intval($slotsRequired);
         $dayquery->writeTemporaryScopeList($calendar, $slotsRequired);
         $selectedDate = $calendar->getFirstDay();
         $processList = new Collection();
@@ -33,7 +29,8 @@ class ProcessStatusFree extends Process
                 'month' => $selectedDate->format('m'),
                 'day' => $selectedDate->format('d'),
                 'slotType' => $slotType,
-                'forceRequiredSlots' => $requiredSlots,
+                'forceRequiredSlots' =>
+                    ($slotsRequired === null || $slotsRequired < 1) ? 1 : intval($slotsRequired),
             ]
         );
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
@@ -52,6 +49,7 @@ class ProcessStatusFree extends Process
         unset($dayquery); // drop temporary scope list
         return $processList;
     }
+
 
     public function readReservedProcesses($resolveReferences = 2)
     {
