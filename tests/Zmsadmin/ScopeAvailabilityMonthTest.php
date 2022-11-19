@@ -33,8 +33,7 @@ class ScopeAvailabilityMonthTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                        'resolveReferences' => 1
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
@@ -59,7 +58,7 @@ class ScopeAvailabilityMonthTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/calendar/',
-                    'parameters' => ['fillWithEmptyDays' => 1],
+                    'parameters' => ['fillWithEmptyDays' => 1, 'slotType' => 'intern', 'slotsRequired' => 0],
                     'response' => $this->readFixture("GET_calendar.json")
                 ]
             ]
@@ -93,15 +92,14 @@ class ScopeAvailabilityMonthTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                        'resolveReferences' => 1
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/calendar/',
-                    'parameters' => ['fillWithEmptyDays' => 1],
+                    'parameters' => ['fillWithEmptyDays' => 1, 'slotType' => 'intern', 'slotsRequired' => 0],
                     'exception' => $exception
                 ]
             ]
@@ -131,15 +129,14 @@ class ScopeAvailabilityMonthTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                        'resolveReferences' => 1
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/calendar/',
-                    'parameters' => ['fillWithEmptyDays' => 1],
+                    'parameters' => ['fillWithEmptyDays' => 1, 'slotType' => 'intern', 'slotsRequired' => 0],
                     'response' => $this->readFixture("GET_calendar.json")
                 ],
                 [
@@ -179,8 +176,7 @@ class ScopeAvailabilityMonthTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                        'resolveReferences' => 1
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
@@ -205,7 +201,7 @@ class ScopeAvailabilityMonthTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/calendar/',
-                    'parameters' => ['fillWithEmptyDays' => 1],
+                    'parameters' => ['fillWithEmptyDays' => 1, 'slotType' => 'intern', 'slotsRequired' => 0],
                     'response' => $this->readFixture("GET_calendar.json")
                 ]
             ]
@@ -239,15 +235,14 @@ class ScopeAvailabilityMonthTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
+                        'resolveReferences' => 1
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/calendar/',
-                    'parameters' => ['fillWithEmptyDays' => 1],
+                    'parameters' => ['fillWithEmptyDays' => 1, 'slotType' => 'intern', 'slotsRequired' => 0],
                     'exception' => $exception
                 ],
                 [
