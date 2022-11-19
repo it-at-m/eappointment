@@ -389,14 +389,9 @@ class ProcessTest extends Base
         $now = static::$now;
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
-        $input->queue['callTime'] = 0;
-        $process = $query->readSlotCount($input);
-        $process = $query->writeEntityReserved($process, $now, "public", 0, 1);
+        $process = $query->writeEntityReserved($input, $now, "public", 0, 1);
+        $process = $query->readSlotCount($process);
         $this->assertEquals(3, $process->getAppointments()->getFirst()['slotCount']);
-
-        $process = $query->updateProcessStatus($process, 'confirmed', $now);
-        $this->assertEquals(3, $process->getAppointments()->getFirst()['slotCount']);
-        $this->assertEquals('confirmed', $process->getStatus());
     }
 
     public function testMultipleSlots()
