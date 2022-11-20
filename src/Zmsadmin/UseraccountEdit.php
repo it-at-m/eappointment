@@ -43,6 +43,9 @@ class UseraccountEdit extends BaseController
             }
         }
 
+        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+        $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider'));
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/useraccountEdit.twig',
@@ -55,7 +58,7 @@ class UseraccountEdit extends BaseController
                 'title' => 'Nutzer: Einrichtung und Administration','menuActive' => 'useraccount',
                 'exception' => (isset($result)) ? $result : null,
                 'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
-                'isFromOidc' => in_array($userAccount->getOidcProviderFromName(), \App::$allowedOidcProvider)
+                'isFromOidc' => in_array($userAccount->getOidcProviderFromName(), $allowedProviderList)
             ]
         );
     }

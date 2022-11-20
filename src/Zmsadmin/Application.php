@@ -52,13 +52,6 @@ class Application extends \BO\Slim\Application
      );
 
     /**
-     * supported oidc provider
-    */
-    public static $allowedOidcProvider = [
-        'keycloak'
-    ];
-
-    /**
     * config preferences
     */
     const CONFIG_SECURE_TOKEN = 'a9b215f1-e460-490c-8a0b-6d42c274d5e4';

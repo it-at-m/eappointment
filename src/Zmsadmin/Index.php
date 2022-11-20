@@ -56,7 +56,7 @@ class Index extends BaseController
                 'title' => 'Anmeldung',
                 'config' => $config,
                 'workstation' => $workstation,
-                'oidcproviderlist' => $this->getProviderList(),
+                'oidcproviderlist' => $this->getProviderList($config),
                 'oidclogin' => $oidclogin,
                 'showloginform' => (! $oidclogin)
             )
@@ -100,11 +100,15 @@ class Index extends BaseController
         return $exceptionData;
     }
 
-    private function getProviderList()
+    private function getProviderList($config)
     {
+        $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider'));
         $oidcproviderlist = [];
         foreach(\BO\Slim\Middleware\OAuthMiddleware::$authInstances as $provider => $authInstance) {
-            if (class_exists($authInstance) && in_array($provider, \App::$allowedOidcProvider)) {
+            if (0 < count($allowedProviderList) && 
+                class_exists($authInstance) && 
+                in_array($provider, $allowedProviderList)
+            ) {
                 $oidcproviderlist[] = $provider;
             }
         }
