@@ -212,7 +212,7 @@ class Provider extends AbstractProvider
         $resourceOwner = $this->getResourceOwner($token);
         $ownerData['username'] = $resourceOwner->getName(). '@' . static::PROVIDERNAME;
         if ($resourceOwner->getVerifiedEmail()) {
-            $ownerData['email'] = $resourceOwner->getVerfifiedEmail();
+            $ownerData['email'] = $resourceOwner->getVerifiedEmail();
         }
         return $ownerData;
     }
