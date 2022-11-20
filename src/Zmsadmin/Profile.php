@@ -47,7 +47,9 @@ class Profile extends BaseController
                 'success' => $confirmSuccess,
                 'error' => $error,
                 'exception' => (isset($result)) ? $result : null,
-                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema))
+                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
+                'isFromOidc' => in_array($entity->getOidcProviderFromName(), \App::$allowedOidcProvider)
+
             )
         );
     }

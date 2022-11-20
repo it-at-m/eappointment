@@ -26,6 +26,34 @@ class ProfileTest extends Base
         $this->assertStringContainsString('Nutzerinformation', (string)$response->getBody());
         $this->assertStringContainsString('testadmin', (string)$response->getBody());
         $this->assertStringContainsString('value="0"', (string)$response->getBody());
+        $this->assertStringNotContainsString(
+            'Dieser Nutzer wurde über einen OpenID Connect Anbieter angelegt.', 
+            (string)$response->getBody());
+        $this->assertStringContainsString(
+            'Passwortwiederholung', 
+            (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testRenderingOidcProvider()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Oidc.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertStringContainsString(
+            'Dieser Nutzer wurde über einen OpenID Connect Anbieter angelegt.', 
+            (string)$response->getBody());
+        $this->assertStringNotContainsString(
+            'Passwortwiederholung', 
+            (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
