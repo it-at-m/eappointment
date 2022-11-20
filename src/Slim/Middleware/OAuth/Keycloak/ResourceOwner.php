@@ -44,6 +44,20 @@ class ResourceOwner extends KeycloakResourceOwner
     }
 
     /**
+     * Get verified resource owner email
+     *
+     * @return string|null
+     */
+    public function getVerifiedEmail()
+    {
+        $email = null;
+        if (\array_key_exists('email_verified', $this->response) && $this->response['email_verified']) {
+            $email = $this->getEmail();
+        }
+        return $email;
+    }
+
+    /**
      * Get resource owner name
      *
      * @return string|null
