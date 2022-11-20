@@ -29,7 +29,8 @@ class WorkstationStatus extends BaseController
         return Render::withJson($response, ['workstation' => $workstation]);
     }
 
-    protected function withFixedLastLogin($workstation) {
+    protected function withFixedLastLogin($workstation)
+    {
         $dateTime = (new \DateTime())->setTimestamp($workstation->getUseraccount()->lastLogin);
         $hour = \App::$now->format('H');
         $minute = $dateTime->format('i');

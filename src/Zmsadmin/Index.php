@@ -36,17 +36,17 @@ class Index extends BaseController
                 return \BO\Slim\Render::redirect('workstationSelect', array(), array());
             }
             \BO\Slim\Render::withHtml(
-            $response,
-            'page/index.twig',
-            array(
+                $response,
+                'page/index.twig',
+                array(
                 'title' => 'Anmeldung gescheitert',
                 'loginfailed' => true,
                 'workstation' => null,
                 'exception' => $loginData,
                 'showloginform' => true,
                 'oidcproviderlist' => $this->getProviderList($config)
-            )
-        );
+                )
+            );
         }
         return \BO\Slim\Render::withHtml(
             $response,
@@ -103,14 +103,14 @@ class Index extends BaseController
     {
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider'));
         $oidcproviderlist = [];
-        foreach(\BO\Slim\Middleware\OAuthMiddleware::$authInstances as $provider => $authInstance) {
-            if (0 < count($allowedProviderList) && 
-                class_exists($authInstance) && 
+        foreach (\BO\Slim\Middleware\OAuthMiddleware::$authInstances as $provider => $authInstance) {
+            if (0 < count($allowedProviderList) &&
+                class_exists($authInstance) &&
                 in_array($provider, $allowedProviderList)
             ) {
                 $oidcproviderlist[] = $provider;
             }
         }
-       return $oidcproviderlist;
+        return $oidcproviderlist;
     }
 }
