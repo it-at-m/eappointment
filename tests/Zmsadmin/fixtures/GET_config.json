@@ -26,6 +26,10 @@
         "costs": "0.15",
         "erinnerungsvorlauf": "180"
       },
+      "oidc": {
+        "provider": "keycloak",
+        "onlyVerifiedMail": 1
+      },
       "ticketprinter": {
         "baseUrl": "/terminvereinbarung/ticketprinter/"
       },
