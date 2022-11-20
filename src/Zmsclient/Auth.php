@@ -41,7 +41,9 @@ class Auth
     {
         if (array_key_exists(self::getCookieName(), $_COOKIE)) {
             unset($_COOKIE[self::getCookieName()]);
-            setcookie(self::getCookieName(), '', time() - 3600, '/');
+            if (!headers_sent()) {
+                setcookie(self::getCookieName(), '', time() - 3600, '/');
+            }
         }
     }
 
@@ -90,7 +92,9 @@ class Auth
     {
         if (array_key_exists(self::getOidcName(), $_COOKIE)) {
             unset($_COOKIE[self::getOidcName()]);
-            setcookie(self::getOidcName(), '', time() - 3600, '/');
+            if (!headers_sent()) {
+                setcookie(self::getOidcName(), '', time() - 3600, '/');
+            }
         }
     }
 }
