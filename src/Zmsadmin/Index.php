@@ -26,6 +26,7 @@ class Index extends BaseController
         } catch (\Exception $workstationexception) {
             $workstation = null;
         }
+        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
         $input = $request->getParsedBody();
         $oidclogin = $request->getAttribute('validator')->getParameter('oidclogin')->isString()->getValue();
         if ($request->isPost()) {
@@ -42,13 +43,11 @@ class Index extends BaseController
                 'loginfailed' => true,
                 'workstation' => null,
                 'exception' => $loginData,
-                'showloginform' => true
+                'showloginform' => true,
+                'oidcproviderlist' => $this->getProviderList($config)
             )
         );
         }
-        $config = (! $workstation)
-            ? \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity()
-            : null;
         return \BO\Slim\Render::withHtml(
             $response,
             'page/index.twig',
