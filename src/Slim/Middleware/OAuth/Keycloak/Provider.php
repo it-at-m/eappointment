@@ -62,7 +62,10 @@ class Provider extends Keycloak
     {
         $resourceOwner = $this->getResourceOwner($token);
         $ownerData['username'] = $resourceOwner->getName(). '@' . static::PROVIDERNAME;
-        $ownerData['email'] = $resourceOwner->getEmail();
+        if ($resourceOwner->getVerifiedEmail()) {
+            $ownerData['email'] = $resourceOwner->getVerfifiedEmail();
+        }
+        error_log(var_export($ownerData,1));
         return $ownerData;
     }
 
