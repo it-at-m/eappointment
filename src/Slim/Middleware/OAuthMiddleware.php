@@ -38,7 +38,7 @@ class OAuthMiddleware
     }
 
     /**
-     * Set the authorizsationType attribute to request and init authorization method 
+     * Set the authorizsationType attribute to request and init authorization method
      *
      * @param ServerRequestInterface $request PSR7 request
      * @param ResponseInterface $response     PSR7 response
@@ -52,8 +52,8 @@ class OAuthMiddleware
         callable $next
     ) {
         $request = $request->withAttribute('authentificationHandler', $this->authentificationHandler);
-        $oidcProviderName = ($request->getParam('provider')) ? 
-            $request->getParam('provider') : 
+        $oidcProviderName = ($request->getParam('provider')) ?
+            $request->getParam('provider') :
             \BO\Zmsclient\Auth::getOidcProvider();
         if ($oidcProviderName) {
             $oidcInstance = static::$authInstances[$oidcProviderName];
@@ -83,8 +83,7 @@ class OAuthMiddleware
 
     private function handleLogout(ServerRequestInterface $request, ResponseInterface $response, $instance)
     {
-        if (
-            'logout' == $request->getAttribute('authentificationHandler') && 
+        if ('logout' == $request->getAttribute('authentificationHandler') &&
             ! $request->getParam('state')
         ) {
             return $instance->doLogout($response);
@@ -94,8 +93,7 @@ class OAuthMiddleware
 
     private function handleRefreshToken(ServerRequestInterface $request, ResponseInterface $response, $instance)
     {
-        if (
-            'refresh' == $request->getAttribute('authentificationHandler') && 
+        if ('refresh' == $request->getAttribute('authentificationHandler') &&
             ! $instance->writeNewAccessTokenIfExpired()
         ) {
             return $instance->doLogout($response);
