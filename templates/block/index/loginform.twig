@@ -45,6 +45,7 @@
 
         {% block board_footer %}
             Wenden Sie sich bei vergessenen Passwörtern bitte an Ihren lokalen Anwendungssystembetreuer.
+            {% if oidcproviderlist|length %}
             <br /><br />
             {{ ("Einloggen mit")|trans }}
             <div class="form-actions" style="display:flex; justify-content:center; margin-top:5px;">
@@ -54,6 +55,7 @@
                 </form>
             {% endfor %}
             </div>
+            {% endif %}
         {% endblock %}
 
 {% endembed %}
