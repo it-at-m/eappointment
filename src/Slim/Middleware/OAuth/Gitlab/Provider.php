@@ -210,7 +210,7 @@ class Provider extends AbstractProvider
     public function getResourceOwnerData(AccessToken $token)
     {
         $resourceOwner = $this->getResourceOwner($token);
-        $ownerData['username'] = $resourceOwner->getName();
+        $ownerData['username'] = $resourceOwner->getName(). '@' . static::PROVIDERNAME;
         $ownerData['email'] = $resourceOwner->getEmail();
         return $ownerData;
     }
