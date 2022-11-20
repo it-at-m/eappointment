@@ -263,6 +263,11 @@ class Useraccount extends Schema\Entity
         return $hash;
     }
 
+    /**
+     * create useraccount from open id input data with random password
+     *
+     * @return string $entity
+    */
     public function createFromOpenidData($data)
     {
         $entity = new self();
@@ -273,5 +278,19 @@ class Useraccount extends Schema\Entity
         $password = substr(str_shuffle($entity->id . $entity->email), 0, 8);
         $entity->password = $this->getHash($password);
         return $entity;
+    }
+
+    /**
+     * get oidc provider from $entity id if it exists
+     *
+     * @return string $entity
+    */
+    public function getOidcProviderFromName()
+    {
+        $providerName = '';
+        if (($pos = strpos($this->id, "@")) !== false) {
+            $providerName = substr($this->id, $pos+1);
+        }
+        return ('' !== $providerName) ? $providerName : null;
     }
 }
