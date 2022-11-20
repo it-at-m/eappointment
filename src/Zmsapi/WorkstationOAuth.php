@@ -38,7 +38,7 @@ class WorkstationOAuth extends BaseController
         } else {
             $workstation = $this->writeOAuthWorkstation($entity, $state, $resolveReferences);
         }
-        \BO\Zmsdb\Connection\Select::writeCommit();  
+        \BO\Zmsdb\Connection\Select::writeCommit();
 
         $message = Response\Message::create($request);
         $message->data = $workstation;
@@ -65,7 +65,8 @@ class WorkstationOAuth extends BaseController
         return $workstation;
     }
 
-    protected function writeOAuthWorkstation(UseraccountEntity $entity, $state, $resolveReferences){
+    protected function writeOAuthWorkstation(UseraccountEntity $entity, $state, $resolveReferences)
+    {
         $useraccount = (new Useraccount)->writeEntity($entity);
         $query = new Workstation();
         $workstation = $query->writeEntityLoginByName(
@@ -75,9 +76,9 @@ class WorkstationOAuth extends BaseController
             $resolveReferences
         );
         $workstation = $query->updateEntityAuthkey(
-            $useraccount->getId(), 
-            $entity->password, 
-            $state, 
+            $useraccount->getId(),
+            $entity->password,
+            $state,
             $resolveReferences
         );
         return $workstation;
