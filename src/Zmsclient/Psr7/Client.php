@@ -49,7 +49,8 @@ class Client implements ClientInterface
         return static::$curlClient;
     }
 
-    public function send(RequestInterface $request) {
+    public function send(RequestInterface $request)
+    {
         return static::readResponse($request);
     }
 }
