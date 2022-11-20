@@ -32,6 +32,13 @@ class UseraccountEditTest extends Base
                     'url' => '/owner/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_owner.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
+                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
@@ -67,6 +74,13 @@ class UseraccountEditTest extends Base
                     'url' => '/owner/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_owner.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
+                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
@@ -162,6 +176,13 @@ class UseraccountEditTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/useraccount/testuser/',
                     'exception' => $exception
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
+                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
@@ -221,6 +242,13 @@ class UseraccountEditTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/useraccount/testuser/',
                     'exception' => $exception
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
+                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );

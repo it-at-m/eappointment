@@ -36,7 +36,7 @@ class Profile extends BaseController
             }
         }
         $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
-        $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider'));
+        $allowedProviderList = array_filter(explode(',', $config->getPreference('oidc', 'provider')));
         return \BO\Slim\Render::withHtml(
             $response,
             'page/profile.twig',
@@ -49,8 +49,10 @@ class Profile extends BaseController
                 'error' => $error,
                 'exception' => (isset($result)) ? $result : null,
                 'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
-                'isFromOidc' => in_array($entity->getOidcProviderFromName(), $allowedProviderList)
-
+                'isFromOidc' => (
+                    count($allowedProviderList) &&
+                    in_array($entity->getOidcProviderFromName(), $allowedProviderList)
+                )
             )
         );
     }
