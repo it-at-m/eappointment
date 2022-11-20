@@ -65,7 +65,8 @@ class WorkstationOAuth extends BaseController
         return $workstation;
     }
 
-    protected function writeOAuthWorkstation(UseraccountEntity $entity, $state, $resolveReferences){
+    protected function writeOAuthWorkstation(UseraccountEntity $entity, $state, $resolveReferences)
+    {
         $useraccount = (new Useraccount)->writeEntity($entity);
         $query = new Workstation();
         $workstation = $query->writeEntityLoginByName(
