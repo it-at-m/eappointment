@@ -65,7 +65,7 @@ class Provider extends Keycloak
         if ($resourceOwner->getVerifiedEmail()) {
             $ownerData['email'] = $resourceOwner->getVerifiedEmail();
         }
-        error_log(var_export($ownerData,1));
+        error_log(var_export($ownerData, 1));
         return $ownerData;
     }
 
