@@ -26,6 +26,7 @@ class KeycloakInstance
         $accessToken = $this->getAccessToken($request->getParam("code"));
         $this->testAccess($accessToken);
         $ownerInputData = $this->provider->getResourceOwnerData($accessToken);
+        $this->testOwnerData($ownerInputData);
         try {
             if (\BO\Zmsclient\Auth::getKey()) {
                 $this->writeDeleteSession();
@@ -80,6 +81,15 @@ class KeycloakInstance
             throw new \BO\Slim\Exception\OAuthFailed();
         }
     }
+
+    private function testOwnerData(array $ownerInputData)
+    {
+        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+        if (! \array_key_exists('email', $ownerInputData) && 1 == $config->getPreference('oidc', 'onlyVerifiedMail')) {
+            throw new \BO\Slim\Exception\OAuthPreconditionFailed();
+        }
+    }
+
 
     private function getAccessToken($code)
     {
