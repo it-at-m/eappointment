@@ -40,10 +40,6 @@
                 {{  self.errormessage(groupargs.errors, fieldId,) -}}
             {% endif %}
         </div>
-
-        {% if groupargs.description %}
-            {{ self.groupdescription(groupargs.description, groupargs.descriptionId?groupargs.descriptionId:fieldId) -}}
-        {% endif -%}
     </{{ groupargs.groupTag|default('div') }}>
 {% endmacro -%}
 
@@ -56,6 +52,9 @@
 {% macro formelements(elements, fieldId, groupargs) %}
     {% import _self as self %}
     {% for element in elements -%}
+        {% if 1 < elements|length %}
+        {% set fieldId = fieldId ~ loop.index %}
+        {% endif %}
         {%- if element.type == "select" -%}
             {{- self.selectfield(element.parameter, fieldId, groupargs) -}}
         {% endif -%}
@@ -116,6 +115,10 @@
 
         {%- if element.parameter.append %}
             <small class="formgroup__help">{{ element.parameter.append }}</small>
+        {% endif -%}
+
+        {% if groupargs.description %}
+            {{ self.groupdescription(groupargs.description, groupargs.descriptionId ? groupargs.descriptionId : fieldId) -}}
         {% endif -%}
     {% endfor -%}
 {% endmacro %}
@@ -483,12 +486,12 @@ aria-describedby="{%
 {% macro groupdescription(description, fieldId) %}
     {% if description is iterable %}
         {% for key, entry in description %}
-            <p class="formgroup__help" {{ fieldId? ('id="help_' ~ fieldId ~ '_' ~ key ~ '"')|raw }}>
+            <p class="formgroup__help" {{ fieldId ? ('id="help_' ~ fieldId ~ '_' ~ key ~ '"')|raw }}>
                 {{ entry | raw }}
             </p>
         {% endfor %}
     {% else %}
-        <p class="formgroup__help" {{ fieldId? ('id="help_' ~ fieldId ~ '"')|raw }}>
+        <p class="formgroup__help" {{ fieldId ? ('id="help_' ~ fieldId ~ '"')|raw }}>
             {{ description | raw }}
         </p>
     {% endif %}
