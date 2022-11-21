@@ -11,12 +11,40 @@
     {{ ("Dieser Nutzer wurde über einen OpenID Connect Anbieter angelegt. Nutzername, E-Mail und Passwörter sind hier nicht änderbar.")|trans }}
 </div>
 {% endif %}
+
+{% set providerOptions = [{"name": "Nein, lokale Anmeldung bevorzugen", "value": ""}] %}
+{% for oidcProvider in oidcProviderList %}
+    {% set providerOptions = providerOptions|merge([{ "value": oidcProvider, "name": "Ja, " ~ oidcProvider ~ " als Provider nutzen"}]) %}
+{% endfor %}
 <form action="./" method="post" class="form--base">
     <div class="fieldset">
         <div class="panel--heavy">
         {% set passwordRequired = false %}
         {% if action == "add" %}
             {% set passwordRequired = true %}
+        {% endif %}
+
+        {% if action == "add" and 0 < oidcProviderList|length %}
+        <div class="fieldset">
+            <div class="panel--light">
+                {{ formgroup(
+                    {
+                        "label": "Login nur über OIDC",
+                        "description": "Alle wesentlichen Zugangsdaten werden ausschließlich beim OIDC Provider verwaltet",
+                    },
+                    [{
+                        "type":"select",
+                        "parameter": {
+                            "label": "",
+                            "accesskey":"o",
+                            "name": "oidcProvider",
+                            "id": "useOidcProvider",
+                            "options": providerOptions,
+                        }
+                    }]
+                ) }}
+            </div>
+        </div>
         {% endif %}
 
         {{ formgroup(

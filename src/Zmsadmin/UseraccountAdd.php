@@ -26,7 +26,7 @@ class UseraccountAdd extends BaseController
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
 
         $input = $request->getParsedBody();
-        if (is_array($input) && array_key_exists('id', $input)) {
+        if ($request->isPost()) {
             $input['password'] = $input['changePassword'][0];
             $result = $this->writeNewEntity($input);
             if ($result instanceof Entity) {
@@ -42,6 +42,9 @@ class UseraccountAdd extends BaseController
             }
         }
 
+        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+        $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider'));
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/useraccountEdit.twig',
@@ -55,6 +58,7 @@ class UseraccountAdd extends BaseController
                 'exception' => (isset($result)) ? $result : null,
                 'userAccount' => (isset($result)) ? $input : null,
                 'selectedDepartment' => $selectedDepartment,
+                'oidcProviderList' => array_filter($allowedProviderList),
                 'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema))
             ]
         );
@@ -63,6 +67,9 @@ class UseraccountAdd extends BaseController
     protected function writeNewEntity($input)
     {
         $entity = new Entity($input);
+        if (isset($input['oidcProvider']) && '' != $input['oidcProvider']) {
+            $entity->id = $entity->id. '@' .$input['oidcProvider'];
+        }
         $entity = $entity->withCleanedUpFormData(true);
         try {
             $entity = \App::$http->readPostResult('/useraccount/', $entity)->getEntity();

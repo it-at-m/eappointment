@@ -374,7 +374,7 @@ aria-describedby="{%
                 value="{% if args.value == 0 %}1{% else %}0{% endif %}" 
             >
             <input
-                class="form-check-input"
+                class="form-check-input{% if args.class %} {{ args.class }}{% endif %}"
                 type="checkbox"
                 tabindex="{{ args.tabindex|default(0)}}"
                 name="{{ args.name }}"
