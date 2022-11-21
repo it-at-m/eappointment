@@ -58,6 +58,7 @@ class UseraccountEdit extends BaseController
                 'title' => 'Nutzer: Einrichtung und Administration','menuActive' => 'useraccount',
                 'exception' => (isset($result)) ? $result : null,
                 'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
+                'oidcProviderList' => array_filter($allowedProviderList),
                 'isFromOidc' => in_array($userAccount->getOidcProviderFromName(), $allowedProviderList)
             ]
         );
