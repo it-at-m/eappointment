@@ -209,6 +209,9 @@ class Useraccount extends Schema\Entity
         ) {
             unset($this['changePassword']);
         }
+        if (isset($this['oidcProvider'])) {
+            unset($this['oidcProvider']);
+        }
 
         return $this;
     }
