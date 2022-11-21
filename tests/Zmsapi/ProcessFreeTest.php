@@ -100,7 +100,7 @@ class ProcessFreeTest extends Base
     // request with 2 slots in scope 148 so 4 slots for 2 requests
     public function testGettingAvailableSlotsFor2Requests()
     {
-        \App::$now = new \DateTimeImmutable('2016-05-24 15:00');
+        \App::$now->modify('2016-05-24 15:00');
         $response = $this->render([], [
             '__body' => '{
                 "firstDay": {
@@ -136,7 +136,7 @@ class ProcessFreeTest extends Base
     // request with 2 and 1 slots in scope 148 so 3 slots for 2 requests
     public function testGettingAvailableSlotsFor3Requests()
     {
-        \App::$now = new \DateTimeImmutable('2016-05-24 15:00');
+        \App::$now->modify('2016-05-24 15:00');
         $response = $this->render([], [
             '__body' => '{
                 "firstDay": {
