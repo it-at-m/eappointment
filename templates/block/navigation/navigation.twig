@@ -79,14 +79,13 @@
             {% endif %}
             {% if workstation.scope.id and rights.ticketprinter %}
                 <li class="nav__link{{ menuActive == 'ticketprinterStatus'? ' active' }}">
-                    <a title="{% trans %}Hier können Sie die Wartenummernausgabe aktivieren oder deaktivieren{% endtrans %}" {{ menuActive == 'ticketprinterStatus'? ' aria-current="page"' }} href="{{ urlGet('ticketprinterStatusByScope', {'id': workstation.scope.id}, {}) }}">
-                        Wartenummern&shy;ausgabe am Kiosk
-                        {% if workstation.scope.status.ticketprinter.deactivated %}
-                            <span class="color-red">gesperrt</span>
-                        {% else %}
-                            <span class="color-green">in Betrieb</span>
-                        {% endif %}
-                    </a>
+                    <a {{ menuActive == 'ticketprinterStatus'? ' aria-current="page"' }} href="{{ urlGet('ticketprinterStatusByScope', {'id': workstation.scope.id}, {}) }}">
+                        Wartenummern&shy;ausgabe am Kiosk ({% if workstation.scope.status.ticketprinter.deactivated %}
+                        <span title="{% trans %}Hier können Sie die Wartenummernausgabe aktivieren{% endtrans %}" class="color-red"> <i class="fas fa-exclamation-circle" alt="{{ ('Die Wartenummerausgabe am Kiosk ist aktuell gesperrt')|trans }}"></i> gesperrt</span>
+                    {% else %}
+                        <span title="{% trans %}Hier können Sie die Wartenummernausgabe deaktivieren{% endtrans %}" class="color-green"> <i class="fas fa-check-circle" alt="{{ ('Die Wartenummerausgabe am Kiosk ist aktuell in Betrieb')|trans }}"></i> in Betrieb</span>
+                    {% endif %})
+                    </a>                   
                 </li>
             {% endif %}
             {% if rights.scope or rights.department or rights.organisation or rights.availability %}
