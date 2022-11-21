@@ -68,7 +68,7 @@
                         {% endif %}
                         <td>
                         <div class="calendar__tile {{ bookableState }}{% if dayoffList.hasEntityByDate(day.toDateTime()) %} mark mark--dayoff{% endif %}{% if isToday %} today{% endif %}">
-                            <a class="month-item" href="{{ urlGet('scopeAvailabilityDay', {'id': scope.id, 'date': dayString}, {}) }}" {% if myDataArray.holiday == true %} title="Ein Feiertag"{% endif %} aria-label="{{ ('Zur Detailansicht')|trans }}">
+                            <a class="month-item" href="{{ urlGet('scopeAvailabilityDay', {'id': scope.id, 'date': dayString}, {}) }}" title="{% if myDataArray.holiday %}{{ ('Ein Feiertag')|trans }}{% else %}{{ ('Zur Detailansicht')|trans }}{% endif %}">
                                 <span class="day">
                                     {{ day.day }}
                                 </span>
@@ -91,8 +91,8 @@
                                     {% endif %}
                                 </div>
                                 <div class="row icons palm-hide">
-                                    {% if day.freeAppointments.public > 0 %}<i class="fas fa-globe" role="img" aria-label="Buchbar per Internet" title="Buchbar per Internet"></i>{% endif %}
-                                    {% if day.freeAppointments.callcenter > 0 %}<i class="fas fa-phone" role="img" aria-label="Buchbar per Callcenter" title="Buchbar per Callcenter"></i>{% endif %}
+                                    {% if day.freeAppointments.public > 0 %}<i class="fas fa-globe" role="img"  title="Buchbar per Internet"></i>{% endif %}
+                                    {% if day.freeAppointments.callcenter > 0 %}<i class="fas fa-phone" role="img"  title="Buchbar per Callcenter"></i>{% endif %}
                                 </div>
                                 <div class="row holiday palm-hide">{% if dayoffList.hasEntityByDate(day.toDateTime()) %}
                                     {{ dayoffList.getByDate(day.toDateTime()).name }}
