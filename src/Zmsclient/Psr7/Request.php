@@ -40,19 +40,4 @@ class Request extends SlimRequest implements \Psr\Http\Message\ServerRequestInte
             $uploadedFiles
         );
     }
-
-    public function getBasePath(): string
-    {
-        $basePath = '/';
-        $serverParams = $this->getServerParams();
-
-        if (!isset($serverParams['REQUEST_URI']) || !isset($serverParams['SCRIPT_NAME'])) {
-            return $basePath;
-        }
-        while (strncmp($serverParams['REQUEST_URI'], $serverParams['SCRIPT_NAME'], strlen($basePath) + 1) === 0) {
-            $basePath = substr($serverParams['REQUEST_URI'], 0, strlen($basePath) + 1);
-        }
-
-        return $basePath;
-    }
 }
