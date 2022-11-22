@@ -8,21 +8,26 @@ namespace BO\Slim;
 
 use \Psr\Http\Message\RequestInterface;
 use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Slim\Interfaces\ErrorHandlerInterface;
 
 /**
   *
   */
-class TwigExceptionHandler
+class TwigExceptionHandler implements ErrorHandlerInterface
 {
 
     const DEFAULT_TEMPLATE = "exception/default.twig";
 
     public function __invoke(
-        RequestInterface $request,
-        ResponseInterface $response,
-        \Throwable $exception
-    ) {
-        return static::withHtml($request, $response, $exception, 500);
+        ServerRequestInterface $request,
+        \Throwable $exception,
+        bool $displayErrorDetails,
+        bool $logErrors,
+        bool $logErrorDetails
+    ): ResponseInterface {
+        $response = \App::$slim->getResponseFactory()->createResponse();
+        return static::withHtml($request, $response, $exception);
     }
 
     public static function withHtml(
