@@ -36,7 +36,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
     {
         $safe = array('is_safe' => array('html'));
         return array(
-            new \Twig\TwigFilter('dumpHttpLog', array($this, 'dumpHttpLog'), $safe),
+            new \Twig\TwigFunction('dumpHttpLog', array($this, 'dumpHttpLog'), $safe),
         );
     }
 
