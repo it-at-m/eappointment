@@ -37,29 +37,29 @@ class TwigExtension extends AbstractExtension
     {
         $safe = array('is_safe' => array('html'));
         return array(
-            new \Twig\TwigFilter('urlGet', array($this, 'urlGet')),
-            new \Twig\TwigFilter('csvProperty', array($this, 'csvProperty')),
-            new \Twig\TwigFilter('azPrefixList', array($this, 'azPrefixList')),
-            new \Twig\TwigFilter('azPrefixListCollator', array($this, 'azPrefixListCollator')),
-            new \Twig\TwigFilter('isValueInArray', array($this, 'isValueInArray')),
-            new \Twig\TwigFilter('remoteInclude', array($this, 'remoteInclude'), $safe),
-            new \Twig\TwigFilter('includeUrl', array($this, 'includeUrl')),
-            new \Twig\TwigFilter('getEsiFromPath', array($this, 'getEsiFromPath')),
-            new \Twig\TwigFilter('baseUrl', array($this, 'baseUrl')),
-            new \Twig\TwigFilter('getLanguageDescriptor', array($this, 'getLanguageDescriptor')),
-            new \Twig\TwigFilter('currentLang', array($this, 'currentLang')),
-            new \Twig\TwigFilter('currentRoute', array($this, 'currentRoute')),
-            new \Twig\TwigFilter('currentLocale', array($this, 'currentLocale')),
-            new \Twig\TwigFilter('currentVersion', array($this, 'currentVersion')),
-            new \Twig\TwigFilter('formatDateTime', array($this, 'formatDateTime')),
-            new \Twig\TwigFilter('toTextFormat', array($this, 'toTextFormat')),
-            new \Twig\TwigFilter('getNow', array($this, 'getNow')),
-            new \Twig\TwigFilter('isNumeric', array($this, 'isNumeric')),
-            new \Twig\TwigFilter('dumpAppProfiler', array($this, 'dumpAppProfiler'), $safe),
-            new \Twig\TwigFilter('getSystemStatus', array($this, 'getSystemStatus'), $safe),
-            new \Twig\TwigFilter('getClientHost', array($this, 'getClientHost')),
-            new \Twig\TwigFilter('kindOfPayment', array($this, 'kindOfPayment')),
-            new \Twig\TwigFilter('isImageAllowed', array($this, 'isImageAllowed')),
+            new \Twig\TwigFunction('urlGet', array($this, 'urlGet')),
+            new \Twig\TwigFunction('csvProperty', array($this, 'csvProperty')),
+            new \Twig\TwigFunction('azPrefixList', array($this, 'azPrefixList')),
+            new \Twig\TwigFunction('azPrefixListCollator', array($this, 'azPrefixListCollator')),
+            new \Twig\TwigFunction('isValueInArray', array($this, 'isValueInArray')),
+            new \Twig\TwigFunction('remoteInclude', array($this, 'remoteInclude'), $safe),
+            new \Twig\TwigFunction('includeUrl', array($this, 'includeUrl')),
+            new \Twig\TwigFunction('getEsiFromPath', array($this, 'getEsiFromPath')),
+            new \Twig\TwigFunction('baseUrl', array($this, 'baseUrl')),
+            new \Twig\TwigFunction('getLanguageDescriptor', array($this, 'getLanguageDescriptor')),
+            new \Twig\TwigFunction('currentLang', array($this, 'currentLang')),
+            new \Twig\TwigFunction('currentRoute', array($this, 'currentRoute')),
+            new \Twig\TwigFunction('currentLocale', array($this, 'currentLocale')),
+            new \Twig\TwigFunction('currentVersion', array($this, 'currentVersion')),
+            new \Twig\TwigFunction('formatDateTime', array($this, 'formatDateTime')),
+            new \Twig\TwigFunction('toTextFormat', array($this, 'toTextFormat')),
+            new \Twig\TwigFunction('getNow', array($this, 'getNow')),
+            new \Twig\TwigFunction('isNumeric', array($this, 'isNumeric')),
+            new \Twig\TwigFunction('dumpAppProfiler', array($this, 'dumpAppProfiler'), $safe),
+            new \Twig\TwigFunction('getSystemStatus', array($this, 'getSystemStatus'), $safe),
+            new \Twig\TwigFunction('getClientHost', array($this, 'getClientHost')),
+            new \Twig\TwigFunction('kindOfPayment', array($this, 'kindOfPayment')),
+            new \Twig\TwigFunction('isImageAllowed', array($this, 'isImageAllowed')),
         );
     }
 
@@ -285,10 +285,11 @@ class TwigExtension extends AbstractExtension
     public function includeUrl($withUri = true)
     {
         if (null === \App::$includeUrl) {
+            /** @var Request $request */
             $request = $this->container['request'];
-            $uri = (string)$request->getUri()->getBasePath();
+            $uri = (string)$request->getBasePath();
             if ($withUri) {
-                $uri = $request->getUri()->getBaseUrl();
+                $uri = $request->getBaseUrl();
                 $uri = preg_replace('#^https?://[^/]+#', '', $uri); //Do not force protocoll or host
             }
             return Helper::proxySanitizeUri($uri);

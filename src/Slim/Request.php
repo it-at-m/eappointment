@@ -61,4 +61,43 @@ class Request extends \Slim\Psr7\Request
 
         return $result;
     }
+
+    public function getBasePath(): string
+    {
+        $basePath = '/';
+        $serverParams = $this->getServerParams();
+
+        if (!isset($serverParams['REQUEST_URI']) || !isset($serverParams['SCRIPT_NAME'])) {
+            return $basePath;
+        }
+        while (strncmp($serverParams['REQUEST_URI'], $serverParams['SCRIPT_NAME'], strlen($basePath) + 1) === 0) {
+            $basePath = substr($serverParams['REQUEST_URI'], 0, strlen($basePath) + 1);
+        }
+
+        return $basePath;
+    }
+
+    /**
+     * Return the fully qualified base URL.
+     *
+     * Note that this method never includes a trailing /
+     *
+     * This method is not part of PSR-7.
+     *
+     * @return string
+     */
+    public function getBaseUrl()
+    {
+        $scheme = $this->getUri()->getScheme();
+        $authority = $this->getUri()->getAuthority();
+        $basePath = $this->getBasePath();
+
+        if ($authority !== '' && substr($basePath, 0, 1) !== '/') {
+            $basePath = $basePath . '/' . $basePath;
+        }
+
+        return ($scheme !== '' ? $scheme . ':' : '')
+            . ($authority ? '//' . $authority : '')
+            . rtrim($basePath, '/');
+    }
 }

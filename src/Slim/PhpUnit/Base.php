@@ -19,7 +19,7 @@ use Slim\Psr7\Environment;
 use Slim\Psr7\Factory\UriFactory;
 use Slim\Psr7\Headers;
 use BO\Slim\Request;
-use Slim\Psr7\Response;
+use BO\Slim\Response;
 use Slim\Psr7\Factory\StreamFactory;
 
 /**
