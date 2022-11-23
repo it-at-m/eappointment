@@ -85,13 +85,16 @@ class Request extends \Slim\Psr7\Request
      */
     public function getBasePath(): string
     {
-        $basePath = '/';
+        $basePath = '';
         $serverParams = $this->getServerParams();
 
         if (!isset($serverParams['REQUEST_URI']) || !isset($serverParams['SCRIPT_NAME'])) {
             return $basePath;
         }
-        while (strncmp($serverParams['REQUEST_URI'], $serverParams['SCRIPT_NAME'], strlen($basePath) + 1) === 0) {
+
+        while (min(strlen($serverParams['REQUEST_URI']), strlen($serverParams['SCRIPT_NAME'])) > strlen($basePath)
+            && strncmp($serverParams['REQUEST_URI'], $serverParams['SCRIPT_NAME'], strlen($basePath) + 1) === 0
+        ) {
             $basePath = substr($serverParams['REQUEST_URI'], 0, strlen($basePath) + 1);
         }
 
