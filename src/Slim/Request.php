@@ -42,6 +42,23 @@ class Request extends \Slim\Psr7\Request
     }
 
     /**
+     * @deprecated
+     * please use explicitly the query params or parsed request body params
+     *
+     * @return mixed[]
+     */
+    public function getParams()
+    {
+        $params = $this->getQueryParams();
+        $postParams = $this->getParsedBody();
+        if ($postParams) {
+            $params = array_replace($params, (array)$postParams);
+        }
+
+        return $params;
+    }
+
+    /**
      * Fetch cookie value from cookies sent by the client to the server.
      *
      * Note: This method is not part of the PSR-7 standard.
@@ -62,6 +79,10 @@ class Request extends \Slim\Psr7\Request
         return $result;
     }
 
+    /**
+     * @deprecated
+     * @return string
+     */
     public function getBasePath(): string
     {
         $basePath = '/';
@@ -84,6 +105,7 @@ class Request extends \Slim\Psr7\Request
      *
      * This method is not part of PSR-7.
      *
+     * @deprecated
      * @return string
      */
     public function getBaseUrl()
