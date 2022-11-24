@@ -98,7 +98,7 @@ class Request extends \Slim\Psr7\Request
             $basePath = substr($serverParams['REQUEST_URI'], 0, strlen($basePath) + 1);
         }
 
-        return $basePath;
+        return rtrim($basePath, '/');
     }
 
     /**
