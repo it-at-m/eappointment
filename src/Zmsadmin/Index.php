@@ -30,7 +30,7 @@ class Index extends BaseController
         $input = $request->getParsedBody();
         $oidclogin = $request->getAttribute('validator')->getParameter('oidclogin')->isString()->getValue();
         if ($request->isPost()) {
-            $loginData = $this->testLogin($input, $response);
+            $loginData = $this->testLogin($input);
             if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
                 \BO\Zmsclient\Auth::setKey($loginData->authkey);
                 return \BO\Slim\Render::redirect('workstationSelect', array(), array());
@@ -62,7 +62,7 @@ class Index extends BaseController
         );
     }
 
-    protected function testLogin($input, $response)
+    protected function testLogin($input)
     {
         $userAccount = new \BO\Zmsentities\Useraccount(array(
             'id' => $input['loginName'],
