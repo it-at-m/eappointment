@@ -26,11 +26,13 @@ class TrailingSlash
                 $uriString = preg_replace('#^https?:#', '', (string)$uri); //Do not force protocol
             }
 
-            return \App::$slim->redirect(
+            $redirects = \App::$slim->redirect(
                 (string) $request->getUri(),
                 $uriString,
                 StatusCodeInterface::STATUS_MOVED_PERMANENTLY
-            );
+            )->getCallable();
+
+            return $redirects();
         }
 
         return $next->handle($request);
