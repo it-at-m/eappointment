@@ -131,7 +131,6 @@ class Workstation extends Base
 
     public function writeEntityLoginByOidc($loginName, $authKey, \DateTimeInterface $dateTime, $resolveReferences = 0)
     {
-        $useraccount = new Useraccount();
         $workstation = new Entity();
         $query = Query\Workstation::QUERY_LOGIN_OIDC;
         $result = $this->perform(
