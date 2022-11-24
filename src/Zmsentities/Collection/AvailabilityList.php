@@ -193,7 +193,7 @@ class AvailabilityList extends Base
     public function getSummerizedSlotCount()
     {
         return array_reduce($this->getArrayCopy(), function ($carry, $item) {
-            $itemId = $item->id;
+            $itemId = ($item->id) ? $item->id : $item->tempId;
             $maxSlots = (int) $item->getSlotList()->getSummerizedSlot()->intern;
             $carry[$itemId] = $maxSlots;
             return $carry;
