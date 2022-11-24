@@ -5593,15 +5593,12 @@ use \Psr\Http\Message\ResponseInterface;
  *          tags:
  *              - workstation
  *          parameters:
- *              -   name: X-Authkey
+ *              -   name: useraccount
+ *                  description: useraccount data to update
  *                  required: true
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *              -   name: resolveReferences
- *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
- *                  in: query
- *                  type: integer
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/useraccount.json"
  *          responses:
  *              200:
  *                  description: "success"
@@ -5632,12 +5629,15 @@ use \Psr\Http\Message\ResponseInterface;
  *          tags:
  *              - workstation
  *          parameters:
- *              -   name: useraccount
- *                  description: useraccount data to update
+ *              -   name: X-Authkey
  *                  required: true
- *                  in: body
- *                  schema:
- *                      $ref: "schema/useraccount.json"
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
