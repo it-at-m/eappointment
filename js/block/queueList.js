@@ -1,6 +1,7 @@
 import BaseView from '../lib/baseview';
 import $ from "jquery";
 import RingAudio from "./ringAudio";
+import AnalogClock from "./analogClock";
 
 class View extends BaseView {
 
@@ -30,6 +31,7 @@ class View extends BaseView {
                 var audioCheck = new RingAudio();
                 audioCheck.initSoundCheck();
                 this.getDestinationToNumber();
+                $('#Uhr').each(function() { new AnalogClock();});
             })
             .fail(function () {
                 $('.fatal').show();
