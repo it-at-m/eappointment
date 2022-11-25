@@ -3,33 +3,35 @@ import CoolClock from '../lib/coolclock';
 import $ from "jquery";
 
 
-class View extends BaseView {
-    constructor (element) {
-        super(element);
+class View {
+    constructor () {
         this.clearClock();
         this.addClock('clock_big', 200);
-        //this.addClock('clock_medium', 160);
-        //this.addClock('clock', 120);
+        this.addClock('clock_medium', 160);
+        this.addClock('clock', 120);
         this.initClock();
     }
 
     clearClock()
     {
-        $("#Uhr").empty();
+        console.log('cleared old clock')
+        $("#Uhr").children(".container").empty();
     }
 
     addClock(id, diameter) {
+        console.log(`added new clock instances ${id}`)
         let clock = document.createElement("canvas");
-        clock.setAttribute(`id`, id);
+        clock.setAttribute(`id`, id + Date.now());
         clock.classList.add(`CoolClock:themed:${diameter}:showSecondHand::${Date.now()}`);
         clock.classList.add(`myClock`);
         clock.setAttribute(`width`, diameter * 2);
         clock.setAttribute(`height`, diameter * 2)
         clock.setAttribute(`style`, `width: ${diameter * 2}px; height: ${diameter * 2}px`);
-        $(clock).appendTo($("#Uhr"));
+        $(clock).appendTo($(`#${id}`));
     }
 
     initClock() {
+        console.log('start clock')
         CoolClock.config.skins = {
             themed: {
                 outerBorder: { lineWidth: 1, radius:95, color: "black", alpha: 0 },
@@ -41,7 +43,6 @@ class View extends BaseView {
                 secondDecoration: { lineWidth: 1, startAt: 70, radius: 4, fillColor: "red", color: "red", alpha: 0 }
             }
         };
-
         CoolClock.findAndCreateClocks();
     }
 }

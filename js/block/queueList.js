@@ -7,6 +7,7 @@ class View extends BaseView {
 
     constructor(element) {
         super(element);
+        this.resfreshLimiter = 0;
         this.bindPublicMethods('initRequest', 'setInterval');
         console.log('Found queueList container');
         $(window).on(
@@ -31,12 +32,23 @@ class View extends BaseView {
                 var audioCheck = new RingAudio();
                 audioCheck.initSoundCheck();
                 this.getDestinationToNumber();
-                $('#Uhr').each(function() { new AnalogClock();});
+                this.handleClock();
             })
             .fail(function () {
                 $('.fatal').show();
             });
         this.setInterval();
+    }
+
+    handleClock() {
+        console.log(this.resfreshLimiter)
+        if (this.resfreshLimiter == 0) {
+            new AnalogClock();
+        }
+        this.resfreshLimiter ++;
+        if (this.resfreshLimiter == 12) {
+            this.resfreshLimiter = 0;
+        }
     }
 
     setInterval() {

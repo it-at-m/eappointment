@@ -369,7 +369,7 @@ CoolClock.findAndCreateClocks = function() {
                 displayRadius:  fields[2],
                 showSecondHand: fields[3]!='noSeconds',
                 gmtOffset:      fields[4],
-                referenceTime:  (window.$ && window.$.isNumeric(fields[5]) || !isNaN(fields[5])) ? fields[5] : null,
+                referenceTime:  fields[5],
                 showDigital:    fields[6]=='showDigital',
                 logClock:       fields[7]=='logClock',
                 logClockRev:    fields[7]=='logClockRev'
