@@ -16,7 +16,7 @@ use Slim\Psr7\Uri;
 
 class SubPathTest extends TestCase
 {
-    public function testHandle()
+    public function testInvoke()
     {
         $uri = new Uri('http', 'localhost', 80, '/admin/account/');
         $serverParams = [

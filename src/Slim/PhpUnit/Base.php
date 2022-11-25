@@ -97,7 +97,7 @@ abstract class Base extends TestCase
             // prevent isOveraged error-Handling
             $sessionData['human']['ts'] = time() - 10;
         }
-        $request = self::createBasicRequest($method, $uri);
+        $request = self::createBasicRequest($method, $uri, ['Accept' => \BO\Slim\Headers::MEDIA_TYPE_TEXT_HTML]);
         $sessionContainer = SessionHuman::fromContainer(function () use ($sessionData) {
             $session = new SessionData($sessionData);
             $session->setEntityClass($this->sessionClass);
@@ -117,7 +117,7 @@ abstract class Base extends TestCase
     public static function createBasicRequest(
         string $method = "GET",
         string $uri = '',
-        string $acceptMediaType = Request::MEDIA_TYPE_TEXT_HTML
+        array $addHeaders = []
     ): ServerRequestInterface {
         $env = Environment::mock([
             'REQUEST_METHOD'       => $method,
@@ -127,7 +127,9 @@ abstract class Base extends TestCase
 
         $uri = (new UriFactory())->createFromGlobals($env);
         $headers = Headers::createFromGlobals();
-        $headers->addHeader('Accept', $acceptMediaType);
+        foreach ($addHeaders as $key => $value) {
+            $headers->addHeader($key, $value);
+        }
 
         $body = (new StreamFactory())->createStream();
 
