@@ -1,16 +1,7 @@
-//modified with pull request https://github.com/simonbaird/CoolClock/pull/16/files
-//by Torsten Kunst
-//14.12.2016
-
-import jQuery from "jquery";
-
-
 // Constructor for CoolClock objects
 let CoolClock = function(options) {
     return this.init(options);
 };
-
-window.CoolClock = CoolClock;
 
 // Config contains some defaults, and clock skins
 CoolClock.config = {
@@ -126,6 +117,7 @@ CoolClock.prototype = {
 
         return this;
     },
+    
     /* eslint-enable complexity */
 
     // Draw a circle at point x,y with params as defined in skin
@@ -382,12 +374,9 @@ CoolClock.findAndCreateClocks = function() {
                 logClock:       fields[7]=='logClock',
                 logClockRev:    fields[7]=='logClockRev'
             });
+            window.CoolClock = CoolClock;
         }
     }
 };
-
-// If you don't have jQuery then you need a body onload like this: <body onload="CoolClock.findAndCreateClocks()">
-// If you do have jQuery and it's loaded already then we can do it right now
-if (window.jQuery) jQuery(document).ready(CoolClock.findAndCreateClocks);
 
 export default CoolClock;
