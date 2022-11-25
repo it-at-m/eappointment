@@ -16,7 +16,7 @@ use Slim\Psr7\Uri;
 
 class ValidatorTest extends TestCase
 {
-    public function testHandle()
+    public function testInvoke()
     {
         $uri = new Uri('http', 'localhost', 80, '/admin/account/');
         $request = new Request('GET', $uri, new Headers([]), [], [], new Stream(fopen('php://temp', 'wb+')));

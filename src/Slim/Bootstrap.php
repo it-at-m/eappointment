@@ -95,11 +95,13 @@ class Bootstrap
 
         // Configure caching
         App::$slim->add(new \Slim\HttpCache\Cache('public', 300));
-        App::$slim->add(new Middleware\IpAddress(true, true));
         App::$slim->add(new Middleware\Validator());
         App::$slim->addRoutingMiddleware();
+        App::$slim->add(new Middleware\SubPath());
         App::$slim->add(new Middleware\Profiler());
+        App::$slim->add(new Middleware\IpAddress(true, true));
         App::$slim->add('BO\Slim\Middleware\Route:getInfo');
+        App::$slim->add(new Middleware\ZmsSlimRequest());
 
         $errorMiddleware = App::$slim->addErrorMiddleware(App::DEBUG, App::LOG_ERRORS, App::LOG_DETAILS, App::$log);
         $container->set('errorHandler', $errorMiddleware->getDefaultErrorHandler());

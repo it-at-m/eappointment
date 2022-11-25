@@ -9,12 +9,6 @@ namespace BO\Slim;
 
 class Request extends \Slim\Psr7\Request
 {
-    public const MEDIA_TYPE_APPLICATION_XML = 'application/xml';
-    public const MEDIA_TYPE_APPLICATION_JSON = 'application/json';
-    public const MEDIA_TYPE_TEXT_XML = 'text/xml';
-    public const MEDIA_TYPE_TEXT_HTML = 'text/html';
-    public const MEDIA_TYPE_TEXT_PLAIN = 'text/plain';
-
     /**
      * Fetch request parameter value from body or query string (in that order).
      *
