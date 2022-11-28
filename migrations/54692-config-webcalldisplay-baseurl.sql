@@ -1,0 +1,1 @@
+INSERT INTO `config` SET `name` = "webcalldisplay__baseUrl", `value` = "/terminvereinbarung/aufruf/";

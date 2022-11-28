@@ -82,26 +82,4 @@ class ProcessNotificationTest extends Base
         $helper->startProcessing(true);
         $this->assertEquals(1, $helper->getCount());
     }
-
-    public function testCronWithoutLimit()
-    {
-        $now = new \DateTimeImmutable('2016-04-08 08:00:00');
-        $query = new \BO\Zmsdb\ProcessStatusFree();
-        $input = (new \BO\Zmsdb\Tests\ProcessTest())->getTestProcessEntity();
-        
-        $process = $query->writeEntityReserved($input, $now);
-        $process->reminderTimestamp = ($now->modify('-30 minutes'))->getTimestamp();
-        $process = $query->updateEntity($process, $now);
-        $process = $query->updateProcessStatus($process, 'confirmed', $now);
-
-        $process2 = $query->writeEntityReserved($input, $now);
-        $process2->reminderTimestamp = ($now->modify('-30 minutes'))->getTimestamp();
-        $process2 = $query->updateEntity($process2, $now);
-        $process2 = $query->updateProcessStatus($process2, 'confirmed', $now);
-
-        $helper = new \BO\Zmsdb\Helper\SendNotificationReminder($now->modify('-30 minutes'), false);
-        $helper->setLoopCount(1);
-        $helper->startProcessing(true);
-        $this->assertEquals(3, $helper->getCount());
-    }
 }
