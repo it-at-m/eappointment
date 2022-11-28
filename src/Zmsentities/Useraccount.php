@@ -209,6 +209,9 @@ class Useraccount extends Schema\Entity
         ) {
             unset($this['changePassword']);
         }
+        if (isset($this['oidcProvider'])) {
+            unset($this['oidcProvider']);
+        }
 
         return $this;
     }
@@ -263,15 +266,34 @@ class Useraccount extends Schema\Entity
         return $hash;
     }
 
+    /**
+     * create useraccount from open id input data with random password
+     *
+     * @return string $entity
+    */
     public function createFromOpenidData($data)
     {
         $entity = new self();
-        $entity->id = $data->toArray()['preferred_username'];
-        $entity->email = $data->getEmail();
+        $entity->id = $data['username'];
+        $entity->email = $data['email'];
         $department = new Department(['id' => 0]);
         $entity->addDepartment($department);
         $password = substr(str_shuffle($entity->id . $entity->email), 0, 8);
         $entity->password = $this->getHash($password);
         return $entity;
+    }
+
+    /**
+     * get oidc provider from $entity id if it exists
+     *
+     * @return string $entity
+    */
+    public function getOidcProviderFromName()
+    {
+        $providerName = '';
+        if (($pos = strpos($this->id, "@")) !== false) {
+            $providerName = substr($this->id, $pos+1);
+        }
+        return ('' !== $providerName) ? $providerName : null;
     }
 }
