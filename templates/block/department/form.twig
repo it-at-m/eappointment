@@ -164,7 +164,7 @@
                 <a class="button button-default" href="{{ urlGet('useraccountByDepartment', {'id':department.id}, {}) }}">Nutzer</a>
                 {#{ inputsubmit({"type": "new", "name": "neuer_nutzer", "value": "Nutzer hinzufügen" }) }#}
 
-                {{ custombutton({ "type":"new", "disabled":(hasAccess == false), "class": "button button-default","target": urlGet('departmentAddCluster', {'departmentId':department.id}, {}), "label":"Cluster hinzufügen</a>", "title":accessDeniedTitle|trans}) }}
+                {{ custombutton({ "type":"new", "disabled":(hasAccess == false), "class": "button button-default","target": urlGet('departmentAddCluster', {'departmentId':department.id}, {}), "label":"Cluster hinzufügen", "title":accessDeniedTitle|trans}) }}
 
                 {{ custombutton({ "type":"new", "disabled":(hasAccess == false), "class": "button","target": urlGet("departmentAddScope", {'id': department.id}, {}), "label":"Standort hinzufügen", "title":accessDeniedTitle|trans}) }}
             {% endif %}

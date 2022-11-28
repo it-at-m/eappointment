@@ -33,6 +33,6 @@ require(APP_PATH . '/config.php');
 
 // add slim middleware
 \App::$slim->add(new \BO\Slim\Middleware\TrailingSlash());
-//\App::$slim->add(new \BO\Slim\Middleware\OAuthMiddleware());
+
 // load routing
 \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');

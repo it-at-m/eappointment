@@ -31,6 +31,9 @@
                 <div data-calendar>
                     {% include "block/calendar/calendarContainer.twig" with {source: "counter"} %}
                 </div>
+                <div style="margin-top:-2em;">
+                    {% include "block/calendar/legend.twig" with {"view": "calendar"} %}
+                </div>
             </div>
         </div>
         <div class="grid">

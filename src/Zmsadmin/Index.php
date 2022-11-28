@@ -6,6 +6,7 @@
 
 namespace BO\Zmsadmin;
 
+use \BO\Zmsentities\Workstation;
 use \BO\Zmsadmin\Helper\LoginForm;
 use \BO\Mellon\Validator;
 
@@ -25,13 +26,28 @@ class Index extends BaseController
         } catch (\Exception $workstationexception) {
             $workstation = null;
         }
+        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
         $input = $request->getParsedBody();
-        if (is_array($input) && array_key_exists('loginName', $input)) {
-            return $this->testLogin($input, $response);
+        $oidclogin = $request->getAttribute('validator')->getParameter('oidclogin')->isString()->getValue();
+        if ($request->isPost()) {
+            $loginData = $this->testLogin($input);
+            if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
+                \BO\Zmsclient\Auth::setKey($loginData->authkey);
+                return \BO\Slim\Render::redirect('workstationSelect', array(), array());
+            }
+            \BO\Slim\Render::withHtml(
+                $response,
+                'page/index.twig',
+                array(
+                'title' => 'Anmeldung gescheitert',
+                'loginfailed' => true,
+                'workstation' => null,
+                'exception' => $loginData,
+                'showloginform' => true,
+                'oidcproviderlist' => $this->getProviderList($config)
+                )
+            );
         }
-        $config = (! $workstation)
-            ? \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity()
-            : null;
         return \BO\Slim\Render::withHtml(
             $response,
             'page/index.twig',
@@ -39,12 +55,14 @@ class Index extends BaseController
                 'title' => 'Anmeldung',
                 'config' => $config,
                 'workstation' => $workstation,
-                'showloginform' => true
+                'oidcproviderlist' => $this->getProviderList($config),
+                'oidclogin' => $oidclogin,
+                'showloginform' => (! $oidclogin)
             )
         );
     }
 
-    protected function testLogin($input, $response)
+    protected function testLogin($input)
     {
         $userAccount = new \BO\Zmsentities\Useraccount(array(
             'id' => $input['loginName'],
@@ -54,12 +72,7 @@ class Index extends BaseController
         try {
             /** @var \BO\Zmsentities\Workstation $workstation */
             $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
-            if ($workstation->offsetExists('authkey')) {
-                \BO\Slim\Profiler::add('start set Authkey');
-                \BO\Zmsclient\Auth::setKey($workstation->authkey);
-                \BO\Slim\Profiler::add('end set Authkey');
-                return \BO\Slim\Render::redirect('workstationSelect', array(), array());
-            }
+            return $workstation;
         } catch (\BO\Zmsclient\Exception $exception) {
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
             if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
@@ -83,16 +96,21 @@ class Index extends BaseController
                 throw $exception;
             }
         }
-        return \BO\Slim\Render::withHtml(
-            $response,
-            'page/index.twig',
-            array(
-                'title' => 'Anmeldung gescheitert',
-                'loginfailed' => true,
-                'workstation' => null,
-                'exception' => $exceptionData,
-                'showloginform' => true
-            )
-        );
+        return $exceptionData;
+    }
+
+    private function getProviderList($config)
+    {
+        $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider'));
+        $oidcproviderlist = [];
+        foreach (\BO\Slim\Middleware\OAuthMiddleware::$authInstances as $provider => $authInstance) {
+            if (0 < count($allowedProviderList) &&
+                class_exists($authInstance) &&
+                in_array($provider, $allowedProviderList)
+            ) {
+                $oidcproviderlist[] = $provider;
+            }
+        }
+        return $oidcproviderlist;
     }
 }

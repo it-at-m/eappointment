@@ -1,5 +1,5 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'loginform loginform-view'} %}
-        {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield %}
+        {% from 'element/helper/form.twig' import formgroup, custombutton, formbutton, inputfield %}
 
         {% block board_title %}
             {{ title }}
@@ -45,6 +45,17 @@
 
         {% block board_footer %}
             Wenden Sie sich bei vergessenen Passwörtern bitte an Ihren lokalen Anwendungssystembetreuer.
+            {% if oidcproviderlist|length %}
+            <br /><br />
+            {{ ("Einloggen mit")|trans }}
+            <div class="form-actions" style="display:flex; justify-content:center; margin-top:5px;">
+            {% for providername in oidcproviderlist %}
+                <form action="./oidc/?provider={{ providername }}" method="POST" class="form--base">
+                    {{ formbutton({"label":providername, "value": providername, "class": "button button--diamond"}) }}
+                </form>
+            {% endfor %}
+            </div>
+            {% endif %}
         {% endblock %}
 
 {% endembed %}

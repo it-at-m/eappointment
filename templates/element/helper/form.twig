@@ -40,10 +40,6 @@
                 {{  self.errormessage(groupargs.errors, fieldId,) -}}
             {% endif %}
         </div>
-
-        {% if groupargs.description %}
-            {{ self.groupdescription(groupargs.description, groupargs.descriptionId?groupargs.descriptionId:fieldId) -}}
-        {% endif -%}
     </{{ groupargs.groupTag|default('div') }}>
 {% endmacro -%}
 
@@ -56,6 +52,9 @@
 {% macro formelements(elements, fieldId, groupargs) %}
     {% import _self as self %}
     {% for element in elements -%}
+        {% if 1 < elements|length %}
+        {% set fieldId = fieldId ~ loop.index %}
+        {% endif %}
         {%- if element.type == "select" -%}
             {{- self.selectfield(element.parameter, fieldId, groupargs) -}}
         {% endif -%}
@@ -116,6 +115,10 @@
 
         {%- if element.parameter.append %}
             <small class="formgroup__help">{{ element.parameter.append }}</small>
+        {% endif -%}
+
+        {% if groupargs.description %}
+            {{ self.groupdescription(groupargs.description, groupargs.descriptionId ? groupargs.descriptionId : fieldId) -}}
         {% endif -%}
     {% endfor -%}
 {% endmacro %}
@@ -256,17 +259,16 @@
 
 {% macro _checkboxselectinner(args) %}
     {% import _self as self %}
-    <ul role="listbox" aria-label="{{ args.ariaLabel|default('Liste') }}" class="checkbox-list inner"{% if args.height %} style="height:{{args.height}}; overflow: auto;"{% endif %}>             
+    <ul aria-label="{{ args.ariaLabel|default('Liste') }}" class="checkbox-list inner"{% if args.height %} style="height:{{args.height}}; overflow: auto;"{% endif %}>             
     {% for item in args.options %}
         {% if item.options is iterable %}
-        <ul role="listbox" class="form-check group checkbox-list" aria-label="{{ args.ariaLabel|default('Liste') }}">
+        <ul class="form-check group checkbox-list" aria-label="{{ args.ariaLabel|default('Liste') }}">
             <h4>{{ item.name }}</h4>
             {% for option in item.options %}
-            <li tabindex="-1">
+            <li>
                 <div class="form-check">
                     <label {% if item.class %}class="form-check-label {{ item.class }}"{% endif %} >
                         <input
-                            role="option"
                             {% if option.selected %}checked="checked"{% endif %}
                             class="form-check-input"
                             type="checkbox"
@@ -282,12 +284,11 @@
             {% endfor %}
         </ul>
         {% else %}
-        <li tabindex="-1">
+        <li>
             <div class="form-check">
                 <label {% if item.class %}class="form-check-label {{ item.class }}"{% endif %}>
                     <input
                         {% if item.selected %}checked="checked"{% endif %}
-                        role="option"
                         class="form-check-input"
                         type="checkbox"
                         tabindex="{{ args.tabindex|default(0) }}"
@@ -374,9 +375,8 @@ aria-describedby="{%
                 value="{% if args.value == 0 %}1{% else %}0{% endif %}" 
             >
             <input
-                class="form-check-input"
+                class="form-check-input{% if args.class %} {{ args.class }}{% endif %}"
                 type="checkbox"
-                tabindex="{{ args.tabindex|default(0)}}"
                 name="{{ args.name }}"
                 {% if args.checked %}checked="checked"{% endif %}
                 value="{{ args.value|default(0) }}"
@@ -486,12 +486,12 @@ aria-describedby="{%
 {% macro groupdescription(description, fieldId) %}
     {% if description is iterable %}
         {% for key, entry in description %}
-            <p class="formgroup__help" {{ fieldId? ('id="help_' ~ fieldId ~ '_' ~ key ~ '"')|raw }}>
+            <p class="formgroup__help" {{ fieldId ? ('id="help_' ~ fieldId ~ '_' ~ key ~ '"')|raw }}>
                 {{ entry | raw }}
             </p>
         {% endfor %}
     {% else %}
-        <p class="formgroup__help" {{ fieldId? ('id="help_' ~ fieldId ~ '"')|raw }}>
+        <p class="formgroup__help" {{ fieldId ? ('id="help_' ~ fieldId ~ '"')|raw }}>
             {{ description | raw }}
         </p>
     {% endif %}

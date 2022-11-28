@@ -62,7 +62,7 @@
                                 {% if process.status == "free" %}{% set highlight = "free" %}{% endif %}
                             {% endfor %}
                             {% set tileTitle = (highlight == "free")? ('Freie Termine um ' ~ slotTime|date("H:i") ~ ' vorhanden') : ('Keine freie Termine um ' ~ slotTime|date("H:i")) %}
-                            <div class="calendar__tile timeslot mark mark--{{ highlight == "free"? 'positive' : 'destructive' }} timeslot--{{ highlight }}" aria-label="{{ tileTitle }}">
+                            <div class="calendar__tile timeslot mark mark--{{ highlight == "free"? 'positive' : 'destructive' }} timeslot--{{ highlight }}" title="{{ tileTitle }}">
                                 <span class="timeslot__time">
                                     {% if highlight == "free" %}
                                     <a class="item" href="{{ urlGet(source, {}, {'date': slotTime|date("Y-m-d"), 'time': slotTime|date("H-i") }) }}" title="Jetzt einen Termin um {{slotTime|date("H:i")}} buchen">
@@ -77,8 +77,8 @@
                                         {% if process.id %}
                                             {% set client = process.clients|first %}
                                             <a class="item" href="{{ urlGet(source, {}, {'date': slotTime|date("Y-m-d"), 'selectedprocess': process.id}) }}" {% if client.familyName %}title="Kunde bearbeiten"{% endif %}>
-                                                <span class="familyName">{{ client.familyName|default("") }}{% if client.familyName %},{% endif %}</span>
-                                                <span class="pid">{{ process.id }}</span>
+                                                <span class="familyName" title="{{ ('Familienname')|trans }}">{{ client.familyName|default("") }}{% if client.familyName %},{% endif %}</span>
+                                                <span class="pid" title="{{ ('Vorgangsnummer')|trans }}">{{ process.id }}</span>
                                             </a>
                                         {% endif %}
                                     {% endfor %}

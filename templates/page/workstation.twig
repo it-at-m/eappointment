@@ -25,6 +25,9 @@
                 <div data-calendar>
                     {% include "block/calendar/calendarContainer.twig" with {source: "workstation"} %}
                 </div>
+                <div style="margin-top:-2em;">
+                    {% include "block/calendar/legend.twig" with {"view": "calendar"} %}
+                </div>
             </div>
         </div>
         <div class="grid">

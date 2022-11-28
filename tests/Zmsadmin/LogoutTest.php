@@ -28,8 +28,8 @@ class LogoutTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertRedirect($response, '/');
-        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertStringContainsString('Erfolgreich abgemeldet', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testLogoutFailed()
