@@ -36,10 +36,6 @@
     {
       "type": "path",
       "url": "../zmsslim"
-    },
-    {
-      "type": "path",
-      "url": "../zmsentities"
     }
   ],
   "bin": [],

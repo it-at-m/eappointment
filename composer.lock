@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cfb52d8cb41fa4d65c590acd7d0ae76d",
+    "content-hash": "86a2485f5fe5c4006ce9cee56ccba004",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -193,11 +193,17 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-main",
+            "version": "2.24.12",
+            "source": {
+                "type": "git",
+                "url": "git@gitlab.com:eappointment/zmsentities.git",
+                "reference": "0f9c1247bb1b948978a51130275a3e849d59fd55"
+            },
             "dist": {
-                "type": "path",
-                "url": "../zmsentities",
-                "reference": "fbb1050984b6ab9d824fb3fe58d78d4392c2cc47"
+                "type": "zip",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=0f9c1247bb1b948978a51130275a3e849d59fd55",
+                "reference": "0f9c1247bb1b948978a51130275a3e849d59fd55",
+                "shasum": ""
             },
             "require": {
                 "eappointment/mellon": "^2.0.1",
@@ -228,11 +234,7 @@
                     "BO\\Zmsentities\\Tests\\": "tests/Zmsentities/"
                 }
             },
-            "scripts": {
-                "command": [
-                    "bin/configure"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -243,9 +245,7 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "transport-options": {
-                "relative": true
-            }
+            "time": "2022-11-09T15:55:11+00:00"
         },
         {
             "name": "eappointment/zmsslim",
