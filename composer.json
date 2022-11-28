@@ -28,16 +28,6 @@
     "container-interop/container-interop": "^1.2",
     "roave/security-advisories": "dev-master"
   },
-  "repositories": [
-    {
-      "type": "path",
-      "url": "../zmsclient"
-    },
-    {
-      "type": "path",
-      "url": "../zmsslim"
-    }
-  ],
   "bin": [],
   "autoload": {
     "psr-4": {
