@@ -155,7 +155,7 @@ class Notification extends Schema\Entity
     public function __toString()
     {
         $string = "notification#";
-        $string .= $this->id;
+        $string .= ($this->hasId()) ? $this->getId() : 0;
         $string .= " recipient:". $this->getRecipient();
         $string .= " identification:". $this->getIdentification();
         $string .= " process:". $this->getProcessId();

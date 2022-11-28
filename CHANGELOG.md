@@ -1,4 +1,12 @@
-## v2.24.10
+## 2.24.12
+
+* #55778 - Personal customer data removal made possible
+
+## 2.24.11
+
+* #55625 - Revising the presentation of services in emails and making adjustments to the spontaneous customer confirmation email
+
+## 2.24.10
 
 * #55114 - new EventLog entity added
 * #55114 - mail templates and mail creation for an appointments overview added
@@ -6,39 +14,39 @@
 * #55456 - a function has been added that compares one provider list with another and only accepts matches
 * #55456 - added a function that sorts a provider list by ID
 
-## v2.24.08
+## 2.24.08
 
 * The php function "strftime()" will be deprecated from php version 8. The "IntlDateFormatter" class has now been used to format dates.
 
-## v2.24.07
+## 2.24.07
 
 * #54479 - Revision of the confirmation email and the spontaneous customer email text
 * #54479 - Link service in the confirmation email for an appointment
 * Add mockup service for http client unit testing
 
-## v2.24.06 - cancelled
+## 2.24.06 - cancelled
 
-## v2.24.05
+## 2.24.05
 
 * #49206 - conflicts for overbooked time slots and out-of-hours get different description
 
-## v2.24.04
+## 2.24.04
 
 * #49206 - Die Slotlist kann bei Bedarf über die Öffnungszeit hinaus erweitert werden wenn ein Paramter gesetzt wird und eine Überbuchung vorhanden ist
 
-## v2.24.00
+## 2.24.00
 
 * #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
 * #44509 - Timezone in ICS Templates für Terminbestätigung und Terminabsagen eingefügt
 
-## v2.23.10
+## 2.23.10
 
 * #44146 Der Text, dass es sich um automatisch generierte Emails handelt befindet sich nun in allen Kunden Mailings vor dem Anrede-Block.
 * #48015 Die Email-Templates zur Absage und Änderungen von Vorgängen für Admins wurden korrigiert.
 * #48018 Das Umfrage-Email-Template hat nun eine verbessertes Anrede-Handling, wenn kein Kundenname angegeben ist
 * #48048 Der Textblock zum Absagen des Termins wurde über den Dienstleistungsblock verschoben
 
-## v2.23.09
+## 2.23.09
 
 * #46920 Eine Liste von Vorgängen kann nun nach dem Namen des Standortes sortiert werden
 * #42066 Wurden für Spontankunden keine Dienstleistungen ausgewählt, wird das in der Bestätigungs-Email nun vermerkt

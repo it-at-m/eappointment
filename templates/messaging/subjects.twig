@@ -1,6 +1,6 @@
 {% block german %}
     {% if status == 'confirmed' or status == 'appointment' %}
-    Terminbestaetigung
+    Terminbestätigung
     {% elseif status == 'reminder' %}
     Terminerinnerung
     {% elseif (status == 'deleted' or status == 'blocked') and not initiator %}
@@ -10,7 +10,7 @@
     {% elseif status == 'updated' and initiator %}
     Information Terminänderung
     {% elseif status == 'queued' %}
-    Wartenummerbestaetigung
+    Wartenummerbestätigung
     {% elseif status == 'pickup' %}
     Ihr Dokument {% if process.requests|first.name %}({{ process.requests|first.name }}) {% endif %}ist fertig und liegt zur Abholung bereit.
     {% elseif status == 'survey' and process.clients|first.surveyAccepted %}

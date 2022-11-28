@@ -155,7 +155,7 @@ class Session extends Schema\Entity
 
     public function isReserved()
     {
-        return ('reserved' == $this->getStatus() || $this->hasChangedProcess()) ? true : false;
+        return ('reserved' == $this->getStatus()) ? true : false;
     }
 
     public function isConfirmed()
@@ -190,7 +190,7 @@ class Session extends Schema\Entity
 
     public function hasChangedProcess()
     {
-        return ('changedProcess' == $this->getStatus()) ? true : false;
+        return ('inChange' == $this->getStatus()) ? true : false;
     }
 
     public function hasPreviousAppointmentSearch()
@@ -264,5 +264,32 @@ class Session extends Schema\Entity
                 !($this->getScope() == $newEntryData['scope'])
             )
          ) ? true : false;
+    }
+
+    public function withOidcDataOnly()
+    {
+        $entity = clone $this;
+        if ($entity->toProperty()->content->basket->isAvailable()) {
+            unset($entity->content['basket']);
+        }
+        if ($entity->toProperty()->content->human->isAvailable()) {
+            unset($entity->content['human']);
+        }
+        if ($entity->toProperty()->content->entry->isAvailable()) {
+            unset($entity->content['entry']);
+        }
+        if ($entity->toProperty()->content->source->isAvailable()) {
+            unset($entity->content['source']);
+        }
+        if ($entity->toProperty()->content->status->isAvailable()) {
+            unset($entity->content['status']);
+        }
+        if ($entity->toProperty()->content['X-Authkey']->isAvailable()) {
+            unset($entity->content['X-Authkey']);
+        }
+        if ($entity->toProperty()->content->error->isAvailable()) {
+            unset($entity->content['error']);
+        }
+        return $entity;
     }
 }

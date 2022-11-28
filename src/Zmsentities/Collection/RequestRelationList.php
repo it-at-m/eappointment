@@ -50,4 +50,19 @@ class RequestRelationList extends Base
         }
         return $providerList->withUniqueProvider();
     }
+
+    public function getFilteredByRequestAndProvider($requestList, $providerList)
+    {
+        $list = new self();
+        foreach ($requestList as $request) {
+            foreach ($this as $item) {
+                if ($request->getId() == $item['request']['id'] &&
+                    $providerList->hasProvider($item['provider']['id'])
+                ) {
+                    $list->addEntity($item);
+                }
+            }
+        }
+        return $list;
+    }
 }

@@ -122,10 +122,19 @@ class NotificationTest extends EntityCommonTests
 
         $resolvedEntity = $entity->toResolvedEntity($process, $config, $department, 'confirmed');
         $this->assertStringContainsString(
+            'Ihr Termin wurde erfolgreich gebucht mit der Nummer:  123',
+            $resolvedEntity['message'],
+            'resolving entity failed'
+        );
+
+        unset($process->scope->preferences);
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, $department, 'confirmed');
+        $this->assertStringContainsString(
             'Ihre Telefonnummer wurde erfolgreich registriert',
             $resolvedEntity['message'],
             'resolving entity failed'
         );
+
     }
 
     public function testToResolvedEntityAppointment()
