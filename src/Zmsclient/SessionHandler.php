@@ -54,12 +54,13 @@ class SessionHandler implements \SessionHandlerInterface
         return true;
     }
 
-    public function read($sessionId)
+    public function read($sessionId, $params = [])
     {
+        $params['sync'] = static::$useSyncFlag;
         try {
             $session = $this->http->readGetResult(
                 '/session/' . $this->sessionName . '/' . $sessionId . '/',
-                ['sync' => static::$useSyncFlag]
+                $params
             )
             ->getEntity();
         } catch (Exception\ApiFailed $exception) {
@@ -71,10 +72,13 @@ class SessionHandler implements \SessionHandlerInterface
                 throw $exception;
             }
         }
+        if (isset($params['oidc']) && 1 == $params['oidc'] && $session) {
+            $session = $session->withOidcDataOnly();
+        }
         return ($session && array_key_exists('content', $session)) ? serialize($session->getContent()) : '';
     }
 
-    public function write($sessionId, $sessionData)
+    public function write($sessionId, $sessionData, $params = [])
     {
         $entity = new \BO\Zmsentities\Session();
         $entity->id = $sessionId;
@@ -82,7 +86,7 @@ class SessionHandler implements \SessionHandlerInterface
         $entity->content = unserialize($sessionData);
 
         try {
-            $session = $this->http->readPostResult('/session/', $entity)
+            $session = $this->http->readPostResult('/session/', $entity, $params)
                 ->getEntity();
         } catch (Exception $exception) {
             if ($exception->getCode() == 404) {
