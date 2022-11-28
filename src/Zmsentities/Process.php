@@ -402,10 +402,9 @@ class Process extends Schema\Entity
     {
         $entity = clone $this;
         if ($this->toProperty()->clients->isAvailable()) {
-            unset($entity['clients']);
-        }
-        if ($this->toProperty()->appointments->isAvailable()) {
-            unset($entity['appointments']);
+            $client = $entity->getFirstClient();
+            unset($client['familyName']);
+            unset($client['email']);
         }
         return $entity;
     }

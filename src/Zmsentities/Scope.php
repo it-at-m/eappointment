@@ -31,7 +31,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
             $this->provider = new Provider($this->toProperty()->provider->get());
         }
         if (!isset($this->provider['id']) || !$this->provider->id) {
-            $exception = new Exception\ScopeMissingProvider("No reference to a provider found for scope");
+            $exception = new Exception\ScopeMissingProvider("No reference to a provider found for scope $this->id");
             $exception->data['scope'] = $this->getArrayCopy();
             throw $exception;
         }
@@ -188,6 +188,12 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     {
         $notificationEnabled = $this->getPreference('appointment', 'notificationConfirmationEnabled');
         return ($notificationEnabled) ? true : false;
+    }
+
+    public function hasNotificationReminderEnabled()
+    {
+        $hasReminderEnabled = $this->getPreference('appointment', 'notificationHeadsUpEnabled');
+        return ($hasReminderEnabled) ? true : false;
     }
 
     public function isEmailRequired()

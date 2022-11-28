@@ -61,18 +61,18 @@ class MailTest extends EntityCommonTests
         $this->assertFalse($entity->hasIcs(), 'Mimepart with mime text/calendar should not exist');
         $resolvedEntity = $entity->toResolvedEntity($process, $config, 'appointment');
         $this->assertStringContainsString(
-            'Sehr geehrte/r Frau',
+            'Guten Tag',
             $resolvedEntity->getHtmlPart(),
             'Mimepart content is not html'
         );
         $this->assertStringContainsString(
-            'Ihre Vorgangsnummer ist die **"123456"**',
+            '**Vorgangsnummer:** 123456',
             $resolvedEntity->getPlainPart(),
             'Mimepart content is not plain text'
         );
         $this->assertStringContainsString('BEGIN:VCALENDAR', $resolvedEntity->getIcsPart(), 'Mimepart content is not plain text');
         // test if appointment date formatted correct
-        $this->assertStringContainsString('Mittwoch\, 18. November', $resolvedEntity->getIcsPart());
+        $this->assertStringContainsString('18. November 2015 um 18:52', $resolvedEntity->getIcsPart());
         $this->assertStringContainsString('DTSTART;TZID=Europe/Berlin:20151118T185251', $resolvedEntity->getIcsPart());
     }
 
@@ -87,7 +87,7 @@ class MailTest extends EntityCommonTests
         $resolvedEntity = $entity->toResolvedEntity($process, $config, 'appointment');
 
         $this->assertStringContainsString('Achtung! Dies ist eine automatisch erstellte E-Mail', $resolvedEntity->getIcsPart(), 'ICS content is not valid');
-        $this->assertStringContainsString('Sehr geehrte/r', $resolvedEntity->getIcsPart(), 'ICS content is not valid');
+        $this->assertStringContainsString('Guten Tag', $resolvedEntity->getIcsPart(), 'ICS content is not valid');
         // test if appointment date formatted correct
     }
 
@@ -99,7 +99,7 @@ class MailTest extends EntityCommonTests
         $config = (new \BO\Zmsentities\Config())->getExample();
         $entity->addMultiPart(array());
         $resolvedEntity = $entity->toResolvedEntity($process, $config, 'appointment');
-        $this->assertStringContainsString('Sehr geehrte/r Frau', $resolvedEntity->getHtmlPart());
+        $this->assertStringContainsString('Guten Tag', $resolvedEntity->getHtmlPart());
         $this->assertStringNotContainsString('Erforderliche Unterlagen', $resolvedEntity->getHtmlPart());
         $this->assertStringContainsString('BEGIN:VCALENDAR', $resolvedEntity->getIcsPart());
     }
@@ -330,7 +330,7 @@ class MailTest extends EntityCommonTests
         $entity->addMultiPart(array());
         $entity->client = null;
         $resolvedEntity = $entity->toResolvedEntity($process, $config, 'survey');
-        $this->assertStringContainsString('Sehr geehrte/r Herr/Frau Max Mustermann', $resolvedEntity->getPlainPart());
+        $this->assertStringContainsString('Guten Tag Max Mustermann', $resolvedEntity->getPlainPart());
         $processSurvey = clone $process;
         $processSurvey->getFirstClient()->familyName = null;
         $resolvedEntity = $entity->toResolvedEntity($processSurvey, $config, 'survey');
@@ -342,7 +342,7 @@ class MailTest extends EntityCommonTests
             $entity->addMultiPart(array());
             $entity->client = null;
             $resolvedEntity = $entity->toResolvedEntity($process, $config, $status);
-            $this->assertStringContainsString('Sehr geehrte/r', $resolvedEntity->getPlainPart());
+            $this->assertStringContainsString('Guten Tag', $resolvedEntity->getPlainPart());
             $this->assertStringContainsString(
                 'Achtung! Dies ist eine automatisch erstellte E-Mail.',
                 $resolvedEntity->getPlainPart()
