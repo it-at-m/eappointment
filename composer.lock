@@ -138,25 +138,11 @@
         },
         {
             "name": "eappointment/zmsclient",
-<<<<<<< HEAD
             "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
-                "reference": "c71c51c2ed9ee5246d9678e88caae97b455a869c"
-=======
-            "version": "2.24.12",
-            "source": {
-                "type": "git",
-                "url": "git@gitlab.com:eappointment/zmsclient.git",
-                "reference": "0fec386e6e1b1c9da5e69195dc746f31d6734cec"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=0fec386e6e1b1c9da5e69195dc746f31d6734cec",
-                "reference": "0fec386e6e1b1c9da5e69195dc746f31d6734cec",
-                "shasum": ""
->>>>>>> main
+                "reference": "3eaf9b57b25bb31bf6714fe690197fc1c8718fe3"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -201,7 +187,6 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-<<<<<<< HEAD
             "transport-options": {
                 "relative": true
             }
@@ -212,24 +197,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "3809a551054b401fe1f964adeb645b9221a74629"
-=======
-            "time": "2022-11-15T11:22:33+00:00"
-        },
-        {
-            "name": "eappointment/zmsentities",
-            "version": "2.24.12",
-            "source": {
-                "type": "git",
-                "url": "git@gitlab.com:eappointment/zmsentities.git",
-                "reference": "0f9c1247bb1b948978a51130275a3e849d59fd55"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=0f9c1247bb1b948978a51130275a3e849d59fd55",
-                "reference": "0f9c1247bb1b948978a51130275a3e849d59fd55",
-                "shasum": ""
->>>>>>> main
+                "reference": "fbb1050984b6ab9d824fb3fe58d78d4392c2cc47"
             },
             "require": {
                 "eappointment/mellon": "^2.0.1",
@@ -275,7 +243,6 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-<<<<<<< HEAD
             "transport-options": {
                 "relative": true
             }
@@ -286,18 +253,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "d8b0347b47a946c10c24dd4bc5cf447f4cdf1d97"
-=======
-            "time": "2022-11-09T15:55:11+00:00"
-        },
-        {
-            "name": "eappointment/zmsslim",
-            "version": "2.24.12",
-            "source": {
-                "type": "git",
-                "url": "https://gitlab+deploy-token-1182224:zbGL4n64xnbXxMknYVwj@gitlab.com/eappointment/zmsslim.git",
-                "reference": "d320ce288e33c860469018ceba275f4481284383"
->>>>>>> main
+                "reference": "2d984b70a645b3e4d72077cc852848240d0fe5a8"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -341,13 +297,9 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-<<<<<<< HEAD
             "transport-options": {
                 "relative": true
             }
-=======
-            "time": "2022-11-15T12:27:09+00:00"
->>>>>>> main
         },
         {
             "name": "fig/http-message-util",
@@ -464,16 +416,16 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "8.13.0",
+            "version": "8.13.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "eb1cea72dc8d020e149062371a2c6717457cf561"
+                "reference": "58285eaba7cb388f57b5b1b3689a566694b4e043"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/eb1cea72dc8d020e149062371a2c6717457cf561",
-                "reference": "eb1cea72dc8d020e149062371a2c6717457cf561",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/58285eaba7cb388f57b5b1b3689a566694b4e043",
+                "reference": "58285eaba7cb388f57b5b1b3689a566694b4e043",
                 "shasum": ""
             },
             "require": {
@@ -532,7 +484,7 @@
                 "issues": "https://github.com/giggsey/libphonenumber-for-php/issues",
                 "source": "https://github.com/giggsey/libphonenumber-for-php"
             },
-            "time": "2022-11-07T12:16:34+00:00"
+            "time": "2022-11-28T12:02:06+00:00"
         },
         {
             "name": "giggsey/locale",
@@ -1834,12 +1786,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "a1e30f9773206c2740bdb26d564857fe8ee897ae"
+                "reference": "6f53c627e2f44ac1bd2fbaf2a068e682f40968b5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/a1e30f9773206c2740bdb26d564857fe8ee897ae",
-                "reference": "a1e30f9773206c2740bdb26d564857fe8ee897ae",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/6f53c627e2f44ac1bd2fbaf2a068e682f40968b5",
+                "reference": "6f53c627e2f44ac1bd2fbaf2a068e682f40968b5",
                 "shasum": ""
             },
             "conflict": {
@@ -2071,7 +2023,7 @@
                 "modx/revolution": "<= 2.8.3-pl|<2.8",
                 "mojo42/jirafeau": "<4.4",
                 "monolog/monolog": ">=1.8,<1.12",
-                "moodle/moodle": "<4.0.1",
+                "moodle/moodle": "<4.0.5",
                 "mustache/mustache": ">=2,<2.14.1",
                 "namshi/jose": "<2.2",
                 "neoan3-apps/template": "<1.1.1",
@@ -2128,6 +2080,7 @@
                 "phpunit/phpunit": ">=4.8.19,<4.8.28|>=5,<5.6.3",
                 "phpwhois/phpwhois": "<=4.2.5",
                 "phpxmlrpc/extras": "<0.6.1",
+                "phpxmlrpc/phpxmlrpc": "<4.9",
                 "pimcore/data-hub": "<1.2.4",
                 "pimcore/pimcore": "<10.5.9",
                 "pocketmine/bedrock-protocol": "<8.0.2",
@@ -2366,7 +2319,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-11-22T19:04:21+00:00"
+            "time": "2022-11-28T12:05:40+00:00"
         },
         {
             "name": "slim/http-cache",
@@ -6583,5 +6536,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.1.0"
 }
