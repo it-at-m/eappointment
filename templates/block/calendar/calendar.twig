@@ -64,10 +64,13 @@
                     
                     <td>
                         <div data-date="{{ dayString }}" title="{{ dayString|localizeddate("short","none",NULL,NULL,"EE dd. MMMM y") }} - {{ freeAppointmentsTitle }}" class="calendar__tile {% if isToday %}today small {% endif %}{{ class }}{{ holidayDate }}{{ setSelectedDate }}{{ sundayDate }}">
+                            
+                            <label class="aural" id="calendar_day-{{ item.day }}-help">{{ dayString|localizeddate("short","none",NULL,NULL,"EE dd. MMMM y") }} - {{ freeAppointmentsTitle }}</label>
+
                             {% if ((dow == 6 and item.status != "bookable") or item.status == "restricted" or dayString|date("U") <= getNow()|date("U")) and not isToday %}
-                                <span class="day">{{ item.day }}</span>
+                                <span class="day" aria-describedby="calendar_day-{{ item.day }}-help">{{ item.day }}</span>
                             {% else %}
-                                <a class="day" href="#" data-date="{{dayString}}" title="{{ dayString|localizeddate("short","none",NULL,NULL,"EE dd. MMMM y") }} - {{ freeAppointmentsTitle }}">{{ item.day }}</a>
+                                <a class="day" href="#" data-date="{{dayString}}" title="{{ dayString|localizeddate("short","none",NULL,NULL,"EE dd. MMMM y") }} - {{ freeAppointmentsTitle }}" aria-describedby="calendar_day-{{ item.day }}-help">{{ item.day }}</a>
                             {% endif %}
                         </div>
                     </td>

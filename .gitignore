@@ -17,4 +17,8 @@ package-lock.json
 .cache
 .phpunit.*
 keycloak.json
+<<<<<<< HEAD
 gitlab.json
+=======
+gitlab.json
+>>>>>>> main

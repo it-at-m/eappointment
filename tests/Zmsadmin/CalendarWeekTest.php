@@ -60,7 +60,10 @@ class CalendarWeekTest extends Base
             'Standort: Bürgeramt Heerstraße, 13. Kalenderwoche',
             (string)$response->getBody()
         );
-        $this->assertStringContainsString('<span class="pid">184432</span>', (string)$response->getBody());
+        $this->assertStringContainsString(
+            '<span class="pid" title="Vorgangsnummer">184432</span>', 
+            (string)$response->getBody()
+        );
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -111,7 +114,10 @@ class CalendarWeekTest extends Base
             'Standort: Bürgeramt Heerstraße, 13. Kalenderwoche',
             (string)$response->getBody()
         );
-        $this->assertStringContainsString('<span class="pid">184432</span>', (string)$response->getBody());
+        $this->assertStringContainsString(
+            '<span class="pid" title="Vorgangsnummer">184432</span>', 
+            (string)$response->getBody()
+        );
         $this->assertEquals(200, $response->getStatusCode());
     }
 

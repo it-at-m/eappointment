@@ -19,10 +19,9 @@
     "phpspec/prophecy-phpunit": "^2.0.0"
   },
   "require": {
-    "eappointment/mellon": "^2.6.0",
-    "eappointment/zmsentities": "dev-main || ^2.0",
-    "eappointment/zmsslim": "dev-main || ^2.0",
     "eappointment/zmsclient": "dev-main || ^2.0",
+    "eappointment/zmsslim": "dev-main || ^2.0",
+    "eappointment/zmsentities": "dev-main || ^2.0",
     "monolog/monolog": "1.*",
     "league/csv": "^9.0",
     "psr/http-message": "^1.0",
@@ -31,8 +30,16 @@
   },
   "repositories": [
     {
-      "type": "vcs",
-      "url": "https://gitlab+deploy-token-1182224:zbGL4n64xnbXxMknYVwj@gitlab.com/eappointment/zmsslim.git"
+      "type": "path",
+      "url": "../zmsclient"
+    },
+    {
+      "type": "path",
+      "url": "../zmsslim"
+    },
+    {
+      "type": "path",
+      "url": "../zmsentities"
     }
   ],
   "bin": [],

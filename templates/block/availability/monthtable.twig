@@ -68,7 +68,7 @@
                         {% endif %}
                         <td>
                         <div class="calendar__tile {{ bookableState }}{% if dayoffList.hasEntityByDate(day.toDateTime()) %} mark mark--dayoff{% endif %}{% if isToday %} today{% endif %}">
-                            <a class="month-item" href="{{ urlGet('scopeAvailabilityDay', {'id': scope.id, 'date': dayString}, {}) }}" {% if myDataArray.holiday == true %} title="Ein Feiertag"{% endif %} aria-label="{{ ('Zur Detailansicht')|trans }}">
+                            <a class="month-item" href="{{ urlGet('scopeAvailabilityDay', {'id': scope.id, 'date': dayString}, {}) }}" title="{% if myDataArray.holiday %}{{ ('Ein Feiertag')|trans }}{% else %}{{ ('Zur Detailansicht')|trans }}{% endif %}">
                                 <span class="day">
                                     {{ day.day }}
                                 </span>
@@ -91,8 +91,8 @@
                                     {% endif %}
                                 </div>
                                 <div class="row icons palm-hide">
-                                    {% if day.freeAppointments.public > 0 %}<i class="fas fa-globe" role="img" aria-label="Buchbar per Internet" title="Buchbar per Internet"></i>{% endif %}
-                                    {% if day.freeAppointments.callcenter > 0 %}<i class="fas fa-phone" role="img" aria-label="Buchbar per Callcenter" title="Buchbar per Callcenter"></i>{% endif %}
+                                    {% if day.freeAppointments.public > 0 %}<i class="fas fa-globe" role="img"  title="Buchbar per Internet"></i>{% endif %}
+                                    {% if day.freeAppointments.callcenter > 0 %}<i class="fas fa-phone" role="img"  title="Buchbar per Callcenter"></i>{% endif %}
                                 </div>
                                 <div class="row holiday palm-hide">{% if dayoffList.hasEntityByDate(day.toDateTime()) %}
                                     {{ dayoffList.getByDate(day.toDateTime()).name }}
@@ -119,30 +119,7 @@
 
 {% endembed %}
 
-
-        {% from 'element/helper/snippets.twig' import openingCalendarIcon %}
-
-        <section class="block calendar-legend" aria-hidden="true">
-            <h2 class="block__heading">Legende</h2>
-            <ul class="list--clean">
-                <li><span class="day square today">1</span> Heute</li>
-                <li><span class="day square closed">1</span> Geschlossen</li>
-            </ul>
-            <ul class="list--clean">
-                <li><span class="day rectangle mark">1</span> Freie Termine</li>
-                <li><span class="day rectangle mark mark--destructive">1</span> Keine freien Termine</li>
-                <li><span class="day rectangle mark mark--dayoff">1</span> Freier Tag</li>
-            </ul>
-            <ul class="list--clean">
-                <li>{{ openingCalendarIcon('K','red', 1, 'Konflikt') }} Konflikt</li>
-                <li>{{ openingCalendarIcon('S','green', 1, 'Offen für Spontankunden') }} Offen für Spontankunden</li>
-                <li>{{ openingCalendarIcon('T','blue', 1, 'Offen für Terminkunden') }} Offen für Terminkunden</li>
-            </ul>
-            <ul class="list--clean">
-                <li><i class="fas fa-globe" aria-hidden="true"></i> Buchbar per Internet</li>
-                <li><i class="fas fa-phone" aria-hidden="true"></i> Buchbar per Callcenter</li>
-            </ul>
-        </section>
+    {% include "block/calendar/legend.twig" %}
 
 
     {% set monthSecondsIntern = 0 %}

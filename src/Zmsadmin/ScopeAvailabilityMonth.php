@@ -35,16 +35,18 @@ class ScopeAvailabilityMonth extends BaseController
             'resolveReferences' => 1,
             'gql' => Helper\GraphDefaults::getWorkstation()
         ])->getEntity();
+        
         $dateTime = (isset($args['date'])) ? new \BO\Zmsentities\Helper\DateTime($args['date']) : \App::$now;
         $startDate = $dateTime->modify('first day of this month');
         $endDate = $dateTime->modify('last day of this month');
 
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
         $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/', [
-            'resolveReferences' => 1,
-            'gql' => Helper\GraphDefaults::getScope()
+            'resolveReferences' => 1
         ])->getEntity();
-        $calendar = $this->getCalendar($scope, $startDate, $endDate);
+        $calendar = new Helper\Calendar($dateTime->format('Y-m-d'));
+        $scopeList = (new \BO\Zmsentities\Collection\ScopeList)->addEntity($scope);
+        $month = $calendar->readMonthListByScopeList($scopeList, 'intern', 0)->getFirst();
 
         $availabilityList = $this->getAvailabilityList($scope, $startDate, $endDate);
         $processConflictList = \App::$http
@@ -67,7 +69,7 @@ class ScopeAvailabilityMonth extends BaseController
                 'dayoffList' => $scope->getDayoffList(),
                 'dateTime' => $dateTime,
                 'timestamp' => $dateTime->getTimeStamp(),
-                'month' => $calendar->getMonthList()->getFirst(),
+                'month' => $month,
                 'scope' => $scope,
                 'menuActive' => 'owner',
                 'title' => 'Behörden und Standorte - Öffnungszeiten',
@@ -98,21 +100,5 @@ class ScopeAvailabilityMonth extends BaseController
             $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
         }
         return $availabilityList;
-    }
-
-    protected function getCalendar($scope, $startDate, $endDate)
-    {
-        $calendar = new Calendar();
-        $calendar->firstDay->setDateTime($startDate);
-        $calendar->lastDay->setDateTime($endDate);
-        $calendar->scopes[] = $scope;
-        try {
-            $calendar = \App::$http->readPostResult('/calendar/', $calendar, ['fillWithEmptyDays' => 1])->getEntity();
-        } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template != 'BO\Zmsapi\Exception\Calendar\AppointmentsMissed') {
-                throw $exception;
-            }
-        }
-        return $calendar;
     }
 }

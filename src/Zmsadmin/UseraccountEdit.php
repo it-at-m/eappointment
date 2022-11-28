@@ -11,6 +11,7 @@ namespace BO\Zmsadmin;
 use BO\Zmsentities\Schema\Loader;
 use BO\Zmsentities\Useraccount as Entity;
 use BO\Mellon\Validator;
+use BO\Zmsclient\Auth;
 
 class UseraccountEdit extends BaseController
 {
@@ -42,6 +43,9 @@ class UseraccountEdit extends BaseController
             }
         }
 
+        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+        $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider'));
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/useraccountEdit.twig',
@@ -54,6 +58,8 @@ class UseraccountEdit extends BaseController
                 'title' => 'Nutzer: Einrichtung und Administration','menuActive' => 'useraccount',
                 'exception' => (isset($result)) ? $result : null,
                 'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
+                'oidcProviderList' => array_filter($allowedProviderList),
+                'isFromOidc' => in_array($userAccount->getOidcProviderFromName(), $allowedProviderList)
             ]
         );
     }

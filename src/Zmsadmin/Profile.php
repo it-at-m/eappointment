@@ -23,6 +23,7 @@ class Profile extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $confirmSuccess = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
+        $error = $request->getAttribute('validator')->getParameter('error')->isString()->getValue();
         $entity = new Entity($workstation->useraccount);
 
         if ($request->isPost()) {
@@ -34,7 +35,8 @@ class Profile extends BaseController
                 ]);
             }
         }
-
+        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+        $allowedProviderList = array_filter(explode(',', $config->getPreference('oidc', 'provider')));
         return \BO\Slim\Render::withHtml(
             $response,
             'page/profile.twig',
@@ -44,8 +46,13 @@ class Profile extends BaseController
                 'workstation' => $workstation,
                 'useraccount' => $entity->getArrayCopy(),
                 'success' => $confirmSuccess,
+                'error' => $error,
                 'exception' => (isset($result)) ? $result : null,
-                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema))
+                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
+                'isFromOidc' => (
+                    count($allowedProviderList) &&
+                    in_array($entity->getOidcProviderFromName(), $allowedProviderList)
+                )
             )
         );
     }

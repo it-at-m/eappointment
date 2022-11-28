@@ -10,6 +10,9 @@ const preventFormResubmit = (element) => {
         }
 
         $form.attr('data-submitting', true)
+        setTimeout(() => {
+            $form.off('submit').attr('data-submitting', false)
+        }, 3000)
     })
 }
 

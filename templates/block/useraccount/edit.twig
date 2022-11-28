@@ -5,6 +5,17 @@
 {% if action == "add" %}
 {% set readonly = 0 %}
 {% endif %}
+
+{% if isFromOidc %}
+<div class="message message--info">
+    {{ ("Dieser Nutzer wurde über einen OpenID Connect Anbieter angelegt. Nutzername, E-Mail und Passwörter sind hier nicht änderbar.")|trans }}
+</div>
+{% endif %}
+
+{% set providerOptions = [{"name": "Nein, lokale Anmeldung bevorzugen", "value": ""}] %}
+{% for oidcProvider in oidcProviderList %}
+    {% set providerOptions = providerOptions|merge([{ "value": oidcProvider, "name": "Ja, " ~ oidcProvider ~ " als Provider nutzen"}]) %}
+{% endfor %}
 <form action="./" method="post" class="form--base">
     <div class="fieldset">
         <div class="panel--heavy">
@@ -13,10 +24,33 @@
             {% set passwordRequired = true %}
         {% endif %}
 
+        {% if action == "add" and 0 < oidcProviderList|length %}
+        <div class="fieldset">
+            <div class="panel--light">
+                {{ formgroup(
+                    {
+                        "label": "Login nur über OIDC",
+                        "description": "Alle wesentlichen Zugangsdaten werden ausschließlich beim OIDC Provider verwaltet",
+                    },
+                    [{
+                        "type":"select",
+                        "parameter": {
+                            "label": "",
+                            "accesskey":"o",
+                            "name": "oidcProvider",
+                            "id": "useOidcProvider",
+                            "options": providerOptions,
+                        }
+                    }]
+                ) }}
+            </div>
+        </div>
+        {% endif %}
+
         {{ formgroup(
             {
                 "label": "Nutzername:",
-                "description": not readonly ? metadata.id.description : "",
+                "description": metadata.id.description,
                 "required": true,
                 "errors": exception.data.id.messages
             },
@@ -26,7 +60,7 @@
                     "name": "id",
                     "value": userAccount.id,
                     "maxlength": 40,
-                    "readonly": readonly
+                    "readonly": (readonly and isFromOidc)
                 }
             }]
         ) }}
@@ -42,11 +76,13 @@
                 "parameter": {
                     "name": "email",
                     "value": userAccount.email,
-                    "maxlength": 100
+                    "maxlength": 100,
+                    "readonly": isFromOidc ? 1 : 0
                 }
             }]
         ) }}
 
+        {% if not isFromOidc %}
         {% set passwordDescription = metadata.password.description + metadata.changePassword.description %}
         {{ formgroup(
             {
@@ -81,6 +117,7 @@
                 }
             }]
         ) }}
+        {% endif %}
 
         {% if not selectedDepartment %}
             {% set departmentOptionsGroup = [] %}

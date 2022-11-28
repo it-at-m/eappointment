@@ -7,7 +7,7 @@
 {% endblock %}
 {% block errors %}
 	{% if block(error) is defined %}
-		{% trans %}Fehler{% endtrans %}: {{ block(error) }}
+		{{ block(error) }}
 	{% endif %}
 {% endblock %}
 {% block notices %}
