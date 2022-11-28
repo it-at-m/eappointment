@@ -29,7 +29,17 @@ class ProcessMailReminderTest extends Base
         );
     }
 
-    public function testCronHelper()
+    public function testCronHelperTwoDays()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 07:40");
+        $helper = new \BO\Zmsdb\Helper\SendMailReminder($now, 48, false);
+        $helper->setLimit(10);
+        $helper->setLoopCount(5);
+        $helper->startProcessing(true);
+        $this->assertEquals(10, $helper->getCount());
+    }
+
+    public function testCronHelperTwoHours()
     {
         $now = new \DateTimeImmutable("2016-04-01 13:40");
         $helper = new \BO\Zmsdb\Helper\SendMailReminder($now, 2, false);

@@ -3242,6 +3242,13 @@
           }
         },
         {
+          "service": "1120703",
+          "appointment": {
+            "slots": "2",
+            "allowed": true
+          }
+        },
+        {
           "service": "120656",
           "appointment": {
             "slots": "0",
@@ -3307,7 +3314,7 @@
         {
           "service": "120703",
           "appointment": {
-            "slots": "0",
+            "slots": "1",
             "allowed": true
           }
         },
