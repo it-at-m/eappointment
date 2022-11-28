@@ -85,7 +85,6 @@ class BAllTest extends Base
                 $day->freeAppointments->public = intval($day->freeAppointments->public);
                 $day->freeAppointments->callcenter = intval($day->freeAppointments->callcenter);
                 $day->freeAppointments = $day->freeAppointments->getArrayCopy();
-                $day->allAppointments = $day->allAppointments->getArrayCopy();
                 $testExport[$key] = $day->getArrayCopy();
             }
             $export .= var_export($testExport, true);
