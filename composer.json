@@ -19,9 +19,9 @@
     "phpspec/prophecy-phpunit": "^2.0.0"
   },
   "require": {
-    "eappointment/zmsclient": "dev-main || ^2.0",
-    "eappointment/zmsslim": "dev-main || ^2.0",
-    "eappointment/zmsentities": "dev-main || ^2.0",
+    "eappointment/zmsclient": "dev-muc/dev",
+    "eappointment/zmsslim": "dev-muc/dev",
+    "eappointment/zmsentities": "dev-muc/dev",
     "monolog/monolog": "1.*",
     "league/csv": "^9.0",
     "psr/http-message": "^1.0",
