@@ -17,11 +17,11 @@
     "helmich/phpunit-psr7-assert": "^4.3.0"
   },
   "require": {
-    "eappointment/zmsslim": "dev-main || ^2.0",
-    "eappointment/zmsclient": "dev-main || ^2.0",
+    "eappointment/zmsslim": "dev-muc/dev",
+    "eappointment/zmsclient": "dev-muc/dev",
     "eappointment/zmsdldb": "dev-main || ^2.0",
-    "eappointment/zmsdb": "dev-main || ^2.0",
-    "eappointment/zmsentities": "dev-main || ^2.0",
+    "eappointment/zmsdb": "dev-muc/dev",
+    "eappointment/zmsentities": "dev-muc/dev",
     "monolog/monolog": "1.*",
     "ulrichsg/getopt-php": "^2.3",
     "league/climate": "^3.2",
