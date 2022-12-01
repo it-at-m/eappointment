@@ -27,7 +27,7 @@ class ApikeyUpdateTest extends Base
         $entity = (new Query())->writeEntity($input);
 
         $response = $this->render([], [
-            '__body' => $entity
+            '__body' => (string) $entity
         ], []);
         $this->assertStringContainsString('apikey.json', (string)$response->getBody());
         $this->assertStringContainsString('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs', (string)$response->getBody());
