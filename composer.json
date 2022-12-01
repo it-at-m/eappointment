@@ -17,11 +17,11 @@
     "helmich/phpunit-psr7-assert": "^4.3.0"
   },
   "require": {
-    "eappointment/zmsslim": "dev-main || ^2.0",
-    "eappointment/zmsclient": "dev-main || ^2.0",
+    "eappointment/zmsslim": "dev-ticket55431-slim-update#50b791fa",
+    "eappointment/zmsclient": "dev-ticket55431-slim-update",
     "eappointment/zmsdldb": "dev-main || ^2.0",
-    "eappointment/zmsdb": "dev-main || ^2.0",
-    "eappointment/zmsentities": "dev-main || ^2.0",
+    "eappointment/zmsdb": "dev-ticket55431-slim-update",
+    "eappointment/zmsentities": "dev-ticket55431-slim-update",
     "monolog/monolog": "1.*",
     "ulrichsg/getopt-php": "^2.3",
     "league/climate": "^3.2",
@@ -51,5 +51,15 @@
       "BO\\Zmsapi\\": "src/Zmsapi/",
       "BO\\Zmsapi\\Tests\\": "tests/Zmsapi/"
     }
-  }
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../zmsdb"
+    },
+    {
+      "type": "path",
+      "url": "../zmsentities"
+    }
+  ]
 }
