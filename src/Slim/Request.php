@@ -74,7 +74,7 @@ class Request extends \Slim\Psr7\Request
     }
 
     /**
-     * @deprecated
+     * @deprecated (use SlimApp::getBasePath() or resolve a named route instead)
      * @return string
      */
     public function getBasePath(): string
