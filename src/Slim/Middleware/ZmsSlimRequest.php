@@ -21,7 +21,7 @@ class ZmsSlimRequest
      */
     public function __invoke(Request $request, RequestHandlerInterface $next): ResponseInterface
     {
-        $zmsSlimRequest = $request;
+        $decoratedRequest = $request;
 
         if (!$request instanceof \BO\Slim\Request) {
             $zmsSlimRequest = new \BO\Slim\Request(
@@ -33,8 +33,25 @@ class ZmsSlimRequest
                 $request->getBody(),
                 $request->getUploadedFiles()
             );
+
+            $decoratedRequest = $this->addAttributes(
+                $zmsSlimRequest->withParsedBody($request->getParsedBody()),
+                $request->getAttributes()
+            );
         }
 
-        return $next->handle($zmsSlimRequest);
+        return $next->handle($decoratedRequest);
+    }
+
+    protected function addAttributes(Request $request, array $attributes): Request
+    {
+        if (count($attributes) === 0) {
+            return $request;
+        }
+
+        return $this->addAttributes(
+            $request->withAttribute(array_key_first($attributes), array_shift($attributes)),
+            $attributes
+        );
     }
 }
