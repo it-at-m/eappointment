@@ -27,8 +27,7 @@ class Language
         $this->setCurrentLocale();
         $defaultLang = $this->getDefault();
 
-        if (
-            \App::MULTILANGUAGE
+        if (\App::MULTILANGUAGE
             || (strlen($fallbackLocale) > 0 && strlen($this->currentLocale) > 0 && strlen($defaultLang) > 0)
         ) {
             if (null === self::$translatorInstance) {
