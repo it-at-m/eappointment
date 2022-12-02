@@ -43,7 +43,7 @@ class ZmsSlimRequest
         return $next->handle($decoratedRequest);
     }
 
-    protected function addAttributes(Request $request, array $attributes): Request
+    protected function addAttributes(\BO\Slim\Request $request, array $attributes): \BO\Slim\Request
     {
         if (count($attributes) === 0) {
             return $request;

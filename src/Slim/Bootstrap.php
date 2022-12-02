@@ -90,6 +90,7 @@ class Bootstrap
             new ResponseFactory(),
             $container
         );
+        App::$slim->determineBasePath();
 
         $container->set('router', App::$slim->getRouteCollector());
 
@@ -97,7 +98,6 @@ class Bootstrap
         App::$slim->add(new \Slim\HttpCache\Cache('public', 300));
         App::$slim->add(new Middleware\Validator());
         App::$slim->addRoutingMiddleware();
-        App::$slim->add(new Middleware\SubPath());
         App::$slim->add(new Middleware\Profiler());
         App::$slim->add(new Middleware\IpAddress(true, true));
         App::$slim->add('BO\Slim\Middleware\Route:getInfo');
@@ -106,7 +106,6 @@ class Bootstrap
         $errorMiddleware = App::$slim->addErrorMiddleware(App::DEBUG, App::LOG_ERRORS, App::LOG_DETAILS, App::$log);
         $container->set('errorHandler', $errorMiddleware->getDefaultErrorHandler());
 
-//        self::addTwigExtension(new \Slim\Views\TwigExtension());
         self::addTwigExtension(new TwigExtensionsAndFilter(
             $container
         ));
