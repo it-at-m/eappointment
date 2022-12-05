@@ -8,13 +8,19 @@
             "email": "mathias.fischer@berlinonline.de"
         }
     ],
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://gitlab.com/eappointment/zmsentities.git"
+        }
+    ],
     "require": {
         "php": ">=7.3.0",
         "ext-mbstring": ">=0",
         "ext-json": ">=1.0",
         "ext-pcre": ">=0",
         "eappointment/zmsdldb": "dev-main || ^2.0",
-        "eappointment/zmsentities": "dev-main || ^2.0",
+        "eappointment/zmsentities": "dev-muc/dev",
         "eappointment/mellon": "^2.6.0",
         "aura/sql": "^2.4",
         "roave/security-advisories": "dev-master",
