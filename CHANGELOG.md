@@ -1,3 +1,6 @@
+## 2.24.13
+* #56079 - Revert changes for required slot calculation
+
 ## 2.24.12
 * #55778 - Updating a process without the possibility to change the appointment time and location
 * #55778 - Revision of the assignment of appointment data and follow-up appointments 
