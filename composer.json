@@ -8,6 +8,24 @@
       "email": "mathias.fischer@berlinonline.de"
     }
   ],
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://gitlab.com/eappointment/zmsclient.git"
+    },
+    {
+      "type": "git",
+      "url": "https://gitlab.com/eappointment/zmsslim.git"
+    },
+    {
+      "type": "git",
+      "url": "https://gitlab.com/eappointment/zmsdb.git"
+    },
+    {
+      "type": "git",
+      "url": "https://gitlab.com/eappointment/zmsentities.git"
+    }
+  ],
   "require-dev": {
     "aronduby/dump": "*",
     "phpmd/phpmd": "@stable",
@@ -17,11 +35,11 @@
     "helmich/phpunit-psr7-assert": "^4.3.0"
   },
   "require": {
-    "eappointment/zmsslim": "dev-main || ^2.0",
-    "eappointment/zmsclient": "dev-main || ^2.0",
+    "eappointment/zmsslim": "dev-muc/dev",
+    "eappointment/zmsclient": "dev-muc/dev",
     "eappointment/zmsdldb": "dev-main || ^2.0",
-    "eappointment/zmsdb": "dev-main || ^2.0",
-    "eappointment/zmsentities": "dev-main || ^2.0",
+    "eappointment/zmsdb": "dev-muc/dev",
+    "eappointment/zmsentities": "dev-muc/dev",
     "monolog/monolog": "1.*",
     "ulrichsg/getopt-php": "^2.3",
     "league/climate": "^3.2",
@@ -31,18 +49,18 @@
     "clean": "rm -f public/doc/assets/*.* && rm -f public/_test/assets/*.*",
     "command": "bin/configure",
     "wget-files": [
-        "wget https://eappointment.gitlab.io/zmsapi/doc/swagger.json -O public/doc/swagger.json",
-        "wget https://eappointment.gitlab.io/zmsapi/doc/assets/redoc.min.js -O public/doc/assets/redoc.min.js",
-        "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui-bundle.js -O public/_test/assets/swagger-ui-bundle.js",
-        "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui.css -O public/_test/assets/swagger-ui.css",
-        "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui-standalone-preset.js -O public/_test/assets/swagger-ui-standalone-preset.js",
-        "sha256sum --status -c checksums.txt"
+      "wget https://eappointment.gitlab.io/zmsapi/doc/swagger.json -O public/doc/swagger.json",
+      "wget https://eappointment.gitlab.io/zmsapi/doc/assets/redoc.min.js -O public/doc/assets/redoc.min.js",
+      "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui-bundle.js -O public/_test/assets/swagger-ui-bundle.js",
+      "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui.css -O public/_test/assets/swagger-ui.css",
+      "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui-standalone-preset.js -O public/_test/assets/swagger-ui-standalone-preset.js",
+      "sha256sum --status -c checksums.txt"
     ],
     "post-install-cmd": [
-        "@wget-files"
+      "@wget-files"
     ],
     "post-update-cmd": [
-        "@wget-files"
+      "@wget-files"
     ]
   },
   "bin": [],
