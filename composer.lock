@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cfb52d8cb41fa4d65c590acd7d0ae76d",
+    "content-hash": "f81a58224221bdc420bf9201bc87968e",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -138,16 +138,17 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "../zmsclient",
-                "reference": "3eaf9b57b25bb31bf6714fe690197fc1c8718fe3"
+            "version": "dev-muc/dev",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab.com/eappointment/zmsclient.git",
+                "reference": "94b9cc3c7576d99d415e4206e18769e15bca64fb"
             },
             "require": {
                 "aronduby/dump": "^0.9",
                 "eappointment/mellon": "^2.0.1",
-                "eappointment/zmsentities": "dev-main || ^2.0",
+                "eappointment/zmsentities": "dev-muc/dev",
+                "eappointment/zmsslim": "dev-muc/dev",
                 "ext-curl": ">=0",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -158,7 +159,6 @@
                 "roave/security-advisories": "dev-master"
             },
             "require-dev": {
-                "eappointment/zmsslim": "dev-main || ^2.0",
                 "helmich/phpunit-psr7-assert": "^4.3.0",
                 "phpmd/phpmd": "@stable",
                 "phpspec/prophecy-phpunit": "^2.0.0",
@@ -187,17 +187,15 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "transport-options": {
-                "relative": true
-            }
+            "time": "2022-12-05T10:32:10+00:00"
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "../zmsentities",
-                "reference": "fbb1050984b6ab9d824fb3fe58d78d4392c2cc47"
+            "version": "dev-muc/dev",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab.com/eappointment/zmsentities.git",
+                "reference": "e5a71f90be66078da9a46aac428de007165a9f12"
             },
             "require": {
                 "eappointment/mellon": "^2.0.1",
@@ -243,17 +241,15 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "transport-options": {
-                "relative": true
-            }
+            "time": "2022-11-30T09:26:18+00:00"
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "../zmsslim",
-                "reference": "2d984b70a645b3e4d72077cc852848240d0fe5a8"
+            "version": "dev-muc/dev",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab.com/eappointment/zmsslim.git",
+                "reference": "d6a930f408fe62ea1397d5cf58652ce9d0af6404"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -297,9 +293,7 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-            "transport-options": {
-                "relative": true
-            }
+            "time": "2022-11-28T12:23:23+00:00"
         },
         {
             "name": "fig/http-message-util",
@@ -1786,12 +1780,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "6f53c627e2f44ac1bd2fbaf2a068e682f40968b5"
+                "reference": "891ecbb72eac808c80fb97f2cce67824e94e5652"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/6f53c627e2f44ac1bd2fbaf2a068e682f40968b5",
-                "reference": "6f53c627e2f44ac1bd2fbaf2a068e682f40968b5",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/891ecbb72eac808c80fb97f2cce67824e94e5652",
+                "reference": "891ecbb72eac808c80fb97f2cce67824e94e5652",
                 "shasum": ""
             },
             "conflict": {
@@ -1816,12 +1810,12 @@
                 "awesome-support/awesome-support": "<=6.0.7",
                 "aws/aws-sdk-php": ">=3,<3.2.1",
                 "backdrop/backdrop": "<=1.23",
-                "badaso/core": "<2.6.1",
+                "badaso/core": "<2.7",
                 "bagisto/bagisto": "<0.1.5",
                 "barrelstrength/sprout-base-email": "<1.2.7",
                 "barrelstrength/sprout-forms": "<3.9",
                 "barryvdh/laravel-translation-manager": "<0.6.2",
-                "baserproject/basercms": "<4.5.4",
+                "baserproject/basercms": "<=4.7.1",
                 "billz/raspap-webgui": "<=2.6.6",
                 "bk2k/bootstrap-package": ">=7.1,<7.1.2|>=8,<8.0.8|>=9,<9.0.4|>=9.1,<9.1.3|>=10,<10.0.10|>=11,<11.0.3",
                 "bmarshall511/wordpress_zero_spam": "<5.2.13",
@@ -2149,6 +2143,7 @@
                 "snipe/snipe-it": "<6.0.11|>= 6.0.0-RC-1, <= 6.0.0-RC-5",
                 "socalnick/scn-social-auth": "<1.15.2",
                 "socialiteproviders/steam": "<1.1",
+                "spatie/browsershot": "<3.57.4",
                 "spipu/html2pdf": "<5.2.4",
                 "spoonity/tcpdf": "<6.2.22",
                 "squizlabs/php_codesniffer": ">=1,<2.8.1|>=3,<3.0.1",
@@ -2319,7 +2314,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-11-28T12:05:40+00:00"
+            "time": "2022-12-02T23:04:13+00:00"
         },
         {
             "name": "slim/http-cache",
@@ -3144,16 +3139,16 @@
         },
         {
             "name": "symfony/twig-bridge",
-            "version": "v5.4.14",
+            "version": "v5.4.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/twig-bridge.git",
-                "reference": "60db1cc3f5b098eb194c00a10489148a03861371"
+                "reference": "227d5030714c024bf4bc760b5762224070d4288c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/twig-bridge/zipball/60db1cc3f5b098eb194c00a10489148a03861371",
-                "reference": "60db1cc3f5b098eb194c00a10489148a03861371",
+                "url": "https://api.github.com/repos/symfony/twig-bridge/zipball/227d5030714c024bf4bc760b5762224070d4288c",
+                "reference": "227d5030714c024bf4bc760b5762224070d4288c",
                 "shasum": ""
             },
             "require": {
@@ -3245,7 +3240,7 @@
             "description": "Provides integration for Twig with various Symfony components",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/twig-bridge/tree/v5.4.14"
+                "source": "https://github.com/symfony/twig-bridge/tree/v5.4.16"
             },
             "funding": [
                 {
@@ -3261,7 +3256,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-10-11T12:49:22+00:00"
+            "time": "2022-11-04T07:37:26+00:00"
         },
         {
             "name": "twig/extensions",
@@ -4394,21 +4389,21 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "v1.15.0",
+            "version": "v1.16.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "bbcd7380b0ebf3961ee21409db7b38bc31d69a13"
+                "reference": "be8cac52a0827776ff9ccda8c381ac5b71aeb359"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/bbcd7380b0ebf3961ee21409db7b38bc31d69a13",
-                "reference": "bbcd7380b0ebf3961ee21409db7b38bc31d69a13",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/be8cac52a0827776ff9ccda8c381ac5b71aeb359",
+                "reference": "be8cac52a0827776ff9ccda8c381ac5b71aeb359",
                 "shasum": ""
             },
             "require": {
                 "doctrine/instantiator": "^1.2",
-                "php": "^7.2 || ~8.0, <8.2",
+                "php": "^7.2 || 8.0.* || 8.1.* || 8.2.*",
                 "phpdocumentor/reflection-docblock": "^5.2",
                 "sebastian/comparator": "^3.0 || ^4.0",
                 "sebastian/recursion-context": "^3.0 || ^4.0"
@@ -4455,9 +4450,9 @@
             ],
             "support": {
                 "issues": "https://github.com/phpspec/prophecy/issues",
-                "source": "https://github.com/phpspec/prophecy/tree/v1.15.0"
+                "source": "https://github.com/phpspec/prophecy/tree/v1.16.0"
             },
-            "time": "2021-12-08T12:19:24+00:00"
+            "time": "2022-11-29T15:06:56+00:00"
         },
         {
             "name": "phpspec/prophecy-phpunit",
@@ -6101,16 +6096,16 @@
         },
         {
             "name": "symfony/dependency-injection",
-            "version": "v5.4.13",
+            "version": "v5.4.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dependency-injection.git",
-                "reference": "24cf522668845391c0542bc1de496366072a6d0e"
+                "reference": "a93e1863500940780fc1235f52d54397be2d14b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/24cf522668845391c0542bc1de496366072a6d0e",
-                "reference": "24cf522668845391c0542bc1de496366072a6d0e",
+                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/a93e1863500940780fc1235f52d54397be2d14b3",
+                "reference": "a93e1863500940780fc1235f52d54397be2d14b3",
                 "shasum": ""
             },
             "require": {
@@ -6170,7 +6165,7 @@
             "description": "Allows you to standardize and centralize the way objects are constructed in your application",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/dependency-injection/tree/v5.4.13"
+                "source": "https://github.com/symfony/dependency-injection/tree/v5.4.16"
             },
             "funding": [
                 {
@@ -6186,7 +6181,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-08-30T19:10:13+00:00"
+            "time": "2022-11-25T07:33:13+00:00"
         },
         {
             "name": "symfony/filesystem",
@@ -6536,5 +6531,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
