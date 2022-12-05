@@ -1,5 +1,6 @@
 import BaseView from '../lib/baseview';
 import $ from "jquery";
+import AnalogClock from "./analogClock";
 
 class View extends BaseView {
 
@@ -27,6 +28,7 @@ class View extends BaseView {
                 this.hideMessages(0);
                 this.setWaitingClients(data);
                 this.setWaitingTime(data);
+                new AnalogClock();
             })
             .fail(function () {
                 $('.fatal').show();

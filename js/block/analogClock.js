@@ -1,4 +1,3 @@
-import BaseView from '../lib/baseview';
 import CoolClock from '../lib/coolclock';
 import $ from "jquery";
 
@@ -31,7 +30,7 @@ class View {
     }
 
     initClock() {
-        console.log('start clock')
+        //console.log('start clock')
         CoolClock.config.skins = {
             themed: {
                 outerBorder: { lineWidth: 1, radius:95, color: "black", alpha: 0 },
