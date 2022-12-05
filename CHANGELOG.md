@@ -1,3 +1,8 @@
+## 2.24.13
+
+* #56114 - Update of the analog clock every minute when the /info/ route is retrieved
+* #54692 - add styles to qrcode headline
+
 ## 2.24.12
 
 * #54692 - QR code initialization to call the webcalldisplay URL and Index class cleaned up and structured by separate functions
