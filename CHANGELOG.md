@@ -1,3 +1,6 @@
+## 2.24.13
+* #56079 - Unit Tests for checking multiple services in one appointment have been corrected
+
 ## 2.24.12
 * #55778 - Change of appointment date and location no longer allowed during an update
 
