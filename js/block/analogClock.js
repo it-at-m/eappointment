@@ -3,7 +3,8 @@ import $ from "jquery";
 
 
 class View {
-    constructor () {
+    constructor (serverTime) {
+        this.serverTime = serverTime * 1000 || Date.now()
         this.clearClock();
         this.addClock('clock_big', 200);
         this.addClock('clock_medium', 160);
@@ -19,14 +20,22 @@ class View {
 
     addClock(id, diameter) {
         console.log(`added new clock instances ${id}`)
+        let date = new Date(this.serverTime);
         let clock = document.createElement("canvas");
-        clock.setAttribute(`id`, id + Date.now());
-        clock.classList.add(`CoolClock:themed:${diameter}:showSecondHand::${Date.now()}`);
+        clock.setAttribute(`id`, id + this.serverTime);
+        clock.classList.add(`CoolClock:themed:${diameter}:showSecondHand::${this.serverTime}`);
         clock.classList.add(`myClock`);
         clock.setAttribute(`width`, diameter * 2);
         clock.setAttribute(`height`, diameter * 2)
         clock.setAttribute(`style`, `width: ${diameter * 2}px; height: ${diameter * 2}px`);
         $(clock).appendTo($(`#${id}`));
+
+        let dayname = date.toLocaleString("de-de", {weekday: 'long'});
+        let day = String(date.getDate()).padStart(2, '0');
+        let month = String(date.getMonth() + 1).padStart(2, '0');
+        let year = date.getFullYear();
+        let dateString = dayname + ', ' + day + '.' + month + '.' + year + '<br />';
+        $("#aufrufanzeige_Datum").html(dateString);
     }
 
     initClock() {
