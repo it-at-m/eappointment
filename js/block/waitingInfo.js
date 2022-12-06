@@ -28,7 +28,7 @@ class View extends BaseView {
                 this.hideMessages(0);
                 this.setWaitingClients(data);
                 this.setWaitingTime(data);
-                new AnalogClock();
+                new AnalogClock(window.bo.zmscalldisplay.serverTime);
             })
             .fail(function () {
                 $('.fatal').show();
