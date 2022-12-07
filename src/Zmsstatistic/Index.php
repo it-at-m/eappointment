@@ -6,7 +6,7 @@
 
 namespace BO\Zmsstatistic;
 
-use \BO\Zmsstatistic\Helper\LoginForm;
+use \BO\Zmsentities\Workstation;
 use \BO\Mellon\Validator;
 
 class Index extends BaseController
@@ -23,18 +23,31 @@ class Index extends BaseController
         array $args
     ) {
         try {
-            $this->workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        } catch (\Throwable $workstationexception) {
-            $this->workstation = null;
+            $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        } catch (\Exception $workstationexception) {
+            $workstation = null;
+        }
+        $input = $request->getParsedBody();
+        if ($request->isPost()) {
+            $loginData = $this->testLogin($input);
+
+            if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
+                \BO\Zmsclient\Auth::setKey($loginData->authkey);
+                return \BO\Slim\Render::redirect('workstationSelect', array(), array());
+            }
+            \BO\Slim\Render::withHtml(
+                $response,
+                'page/index.twig',
+                array(
+                'title' => 'Anmeldung gescheitert',
+                'loginfailed' => true,
+                'workstation' => null,
+                'exception' => $loginData
+                )
+            );
         }
 
-        $form = LoginForm::fromLoginParameters();
-        $validate = Validator::param('login_form_validate')->isBool()->getValue();
-        $loginData = ($validate) ? $form->getStatus() : null;
-        if ($loginData && !$form->hasFailed()) {
-            return $this->testLogin($loginData, $response);
-        }
-        $config = (! $this->workstation)
+        $config = (! $workstation)
             ? \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity()
             : null;
         return \BO\Slim\Render::withHtml(
@@ -42,10 +55,8 @@ class Index extends BaseController
             'page/index.twig',
             array(
                 'title' => 'Anmeldung',
-                'loginfailed' => Validator::param('login_failed')->isBool()->getValue(),
                 'config' => $config,
-                'workstation' => $this->workstation,
-                'loginData' => $loginData
+                'workstation' => $workstation
             )
         );
     }

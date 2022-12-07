@@ -32,7 +32,6 @@ class Access extends \BO\Slim\Controller
 
     protected function readWorkstation()
     {
-        $workstation = $this->workstation;
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => $this->resolveLevel]);
         return ($workstation) ? $workstation->getEntity() : null;
     }
@@ -99,33 +98,40 @@ class Access extends \BO\Slim\Controller
         );
     }
 
-    protected function testLogin($loginData, $response)
+    protected function testLogin($input)
     {
         $userAccount = new \BO\Zmsentities\Useraccount(array(
-            'id' => $loginData['loginName']['value'],
-            'password' => $loginData['password']['value']
+            'id' => $input['loginName'],
+            'password' => $input['password'],
+            'departments' => array('id' => 0) // required in schema validation
         ));
         try {
+            /** @var \BO\Zmsentities\Workstation $workstation */
             $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
-            if (array_key_exists('authkey', $workstation)) {
-                \BO\Zmsclient\Auth::setKey($workstation->authkey);
-                return \BO\Slim\Render::redirect('workstationSelect', array(), array());
-            }
+            return $workstation;
         } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template == 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn') {
+            $template = TwigExceptionHandler::getExceptionTemplate($exception);
+            if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
+                $exceptionData = [
+                  'template' => 'exception/bo/zmsapi/exception/useraccount/invalidcredentials.twig'
+                ];
+                $exceptionData['data']['password']['messages'] = [
+                    'Der Nutzername oder das Passwort wurden falsch eingegeben'
+                ];
+            } elseif ('BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn' == $exception->template) {
                 \BO\Zmsclient\Auth::setKey($exception->data['authkey']);
+                throw $exception;
+            } elseif ('' != $exception->template
+                && \App::$slim->getContainer()->view->getLoader()->exists($template)
+            ) {
+                $exceptionData = [
+                  'template' => $template,
+                  'data' => $exception->data
+                ];
+            } else {
                 throw $exception;
             }
         }
-        return \BO\Slim\Render::withHtml(
-            $response,
-            'page/index.twig',
-            array(
-                'title' => 'Anmeldung gescheitert',
-                'loginfailed' => true,
-                'workstation' => null,
-                'loginData' => $loginData
-            )
-        );
+        return $exceptionData;
     }
 }
