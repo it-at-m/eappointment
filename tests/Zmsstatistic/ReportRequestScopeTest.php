@@ -34,7 +34,7 @@ class ReportRequestScopeTest extends Base
                 'function' => 'readGetResult',
                 'url' => '/organisation/71/owner/',
                 'response' => $this->readFixture("GET_owner_23.json")
-            ],
+              ],
               [
                   'function' => 'readGetResult',
                   'url' => '/warehouse/requestscope/141/',

@@ -34,7 +34,7 @@ class ReportClientOrganisationTest extends Base
                 'function' => 'readGetResult',
                 'url' => '/organisation/71/owner/',
                 'response' => $this->readFixture("GET_owner_23.json")
-            ],
+              ],
               [
                   'function' => 'readGetResult',
                   'url' => '/warehouse/clientorganisation/71/',
@@ -80,7 +80,7 @@ class ReportClientOrganisationTest extends Base
                 'function' => 'readGetResult',
                 'url' => '/organisation/71/owner/',
                 'response' => $this->readFixture("GET_owner_23.json")
-            ],
+              ],
               [
                   'function' => 'readGetResult',
                   'url' => '/warehouse/clientorganisation/71/',

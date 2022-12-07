@@ -27,7 +27,7 @@ class IndexTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/config/',
                     'parameters' => [],
-                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
+                    'xtoken' => \App::CONFIG_SECURE_TOKEN,
                     'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
@@ -91,6 +91,13 @@ class IndexTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
                     'exception' => $exception
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => \App::CONFIG_SECURE_TOKEN,
+                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
