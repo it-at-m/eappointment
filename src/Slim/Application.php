@@ -121,4 +121,7 @@ class Application
             'default' => false,
         )
     );
+
+    // default overwritten with Bootstrap::init()
+    public static $urlSignatureSecret = 'e8dd240a854185c740384d90d771d85c';
 }
