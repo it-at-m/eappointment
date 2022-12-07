@@ -40,7 +40,18 @@
     "league/csv": "^9.0",
     "psr/http-message": "^1.0",
     "container-interop/container-interop": "^1.2",
-    "roave/security-advisories": "dev-master"
+    "roave/security-advisories": "dev-master",
+    "php": ">=7.3.0",
+    "slim/slim": "3.*",
+    "twig/twig": "^2.14",
+    "twig/extensions": "*",
+    "slim/twig-view": "^2.1",
+    "slim/http-cache": "^0.3.0",
+    "eappointment/mellon": "^2.6.0",
+    "aronduby/dump": "^0.9",
+    "symfony/translation": "^5.2",
+    "symfony/twig-bridge": "^5.2",
+    "stevenmaguire/oauth2-keycloak": "^3.1"
   },
   "bin": [],
   "autoload": {
