@@ -7,17 +7,21 @@
  */
 namespace BO\Zmscalldisplay;
 
+use BO\Slim\Render;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 class Info extends BaseController
 {
 
     /**
      * @SuppressWarnings(UnusedFormalParameter)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
-        array $args
+        RequestInterface $request,
+        ResponseInterface                  $response,
+        array                              $args
     ) {
         $calldisplay = new Helper\Calldisplay($request);
         $queueListFull = \App::$http
@@ -28,7 +32,7 @@ class Info extends BaseController
         $fakeEntity = $queueListFull->getFakeOrLastWaitingnumber();
         $waitingClientsBefore = $queueListFull->getQueuePositionByNumber($fakeEntity->number);
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'element/tempWaitingValues.twig',
             array(

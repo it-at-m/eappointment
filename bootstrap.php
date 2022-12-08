@@ -21,9 +21,7 @@ require(APP_PATH . '/config.php');
 
 // Set option for environment, routing, logging and templating
 \BO\Slim\Bootstrap::init();
-\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\TextExtension());
-\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\I18nExtension());
-\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\IntlExtension());
+\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extra\Intl\IntlExtension());
 
 umask(0002); // Allow group to delete twig cache files
 
