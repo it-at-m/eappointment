@@ -7,16 +7,19 @@
  */
 namespace BO\Zmscalldisplay;
 
+use BO\Slim\Render;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 class Queue extends BaseController
 {
-
     /**
      * @SuppressWarnings(UnusedFormalParameter)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $validator = $request->getAttribute('validator');
@@ -29,7 +32,7 @@ class Queue extends BaseController
             ])
             ->getCollection();
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'block/queue/queueTable.twig',
             array(
