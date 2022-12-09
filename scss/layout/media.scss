@@ -34,11 +34,12 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         left:21px;
         top:154px;
         width:275px;
+        height:275px;
     }
     .aufrufanzeige .aufrufanzeige_Datum {
         font-size:20px;
         left:21px;
-        top:410px;
+        top:450px;
         width:275px;
     }
     .aufrufanzeige .aufrufanzeige_main {
@@ -111,17 +112,12 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         left:40px;
         top:223px;
         width:350px;
-    }
-    .aufrufanzeige .uhr #clock {
-        display:none;
-    }
-    .aufrufanzeige .uhr #clock_medium {
-        display:block;
+        height:350px;
     }
     .aufrufanzeige .aufrufanzeige_Datum {
         font-size:28px;
-        left:21px;
-        top:575px;
+        left:35px;
+        top:585px;
         width:350px;
     }
     .aufrufanzeige .aufrufanzeige_main {
@@ -194,12 +190,7 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         left:47px;
         top:160px;
         width:400px;
-    }
-    .aufrufanzeige .uhr #clock {
-        display:none;
-    }
-    .aufrufanzeige .uhr #clock_big {
-        display:block !important;
+        height:400px;
     }
     .aufrufanzeige .aufrufanzeige_Datum {
         font-size:32px;
