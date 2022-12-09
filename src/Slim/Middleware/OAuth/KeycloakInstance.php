@@ -76,7 +76,7 @@ class KeycloakInstance
         list($header, $payload, $signature)  = explode('.', $token->getToken());
         $accessTokenPayload = json_decode(base64_decode($payload), true);
         $audience = $accessTokenPayload['aud'];
-        $ressourceAccess = array_keys($accessTokenPayload['resource_access']);
+        $ressourceAccess = array_keys($accessTokenPayload['resource_access']['zms']['roles']);
         if (! in_array(\App::IDENTIFIER, $audience) && ! in_array(\App::IDENTIFIER, $ressourceAccess)) {
             throw new \BO\Slim\Exception\OAuthFailed();
         }
