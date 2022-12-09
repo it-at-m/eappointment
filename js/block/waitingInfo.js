@@ -17,6 +17,7 @@ class View extends BaseView {
     }
 
     load() {
+        new AnalogClock();
         const ajaxopt = {
             type: "POST",
             url: this.getUrl('/info/'),
@@ -28,7 +29,6 @@ class View extends BaseView {
                 this.hideMessages(0);
                 this.setWaitingClients(data);
                 this.setWaitingTime(data);
-                new AnalogClock(window.bo.zmscalldisplay.serverTime);
             })
             .fail(function () {
                 $('.fatal').show();
