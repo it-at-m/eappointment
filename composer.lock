@@ -166,12 +166,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsclient.git",
-                "reference": "2e02935e963d83ce4f0a859b14a004e0a9d182cf"
+                "reference": "8526be67cc04893cabf062c27753fec51d382566"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=2e02935e963d83ce4f0a859b14a004e0a9d182cf",
-                "reference": "2e02935e963d83ce4f0a859b14a004e0a9d182cf",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=8526be67cc04893cabf062c27753fec51d382566",
+                "reference": "8526be67cc04893cabf062c27753fec51d382566",
                 "shasum": ""
             },
             "require": {
@@ -213,7 +213,7 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "time": "2022-12-12T16:36:39+00:00"
+            "time": "2022-12-12T16:45:25+00:00"
         },
         {
             "name": "eappointment/zmsdb",
@@ -221,12 +221,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsdb.git",
-                "reference": "9be8a8d9b52d849917e7bdb958a26f213071b0e2"
+                "reference": "ab266f7dd476d8ee518e3e33c5cebd68d3a095ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=9be8a8d9b52d849917e7bdb958a26f213071b0e2",
-                "reference": "9be8a8d9b52d849917e7bdb958a26f213071b0e2",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=ab266f7dd476d8ee518e3e33c5cebd68d3a095ce",
+                "reference": "ab266f7dd476d8ee518e3e33c5cebd68d3a095ce",
                 "shasum": ""
             },
             "require": {
@@ -288,7 +288,7 @@
                 }
             ],
             "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
-            "time": "2022-12-12T16:36:27+00:00"
+            "time": "2022-12-12T16:46:14+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
