@@ -114,7 +114,7 @@
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "2.24.13-rc4",
+            "version": "2.24.13",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsdldb.git",
@@ -167,7 +167,7 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "2.24.13-rc4",
+            "version": "2.24.13",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsentities.git",
