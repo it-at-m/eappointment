@@ -16,12 +16,12 @@
       "preferences": {
         "notifications": {
           "enabled": true,
-          "identification": "terminvereinbarung@mitte.berlin.de",
+          "identification": "max@example.com",
           "sendConfirmationEnabled": true,
           "sendReminderEnabled": true
         }
       },
-      "email": "terminvereinbarung@mitte.berlin.de"
+      "email": "max@example.com"
     },
     "message": "Denken Sie an ihren Termin mit der Nummer 123456",
     "process": {

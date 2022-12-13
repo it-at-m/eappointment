@@ -9,6 +9,7 @@ namespace BO\Zmsmessaging;
 use \BO\Zmsentities\Mail;
 use \BO\Zmsentities\Notification;
 use \BO\Zmsentities\Mimepart;
+use \BO\Mellon\Validator;
 
 class BaseController
 {
@@ -41,6 +42,11 @@ class BaseController
     public static function getLogList()
     {
         return static::$logList;
+    }
+
+    public static function clearLogList()
+    {
+        static::$logList = [];
     }
 
     protected function getSpendTime()
@@ -115,6 +121,10 @@ class BaseController
         }
         if (! $entity->hasContent()) {
             throw new \BO\Zmsmessaging\Exception\MailWithoutContent();
+        }
+
+        if ($entity instanceof Mail && ! Validator::value($entity->getRecipient())->isMail()->hasDNS()->getValue()) {
+            throw new \BO\Zmsmessaging\Exception\InvalidMailAddress();
         }
     }
 }
