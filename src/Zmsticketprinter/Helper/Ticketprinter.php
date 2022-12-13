@@ -38,7 +38,7 @@ class Ticketprinter
         if (!$ticketprinterHash) {
             $entity = \App::$http->readGetResult(
                 '/organisation/'. self::$organisation->id . '/hash/',
-                ['name' => $parameters['name']]
+                ['name' => $parameters['name'] ?? null]
             )->getEntity();
             \BO\Zmsclient\Ticketprinter::setHash($entity->hash, $request);
         } else {
