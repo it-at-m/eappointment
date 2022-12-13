@@ -17,12 +17,12 @@
         "preferences": {
           "notifications": {
             "enabled": true,
-            "identification": "terminvereinbarung@mitte.berlin.de",
+            "identification": "max@example.com",
             "sendConfirmationEnabled": true,
             "sendReminderEnabled": true
           }
         },
-        "email": "terminvereinbarung@mitte.berlin.de",
+        "email": "max@example.com",
         "name": "Bürgeramt"
       },
       "multipart": [

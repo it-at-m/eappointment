@@ -16,7 +16,7 @@
       "preferences": {
         "notifications": {
           "enabled": true,
-          "identification": "terminvereinbarung@mitte.berlin.de",
+          "identification": "max@example.com",
           "sendConfirmationEnabled": true,
           "sendReminderEnabled": true
         }

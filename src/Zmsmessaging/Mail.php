@@ -101,12 +101,12 @@ class Mail extends BaseController
             $code = $exception->getCode();
             \App::$log->warning($message, []);
         } catch (\Exception $exception) {
-            $message = "Message #$messageId Failure: ". $exception->getMessage();
+            $message = "Message #$messageId Exception Failure: ". $exception->getMessage();
             $code = $exception->getCode();
             \App::$log->warning($message, []);
         }
         if ($message) {
-            if (428 == $code) {
+            if (428 == $code || 422 == $code) {
                 $this->log("Build Mailer Failure ". $code .": deleteEntityFromQueue() - ". \App::$now->format('c'));
                 $this->deleteEntityFromQueue($entity);
             } else {

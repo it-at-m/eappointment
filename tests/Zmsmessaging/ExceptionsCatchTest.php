@@ -22,6 +22,11 @@ class ExceptionsCatchTest extends Base
                         'limit' => 300
                     ],
                     'response' => $this->readFixture("GET_mails_queue_no_department.json"),
+                ],
+                [
+                    'function' => 'readDeleteResult',
+                    'url' => '/mails/1234/',
+                    'response' => $this->readFixture("GET_mail.json")
                 ]
             ]
         );
@@ -34,6 +39,8 @@ class ExceptionsCatchTest extends Base
                 $this->assertStringContainsString('Die Adresse ist ungültig:  (From)', $value);
             } elseif (strpos($value, 'Zmsmessaging.ERROR') !== false) {
                 $this->assertStringContainsString('No valid mailer', $value);
+            } elseif (strpos($value, 'Exception Failure') !== false) {
+                $this->assertStringContainsString('No valid email exists', $value);
             } else {
                 $this->assertFalse(strpos($value, 'PHPMailer Failure') !== false);
             }
