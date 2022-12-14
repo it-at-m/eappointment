@@ -7,18 +7,20 @@
  */
 namespace BO\Zmsticketprinter;
 
-use \BO\Zmsentities\Ticketprinter as Entity;
+use BO\Slim\Render;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class Notification extends BaseController
 {
 
     /**
      * @SuppressWarnings(UnusedFormalParameter)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $validator = $request->getAttribute('validator');
@@ -28,7 +30,7 @@ class Notification extends BaseController
         $ticketprinter = Helper\Ticketprinter::readWithHash($request);
 
         if (! $waitingNumber) {
-            return \BO\Slim\Render::redirect(
+            return Render::redirect(
                 'Message',
                 [
                   'status' => 'process_notification_amendment_waitingnumber_unvalid'
@@ -48,7 +50,7 @@ class Notification extends BaseController
             throw new Exception\ScopeNotFound();
         }
         if ($process->getFirstClient()->hasTelephone()) {
-            return \BO\Slim\Render::redirect(
+            return Render::redirect(
                 'Message',
                 [
                   'status' => 'process_notification_amendment_phonenumber_exists'
@@ -60,7 +62,7 @@ class Notification extends BaseController
             );
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/notification.twig',
             array(

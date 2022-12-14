@@ -18,8 +18,8 @@ class RoutingTest extends Base
         $request = static::createBasicRequest('GET', '/');
         \App::$language = new \BO\Slim\Language($request, \App::$supportedLanguages);
         $exception = new \BO\Zmsticketprinter\Exception\ScopeNotFound();
-        $container = \App::$slim->getContainer();
-        $response = $container['errorHandler']($request, $this->getResponse(), $exception);
+        $errorHandler = \App::$slim->getContainer()->get('errorHandler');
+        $response = $errorHandler($request, $exception, true, false, false);
         $this->assertStringContainsString(
             'Es konnte zu den angegeben Daten kein Standort gefunden werden.',
             (string)$response->getBody()
@@ -30,8 +30,8 @@ class RoutingTest extends Base
     {
         $request = static::createBasicRequest('GET', '/');
         $exception = new \Exception('System Failure', 404);
-        $container = \App::$slim->getContainer();
-        $response = $container['errorHandler']($request, $this->getResponse(), $exception);
+        $errorHandler = \App::$slim->getContainer()->get('errorHandler');
+        $response = $errorHandler($request, $exception, true, false, false);
         $this->assertStringContainsString('Es ist ein Fehler aufgetreten', (string)$response->getBody());
         $this->assertStringContainsString('System Failure', (string)$response->getBody());
     }

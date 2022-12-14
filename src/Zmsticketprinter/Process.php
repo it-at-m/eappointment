@@ -7,18 +7,23 @@
  */
 namespace BO\Zmsticketprinter;
 
-use \BO\Zmsentities\Ticketprinter as Entity;
+use BO\Slim\Render;
+use BO\Zmsclient\Exception\BadRequest;
+use BO\Zmsentities\Scope;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use BO\Zmsticketprinter\Helper\QueueListHelper;
 
 class Process extends BaseController
 {
 
     /**
      * @SuppressWarnings(UnusedFormalParameter)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $config = \App::$http->readGetResult('/config/', [], \App::SECURE_TOKEN)->getEntity();
@@ -37,14 +42,16 @@ class Process extends BaseController
                 '/cluster/'. $clusterId .'/waitingnumber/'. $ticketprinter->hash .'/'
             )->getEntity();
             $scope = $process->scope;
+        } else {
+            throw new BadRequest('Missing Parameter');
         }
 
-        $scope = new \BO\Zmsentities\Scope($process->scope);
+        $scope = new Scope($process->scope);
         $department = \App::$http->readGetResult('/scope/'. $scope->getId() . '/department/')->getEntity();
 
-        $queueListHelper = (new Helper\QueueListHelper($scope, $process));
+        $queueListHelper = (new QueueListHelper($scope, $process));
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/process.twig',
             array(

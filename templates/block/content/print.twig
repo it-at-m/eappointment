@@ -6,7 +6,7 @@
     	<span class="printausgabe msg_ihre_wartenummer">
     		{{ process.scope.contact.name }}<br>
     		{% if process.scope.hint %}Info: {{ process.scope.hint }}<br>{% endif %}
-    		{{ process.queue.arrivalTime|localizeddate("short","none",NULL,NULL,"EE dd. MMMM Y") }}, {{ process.queue.arrivalTime|localizeddate("short","none",NULL,NULL,"HH:mm") }} {% trans %}Uhr{% endtrans %}<br>
+    		{{ process.queue.arrivalTime|format_date(pattern="EE dd. MMMM Y") }}, {{ process.queue.arrivalTime|format_date(pattern="HH:mm") }} {% trans %}Uhr{% endtrans %}<br>
 		</span>
 	</span>
 </div>

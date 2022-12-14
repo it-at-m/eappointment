@@ -7,23 +7,26 @@
  */
 namespace BO\Zmsticketprinter;
 
-use \BO\Zmsentities\Ticketprinter as Entity;
+use BO\Slim\Render;
+use BO\Zmsclient\Ticketprinter;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class Reset extends BaseController
 {
 
     /**
      * @SuppressWarnings(UnusedFormalParameter)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
-        \BO\Zmsclient\Ticketprinter::setHash("", $request);
+        Ticketprinter::setHash("", $request);
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/reset.twig',
             array(

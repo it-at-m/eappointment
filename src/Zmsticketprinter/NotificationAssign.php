@@ -7,18 +7,21 @@
  */
 namespace BO\Zmsticketprinter;
 
-use \BO\Zmsentities\Ticketprinter as Entity;
+use BO\Slim\Render;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use BO\Zmsticketprinter\Helper\QueueListHelper;
 
 class NotificationAssign extends BaseController
 {
 
     /**
      * @SuppressWarnings(UnusedFormalParameter)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $validator = $request->getAttribute('validator');
@@ -29,7 +32,7 @@ class NotificationAssign extends BaseController
         $process = \App::$http->readGetResult('/process/'. $processId .'/'. $authKey .'/')->getEntity();
 
         if ($telephone->hasFailed()) {
-            return \BO\Slim\Render::redirect(
+            return Render::redirect(
                 'Message',
                 [
                     'status' => 'process_notification_number_unvalid'
@@ -43,7 +46,7 @@ class NotificationAssign extends BaseController
 
         $process = $this->writeUpdateProcessWithNotification($process, $telephone);
 
-        return \BO\Slim\Render::redirect(
+        return Render::redirect(
             'Message',
             [
                 'status' => 'process_notification_success'
@@ -63,7 +66,7 @@ class NotificationAssign extends BaseController
         $headsUpTime = $process->getCurrentScope()->getPreference('notifications', 'headsUpTime');
         $queue = $process->queue;
         $number = ($queue->withAppointment) ? $process->getId() : $queue->number;
-        $waitingTimeEstimate = (new Helper\QueueListHelper($process->getCurrentScope()))
+        $waitingTimeEstimate = (new QueueListHelper($process->getCurrentScope()))
             ->getList()
             ->getQueueByNumber($number)
             ->waitingTimeEstimate;
@@ -79,6 +82,7 @@ class NotificationAssign extends BaseController
             '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
             $process
         );
+
         return $process;
     }
 }
