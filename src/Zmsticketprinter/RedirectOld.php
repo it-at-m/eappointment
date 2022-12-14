@@ -8,6 +8,10 @@
  */
 namespace BO\Zmsticketprinter;
 
+use BO\Slim\Render;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 class RedirectOld extends BaseController
 {
 
@@ -15,15 +19,16 @@ class RedirectOld extends BaseController
      * @SuppressWarnings(UnusedFormalParameter)
      * add params to session if valid and redirect to calendar
      *
-     * @return string
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $buttonList = Helper\EntryFromOldRoute::getFromOldMehrfachKiosk($request);
-        return \BO\Slim\Render::redirect(
+
+        return Render::redirect(
             'Index',
             array(),
             array(

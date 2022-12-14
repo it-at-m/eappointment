@@ -7,16 +7,24 @@
  */
 namespace BO\Zmsticketprinter;
 
+use BO\Mellon\Unvalidated;
+use BO\Mellon\Valid;
+use BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Zmsentities\Ticketprinter;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 class Index extends BaseController
 {
 
     /**
      * @SuppressWarnings(UnusedFormalParameter)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         Helper\HomeUrl::create($request);
@@ -31,7 +39,7 @@ class Index extends BaseController
 
         $organisation = $ticketprinterHelper::$organisation;
         if (1 == count($ticketprinter->buttons) && 'scope' == $ticketprinter->buttons[0]['type']) {
-            return \BO\Slim\Render::redirect(
+            return Render::redirect(
                 'TicketprinterByScope',
                 array(
                     'scopeId' => $ticketprinter->buttons[0]['scope']['id']
@@ -42,7 +50,7 @@ class Index extends BaseController
         $template = (new Helper\TemplateFinder($defaultTemplate->getValue()))
             ->setCustomizedTemplate($ticketprinter, $organisation);
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             $template->getTemplate(),
             array(
@@ -56,6 +64,12 @@ class Index extends BaseController
         );
     }
 
+    /**
+     * @param Validator $validator
+     * @param Ticketprinter $ticketprinter
+     * @param Unvalidated|Valid $defaultTemplate
+     * @return array
+     */
     protected function getQueryString($validator, $ticketprinter, $defaultTemplate)
     {
         $query = ($defaultTemplate->getValue() == 'default') ? [] : ['template' => $defaultTemplate->getValue()];
@@ -65,6 +79,7 @@ class Index extends BaseController
                 $query['ticketprinter[home]'] = $homeUrl;
             }
         }
+
         return $query;
     }
 }

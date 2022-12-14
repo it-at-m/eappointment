@@ -7,23 +7,28 @@
  */
 namespace BO\Zmsticketprinter;
 
+use BO\Slim\Render;
+use BO\Zmsclient\Ticketprinter;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 class Home extends BaseController
 {
 
     /**
      * @SuppressWarnings(UnusedFormalParameter)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
-        $homeUrl = \BO\Zmsclient\Ticketprinter::getHomeUrl();
+        $homeUrl = Ticketprinter::getHomeUrl();
         if (! $homeUrl) {
             throw new Exception\HomeNotFound();
         }
-        $response = \BO\Slim\Render::withLastModified($response, time(), '0');
-        return $response->withRedirect($homeUrl);
+
+        return Render::withLastModified($response, time(), '0')->withRedirect($homeUrl);
     }
 }
