@@ -66,6 +66,30 @@
                     }
                 }]
             ) }}
+
+            {{ formgroup(
+                {"label": null},
+                [{
+                    "type":"checkbox",
+                    "parameter": {
+                        "name": "sendEmailReminderEnabled",
+                        "label": "Terminerinerung versenden",
+                        "value": 1,
+                        "checked":  department.sendEmailReminderEnabled|default(1),
+                    }
+                }]
+            ) }}
+
+            {{ formgroup(
+                {"label": "Zeit vor Terminbeginn in der eine Terminerinerung verschickt wird (Minuten):"},
+                [{
+                    "type":"input",
+                    "parameter": {
+                        "name": "sendEmailReminderMinutesBefore",
+                        "value": department.sendEmailReminderMinutesBefore,
+                    }
+                }]
+            ) }}
         </div>
     </fieldset>
     
