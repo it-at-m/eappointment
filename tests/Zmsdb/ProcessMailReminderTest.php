@@ -32,7 +32,7 @@ class ProcessMailReminderTest extends Base
     public function testCronHelper()
     {
         $now = new \DateTimeImmutable("2016-04-01 13:40");
-        $helper = new \BO\Zmsdb\Helper\SendMailReminder($now, 2, false);
+        $helper = new \BO\Zmsdb\Helper\SendMailReminder($now, 120, false);
         $helper->setLimit(6);
         $helper->setLoopCount(3);
         $helper->startProcessing(true);

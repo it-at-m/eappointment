@@ -806,7 +806,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function readEmailReminderProcessListByInterval(
         \DateTimeInterface $now,
         \DateTimeInterface $lastRun,
-        $reminderInSeconds,
+        $defaultReminderInMinutes,
         $limit = 500,
         $offset = null,
         $resolveReferences = 0
@@ -815,7 +815,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $selectQuery
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
-            ->addConditionProcessMailReminder($now, $lastRun, $reminderInSeconds)
+            ->addConditionProcessMailReminder($now, $lastRun, $defaultReminderInMinutes)
             ->addConditionAssigned()
             ->addConditionIgnoreSlots()
             ->addConditionStatus('confirmed')
