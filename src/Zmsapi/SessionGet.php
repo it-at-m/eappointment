@@ -8,6 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Zmsdb\Session;
+use \BO\Mellon\Validator;
 
 class SessionGet extends BaseController
 {
