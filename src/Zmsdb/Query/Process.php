@@ -298,10 +298,22 @@ class Process extends Base implements MappingInterface
     public function addConditionProcessMailReminder(
         \DateTimeInterface $now,
         \DateTimeInterface $lastRun,
-        $reminderInSeconds
+        $defaultReminderInMinutes
     ) {
         $this->query
-            ->where(function (\Solution10\SQL\ConditionBuilder $query) use ($now, $lastRun, $reminderInSeconds) {
+            ->leftJoin(
+                new Alias("standort", 'standort'),
+                'standort.StandortID',
+                '=',
+                'process.StandortID'
+            )
+            ->leftJoin(
+                new Alias("email", 'email'),
+                'email.BehoerdenID',
+                '=',
+                'standort.BehoerdenID'
+            )
+            ->where(function (\Solution10\SQL\ConditionBuilder $query) use ($now, $lastRun, $defaultReminderInMinutes) {
                 $query
                     ->andWith(
                         self::expression(
@@ -318,11 +330,9 @@ class Process extends Base implements MappingInterface
                         $now->format('Y-m-d H:i:s')
                     )
                     ->andWith(
-                        self::expression(
-                            'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)'
-                        ),
-                        '<=',
-                        $now->modify('+ ' . $reminderInSeconds . ' Seconds')->format('Y-m-d H:i:s')
+                        'email.send_reminder',
+                        '=',
+                        1
                     )
                     ->andWith(
                         'process.EMail',
@@ -333,6 +343,13 @@ class Process extends Base implements MappingInterface
                         'process.EMailverschickt',
                         '=',
                         0
+                    )
+                    ->andWith(
+                        self::expression(
+                            'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)'
+                        ),
+                        '<',
+                        'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`) > timestamp(DATE_SUB(NOW(), INTERVAL IFNULL(email.send_reminder_minutes_before, ' . $defaultReminderInMinutes . ') MINUTE))'
                     );
             });
         $this->query->orderBy('appointments__0__date', 'ASC');

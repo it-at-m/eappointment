@@ -17,7 +17,7 @@ class SendMailReminder
 
     protected $lastRun;
 
-    protected $reminderInSeconds;
+    protected $defaultReminderInMinutes;
 
     protected $verbose = false;
 
@@ -27,10 +27,10 @@ class SendMailReminder
 
     protected $count = 0;
 
-    public function __construct(\DateTimeInterface $now, $hours = 2, $verbose = false)
+    public function __construct(\DateTimeInterface $now, $sendReminderBeforeMinutes, $verbose = false)
     {
         $this->dateTime = $now;
-        $this->reminderInSeconds = (60 * 60) * $hours;
+        $this->defaultReminderInMinutes = $sendReminderBeforeMinutes;
         $this->lastRun = (new MailRepository)->readReminderLastRun($now);
         if ($verbose) {
             $this->verbose = true;
@@ -76,7 +76,7 @@ class SendMailReminder
             $processList = (new ProcessRepository)->readEmailReminderProcessListByInterval(
                 $this->dateTime,
                 $this->lastRun,
-                $this->reminderInSeconds,
+                $this->defaultReminderInMinutes,
                 $limit,
                 $offset,
                 2
