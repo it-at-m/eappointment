@@ -1,8 +1,6 @@
 <?php
 // @codingStandardsIgnoreFile
 
-// Allow configuration by ENVIRONMENT variables
-
 // MYSQL_USER with access to DB
 if (!defined('MYSQL_USER')) {
     define('MYSQL_USER', getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root');
@@ -53,7 +51,6 @@ class App extends \BO\Zmsapi\Application
     const IDENTIFIER = 'Zmsapi-ENV';
     const DEBUG = false;
     const DB_ENABLE_WSREPSYNCWAIT = true;
-
     /**
      * @var String DB_DSN_READONLY
      */

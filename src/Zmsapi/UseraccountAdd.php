@@ -50,12 +50,6 @@ class UseraccountAdd extends BaseController
             throw $exception;
         }
 
-        if (0 == count($entity->departments)) {
-            $exception = new Exception\Useraccount\UseraccountNoDepartments();
-            $exception->data['input'] = $input;
-            throw $exception;
-        }
-
         if ((new Useraccount)->readIsUserExisting($entity->id)) {
             throw new Exception\Useraccount\UseraccountAlreadyExists();
         }

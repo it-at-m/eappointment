@@ -60,12 +60,6 @@ class UseraccountUpdate extends BaseController
             throw $exception;
         }
 
-        if (0 == count($entity->departments)) {
-            $exception = new Exception\Useraccount\UseraccountNoDepartments();
-            $exception->data['input'] = $input;
-            throw $exception;
-        }
-
         if ($args['loginname'] != $entity->id && (new Useraccount)->readIsUserExisting($entity->id)) {
             throw new Exception\Useraccount\UseraccountAlreadyExists();
         }
