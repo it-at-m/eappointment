@@ -349,7 +349,8 @@ class Process extends Base implements MappingInterface
                             'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)'
                         ),
                         '<',
-                        'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`) > timestamp(DATE_SUB(NOW(), INTERVAL IFNULL(email.send_reminder_minutes_before, ' . $defaultReminderInMinutes . ') MINUTE))'
+                        'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`) > timestamp(DATE_SUB(NOW(), INTERVAL'
+                        . ' IFNULL(email.send_reminder_minutes_before, ' . $defaultReminderInMinutes . ') MINUTE))'
                     );
             });
         $this->query->orderBy('appointments__0__date', 'ASC');
