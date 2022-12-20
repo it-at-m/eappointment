@@ -81,6 +81,14 @@
                 }
             }
         },
+        "sendEmailReminderEnabled": {
+            "type": "boolean",
+            "description": "activation of sending e-mail reminder"
+        },
+        "sendEmailReminderMinutesBefore": {
+            "type": "number",
+            "description": "number of minutes before appointment when reminder e-mail is sent"
+        },
         "links": {
             "type": "array",
             "items": {
