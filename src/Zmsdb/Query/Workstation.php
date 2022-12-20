@@ -27,6 +27,19 @@ class Workstation extends Base implements MappingInterface
             `Passworthash` = ?
     ';
 
+    const QUERY_LOGIN_OIDC = '
+        UPDATE
+            '. self::TABLE .'
+        SET
+            `SessionID`=?,
+            `Datum`=?,
+            `Arbeitsplatznr`="",
+            `aufrufzusatz`="",
+            `StandortID`=0
+        WHERE
+            `Name`=?
+    ';
+
     const QUERY_PROCESS_RESET = '
         UPDATE
             '. Process::TABLE .'
@@ -58,6 +71,16 @@ class Workstation extends Base implements MappingInterface
         WHERE
             `Name` = :loginName
         LIMIT 1
+    ';
+
+    const QUERY_UPDATE_AUTHKEY = '
+        UPDATE
+            '. self::TABLE .'
+        SET
+            `SessionID`=?
+        WHERE
+            `Name`= ?  AND
+            `Passworthash` = ?
     ';
 
     protected function addRequiredJoins()

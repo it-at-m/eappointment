@@ -21,7 +21,7 @@ class SendMailReminder
 
     protected $verbose = false;
 
-    protected $limit = 10000;
+    protected $limit = 5000;
 
     protected $loopCount = 500;
 
@@ -29,12 +29,21 @@ class SendMailReminder
 
     public function __construct(\DateTimeInterface $now, $sendReminderBeforeMinutes, $verbose = false)
     {
+        $config = (new ConfigRepository())->readEntity();
+        $configLimit = $config->getPreference('mailings', 'sqlMaxLimit');
+        $configBatchSize = $config->getPreference('mailings', 'sqlBatchSize');
+        $this->limit = ($configLimit) ? $configLimit : $this->limit;
+        $this->loopCount  = ($configBatchSize) ? $configBatchSize : $this->loopCount;
         $this->dateTime = $now;
         $this->defaultReminderInMinutes = $sendReminderBeforeMinutes;
         $this->lastRun = (new MailRepository)->readReminderLastRun($now);
         if ($verbose) {
             $this->verbose = true;
-            $this->log("\nINFO: Send email reminder dependent on last run: ". $this->lastRun->format('Y-m-d H:i:s'));
+            $this->log(
+                "\nINFO: Send email reminder (Limits: ".
+                $configLimit ."|". $configBatchSize .") dependent on last run: ".
+                $this->lastRun->format('Y-m-d H:i:s')
+            );
         }
     }
 
@@ -62,24 +71,26 @@ class SendMailReminder
 
     public function startProcessing($commit)
     {
-        $this->writeMailReminderList($commit);
-        $this->log("\nINFO: Last run ". $this->dateTime->format('Y-m-d H:i:s'));
         if ($commit) {
             (new MailRepository)->writeReminderLastRun($this->dateTime);
         }
+        $this->writeMailReminderList($commit);
+        $this->log("\nINFO: Last run ". $this->dateTime->format('Y-m-d H:i:s'));
         $this->log("\nSUMMARY: Sent mail reminder: ".$this->count);
     }
 
     protected function writeMailReminderList($commit)
     {
-        $count = $this->writeByCallback($commit, function ($limit, $offset) {
+        // The offset parameter was removed here, because with each loop the processes are searched, which have not
+        // been processed yet. An offset leads to the fact that with the renewed search the first results are skipped.
+        $count = $this->writeByCallback($commit, function ($limit) {
             $processList = (new ProcessRepository)->readEmailReminderProcessListByInterval(
                 $this->dateTime,
                 $this->lastRun,
                 $this->defaultReminderInMinutes,
                 $limit,
-                $offset,
-                2
+                null,
+                1
             );
             return $processList;
         });
@@ -89,16 +100,15 @@ class SendMailReminder
     protected function writeByCallback($commit, \Closure $callback)
     {
         $processCount = 0;
-        $startposition = 0;
         while ($processCount < $this->limit) {
-            $processList = $callback($this->loopCount, $startposition);
+            $this->log("***Stack count***: ".$processCount);
+            $processList = $callback($this->loopCount);
             if (0 == $processList->count()) {
                 break;
             }
+            
             foreach ($processList as $process) {
-                if (!$this->writeReminder($process, $commit, $processCount)) {
-                    $startposition++;
-                }
+                $this->writeReminder($process, $commit, $processCount);
                 $processCount++;
             }
         }
@@ -107,21 +117,21 @@ class SendMailReminder
 
     protected function writeReminder(Process $process, $commit, $processCount)
     {
-        $entity = null;
         $department = (new DepartmentRepository())->readByScopeId($process->getScopeId(), 0);
         if ($process->getFirstClient()->hasEmail() && $department->hasMail()) {
             $config = (new ConfigRepository)->readEntity();
             $collection = $this->getProcessListOverview($process, $config);
             $entity = (new Mail)->toResolvedEntity($collection, $config, 'reminder');
+            $this->log(
+                "INFO: $processCount. Create mail with process ". $process->getId() .
+                " - ". $entity->subject ." for ". $process->getFirstAppointment()
+            );
             if ($commit) {
                 $entity = (new MailRepository)->writeInQueue($entity, $this->dateTime);
                 Log::writeLogEntry("Write Reminder (Mail::writeInQueue) $entity ", $process->getId());
-                $this->log(
-                    "INFO: $processCount. Write mail in queue with ID ". $entity->getId() ." - ". $entity->subject
-                );
+                $this->log("INFO: Mail has been written in queue successfully with ID ". $entity->getId());
             }
         }
-        return $entity;
     }
 
     protected function getProcessListOverview($process, $config)

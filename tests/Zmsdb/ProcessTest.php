@@ -145,6 +145,30 @@ class ProcessTest extends Base
         $process = $query->updateEntity($process, $now);
     }
 
+    public function testUpdateProcessWithoutClientData()
+    {
+        $now = static::$now;
+        $query = new ProcessStatusFree();
+        $input = $this->getTestProcessEntity();
+        $input->getFirstAppointment()->slotCount = 3;
+        $input->queue['callTime'] = 0;
+        $process = $query->writeEntityReserved($input, $now);
+        $client = $process->getFirstClient();
+        $client->familyName = 'Unit Test';
+        $client->email = 'unittest@service.berlin.de';
+        $process = $query->updateEntity($process, $now);
+
+        $this->assertEquals("Unit Test", $process->getFirstClient()->familyName);
+        $this->assertEquals("unittest@service.berlin.de", $process->getFirstClient()->email);
+
+        unset($client->familyName);
+        unset($client->email);
+        $process = $query->updateEntity($process, $now);
+        $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
+        $this->assertEquals("Unit Test", $process->getFirstClient()->familyName);
+        $this->assertEquals("unittest@service.berlin.de", $process->getFirstClient()->email);
+    }
+
     public function testUpdateFail()
     {
         $now = static::$now;
@@ -243,7 +267,7 @@ class ProcessTest extends Base
             "scope"=>[
                 "id"=>"141"
             ],
-            "slotCount"=>"2"
+            "slotCount"=>"6"
         ]);
 
         // get old process and clone to new process with id = 0 and new appointment to reserve
@@ -631,7 +655,8 @@ class ProcessTest extends Base
                         "endInDaysDefault"=>"60",
                         "multipleSlotsEnabled"=>"1",
                         "reservationDuration"=>"5",
-                        "startInDaysDefault"=>"0"
+                        "startInDaysDefault"=>"0",
+                        "notificationHeadsUpEnabled"=>"1"
                     ],
                     "client"=>[
                         "alternateAppointmentUrl"=>"",
@@ -639,7 +664,8 @@ class ProcessTest extends Base
                         "amendmentLabel"=>"",
                         "emailRequired"=>"1",
                         "telephoneActivated"=>"1",
-                        "telephoneRequired"=>"1"
+                        "telephoneRequired"=>"1",
+                        "emailFrom"=>"1"
                     ],
                     "notifications"=>[
                         "confirmationContent"=>"",
