@@ -159,7 +159,12 @@ class Department extends Base
             $this->writeDepartmentDayoffs($lastInsertId, $entity->dayoff);
         }
         if ($entity->toProperty()->email->isAvailable()) {
-            $this->writeDepartmentMail($lastInsertId, $entity->email);
+            $this->writeDepartmentMail(
+                $lastInsertId,
+                $entity->email,
+                $entity->sendEmailReminderEnabled,
+                $entity->sendEmailReminderMinutesBefore
+            );
         }
         if ($entity->getNotificationPreferences()) {
             $this->writeDepartmentNotifications($lastInsertId, $entity->getNotificationPreferences());
@@ -190,7 +195,12 @@ class Department extends Base
             $this->writeDepartmentDayoffs($departmentId, $entity->dayoff);
         }
         if ($entity->toProperty()->email->isAvailable()) {
-            $this->updateDepartmentMail($departmentId, $entity->email);
+            $this->updateDepartmentMail(
+                $departmentId,
+                $entity->email,
+                $entity->sendEmailReminderEnabled,
+                $entity->sendEmailReminderMinutesBefore
+            );
         }
         $this->updateDepartmentNotifications($departmentId, $entity->getNotificationPreferences());
         return $this->readEntity($departmentId);
@@ -269,12 +279,18 @@ class Department extends Base
      *
      * @return Boolean
      */
-    protected function writeDepartmentMail($departmentId, $email)
-    {
+    protected function writeDepartmentMail(
+        $departmentId,
+        $email,
+        $sendEmailReminderEnabled,
+        $sendEmailReminderMinutesBefore
+    ) {
         self::$departmentCache = [];
         $result = $this->perform(Query\Department::QUERY_MAIL_INSERT, array(
             $departmentId,
-            $email
+            $email,
+            $sendEmailReminderEnabled,
+            $sendEmailReminderMinutesBefore
         ));
         return $result;
     }
@@ -314,13 +330,19 @@ class Department extends Base
      *
      * @return Boolean
      */
-    protected function updateDepartmentMail($departmentId, $email)
-    {
+    protected function updateDepartmentMail(
+        $departmentId,
+        $email,
+        $sendEmailReminderEnabled,
+        $sendEmailReminderMinutesBefore
+    ) {
         self::$departmentCache = [];
         $query = Query\Department::QUERY_MAIL_UPDATE;
         return $this->fetchAffected($query, array(
             'email' => $email,
-            'departmentId' => $departmentId
+            'departmentId' => $departmentId,
+            'sendEmailReminderEnabled' => $sendEmailReminderEnabled,
+            'sendEmailReminderMinutesBefore' => $sendEmailReminderMinutesBefore
         ));
     }
 
