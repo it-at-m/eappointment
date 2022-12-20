@@ -14,7 +14,9 @@ class Department extends Base implements MappingInterface
             emailID=@tempEmailID,
             BehoerdenID=:departmentId,
             absenderadresse=:email,
-            serveradresse="localhost"
+            serveradresse="localhost",
+            send_reminder=:sendEmailReminderEnabled,
+            send_reminder_minutes_before=:sendEmailReminderMinutesBefore
     ';
 
     const QUERY_NOTIFICATIONS_UPDATE = '
@@ -38,7 +40,9 @@ class Department extends Base implements MappingInterface
         SET
             BehoerdenID=?,
             serveradresse="localhost",
-            absenderadresse=?
+            absenderadresse=?,
+            send_reminder=?,
+            send_reminder_minutes_before=?
     ';
 
     const QUERY_NOTIFICATIONS_INSERT = '
@@ -79,6 +83,8 @@ class Department extends Base implements MappingInterface
             'contact__country' => self::expression('"Germany"'),
             'contact__name' => 'department.Ansprechpartner',
             'email' => 'department_email.absenderadresse',
+            'sendEmailReminderEnabled' => 'department_email.send_reminder',
+            'sendEmailReminderMinutesBefore' => 'department_email.send_reminder_minutes_before',
             'id' => 'department.BehoerdenID',
             'name' => 'department.Name',
             'preferences__notifications__enabled' => 'department_sms.enabled',
