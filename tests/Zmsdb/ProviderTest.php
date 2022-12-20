@@ -93,8 +93,8 @@ class ProviderTest extends Base
         $importInput = $repository->fromLocation()->fetchList();
         $collection = $query->writeImportList($importInput, 'dldb'); //return written entity by true
         $this->assertEquals('dldb', $collection->getFirst()->getSource());
-        $this->assertEquals('0', $collection->getFirst()->getSlotCount());
-        $this->assertEquals(122208, $collection->getFirst()->getProvider()->getId());
-        $this->assertEquals(120335, $collection->getFirst()->getRequest()->getId());
+        $this->assertEquals('2', $collection->getFirst()->getSlotCount());
+        $this->assertEquals(122217, $collection->getFirst()->getProvider()->getId());
+        $this->assertEquals(1120703, $collection->getFirst()->getRequest()->getId());
     }
 }

@@ -129,6 +129,27 @@ class Workstation extends Base
         return $collection;
     }
 
+    public function writeEntityLoginByOidc($loginName, $authKey, \DateTimeInterface $dateTime, $resolveReferences = 0)
+    {
+        $workstation = new Entity();
+        $query = Query\Workstation::QUERY_LOGIN_OIDC;
+        $result = $this->perform(
+            $query,
+            array(
+                $authKey,
+                $dateTime->format('Y-m-d'),
+                $loginName
+            )
+        );
+        if ($result) {
+            $workstation = $this->readEntity($loginName, $resolveReferences);
+            $workstation->authkey = $authKey;
+            $query = Query\Workstation::QUERY_PROCESS_RESET;
+            $this->perform($query, [$workstation->id]);
+        }
+        return $workstation;
+    }
+
     public function writeEntityLoginByName($loginName, $password, \DateTimeInterface $dateTime, $resolveReferences = 0)
     {
         $useraccount = new Useraccount();
@@ -235,5 +256,31 @@ class Workstation extends Base
             $this->writeItem($query);
         }
         return $this->readEntity($entity->useraccount['id'], $resolveReferences);
+    }
+
+    /**
+     * update a workstations authkey - is needed for openid login
+     *
+     * @param
+     * useraccountId
+     *
+     * @return Entity
+     */
+    public function updateEntityAuthkey($loginName, $password, $authKey, $resolveReferences)
+    {
+        $query = Query\Workstation::QUERY_UPDATE_AUTHKEY;
+        $result = $this->perform(
+            $query,
+            array(
+                $authKey,
+                $loginName,
+                $password
+            )
+        );
+        if ($result) {
+            $workstation = $this->readEntity($loginName, $resolveReferences);
+            $workstation->authkey = $authKey;
+        }
+        return $workstation;
     }
 }
