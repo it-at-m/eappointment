@@ -6,11 +6,11 @@
 
 namespace BO\Zmsstatistic\Download;
 
-use \BO\Zmsentities\Exchange as ReportEntity;
-
-use \BO\Zmsstatistic\Helper\Download;
-
+use BO\Zmsentities\Exchange as ReportEntity;
+use BO\Zmsstatistic\Helper\Download;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class WaitingReport extends Base
 {
@@ -21,24 +21,25 @@ class WaitingReport extends Base
     ];
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $title = 'waitingstatistic_'. $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
-        $spreadsheet = $download->getSpreadSheet();
-        $spreadsheet = $this->writeInfoHeader($args, $spreadsheet);
+
+        $this->writeInfoHeader($args, $download->getSpreadSheet());
         foreach ($args['reports'] as $report) {
             if ('month' == $report->period) {
-                $spreadsheet = $this->writeWaitingReport($report, $download->getSpreadSheet(), 'yyyy', 'MMMM');
+                $this->writeWaitingReport($report, $download->getSpreadSheet(), 'yyyy', 'MMMM');
             } else {
-                $spreadsheet = $this->writeWaitingReport($report, $download->getSpreadSheet());
+                $this->writeWaitingReport($report, $download->getSpreadSheet());
             }
         }
+
         return $download->writeDownload($response);
     }
 
@@ -54,6 +55,7 @@ class WaitingReport extends Base
         foreach ($this->reportParts as $partName => $headline) {
             $this->writeReportPart($report, $sheet, $partName, $headline);
         }
+
         return $spreadsheet;
     }
 

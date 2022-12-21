@@ -6,11 +6,11 @@
 
 namespace BO\Zmsstatistic\Download;
 
-use \BO\Zmsentities\Exchange as ReportEntity;
-
-use \BO\Zmsstatistic\Helper\Download;
-
+use BO\Zmsentities\Exchange as ReportEntity;
+use BO\Zmsstatistic\Helper\Download;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class RequestReport extends Base
 {
@@ -25,24 +25,25 @@ class RequestReport extends Base
 
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $title = 'requeststatistic_'. $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
-        $spreadsheet = $download->getSpreadSheet();
-        $spreadsheet = $this->writeInfoHeader($args, $spreadsheet);
+
+        $this->writeInfoHeader($args, $download->getSpreadSheet());
         foreach ($args['reports'] as $report) {
             if ('month' == $report->period) {
-                $spreadsheet = $this->writeReport($report, $download->getSpreadSheet(), 'yyyy', 'MMMM');
+                $this->writeReport($report, $download->getSpreadSheet(), 'yyyy', 'MMMM');
             } else {
-                $spreadsheet = $this->writeReport($report, $download->getSpreadSheet());
+                $this->writeReport($report, $download->getSpreadSheet());
             }
         }
+
         return $download->writeDownload($response);
     }
 
@@ -61,6 +62,7 @@ class RequestReport extends Base
 
         $this->writeHeader($report, $sheet, $datePatternCol1, $datePatternCol2);
         $this->writeReportData($report, $sheet, $datePatternCol1, $datePatternCol2);
+
         return $spreadsheet;
     }
 

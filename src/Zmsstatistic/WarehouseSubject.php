@@ -6,17 +6,20 @@
 
 namespace BO\Zmsstatistic;
 
+use BO\Slim\Render;
 use BO\Zmsstatistic\Download\WarehouseSubject as Download;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class WarehouseSubject extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $validator = $request->getAttribute('validator');
@@ -31,13 +34,13 @@ class WarehouseSubject extends BaseController
             return (new Download(\App::$slim->getContainer()))->readResponse($request, $response, $args);
         }
         if (count($subjectList['data']) == 1) {
-            return \BO\Slim\Render::redirect("WarehousePeriod", [
+            return Render::redirect("WarehousePeriod", [
                 'subject' => $args['subject'],
                 'subjectid' => $subjectList['data'][0][0],
             ]);
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/warehouseSubject.twig',
             array(

@@ -48,7 +48,10 @@ class ReportClientScopeTest extends Base
             '<a class="active" href="/report/client/scope/">Bürgeramt Heerstraße </a>',
             (string) $response->getBody()
         );
-        $this->assertStringContainsString('<a href="/report/client/scope/2016-04/">April</a>', (string) $response->getBody());
+        $this->assertStringContainsString(
+            '<a href="/report/client/scope/2016-04/">April</a>',
+            (string) $response->getBody()
+        );
         $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
@@ -268,7 +271,7 @@ class ReportClientScopeTest extends Base
                 ]
             ]
         );
-        ob_start();
+
         $response = $this->render(
             [
                 'period' => '2016-04'
@@ -279,12 +282,11 @@ class ReportClientScopeTest extends Base
             ],
             [ ]
         );
-        $output = ob_get_contents();
-        ob_end_clean();
+
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
         $this->assertStringContainsString(
             '"April";"2016";"Charlottenburg-Wilmersdorf";"Bürgeramt";"Bürgeramt Heerstraße ";"135";"";"";""',
-            $output
+            (string) $response->getBody()
         );
     }
 

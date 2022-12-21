@@ -6,21 +6,23 @@
 
 namespace BO\Zmsstatistic;
 
-use \BO\Zmsclient\Auth;
+use BO\Slim\Render;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class Logout extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         \App::$http->readDeleteResult('/workstation/login/'. $this->workstation->useraccount['id'] .'/');
-        return \BO\Slim\Render::redirect(
+        return Render::redirect(
             'index',
             array(
                 'title' => 'Anmeldung'

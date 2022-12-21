@@ -86,11 +86,11 @@ class WarehouseSubjectTest extends Base
             ]
         );
 
-
-        ob_start();
         $response = $this->render(['subject' => 'waitingscope'], ['type' => 'xlsx'], [ ]);
-        $output = ob_get_contents();
-        ob_end_clean();
-        $this->assertStringContainsString('raw_statistic_waitingscope.xlsx', $response->getHeaderLine('Content-Disposition'));
+
+        $this->assertStringContainsString(
+            'raw_statistic_waitingscope.xlsx',
+            $response->getHeaderLine('Content-Disposition')
+        );
     }
 }

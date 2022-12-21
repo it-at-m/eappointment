@@ -6,25 +6,29 @@
  */
 namespace BO\Zmsstatistic\Helper;
 
+use BO\Slim\Render;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 class DialogHandler extends \BO\Zmsstatistic\BaseController
 {
     protected $withAccess = false;
 
     /**
      * @SuppressWarnings(UnusedFormalParameter)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $validator = $request->getAttribute('validator');
         $template = $validator->getParameter('template')->isString()->getValue();
         $parameter = $validator->getParameter('parameter')->isArray()->getValue();
-        $parameter = ($parameter) ? $parameter : array();
+        $parameter = $parameter !== null ? $parameter : array();
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'element/helper/dialog/'. $template .'.twig',
             $parameter

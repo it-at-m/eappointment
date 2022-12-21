@@ -6,17 +6,21 @@
 
 namespace BO\Zmsstatistic;
 
+use BO\Slim\Render;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 class Overview extends BaseController
 {
     protected $resolveLevel = 3;
 
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $waitingperiod = \App::$http
@@ -29,7 +33,7 @@ class Overview extends BaseController
             ->readGetResult('/warehouse/requestscope/' . $this->workstation->scope['id'] . '/')
             ->getEntity();
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/overview.twig',
             array(

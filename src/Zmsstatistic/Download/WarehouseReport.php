@@ -6,27 +6,27 @@
 
 namespace BO\Zmsstatistic\Download;
 
-use \BO\Zmsentities\Exchange as ReportEntity;
-
-use \BO\Zmsstatistic\Helper\Download;
-
+use BO\Zmsentities\Exchange as ReportEntity;
+use BO\Zmsstatistic\Helper\Download;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class WarehouseReport extends Base
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $title = 'raw_statistic_'. $args['subject'] .'_'. $args['subjectid'] .'_'. $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
-        $spreadsheet = $download->getSpreadSheet();
-        $spreadsheet = $this->writeRawReport($args['report'], $spreadsheet);
+
+        $this->writeRawReport($args['report'], $download->getSpreadSheet());
 
         return $download->writeDownload($response);
     }

@@ -173,8 +173,9 @@ class ReportClientOrganisationTest extends Base
                 ],
                 [ ]
             );
+
             $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
-            $this->assertEquals('da39a3ee5e6b4b0d3255bfef95601890afd80709', sha1((string)$response->getBody()));
+            $this->assertLessThan(5, abs(6828 - strlen((string) $response->getBody())));
         });
     }
 
@@ -221,7 +222,7 @@ class ReportClientOrganisationTest extends Base
                 ]
             ]
         );
-        ob_start();
+
         $response = $this->render(
             [
                 'period' => '2016-04'
@@ -232,12 +233,11 @@ class ReportClientOrganisationTest extends Base
             ],
             [ ]
         );
-        $output = ob_get_contents();
-        ob_end_clean();
+
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
         $this->assertStringContainsString(
             '"April";"2016";"Charlottenburg-Wilmersdorf";"Bürgeramt";"Bürgeramt Heerstraße ";"135";"";"";""',
-            $output
+            (string) $response->getBody()
         );
     }
 

@@ -7,6 +7,8 @@
 namespace BO\Zmsstatistic;
 
 use BO\Slim\Render;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class Healthcheck extends BaseController
 {
@@ -16,14 +18,14 @@ class Healthcheck extends BaseController
      * @SuppressWarnings(UnusedFormalParameter)
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $response = \BO\Zmsclient\Status::testStatus($response, function () {
             return \App::$http->readGetResult('/status/', ['includeProcessStats' => 0])->getEntity();
         });
-        $response = \BO\Slim\Render::withLastModified($response, time(), '0');
-        return $response;
+
+        return Render::withLastModified($response, time(), '0');
     }
 }

@@ -192,7 +192,7 @@ class ReportRequestOrganisationTest extends Base
                 ]
             ]
         );
-        ob_start();
+
         $response = $this->render(
             [
                 'period' => '2016-04'
@@ -202,12 +202,11 @@ class ReportRequestOrganisationTest extends Base
             ],
             [ ]
         );
-        $output = ob_get_contents();
-        ob_end_clean();
+
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
         $this->assertStringContainsString(
             '"Personalausweis beantragen";"14";"14";',
-            $output
+            (string) $response->getBody()
         );
     }
 

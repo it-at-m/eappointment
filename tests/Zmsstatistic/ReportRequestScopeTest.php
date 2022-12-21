@@ -48,7 +48,10 @@ class ReportRequestScopeTest extends Base
             '<a class="active" href="/report/request/scope/">Bürgeramt Heerstraße </a>',
             (string) $response->getBody()
         );
-        $this->assertStringContainsString('<a href="/report/request/scope/2016-04/">April</a>', (string) $response->getBody());
+        $this->assertStringContainsString(
+            '<a href="/report/request/scope/2016-04/">April</a>',
+            (string) $response->getBody()
+        );
         $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
@@ -190,7 +193,7 @@ class ReportRequestScopeTest extends Base
                 ]
             ]
         );
-        ob_start();
+
         $response = $this->render(
             [
                 'period' => '2016-04'
@@ -200,12 +203,11 @@ class ReportRequestScopeTest extends Base
             ],
             [ ]
         );
-        $output = ob_get_contents();
-        ob_end_clean();
+
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
         $this->assertStringContainsString(
             '"Personalausweis beantragen";"14";"14";',
-            $output
+            (string) $response->getBody()
         );
     }
 
@@ -246,7 +248,7 @@ class ReportRequestScopeTest extends Base
                 ]
             ]
         );
-        ob_start();
+
         $response = $this->render(
             [
                 'period' => '2016'
@@ -256,13 +258,15 @@ class ReportRequestScopeTest extends Base
             ],
             [ ]
         );
-        $output = ob_get_contents();
-        ob_end_clean();
+
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
-        $this->assertStringContainsString('"Zeitraum:";"01.01.2016";"bis";"31.12.2016"', $output);
+        $this->assertStringContainsString(
+            '"Zeitraum:";"01.01.2016";"bis";"31.12.2016"',
+            (string) $response->getBody()
+        );
         $this->assertStringContainsString(
             '"Personalausweis beantragen";"14";"0";"0";"0";"14";"0";"0";"0";"0";"0";"0";"0";"0"',
-            $output
+            (string) $response->getBody()
         );
     }
 }

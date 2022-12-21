@@ -183,14 +183,13 @@ class ReportWaitingOrganisationTest extends Base
                 ]
             ]
         );
-        ob_start();
+
         $response = $this->render(['period' => '2016-03'], ['type' => 'csv'], []);
-        $output = ob_get_contents();
-        ob_end_clean();
+
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
         $this->assertStringContainsString(
             '"Tagesmaximum";"532";"414";"280";"160";"256";"437";"455";"202";"532";"359";"384";"417";"148";"375";"343";',
-            $output
+            (string) $response->getBody()
         );
     }
 

@@ -48,7 +48,10 @@ class ReportRequestDepartmentTest extends Base
             '<a class="active" href="/report/request/department/">Bürgeramt</a>',
             (string) $response->getBody()
         );
-        $this->assertStringContainsString('<a href="/report/request/department/2016-04/">April</a>', (string) $response->getBody());
+        $this->assertStringContainsString(
+            '<a href="/report/request/department/2016-04/">April</a>',
+            (string) $response->getBody()
+        );
         $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
@@ -190,7 +193,7 @@ class ReportRequestDepartmentTest extends Base
                 ]
             ]
         );
-        ob_start();
+
         $response = $this->render(
             [
                 'period' => '2016-04'
@@ -200,12 +203,11 @@ class ReportRequestDepartmentTest extends Base
             ],
             [ ]
         );
-        $output = ob_get_contents();
-        ob_end_clean();
+
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
         $this->assertStringContainsString(
             '"Personalausweis beantragen";"14";"14";',
-            $output
+            (string) $response->getBody()
         );
     }
 

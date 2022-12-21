@@ -6,10 +6,8 @@
 
 namespace BO\Zmsstatistic\Download;
 
-use \BO\Zmsentities\Exchange as ReportEntity;
-
-use \BO\Zmsstatistic\Helper\Download;
-
+use BO\Zmsentities\Exchange as ReportEntity;
+use BO\Zmsstatistic\Helper\Download;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class WarehouseSubject extends Base
@@ -25,8 +23,8 @@ class WarehouseSubject extends Base
     ) {
         $title = 'raw_statistic_'. $args['subject'];
         $download = (new Download($request))->setSpreadSheet($title);
-        $spreadsheet = $download->getSpreadSheet();
-        $spreadsheet = $this->writeRawReport($args['reports'][0], $spreadsheet);
+
+        $this->writeRawReport($args['reports'][0], $download->getSpreadSheet());
 
         return $download->writeDownload($response);
     }

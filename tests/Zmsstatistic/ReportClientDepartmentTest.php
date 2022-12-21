@@ -48,7 +48,10 @@ class ReportClientDepartmentTest extends Base
             '<a class="active" href="/report/client/department/">Bürgeramt</a>',
             (string) $response->getBody()
         );
-        $this->assertStringContainsString('<a href="/report/client/department/2016-04/">April</a>', (string) $response->getBody());
+        $this->assertStringContainsString(
+            '<a href="/report/client/department/2016-04/">April</a>',
+            (string) $response->getBody()
+        );
         $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
@@ -109,7 +112,10 @@ class ReportClientDepartmentTest extends Base
             '<td class="report-board--summary" colspan="2">April 2016</td>',
             (string) $response->getBody()
         );
-        $this->assertStringContainsString('Auswertung für Bürgeramt im Zeitraum April 2016', (string) $response->getBody());
+        $this->assertStringContainsString(
+            'Auswertung für Bürgeramt im Zeitraum April 2016',
+            (string) $response->getBody()
+        );
         $this->assertStringContainsString('135', (string) $response->getBody());
     }
 
@@ -214,7 +220,7 @@ class ReportClientDepartmentTest extends Base
                 ]
             ]
         );
-        ob_start();
+
         $response = $this->render(
             [
                 'period' => '2016-04'
@@ -225,12 +231,11 @@ class ReportClientDepartmentTest extends Base
             ],
             [ ]
         );
-        $output = ob_get_contents();
-        ob_end_clean();
+
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
         $this->assertStringContainsString(
             '"April";"2016";"Charlottenburg-Wilmersdorf";"Bürgeramt";"Bürgeramt Heerstraße ";"135";"";"";""',
-            $output
+            $response->getBody()
         );
     }
 

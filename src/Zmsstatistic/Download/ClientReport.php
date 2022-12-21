@@ -6,21 +6,21 @@
 
 namespace BO\Zmsstatistic\Download;
 
-use \BO\Zmsentities\Exchange as ReportEntity;
-
-use \BO\Zmsstatistic\Helper\Download;
-
+use BO\Zmsentities\Exchange as ReportEntity;
+use BO\Zmsstatistic\Helper\Download;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class ClientReport extends Base
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $title = 'clientstatistic_'. $args['period'];
@@ -36,7 +36,8 @@ class ClientReport extends Base
                 }
             }
         }
-        $spreadsheet = $this->writeLegend($spreadsheet);
+        $this->writeLegend($spreadsheet);
+
         return $download->writeDownload($response);
     }
 
@@ -51,6 +52,7 @@ class ClientReport extends Base
         $this->writeReportHeader($report, $sheet);
         $this->writeTotalsRow($report, $sheet, $datePatternTotals);
         $this->writeReportData($report, $sheet, $datePatternCol1, $datePatternCol2);
+
         return $spreadsheet;
     }
 
@@ -90,6 +92,7 @@ class ClientReport extends Base
     public function writeReportData(ReportEntity $report, $sheet, $datePatternCol1, $datePatternCol2)
     {
         $reportData = [];
+
         foreach ($report->data as $row => $entry) {
             foreach ($entry as $key => $item) {
                 if (! in_array($key, static::$ignoreColumns)) {
@@ -102,6 +105,7 @@ class ClientReport extends Base
                 }
             }
         }
+
         $sheet->fromArray($reportData, null, 'A'. ($sheet->getHighestRow() + 1));
     }
 
@@ -112,6 +116,7 @@ class ClientReport extends Base
         $legendData[] = '** in dieser Spalte sind nicht abschließend bearbeitete Kunden angegeben';
         $legendData = array_chunk($legendData, 1);
         $sheet->fromArray($legendData, null, 'A'. ($sheet->getHighestRow() + 1));
+
         return $spreadsheet;
     }
 }
