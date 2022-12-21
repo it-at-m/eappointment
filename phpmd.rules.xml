@@ -7,14 +7,9 @@
     <description> Rulesets without controversial rules but including the check for superglobals </description> 
     <rule ref="rulesets/codesize.xml" />
     <rule ref="rulesets/design.xml" />
-    <rule ref="rulesets/naming.xml" />
+    <rule ref="rulesets/naming.xml">
+        <exclude name="LongVariable" />
+    </rule>
     <rule ref="rulesets/unusedcode.xml" />
     <rule ref="rulesets/controversial.xml/Superglobals" />
-
-    <rule ref="rulesets/naming.xml/LongVariable">
-        <priority>3</priority>
-        <properties>
-            <property name="maximum" value="30" />
-        </properties>
-    </rule>
 </ruleset>
