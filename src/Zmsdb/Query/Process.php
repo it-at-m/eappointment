@@ -347,7 +347,7 @@ class Process extends Base implements MappingInterface
                             'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)'
                         ),
                         '<',
-                        'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`) > timestamp(DATE_SUB(NOW(), INTERVAL'
+                        'timestamp(DATE_ADD(NOW(), INTERVAL'
                         . ' IFNULL(email.send_reminder_minutes_before, ' . $defaultReminderInMinutes . ') MINUTE))'
                     );
             });
