@@ -6,9 +6,9 @@
 
 namespace BO\Zmsstatistic;
 
-use \BO\Mellon\Validator;
-
-use \BO\Zmsentities\Workstation as Entity;
+use BO\Zmsentities\Workstation as Entity;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class QuickLogin extends BaseController
 {
@@ -16,12 +16,12 @@ class QuickLogin extends BaseController
 
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
 
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $loginData = Helper\LoginForm::fromQuickLogin();
@@ -48,8 +48,9 @@ class QuickLogin extends BaseController
         $workstation->scope = new \BO\Zmsentities\Scope(array('id' => $loginData['scope']['value']));
         $workstation->hint = $loginData['hint']['value'];
         $workstation->name = $loginData['workstation']['value'];
-        $workstation = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
-        $basePath = $request->getUri()->getBasePath();
+        \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
+
+        $basePath = $request->getBasePath();
         return $response->withRedirect($basePath .'/'. trim($loginData['redirectUrl']['value'], "/"));
     }
 }

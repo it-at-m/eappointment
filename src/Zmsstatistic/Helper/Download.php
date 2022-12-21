@@ -7,16 +7,16 @@
  */
 namespace BO\Zmsstatistic\Helper;
 
+use BO\Slim\Response;
+use Fig\Http\Message\StatusCodeInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-
-use \BO\Mellon\Validator;
 
 class Download
 {
     protected $writer = null;
 
-    protected $spreedsheet = null;
+    protected $spreadsheet = null;
 
     protected $period = '';
 
@@ -31,9 +31,26 @@ class Download
         return $this;
     }
 
+    /**
+     * @param Response $response
+     * @return mixed
+     */
     public function writeDownload($response)
     {
-        $response->getBody()->write($this->getWriter()->save('php://output'));
+        $resource = fopen('php://temp', 'x+');
+
+        try {
+            $this->getWriter()->save($resource);
+            rewind($resource);
+            $response->getBody()->write(stream_get_contents($resource));
+        } catch (\Exception $e) {
+            fclose($resource);
+
+            return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
+        }
+
+        fclose($resource);
+
         return $response
             ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             ->withHeader('Content-Disposition', sprintf('attachment; filename="%s.%s"', $this->title, $this->type));

@@ -6,6 +6,10 @@
 
 namespace BO\Zmsstatistic;
 
+use BO\Slim\Render;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 class ReportWaitingDepartment extends BaseController
 {
     protected $hashset = [
@@ -21,11 +25,11 @@ class ReportWaitingDepartment extends BaseController
 
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $validator = $request->getAttribute('validator');
@@ -51,7 +55,7 @@ class ReportWaitingDepartment extends BaseController
             return (new Download\WaitingReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/reportWaitingIndex.twig',
             array(

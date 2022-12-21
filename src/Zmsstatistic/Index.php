@@ -6,8 +6,11 @@
 
 namespace BO\Zmsstatistic;
 
-use \BO\Zmsentities\Workstation;
-use \BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Zmsclient\Auth;
+use BO\Zmsentities\Workstation;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class Index extends BaseController
 {
@@ -15,11 +18,11 @@ class Index extends BaseController
 
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         try {
@@ -28,14 +31,14 @@ class Index extends BaseController
             $workstation = null;
         }
         $input = $request->getParsedBody();
-        if ($request->isPost()) {
+        if ($request->getMethod() === 'POST') {
             $loginData = $this->testLogin($input);
 
             if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
-                \BO\Zmsclient\Auth::setKey($loginData->authkey);
-                return \BO\Slim\Render::redirect('workstationSelect', array(), array());
+                Auth::setKey($loginData->authkey);
+                return Render::redirect('workstationSelect', array(), array());
             }
-            \BO\Slim\Render::withHtml(
+            Render::withHtml(
                 $response,
                 'page/index.twig',
                 array(
@@ -50,7 +53,7 @@ class Index extends BaseController
         $config = (! $workstation)
             ? \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity()
             : null;
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/index.twig',
             array(

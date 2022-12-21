@@ -6,19 +6,23 @@
 
 namespace BO\Zmsstatistic;
 
+use BO\Slim\Render;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 class Changelog extends BaseController
 {
     protected $withAccess = false;
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \psr\http\message\requestinterface $request,
-        \psr\http\message\responseinterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/changelog.twig',
             array(

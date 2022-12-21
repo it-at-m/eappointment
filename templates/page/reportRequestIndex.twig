@@ -53,7 +53,7 @@
                             </span>
                         </th>
                     {% if exchangeRequest.period == "day" %}
-                        <th class="statistik">{{ startDate|localizeddate("medium","none",NULL,NULL,"LLL") }}</th>
+                        <th class="statistik">{{ startDate|format_date(pattern="LLL") }}</th>
                     {% elseif exchangeRequest.period == "month" %}
                         <th class="statistik">{{ startDate|date('Y') }}</th>
                     {% endif %}
@@ -61,7 +61,7 @@
                         {% if exchangeRequest.period == "day" %}
                             <th class="statistik">&nbsp;{{ "%'02s"|format(date) }}</th>
                         {% elseif exchangeRequest.period == "month" %}
-                            <th class="statistik">&nbsp;{{ (startDate|date('Y') ~"-"~ "%02d"|format(date))|localizeddate("medium","none",NULL,NULL,"LLL") }}</th>
+                            <th class="statistik">&nbsp;{{ (startDate|date('Y') ~"-"~ "%02d"|format(date))|format_date(pattern="LLL") }}</th>
                         {% endif %}
                     {% endfor %}
                     </tr>

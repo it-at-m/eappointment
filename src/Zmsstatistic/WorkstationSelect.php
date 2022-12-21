@@ -6,19 +6,22 @@
 
 namespace BO\Zmsstatistic;
 
-use \BO\Zmsstatistic\Helper\LoginForm;
-use \BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Zmsstatistic\Helper\LoginForm;
+use BO\Mellon\Validator;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class WorkstationSelect extends BaseController
 {
     protected $resolveLevel = 3;
     /**
      * @SuppressWarnings(Parameter)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $this->workstation->testDepartmentList();
@@ -32,7 +35,7 @@ class WorkstationSelect extends BaseController
             $queryParams = ($selectedDate) ? array('date' => $selectedDate) : array();
             if (! $form->hasFailed()) {
                 LoginForm::writeWorkstationUpdate($form, $this->workstation);
-                return \BO\Slim\Render::redirect(
+                return Render::redirect(
                     'Overview',
                     array(),
                     $queryParams
@@ -40,7 +43,7 @@ class WorkstationSelect extends BaseController
             }
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/workstationSelect.twig',
             array(

@@ -123,9 +123,4 @@ use \Psr\Http\Message\ResponseInterface;
     };
 });
 
-\App::$slim->getContainer()->offsetSet('errorHandler', function ($container) {
-    return new \BO\Zmsstatistic\Helper\TwigExceptionHandler($container);
-});
-\App::$slim->getContainer()->offsetSet('phpErrorHandler', function ($container) {
-    return new \BO\Zmsstatistic\Helper\TwigExceptionHandler($container);
-});
+\App::$slim->getContainer()->offsetSet('errorHandler', new \BO\Zmsstatistic\Helper\TwigExceptionHandler());

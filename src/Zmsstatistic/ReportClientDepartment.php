@@ -6,6 +6,10 @@
 
 namespace BO\Zmsstatistic;
 
+use BO\Slim\Render;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 class ReportClientDepartment extends BaseController
 {
     protected $totals = [
@@ -20,11 +24,11 @@ class ReportClientDepartment extends BaseController
 
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $validator = $request->getAttribute('validator');
@@ -57,10 +61,11 @@ class ReportClientDepartment extends BaseController
             $args['reports'][] = $exchangeClient;
             $args['department'] = $this->department;
             $args['organisation'] = $this->organisation;
+
             return (new Download\ClientReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
         }
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/reportClientIndex.twig',
             array(

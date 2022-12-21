@@ -6,8 +6,6 @@
 
 namespace BO\Zmsstatistic\Download;
 
-use \BO\Zmsentities\Exchange as ReportEntity;
-
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class Base extends \BO\Zmsstatistic\BaseController
@@ -81,6 +79,7 @@ class Base extends \BO\Zmsstatistic\BaseController
             $range = array('Zeitraum:', $firstDay, 'bis', $lastDay);
             $sheet->fromArray($range, null, 'A'. ($sheet->getHighestRow() + 1));
         }
+
         return $spreadsheet;
     }
 
@@ -109,6 +108,7 @@ class Base extends \BO\Zmsstatistic\BaseController
             \IntlDateFormatter::GREGORIAN,
             $pattern
         );
+
         return $dateFormatter->format($date->getTimestamp());
     }
 }

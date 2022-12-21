@@ -7,7 +7,7 @@
  */
 namespace BO\Zmsstatistic\Helper;
 
-use \BO\Mellon\Validator;
+use BO\Mellon\Validator;
 
 class LoginForm
 {

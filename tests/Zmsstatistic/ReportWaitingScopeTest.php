@@ -48,7 +48,10 @@ class ReportWaitingScopeTest extends Base
             '<a class="active" href="/report/waiting/scope/">Bürgeramt Heerstraße </a>',
             (string) $response->getBody()
         );
-        $this->assertStringContainsString('<a href="/report/waiting/scope/2016-03/">März</a>', (string) $response->getBody());
+        $this->assertStringContainsString(
+            '<a href="/report/waiting/scope/2016-03/">März</a>',
+            (string) $response->getBody()
+        );
         $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
@@ -225,14 +228,13 @@ class ReportWaitingScopeTest extends Base
                 ]
             ]
         );
-        ob_start();
+
         $response = $this->render(['period' => '2016-03'], ['type' => 'csv'], []);
-        $output = ob_get_contents();
-        ob_end_clean();
+
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
         $this->assertStringContainsString(
             '"Tagesmaximum";"532";"414";"280";"160";"256";"437";"455";"202";"532";"359";"384";"417";"148";"375";"343";',
-            $output
+            (string) $response->getBody()
         );
     }
 
@@ -273,12 +275,11 @@ class ReportWaitingScopeTest extends Base
                 ]
             ]
         );
-        ob_start();
+
         $response = $this->render(['period' => '2016'], ['type' => 'csv'], []);
-        $output = ob_get_contents();
-        ob_end_clean();
+
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
-        $this->assertStringContainsString('"2016";"Januar";"Februar";"März"', $output);
-        $this->assertStringContainsString('"Tagesmaximum";"532";"384";"506";"532"', $output);
+        $this->assertStringContainsString('"2016";"Januar";"Februar";"März"', (string) $response->getBody());
+        $this->assertStringContainsString('"Tagesmaximum";"532";"384";"506";"532"', (string) $response->getBody());
     }
 }

@@ -6,11 +6,8 @@
 
 namespace BO\Zmsstatistic;
 
-use \Psr\Http\Message\RequestInterface;
-
-use \Psr\Http\Message\ResponseInterface;
-
-use \BO\Mellon\Validator;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * @SuppressWarnings(NumberOfChildren)

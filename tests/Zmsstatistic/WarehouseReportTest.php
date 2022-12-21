@@ -91,11 +91,8 @@ class WarehouseReportTest extends Base
             ]
         );
 
-
-        ob_start();
         $response = $this->render($this->arguments, ['type' => 'xlsx'], [ ]);
-        $output = ob_get_contents();
-        ob_end_clean();
+
         $this->assertStringContainsString(
             'raw_statistic_waitingscope_141_2016-03.xlsx',
             $response->getHeaderLine('Content-Disposition')

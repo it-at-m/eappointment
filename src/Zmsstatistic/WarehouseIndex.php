@@ -6,22 +6,26 @@
 
 namespace BO\Zmsstatistic;
 
+use BO\Slim\Render;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 class WarehouseIndex extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $warehouse = \App::$http->readGetResult('/warehouse/')
           ->getEntity()
           ->toHashed();
 
-        return \BO\Slim\Render::withHtml(
+        return Render::withHtml(
             $response,
             'page/warehouseIndex.twig',
             array(

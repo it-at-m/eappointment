@@ -45,9 +45,9 @@
                 {% endfor %}
                 <td>
                     {% if monthExists %}
-                        <a href="{{ urlGet("Report%s"|format(source.entity), {'period': tmpmonth}, {}) }}">{{ tmpmonth|localizeddate("full","none",NULL,NULL,"MMMM") }}</a>
+                        <a href="{{ urlGet("Report%s"|format(source.entity), {'period': tmpmonth}, {}) }}">{{ tmpmonth|format_date(pattern="MMMM") }}</a>
                     {% else %}
-                        {{ tmpmonth|localizeddate("full","none",NULL,NULL,"MMMM") }}
+                        {{ tmpmonth|format_date(pattern="MMMM") }}
                     {% endif %}
                 </td>
             {% endfor %}

@@ -7,6 +7,12 @@
  */
 namespace BO\Zmsstatistic\Helper;
 
+use BO\Zmsclient\Auth;
+use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
+use BO\Zmsentities\Exception\WorkstationMissingScope;
+use BO\Zmsentities\Useraccount;
+use BO\Zmsentities\Workstation;
+
 class Access extends \BO\Slim\Controller
 {
     protected $workstation = null;
@@ -19,9 +25,11 @@ class Access extends \BO\Slim\Controller
 
     protected $withAccess = true;
 
+    protected $owner = null;
+
     protected function initAccessRights($request)
     {
-        $this->workstation = $this->readWorkstation($request);
+        $this->workstation = $this->readWorkstation();
         if ($this->workstation && isset($this->workstation->scope['id'])) {
             $this->department = $this->readDepartment();
             $this->organisation = $this->readOrganisation();
@@ -76,7 +84,7 @@ class Access extends \BO\Slim\Controller
             (false !== strpos($path, 'organisation') && ! $this->organisation) ||
             (false !== strpos($path, 'department') && ! $this->department)
         ) {
-            throw new \BO\Zmsentities\Exception\UserAccountAccessRightsFailed();
+            throw new UserAccountAccessRightsFailed();
         }
     }
 
@@ -85,7 +93,7 @@ class Access extends \BO\Slim\Controller
         if ($this->isPathWithoutScope($path)
             && (! isset($this->workstation['scope']) || ! isset($this->workstation['scope']['id']))
         ) {
-            throw new \BO\Zmsentities\Exception\WorkstationMissingScope();
+            throw new WorkstationMissingScope();
         }
     }
 
@@ -100,13 +108,13 @@ class Access extends \BO\Slim\Controller
 
     protected function testLogin($input)
     {
-        $userAccount = new \BO\Zmsentities\Useraccount(array(
+        $userAccount = new Useraccount(array(
             'id' => $input['loginName'],
             'password' => $input['password'],
             'departments' => array('id' => 0) // required in schema validation
         ));
         try {
-            /** @var \BO\Zmsentities\Workstation $workstation */
+            /** @var Workstation $workstation */
             $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
             return $workstation;
         } catch (\BO\Zmsclient\Exception $exception) {
@@ -119,10 +127,10 @@ class Access extends \BO\Slim\Controller
                     'Der Nutzername oder das Passwort wurden falsch eingegeben'
                 ];
             } elseif ('BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn' == $exception->template) {
-                \BO\Zmsclient\Auth::setKey($exception->data['authkey']);
+                Auth::setKey($exception->data['authkey']);
                 throw $exception;
             } elseif ('' != $exception->template
-                && \App::$slim->getContainer()->view->getLoader()->exists($template)
+                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
             ) {
                 $exceptionData = [
                   'template' => $template,
