@@ -171,7 +171,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "e5a71f90be66078da9a46aac428de007165a9f12"
+                "reference": "040f54a60bf076b8afd453fa41614578bad1ef27"
             },
             "require": {
                 "eappointment/mellon": "^2.0.1",
@@ -217,7 +217,7 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2022-11-30T09:26:18+00:00"
+            "time": "2022-12-20T07:50:11+00:00"
         },
         {
             "name": "giggsey/libphonenumber-for-php",
@@ -4433,5 +4433,5 @@
         "ext-pcre": ">=0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }
