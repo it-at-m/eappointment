@@ -147,7 +147,7 @@ class Result
     /**
      * Description
      *
-     * @return Entity
+     * @return Entity|null|false
      */
     public function getEntity()
     {
