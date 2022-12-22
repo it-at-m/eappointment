@@ -333,7 +333,7 @@ class Process extends Base implements MappingInterface
                     ->andWith(
                         self::expression(
                             'DATE_SUB(CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`), INTERVAL '
-                            . 'IFNULL(scopemail.send_reminder_minutes_before, ' . $defaultReminderInMinutes 
+                            . 'IFNULL(scopemail.send_reminder_minutes_before, ' . $defaultReminderInMinutes
                             . ') MINUTE)'
                         ),
                         '<=',
