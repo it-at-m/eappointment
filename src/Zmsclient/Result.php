@@ -2,8 +2,14 @@
 
 namespace BO\Zmsclient;
 
-use \BO\Mellon\Validator;
-use \BO\Zmsentities\Schema\Factory;
+use BO\Mellon\Valid;
+use BO\Mellon\Validator;
+use BO\Zmsentities\Metaresult;
+use BO\Zmsentities\Collection\Base as BaseCollection;
+use BO\Zmsentities\Schema\Entity;
+use BO\Zmsentities\Schema\Factory;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Handle default response
@@ -11,32 +17,32 @@ use \BO\Zmsentities\Schema\Factory;
 class Result
 {
     /**
-     * @var \Psr\Http\Message\ResponseInterface $response
+     * @var ResponseInterface
      */
     protected $response;
 
     /**
-     * @var \Psr\Http\Message\RequestInterface $request
+     * @var RequestInterface|null
      */
     protected $request;
 
     /**
-     * @var Array $data Type \BO\Zmsentities\Schema\entity
+     * @var Entity[]|null
      */
     protected $data = null;
 
     /**
-    * @var Array $meta Type \BO\Zmsentities\Meta
+    * @var Metaresult|null
     */
     protected $meta = null;
 
     /**
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @param \Psr\Http\Message\RequestInterface $request (optional) reference for better error messages
+     * @param ResponseInterface $response
+     * @param RequestInterface|null $request (optional) reference for better error messages
      */
     public function __construct(
-        \Psr\Http\Message\ResponseInterface $response,
-        \Psr\Http\Message\RequestInterface $request = null
+        ResponseInterface $response,
+        RequestInterface $request = null
     ) {
         $this->request = $request;
         $this->response = $response;
@@ -44,10 +50,10 @@ class Result
 
     /**
      * Parse response and the object values
-     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param ResponseInterface $response
      * @return self
      */
-    public function setResponse(\Psr\Http\Message\ResponseInterface $response)
+    public function setResponse(ResponseInterface $response)
     {
         $body = Validator::value((string)$response->getBody())->isJson();
         $this->testMeta($body, $response);
@@ -55,15 +61,18 @@ class Result
         if (array_key_exists("data", $result)) {
             $this->setData($result['data']);
         }
+
         return $this;
     }
 
     /**
      * Test meta data on errors
      *
+     * @param Valid $body
+     * @param ResponseInterface $response
      * @throws Exception
      */
-    protected function testMeta($body, \Psr\Http\Message\ResponseInterface $response)
+    protected function testMeta($body, ResponseInterface $response)
     {
         if ($body->hasFailed()) {
             $content = (string)$response->getBody();
@@ -108,7 +117,7 @@ class Result
     /**
      * Get the origin request
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return RequestInterface|null
      */
     public function getRequest()
     {
@@ -118,7 +127,7 @@ class Result
     /**
      * Get the origin response
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      */
     public function getResponse()
     {
@@ -128,7 +137,7 @@ class Result
     /**
      * Get the origin response
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return bool
      */
     public function isStatus($statuscode)
     {
@@ -138,7 +147,7 @@ class Result
     /**
      * Description
      *
-     * @return \BO\Zmsentities\Schema\Entity
+     * @return Entity
      */
     public function getEntity()
     {
@@ -147,13 +156,14 @@ class Result
             $data = $this->getData();
             $entity = reset($data);
         }
+
         return $entity;
     }
 
     /**
      * Description
      *
-     * @return \BO\Zmsentities\Schema\Entity
+     * @return BaseCollection|null
      */
     public function getCollection()
     {
@@ -165,31 +175,35 @@ class Result
             $className = "\\BO\\Zmsentities\\Collection\\" . $alias . "List";
             $collection = new $className($this->getData());
         }
+
         return $collection;
     }
+
     /**
      * Description
      *
-     * @return Array (\BO\Zmsentities\Schema\Entity)
+     * @return Entity[]
      */
     public function getData()
     {
         if (null === $this->data) {
             $this->setResponse($this->response);
         }
+
         return $this->data;
     }
 
     /**
      * Description
      *
-     * @return Array (\BO\Zmsentities\Meta)
+     * @return Metaresult|null
      */
     public function getMeta()
     {
         if (null === $this->meta) {
             $this->setResponse($this->response);
         }
+
         return $this->meta;
     }
 
@@ -207,13 +221,14 @@ class Result
                 $idList[] = $item['id'];
             }
         }
+
         return join(',', array_unique($idList));
     }
 
     /**
      * Set entity from response
      *
-     * @param Array $data
+     * @param array $data
      *
      * @return self
      */
@@ -228,6 +243,7 @@ class Result
             }
             $this->data[] = Factory::create($entityData)->getEntity();
         }
+
         return $this;
     }
 }
