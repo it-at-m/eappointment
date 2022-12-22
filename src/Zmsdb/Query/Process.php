@@ -299,18 +299,6 @@ class Process extends Base implements MappingInterface
         $defaultReminderInMinutes
     ) {
         $this->query
-            ->leftJoin(
-                new Alias("standort", 'standort'),
-                'standort.StandortID',
-                '=',
-                'process.StandortID'
-            )
-            ->leftJoin(
-                new Alias("email", 'email'),
-                'email.BehoerdenID',
-                '=',
-                'standort.BehoerdenID'
-            )
             ->where(function (\Solution10\SQL\ConditionBuilder $query) use ($now, $lastRun, $defaultReminderInMinutes) {
                 $query
                     ->andWith(
@@ -328,7 +316,7 @@ class Process extends Base implements MappingInterface
                         $now->format('Y-m-d H:i:s')
                     )
                     ->andWith(
-                        'email.send_reminder',
+                        'scopemail.send_reminder',
                         '=',
                         1
                     )
@@ -344,11 +332,11 @@ class Process extends Base implements MappingInterface
                     )
                     ->andWith(
                         self::expression(
-                            'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)'
+                            'DATE_SUB(CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`), INTERVAL '
+                            . 'IFNULL(scopemail.send_reminder_minutes_before, ' . $defaultReminderInMinutes . ') MINUTE)'
                         ),
-                        '<',
-                        'timestamp(DATE_ADD(NOW(), INTERVAL'
-                        . ' IFNULL(email.send_reminder_minutes_before, ' . $defaultReminderInMinutes . ') MINUTE))'
+                        '<=',
+                        $now->format('Y-m-d H:i:s')
                     );
             });
         $this->query->orderBy('appointments__0__date', 'ASC');
