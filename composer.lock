@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f81a58224221bdc420bf9201bc87968e",
+    "content-hash": "e726828a5332d5e2ca4de2829872c7c7",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -138,17 +138,23 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-muc/dev",
+            "version": "dev-muc/release/sprint14",
             "source": {
                 "type": "git",
-                "url": "https://gitlab.com/eappointment/zmsclient.git",
-                "reference": "94b9cc3c7576d99d415e4206e18769e15bca64fb"
+                "url": "git@gitlab.com:eappointment/zmsclient.git",
+                "reference": "8ea56fdd90bd3913a5e28f6aeb7fb66fe8e006ac"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=8ea56fdd90bd3913a5e28f6aeb7fb66fe8e006ac",
+                "reference": "8ea56fdd90bd3913a5e28f6aeb7fb66fe8e006ac",
+                "shasum": ""
             },
             "require": {
                 "aronduby/dump": "^0.9",
                 "eappointment/mellon": "^2.0.1",
-                "eappointment/zmsentities": "dev-muc/dev",
-                "eappointment/zmsslim": "dev-muc/dev",
+                "eappointment/zmsentities": "dev-muc/release/sprint14",
+                "eappointment/zmsslim": "dev-muc/release/sprint14",
                 "ext-curl": ">=0",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -187,15 +193,21 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "time": "2022-12-05T10:32:10+00:00"
+            "time": "2023-01-02T15:29:58+00:00"
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-muc/dev",
+            "version": "dev-muc/release/sprint14",
             "source": {
                 "type": "git",
-                "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "e5a71f90be66078da9a46aac428de007165a9f12"
+                "url": "git@gitlab.com:eappointment/zmsentities.git",
+                "reference": "040f54a60bf076b8afd453fa41614578bad1ef27"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=040f54a60bf076b8afd453fa41614578bad1ef27",
+                "reference": "040f54a60bf076b8afd453fa41614578bad1ef27",
+                "shasum": ""
             },
             "require": {
                 "eappointment/mellon": "^2.0.1",
@@ -226,11 +238,7 @@
                     "BO\\Zmsentities\\Tests\\": "tests/Zmsentities/"
                 }
             },
-            "scripts": {
-                "command": [
-                    "bin/configure"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -241,15 +249,21 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2022-11-30T09:26:18+00:00"
+            "time": "2022-12-20T07:50:11+00:00"
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-muc/dev",
+            "version": "dev-muc/release/sprint14",
             "source": {
                 "type": "git",
-                "url": "https://gitlab.com/eappointment/zmsslim.git",
-                "reference": "0b94df1a6108e67486a600ccdd15d70fc00f5096"
+                "url": "git@gitlab.com:eappointment/zmsslim.git",
+                "reference": "a432bb5390b38df832b62b4ae5411b4b98ba8fba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=a432bb5390b38df832b62b4ae5411b4b98ba8fba",
+                "reference": "a432bb5390b38df832b62b4ae5411b4b98ba8fba",
+                "shasum": ""
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -278,11 +292,7 @@
                     "BO\\Slim\\Tests\\": "tests/Slim/"
                 }
             },
-            "scripts": {
-                "command": [
-                    "bin/configure"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -293,7 +303,7 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-            "time": "2022-12-09T11:01:59+00:00"
+            "time": "2022-12-21T12:53:11+00:00"
         },
         {
             "name": "fig/http-message-util",
@@ -6532,5 +6542,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
