@@ -83,37 +83,42 @@ $downloads = array(
 );
 foreach ($downloads as $download) {
     $dest = $destinationPath . DIRECTORY_SEPARATOR . $download['file'];
-
+    
     if (file_exists($dest)) {
         $oldContentJson = file_get_contents($dest);
     } else {
         $oldContentJson = '{}';
     }
     $oldContent = json_decode($oldContentJson, true);
+    $oldContentJson = null;
 
     $request = Request::get($baseDomain . $download['url']);
 
     if (isset($oldContent['hash']) && !empty($oldContent['hash'])) {
         $request->addHeader('If-None-Match', $oldContent['hash']);
     }
+    $oldContent = null;
 
-    $respronse = $request
+    $response = $request
         //->followRedirects()
         ->send()
     ;
 
-    if (304 == $respronse->code) {
+    if (304 == $response->code) {
         continue;
     }
 
-    $json = $respronse->body;
+    $json = $response->body;
     $tmp = $destinationPath . DIRECTORY_SEPARATOR . 'tmp.' . $download['file'];
     file_put_contents($tmp, $json);
     $data = json_decode($json, true);
+    $json = null;
+    $response = null;
     if (array_key_exists('error', $data) && $data['error'] === false) {
         rename($tmp, $dest);
     } else {
         echo $cli->red($baseDomain . $download['url'] . " did not validate, see temp file $tmp \n");
         exit(1);
     }
+    $data = null;
 }
