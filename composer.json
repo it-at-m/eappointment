@@ -8,6 +8,9 @@
       "email": "mathias.fischer@berlinonline.de"
     }
   ],
+  "scripts": {
+    "command": "bin/configure"
+  },
   "require-dev": {
     "phpmd/phpmd": "@stable",
     "squizlabs/php_codesniffer": "*",
