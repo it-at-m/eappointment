@@ -76,6 +76,7 @@ class KeycloakInstance
         list($header, $payload, $signature)  = explode('.', $token->getToken());
         $realmData = $this->provider::getBasicOptionsFromJsonFile();
         $accessTokenPayload = json_decode(base64_decode($payload), true);
+        error_log("_________________1111111_________________" . json_encode($accessTokenPayload) );
         $audience = $accessTokenPayload['aud'];
         $ressourceAccess = array_keys($accessTokenPayload['resource_access'][$realmData['clientId']]['roles']);
         if (! in_array(\App::IDENTIFIER, $audience) && ! in_array(\App::IDENTIFIER, $ressourceAccess)) {
