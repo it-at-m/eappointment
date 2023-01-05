@@ -61,11 +61,15 @@ class Provider extends Keycloak
     public function getResourceOwnerData(AccessToken $token)
     {
         $resourceOwner = $this->getResourceOwner($token);
+        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
         $ownerData['username'] = $resourceOwner->getName(). '@' . static::PROVIDERNAME;
-        if ($resourceOwner->getVerifiedEmail()) {
-            $ownerData['email'] = $resourceOwner->getVerifiedEmail();
+        if(1 == $config->getPreference('oidc', 'onlyVerifiedMail')){
+            if ($resourceOwner->getVerifiedEmail()) {
+                $ownerData['email'] = $resourceOwner->getVerifiedEmail();
+            }  
+        } else {
+            $ownerData['email'] = $resourceOwner->getEmail();
         }
-        error_log(var_export($ownerData, 1));
         return $ownerData;
     }
 
