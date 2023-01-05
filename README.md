@@ -354,3 +354,4 @@ Includes a remote HTML file in your code.
 If the configuration setting `ESI_ENABLED` is true, it will output a `<esi:include src="$uri" />`.
 
 * **uri** *String* - URL to include in the template.
+
