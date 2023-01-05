@@ -19,6 +19,8 @@ class Application
      */
     const DEBUG = false;
     const DEBUGLEVEL = 'WARNING';
+    
+    const TOBIASDEBUG = '050123';
 
     /**
      * Settings for region
