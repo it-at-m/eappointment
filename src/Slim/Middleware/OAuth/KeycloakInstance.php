@@ -74,6 +74,7 @@ class KeycloakInstance
     private function testAccess(AccessToken $token)
     {
         list($header, $payload, $signature)  = explode('.', $token->getToken());
+        $realmData = $this->provider::getBasicOptionsFromJsonFile();
         $accessTokenPayload = json_decode(base64_decode($payload), true);
         $clientRoles = array_values($accessTokenPayload['resource_access'][\App::IDENTIFIER]['roles']);
         if (
