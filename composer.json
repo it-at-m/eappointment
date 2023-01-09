@@ -8,24 +8,6 @@
       "email": "mathias.fischer@berlinonline.de"
     }
   ],
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://gitlab.com/eappointment/zmsclient.git"
-    },
-    {
-      "type": "git",
-      "url": "https://gitlab.com/eappointment/zmsslim.git"
-    },
-    {
-      "type": "git",
-      "url": "https://gitlab.com/eappointment/zmsdb.git"
-    },
-    {
-      "type": "git",
-      "url": "https://gitlab.com/eappointment/zmsentities.git"
-    }
-  ],
   "require-dev": {
     "aronduby/dump": "*",
     "phpmd/phpmd": "@stable",
@@ -47,7 +29,6 @@
   },
   "scripts": {
     "clean": "rm -f public/doc/assets/*.* && rm -f public/_test/assets/*.*",
-    "command": "bin/configure",
     "wget-files": [
       "wget https://eappointment.gitlab.io/zmsapi/doc/swagger.json -O public/doc/swagger.json",
       "wget https://eappointment.gitlab.io/zmsapi/doc/assets/redoc.min.js -O public/doc/assets/redoc.min.js",
