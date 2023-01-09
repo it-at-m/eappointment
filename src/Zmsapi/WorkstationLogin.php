@@ -43,7 +43,7 @@ class WorkstationLogin extends BaseController
         return $response;
     }
 
-    public static function getLoggedInWorkstation($request, $entity, $resolveReferences, $oidcLogin = false)
+    public static function getLoggedInWorkstation($request, $entity, $resolveReferences)
     {
         Helper\UserAuth::testUseraccountExists($entity->getId());
         $useraccount = Helper\UserAuth::getVerifiedUseraccount($entity);
