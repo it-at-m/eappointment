@@ -87,6 +87,7 @@
         },
         "sendEmailReminderMinutesBefore": {
             "type": "number",
+            "default": null,
             "description": "number of minutes before appointment when reminder e-mail is sent"
         },
         "links": {
