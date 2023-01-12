@@ -86,7 +86,10 @@
             "description": "activation of sending e-mail reminder"
         },
         "sendEmailReminderMinutesBefore": {
-            "type": "number",
+            "type": [
+                "number",
+                "null"
+            ],
             "default": null,
             "description": "number of minutes before appointment when reminder e-mail is sent"
         },
