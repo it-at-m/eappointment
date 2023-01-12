@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2a89a8443cea33832c69574f9c0c6731",
+    "content-hash": "f144859fcbc072ee4699f467f36a8359",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -165,14 +165,8 @@
             "version": "dev-muc/dev",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.com:eappointment/zmsclient.git",
+                "url": "https://gitlab.com/eappointment/zmsclient.git",
                 "reference": "94b9cc3c7576d99d415e4206e18769e15bca64fb"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=94b9cc3c7576d99d415e4206e18769e15bca64fb",
-                "reference": "94b9cc3c7576d99d415e4206e18769e15bca64fb",
-                "shasum": ""
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -202,7 +196,11 @@
                     "BO\\Zmsclient\\Tests\\": "tests/Zmsclient/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "command": [
+                    "bin/configure"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -220,14 +218,8 @@
             "version": "dev-muc/dev",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.com:eappointment/zmsdb.git",
+                "url": "https://gitlab.com/eappointment/zmsdb.git",
                 "reference": "1a3ab1f53a98e16933e8ba1f8284ef6a9306026c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=1a3ab1f53a98e16933e8ba1f8284ef6a9306026c",
-                "reference": "1a3ab1f53a98e16933e8ba1f8284ef6a9306026c",
-                "shasum": ""
             },
             "require": {
                 "aura/sql": "^2.4",
@@ -277,7 +269,11 @@
                     "BO\\Zmsdb\\Tests\\": "tests/Zmsdb/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "command": [
+                    "bin/configure"
+                ]
+            },
             "license": [
                 "EUPL-1.2"
             ],
@@ -292,16 +288,16 @@
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "2.24.13",
+            "version": "2.24.14-rc1",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsdldb.git",
-                "reference": "115c7e898d3865155ab656bc2f3bee5157557e6b"
+                "reference": "24ba2608905834371b9790d4f852b4fdef692c77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdldb/repository/archive.zip?sha=115c7e898d3865155ab656bc2f3bee5157557e6b",
-                "reference": "115c7e898d3865155ab656bc2f3bee5157557e6b",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdldb/repository/archive.zip?sha=24ba2608905834371b9790d4f852b4fdef692c77",
+                "reference": "24ba2608905834371b9790d4f852b4fdef692c77",
                 "shasum": ""
             },
             "require": {
@@ -341,21 +337,15 @@
                 }
             ],
             "description": "Client for DLDB",
-            "time": "2022-12-12T16:26:58+00:00"
+            "time": "2023-01-02T11:31:10+00:00"
         },
         {
             "name": "eappointment/zmsentities",
             "version": "dev-muc/dev",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.com:eappointment/zmsentities.git",
-                "reference": "b5f8c984aa028092549a8ce0531e56f0f72ee034"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=b5f8c984aa028092549a8ce0531e56f0f72ee034",
-                "reference": "b5f8c984aa028092549a8ce0531e56f0f72ee034",
-                "shasum": ""
+                "url": "https://gitlab.com/eappointment/zmsentities.git",
+                "reference": "4d1cc775e7976cceeea7d85a7bd2a91ebff49e05"
             },
             "require": {
                 "eappointment/mellon": "^2.0.1",
@@ -386,7 +376,11 @@
                     "BO\\Zmsentities\\Tests\\": "tests/Zmsentities/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "command": [
+                    "bin/configure"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -397,21 +391,15 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2023-01-11T11:37:36+00:00"
+            "time": "2023-01-12T15:03:30+00:00"
         },
         {
             "name": "eappointment/zmsslim",
             "version": "dev-muc/dev",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.com:eappointment/zmsslim.git",
-                "reference": "f55b34282566530b099783d5041f012d5afbcbba"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=f55b34282566530b099783d5041f012d5afbcbba",
-                "reference": "f55b34282566530b099783d5041f012d5afbcbba",
-                "shasum": ""
+                "url": "https://gitlab.com/eappointment/zmsslim.git",
+                "reference": "a1bd059ded141c08d0037153401cfdfc6b79050b"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -440,7 +428,11 @@
                     "BO\\Slim\\Tests\\": "tests/Slim/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "command": [
+                    "bin/configure"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -451,7 +443,7 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-            "time": "2023-01-05T10:15:42+00:00"
+            "time": "2023-01-05T12:30:00+00:00"
         },
         {
             "name": "fig/http-message-util",
@@ -1973,12 +1965,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "0c14acdc4a756a825d19f2011fc3bb74d0b3cac2"
+                "reference": "3d58f0fde200b622c2df1b8362362e1a11ee6444"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/0c14acdc4a756a825d19f2011fc3bb74d0b3cac2",
-                "reference": "0c14acdc4a756a825d19f2011fc3bb74d0b3cac2",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/3d58f0fde200b622c2df1b8362362e1a11ee6444",
+                "reference": "3d58f0fde200b622c2df1b8362362e1a11ee6444",
                 "shasum": ""
             },
             "conflict": {
@@ -2274,7 +2266,7 @@
                 "phpunit/phpunit": ">=4.8.19,<4.8.28|>=5,<5.6.3",
                 "phpwhois/phpwhois": "<=4.2.5",
                 "phpxmlrpc/extras": "<0.6.1",
-                "phpxmlrpc/phpxmlrpc": "<4.9",
+                "phpxmlrpc/phpxmlrpc": "<4.9.2",
                 "pimcore/data-hub": "<1.2.4",
                 "pimcore/pimcore": "<10.5.9",
                 "pocketmine/bedrock-protocol": "<8.0.2",
@@ -2522,7 +2514,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-01-10T23:04:17+00:00"
+            "time": "2023-01-12T00:15:09+00:00"
         },
         {
             "name": "seld/cli-prompt",
