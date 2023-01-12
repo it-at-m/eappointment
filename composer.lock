@@ -195,7 +195,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "b5f8c984aa028092549a8ce0531e56f0f72ee034"
+                "reference": "4d1cc775e7976cceeea7d85a7bd2a91ebff49e05"
             },
             "require": {
                 "eappointment/mellon": "^2.0.1",
@@ -241,7 +241,7 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2023-01-11T11:37:36+00:00"
+            "time": "2023-01-12T15:03:30+00:00"
         },
         {
             "name": "eappointment/zmsslim",
