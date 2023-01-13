@@ -30,6 +30,7 @@ class Department extends BaseController
         if ($request->isPost()) {
             $input = $this->withCleanupLinks($input);
             $input = $this->withCleanupDayoffs($input);
+            $input = $this->withCleanupEmailReminder($input);
             $entity = (new Entity($input))->withCleanedUpFormData();
             $entity->id = $entityId;
             $entity->dayoff = $entity->getDayoffList()->withTimestampFromDateformat();
@@ -84,6 +85,15 @@ class Department extends BaseController
         $input['dayoff'] = array_filter($dayoffs, function ($dayoff) {
             return !($dayoff['name'] === '');
         });
+
+        return $input;
+    }
+
+    private function withCleanupEmailReminder(array $input)
+    {
+        if ($input['sendEmailReminderMinutesBefore'] === '') {
+            $input['sendEmailReminderMinutesBefore'] = null;
+        }
 
         return $input;
     }
