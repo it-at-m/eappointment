@@ -95,7 +95,7 @@ class Department extends BaseController
             $input['sendEmailReminderMinutesBefore'] = null;
         }
 
-        if ($input['sendEmailReminderEnabled']) {
+        if ($input['sendEmailReminderEnabled'] && empty($input['sendEmailReminderMinutesBefore'])) {
             $input['sendEmailReminderMinutesBefore'] = 120;
         }
 
