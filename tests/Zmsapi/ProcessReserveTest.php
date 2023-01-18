@@ -89,7 +89,7 @@ class ProcessReserveTest extends Base
         ], []);
 
         $responseData = json_decode($response->getBody(), 1);
-        $this->assertEquals('3', $responseData['data']['appointments'][0]['slotCount']);
+        $this->assertEquals('6', $responseData['data']['appointments'][0]['slotCount']);
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
