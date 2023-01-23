@@ -48,8 +48,7 @@ class KeycloakInstance
     {
         $this->writeDeleteSession();
         $realmData = $this->provider::getBasicOptionsFromJsonFile();
-        $logoutUrl = $this->provider->getLogoutUrl(['redirect_uri' => $realmData['logoutUri']]);
-        return $response->withRedirect($logoutUrl, 301);
+        return $response->withRedirect($realmData['logoutUri'], 301);
     }
 
     public function writeNewAccessTokenIfExpired()
