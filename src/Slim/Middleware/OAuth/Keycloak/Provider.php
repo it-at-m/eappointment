@@ -92,6 +92,7 @@ class Provider extends Keycloak
         $realmData['clientName'] = $config_data['clientName'];
         $realmData['redirectUri'] = $config_data['auth-redirect-url'];
         $realmData['logoutUri'] = $config_data['logout-redirect-url'];
+        $realmData['version'] = $config_data['version'];
         return $realmData;
     }
 }
