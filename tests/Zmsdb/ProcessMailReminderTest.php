@@ -27,6 +27,10 @@ class ProcessMailReminderTest extends Base
             '2016-04-01 13:50',
             $processList->getLast()->getFirstAppointment()->toDateTime()->format('Y-m-d H:i')
         );
+        $this->assertStringContainsString(
+            'Bürgeramt Wedding',
+            $processList->getLast()->scope->provider->contact['name']
+        );
     }
 
     public function testCronHelperTwoDays()
