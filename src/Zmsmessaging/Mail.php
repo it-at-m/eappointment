@@ -152,8 +152,6 @@ class Mail extends BaseController
         $mailer->CharSet = 'UTF-8';
         $mailer->SetLanguage("de");
         $mailer->Encoding = $encoding;
-        $this->log("Build Mailer: addCustomHeader() - ". \App::$now->format('c'));
-        $mailer->addCustomHeader('Content-Transfer-Encoding', $encoding);
         $mailer->IsHTML(true);
         $mailer->XMailer = \App::IDENTIFIER;
         $mailer->Subject = $entity['subject'];

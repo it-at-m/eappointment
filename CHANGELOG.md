@@ -1,5 +1,6 @@
 ## 2.24.14
 * #56299 - remove invalid email from queue automatically
+* #37 - Rejecting mail with invalid Content-Transfer-Encoding fixed
 
 ## 2.24.10
 
