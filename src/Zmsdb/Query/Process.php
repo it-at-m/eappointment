@@ -466,7 +466,7 @@ class Process extends Base implements MappingInterface
             }
             if ('processing' == $status) {
                 $query
-                    ->andWith('process.aufruferfolgreich', '!=', 1)
+                    ->andWith('process.aufruferfolgreich', '!=', 0)
                     ->andWith('process.NutzerID', '!=', 0)
                     ->andWith('process.StandortID', '!=', 0);
             }
