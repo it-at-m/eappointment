@@ -9,6 +9,7 @@
     }
   ],
   "scripts": {
+    "command": "bin/configure"
   },
   "require-dev": {
     "phpmd/phpmd": "@stable",
