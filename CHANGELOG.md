@@ -1,3 +1,6 @@
+## 2.24.14
+* #54285 - The fetching of operations that are in process has been corrected
+
 ## 2.24.13
 * #56079 - Revert changes for required slot calculation
 
