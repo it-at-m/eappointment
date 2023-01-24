@@ -90,7 +90,7 @@ class SendMailReminder
                 $this->reminderInSeconds,
                 $limit,
                 null,
-                1
+                2
             );
             return $processList;
         });
