@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8a476a2c18dca4e9029535e2f06907df",
+    "content-hash": "f81a58224221bdc420bf9201bc87968e",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -141,14 +141,8 @@
             "version": "dev-muc/dev",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.com:eappointment/zmsclient.git",
+                "url": "https://gitlab.com/eappointment/zmsclient.git",
                 "reference": "94b9cc3c7576d99d415e4206e18769e15bca64fb"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=94b9cc3c7576d99d415e4206e18769e15bca64fb",
-                "reference": "94b9cc3c7576d99d415e4206e18769e15bca64fb",
-                "shasum": ""
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -178,7 +172,11 @@
                     "BO\\Zmsclient\\Tests\\": "tests/Zmsclient/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "command": [
+                    "bin/configure"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -196,14 +194,8 @@
             "version": "dev-muc/dev",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.com:eappointment/zmsentities.git",
+                "url": "https://gitlab.com/eappointment/zmsentities.git",
                 "reference": "4d1cc775e7976cceeea7d85a7bd2a91ebff49e05"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=4d1cc775e7976cceeea7d85a7bd2a91ebff49e05",
-                "reference": "4d1cc775e7976cceeea7d85a7bd2a91ebff49e05",
-                "shasum": ""
             },
             "require": {
                 "eappointment/mellon": "^2.0.1",
@@ -234,7 +226,11 @@
                     "BO\\Zmsentities\\Tests\\": "tests/Zmsentities/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "command": [
+                    "bin/configure"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -252,14 +248,8 @@
             "version": "dev-muc/dev",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.com:eappointment/zmsslim.git",
+                "url": "https://gitlab.com/eappointment/zmsslim.git",
                 "reference": "691711fbd11aeb692651feab18fdba1d9b9bcee3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=691711fbd11aeb692651feab18fdba1d9b9bcee3",
-                "reference": "691711fbd11aeb692651feab18fdba1d9b9bcee3",
-                "shasum": ""
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -288,7 +278,11 @@
                     "BO\\Slim\\Tests\\": "tests/Slim/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "command": [
+                    "bin/configure"
+                ]
+            },
             "license": [
                 "MIT"
             ],
