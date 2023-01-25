@@ -25,7 +25,7 @@ class Topic extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($topiclist) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($topiclist) {
                 $topic = new \BO\Dldb\MySQL\Entity\Topic();
                 $topic->offsetSet('data_json', $data_json);
                 
@@ -112,7 +112,7 @@ class Topic extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($topiclist) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($topiclist) {
                 $topic = new \BO\Dldb\MySQL\Entity\Topic();
                 $topic->offsetSet('data_json', $data_json);
                 
