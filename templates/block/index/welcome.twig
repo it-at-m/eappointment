@@ -7,16 +7,10 @@
         
         {% set class = '' %}
         {% block board_body %}
-            {% if oidclogin %}
-            <p class="message message--error">
-            <strong>{% trans %}Wichtiger Hinweis{% endtrans %}</strong>: {% trans %}Es muss ein Passwort vergeben werden, wenn  sie sich zukünftig direkt im System einloggen wollen. Weiterhin müssen zwingend Standorte zugewiesen werden - dies kann nur ein Standortadministrator für Sie tun. Wenden Sie sich an ihren Standortadministrator.{% endtrans %}
-            </p>
-            {% else %}
-            <p>Um alle Funktionen des Systems nutzen zu können, identifizieren Sie sich bitte mit ihrem <strong>Nutzernamen</strong> und ihrem <strong>Passwort</strong> und wählen Sie im folgenden Schritt einen <strong>Standort</strong> und falls erforderlich eine <strong>Platz- oder Raum-Nummer</strong>.</p>
-            {% endif %}
+            <p>Um alle Funktionen des Systems nutzen zu können, müssen für Ihr Account noch entsprechende Rollen und Rechte zugeordnet werden. Wenden Sie sich hierfür bitte an Ihren Administrator.</p>
         {% endblock %} 
 
         {% block board_footer %}
-            <span>Version {{ currentVersion() }}</span>
+            <span>Version {{ currentVersion() }} </span>
         {% endblock %} 
 {% endembed %}
