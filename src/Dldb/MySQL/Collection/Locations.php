@@ -5,7 +5,6 @@
  **/
 namespace BO\Dldb\MySQL\Collection;
 
-use \BO\Dldb\MySQL\Entity\Location as Entity;
 use \BO\Dldb\Collection\Locations as Base;
 
 /**

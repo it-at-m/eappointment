@@ -21,17 +21,17 @@ class Topic extends Base
             $sqlArgs = [$this->locale];
             $sql = 'SELECT data_json FROM topic WHERE locale = ?';
 
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Topic');
-
-            $stm->execute($sqlArgs);
-            $topics = $stm->fetchAll();
-
             $topiclist = new Collection();
-            
-            foreach ($topics as $topic) {
+
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($topiclist) {
+                $topic = new \BO\Dldb\MySQL\Entity\Topic();
+                $topic->offsetSet('data_json', $data_json);
+                
                 $topiclist[$topic['id']] = $topic;
-            }
+            });
+            
             return $topiclist;
         } catch (\Exception $e) {
             throw $e;
@@ -89,13 +89,14 @@ class Topic extends Base
     public function readSearchResultList($query)
     {
         try {
+            #$query = '+' . implode(' +', explode(' ', $query));
             $sqlArgs = [$this->locale, $this->locale, $query];
             $sql = "SELECT t.data_json 
             FROM search AS se
             LEFT JOIN topic AS t ON t.id = se.object_id AND t.locale = ?
             WHERE 
-                se.locale = ? AND MATCH (search_value) AGAINST (? IN NATURAL LANGUAGE MODE)
-                AND (search_type IN ('name', 'keywords')) AND entity_type='topic'
+                se.locale = ? AND MATCH (search_value) AGAINST (? IN BOOLEAN MODE)
+                AND (search_type IN ('name', 'keywords', 'titles')) AND entity_type='topic'
              GROUP BY se.object_id
             ";
             /*
@@ -107,19 +108,17 @@ class Topic extends Base
             }*/
             #print_r($sql);exit;
 
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Topic');
-
-            $stm->execute($sqlArgs);
-            
-            $topics = $stm->fetchAll();
-
             $topiclist = new Collection();
-            
-            foreach ($topics as $topic) {
+
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($topiclist) {
+                $topic = new \BO\Dldb\MySQL\Entity\Topic();
+                $topic->offsetSet('data_json', $data_json);
+                
                 $topiclist[$topic['id']] = $topic;
-            }
-            #echo '<pre>' . print_r($topiclist,1) . '</pre>';exit;
+            });
+
             return $topiclist;
         } catch (\Exception $e) {
             throw $e;
