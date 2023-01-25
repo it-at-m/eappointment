@@ -1,5 +1,6 @@
 ## 2.24.14
 * #54285 - The fetching of operations that are in process has been corrected
+* #56588 - The resolution of the references of the location has been increased to 2 so that the service provider contact is available in the reminder email
 
 ## 2.24.13
 * #56079 - Revert changes for required slot calculation
