@@ -38,6 +38,8 @@ class Location extends Base
 
     public function fetchList($service_csv = false, $mixLanguages = false)
     {
+        # COALESCE(l2.data_json, l.data_json) AS data_json
+        # IF(l2.id, l2.data_json, l.data_json) AS data_json
         try {
             $sqlArgs = [$this->locale];
             $where = [];
@@ -49,7 +51,7 @@ class Location extends Base
             } else {
                 $where[] = "l.locale='de'";
                 $sql = "SELECT 
-                IF(l2.id, l2.data_json, l.data_json) AS data_json
+                COALESCE(l2.data_json, l.data_json) AS data_json
                 FROM location AS l
                 LEFT JOIN location AS l2 ON l2.id = l.id AND l2.locale = ?
                 ";
@@ -69,17 +71,17 @@ class Location extends Base
             $sql .= " WHERE " . implode(' AND ', $where);
             $sql .= " " . $groupBy;
 
-            #echo '<pre>' . print_r([$sql, $sqlArgs],1) . '</pre>';exit;
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
-            $stm->execute($sqlArgs);
-            
-            $locations = $stm->fetchAll();
             $locationList = new Collection();
-            foreach ($locations as $location) {
+
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($locationList) {
+                $location = new \BO\Dldb\MySQL\Entity\Location();
+                $location->offsetSet('data_json', $data_json);
+                
                 $locationList[$location['id']] = $location;
-            }
-            #echo '<pre>' . print_r($locationList,1) . '</pre>';exit;
+            });
+
             return $locationList;
         } catch (\Exception $e) {
             throw $e;
@@ -99,7 +101,7 @@ class Location extends Base
             } else {
                 $where[] = "l.locale='de'";
                 $sql = "SELECT 
-                IF(l2.id, l2.data_json, l.data_json) AS data_json
+                COALESCE(l2.data_json, l.data_json) AS data_json
                 FROM location AS l
                 LEFT JOIN location AS l2 ON l2.id = l.id AND l2.locale = ?
                 ";
@@ -112,17 +114,16 @@ class Location extends Base
             
             $sql .= " " . $groupBy;
 
-            #echo '<pre>' . print_r([$sql, $sqlArgs],1) . '</pre>';exit;
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
-            $stm->execute($sqlArgs);
-            
-            $locations = $stm->fetchAll();
             $locationList = new Collection();
-            foreach ($locations as $location) {
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($locationList) {
+                $location = new \BO\Dldb\MySQL\Entity\Location();
+                $location->offsetSet('data_json', $data_json);
+                
                 $locationList[$location['id']] = $location;
-            }
-            #echo '<pre>' . print_r($locationList,1) . '</pre>';exit;
+            });
+
             return $locationList;
         } catch (\Exception $e) {
             throw $e;
@@ -138,38 +139,36 @@ class Location extends Base
         try {
             $sqlArgs = [$this->locale];
             $where = [];
-            $join = [];
             if (false === $mixLanguages) {
                 $where[] = 'l.locale = ?';
                 $sql = 'SELECT data_json FROM location AS l';
             } else {
                 $where[] = "l.locale='de'";
                 $sql = "SELECT 
-                IF(l2.id, l2.data_json, l.data_json) AS data_json
+                COALESCE(l2.data_json, l.data_json) AS data_json
                 FROM location AS l
                 LEFT JOIN location AS l2 ON l2.id = l.id AND l2.locale = ?
                 ";
             }
-
-            #$sql = 'SELECT data_json FROM location WHERE locale = ?';
 
             $ids = explode(',', $location_csv);
             $questionMarks = array_fill(0, count($ids), '?');
             $where[] = 'l.id IN (' . implode(', ', $questionMarks) . ')';
             array_push($sqlArgs, ...$ids);
 
-            $sql .= " " . implode(' ', $join);
             $sql .= " WHERE " . implode(' AND ', $where);
 
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
-            $stm->execute($sqlArgs);
-            
-            $locations = $stm->fetchAll();
             $locationList = new Collection();
-            foreach ($locations as $location) {
+
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($locationList) {
+                $location = new \BO\Dldb\MySQL\Entity\Location();
+                $location->offsetSet('data_json', $data_json);
+                
                 $locationList[$location['id']] = $location;
-            }
+            });
+
             return $locationList;
         } catch (\Exception $e) {
             throw $e;
@@ -198,24 +197,29 @@ class Location extends Base
             }
             $sql .= ' ORDER BY l.category_identifier, l.name';
             
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
-            $stm->execute($sqlArgs);
-            
             $locationList = new Collection();
-            
-            while ($location = $stm->fetch()) {
-                $locationList[$location['id']] = $location;
-            }
-            return $locationList;
-            
-            #$locations = $stm->fetchAll();
 
-            #foreach ($locations as $location) {
-            #    $locationList[$location['id']] = $location;
-            #}
-            
-            #return $locationList;
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function(
+                $id, $name, $authority_name, $category_json, 
+                $contact_json, $address_json, $geo_json,
+                $meta__url
+            ) use ($locationList) {
+                $location = new \BO\Dldb\MySQL\Entity\Location();
+                $location->offsetSet('id', $id);
+                $location->offsetSet('name', $name);
+                $location->offsetSet('authority_name', $authority_name);
+                $location->offsetSet('category_json', $category_json);
+                $location->offsetSet('contact_json', $contact_json);
+                $location->offsetSet('address_json', $address_json);
+                $location->offsetSet('geo_json', $geo_json);
+                $location->offsetSet('meta__url', $meta__url);
+                
+                $locationList[$location['id']] = $location;
+            });
+
+            return $locationList;
         } catch (\Exception $e) {
             throw $e;
         }
@@ -257,12 +261,13 @@ class Location extends Base
     public function readSearchResultList($query, $service_csv = null)
     {
         try {
+            #$query = '+' . implode(' +', explode(' ', $query));
             $sqlArgs = [$this->locale, $this->locale, $query];
             $sql = "SELECT l.data_json 
             FROM search AS se
             LEFT JOIN location AS l ON l.id = se.object_id AND l.locale = ?
             WHERE 
-                se.locale = ? AND MATCH (search_value) AGAINST (? IN NATURAL LANGUAGE MODE)
+                se.locale = ? AND MATCH (search_value) AGAINST (? IN BOOLEAN MODE)
                 AND (search_type IN ('name', 'keywords', 'address')) AND entity_type='location'
              GROUP BY se.object_id
             ";
@@ -275,18 +280,17 @@ class Location extends Base
             }*/
             #print_r($sql);exit;
 
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
-
-            $stm->execute($sqlArgs);
-            
-            $locations = $stm->fetchAll();
-
             $locationList = new Collection();
-            foreach ($locations as $location) {
+
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($locationList) {
+                $location = new \BO\Dldb\MySQL\Entity\Location();
+                $location->offsetSet('data_json', $data_json);
+                
                 $locationList[$location['id']] = $location;
-            }
-            #echo '<pre>' . print_r($locationList,1) . '</pre>';exit;
+            });
+
             return $locationList;
         } catch (\Exception $e) {
             throw $e;
@@ -295,39 +299,39 @@ class Location extends Base
 
     public function fetchLocationsForCompilation($authoritys = [], $locations = [])
     {
-        $limit = 1000;
+        try {
+            $sqlArgs = [$this->locale];
 
-        $localeFilter = new \Elastica\Query\Term(array(
-            'meta.locale' => $this->locale
-        ));
+            $sql = "SELECT 
+                l.data_json
+            FROM location AS l
+            ";
+            $where = ['l.locale = ?'];
 
-        $boolquery = new \Elastica\Query\BoolQuery();
-        $boolquery->addMust($localeFilter);
+            if (!empty($authoritys)) {
+                $where[] = 'l.authority_id IN (' . implode(',', $authoritys) . ')';
+            }
 
-        if (!empty($authoritys)) {
-            $authorityFilter = new \Elastica\Query\Terms('authority.id', $authoritys);
-            $boolquery->addMust($authorityFilter);
+            if (!empty($locations)) {
+                $where[] = 'l.id IN (' . implode(',', $locations) . ')';
+            }
+
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+
+            $locationList = new Collection();
+
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($locationList) {
+                $location = new \BO\Dldb\MySQL\Entity\Location();
+                $location->offsetSet('data_json', $data_json);
+                
+                $locationList[$location['id']] = $location;
+            });
+
+            return $locationList;
+        } catch (\Exception $e) {
+            throw $e;
         }
-        if (!empty($locations)) {
-            $locationFilter = new \Elastica\Query\Terms('id', $locations);
-            $boolquery->addMust($locationFilter);
-        }
-
-        $query = \Elastica\Query::create($boolquery);
-        $query->addSort(['sort' => 'asc']);
-        #print_r(json_encode($query->toArray()));exit;
-        $resultList = $this
-            ->access()
-            ->getIndex()
-            ->getType('location')
-            ->search($query, $limit)
-        ;
-
-        $locationList = new Collection();
-        foreach ($resultList as $result) {
-            $location = new Entity($result->getData());
-            $locationList[$location['id']] = $location;
-        }
-        return $locationList;
     }
 }

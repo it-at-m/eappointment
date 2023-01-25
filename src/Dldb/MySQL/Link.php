@@ -5,7 +5,6 @@
  **/
 namespace BO\Dldb\MySQL;
 
-use \BO\Dldb\MySQL\Entity\Link as Entity;
 use \BO\Dldb\MySQL\Collection\Links as Collection;
 use \BO\Dldb\Elastic\Link as Base;
 
@@ -13,29 +12,27 @@ use \BO\Dldb\Elastic\Link as Base;
  */
 class Link extends Base
 {
-
     public function readSearchResultList($query)
     {
         try {
+            #$query = '+' . implode(' +', explode(' ', $query));
             $sqlArgs = [$this->locale, $query];
             $sql = "SELECT tl.data_json 
             FROM topic_links AS tl
             WHERE 
-            tl.locale = ? AND MATCH (tl.search) AGAINST (? IN NATURAL LANGUAGE MODE)
+            tl.locale = ? AND MATCH (tl.search) AGAINST (? IN BOOLEAN MODE)
             ";
-           
-            $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Link');
-            $stm->execute($sqlArgs);
-            
-            $links = $stm->fetchAll();
-            
+
             $linklist = new Collection();
-            
-            foreach ($links as $link) {
+
+            $stm = $this->access()->prepare($sql);
+            $stm->execute($sqlArgs);
+            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($linklist) {
+                $link = new \BO\Dldb\MySQL\Entity\Link();
+                $link->offsetSet('data_json', $data_json);
                 $linklist[$link['link']] = $link;
-            }
-            
+            });
+
             return $linklist;
         } catch (\Exception $e) {
             throw $e;

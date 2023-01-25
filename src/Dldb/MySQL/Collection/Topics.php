@@ -5,7 +5,6 @@
  **/
 namespace BO\Dldb\MySQL\Collection;
 
-use \BO\Dldb\MySQL\Entity\Topic as Entity;
 use \BO\Dldb\Collection\Topics as Base;
 
 /**

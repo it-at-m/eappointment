@@ -47,7 +47,7 @@ class Search extends Base
     public function clearEntity(array $addWhere = []) : bool
     {
         try {
-            print_r(static::class);
+            #print_r(static::class);
             return $this->deleteWith(
                 array_combine(['entity_type', 'locale'], array_values($this->get(['entity_type', 'locale'])))
             );

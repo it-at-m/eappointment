@@ -6,7 +6,6 @@
 namespace BO\Dldb\MySQL\Entity;
 
 use \BO\Dldb\Entity\Office as Base;
-use \BO\Dldb\MySQL\Collection\Offices as Collection;
 
 /**
  * @SuppressWarnings(Coupling)

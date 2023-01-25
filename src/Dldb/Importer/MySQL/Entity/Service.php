@@ -44,13 +44,11 @@ class Service extends Base
                     'entity_type' => static::getTableName(),
                     'search_type' => 'name'
                 ],
-                
                 'multiple' => false,
                 'clearFields' => [
                     'entity_type' => static::getTableName(),
                     'locale' => $this->get('meta.locale')
                 ],
-                
                 'deleteFields' => [
                     'object_id' => $this->get('id'),
                     'locale' => $this->get('meta.locale'),
@@ -58,6 +56,7 @@ class Service extends Base
                 ],
                 'selfAsArray' => true
             ],
+            /*
             'description' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
                 'neededFields' => [
@@ -81,6 +80,7 @@ class Service extends Base
                 ],
                 'selfAsArray' => true
             ],
+            */
             'meta.keywords' => [
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\Search',
                 'neededFields' => [
@@ -286,6 +286,11 @@ class Service extends Base
             $fields = $this->get(['id', 'meta.locale', 'meta.hash']);
             $fields[] = static::getTableName();
             
+            if (is_array($fields[2])) {
+                error_log(print_r($fields[2]));
+            }
+            #error_log(print_r($fields[2]));
+
             $this->setStatus(static::STATUS_OLD);
             if ($this->itemNeedsUpdate(...array_values($fields))) {
                 $this->setStatus(static::STATUS_NEW);
