@@ -5,8 +5,17 @@
             {{ title }}
         {% endblock %}
 
-
         {% block board_body %}
+            {% if oidcproviderlist|length %}
+                <div class="form-actions" style="justify-content:left; margin-bottom:10px;">
+                    {% for providername in oidcproviderlist %}
+                        <form action="./oidc/?provider={{ providername }}" method="POST" class="form--base">
+                            {{ formbutton({"label": "Anmelden", "value": providername, "class": "button button--diamond"}) }}
+                        </form>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <form action="./" method="POST" class="form--base">
                 <fieldset>
                     {{ formgroup(
@@ -45,17 +54,6 @@
 
         {% block board_footer %}
             Wenden Sie sich bei vergessenen Passwörtern bitte an Ihren lokalen Anwendungssystembetreuer.
-            {% if oidcproviderlist|length %}
-            <br /><br />
-            {{ ("Einloggen mit")|trans }}
-            <div class="form-actions" style="display:flex; justify-content:center; margin-top:5px;">
-            {% for providername in oidcproviderlist %}
-                <form action="./oidc/?provider={{ providername }}" method="POST" class="form--base">
-                    {{ formbutton({"label":providername, "value": providername, "class": "button button--diamond"}) }}
-                </form>
-            {% endfor %}
-            </div>
-            {% endif %}
         {% endblock %}
 
 {% endembed %}
