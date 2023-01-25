@@ -110,9 +110,10 @@ class ArchivedDataIntoStatisticByCron
                     "INFO: Process {$process->archiveId} with request {$request->getId()}"
                     ." for scope {$scope->getId()} archived on $processDate"
                 );
-            }
-            else {
-                $this->logMessage("WARN: Could not archive process {$process->archiveId} with request {$request->getId()}!");
+            } else {
+                $this->logMessage(
+                    "WARN: Could not archive process {$process->archiveId} with request {$request->getId()}!"
+                );
             }
         }
     }
