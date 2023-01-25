@@ -49,6 +49,7 @@ class Index extends BaseController
 
         $response = Render::withLastModified($response, time(), '0');
 
-        return Render::withJson($response, $schema, 200);;
+        return Render::withJson($response, $schema, 200);
+        ;
     }
 }
