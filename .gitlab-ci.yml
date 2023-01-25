@@ -62,9 +62,3 @@ build-docker:
     extends: .build-docker
 
 
-build-docker-muc-dev:
-    extends: .build-docker
-    only:
-        refs:
-            - muc/dev
-
