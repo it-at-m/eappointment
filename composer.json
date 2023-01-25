@@ -19,7 +19,7 @@
   "require": {
     "eappointment/zmsslim": "dev-ticket55431-slim-update#50b791fa",
     "eappointment/zmsclient": "dev-ticket55431-slim-update",
-    "eappointment/zmsdldb": "dev-main || ^2.0",
+    "eappointment/zmsdldb": "dev-ticket55432-make-the-code-php8-compatible",
     "eappointment/zmsdb": "dev-ticket55431-slim-update",
     "eappointment/zmsentities": "dev-ticket55431-slim-update",
     "monolog/monolog": "1.*",
