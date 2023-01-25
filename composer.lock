@@ -116,12 +116,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsdldb.git",
-                "reference": "bc31bcae1811fca3e4fde12f99ad2e0bb609f0cd"
+                "reference": "78dc9696dea8ab6b492be0d849ebc29f68f11821"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdldb/repository/archive.zip?sha=bc31bcae1811fca3e4fde12f99ad2e0bb609f0cd",
-                "reference": "bc31bcae1811fca3e4fde12f99ad2e0bb609f0cd",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdldb/repository/archive.zip?sha=78dc9696dea8ab6b492be0d849ebc29f68f11821",
+                "reference": "78dc9696dea8ab6b492be0d849ebc29f68f11821",
                 "shasum": ""
             },
             "require": {
@@ -161,7 +161,7 @@
                 }
             ],
             "description": "Client for DLDB",
-            "time": "2022-10-04T07:51:45+00:00"
+            "time": "2023-01-25T18:49:38+00:00"
         },
         {
             "name": "eappointment/zmsentities",
