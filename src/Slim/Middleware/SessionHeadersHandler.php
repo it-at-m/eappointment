@@ -132,7 +132,7 @@ class SessionHeadersHandler
 
         // invoke the next middleware
         if (null !== $next) {
-            $response = $next($request);
+            $response = $next->handle($request);
         } else {
             $response = (new ResponseFactory())->createResponse();
         }
