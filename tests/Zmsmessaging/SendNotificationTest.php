@@ -52,11 +52,11 @@ class SendNotificationTest extends Base
 
         $preferences = (new \BO\Zmsentities\Config())->getNotificationPreferences();
         $url = $preferences['gatewayUrl'] .
-            urlencode(utf8_encode($resolvedEntity->getMessage())) .
+            urlencode($resolvedEntity->getMessage()) .
             '&sender='. urlencode($resolvedEntity->getIdentification()) .
             '&recipient=' .
             urlencode($resolvedEntity->client['telephone'])
         ;
-        $this->assertStringContainsString('Bürgeramt', utf8_decode(urldecode($url)));
+        $this->assertStringContainsString('Bürgeramt', urldecode($url));
     }
 }
