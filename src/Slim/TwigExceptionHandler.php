@@ -35,8 +35,10 @@ class TwigExceptionHandler implements ErrorHandlerInterface
         bool $logErrors,
         bool $logErrorDetails
     ): ResponseInterface {
+        
+        $decoratedRequest = \BO\Slim\Middleware\ZmsSlimRequest::getDecoratedRequest($request);
         $response = \App::$slim->getResponseFactory()->createResponse();
-        return static::withHtml($request, $response, $exception);
+        return static::withHtml($decoratedRequest, $response, $exception);
     }
 
     public static function withHtml(
@@ -80,6 +82,7 @@ class TwigExceptionHandler implements ErrorHandlerInterface
                 */
             }
             $response = Render::withLastModified($response, time(), '0');
+
             return Render::withHtml(
                 $response,
                 $template,
@@ -97,7 +100,7 @@ class TwigExceptionHandler implements ErrorHandlerInterface
                 . ":"
                 . $exception->getLine()
                 . " "
-                . $exception->getTraceAsString
+                . $exception->getTraceAsString()
                 ." ---- because of "
                 . $subexception->getMessage()
                 . " "
@@ -118,6 +121,7 @@ class TwigExceptionHandler implements ErrorHandlerInterface
         $classname = strtolower($classname);
         $classname = preg_replace('#[\\\]+#', '/', $classname);
         $template = "exception/$classname.twig";
+
         if (!$loader->exists($template)) {
             $template = static::DEFAULT_TEMPLATE;
         }

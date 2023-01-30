@@ -29,7 +29,8 @@ class SessionMiddleware
         });
 
         if (null !== $next) {
-            $response = $next->handle($requestInterface->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer));
+            $requestInterface = $requestInterface->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer);
+            $response = $next->handle($requestInterface);
         } else {
             $response = (new ResponseFactory())->createResponse();
         }
