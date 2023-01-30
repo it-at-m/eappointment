@@ -9,7 +9,7 @@ class VersionTest extends Base
     public function testRendering()
     {
         $version = Version::getArray();
-        $this->assertTrue(is_numeric($version['major']));
+        $this->assertTrue(is_numeric($version['minor']));
     }
 
     public function testVersionUnknown()
