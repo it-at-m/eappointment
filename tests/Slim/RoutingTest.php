@@ -23,8 +23,18 @@ class RoutingTest extends Base
         $request = static::createBasicRequest('GET', '/unittest/1234/');
         $exception = new \Exception;
         /** @var ErrorHandler $errorHandler */
-        $errorHandler = \App::$slim->getContainer()->get('errorHandler');
+        $errorHandler = \App::$slim->getContainer()->get('errorMiddleware')->getDefaultErrorHandler();
         $response = $errorHandler($request, $exception, true, false, false);
         $this->assertStringContainsString('Slim Application Error', (string)$response->getBody());
+    }
+
+    public function test404ErrorHandler()
+    {
+        $request = self::createBasicRequest('GET', '/notfound/');
+        $exception = new \Slim\Exception\HttpNotFoundException($request);
+        /** @var ErrorHandler $errorHandler */
+        $errorHandler = \App::$slim->getContainer()->get('errorMiddleware')->getDefaultErrorHandler();
+        $response = $errorHandler($request, $exception, true, false, false);
+        $this->assertStringContainsString('<h1>404 Not Found</h1>', (string)$response->getBody());
     }
 }
