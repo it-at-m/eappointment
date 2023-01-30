@@ -65,10 +65,9 @@ class ErrorHandler implements ErrorHandlerInterface
                 "[API] Fatal Exception: "
                 . " in " . $exception->getFile() . " +" . $exception->getLine()
                 . " -> " . $exception->getMessage()
-                . " | Trace: " . preg_replace("#(\s)+#", ' ', str_replace('\\',':', $message->meta->trace))
+                . " | Trace: " . preg_replace("#(\s)+#", ' ', str_replace('\\', ':', $message->meta->trace))
             );
         }
         return Render::withJson($response, $message, $status);
     }
 }
-
