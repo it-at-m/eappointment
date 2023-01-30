@@ -15,6 +15,7 @@ class ErrorHandler implements ErrorHandlerInterface
 {
     /**
      * @SuppressWarnings("PMD.UnusedFormalParameter")
+     * @SuppressWarnings(Complexity)
      * @param ServerRequestInterface $request
      * @param \Throwable $exception
      * @param bool $displayErrorDetails
