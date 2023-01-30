@@ -102,9 +102,10 @@ class Bootstrap
         App::$slim->add(new Middleware\Profiler());
         App::$slim->add(new Middleware\IpAddress(true, true));
         App::$slim->add(new Middleware\ZmsSlimRequest());
+        App::$slim->add(new Middleware\TrailingSlash());
 
         $errorMiddleware = App::$slim->addErrorMiddleware(App::DEBUG, App::LOG_ERRORS, App::LOG_DETAILS, App::$log);
-        $container->set('errorHandler', $errorMiddleware->getDefaultErrorHandler());
+        $container->set('errorMiddleware', $errorMiddleware);
 
         self::addTwigExtension(new TwigExtensionsAndFilter(
             $container

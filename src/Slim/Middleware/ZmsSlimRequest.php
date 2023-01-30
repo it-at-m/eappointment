@@ -24,32 +24,38 @@ class ZmsSlimRequest
         $decoratedRequest = $request;
 
         if (!$request instanceof \BO\Slim\Request) {
-            $zmsSlimRequest = new \BO\Slim\Request(
-                $request->getMethod(),
-                $request->getUri(),
-                new Headers($request->getHeaders()),
-                $request->getCookieParams(),
-                $request->getServerParams(),
-                $request->getBody(),
-                $request->getUploadedFiles()
-            );
-
-            $decoratedRequest = $this->addAttributes(
-                $zmsSlimRequest->withParsedBody($request->getParsedBody()),
-                $request->getAttributes()
-            );
+            $decoratedRequest = static::getDecoratedRequest($request);
         }
 
         return $next->handle($decoratedRequest);
     }
 
-    protected function addAttributes(\BO\Slim\Request $request, array $attributes): \BO\Slim\Request
+    public static function getDecoratedRequest(Request $request)
+    {
+        $zmsSlimRequest = new \BO\Slim\Request(
+            $request->getMethod(),
+            $request->getUri(),
+            new Headers($request->getHeaders()),
+            $request->getCookieParams(),
+            $request->getServerParams(),
+            $request->getBody(),
+            $request->getUploadedFiles()
+        );
+
+        $decoratedRequest = static::addAttributes(
+            $zmsSlimRequest->withParsedBody($request->getParsedBody()),
+            $request->getAttributes()
+        );
+        return $decoratedRequest;
+    }
+
+    protected static function addAttributes(\BO\Slim\Request $request, array $attributes): \BO\Slim\Request
     {
         if (count($attributes) === 0) {
             return $request;
         }
 
-        return $this->addAttributes(
+        return static::addAttributes(
             $request->withAttribute(array_key_first($attributes), array_shift($attributes)),
             $attributes
         );
