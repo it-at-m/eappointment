@@ -182,12 +182,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsclient.git",
-                "reference": "470b7f4ca9b9fc7b7f172352363f308033f3e4bd"
+                "reference": "ac9859f426a1ccdec812d0301ca36e059985285c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=470b7f4ca9b9fc7b7f172352363f308033f3e4bd",
-                "reference": "470b7f4ca9b9fc7b7f172352363f308033f3e4bd",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=ac9859f426a1ccdec812d0301ca36e059985285c",
+                "reference": "ac9859f426a1ccdec812d0301ca36e059985285c",
                 "shasum": ""
             },
             "require": {
@@ -231,7 +231,7 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "time": "2022-11-22T09:02:29+00:00"
+            "time": "2023-01-30T16:27:04+00:00"
         },
         {
             "name": "eappointment/zmsdb",
@@ -427,12 +427,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsslim.git",
-                "reference": "9b66ece710f140a4d39956cf8c65ddd3ae32431e"
+                "reference": "98ea03a534371ba94aae623b50f5aa54f9940f88"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=9b66ece710f140a4d39956cf8c65ddd3ae32431e",
-                "reference": "9b66ece710f140a4d39956cf8c65ddd3ae32431e",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=98ea03a534371ba94aae623b50f5aa54f9940f88",
+                "reference": "98ea03a534371ba94aae623b50f5aa54f9940f88",
                 "shasum": ""
             },
             "require": {
@@ -477,7 +477,7 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-            "time": "2023-01-26T11:23:03+00:00"
+            "time": "2023-01-30T17:07:15+00:00"
         },
         {
             "name": "fig/http-message-util",
