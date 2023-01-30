@@ -29,7 +29,7 @@ class Auth
         if (array_key_exists(self::getCookieName(), $_COOKIE)) {
             return $_COOKIE[self::getCookieName()];
         }
-        return null;
+        return false;
     }
 
     /**
@@ -41,7 +41,9 @@ class Auth
     {
         if (array_key_exists(self::getCookieName(), $_COOKIE)) {
             unset($_COOKIE[self::getCookieName()]);
-            setcookie(self::getCookieName(), '', time() - 3600);
+            if (!headers_sent()) {
+                setcookie(self::getCookieName(), '', time() - 3600, '/');
+            }
         }
     }
 
