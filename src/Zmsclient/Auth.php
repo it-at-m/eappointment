@@ -29,7 +29,7 @@ class Auth
         if (array_key_exists(self::getCookieName(), $_COOKIE)) {
             return $_COOKIE[self::getCookieName()];
         }
-        return false;
+        return null;
     }
 
     /**
