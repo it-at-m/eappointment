@@ -116,11 +116,3 @@ use \Psr\Http\Message\ResponseInterface;
 
 \App::$slim->get('/healthcheck/', '\BO\Zmsstatistic\Healthcheck')
     ->setName("healthcheck");
-
-\App::$slim->getContainer()->offsetSet('notFoundHandler', function ($container) {
-    return function (RequestInterface $request, ResponseInterface $response) {
-        return \BO\Slim\Render::withHtml($response, 'page/404.twig');
-    };
-});
-
-\App::$slim->getContainer()->offsetSet('errorHandler', new \BO\Zmsstatistic\Helper\TwigExceptionHandler());
