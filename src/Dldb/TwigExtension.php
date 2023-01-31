@@ -13,7 +13,7 @@ use Error;
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @SuppressWarnings(PHPMD.TooManyMethods)
  */
-class TwigExtension extends \Twig_Extension
+class TwigExtension extends \Twig\Extension\AbstractExtension
 {
 
     public function __construct($container = null)
