@@ -27,8 +27,9 @@ require(APP_PATH . '/config.php');
 \BO\Zmsclient\Http::$logEnabled = \App::DEBUG;
 \BO\Zmsclient\Http::$jsonCompressLevel = \App::JSON_COMPRESS_LEVEL;
 
-// add slim middleware
-\App::$slim->add(new \BO\Slim\Middleware\TrailingSlash());
+// load error middleware
+$errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
+$errorMiddleware->setDefaultErrorHandler(new \BO\Zmsstatistic\Helper\TwigExceptionHandler());
 
 // load routing
 \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');

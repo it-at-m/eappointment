@@ -13,6 +13,10 @@ class TwigExceptionHandler extends \BO\Slim\TwigExceptionHandler
         \Throwable $exception,
         $status = 500
     ) {
+        if ($exception instanceof \Slim\Exception\HttpNotFoundException) {
+            \BO\Slim\Controller::prepareRequest($request);
+            return \BO\Slim\Render::withHtml($response, 'page/404.twig');
+        }
         try {
             $exception->templatedata = [
                 'workstation' => \App::$http->readGetResult('/workstation/')->getEntity(),

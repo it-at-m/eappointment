@@ -15,5 +15,5 @@ then
 fi
 test -d $ROOT/cache && chmod -fR a+rwX $ROOT/cache || echo "Could not chmod cache files"
 
-VERSION=`git describe --abbrev=0 --tags`
+VERSION=`git describe --abbrev=0 --all`
 echo $VERSION > $ROOT/VERSION
