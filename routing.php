@@ -20,7 +20,7 @@ use \Psr\Http\Message\ResponseInterface;
     ->setName("queue");
 
 \App::$slim->post('/info/', '\BO\Zmscalldisplay\Info')
-->setName("info");
+    ->setName("info");
 
 /*
  * ---------------------------------------------------------------------------

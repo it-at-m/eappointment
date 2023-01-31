@@ -20,8 +20,8 @@ class Info extends BaseController
      */
     public function readResponse(
         RequestInterface $request,
-        ResponseInterface                  $response,
-        array                              $args
+        ResponseInterface $response,
+        array $args
     ) {
         $calldisplay = new Helper\Calldisplay($request);
         $queueListFull = \App::$http
