@@ -11,6 +11,11 @@
   "scripts": {
     "command": "bin/configure"
   },
+  "config": {
+    "platform": {
+        "php": "7.3"
+    }
+  },
   "require-dev": {
     "phpmd/phpmd": "^2.13",
     "squizlabs/php_codesniffer": "*",
