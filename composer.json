@@ -11,20 +11,6 @@
   "scripts": {
     "command": "bin/configure"
   },
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://gitlab.com/eappointment/zmsclient.git"
-    },
-    {
-      "type": "git",
-      "url": "https://gitlab.com/eappointment/zmsslim.git"
-    },
-    {
-      "type": "git",
-      "url": "https://gitlab.com/eappointment/zmsentities.git"
-    }
-  ],
   "require-dev": {
     "phpmd/phpmd": "@stable",
     "squizlabs/php_codesniffer": "*",
