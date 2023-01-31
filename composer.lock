@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b513cf23409e85a993aaadba7dfb5628",
+    "content-hash": "1908da76f698479aa809b2c2c4cf567e",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -181,12 +181,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsentities.git",
-                "reference": "cf03ef6f"
+                "reference": "cf03ef6f71bafc09cad3f0c62b76709e9d6f34e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=cf03ef6f",
-                "reference": "cf03ef6f",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=cf03ef6f71bafc09cad3f0c62b76709e9d6f34e2",
+                "reference": "cf03ef6f71bafc09cad3f0c62b76709e9d6f34e2",
                 "shasum": ""
             },
             "require": {
@@ -239,12 +239,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsslim.git",
-                "reference": "5bc21462"
+                "reference": "98ea03a534371ba94aae623b50f5aa54f9940f88"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=5bc21462",
-                "reference": "5bc21462",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=98ea03a534371ba94aae623b50f5aa54f9940f88",
+                "reference": "98ea03a534371ba94aae623b50f5aa54f9940f88",
                 "shasum": ""
             },
             "require": {

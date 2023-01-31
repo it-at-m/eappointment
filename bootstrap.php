@@ -33,8 +33,9 @@ umask(0002); // Allow group to delete twig cache files
 \App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL);
 \BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
 
-// load middleware
-\App::$slim->add(new \BO\Slim\Middleware\TrailingSlash());
+// add slim error middleware
+$errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
+$errorMiddleware->setDefaultErrorHandler(new \BO\Zmscalldisplay\Helper\TwigExceptionHandler());
 
 // load routing
 \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');
