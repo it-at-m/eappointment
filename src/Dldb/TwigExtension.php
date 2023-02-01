@@ -210,7 +210,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
     {
         $azList = array();
         foreach ((array)$list as $item) {
-            if (!is_scalar($item) && array_key_exists($property, $item)) {
+            if (!is_scalar($item) && Entity\Base::hasValidOffset($item, $property)) {
                 $currentPrefix = self::sortFirstChar($item[$property]);
                 if (!array_key_exists($currentPrefix, $azList)) {
                     $azList[$currentPrefix] = array(
@@ -261,7 +261,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
     {
         $propertylist = array();
         foreach ($list as $item) {
-            if (!is_scalar($item) && array_key_exists($property, $item)) {
+            if (!is_scalar($item) && Entity\Base::hasValidOffset($item, $property)) {
                 $propertylist[] = $item[$property];
             }
         }
@@ -272,7 +272,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
     {
         $propertylist = array();
         foreach ($list as $item) {
-            if (!is_scalar($item) && array_key_exists('services', $item)) {
+            if (!is_scalar($item) && Entity\Base::hasValidOffset($item, 'services')) {
                 $appointment = $this->getAppointmentForService($item, $service_id);
                 if ($appointment === false) {
                     continue;
