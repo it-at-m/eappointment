@@ -66,14 +66,11 @@ class OAuthMiddleware
     private function handleLogin(ServerRequestInterface $request, ResponseInterface $response, $instance)
     {
         if (! $request->getParam("code") && '' == \BO\Zmsclient\Auth::getKey()) {
-            $authUrl = $instance->getProvider()->getAuthorizationUrl();
-            \BO\Zmsclient\Auth::setOidcProvider($request->getParam('provider'));
-            \BO\Zmsclient\Auth::setKey($instance->getProvider()->getState());
-            return $response->withRedirect($authUrl, 301);
+            return $response->withRedirect($this->getAuthUrl($request, $instance), 301);
         } elseif ($request->getParam("state") !== \BO\Zmsclient\Auth::getKey()) {
             \BO\Zmsclient\Auth::removeKey();
             \BO\Zmsclient\Auth::removeOidcProvider();
-            throw new \BO\Slim\Exception\OAuthInvalid();
+            return $response->withRedirect($this->getAuthUrl($request, $instance), 301);
         }
         if ('login' == $request->getAttribute('authentificationHandler')) {
             return $instance->doLogin($request, $response);
@@ -99,5 +96,12 @@ class OAuthMiddleware
             return $instance->doLogout($response);
         }
         return $response;
+    }
+
+    private function getAuthUrl(ServerRequestInterface $request, $instance){
+        $authUrl = $instance->getProvider()->getAuthorizationUrl();
+        \BO\Zmsclient\Auth::setOidcProvider($request->getParam('provider'));
+        \BO\Zmsclient\Auth::setKey($instance->getProvider()->getState());
+        return $authUrl;
     }
 }
