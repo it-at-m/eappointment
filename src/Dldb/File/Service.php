@@ -30,10 +30,8 @@ class Service extends Base
      * @SuppressWarnings(Param)
      * @return Collection
      */
-    public function searchAll($querystring, $service_csv = '', $location_csv = '')
+    public function searchAll($querystring, $service_csv = false, $location_csv = false)
     {
-        $locationsCsvByUser = ($location_csv) ? true : false;
-        $location_csv = (! $location_csv) ? $this->fetchLocationCsv($service_csv) : $location_csv;
         $serviceList = $this->fetchList($location_csv);
         if ($querystring) {
             $serviceList = new Collection(array_filter((array) $serviceList, function ($item) use ($querystring) {
@@ -44,7 +42,7 @@ class Service extends Base
             }));
         }
         $serviceList = $serviceList->sortByName();
-        return ($locationsCsvByUser) ? $serviceList->containsLocation($location_csv) : $serviceList;
+        return ($location_csv) ? $serviceList->containsLocation($location_csv) : $serviceList;
     }
 
     /**
