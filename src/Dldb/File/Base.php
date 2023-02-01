@@ -123,7 +123,7 @@ abstract class Base
     {
         $itemList = $this->getItemList();
 
-        if (!$itemList instanceof \BO\Dldb\Collection\Base || !$itemList->offsetExists($itemId)) {
+        if (! $itemId || !$itemList instanceof \BO\Dldb\Collection\Base || !$itemList->offsetExists($itemId)) {
             return false;
         }
 
