@@ -90,7 +90,7 @@ class Location extends Base
         $serviceList = $this->getServiceInfoList($serviceCsv);
         $servicecount = array();
         foreach ($serviceList as $serviceinfo) {
-            if (true === $this->hasValidOffset($serviceinfo, 'appointment')
+            if (true === static::hasValidOffset($serviceinfo, 'appointment')
                 && $serviceinfo['appointment']['allowed']
                 && ($external || $serviceinfo['appointment']['external'] === false)
             ) {
