@@ -169,7 +169,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
 
     public function formatDateTime($dateString)
     {
-        $dateTime = new \DateTimeImmutable($dateString, new \DateTimezone('Europe/Berlin'));
+        $dateTime = (new \DateTimeImmutable('now', new \DateTimezone('Europe/Berlin')))->setTimestamp($dateString);
         $formatDate['date']     = Helper\DateTime::getFormatedDates($dateTime, "EE, dd. MMMM yyyy");
         $formatDate['fulldate'] = Helper\DateTime::getFormatedDates($dateTime, "EEEE, 'den' dd. MMMM yyyy");
         $formatDate['weekday']  = ($dateTime->format('N') == 0) ?
