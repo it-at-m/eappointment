@@ -42,14 +42,14 @@ class Base extends \ArrayObject
         return $this['path'];
     }
 
+    public function hasValidOffset($item, $index) {
+        return ((is_object($item) && $item->offsetExists($index)) || false === array_key_exists($index, $item));
+    }
+
     public function getLocale()
     {
         $meta = $this['meta'];
-        if ((
-            (is_object($meta) && $meta->offsetExists('locale'))
-                || array_key_exists('locale', $meta)
-            ) === false
-        ) {
+        if (false === $this->hasValidOffset($meta, 'locale')) {
             return false;
         }
         return $this['meta']['locale'];
