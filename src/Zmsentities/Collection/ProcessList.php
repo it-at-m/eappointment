@@ -377,7 +377,7 @@ class ProcessList extends Base
     {
         $processList = new self();
         foreach ($this as $process) {
-            if ($process->getFirstAppointment()->date == $now->getTimestamp()) {
+            if ($process->getFirstAppointment()->toDateTime()->format('Y-m-d') == $now->format('Y-m-d')) {
                 $processList->addEntity(clone $process);
             }
         }
