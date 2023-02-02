@@ -373,6 +373,17 @@ class ProcessList extends Base
         return $conflictList;
     }
 
+    public function withinExactDate(\DateTimeInterface $now)
+    {
+        $processList = new self();
+        foreach ($this as $process) {
+            if ($process->getFirstAppointment()->date == $now->getTimestamp()) {
+                $processList->addEntity(clone $process);
+            }
+        }
+        return $processList;
+    }
+
     public function withoutDublicatedConflicts()
     {
         $collection = new self();
