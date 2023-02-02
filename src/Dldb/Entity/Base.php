@@ -43,7 +43,10 @@ class Base extends \ArrayObject
     }
 
     public static function hasValidOffset($item, $index) {
-        return ((is_object($item) && $item->offsetExists($index)) || array_key_exists($index, $item));
+        return (
+            (is_object($item) && $item->offsetExists($index)) || 
+            (is_array($item) && array_key_exists($index, $item))
+        );
     }
 
     public function getLocale()
