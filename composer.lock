@@ -182,12 +182,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsclient.git",
-                "reference": "ac9859f426a1ccdec812d0301ca36e059985285c"
+                "reference": "b8ea6c1f205fbcb36b4851514ec5ef9d40b793c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=ac9859f426a1ccdec812d0301ca36e059985285c",
-                "reference": "ac9859f426a1ccdec812d0301ca36e059985285c",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=b8ea6c1f205fbcb36b4851514ec5ef9d40b793c7",
+                "reference": "b8ea6c1f205fbcb36b4851514ec5ef9d40b793c7",
                 "shasum": ""
             },
             "require": {
@@ -231,7 +231,7 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "time": "2023-01-30T16:27:04+00:00"
+            "time": "2023-01-31T14:45:17+00:00"
         },
         {
             "name": "eappointment/zmsdb",
@@ -316,12 +316,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsdldb.git",
-                "reference": "78dc9696dea8ab6b492be0d849ebc29f68f11821"
+                "reference": "427595eed4ec8a61a39b1e398de83b2b4bc5c69c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdldb/repository/archive.zip?sha=78dc9696dea8ab6b492be0d849ebc29f68f11821",
-                "reference": "78dc9696dea8ab6b492be0d849ebc29f68f11821",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdldb/repository/archive.zip?sha=427595eed4ec8a61a39b1e398de83b2b4bc5c69c",
+                "reference": "427595eed4ec8a61a39b1e398de83b2b4bc5c69c",
                 "shasum": ""
             },
             "require": {
@@ -331,14 +331,14 @@
                 "ext-pcre": ">=0",
                 "nategood/httpful": "0.*",
                 "php": ">=7.3.0",
+                "twig/twig": "3.*",
                 "vanilla/garden-cli": "1.*"
             },
             "require-dev": {
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^9.5.4",
                 "seld/jsonlint": "*",
-                "squizlabs/php_codesniffer": "*",
-                "twig/extensions": "*"
+                "squizlabs/php_codesniffer": "*"
             },
             "bin": [
                 "bin/dldbget"
@@ -361,7 +361,7 @@
                 }
             ],
             "description": "Client for DLDB",
-            "time": "2023-01-25T18:49:38+00:00"
+            "time": "2023-02-02T09:22:47+00:00"
         },
         {
             "name": "eappointment/zmsentities",
@@ -369,12 +369,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsentities.git",
-                "reference": "cf03ef6f71bafc09cad3f0c62b76709e9d6f34e2"
+                "reference": "5e79a2da8b58a76ea5c24c8f6b9700a8c78f0668"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=cf03ef6f71bafc09cad3f0c62b76709e9d6f34e2",
-                "reference": "cf03ef6f71bafc09cad3f0c62b76709e9d6f34e2",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=5e79a2da8b58a76ea5c24c8f6b9700a8c78f0668",
+                "reference": "5e79a2da8b58a76ea5c24c8f6b9700a8c78f0668",
                 "shasum": ""
             },
             "require": {
@@ -419,7 +419,7 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2022-12-07T08:24:48+00:00"
+            "time": "2023-02-02T16:38:47+00:00"
         },
         {
             "name": "eappointment/zmsslim",
@@ -1874,12 +1874,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "85ea494f3599c1d23c81c65d0c994e0f80895a75"
+                "reference": "9a9f90b6604361dad56243d9bdd5e0d6a65ff5c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/85ea494f3599c1d23c81c65d0c994e0f80895a75",
-                "reference": "85ea494f3599c1d23c81c65d0c994e0f80895a75",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/9a9f90b6604361dad56243d9bdd5e0d6a65ff5c7",
+                "reference": "9a9f90b6604361dad56243d9bdd5e0d6a65ff5c7",
                 "shasum": ""
             },
             "conflict": {
@@ -1969,7 +1969,7 @@
                 "doctrine/mongodb-odm-bundle": ">=2,<3.0.1",
                 "doctrine/orm": ">=2,<2.4.8|>=2.5,<2.5.1|>=2.8.3,<2.8.4",
                 "dolibarr/dolibarr": "<16|>=16.0.1,<16.0.3|= 12.0.5|>= 3.3.beta1, < 13.0.2",
-                "dompdf/dompdf": "<2.0.1",
+                "dompdf/dompdf": "<2.0.2",
                 "drupal/core": ">=7,<7.91|>=8,<9.3.19|>=9.4,<9.4.3",
                 "drupal/drupal": ">=7,<7.80|>=8,<8.9.16|>=9,<9.1.12|>=9.2,<9.2.4",
                 "dweeves/magmi": "<=0.7.24",
@@ -2023,7 +2023,7 @@
                 "friendsofsymfony/user-bundle": ">=1.2,<1.3.5",
                 "friendsoftypo3/mediace": ">=7.6.2,<7.6.5",
                 "froala/wysiwyg-editor": "<3.2.7",
-                "froxlor/froxlor": "<2.0.8",
+                "froxlor/froxlor": "<2.0.10",
                 "fuel/core": "<1.8.1",
                 "gaoming13/wechat-php-sdk": "<=1.10.2",
                 "genix/cms": "<=1.1.11",
@@ -2284,7 +2284,7 @@
                 "symfony/form": ">=2.3,<2.3.35|>=2.4,<2.6.12|>=2.7,<2.7.50|>=2.8,<2.8.49|>=3,<3.4.20|>=4,<4.0.15|>=4.1,<4.1.9|>=4.2,<4.2.1",
                 "symfony/framework-bundle": ">=2,<2.3.18|>=2.4,<2.4.8|>=2.5,<2.5.2|>=2.7,<2.7.51|>=2.8,<2.8.50|>=3,<3.4.26|>=4,<4.1.12|>=4.2,<4.2.7|>=5.3.14,<=5.3.14|>=5.4.3,<=5.4.3|>=6.0.3,<=6.0.3|= 6.0.3|= 5.4.3|= 5.3.14",
                 "symfony/http-foundation": ">=2,<2.8.52|>=3,<3.4.35|>=4,<4.2.12|>=4.3,<4.3.8|>=4.4,<4.4.7|>=5,<5.0.7",
-                "symfony/http-kernel": ">=2,<2.8.52|>=3,<3.4.35|>=4,<4.2.12|>=4.3,<4.4.13|>=5,<5.1.5|>=5.2,<5.3.12",
+                "symfony/http-kernel": ">=2,<4.4.50|>=5,<5.4.20|>=6,<6.0.20|>=6.1,<6.1.12|>=6.2,<6.2.6",
                 "symfony/intl": ">=2.7,<2.7.38|>=2.8,<2.8.31|>=3,<3.2.14|>=3.3,<3.3.13",
                 "symfony/maker-bundle": ">=1.27,<1.29.2|>=1.30,<1.31.1",
                 "symfony/mime": ">=4.3,<4.3.8",
@@ -2294,13 +2294,13 @@
                 "symfony/proxy-manager-bridge": ">=2.7,<2.7.51|>=2.8,<2.8.50|>=3,<3.4.26|>=4,<4.1.12|>=4.2,<4.2.7",
                 "symfony/routing": ">=2,<2.0.19",
                 "symfony/security": ">=2,<2.7.51|>=2.8,<3.4.49|>=4,<4.4.24|>=5,<5.2.8",
-                "symfony/security-bundle": ">=2,<2.7.48|>=2.8,<2.8.41|>=3,<3.3.17|>=3.4,<3.4.11|>=4,<4.0.11|>=5.3,<5.3.12",
+                "symfony/security-bundle": ">=2,<4.4.50|>=5,<5.4.20|>=6,<6.0.20|>=6.1,<6.1.12|>=6.2,<6.2.6",
                 "symfony/security-core": ">=2.4,<2.6.13|>=2.7,<2.7.9|>=2.7.30,<2.7.32|>=2.8,<3.4.49|>=4,<4.4.24|>=5,<5.2.9",
                 "symfony/security-csrf": ">=2.4,<2.7.48|>=2.8,<2.8.41|>=3,<3.3.17|>=3.4,<3.4.11|>=4,<4.0.11",
                 "symfony/security-guard": ">=2.8,<3.4.48|>=4,<4.4.23|>=5,<5.2.8",
                 "symfony/security-http": ">=2.3,<2.3.41|>=2.4,<2.7.51|>=2.8,<2.8.50|>=3,<3.4.26|>=4,<4.2.12|>=4.3,<4.3.8|>=4.4,<4.4.7|>=5,<5.0.7|>=5.1,<5.2.8|>=5.3,<5.3.2",
                 "symfony/serializer": ">=2,<2.0.11|>=4.1,<4.4.35|>=5,<5.3.12",
-                "symfony/symfony": ">=2,<3.4.49|>=4,<4.4.35|>=5,<5.3.12|>=5.3.14,<=5.3.14|>=5.4.3,<=5.4.3|>=6.0.3,<=6.0.3",
+                "symfony/symfony": ">=2,<4.4.50|>=5,<5.4.20|>=6,<6.0.20|>=6.1,<6.1.12|>=6.2,<6.2.6",
                 "symfony/translation": ">=2,<2.0.17",
                 "symfony/validator": ">=2,<2.0.24|>=2.1,<2.1.12|>=2.2,<2.2.5|>=2.3,<2.3.3",
                 "symfony/var-exporter": ">=4.2,<4.2.12|>=4.3,<4.3.8",
@@ -2433,7 +2433,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-01-26T20:04:06+00:00"
+            "time": "2023-02-01T13:08:34+00:00"
         },
         {
             "name": "seld/cli-prompt",
@@ -4317,22 +4317,22 @@
         },
         {
             "name": "helmich/phpunit-json-assert",
-            "version": "v3.4.2",
+            "version": "v3.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/martin-helmich/phpunit-json-assert.git",
-                "reference": "e2ff61f042c6c86566db297f7da13538bfb80140"
+                "reference": "73d72cc86f427ff247c8f356798b0568a185cf53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/martin-helmich/phpunit-json-assert/zipball/e2ff61f042c6c86566db297f7da13538bfb80140",
-                "reference": "e2ff61f042c6c86566db297f7da13538bfb80140",
+                "url": "https://api.github.com/repos/martin-helmich/phpunit-json-assert/zipball/73d72cc86f427ff247c8f356798b0568a185cf53",
+                "reference": "73d72cc86f427ff247c8f356798b0568a185cf53",
                 "shasum": ""
             },
             "require": {
                 "justinrainbow/json-schema": "^5.0",
                 "php": "^7.2 || ^8.0",
-                "softcreatr/jsonpath": "^0.7.2"
+                "softcreatr/jsonpath": "^0.7.2 || ^0.8"
             },
             "conflict": {
                 "phpunit/phpunit": "<8.0 || >= 10.0"
@@ -4359,7 +4359,7 @@
             "description": "PHPUnit assertions for JSON documents",
             "support": {
                 "issues": "https://github.com/martin-helmich/phpunit-json-assert/issues",
-                "source": "https://github.com/martin-helmich/phpunit-json-assert/tree/v3.4.2"
+                "source": "https://github.com/martin-helmich/phpunit-json-assert/tree/v3.4.3"
             },
             "funding": [
                 {
@@ -4371,7 +4371,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-03-29T06:47:09+00:00"
+            "time": "2023-02-01T09:41:56+00:00"
         },
         {
             "name": "helmich/phpunit-psr7-assert",
@@ -6527,16 +6527,16 @@
         },
         {
             "name": "symfony/dependency-injection",
-            "version": "v5.4.19",
+            "version": "v5.4.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dependency-injection.git",
-                "reference": "99dae35f2b7d1bd9b800fcda4173215fc9f79ba3"
+                "reference": "8185ed0df129005a26715902f1a53bad0fe67102"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/99dae35f2b7d1bd9b800fcda4173215fc9f79ba3",
-                "reference": "99dae35f2b7d1bd9b800fcda4173215fc9f79ba3",
+                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/8185ed0df129005a26715902f1a53bad0fe67102",
+                "reference": "8185ed0df129005a26715902f1a53bad0fe67102",
                 "shasum": ""
             },
             "require": {
@@ -6596,7 +6596,7 @@
             "description": "Allows you to standardize and centralize the way objects are constructed in your application",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/dependency-injection/tree/v5.4.19"
+                "source": "https://github.com/symfony/dependency-injection/tree/v5.4.20"
             },
             "funding": [
                 {
@@ -6612,7 +6612,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-01-23T15:37:22+00:00"
+            "time": "2023-01-27T11:08:11+00:00"
         },
         {
             "name": "symfony/filesystem",
