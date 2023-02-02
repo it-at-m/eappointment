@@ -1,3 +1,6 @@
+## 2.24.14
+* #54285 - filter processList by given timestamp
+
 ## 2.24.13
 * #56121 - getSummerizedSlotCount with tempId if unsaved new availability exists
 * #56079 - remove wrong slotcount calculation in requestrealationlist
