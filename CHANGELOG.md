@@ -1,6 +1,7 @@
 ## 2.24.14
 * #54285 - filter calldisplay queuelistd by given date
 * #56366 - bugfix memory exhaustion dldbget (DLDB Downloads via service.berlin.de)
+* #54285 - filter calldisplay queue by todays date to display only processes within today
 
 ## 2.24.13
 * #56079 - Unit Tests for checking multiple services in one appointment have been corrected
