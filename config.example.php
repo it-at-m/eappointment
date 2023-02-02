@@ -2,10 +2,11 @@
 // @codingStandardsIgnoreFile
  
 define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://localhost/terminvereinbarung/api/2');
+define('ZMS_IDENTIFIER', getenv('ZMS_IDENTIFIER') ? getenv('ZMS_IDENTIFIER') : 'Zmsadmin-ENV');
 
 class App extends \BO\Zmsadmin\Application
 {
-    const IDENTIFIER = 'zms';
+    const IDENTIFIER = ZMS_IDENTIFIER;
     const DEBUG = false;
     // Per default uses dir ./cache
     //const TWIG_CACHE = false;
