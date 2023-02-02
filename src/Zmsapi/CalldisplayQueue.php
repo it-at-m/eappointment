@@ -95,6 +95,7 @@ class CalldisplayQueue extends BaseController
         $query = new \BO\Zmsdb\Process();
         return $query
             ->readProcessListByScopeAndStatus($scope->getId(), $status, $resolveReferences)
+            ->withinExactDate(\App::$now)
             ->toQueueList(\App::$now)
             ->withPickupDestination($scope);
     }
