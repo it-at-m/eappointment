@@ -1,3 +1,6 @@
+## 2.24.14
+* fixed some css behaviour on multicolumns in different screen sizes
+
 ## 2.24.13
 
 * #56114 - Update of the analog clock every minute when the /info/ route is retrieved
