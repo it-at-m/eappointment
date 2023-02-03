@@ -1,20 +1,5 @@
 {% block infoColumn %}
 <!--Logo und Text-->
-<style>
-	.qrCode--Headline {
-		text-align: center;
-		background: #fff;
-		font-family: Arial,sans-serif;
-		font-size: 32px;
-		font-weight: 700;
-		line-height: 45px;
-		margin-bottom: 3px;
-		margin-top: 45px;
-	}
-	.qrContainer {
-		background: #fff;
-	}
-</style>
 <div align="center">
 	{% if showQrCode and webcalldisplay is defined %}
 		<div class="qrCode--Headline">{{ ("Mobile Aufrufanzeige")|trans }}</div>
