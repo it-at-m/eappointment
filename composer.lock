@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bdfecc0746be8eea04bea18fdd22be5c",
+    "content-hash": "c53c1dfc3a982bafd3dd7906f861366a",
     "packages": [
         {
             "name": "aura/sql",
@@ -4452,7 +4452,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "eappointment/zmsdldb": 20,
-        "eappointment/zmsentities": 20,
+        "eappointment/zmsentities": 5,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
@@ -4464,5 +4464,5 @@
         "ext-pcre": ">=0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.0.0"
 }
