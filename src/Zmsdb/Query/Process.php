@@ -460,9 +460,13 @@ class Process extends Base implements MappingInterface
             if ('pending' == $status) {
                 $query
                     ->andWith('process.StandortID', '!=', 0)
-                    ->andWith('process.AbholortID', '=', $scopeId)
                     ->andWith('process.Abholer', '!=', 0)
                     ->andWith('process.NutzerID', '=', 0);
+                if (0 != $scopeId) {
+                    $query->andWith('process.AbholortID', '=', $scopeId);
+                } else {
+                    $query->andWith('process.AbholortID', '!=', 0);
+                }
             }
             if ('processing' == $status) {
                 $query
@@ -473,8 +477,12 @@ class Process extends Base implements MappingInterface
             if ('pickup' == $status) {
                 $query
                     ->andWith('process.StandortID', '!=', 0)
-                    ->andWith('process.AbholortID', '=', $scopeId)
                     ->andWith('process.NutzerID', '!=', 0);
+                if (0 != $scopeId) {
+                    $query->andWith('process.AbholortID', '=', $scopeId);
+                } else {
+                    $query->andWith('process.AbholortID', '!=', 0);
+                }
             }
             if ('called' == $status) {
                 $query
@@ -493,9 +501,12 @@ class Process extends Base implements MappingInterface
                 $query
                     ->andWith('process.vorlaeufigeBuchung', '=', 0)
                     ->andWith('process.Abholer', '=', 0)
-                    ->andWith('process.StandortID', '!=', 0)
                     ->andWith('process.Uhrzeit', '!=', '00:00:00')
                     ->andWith('process.IPTimeStamp', '!=', 0);
+                if (0 != $scopeId) {
+                    $query
+                        ->andWith('process.StandortID', '=', $scopeId);
+                }
             }
         });
         return $this;
