@@ -506,9 +506,6 @@ class Process extends Base implements MappingInterface
                 if (0 != $scopeId) {
                     $query
                         ->andWith('process.StandortID', '=', $scopeId);
-                } else {
-                    $query
-                        ->andWith('process.StandortID', '!=', 0);
                 }
             }
         });
