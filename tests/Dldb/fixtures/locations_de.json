@@ -16,7 +16,8 @@
       },
       "office": "weitere",
       "authority": {
-        "id": "12671"
+        "id": "12671",
+        "name": "Bezirksamt Mitte"
       },
       "geo": {
         "lat": 53.45,
@@ -4436,7 +4437,8 @@
       },
       "office": "auslandsamt",
       "authority": {
-        "id": "12760"
+        "id": "12760",
+        "name": "Landesamt f\u00fcr B\u00fcrger- und Ordnungsangelegenheiten (LABO)"
       },
       "geo": {
         "lat": 53.45,
@@ -5308,7 +5310,8 @@
       },
       "office": "buergeramt",
       "authority": {
-        "id": "12668"
+        "id": "12668",
+        "name": "Bezirksamt Friedrichshain - Kreuzberg"
       },
       "geo": {
         "lat": 53.45,
@@ -18932,7 +18935,8 @@
       },
       "office": "buergeramt",
       "authority": {
-        "id": "12675"
+        "id": "12675",
+        "name": "Bezirksamt Spandau"
       },
       "geo": {
         "lat": 53.45,
