@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "853520c061dc6f4812c2245b1cb37068",
+    "content-hash": "c6b966f652d8ed61ae10b890a3306cb2",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -102,7 +102,7 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "2.24.14-rc2",
+            "version": "2.24.14",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsentities.git",
@@ -158,16 +158,16 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "2.24.13",
+            "version": "2.24.14",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsslim.git",
-                "reference": "f2fbed6a46307f2131e0eb292daebdcbb27a5a2e"
+                "reference": "009abd6fe4eea96e9a4f8aee6b6002dbe04db1f0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=f2fbed6a46307f2131e0eb292daebdcbb27a5a2e",
-                "reference": "f2fbed6a46307f2131e0eb292daebdcbb27a5a2e",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=009abd6fe4eea96e9a4f8aee6b6002dbe04db1f0",
+                "reference": "009abd6fe4eea96e9a4f8aee6b6002dbe04db1f0",
                 "shasum": ""
             },
             "require": {
@@ -207,7 +207,7 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-            "time": "2022-12-12T16:36:33+00:00"
+            "time": "2023-02-07T10:49:23+00:00"
         },
         {
             "name": "fig/http-message-util",
@@ -5662,7 +5662,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "eappointment/zmsentities": 5,
+        "eappointment/zmsentities": 20,
         "eappointment/zmsslim": 20,
         "roave/security-advisories": 20,
         "phpmd/phpmd": 0
