@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c53c1dfc3a982bafd3dd7906f861366a",
+    "content-hash": "bdfecc0746be8eea04bea18fdd22be5c",
     "packages": [
         {
             "name": "aura/sql",
@@ -114,16 +114,16 @@
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "2.24.14-rc2",
+            "version": "2.24.14",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsdldb.git",
-                "reference": "b0972bf458fafa2d2720cdac2f502fd1ec4f8d8b"
+                "reference": "88a7b0ef82bf1807b32c4eb018f849d7390d6a0b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdldb/repository/archive.zip?sha=b0972bf458fafa2d2720cdac2f502fd1ec4f8d8b",
-                "reference": "b0972bf458fafa2d2720cdac2f502fd1ec4f8d8b",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdldb/repository/archive.zip?sha=88a7b0ef82bf1807b32c4eb018f849d7390d6a0b",
+                "reference": "88a7b0ef82bf1807b32c4eb018f849d7390d6a0b",
                 "shasum": ""
             },
             "require": {
@@ -163,11 +163,11 @@
                 }
             ],
             "description": "Client for DLDB",
-            "time": "2023-02-03T11:43:58+00:00"
+            "time": "2023-02-07T11:33:37+00:00"
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "2.24.14-rc2",
+            "version": "2.24.14",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsentities.git",
@@ -4452,7 +4452,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "eappointment/zmsdldb": 20,
-        "eappointment/zmsentities": 5,
+        "eappointment/zmsentities": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
