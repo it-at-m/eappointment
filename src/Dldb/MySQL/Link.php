@@ -27,7 +27,7 @@ class Link extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($linklist) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($linklist) {
                 $link = new \BO\Dldb\MySQL\Entity\Link();
                 $link->offsetSet('data_json', $data_json);
                 $linklist[$link['link']] = $link;
