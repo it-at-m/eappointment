@@ -38,7 +38,7 @@ class Authority extends Base
                
                 $stm = $this->access()->prepare($sql);
                 $stm->execute($sqlArgs);
-                $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($authorityList) {
+                $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($authorityList) {
                     $authority = new \BO\Dldb\MySQL\Entity\Authority();
                     $authority->offsetSet('data_json', $data_json);
                     $authorityList[$authority['id']] = $authority;
@@ -79,7 +79,7 @@ class Authority extends Base
                 $sql = 'SELECT data_json FROM authority WHERE locale = ?';
                 $stm = $this->access()->prepare($sql);
                 $stm->execute($sqlArgs);
-                $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($authorityList) {
+                $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($authorityList) {
                     $authority = new \BO\Dldb\MySQL\Entity\Authority();
                     $authority->offsetSet('data_json', $data_json);
                     $authorityList[$authority['id']] = $authority;

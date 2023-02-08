@@ -87,7 +87,7 @@ class Service extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($serviceList) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($serviceList) {
                 $service = new \BO\Dldb\MySQL\Entity\Service();
                 $service->offsetSet('data_json', $data_json);
                 
@@ -136,7 +136,7 @@ class Service extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($serviceList) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($serviceList) {
                 $service = new \BO\Dldb\MySQL\Entity\Service();
                 $service->offsetSet('data_json', $data_json);
                 
@@ -171,7 +171,7 @@ class Service extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($serviceList) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($serviceList) {
                 $service = new \BO\Dldb\MySQL\Entity\Service();
                 $service->offsetSet('data_json', $data_json);
                 
@@ -210,7 +210,7 @@ class Service extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($serviceList) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($serviceList) {
                 $service = new \BO\Dldb\MySQL\Entity\Service();
                 $service->offsetSet('data_json', $data_json);
                 
