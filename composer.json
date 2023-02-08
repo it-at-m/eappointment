@@ -8,14 +8,19 @@
             "email": "mathias.fischer@berlinonline.de"
         }
     ],
+    "config": {
+        "platform": {
+            "php": "7.3"
+        }
+    },
     "require": {
         "php": ">=7.3.0",
         "ext-curl": ">=0",
         "ext-mbstring": ">=0",
         "ext-json": ">=1.0",
         "ext-pcre": ">=0",
-        "eappointment/zmsslim": "dev-ticket55431-slim-update",
-        "eappointment/zmsentities": "dev-ticket55431-slim-update",
+        "eappointment/zmsslim": "dev-berlin-rc-2.25.00",
+        "eappointment/zmsentities": "dev-berlin-rc-2.25.00",
         "eappointment/mellon": "^2.0.1",
         "psr/http-message": "^1.0",
         "roave/security-advisories": "dev-master",
