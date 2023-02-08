@@ -8,6 +8,11 @@
       "email": "mathias.fischer@berlinonline.de"
     }
   ],
+  "config": {
+    "platform": {
+        "php": "7.3"
+    }
+  },
   "require-dev": {
     "aronduby/dump": "*",
     "phpmd/phpmd": "@stable",
@@ -17,11 +22,11 @@
     "helmich/phpunit-psr7-assert": "^4.3.0"
   },
   "require": {
-    "eappointment/zmsslim": "dev-main || ^2.0",
-    "eappointment/zmsclient": "dev-main || ^2.0",
-    "eappointment/zmsdldb": "dev-main || ^2.0",
-    "eappointment/zmsdb": "dev-main || ^2.0",
-    "eappointment/zmsentities": "dev-main || ^2.0",
+    "eappointment/zmsslim": "dev-berlin-rc-2.25.00",
+    "eappointment/zmsclient": "dev-berlin-rc-2.25.00",
+    "eappointment/zmsdldb": "dev-berlin-rc-2.25.00",
+    "eappointment/zmsdb": "dev-berlin-rc-2.25.00",
+    "eappointment/zmsentities": "dev-berlin-rc-2.25.00",
     "monolog/monolog": "1.*",
     "ulrichsg/getopt-php": "^2.3",
     "league/climate": "^3.2",
