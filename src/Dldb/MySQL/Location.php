@@ -75,7 +75,7 @@ class Location extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($locationList) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($locationList) {
                 $location = new \BO\Dldb\MySQL\Entity\Location();
                 $location->offsetSet('data_json', $data_json);
                 
@@ -117,7 +117,7 @@ class Location extends Base
             $locationList = new Collection();
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($locationList) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($locationList) {
                 $location = new \BO\Dldb\MySQL\Entity\Location();
                 $location->offsetSet('data_json', $data_json);
                 
@@ -162,7 +162,7 @@ class Location extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($locationList) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($locationList) {
                 $location = new \BO\Dldb\MySQL\Entity\Location();
                 $location->offsetSet('data_json', $data_json);
                 
@@ -201,9 +201,14 @@ class Location extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function(
-                $id, $name, $authority_name, $category_json, 
-                $contact_json, $address_json, $geo_json,
+            $stm->fetchAll(\PDO::FETCH_FUNC, function (
+                $id,
+                $name,
+                $authority_name,
+                $category_json,
+                $contact_json,
+                $address_json,
+                $geo_json,
                 $meta__url
             ) use ($locationList) {
                 $location = new \BO\Dldb\MySQL\Entity\Location();
@@ -284,7 +289,7 @@ class Location extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute($sqlArgs);
-            $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($locationList) {
+            $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($locationList) {
                 $location = new \BO\Dldb\MySQL\Entity\Location();
                 $location->offsetSet('data_json', $data_json);
                 

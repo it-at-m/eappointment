@@ -60,7 +60,7 @@ class Search
 
                     $stm = $this->mysqlAccess->prepare($sql);
                     $stm->execute();
-                    $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($entityClass, $resultList) {
+                    $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($entityClass, $resultList) {
                         $entity = new $entityClass();
                         $entity->offsetSet('data_json', $data_json);
                         
