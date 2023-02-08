@@ -5,39 +5,50 @@
 
 namespace BO\Slim\PhpUnit;
 
+use App;
+use BO\Slim\Middleware\Validator;
+use Helmich\Psr7Assert\Psr7Assertions;
 use PHPUnit\Framework\TestCase;
 
-use \BO\Slim\Middleware\SessionMiddleware;
-use \BO\Slim\Middleware\Session\SessionHuman;
-use \BO\Slim\Middleware\Session\SessionData;
+use BO\Slim\Middleware\SessionMiddleware;
+use BO\Slim\Middleware\Session\SessionHuman;
+use BO\Slim\Middleware\Session\SessionData;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Slim\Psr7\Environment;
+use Slim\Psr7\Factory\UriFactory;
+use Slim\Psr7\Headers;
+use BO\Slim\Request;
+use BO\Slim\Response;
+use Slim\Psr7\Factory\StreamFactory;
 
 /**
  * @SuppressWarnings(PHPMD)
  */
 abstract class Base extends TestCase
 {
-    use \Helmich\Psr7Assert\Psr7Assertions;
+    use Psr7Assertions;
 
     /**
       * Arguments for callback render
       *
-      * @var Array $arguments
+      * @var array $arguments
       */
-    protected $arguments = array();
+    protected $arguments = [];
 
     /**
       * Parameters for the request
       *
-      * @var Array $parameters
+      * @var array $parameters
       */
-    protected $parameters = array();
+    protected $parameters = [];
 
     /**
       * Data for the session
       *
-      * @var Array $sessionData
+      * @var array $sessionData
       */
-    protected $sessionData = array();
+    protected $sessionData = [];
 
     /**
      * Use this object instance for session getEntity()
@@ -61,17 +72,24 @@ abstract class Base extends TestCase
      * Overwrite this function if session data needs function calls
      *
      */
-    protected function getSessionData()
+    protected function getSessionData(): array
     {
         return $this->sessionData;
     }
 
     /**
      *
-     * @return \Psr\Http\Message\RequestInterface
+     * @param string $method
+     * @param string $uri
+     * @param array|null $sessionData
+     *
+     * @return ServerRequestInterface
      */
-    protected function getRequest($method = 'GET', $uri = '', $sessionData = null)
-    {
+    protected function getRequest(
+        string $method = 'GET',
+        string $uri = '',
+        ?array $sessionData = null
+    ): ServerRequestInterface {
         if (null === $sessionData) {
             $sessionData = $this->getSessionData();
         }
@@ -79,41 +97,63 @@ abstract class Base extends TestCase
             // prevent isOveraged error-Handling
             $sessionData['human']['ts'] = time() - 10;
         }
-        $request = self::createBasicRequest($method, $uri);
+        $request = self::createBasicRequest($method, $uri, ['Accept' => \BO\Slim\Headers::MEDIA_TYPE_TEXT_HTML]);
         $sessionContainer = SessionHuman::fromContainer(function () use ($sessionData) {
             $session = new SessionData($sessionData);
             $session->setEntityClass($this->sessionClass);
             return $session;
         });
-        $request = $request->withAttribute(SessionMiddleware::SESSION_ATTRIBUTE, $sessionContainer);
-        return $request;
+        
+        return $request->withAttribute(SessionMiddleware::SESSION_ATTRIBUTE, $sessionContainer);
     }
 
     /**
      * Create a simple basic request
      *
-     * @return \Psr\Http\Message\RequestInterface
+     * @param string $method
+     * @param string $uri
+     * @return ServerRequestInterface
      */
-    public static function createBasicRequest($method = "GET", $uri = '')
-    {
-        $request = \Slim\Http\Request::createFromEnvironment(\Slim\Http\Environment::mock([
+    public static function createBasicRequest(
+        string $method = "GET",
+        string $uri = '',
+        array $addHeaders = []
+    ): ServerRequestInterface {
+        $env = Environment::mock([
             'REQUEST_METHOD'       => $method,
             'REQUEST_URI'          => $uri,
             'REMOTE_ADDR'          => '127.0.0.1'
-        ]));
-        $request = $request->withAttribute('ip_address', '127.0.0.1');
-        return $request;
+        ]);
+
+        $uri = (new UriFactory())->createFromGlobals($env);
+        $headers = Headers::createFromGlobals();
+        foreach ($addHeaders as $key => $value) {
+            $headers->addHeader($key, $value);
+        }
+
+        $body = (new StreamFactory())->createStream();
+
+        $request = new Request($method, $uri, $headers, [], $env, $body, []);
+
+        if ($method === 'POST' &&
+            in_array($headers->getHeader('Content-Type'), ['application/x-www-form-urlencoded', 'multipart/form-data'])
+        ) {
+            // parsed body must be $_POST
+            $request = $request->withParsedBody($_POST);
+        }
+
+        return $request->withAttribute('ip_address', '127.0.0.1');
     }
 
     /**
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      */
-    protected function getResponse($content = '', $status = 200, array $headers = array())
+    protected function getResponse($content = '', $status = 200, array $headers = [])
     {
-        $body = new \Slim\Http\Body(fopen('php://temp', 'r+'));
-        $headers = new \Slim\Http\Headers($headers);
-        $response = new \Slim\Http\Response($status, $headers, $body);
+        $body = (new StreamFactory())->createStream();
+        $headers = new Headers($headers);
+        $response = new Response($status, $headers, $body);
         $body->write($content);
         return $response;
     }
@@ -125,39 +165,47 @@ abstract class Base extends TestCase
         return $response;
     }
 
-    protected function getControllerIdentifier()
+    protected function getControllerIdentifier(): string
     {
         $classname = (null === $this->classname) ?
             preg_replace('#^.*?(\w+)Test$#', '$1', get_class($this)) :
             $this->classname;
-        $controllername = (false !== strpos($classname, '\\')) ? $classname : $this->namespace . $classname;
-        return $controllername;
+
+        return (false !== strpos($classname, '\\')) ? $classname : $this->namespace . $classname;
     }
 
-    protected function render($arguments = [], $parameters = [], $sessionData = null, $method = 'GET')
-    {
+    protected function render(
+        array $arguments = [],
+        $parameters = [],
+        $sessionData = null,
+        $method = 'GET'
+    ) {
         $renderClass = $this->getControllerIdentifier();
-        $controller = new $renderClass(\App::$slim->getContainer());
+        /** @var \BO\Slim\Controller $controller */
+        $controller = new $renderClass(App::$slim->getContainer());
 
         //add uri to test multi languages
         $uri = (array_key_exists('__uri', $parameters)) ? $parameters['__uri'] : '';
         $request = $this->getRequest($method, $uri, $sessionData);
         $request = $this->setRequestParameters($request, $parameters, $method);
         $this->setValidatorInstance($parameters);
-        $request = \BO\Slim\Middleware\Validator::withValidator($request);
-        $response = $controller->__invoke($request, $this->getResponse(), $arguments);
-        return $response;
+        $request = Validator::withValidator($request);
+
+        return $controller->__invoke($request, $this->getResponse(), $arguments);
     }
 
-    protected function setRequestParameters($request, $parameters, $method)
-    {
+    protected function setRequestParameters(
+        ServerRequestInterface $request,
+        array $parameters,
+        string $method
+    ): ServerRequestInterface {
         if ('GET' === $method) {
             $request = $request->withQueryParams($parameters);
         } elseif ('POST' === $method) {
             $request = $request->withParsedBody($parameters);
         }
         if (array_key_exists('__body', $parameters)) {
-            $body = new \Slim\Http\Body(fopen('php://temp', 'r+'));
+            $body = (new StreamFactory())->createStream();
             $body->write($parameters['__body']);
             $request = $request->withBody($body);
         }
@@ -181,7 +229,6 @@ abstract class Base extends TestCase
         if (array_key_exists('__route', $parameters)) {
             $request = $request->withAttribute('route', $parameters['__route']);
         }
-
 
         return $request;
     }

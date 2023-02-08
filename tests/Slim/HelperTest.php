@@ -16,8 +16,8 @@ class HelperTest extends TestCase
     {
         \App::$urlSignatureSecret = 'testSecret';
 
-//        $hash = Helper::hashQueryParameters('testNameOrUrl', ['testParam' => '123', 'a' => 'b'], ['testParam']);
-//        self::assertSame('CewTvYofNPqG4yS4', $hash);
+        $hash = Helper::hashQueryParameters('testNameOrUrl', ['testParam' => '123', 'a' => 'b'], ['testParam']);
+        self::assertSame('CewTvYofNPqG4yS4', $hash);
 
         $hash = Helper::hashQueryParameters('testNameOrUrl', ['testParam' => '123', 'a' => []], ['testParam', 'a']);
         self::assertSame('CewTvYofNPqG4yS4', $hash);

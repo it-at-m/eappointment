@@ -6,6 +6,8 @@ class App extends \BO\Slim\Application
     const IDENTIFIER = 'Slim-ENV';
     const APP_PATH = APP_PATH;
     const DEBUG = true;
+    const LOG_ERRORS = false;
+
     const TEMPLATE_PATH = '/Slim/templates/';
 
     const SESSION_NAME = "Unittest";

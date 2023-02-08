@@ -10,7 +10,8 @@ class TwigExtensionsTest extends TestCase
     public function testBasic()
     {
         $twigExtensionsClass = \App::$slim
-            ->getContainer()->view
+            ->getContainer()
+            ->get('view')
             ->getEnvironment()
             ->getExtension('\BO\Slim\TwigExtension');
         $this->assertEquals('boslimExtension', $twigExtensionsClass->getName());
@@ -32,14 +33,12 @@ class TwigExtensionsTest extends TestCase
 
     public function testCurrentRouteEn()
     {
-        $route = new \Slim\Route('GET', '/unittest/{id}/{lang}/', []);
-        $route->setName('unittest');
-        $route->setArguments(['id' => 123, 'lang' => 'en']);
-        \App::$slim->getContainer()['currentRoute'] = $route->getName();
-        \App::$slim->getContainer()['currentRouteParams'] = $route->getArguments();
+        \App::$slim->getContainer()['currentRoute'] = 'unittest';
+        \App::$slim->getContainer()['currentRouteParams'] = ['id' => 123, 'lang' => 'en'];
 
         $twigExtensionsClass = \App::$slim
-            ->getContainer()->view
+            ->getContainer()
+            ->get('view')
             ->getEnvironment()
             ->getExtension('\BO\Slim\TwigExtension');
         
@@ -50,14 +49,12 @@ class TwigExtensionsTest extends TestCase
 
     public function testCurrentRouteDe()
     {
-        $route = new \Slim\Route('GET', '/unittest/{id}/{lang}/', []);
-        $route->setName('unittest');
-        $route->setArguments(['id' => 123, 'lang' => 'de']);
-        \App::$slim->getContainer()['currentRoute'] = $route->getName();
-        \App::$slim->getContainer()['currentRouteParams'] = $route->getArguments();
+        \App::$slim->getContainer()['currentRoute'] = 'unittest';
+        \App::$slim->getContainer()['currentRouteParams'] = ['id' => 123, 'lang' => 'de'];
 
         $twigExtensionsClass = \App::$slim
-            ->getContainer()->view
+            ->getContainer()
+            ->get('view')
             ->getEnvironment()
             ->getExtension('\BO\Slim\TwigExtension');
         
