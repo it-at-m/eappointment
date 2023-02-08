@@ -50,7 +50,7 @@ class Service extends Base
     public function hasAppointments($external = false)
     {
         foreach ($this['locations'] as $location) {
-            if (array_key_exists('appointment', $location)) {
+            if (isset($location['appointment']['allowed'])) {
                 if ($location['appointment']['allowed']) {
                     if ($external) {
                         return true;

@@ -132,27 +132,17 @@ class AbstractAccess
     {
         if (array_key_exists($instanceName, $this->accessInstance[$locale])) {
             $instance = $this->accessInstance[$locale][$instanceName];
-            if (null === $instance) {
-                try {
-                    $instance = call_user_func_array([$this, 'load' . $instanceName], [$locale]);
-                    if ($instance instanceof \BO\Dldb\File\Base) {
-                        $instance->setAccessInstance($this);
-                        $this->accessInstance[$locale][$instanceName] = $instance;
-                        
-                        return $instance;
-                    }
-                } catch (\Exception $e) {
-                    throw new Exception("Instance for accessing $instanceName ($locale) is not initialized");
-                }
-            }
             if ($instance instanceof \BO\Dldb\File\Base) {
                 return $instance;
+            }
+            if (null === $instance) {
+                throw new Exception("Instance for accessing $instanceName ($locale) is not initialized");
             }
             throw new Exception("Instance for accessing $instanceName failed");
         }
         echo '<pre>' . print_r($this->accessInstance, 1) . '</pre>';
         //exit;
-        throw new Exception("Instance for accessing $instanceName does not exists");
+        throw new Exception("Locale for accessing $instanceName does not exists");
     }
 
     public function fromAuthority($locale = 'de')

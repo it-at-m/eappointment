@@ -109,9 +109,8 @@ class Authority extends Base
      */
     public function isInServiceList($servicelist = array())
     {
-
         foreach ($servicelist as $service) {
-            if (array_key_exists('authorities', $service)) {
+            if ($service->offsetExists('authorities')) {
                 foreach ($service['authorities'] as $authority) {
                     if ($authority['id'] == $this['id']) {
                         return true;

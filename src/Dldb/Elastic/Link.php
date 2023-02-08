@@ -36,7 +36,7 @@ class Link extends Base
         $linkList = new Collection();
         foreach ($resultList as $result) {
             $link = new Entity($result->getData());
-            if (false === array_key_exists($link['link'], $linkList)) {
+            if (false === $linkList->offsetExists($link['link'])) {
                 $linkList[$link['link']] = $link;
             }
         }
