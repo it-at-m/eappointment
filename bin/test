@@ -12,6 +12,10 @@ EEND="\033[00m"
 echo "Testing application"
 cd $ROOT
 
+if [ ! -d "$BASE/vendor" ]; then
+  BASE=$ROOT
+fi
+
 GITFILES=$(git diff --cached --name-only --diff-filter=AM|xargs)
 PHPFILES=$(git diff --cached --name-only --diff-filter=AM|grep "\.php"|xargs)
 if [[ ! $GITFILES =~ "composer.lock" ]]

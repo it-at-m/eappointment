@@ -11,10 +11,10 @@ class Availability extends Base implements Interfaces\ResolveReferences
 {
     public static $cache = [];
 
-    public function readEntity($availabilityId, $resolveReferences = 0, $disableCache = false)
+    public function readEntity($availabilityId, $resolveReferences = 0, $preferCache = false)
     {
         $cacheKey = "$availabilityId-$resolveReferences";
-        if (!$disableCache && !array_key_exists($cacheKey, self::$cache)) {
+        if (!$preferCache || !array_key_exists($cacheKey, self::$cache)) {
             $query = new Query\Availability(Query\Base::SELECT);
             $query
                 ->addEntityMapping()

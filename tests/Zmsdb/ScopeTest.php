@@ -167,7 +167,7 @@ class ScopeTest extends Base
     {
         \BO\Zmsdb\Scope::$cache = [];
         $entity2 = (new Query())->readEntity(141, 2);
-        $this->assertTrue(array_key_exists('data', $entity2->provider));
+        $this->assertArrayHasKey('data', (array) $entity2->provider);
     }
 
     public function testImageData()
