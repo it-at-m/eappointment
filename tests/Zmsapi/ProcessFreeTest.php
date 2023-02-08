@@ -129,6 +129,9 @@ class ProcessFreeTest extends Base
             }'
         ], []);
 
+        foreach(json_decode((string)$response->getBody(), true)['data'] as $processData) {
+            $this->assertEquals(4, $processData['appointments'][0]['slotCount']);
+        }
         $this->assertEquals(19, count(json_decode((string)$response->getBody(), true)['data']));
         $this->assertStringContainsString('"date":"1464337800"', (string)$response->getBody());
     }
@@ -165,6 +168,9 @@ class ProcessFreeTest extends Base
             }'
         ], []);
 
+        foreach(json_decode((string)$response->getBody(), true)['data'] as $processData) {
+            $this->assertEquals(3, $processData['appointments'][0]['slotCount']);
+        }
         $this->assertEquals(25, count(json_decode((string)$response->getBody(), true)['data']));
         $this->assertStringContainsString('"date":"1464337800"', (string)$response->getBody());
     }
@@ -194,6 +200,9 @@ class ProcessFreeTest extends Base
             }'
         ], []);
 
+        foreach(json_decode((string)$response->getBody(), true)['data'] as $processData) {
+            $this->assertEquals(3, $processData['appointments'][0]['slotCount']);
+        }
         $this->assertEquals(25, count(json_decode((string)$response->getBody(), true)['data']));
         $this->assertStringContainsString('"date":"1464340800"', (string)$response->getBody());
     }
@@ -228,6 +237,9 @@ class ProcessFreeTest extends Base
             }'
         ], []);
 
+        foreach(json_decode((string)$response->getBody(), true)['data'] as $processData) {
+            $this->assertEquals(6, $processData['appointments'][0]['slotCount']);
+        }
         $this->assertEquals(11, count(json_decode((string)$response->getBody(), true)['data']));
         $this->assertStringContainsString('"date":"1464340800"', (string)$response->getBody());
     }
