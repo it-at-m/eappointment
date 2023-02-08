@@ -42,9 +42,10 @@ class Base extends \ArrayObject
         return $this['path'];
     }
 
-    public static function hasValidOffset($item, $index) {
+    public static function hasValidOffset($item, $index)
+    {
         return (
-            (is_object($item) && $item->offsetExists($index)) || 
+            (is_object($item) && $item->offsetExists($index)) ||
             (is_array($item) && array_key_exists($index, $item))
         );
     }
