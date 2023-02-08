@@ -10,6 +10,7 @@ use BO\Slim\Request as SlimRequest;
 
 /**
  * Layer to change PSR7 implementation if necessary
+ * @SuppressWarnings(Superglobals)
  */
 class Request extends SlimRequest implements \Psr\Http\Message\ServerRequestInterface
 {
