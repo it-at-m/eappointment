@@ -144,21 +144,24 @@ class Message implements \JsonSerializable
      */
     protected function getProfilerData()
     {
-        $profiles = [];
+        $profiler = null;
         if (Select::hasWriteConnection()) {
-            $profiles += Select::getWriteConnection()->getProfiler()->getProfiles();
+            $profiler = Select::getWriteConnection()->getProfiler();
         }
         if (Select::hasReadConnection()) {
-            $profiles += Select::getReadConnection()->getProfiler()->getProfiles();
+            $profiler = Select::getReadConnection()->getProfiler();
         }
-        $filtered = array();
-        foreach ($profiles as $profile) {
-            if ($profile['function'] == 'perform') {
-                unset($profile['trace']);
-                $profile['statement'] = preg_replace('#\s+#', ' ', $profile['statement']);
-                $filtered[] = $profile;
-            }
+
+        if ($profiler === null) {
+            return [];
         }
-        return $filtered;
+
+        $logger = $profiler->getLogger();
+
+        if (method_exists($logger, 'getMessages')) {
+            return $logger->getMessages();
+        }
+
+        return [];
     }
 }

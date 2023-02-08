@@ -7,23 +7,25 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use BO\Slim\Request;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class Index extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     *
+     * @param RequestInterface|Request $request
+     * @param ResponseInterface $response
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
-        $uri = $request->getUri();
-        $base = $uri->getScheme();
-        $base .= '://';
-        $base .= $uri->getHost();
-        $base .= $uri->getBasePath();
+        $base = $request->getBaseUrl();
         $schema = [
             '$schema' => "http://json-schema.org/draft-04/schema#",
             'meta' => [
@@ -46,7 +48,8 @@ class Index extends BaseController
         ];
 
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $schema, 200);
-        return $response;
+
+        return Render::withJson($response, $schema, 200);
+        ;
     }
 }
