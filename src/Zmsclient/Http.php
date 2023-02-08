@@ -9,6 +9,7 @@ use Psr\Http\Message\UriInterface;
  * Adapter & Decorator Class to use the Psr7\Client
  *
  * Access api method_exists
+ * @SuppressWarnings(Coupling)
  */
 class Http
 {
