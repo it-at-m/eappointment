@@ -8,21 +8,37 @@ namespace BO\Slim;
 
 use \Psr\Http\Message\RequestInterface;
 use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Slim\Interfaces\ErrorHandlerInterface;
 
 /**
   *
   */
-class TwigExceptionHandler
+class TwigExceptionHandler implements ErrorHandlerInterface
 {
 
     const DEFAULT_TEMPLATE = "exception/default.twig";
 
+    /**
+     * @SuppressWarnings("PMD.UnusedFormalParameter")
+     * @param ServerRequestInterface $request
+     * @param \Throwable $exception
+     * @param bool $displayErrorDetails
+     * @param bool $logErrors
+     * @param bool $logErrorDetails
+     * @return ResponseInterface
+     */
     public function __invoke(
-        RequestInterface $request,
-        ResponseInterface $response,
-        \Throwable $exception
-    ) {
-        return static::withHtml($request, $response, $exception, 500);
+        ServerRequestInterface $request,
+        \Throwable $exception,
+        bool $displayErrorDetails,
+        bool $logErrors,
+        bool $logErrorDetails
+    ): ResponseInterface {
+        
+        $decoratedRequest = \BO\Slim\Middleware\ZmsSlimRequest::getDecoratedRequest($request);
+        $response = \App::$slim->getResponseFactory()->createResponse();
+        return static::withHtml($decoratedRequest, $response, $exception);
     }
 
     public static function withHtml(
@@ -32,9 +48,6 @@ class TwigExceptionHandler
         $status = 500
     ) {
         try {
-            if ($exception instanceof \Slim\Exception\Stop) {
-                return true;
-            }
             $request = Controller::prepareRequest($request);
             if ($exception->getCode() >= 200) {
                 $status = $exception->getCode();
@@ -69,6 +82,7 @@ class TwigExceptionHandler
                 */
             }
             $response = Render::withLastModified($response, time(), '0');
+
             return Render::withHtml(
                 $response,
                 $template,
@@ -86,7 +100,7 @@ class TwigExceptionHandler
                 . ":"
                 . $exception->getLine()
                 . " "
-                . $exception->getTraceAsString
+                . $exception->getTraceAsString()
                 ." ---- because of "
                 . $subexception->getMessage()
                 . " "
@@ -97,7 +111,7 @@ class TwigExceptionHandler
 
     public static function getExceptionTemplate(\Throwable $exception)
     {
-        $twig = \App::$slim->getContainer()->view;
+        $twig = \App::$slim->getContainer()->get('view');
         $loader = $twig->getLoader();
         if (isset($exception->template)) {
             $classname = $exception->template;
@@ -107,6 +121,7 @@ class TwigExceptionHandler
         $classname = strtolower($classname);
         $classname = preg_replace('#[\\\]+#', '/', $classname);
         $template = "exception/$classname.twig";
+
         if (!$loader->exists($template)) {
             $template = static::DEFAULT_TEMPLATE;
         }
@@ -127,7 +142,7 @@ class TwigExceptionHandler
 
     public static function getExtendedExceptionInfo(\Throwable $exception, RequestInterface $request)
     {
-        $servertime = Helper::getFormatedDates((new \DateTimeImmutable())->getTimestamp(), 'yyyy-MM-dd H:mm:ss');
+        $servertime = Helper::getFormatedDates((new \DateTimeImmutable())->getTimestamp(), 'yyyy-MM-dd HH:mm:ss');
         $exceptionclass = get_class($exception);
         if (isset($exception->template)) {
             $exceptionclass = $exception->template;
@@ -147,7 +162,7 @@ class TwigExceptionHandler
         }
         $route = $request->getAttribute('route');
         $routename = '';
-        if ($route && $route instanceof \Slim\Route) {
+        if ($route && $route instanceof \Slim\Routing\Route) {
             $routename = $route->getName();
         }
 
