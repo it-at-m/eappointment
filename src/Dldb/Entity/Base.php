@@ -15,7 +15,7 @@ class Base extends \ArrayObject
      */
     public function getId()
     {
-        if (!array_key_exists('id', $this)) {
+        if (!$this->offsetExists('id')) {
             return false;
         }
         return $this['id'];
@@ -36,15 +36,23 @@ class Base extends \ArrayObject
      */
     public function getPath()
     {
-        if (!array_key_exists('path', $this)) {
+        if (!$this->offsetExists('path')) {
             return false;
         }
         return $this['path'];
     }
 
+    public static function hasValidOffset($item, $index) {
+        return (
+            (is_object($item) && $item->offsetExists($index)) || 
+            (is_array($item) && array_key_exists($index, $item))
+        );
+    }
+
     public function getLocale()
     {
-        if (!array_key_exists('locale', $this['meta'])) {
+        $meta = $this['meta'];
+        if (false === static::hasValidOffset($meta, 'locale')) {
             return false;
         }
         return $this['meta']['locale'];
@@ -52,7 +60,7 @@ class Base extends \ArrayObject
 
     public function getLink()
     {
-        if (!array_key_exists('link', $this)) {
+        if (!$this->offsetExists('link')) {
             return false;
         }
         return $this['link'];
@@ -60,7 +68,7 @@ class Base extends \ArrayObject
 
     public function getType()
     {
-        if (!array_key_exists('type', $this)) {
+        if (!$this->offsetExists('type')) {
             return false;
         }
         return $this['type'];

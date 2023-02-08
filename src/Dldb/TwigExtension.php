@@ -13,7 +13,7 @@ use Error;
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @SuppressWarnings(PHPMD.TooManyMethods)
  */
-class TwigExtension extends \Twig_Extension
+class TwigExtension extends \Twig\Extension\AbstractExtension
 {
 
     public function __construct($container = null)
@@ -29,28 +29,28 @@ class TwigExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction('convertOpeningTimes', array($this, 'convertOpeningTimes')),
-            new \Twig_SimpleFunction('csvProperty', array($this, 'csvProperty')),
-            new \Twig_SimpleFunction('csvAppointmentLocations', array($this, 'csvAppointmentLocations')),
-            new \Twig_SimpleFunction('getAppointmentForService', array($this, 'getAppointmentForService')),
-            new \Twig_SimpleFunction('getLocationHintByServiceId', array($this, 'getLocationHintByServiceId')),
-            new \Twig_SimpleFunction('isAppointmentBookable', array($this, 'isAppointmentBookable')),
-            new \Twig_SimpleFunction('kindOfPayment', array($this, 'kindOfPayment')),
-            new \Twig_SimpleFunction('formatDateTime', array($this, 'formatDateTime')),
-            new \Twig_SimpleFunction('dateToTS', array($this, 'dateToTS')),
-            new \Twig_SimpleFunction('tsToDate', array($this, 'tsToDate')),
-            new \Twig_SimpleFunction('dayIsBookable', array($this, 'dayIsBookable')),
-            new \Twig_SimpleFunction('azPrefixList', array($this, 'azPrefixList')),
-            new \Twig_SimpleFunction('formatPhoneNumber', array($this, 'formatPhoneNumber')),
-            new \Twig_SimpleFunction('getOSMOptions', array($this, 'getOSMOptions')),
-            new \Twig_SimpleFunction('getOSMAccessToken', array($this, 'getOSMAccessToken')),
-            new \Twig_SimpleFunction('getD115Enabeld', array($this, 'getD115Enabeld')),
-            new \Twig_SimpleFunction('getD115OpeningTimes', array($this, 'getD115OpeningTimes')),
-            new \Twig_SimpleFunction('getD115Text', array($this, 'getD115Text')),
-            new \Twig_SimpleFunction('getBobbiChatButtonEnabeld', array($this, 'getBobbiChatButtonEnabeld')),
-            new \Twig_SimpleFunction('currentRoute', array($this, 'currentRoute')),
-            new \Twig_SimpleFunction('dump', array($this, 'dump')),
-            new \Twig_SimpleFunction(
+            new \Twig\TwigFunction('convertOpeningTimes', array($this, 'convertOpeningTimes')),
+            new \Twig\TwigFunction('csvProperty', array($this, 'csvProperty')),
+            new \Twig\TwigFunction('csvAppointmentLocations', array($this, 'csvAppointmentLocations')),
+            new \Twig\TwigFunction('getAppointmentForService', array($this, 'getAppointmentForService')),
+            new \Twig\TwigFunction('getLocationHintByServiceId', array($this, 'getLocationHintByServiceId')),
+            new \Twig\TwigFunction('isAppointmentBookable', array($this, 'isAppointmentBookable')),
+            new \Twig\TwigFunction('kindOfPayment', array($this, 'kindOfPayment')),
+            new \Twig\TwigFunction('formatDateTime', array($this, 'formatDateTime')),
+            new \Twig\TwigFunction('dateToTS', array($this, 'dateToTS')),
+            new \Twig\TwigFunction('tsToDate', array($this, 'tsToDate')),
+            new \Twig\TwigFunction('dayIsBookable', array($this, 'dayIsBookable')),
+            new \Twig\TwigFunction('azPrefixList', array($this, 'azPrefixList')),
+            new \Twig\TwigFunction('formatPhoneNumber', array($this, 'formatPhoneNumber')),
+            new \Twig\TwigFunction('getOSMOptions', array($this, 'getOSMOptions')),
+            new \Twig\TwigFunction('getOSMAccessToken', array($this, 'getOSMAccessToken')),
+            new \Twig\TwigFunction('getD115Enabeld', array($this, 'getD115Enabeld')),
+            new \Twig\TwigFunction('getD115OpeningTimes', array($this, 'getD115OpeningTimes')),
+            new \Twig\TwigFunction('getD115Text', array($this, 'getD115Text')),
+            new \Twig\TwigFunction('getBobbiChatButtonEnabeld', array($this, 'getBobbiChatButtonEnabeld')),
+            new \Twig\TwigFunction('currentRoute', array($this, 'currentRoute')),
+            new \Twig\TwigFunction('dump', array($this, 'dump')),
+            new \Twig\TwigFunction(
                 'getAppointmentForLocationFromServiceAppointmentLocations',
                 array($this, 'getAppointmentForLocationFromServiceAppointmentLocations')
             ),
@@ -169,7 +169,7 @@ class TwigExtension extends \Twig_Extension
 
     public function formatDateTime($dateString)
     {
-        $dateTime = new \DateTimeImmutable($dateString, new \DateTimezone('Europe/Berlin'));
+        $dateTime = (new \DateTimeImmutable('now', new \DateTimezone('Europe/Berlin')))->setTimestamp($dateString);
         $formatDate['date']     = Helper\DateTime::getFormatedDates($dateTime, "EE, dd. MMMM yyyy");
         $formatDate['fulldate'] = Helper\DateTime::getFormatedDates($dateTime, "EEEE, 'den' dd. MMMM yyyy");
         $formatDate['weekday']  = ($dateTime->format('N') == 0) ?
@@ -210,7 +210,7 @@ class TwigExtension extends \Twig_Extension
     {
         $azList = array();
         foreach ((array)$list as $item) {
-            if (!is_scalar($item) && array_key_exists($property, $item)) {
+            if (!is_scalar($item) && Entity\Base::hasValidOffset($item, $property)) {
                 $currentPrefix = self::sortFirstChar($item[$property]);
                 if (!array_key_exists($currentPrefix, $azList)) {
                     $azList[$currentPrefix] = array(
@@ -261,7 +261,7 @@ class TwigExtension extends \Twig_Extension
     {
         $propertylist = array();
         foreach ($list as $item) {
-            if (!is_scalar($item) && array_key_exists($property, $item)) {
+            if (!is_scalar($item) && Entity\Base::hasValidOffset($item, $property)) {
                 $propertylist[] = $item[$property];
             }
         }
@@ -272,8 +272,11 @@ class TwigExtension extends \Twig_Extension
     {
         $propertylist = array();
         foreach ($list as $item) {
-            if (!is_scalar($item) && array_key_exists('services', $item)) {
+            if (!is_scalar($item) && Entity\Base::hasValidOffset($item, 'services')) {
                 $appointment = $this->getAppointmentForService($item, $service_id);
+                if ($appointment === false) {
+                    continue;
+                }
                 if (false === $appointment['external'] && true === $appointment['allowed']) {
                     $propertylist[] = $item['id'];
                 }
