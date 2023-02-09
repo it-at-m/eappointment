@@ -92,7 +92,7 @@ class Location extends Base
         foreach ($serviceList as $serviceinfo) {
             if (true === static::hasValidOffset($serviceinfo, 'appointment')
                 && $serviceinfo['appointment']['allowed']
-                && ($external === false || $serviceinfo['appointment']['external'] === false)
+                && ($external || $serviceinfo['appointment']['external'] === false)
             ) {
                 $service_id = $serviceinfo['service'];
                 $servicecount[$service_id] = $service_id;
