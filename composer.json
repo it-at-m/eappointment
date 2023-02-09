@@ -26,9 +26,9 @@
   "require": {
     "php": ">=7.3.0",
     "eappointment/mellon": "^2.6.0",
-    "eappointment/zmsclient": "dev-ticket55431-slim-update",
-    "eappointment/zmsentities": "dev-ticket55431-slim-update",
-    "eappointment/zmsslim": "dev-ticket55431-slim-update",
+    "eappointment/zmsclient": "dev-berlin-rc-2.25.00",
+    "eappointment/zmsentities": "dev-berlin-rc-2.25.00",
+    "eappointment/zmsslim": "dev-berlin-rc-2.25.00",
     "monolog/monolog": "1.*",
     "roave/security-advisories": "dev-master",
     "twig/twig": "3.*",
