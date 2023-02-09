@@ -7,8 +7,10 @@
  */
 namespace BO\Zmscalldisplay\Helper;
 
-use \BO\Mellon\Validator;
-use \BO\Zmsentities\Calldisplay as Entity;
+use BO\Mellon\Validator;
+use BO\Slim\Request;
+use BO\Zmsentities\Calldisplay as Entity;
+use Psr\Http\Message\RequestInterface;
 
 class Calldisplay
 {
@@ -17,6 +19,9 @@ class Calldisplay
 
     const DEFAULT_STATUS = ['called', 'pickup', 'processing'];
 
+    /**
+     * @param Request|RequestInterface $request
+     */
     public function __construct($request)
     {
         $this->entity = static::createInstance($request);
@@ -25,6 +30,7 @@ class Calldisplay
     /**
      * Get status for queue
      *
+     * @param Request|RequestInterface $request
      * @return array
      */
     public static function getRequestedQueueStatus($request)
@@ -36,12 +42,17 @@ class Calldisplay
         return is_string($status) ? explode(',', $status) : static::DEFAULT_STATUS;
     }
 
+    /**
+     * @param bool $resolveEntity
+     * @return Entity
+     */
     public function getEntity($resolveEntity = true)
     {
         if (!$this->isEntityResolved && $resolveEntity) {
             $this->entity = \App::$http->readPostResult('/calldisplay/', $this->entity)->getEntity();
             $this->isEntityResolved = true;
         }
+
         return $this->entity;
     }
 
@@ -57,18 +68,25 @@ class Calldisplay
         return $scope;
     }
 
+    /**
+     * @param Request $request
+     * @return Entity
+     */
     protected static function createInstance($request)
     {
         $calldisplay = new Entity();
-        if ($calldisplay instanceof \BO\Zmsentities\Schema\Entity) {
-            $calldisplay->withResolvedCollections(static::getCollections($request));
-        }
-        return $calldisplay;
+
+        return $calldisplay->withResolvedCollections(static::getCollections($request));
     }
 
+    /**
+     * @param Request $request
+     * @return mixed
+     */
     protected static function getCollections($request)
     {
         $validator = $request->getAttribute('validator');
+
         return $validator->getParameter('collections')->isArray()->getValue();
     }
 }
