@@ -1,30 +1,21 @@
 /* ----------------------------------------------
     Infospalte verstecken
 ---------------------------------------------- */
-body.noInfoColumn {
-    background: url(img/background_anzeige1_behoerde_80.png) top left no-repeat #C8D5E6 !important;
+body.noInfoColumn{
+    background: url(img/background_anzeige1_behoerde_80.png) top left no-repeat #C8D5E6  !important;
 }
-
-@media screen and (max-width:900px) {
-
-    /* 768 * 1366 */
-    body.noInfoColumn {
-        background: url(img/background_anzeige1_hoch_behoerde_80.png) top left no-repeat #C8D5E6 !important;
+@media screen and (max-width:900px) { /* 768 * 1366 */
+    body.noInfoColumn{
+        background: url(img/background_anzeige1_hoch_behoerde_80.png) top left no-repeat #C8D5E6  !important;
     }
 }
-
-@media screen and (min-width:900px) and (max-width:1180px) {
-
-    /* 1080 * 1920 */
-    body.noInfoColumn {
-        background: url(img/background_anzeige1_hoch_1920_behoerde_80.png) top left no-repeat #C8D5E6 !important;
+@media screen and (min-width:900px) and (max-width:1180px) { /* 1080 * 1920 */
+    body.noInfoColumn{
+        background: url(img/background_anzeige1_hoch_1920_behoerde_80.png) top left no-repeat #C8D5E6  !important;
     }
 }
-
-@media screen and (min-width:1820px) {
-
-    /* 1920 * 1080 */
-    body.noInfoColumn {
+@media screen and (min-width:1820px) { /* 1920 * 1080 */
+    body.noInfoColumn{
         background: url(img/background_anzeige1_1920_behoerde_80.png) top left no-repeat #C8D5E6 !important;
     }
 }
@@ -36,10 +27,8 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
 /* ----------------------------------------------
     Spezial-Groessen
 ---------------------------------------------- */
-@media screen and (max-width:900px) {
-
-    /* 768 * 1366 */
-    body {
+@media screen and (max-width:900px) { /* 768 * 1366 */
+    body{
         background: url(img/background_anzeige1_hoch.png) top left no-repeat #C8D5E6;
     }
 
@@ -77,28 +66,28 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
     }
 
     .aufrufanzeige table.aufrufanzeige_aufruf {
-        width: 376px;
+        width:376px;
     }
 
     .aufrufanzeige .aufrufanzeige_text {
-        line-height: 26px;
+        line-height:26px;
         left: 28px;
-        top: 699px;
+        top:699px;
     }
 
     .aufrufanzeige .waitingColumn {
-        top: 450px;
-        left: 15px;
+        top:450px;
+        left:15px;
     }
 
     .aufrufanzeige .wartende_aktuell {
-        font-size: 20px;
-        width: 275px;
+        font-size:20px;
+        width:275px;
     }
 
     .aufrufanzeige .wartezeit_aktuell {
-        font-size: 20px;
-        width: 275px;
+        font-size:20px;
+        width:275px;
     }
 
     span.terminkundennummer {
@@ -123,18 +112,16 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
 }
 
 
-@media screen and (min-width:900px) and (max-width:1180px) {
-
-    /* 1080 * 1920 */
-    body {
+@media screen and (min-width:900px) and (max-width:1180px) { /* 1080 * 1920 */
+    body{
         background: url(img/background_anzeige1_hoch_1920.png) top left no-repeat #C8D5E6;
-        height: 1920px;
+        height:1920px;
     }
 
     #main-header .adressangabe {
-        font-size: 3em;
-        left: 54px;
-        top: 22px;
+        font-size:3em;
+        left:54px;
+        top:22px;
     }
 
     .aufrufanzeige .uhr {
@@ -152,8 +139,8 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
     }
 
     .aufrufanzeige .aufrufanzeige_main {
-        left: 420px;
-        top: 160px;
+        left:420px;
+        top:160px;
     }
 
     .aufrufanzeige table.aufrufanzeige_aufruf td,
@@ -167,7 +154,7 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
     }
 
     .aufrufanzeige table.aufrufanzeige_aufruf th.wartenummer {
-        width: 61.5%;
+        width:61.5%;
     }
 
     .aufrufanzeige table.einspaltig {
@@ -175,19 +162,19 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
     }
 
     .aufrufanzeige table.zweispaltig {
-        width: 280px;
+        width:280px;
     }
 
     .aufrufanzeige .aufrufanzeige_text {
-        line-height: 26px;
+        line-height:26px;
         left: 28px;
-        top: 985px;
-        width: 350px;
+        top:985px;
+        width:350px;
     }
 
     .aufrufanzeige .waitingColumn {
-        top: 580px;
-        left: 35px;
+        top:580px;
+        left:35px;
     }
 
     .aufrufanzeige_text img {
@@ -200,14 +187,19 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
     }
 
     .aufrufanzeige .wartende_aktuell {
-        font-size: 26px;
-        width: 350px;
+        font-size:26px;
+        width:350px;
     }
 
     .aufrufanzeige .wartezeit_aktuell {
-        font-size: 26px;
-        width: 350px;
+        font-size:26px;
+        width:350px;
     }
+  span.terminkundennummer.abholeranzeige.abholeranzeige
+	{
+		font-size: 40px;
+	   line-height: 40px;
+	}
 
     span.terminkundennummer.abholeranzeige.abholeranzeige {
         font-size: 40px;
@@ -230,27 +222,25 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
     }
 }
 
-@media screen and (min-width:1820px) {
-
-    /* 1920 * 1080 */
-    body {
+@media screen and (min-width:1820px) { /* 1920 * 1080 */
+    body{
         background: url(img/background_anzeige1_1920.png) top left no-repeat #C8D5E6;
-        width: 1920px;
-        height: 1080px;
+        width:1920px;
+        height:1080px;
         overflow: hidden;
     }
 
     #main-header .adressangabe {
-        font-size: 3em;
-        left: 54px;
-        top: 22px;
+        font-size:3em;
+        left:54px;
+        top:22px;
     }
 
     .aufrufanzeige .uhr {
-        left: 47px;
-        top: 160px;
-        width: 400px;
-        height: 400px;
+        left:47px;
+        top:160px;
+        width:400px;
+        height:400px;
     }
 
     .aufrufanzeige .aufrufanzeige_Datum {
@@ -263,9 +253,9 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         left: 500px;
         top: 160px;
     }
-
-    .aufrufanzeige table.einspaltig {
-        width: 900px;
+    span.terminkundennummer, span.wartenummer {
+        font-size:80px;
+        line-height:80px;
     }
 
     .aufrufanzeige table.zweispaltig {
@@ -279,8 +269,8 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
     }
 
     span.terminkundennummer.smallerFont8Chars {
-        font-size: 65px;
-        line-height: 65px;
+      font-size: 65px;
+      line-height:65px;
     }
 
     span.abholeranzeige {
@@ -296,41 +286,41 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
     }
 
     .aufrufanzeige .aufrufanzeige_text {
-        line-height: 26px;
+        line-height:26px;
         left: 1535px;
-        top: 104px;
-        width: 361px;
+        top:104px;
+        width:361px;
     }
-
-    .aufrufanzeige_text img {
-        height: 244px;
-    }
+    .aufrufanzeige_text img {height:244px;}
 
     .aufrufanzeige .waitingColumn {
         top: 670px;
     }
 
     .aufrufanzeige .wartende_aktuell {
-        font-size: 32px;
-        width: 400px;
+        font-size:32px;
+        width:400px;
     }
 
     .aufrufanzeige .wartezeit_aktuell {
-        font-size: 32px;
-        width: 400px;
+        font-size:32px;
+        width:400px;
     }
 
+    div.aber_zweispaltig {
+        margin-left:-25px;
+    }
     .aufrufanzeige table.zweispaltig {
         width: 450px;
     }
 
     .aufrufanzeige table.zweispaltig th.wartenummer {
-        width: 60%;
+        width:60%;
     }
 
     .aufrufanzeige table.zweispaltig th,
     .aufrufanzeige table.zweispaltig td {
-        border-right: 6px solid #C8D5E6;
+        border-right:6px solid #C8D5E6;
     }
 
     .zweispaltig span.terminkundennummer,
