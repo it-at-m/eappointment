@@ -28,7 +28,7 @@ class RoutingTest extends Base
         $request = static::createBasicRequest('GET', '/workstation/');
         $exception = new \BO\Zmsentities\Exception\UserAccountMissingRights();
 
-        $errorHandler = \App::$slim->getContainer()->get('errorHandler');
+        $errorHandler = \App::$slim->getContainer()->get('errorMiddleware')->getDefaultErrorHandler();
         $response = $errorHandler($request, $exception, true, false, false);
         $this->assertStringContainsString('board exception', (string)$response->getBody());
         $this->assertStringContainsString(
@@ -51,7 +51,7 @@ class RoutingTest extends Base
 
         $request = static::createBasicRequest('GET', '/workstation/');
         $exception = new \Exception('System Failure', 404);
-        $errorHandler = \App::$slim->getContainer()->get('errorHandler');
+        $errorHandler = \App::$slim->getContainer()->get('errorMiddleware')->getDefaultErrorHandler();
         $response = $errorHandler($request, $exception, true, false, false);
         $this->assertStringContainsString('Es ist ein Fehler aufgetreten', (string)$response->getBody());
         $this->assertStringContainsString('System Failure', (string)$response->getBody());
@@ -71,7 +71,7 @@ class RoutingTest extends Base
         );
 
         $request = static::createBasicRequest('GET', '/workstation/');
-        $errorHandler = \App::$slim->getContainer()->get('errorHandler');
+        $errorHandler = \App::$slim->getContainer()->get('errorMiddleware')->getDefaultErrorHandler();
         $response = $errorHandler($request, $exception, true, false, false);
         $this->assertStringContainsString('board exception', (string)$response->getBody());
         $this->assertStringContainsString(
