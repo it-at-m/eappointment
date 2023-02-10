@@ -16,7 +16,7 @@ abstract class ExchangeSimpleQuery extends Base
         }
         return $entity;
     }
-
+    /*
     public function readSubjectList()
     {
         $entity = new Exchange();
@@ -38,4 +38,5 @@ abstract class ExchangeSimpleQuery extends Base
         $entity->addDataSet(["_"]);
         return $entity;
     }
+    */
 }
