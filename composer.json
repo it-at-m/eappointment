@@ -11,6 +11,9 @@
   "config": {
     "platform": {
         "php": "7.3"
+    },
+    "allow-plugins": {
+      "php-http/discovery": false
     }
   },
   "require-dev": {
