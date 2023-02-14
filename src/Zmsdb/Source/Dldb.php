@@ -60,7 +60,29 @@ class Dldb extends \BO\Zmsdb\Base
     {
         $startTime = microtime(true);
         (new \BO\Zmsdb\Provider())->writeDeleteListBySource('dldb');
-        (new \BO\Zmsdb\Provider())->writeImportList(self::$repository->fromLocation()->fetchList());
+        $providers = (new \BO\Zmsdb\Provider())->writeImportList(self::$repository->fromLocation()->fetchList());
+
+        foreach ($providers as $provider) {
+            $providerData = json_decode($provider->data);
+
+            if (!isset($providerData['forceSlotTimeUpdate']) || !$providerData['forceSlotTimeUpdate']) {
+                continue;
+            }
+
+            $scopes = (new \BO\Zmsdb\Scope())->readByProviderId($provider->getId());
+            foreach ($scopes as $scope) {
+                $availabilities = (new \BO\Zmsdb\Availability())->readList($scope->getId());
+
+                foreach ($availabilities as $availability) {
+                    $availability->slotTimeInMinutes = $providerData['slotTimeInMinutes'];
+                    $updatedEntity = (new Query())->updateEntity($availability->getId(), $availability, 2);
+                    (new \BO\Zmsdb\Slot)->writeByAvailability($updatedEntity, \App::$now);
+                    (new \BO\Zmsdb\Helper\CalculateSlots(\App::DEBUG))
+                        ->writePostProcessingByScope($updatedEntity->scope, \App::$now);
+                }
+            }
+        }
+        
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
             echo "Provider: Took $time seconds\n";
