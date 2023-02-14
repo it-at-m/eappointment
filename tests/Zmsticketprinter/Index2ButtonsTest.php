@@ -31,6 +31,11 @@ class Index2ButtonsTest extends Base
             ],
             [
                 'function' => 'readGetResult',
+                'url' => '/scope/141/department/',
+                'response' => $this->readFixture("GET_department_74.json"),
+            ],
+            [
+                'function' => 'readGetResult',
                 'url' => '/config/',
                 'parameters' => [],
                 'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',

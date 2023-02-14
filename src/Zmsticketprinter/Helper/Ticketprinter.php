@@ -7,83 +7,120 @@
  */
 namespace BO\Zmsticketprinter\Helper;
 
-use \BO\Mellon\Validator;
-use \BO\Zmsentities\Ticketprinter as Entity;
+use BO\Mellon\Validator;
+use BO\Zmsentities\Ticketprinter as Entity;
+use BO\Zmsentities\Organisation;
+use BO\Zmsclient\Ticketprinter as TicketprinterClient;
+use \Psr\Http\Message\RequestInterface;
 
 class Ticketprinter
 {
-    public $entity;
-    public static $organisation = null;
+    protected $entity = null;
 
-    public function __construct($args, $request)
+    protected $scopeId = null;
+
+    protected $organisation = null;
+
+    protected $requestParams = [];
+
+    public function __construct($args, RequestInterface $request)
     {
-        if (\array_key_exists('scopeId', $args)) {
-            $this->entity = static::createInstanceByScope($args, $request);
+        $this->setRequestParameters($request);
+        $this->scopeId = $this->setScopeId($args, $request);
+        $this->organisation = $this->readOrganisation();
+        $entity = $this->getAssembledEntity();
+
+        $hash = $this->readHash($request);
+        if ('' === $hash || false === $hash) {
+            $entity = $this->writeNewWithHash($request, $entity);
         } else {
-            $this->entity = static::createInstance($request);
+            $entity = $this->getByHash($hash, $entity);
         }
-        $this->entity = \App::$http->readPostResult('/ticketprinter/', $this->entity)->getEntity();
+        $this->entity = \App::$http->readPostResult('/ticketprinter/', $entity)->getEntity();
     }
 
-    public static function readWithHash($request)
-    {
-        $validator = $request->getAttribute('validator');
-        $parameters = $validator->getParameter('ticketprinter')->isArray()->getValue();
-        $cookies = $request->getCookieParams();
-
-        $ticketprinterHash = \BO\Zmsclient\Ticketprinter::getHash();
-        if (array_key_exists('Ticketprinter', $cookies) && ! $ticketprinterHash) {
-            $ticketprinterHash = $cookies['Ticketprinter'];
-        }
-        if (!$ticketprinterHash) {
-            $entity = \App::$http->readGetResult(
-                '/organisation/'. self::$organisation->id . '/hash/',
-                ['name' => $parameters['name'] ?? null]
-            )->getEntity();
-            \BO\Zmsclient\Ticketprinter::setHash($entity->hash, $request);
-        } else {
-            $entity = \App::$http->readGetResult('/ticketprinter/'. $ticketprinterHash . '/')->getEntity();
-        }
-        return $entity;
-    }
-
-    public function getEntity()
+    public function getEntity(): Entity
     {
         return $this->entity;
     }
 
-    protected static function createInstanceByScope($args, $request)
+    public function getScopeId(): int
     {
-        $scopeId = Validator::value($args['scopeId'])->isNumber()->getValue();
-        $entity = new Entity();
-        $entity->buttonlist = 's'. $scopeId;
-        $entity = $entity->toStructuredButtonList();
-        self::$organisation = self::readOrganisation($entity, $scopeId);
-        $ticketprinter = static::readWithHash($request);
-        $entity->hash = $ticketprinter->hash;
-        $entity->enabled = $ticketprinter->enabled;
-        return $entity;
+        return $this->scopeId;
     }
 
-    protected static function createInstance($request)
+    public function getOrganisation(): Organisation
+    {
+        return $this->organisation;
+    }
+
+    protected function setScopeId(array $args, RequestInterface $request)
     {
         $validator = $request->getAttribute('validator');
-        $entity = new Entity($validator->getParameter('ticketprinter')->isArray()->getValue());
-        $entity = $entity->toStructuredButtonList();
-        self::$organisation = self::readOrganisation($entity);
-        $ticketprinter = static::readWithHash($request);
-        $entity->hash = $ticketprinter->hash;
-        $entity->enabled = $ticketprinter->enabled;
+        $scopeId = $validator->getParameter('scopeId')->isNumber()->getValue();
+        if (isset($args['scopeId'])) {
+            $scopeId = $validator::value($args['scopeId'])->isNumber()->getValue();
+        }
+        return $scopeId;
+    }
+
+    public function readHash(RequestInterface $request): string
+    {
+        $cookies = $request->getCookieParams();
+        $hash = TicketprinterClient::getHash();
+        if (array_key_exists('Ticketprinter', $cookies) && ! $hash) {
+            $hash = $cookies['Ticketprinter'];
+        }
+        return $hash;
+    }
+
+    protected function getByHash(string $hash, Entity $entity): Entity
+    {
+        $entityWithHash = \App::$http->readGetResult('/ticketprinter/'. $hash . '/')->getEntity();
+        $entity->hash = $entityWithHash->hash;
+        $entity->enabled = $entityWithHash->enabled;
         return $entity;
     }
 
-    protected static function readOrganisation($entity, $scopeId = false)
+    protected function writeNewWithHash(RequestInterface $request, Entity $entity): Entity
+    {
+        if (null === $this->organisation) {
+            throw new Exception\OrganisationNotFound();
+        }
+        $entityWithHash = \App::$http->readGetResult(
+            '/organisation/'. $this->organisation->getId() . '/hash/',
+            ['name' => (isset($this->requestParams['name'])) ? $this->requestParams['name'] : '']
+        )->getEntity();
+        TicketprinterClient::setHash($entityWithHash->hash, $request);
+        $entity->hash = $entityWithHash->hash;
+        $entity->enabled = $entityWithHash->enabled;
+        return $entity;
+    }
+
+    protected function setRequestParameters(RequestInterface $request): void
+    {
+        $validator = $request->getAttribute('validator');
+        $this->requestParams = $validator->getParameter('ticketprinter')->isArray()->getValue();
+    }
+
+    protected function getAssembledEntity(): Entity
+    {
+        $entity = new Entity($this->requestParams);
+        if ($this->scopeId) {
+            $entity = new Entity();
+            $entity->buttonlist = 's'. $this->scopeId;
+        }
+        $entity = $entity->toStructuredButtonList();
+        return $entity;
+    }
+
+    protected function readOrganisation(): Organisation
     {
         $organisation = null;
-        $ticketprinter = clone $entity;
-        if ($scopeId) {
+        $ticketprinter = $this->getAssembledEntity();
+        if ($this->scopeId) {
             $organisation = \App::$http->readGetResult(
-                '/scope/'. $scopeId . '/organisation/',
+                '/scope/'. $this->scopeId . '/organisation/',
                 ['resolveReferences' => 2]
             )->getEntity();
         }
@@ -95,14 +132,6 @@ class Ticketprinter
                     ['resolveReferences' => 2]
                 )->getEntity();
             }
-            /* cluster not supported anymore
-            elseif ('cluster' == $nextButton['type']) {
-                $organisation = \App::$http->readGetResult(
-                    '/cluster/'. $nextButton['cluster']['id'] . '/organisation/',
-                    ['resolveReferences' => 2]
-                )->getEntity();
-            }
-            */
             $nextButton = array_shift($ticketprinter->buttons);
         }
         return $organisation;

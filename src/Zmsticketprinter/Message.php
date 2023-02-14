@@ -23,8 +23,7 @@ class Message extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $ticketprinter = Helper\Ticketprinter::readWithHash($request);
-
+        $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $validator = $request->getAttribute('validator');
         $scopeId = $validator->getParameter('scopeId')->isNumber()->getValue();
         $notHome = $validator->getParameter('notHome')->isNumber()->getValue();
@@ -37,12 +36,9 @@ class Message extends BaseController
                 'debug' => \App::DEBUG,
                 'homeRedirect' => ($notHome) ? false : true,
                 'title' => 'Wartennumernausgabe erfolgreich',
-                'ticketprinter' => $ticketprinter,
+                'ticketprinter' => $ticketprinterHelper->getEntity(),
                 'scopeId' => $scopeId,
-                'organisation' => \App::$http->readGetResult(
-                    '/scope/'. $scopeId . '/organisation/',
-                    ['resolveReferences' => 2]
-                )->getEntity(),
+                'organisation' => $ticketprinterHelper->getOrganisation(),
                 'messages' => array($messages)
             )
         );

@@ -26,7 +26,7 @@ class NotificationAmendment extends BaseController
         $validator = $request->getAttribute('validator');
         $scopeId = $validator->getParameter('scopeId')->isNumber()->getValue();
         $clusterId = $validator->getParameter('clusterId')->isNumber()->getValue();
-        $ticketprinter = Helper\Ticketprinter::readWithHash($request);
+        $ticketprinter = (new Helper\Ticketprinter($args, $request))->getEntity();
 
         $scope = ($scopeId) ? \App::$http->readGetResult('/scope/'. $scopeId .'/')->getEntity() : null;
         $cluster = ($clusterId) ? \App::$http->readGetResult('/cluster/'. $clusterId .'/')->getEntity() : null;

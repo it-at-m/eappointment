@@ -27,7 +27,12 @@ class IndexCustomizedByDepartmentTest extends Base
             [
                 'function' => 'readPostResult',
                 'url' => '/ticketprinter/',
-                'response' => $this->readFixture("GET_ticketprinter_buttonlist_cluster_283.json"),
+                'response' => $this->readFixture("GET_ticketprinter_buttonlist_2.json"),
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/scope/141/department/',
+                'response' => $this->readFixture("GET_department_74.json"),
             ],
             [
                 'function' => 'readGetResult',
