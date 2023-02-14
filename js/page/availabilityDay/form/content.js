@@ -85,7 +85,7 @@ const FormContent = (props) => {
                                 <Inputs.Text name="slotTimeInMinutes"
                                     value={data.slotTimeInMinutes}
                                     width="2"
-                                    attributes={{ maxLength: 3, "id": "AvDaySlottime" }}
+                                    attributes={{ disabled: 'disabled', maxLength: 3, "id": "AvDaySlottime" }}
                                     {...{ onChange }} />
                                 <Label attributes={{"htmlFor": "AvDaySlottime", "className": "light"}}>&nbsp;Minuten Abstand zweier aufeinander folgender Termine</Label>
                             </Controls>
