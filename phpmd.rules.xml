@@ -7,6 +7,10 @@
     <description> Rulesets without controversial rules but including the check for superglobals </description> 
     <rule ref="rulesets/codesize.xml" />
     <rule ref="rulesets/design.xml" />
+        <properties>
+            <property name="maximum" value="14"/>
+        </properties>
+    </rule>
     <rule ref="rulesets/naming.xml">
         <exclude name="LongVariable" />
     </rule>
