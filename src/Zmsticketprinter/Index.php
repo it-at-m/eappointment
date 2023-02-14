@@ -36,8 +36,11 @@ class Index extends BaseController
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
         $ticketprinter->testValid();
+        $ticketprinter = $ticketprinterHelper->getEntity();
+        $scope = $ticketprinter->getScopeList()->getFirst();
+        $department = \App::$http->readGetResult('/scope/'. $scope->id . '/department/')->getEntity();
+        $organisation = $ticketprinterHelper->getOrganisation();
 
-        $organisation = $ticketprinterHelper::$organisation;
         if (1 == count($ticketprinter->buttons) && 'scope' == $ticketprinter->buttons[0]['type']) {
             return Render::redirect(
                 'TicketprinterByScope',
@@ -58,6 +61,7 @@ class Index extends BaseController
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $organisation,
+                'department' => $department,
                 'buttonDisplay' => $template->getButtonTemplateType($ticketprinter),
                 'config' => $config
             )

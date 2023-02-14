@@ -26,25 +26,17 @@ class Process extends BaseController
         ResponseInterface $response,
         array $args
     ) {
+        $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
+
         $config = \App::$http->readGetResult('/config/', [], \App::SECURE_TOKEN)->getEntity();
         $validator = $request->getAttribute('validator');
         $scopeId = $validator->getParameter('scopeId')->isNumber()->getValue();
-        $clusterId = $validator->getParameter('clusterId')->isNumber()->getValue();
-        $ticketprinter = Helper\Ticketprinter::readWithHash($request);
-
-
-        if ($scopeId) {
-            $process = \App::$http->readGetResult(
-                '/scope/'. $scopeId .'/waitingnumber/'. $ticketprinter->hash .'/'
-            )->getEntity();
-        } elseif ($clusterId) {
-            $process = \App::$http->readGetResult(
-                '/cluster/'. $clusterId .'/waitingnumber/'. $ticketprinter->hash .'/'
-            )->getEntity();
-            $scope = $process->scope;
-        } else {
-            throw new BadRequest('Missing Parameter');
+        if (null === $scopeId) {
+            throw new Exception\ScopeNotFound();
         }
+        $process = \App::$http->readGetResult(
+            '/scope/'. $scopeId .'/waitingnumber/'. $ticketprinterHelper->getEntity()->hash .'/'
+        )->getEntity();
 
         $scope = new Scope($process->scope);
         $department = \App::$http->readGetResult('/scope/'. $scope->getId() . '/department/')->getEntity();
@@ -57,11 +49,8 @@ class Process extends BaseController
             array(
                 'debug' => \App::DEBUG,
                 'title' => 'Anmeldung an der Warteschlange',
-                'ticketprinter' => $ticketprinter,
-                'organisation' => \App::$http->readGetResult(
-                    '/scope/'. $scope->id . '/organisation/',
-                    ['resolveReferences' => 2]
-                )->getEntity(),
+                'ticketprinter' => $ticketprinterHelper->getEntity(),
+                'organisation' => $ticketprinterHelper->getOrganisation(),
                 'process' => $process,
                 'waitingTime' => $queueListHelper->getEstimatedWaitingTime(),
                 'waitingClients' => ($queueListHelper->getClientsBefore()),

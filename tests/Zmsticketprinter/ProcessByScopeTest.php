@@ -19,6 +19,11 @@ class ProcessByScopeTest extends Base
                 'response' => $this->readFixture("GET_ticketprinter.json"),
             ],
             [
+                'function' => 'readPostResult',
+                'url' => '/ticketprinter/',
+                'response' => $this->readFixture("GET_ticketprinter.json"),
+            ],
+            [
                 'function' => 'readGetResult',
                 'url' => '/scope/141/department/',
                 'response' => $this->readFixture("GET_department_74.json"),

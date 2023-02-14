@@ -27,7 +27,10 @@ class Notification extends BaseController
         $waitingNumber = $validator->getParameter('waitingNumber')->isNumber()->getValue();
         $hasProcess = $validator->getParameter('processWithNotifiation')->isNumber()->getValue();
         $scopeId = $validator->getParameter('scopeId')->isNumber()->getValue();
-        $ticketprinter = Helper\Ticketprinter::readWithHash($request);
+        if (null === $scopeId) {
+            throw new Exception\ScopeNotFound();
+        }
+        $ticketprinterHelper = new Helper\Ticketprinter($args, $request);
 
         if (! $waitingNumber) {
             return Render::redirect(
@@ -42,13 +45,10 @@ class Notification extends BaseController
             );
         }
 
-        if ($scopeId) {
-            $process = \App::$http
-                ->readGetResult('/scope/'. $scopeId .'/queue/'. $waitingNumber .'/')
-                ->getEntity();
-        } else {
-            throw new Exception\ScopeNotFound();
-        }
+        $process = \App::$http
+            ->readGetResult('/scope/'. $scopeId .'/queue/'. $waitingNumber .'/')
+            ->getEntity();
+
         if ($process->getFirstClient()->hasTelephone()) {
             return Render::redirect(
                 'Message',
@@ -70,11 +70,8 @@ class Notification extends BaseController
                 'hasProcess' => $hasProcess,
                 'homeUrl' => \BO\Zmsclient\Ticketprinter::getHomeUrl(),
                 'title' => 'Anmeldung an der Warteschlange',
-                'ticketprinter' => $ticketprinter,
-                'organisation' => \App::$http->readGetResult(
-                    '/scope/'. $scopeId . '/organisation/',
-                    ['resolveReferences' => 2]
-                )->getEntity(),
+                'ticketprinter' => $ticketprinterHelper->getEntity(),
+                'organisation' => $ticketprinterHelper->getOrganisation(),
                 'process' => $process
             )
         );

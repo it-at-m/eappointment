@@ -36,7 +36,7 @@ class TicketprinterByScope extends BaseController
         $ticketprinter = $ticketprinterHelper->getEntity();
         $scope = $ticketprinter->getScopeList()->getFirst();
         $department = \App::$http->readGetResult('/scope/'. $scope->id . '/department/')->getEntity();
-        $organisation = $ticketprinterHelper::$organisation;
+        $organisation = $ticketprinterHelper->getOrganisation();
         
         $queueListHelper = new QueueListHelper($scope);
         

@@ -28,6 +28,11 @@ class NotificationByScopeTest extends Base
                 'url' => '/scope/141/organisation/',
                 'parameters' => ['resolveReferences' => 2],
                 'response' => $this->readFixture("GET_organisation_71.json"),
+            ],
+            [
+                'function' => 'readPostResult',
+                'url' => '/ticketprinter/',
+                'response' => $this->readFixture("GET_ticketprinter.json"),
             ]
         ];
     }
