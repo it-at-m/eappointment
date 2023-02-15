@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2a89a8443cea33832c69574f9c0c6731",
+    "content-hash": "f144859fcbc072ee4699f467f36a8359",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -220,14 +220,8 @@
             "version": "dev-muc/dev",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.com:eappointment/zmsdb.git",
-                "reference": "1a3ab1f53a98e16933e8ba1f8284ef6a9306026c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=1a3ab1f53a98e16933e8ba1f8284ef6a9306026c",
-                "reference": "1a3ab1f53a98e16933e8ba1f8284ef6a9306026c",
-                "shasum": ""
+                "url": "https://gitlab.com/eappointment/zmsdb.git",
+                "reference": "76defff26839ffa6172aca5f74cf9fa2d38cf074"
             },
             "require": {
                 "aura/sql": "^2.4",
@@ -277,7 +271,11 @@
                     "BO\\Zmsdb\\Tests\\": "tests/Zmsdb/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "command": [
+                    "bin/configure"
+                ]
+            },
             "license": [
                 "EUPL-1.2"
             ],
@@ -288,7 +286,7 @@
                 }
             ],
             "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
-            "time": "2022-12-22T13:45:15+00:00"
+            "time": "2023-02-14T17:12:37+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
