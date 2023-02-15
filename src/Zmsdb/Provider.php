@@ -95,7 +95,7 @@ class Provider extends Base
         foreach ($providerList as $provider) {
             $this->writeImportEntity($provider, $source);
         }
-        return $this->readListBySource($source);
+        return $this->readListBySource($source, 1);
     }
 
     public function writeImportEntity($provider, $source = 'dldb')
