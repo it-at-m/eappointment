@@ -76,6 +76,10 @@ class Dldb extends \BO\Zmsdb\Base
                 $availabilities = (new \BO\Zmsdb\Availability())->readList($scope->getId());
 
                 foreach ($availabilities as $availability) {
+                    if ($availability->slotTimeInMinutes === $providerData['slotTimeInMinutes']) {
+                        continue;
+                    }
+
                     $availability->slotTimeInMinutes = $providerData['slotTimeInMinutes'];
                     $updatedEntity = (new \BO\Zmsdb\Availability())->updateEntity($availability->getId(), $availability, 2);
                     (new \BO\Zmsdb\Slot)->writeByAvailability($updatedEntity, \App::$now);
