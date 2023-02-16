@@ -63,7 +63,9 @@ class Dldb extends \BO\Zmsdb\Base
         $providers = (new \BO\Zmsdb\Provider())->writeImportList(self::$repository->fromLocation()->fetchList());
 
         foreach ($providers as $provider) {
-            $providerData = json_decode($provider->data);
+            $providerData = $provider->data;
+
+            var_dump($providerData);
 
             if (!isset($providerData['forceSlotTimeUpdate']) || !$providerData['forceSlotTimeUpdate']) {
                 continue;
@@ -74,8 +76,12 @@ class Dldb extends \BO\Zmsdb\Base
                 $availabilities = (new \BO\Zmsdb\Availability())->readList($scope->getId());
 
                 foreach ($availabilities as $availability) {
+                    if ($availability->slotTimeInMinutes === $providerData['slotTimeInMinutes']) {
+                        continue;
+                    }
+
                     $availability->slotTimeInMinutes = $providerData['slotTimeInMinutes'];
-                    $updatedEntity = (new Query())->updateEntity($availability->getId(), $availability, 2);
+                    $updatedEntity = (new \BO\Zmsdb\Availability())->updateEntity($availability->getId(), $availability, 2);
                     (new \BO\Zmsdb\Slot)->writeByAvailability($updatedEntity, \App::$now);
                     (new \BO\Zmsdb\Helper\CalculateSlots(\App::DEBUG))
                         ->writePostProcessingByScope($updatedEntity->scope, \App::$now);
