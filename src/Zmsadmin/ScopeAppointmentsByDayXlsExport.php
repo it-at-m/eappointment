@@ -70,9 +70,9 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
         $writer->insertAll($rows);
 
         $response->getBody()->write($writer->toString());
-        $fileName = sprintf("Tagesübersicht_%s_%s.xlsx", $scope->contact['name'], $xlsSheetTitle);
+        $fileName = sprintf("Tagesübersicht_%s_%s.csv", $scope->contact['name'], $xlsSheetTitle);
         return $response
-            ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            ->withHeader('Content-Type', 'Content-Type: text/csv; charset=UTF-8')
             ->withHeader(
                 'Content-Disposition',
                 sprintf('download; filename="'. $this->convertspecialChars($fileName) .'"')
