@@ -36,7 +36,6 @@ class Index extends BaseController
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
         $ticketprinter->testValid();
-        $ticketprinter = $ticketprinterHelper->getEntity();
         $scope = $ticketprinter->getScopeList()->getFirst();
         $department = \App::$http->readGetResult('/scope/'. $scope->id . '/department/')->getEntity();
         $organisation = $ticketprinterHelper->getOrganisation();
