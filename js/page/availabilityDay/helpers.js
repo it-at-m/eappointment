@@ -93,7 +93,7 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
             endInDays: "0"
         },
         multipleSlotsAllowed: 1,
-        slotTimeInMinutes: 10,
+        slotTimeInMinutes: scope.provider.data['slotTimeInMinutes'],
         weekday: {
             [weekday]: 1
         },
