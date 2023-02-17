@@ -13,9 +13,7 @@ class ReservedDataDeleteByCron
 
     protected $verbose = false;
 
-    protected $limit = 10000;
-
-    protected $loopCount = 500;
+    protected $limit = 500;
 
     protected $count = [];
 
@@ -46,31 +44,27 @@ class ReservedDataDeleteByCron
         $this->limit = $limit;
     }
 
-    public function setLoopCount($loopCount)
-    {
-        $this->loopCount = $loopCount;
-    }
-
     public function startProcessing($commit)
     {
         $this->count = array_fill_keys($this->scopeList->getIds(), 0);
         $this->deleteExpiredReservations($commit);
-        $this->log("\nSUMMARY: Deleted reservations: ".var_export(array_filter($this->count), true));
+        $this->log("\nSUMMARY: Processed reservations: ".var_export(array_filter($this->count), true));
     }
 
     protected function deleteExpiredReservations($commit)
     {
         foreach ($this->scopeList as $scope) {
-            $count = $this->deleteByCallback($commit, function ($limit, $offset) use ($scope) {
-                $time = clone $this->time;
+            $count = $this->deleteByCallback($commit, function ($loopLimit) use ($scope) {
                 $reservationDuration = $scope->toProperty()->preferences->appointment->reservationDuration->get();
-                $expiredTime = $time->setTimestamp($time->getTimestamp() - ($reservationDuration * 60));
+                $expiredTime = $this->getExpiredTimeByScopePreference($reservationDuration);
                 $processList = (new \BO\Zmsdb\Process)
-                    ->readExpiredReservationsList($expiredTime, $scope->id, $limit, $offset);
+                    ->readExpiredReservationsList($expiredTime, $scope->id, $loopLimit)
+                    ->sortByCustomKey('createTimestamp');
                 if ($processList->count()) {
                     $this->log(
+                        "Now: ". $this->time->format('H:i:s') .
                         "\nExpiring time: ". $expiredTime->format('H:i:s') ." | scope ". $scope->id .
-                        " | duration $reservationDuration minutes (". $processList->count() . " found)\n------------------------------------------------------------------"
+                        " | duration $reservationDuration minutes (". $processList->count() . " found)\n-------------------------------------------------------------------"
                     );
                 }
                 return $processList;
@@ -80,41 +74,36 @@ class ReservedDataDeleteByCron
         }
     }
 
-    protected function deleteByCallback($commit, \Closure $callback)
+    protected function getExpiredTimeByScopePreference($reservationDuration)
+    {
+        $expiredTime = clone $this->time;
+        $expiredTimestamp = ($expiredTime->getTimestamp() - ($reservationDuration * 60));
+        $expiredTime = $expiredTime->setTimestamp($expiredTimestamp);
+        return $expiredTime;
+    }
+
+    protected function deleteByCallback($commit, \Closure $callback): int
     {
         $processCount = 0;
-        $startposition = 0;
-        while ($processCount < $this->limit) {
-            $processList = $callback($this->loopCount, $startposition);
-            if (0 == $processList->count()) {
-                break;
-            }
-            foreach ($processList as $process) {
-                if (!$this->removeProcess($process, $commit)) {
-                    $startposition++;
+        $processList = $callback($this->limit);
+        foreach ($processList as $process) {
+            if ('reserved' == $process->status) {
+                $this->log(
+                    "INFO: ($process->id) found reservation with age of ". 
+                    ($this->time->getTimestamp() - $process->createTimestamp) ." seconds"
+                );
+                if ($commit) {
+                    $this->writeDeleteProcess($process);
                 }
-                $processCount++;
+            } elseif ($this->verbose) {
+                $this->log("INFO: Keep process $process->id with status $process->status");
             }
+                $processCount++;
         }
         return $processCount;
     }
 
-    protected function removeProcess(\BO\Zmsentities\Process $process, $commit)
-    {
-        $verbose = $this->verbose;
-        if ('reserved' == $process->status) {
-            $this->log("INFO: ($process->id) found reservation ". $process->getFirstAppointment()->toTime());
-            if ($commit) {
-                $this->deleteProcess($process);
-                return 1;
-            }
-        } elseif ($verbose) {
-            $this->log("INFO: Keep process $process->id with status $process->status");
-        }
-        return 0;
-    }
-
-    protected function deleteProcess(\BO\Zmsentities\Process $process)
+    protected function writeDeleteProcess(\BO\Zmsentities\Process $process)
     {
         $verbose = $this->verbose;
         $query = new \BO\Zmsdb\Process();
