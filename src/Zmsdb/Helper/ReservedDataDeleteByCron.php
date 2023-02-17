@@ -64,7 +64,8 @@ class ReservedDataDeleteByCron
                     $this->log(
                         "Now: ". $this->time->format('H:i:s') .
                         "\nExpiring time: ". $expiredTime->format('H:i:s') ." | scope ". $scope->id .
-                        " | duration $reservationDuration minutes (". $processList->count() . " found)\n-------------------------------------------------------------------"
+                        " | duration $reservationDuration minutes (". $processList->count() . " found)" .
+                        "\n-------------------------------------------------------------------"
                     );
                 }
                 return $processList;
