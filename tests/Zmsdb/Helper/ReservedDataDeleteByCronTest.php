@@ -35,7 +35,7 @@ class ReservedDataDeleteByCronTest extends Base
         $expiredDate = clone $now->modify('- 5 minutes');
         $input = $this->getTestProcessEntity();
         (new ProcessStatusFree())->writeEntityReserved($input, $expiredDate);
-        $helper = new ReservedDataDeleteByCron($now, true); // verbose
+        $helper = new ReservedDataDeleteByCron($now, false); // verbose
         $helper->setLimit(100);
         $helper->startProcessing(false);
         $this->assertEquals(1, $helper->getCount()[151]);
