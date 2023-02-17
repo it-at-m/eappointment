@@ -79,6 +79,8 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
         'sunday'
     ][now.isoWeekday() - 1]
 
+    console.log(scope)
+
     const newAvailability = {
         id: null,
         tempId,
