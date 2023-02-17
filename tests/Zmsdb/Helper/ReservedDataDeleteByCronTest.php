@@ -36,9 +36,9 @@ class ReservedDataDeleteByCronTest extends Base
         $expiredDate = clone $now->modify('- 5 minutes');
         $input = $this->getTestProcessEntity();
         (new ProcessStatusFree())->writeEntityReserved($input, $expiredDate);
-        $helper = new ReservedDataDeleteByCron($now, false); // verbose
-        $helper->setLimit(10);
-        $helper->setLoopCount(5);
+        $helper = new ReservedDataDeleteByCron($now, true); // verbose
+        $helper->setLimit(100);
+        $helper->setLoopCount(50);
         $helper->startProcessing(false);
         $this->assertEquals(1, $helper->getCount()[151]);
         $this->assertEquals(1, (new \BO\Zmsdb\Process)->readExpiredReservationsList($now, 151, 10, 0)->count());
