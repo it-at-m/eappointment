@@ -89,7 +89,7 @@ class ReservedDataDeleteByCron
         foreach ($processList as $process) {
             if ('reserved' == $process->status) {
                 $this->log(
-                    "INFO: ($process->id) found reservation with age of ". 
+                    "INFO: ($process->id) found reservation with age of ".
                     ($this->time->getTimestamp() - $process->createTimestamp) ." seconds"
                 );
                 if ($commit) {
