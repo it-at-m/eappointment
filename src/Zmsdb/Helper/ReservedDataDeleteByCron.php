@@ -125,7 +125,7 @@ class ReservedDataDeleteByCron
         }
 
         $this->log(
-            "Now: ". $this->nowTime->format('H:i:s') .
+            "\nNow: ". $this->nowTime->format('H:i:s') .
             "\nTime of expiration: ". $expirationTime->format('H:i:s') ." | scope ". $scope->id .
             " | $reservationDuration minutes reservation time (". $processList->count() . " found)" .
             "\n-------------------------------------------------------------------"
