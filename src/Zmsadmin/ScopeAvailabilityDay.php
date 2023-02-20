@@ -34,7 +34,7 @@ class ScopeAvailabilityDay extends BaseController
     protected static function getScope($scopeId)
     {
         return \App::$http->readGetResult('/scope/' . $scopeId . '/', [
-            'resolveReferences' => 1
+            'resolveReferences' => 3
         ])->getEntity();
     }
 
