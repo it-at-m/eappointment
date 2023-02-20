@@ -5,117 +5,145 @@ namespace BO\Zmsdb\Helper;
 /**
  * @codeCoverageIgnore
  */
-use BO\Zmsentities\Collection\ProcessList as Collection;
+
+use BO\Zmsdb\Process as ProcessRepository;
+use BO\Zmsdb\Scope as ScopeRepository;
+use BO\Zmsentities\Collection\ScopeList;
+use BO\Zmsentities\Process;
+use BO\Zmsentities\Scope;
 
 class ReservedDataDeleteByCron
 {
-    protected $scopeList;
+    /** @var \DateTimeInterface */
+    protected $nowTime;
 
+    /** @var bool */
     protected $verbose = false;
 
+    /** @var int */
     protected $limit = 500;
 
-    protected $count = [];
+    /** @var bool */
+    protected $isDryRun = false;
 
-    public function __construct(\DateTimeInterface $now, $verbose = false)
+    /** @var int[] */
+    protected $countByScopeId = [];
+
+    /** @var Scope */
+    protected $scopeRepository;
+
+    protected $processRepository;
+
+    public function __construct(\DateTimeInterface $now, bool $verbose = false, bool $isDryRun = false)
     {
-        if ($verbose) {
-            $this->log("INFO: Deleting expired reservations older than scopes reservation duration");
-            $this->verbose = true;
-        }
-        $this->time = $now;
-        $this->scopeList = (new \BO\Zmsdb\Scope)->readList();
+        $this->nowTime  = $now;
+        $this->verbose  = $verbose;
+        $this->isDryRun = $isDryRun;
+
+        $this->scopeRepository = new ScopeRepository();
+        $this->processRepository = new ProcessRepository();
     }
 
-    protected function log($message)
+    /**
+     * @return int[]
+     */
+    public function getCount(): array
     {
-        if ($this->verbose) {
-            error_log($message);
-        }
+        return $this->countByScopeId;
     }
 
-    public function getCount()
-    {
-        return $this->count;
-    }
-
-    public function setLimit($limit)
+    public function setLimit(int $limit): ReservedDataDeleteByCron
     {
         $this->limit = $limit;
+
+        return $this;
     }
 
-    public function startProcessing($commit)
+    public function startProcessing(): void
     {
-        $this->count = array_fill_keys($this->scopeList->getIds(), 0);
-        $this->deleteExpiredReservations($commit);
-        $this->log("\nSUMMARY: Processed reservations: ".var_export(array_filter($this->count), true));
+        $this->log("INFO: Deleting expired reservations older than scopes reservation duration");
+
+        $scopeList = $this->scopeRepository->readList();
+        $this->countByScopeId = array_fill_keys($scopeList->getIds(), 0);
+        $this->deleteExpiredReservations($scopeList);
+        $filteredCount = array_filter($this->getCount());
+
+        $this->log(PHP_EOL . "SUMMARY: Processed reservations: " . var_export($filteredCount, true));
     }
 
-    protected function deleteExpiredReservations($commit)
+    protected function log($message): bool
     {
-        foreach ($this->scopeList as $scope) {
-            $count = $this->deleteByCallback($commit, function ($loopLimit) use ($scope) {
-                $reservationDuration = $scope->toProperty()->preferences->appointment->reservationDuration->get();
-                $expiredTime = $this->getExpiredTimeByScopePreference($reservationDuration);
-                $processList = (new \BO\Zmsdb\Process)
-                    ->readExpiredReservationsList($expiredTime, $scope->id, $loopLimit)
-                    ->sortByCustomKey('createTimestamp');
-                if ($processList->count()) {
-                    $this->log(
-                        "Now: ". $this->time->format('H:i:s') .
-                        "\nExpiring time: ". $expiredTime->format('H:i:s') ." | scope ". $scope->id .
-                        " | duration $reservationDuration minutes (". $processList->count() . " found)" .
-                        "\n-------------------------------------------------------------------"
-                    );
-                }
-                return $processList;
-            });
+        return $this->verbose && error_log($message);
+    }
 
-            $this->count[$scope->id] += $count;
+    protected function deleteExpiredReservations(ScopeList $scopeList): void
+    {
+        foreach ($scopeList as $scope) {
+            $countedProcesses = $this->deleteProcessesByScope($scope);
+            $this->countByScopeId[$scope->id] += $countedProcesses;
         }
     }
 
-    protected function getExpiredTimeByScopePreference($reservationDuration)
+    protected function getExpirationTimeByScopePreference(int $reservationDuration): \DateTimeInterface
     {
-        $expiredTime = clone $this->time;
-        $expiredTimestamp = ($expiredTime->getTimestamp() - ($reservationDuration * 60));
-        $expiredTime = $expiredTime->setTimestamp($expiredTimestamp);
-        return $expiredTime;
+        $expirationTime = clone $this->nowTime;
+        $expiredTimestamp = ($this->nowTime->getTimestamp() - ($reservationDuration * 60));
+
+        return $expirationTime->setTimestamp($expiredTimestamp);
     }
 
-    protected function deleteByCallback($commit, \Closure $callback): int
+    protected function deleteProcessesByScope(Scope $scope): int
     {
         $processCount = 0;
-        $processList = $callback($this->limit);
+        $processList  = $this->getProcessListByScope($scope);
+
         foreach ($processList as $process) {
-            if ('reserved' == $process->status) {
-                $this->log(
-                    "INFO: ($process->id) found reservation with age of ".
-                    ($this->time->getTimestamp() - $process->createTimestamp) ." seconds"
-                );
-                if ($commit) {
-                    $this->writeDeleteProcess($process);
-                }
-            } elseif ($this->verbose) {
+            if ($process->status === 'reserved') {
+                $age = ($this->nowTime->getTimestamp() - $process->createTimestamp);
+                $this->log("INFO: found process($process->id) with a reservation age of $age seconds");
+                $this->writeDeleteProcess($process);
+            } else {
                 $this->log("INFO: Keep process $process->id with status $process->status");
             }
-                $processCount++;
+
+            $processCount++;
         }
+
         return $processCount;
     }
 
-    protected function writeDeleteProcess(\BO\Zmsentities\Process $process)
+    protected function getProcessListByScope(Scope $scope): iterable
     {
-        $verbose = $this->verbose;
-        $query = new \BO\Zmsdb\Process();
-        if ($query->writeDeletedEntity($process->id)) {
-            if ($verbose) {
-                $this->log("INFO: ($process->id) removed successfully\n");
-            }
+        $reservationDuration = $scope->toProperty()->preferences->appointment->reservationDuration->get();
+        $expirationTime = $this->getExpirationTimeByScopePreference((int) $reservationDuration);
+        $processList = $this->processRepository
+            ->readExpiredReservationsList($expirationTime, $scope->id, $this->limit)
+            ->sortByCustomKey('createTimestamp');
+
+        if ($processList->count() === 0) {
+            return [];
+        }
+
+        $this->log(
+            "Now: ". $this->nowTime->format('H:i:s') .
+            "\nTime of expiration: ". $expirationTime->format('H:i:s') ." | scope ". $scope->id .
+            " | $reservationDuration minutes reservation time (". $processList->count() . " found)" .
+            "\n-------------------------------------------------------------------"
+        );
+
+        return $processList;
+    }
+
+    protected function writeDeleteProcess(Process $process)
+    {
+        if ($this->isDryRun) {
+            return;
+        }
+
+        if ($this->processRepository->writeDeletedEntity($process->id)) {
+            $this->log("INFO: ($process->id) removed successfully\n");
         } else {
-            if ($verbose) {
-                $this->log("WARN: Could not remove process '$process->id'!\n");
-            }
+            $this->log("WARN: Could not remove process '$process->id'!\n");
         }
     }
 }
