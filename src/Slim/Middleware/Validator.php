@@ -5,7 +5,7 @@ namespace BO\Slim\Middleware;
 use \Psr\Http\Message\ServerRequestInterface;
 use \Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Slim\Psr7\Factory\ResponseFactory;
+use BO\Slim\Factory\ResponseFactory;
 
 class Validator
 {

@@ -6,7 +6,7 @@ use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use Slim\HttpCache\CacheProvider;
-use Slim\Psr7\Factory\ResponseFactory;
+use BO\Slim\Factory\ResponseFactory;
 use BO\Slim\Factory\ServerRequestFactory;
 use Slim\Views\Twig;
 use Twig\Extension\DebugExtension;
