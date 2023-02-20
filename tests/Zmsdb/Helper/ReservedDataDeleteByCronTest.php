@@ -13,7 +13,7 @@ class ReservedDataDeleteByCronTest extends Base
 
     public function testConstructor()
     {
-        $helper = new ReservedDataDeleteByCron(static::$now, false);
+        $helper = new ReservedDataDeleteByCron(static::$now, false, true);
         $this->assertInstanceOf(ReservedDataDeleteByCron::class, $helper);
     }
 
@@ -23,27 +23,26 @@ class ReservedDataDeleteByCronTest extends Base
         $expiredDate = clone $now->modify('- 4 minutes');
         $input = $this->getTestProcessEntity();
         (new ProcessStatusFree())->writeEntityReserved($input, $expiredDate);
-        $helper = new ReservedDataDeleteByCron($now, false); // verbose
-        $helper->setLimit(10);
-        $helper->setLoopCount(5);
-        $helper->startProcessing(false);
-        $this->assertEquals(0, $helper->getCount()[151]);
+
+        $deleteReservationDryRun = new ReservedDataDeleteByCron($now, false, true); // verbose
+        $deleteReservationDryRun->setLimit(100);
+        $deleteReservationDryRun->startProcessing();
+
+        $this->assertEquals(0, $deleteReservationDryRun->getCount()[151]);
     }
 
     public function testWithExpiredReservations()
     {
         $now = static::$now;
-        $expiredDate = clone $now->modify('- 5 minutes');
-        $input = $this->getTestProcessEntity();
-        (new ProcessStatusFree())->writeEntityReserved($input, $expiredDate);
-        $helper = new ReservedDataDeleteByCron($now, false); // verbose
-        $helper->setLimit(10);
-        $helper->setLoopCount(5);
-        $helper->startProcessing(false);
-        $this->assertEquals(1, $helper->getCount()[151]);
-        $this->assertEquals(1, (new \BO\Zmsdb\Process)->readExpiredReservationsList($now, 151, 10, 0)->count());
-        $helper->startProcessing(true);
-        $this->assertEquals(0, (new \BO\Zmsdb\Process)->readExpiredReservationsList($now, 151, 10, 0)->count());
+        $deleteReservationDryRun = new ReservedDataDeleteByCron($now, false, true); // verbose
+        $deleteReservationDryRun->setLimit(100);
+        $deleteReservationDryRun->startProcessing();
+        $this->assertEquals(3, (new \BO\Zmsdb\Process)->readExpiredReservationsList($now, 380, 10, 0)->count());
+        $this->assertEquals(3, $deleteReservationDryRun->getCount()[380]);
+
+        $deleteReservationService = new ReservedDataDeleteByCron($now, false, false); // verbose
+        $deleteReservationService->startProcessing();
+        $this->assertEquals(0, (new \BO\Zmsdb\Process)->readExpiredReservationsList($now, 380, 10, 0)->count());
     }
 
     /**
