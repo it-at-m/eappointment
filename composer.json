@@ -11,6 +11,9 @@
     "config": {
         "platform": {
             "php": "7.3"
+        },
+        "allow-plugins": {
+            "php-http/discovery": false
         }
     },
     "require": {
@@ -19,8 +22,8 @@
         "ext-mbstring": ">=0",
         "ext-json": ">=1.0",
         "ext-pcre": ">=0",
-        "eappointment/zmsslim": "dev-berlin-rc-2.25.00",
-        "eappointment/zmsentities": "dev-berlin-rc-2.25.00",
+        "eappointment/zmsslim": "dev-berlin-rc-2.25.00 || 2.25.*",
+        "eappointment/zmsentities": "dev-berlin-rc-2.25.00 || 2.25.*",
         "eappointment/mellon": "^2.0.1",
         "psr/http-message": "^1.0",
         "roave/security-advisories": "dev-master",
