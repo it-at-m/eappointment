@@ -272,11 +272,7 @@ class Process extends Base implements MappingInterface
     public function addConditionProcessExpiredIPTimeStamp(\DateTimeInterface $expirationDate)
     {
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($expirationDate) {
-            $query->andWith(
-                'process.IPTimeStamp',
-                '<=',
-                $expirationDate->getTimestamp()
-            );
+            $query->andWith('process.IPTimeStamp', '<=', $expirationDate->getTimestamp());
         });
         $this->query->orderBy('appointments__0__date', 'ASC');
         return $this;
