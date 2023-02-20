@@ -25,11 +25,11 @@
     "helmich/phpunit-psr7-assert": "^4.3.0"
   },
   "require": {
-    "eappointment/zmsslim": "dev-berlin-rc-2.25.00",
-    "eappointment/zmsclient": "dev-berlin-rc-2.25.00",
-    "eappointment/zmsdldb": "dev-berlin-rc-2.25.00",
-    "eappointment/zmsdb": "dev-berlin-rc-2.25.00",
-    "eappointment/zmsentities": "dev-berlin-rc-2.25.00",
+    "eappointment/zmsslim": "dev-berlin-rc-2.25.00 || 2.25.*",
+    "eappointment/zmsclient": "dev-berlin-rc-2.25.00 || 2.25.*",
+    "eappointment/zmsdldb": "dev-berlin-rc-2.25.00 || 2.25.*",
+    "eappointment/zmsdb": "dev-berlin-rc-2.25.00 || 2.25.*",
+    "eappointment/zmsentities": "dev-berlin-rc-2.25.00 || 2.25.*",
     "monolog/monolog": "1.*",
     "ulrichsg/getopt-php": "^2.3",
     "league/climate": "^3.2",
