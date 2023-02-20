@@ -312,7 +312,7 @@
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "dev-berlin-rc-2.25.00",
+            "version": "2.25.00-rc1",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsdldb.git",
