@@ -34,19 +34,15 @@ class ReservedDataDeleteByCronTest extends Base
     public function testWithExpiredReservations()
     {
         $now = static::$now;
-        $expiredDate = clone $now->modify('- 5 minutes');
-        $input = $this->getTestProcessEntity();
-        (new ProcessStatusFree())->writeEntityReserved($input, $expiredDate);
-
         $deleteReservationDryRun = new ReservedDataDeleteByCron($now, false, true); // verbose
         $deleteReservationDryRun->setLimit(100);
         $deleteReservationDryRun->startProcessing();
-        $this->assertEquals(1, (new \BO\Zmsdb\Process)->readExpiredReservationsList($now, 151, 10, 0)->count());
-        $this->assertEquals(1, $deleteReservationDryRun->getCount()[151]);
+        $this->assertEquals(3, (new \BO\Zmsdb\Process)->readExpiredReservationsList($now, 380, 10, 0)->count());
+        $this->assertEquals(3, $deleteReservationDryRun->getCount()[380]);
 
         $deleteReservationService = new ReservedDataDeleteByCron($now, false, false); // verbose
         $deleteReservationService->startProcessing();
-        $this->assertEquals(0, (new \BO\Zmsdb\Process)->readExpiredReservationsList($now, 151, 10, 0)->count());
+        $this->assertEquals(0, (new \BO\Zmsdb\Process)->readExpiredReservationsList($now, 380, 10, 0)->count());
     }
 
     /**
