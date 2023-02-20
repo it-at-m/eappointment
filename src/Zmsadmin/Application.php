@@ -7,6 +7,8 @@ namespace BO\Zmsadmin;
 
 use BO\Zmsclient\Http;
 
+define('ZMS_ADMIN_TEMPLATE_FOLDER', getenv('ZMS_ADMIN_TEMPLATE_FOLDER') ? getenv('ZMS_ADMIN_TEMPLATE_FOLDER') : '/templates/');
+
 class Application extends \BO\Slim\Application
 {
     /**
@@ -18,6 +20,9 @@ class Application extends \BO\Slim\Application
     const DEBUG = false;
 
     const TWIG_CACHE = '/cache/';
+
+    const TEMPLATE_PATH = ZMS_ADMIN_TEMPLATE_FOLDER;
+
 
     public static $includeUrl = '/terminvereinbarung/admin';
 
