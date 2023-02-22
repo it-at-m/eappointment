@@ -16,7 +16,7 @@
         "php": "7.3"
     },
     "allow-plugins": {
-      "php-http/discovery": false
+      "php-http/discovery": true
     }
   },
   "require-dev": {

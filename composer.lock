@@ -120,16 +120,16 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "2.25.00-rc2",
+            "version": "2.25.00-rc3",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsclient.git",
-                "reference": "8126c6f87bb3c7bdacb39217f03d986f06681fe1"
+                "reference": "19a5519f263e77fcce88457e1ec299493e4e6088"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=8126c6f87bb3c7bdacb39217f03d986f06681fe1",
-                "reference": "8126c6f87bb3c7bdacb39217f03d986f06681fe1",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=19a5519f263e77fcce88457e1ec299493e4e6088",
+                "reference": "19a5519f263e77fcce88457e1ec299493e4e6088",
                 "shasum": ""
             },
             "require": {
@@ -173,7 +173,7 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "time": "2023-02-20T14:11:52+00:00"
+            "time": "2023-02-22T17:36:12+00:00"
         },
         {
             "name": "eappointment/zmsentities",
@@ -1574,12 +1574,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "9206ad5e9490993f471ef1503f630afd7a849170"
+                "reference": "778a428cd06a290d890e6bc1111b4e651b8a9da8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/9206ad5e9490993f471ef1503f630afd7a849170",
-                "reference": "9206ad5e9490993f471ef1503f630afd7a849170",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/778a428cd06a290d890e6bc1111b4e651b8a9da8",
+                "reference": "778a428cd06a290d890e6bc1111b4e651b8a9da8",
                 "shasum": ""
             },
             "conflict": {
@@ -1894,6 +1894,7 @@
                 "phpxmlrpc/phpxmlrpc": "<4.9.2",
                 "pimcore/data-hub": "<1.2.4",
                 "pimcore/pimcore": "<10.5.17",
+                "pixelfed/pixelfed": "<=0.11.4",
                 "pocketmine/bedrock-protocol": "<8.0.2",
                 "pocketmine/pocketmine-mp": "<4.12.5|>= 4.0.0-BETA5, < 4.4.2",
                 "pressbooks/pressbooks": "<5.18",
@@ -2148,7 +2149,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-02-17T21:04:14+00:00"
+            "time": "2023-02-22T00:14:39+00:00"
         },
         {
             "name": "slim/http-cache",
