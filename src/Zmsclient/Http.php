@@ -252,7 +252,6 @@ class Http
     public static function createRequest(string $method, UriInterface $uri): RequestInterface
     {
         $request = new Psr7\Request($method, $uri);
-
-        return $request->withHeader('User-Agent', 'ClientZMS');
+        return $request;
     }
 }
