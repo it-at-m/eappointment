@@ -88,9 +88,16 @@ class UserAuth
     private static function getBasicAuth($request)
     {
         $header = $request->getHeaderLine('Authorization');
+        error_log(
+            'Is Authorization Header not basic? '. 
+            var_export((strpos($header, 'Basic') !== 0),1) . ' full auth header: '. 
+            var_export($header,1)
+        );
         if (strpos($header, 'Basic') !== 0) {
             return false;
         }
+        error_log(base64_decode(substr($header, 6)));
+
         $header = explode(':', base64_decode(substr($header, 6)), 2);
         $authorization = [
             'username' => $header[0],
