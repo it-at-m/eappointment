@@ -251,7 +251,7 @@ class Http
 
     public static function createRequest(string $method, UriInterface $uri): RequestInterface
     {
-        $request = new Psr7\Request($method, $uri, 'php://memory', new Headers([],[]));
+        $request = new Psr7\Request($method, $uri, 'php://memory', new Headers([], []));
         return $request;
     }
 }
