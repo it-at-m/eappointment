@@ -4,6 +4,7 @@ namespace BO\Zmsclient;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
+use Slim\Psr7\Headers;
 
 /**
  * Adapter & Decorator Class to use the Psr7\Client
