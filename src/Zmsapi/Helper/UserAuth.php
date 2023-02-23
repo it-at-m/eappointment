@@ -90,7 +90,7 @@ class UserAuth
         $header = $request->getHeaderLine('Authorization');
         $userInfo = explode(':', $request->getUri()->getUserInfo());
 
-        if (strpos($header, 'Basic') !== 0 && $userInfo[0] == "vorschau") {
+        if (strpos($header, 'Basic') !== 0 || $userInfo[0] == "vorschau") {
             return false;
         }
 
