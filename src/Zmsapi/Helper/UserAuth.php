@@ -94,9 +94,9 @@ class UserAuth
             var_export($header,1)
         );
         if (strpos($header, 'Basic') !== 0) {
+            error_log('not basic: return false');
             return false;
         }
-        error_log(base64_decode(substr($header, 6)));
 
         $header = explode(':', base64_decode(substr($header, 6)), 2);
         $authorization = [
