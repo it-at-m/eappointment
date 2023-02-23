@@ -90,10 +90,10 @@ class UserAuth
         $header = $request->getHeaderLine('Authorization');
         error_log(
             'Is Authorization Header not basic? '. 
-            var_export((strpos($header, 'Basic') === false),1) . ' full auth header: '. 
+            var_export((strpos($header, 'Basic') !== false),1) . ' full auth header: '. 
             var_export($header,1)
         );
-        if (strpos($header, 'Basic') === false) {
+        if (strpos($header, 'Basic') !== false) {
             error_log('not basic: return false');
             return false;
         }
