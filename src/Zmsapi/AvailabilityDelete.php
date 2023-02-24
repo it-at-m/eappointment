@@ -6,8 +6,16 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Zmsdb\Availability as Query;
+use BO\Slim\Render;
+
+use BO\Zmsdb\Availability as AvailabilityRepository;
+use BO\Zmsdb\Helper\CalculateSlots as CalculateSlotsHelper;
+
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
+use BO\Zmsapi\Exception\Availability\AvailabilityNotFound as NotFoundException;
+
 
 class AvailabilityDelete extends BaseController
 {
@@ -16,16 +24,19 @@ class AvailabilityDelete extends BaseController
      * @return String
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
-    ) {
+    ): ResponseInterface {
         (new Helper\User($request))->checkRights();
-        $query = new Query();
+        $query = new AvailabilityRepository();
         $entity = $query->readEntity($args['id'], 2);
 
-        if ($entity->hasId() && $query->deleteEntity($entity->getId())) {
-            (new \BO\Zmsdb\Helper\CalculateSlots(\App::DEBUG))->writePostProcessingByScope($entity->scope, \App::$now);
+        if (! $entity) {
+            throw new NotFoundException();
+        }
+        if ($query->deleteEntity($entity->getId())) {
+            (new CalculateSlotsHelper(\App::DEBUG))->writePostProcessingByScope($entity->scope, \App::$now);
         }
 
         $message = Response\Message::create($request);

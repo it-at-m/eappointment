@@ -6,9 +6,23 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Availability as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+
+use BO\Zmsentities\Availability as Entity;
+use BO\Zmsentities\Collection\AvailabilityList as Collection;
+
+use BO\Zmsdb\Availability as AvailabilityRepository;
+use BO\Zmsdb\Slot as SlotRepository;
+use BO\Zmsdb\Helper\CalculateSlots as CalculateSlotsHelper;
+use BO\Zmsdb\Connection\Select as DbConnection;
+
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
+use BO\Zmsapi\Exception\Availability\AvailabilityNotFound as NotFoundException;
+use BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed as UpdateFailedException;
+
 
 /**
  * @SuppressWarnings(Coupling)
@@ -20,41 +34,22 @@ class AvailabilityAdd extends BaseController
      * @return String
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
-    ) {
+    ): ResponseInterface {
         (new Helper\User($request))->checkRights();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $useMigrationFix = Validator::param('migrationfix')->isNumber()->setDefault(1)->getValue();
-        $newEntity = null;
-        if (0 == count($input)) {
-            throw new Exception\Availability\AvailabilityNotFound();
+        if ($input && count($input) === 0) {
+            throw new NotFoundException();
         }
-        $collection = new \BO\Zmsentities\Collection\AvailabilityList();
-        \BO\Zmsdb\Connection\Select::getWriteConnection();
+        $collection = new Collection();
+        DbConnection::getWriteConnection();
         foreach ($input as $availability) {
-            $entity = new \BO\Zmsentities\Availability($availability);
-            $entity->testValid();
-            if ($entity->id) {
-                $oldentity = (new Query())->readEntity($entity->id);
-                if ($oldentity->hasId()) {
-                    $newEntity = (new Query())->updateEntity($entity->id, $entity, 2);
-                } elseif ($useMigrationFix) {
-                    //Workaround for openinghours migration, remove after AP13
-                    $newEntity = (new Query())->writeEntity($entity, 2);
-                }
-            } else {
-                $newEntity = (new Query())->writeEntity($entity, 2);
-            }
-            if (! $newEntity) {
-                throw new Exception\Availability\AvailabilityUpdateFailed();
-            }
-            (new \BO\Zmsdb\Slot)->writeByAvailability($newEntity, \App::$now);
-            (new \BO\Zmsdb\Helper\CalculateSlots(\App::DEBUG))
-                ->writePostProcessingByScope($newEntity->scope, \App::$now);
-            \BO\Zmsdb\Connection\Select::writeCommit();
-            $collection[] = $newEntity;
+            $entity = new Entity($availability);
+            $updatedEntity = $this->writeEntityUpdate($entity);  
+            $this->writeCalculatedSlots($updatedEntity);
+            $collection[] = $updatedEntity;
         }
 
         $message = Response\Message::create($request);
@@ -63,5 +58,43 @@ class AvailabilityAdd extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
+    }
+
+    protected function writeCalculatedSlots($updatedEntity)
+    {
+        (new SlotRepository)->writeByAvailability($updatedEntity, \App::$now);
+        (new CalculateSlotsHelper(\App::DEBUG))
+            ->writePostProcessingByScope($updatedEntity->scope, \App::$now);
+        DbConnection::writeCommit();
+    }
+
+    protected function writeEntityUpdate($entity): Entity
+    {
+        $query = new AvailabilityRepository();
+        $entity->testValid();
+        $oldentity = $query->readEntity($entity->id);
+        if ($oldentity && $oldentity->hasId()) {
+            $this->writeSpontaneousEntity($oldentity);
+            $updatedEntity = $query->updateEntity($entity->id, $entity, 2);
+        } else {
+            $updatedEntity = $query->writeEntity($entity, 2);
+        }
+        if (! $updatedEntity) {
+            throw new UpdateFailedException();
+        }
+        return $updatedEntity;
+    }
+
+    protected function writeSpontaneousEntity(Entity $entity): void
+    {
+        $doubleTypesEntity = (new AvailabilityRepository())->readEntityDoubleTypes($entity->id);
+        if ($doubleTypesEntity) {
+            $doubleTypesEntity->workstationCount['intern'] = 0;
+            $doubleTypesEntity->workstationCount['callcenter'] = 0;
+            $doubleTypesEntity->workstationCount['public'] = 0;
+            $doubleTypesEntity['description'] = '';
+            $doubleTypesEntity['type'] = 'openinghours';
+            (new AvailabilityRepository())->writeEntity($doubleTypesEntity);
+        }
     }
 }
