@@ -21,6 +21,9 @@ use Psr\Http\Message\ResponseInterface;
 
 use BO\Zmsapi\Exception\Availability\AvailabilityNotFound as NotfoundException;
 
+/**
+ * @SuppressWarnings(Coupling)
+ */
 class AvailabilityUpdate extends BaseController
 {
     /**
