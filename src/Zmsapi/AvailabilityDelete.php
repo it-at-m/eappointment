@@ -16,7 +16,6 @@ use Psr\Http\Message\ResponseInterface;
 
 use BO\Zmsapi\Exception\Availability\AvailabilityNotFound as NotFoundException;
 
-
 class AvailabilityDelete extends BaseController
 {
     /**

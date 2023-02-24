@@ -23,7 +23,6 @@ use Psr\Http\Message\ResponseInterface;
 use BO\Zmsapi\Exception\Availability\AvailabilityNotFound as NotFoundException;
 use BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed as UpdateFailedException;
 
-
 /**
  * @SuppressWarnings(Coupling)
  */
@@ -47,7 +46,7 @@ class AvailabilityAdd extends BaseController
         DbConnection::getWriteConnection();
         foreach ($input as $availability) {
             $entity = new Entity($availability);
-            $updatedEntity = $this->writeEntityUpdate($entity);  
+            $updatedEntity = $this->writeEntityUpdate($entity);
             $this->writeCalculatedSlots($updatedEntity);
             $collection[] = $updatedEntity;
         }
