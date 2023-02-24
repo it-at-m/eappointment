@@ -86,7 +86,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
                 $entity->workstationCount['public'] = 0;
                 if ($entity['type'] == 'appointment') {
                     $entity['description'] = '';
-                    $entity->id = '__spontan__'. $entity->id;
+                    $entity->id = 0;
                     $entity['type'] = 'openinghours';
                 }
                 $entity['type'] = ($entity['type'] != 'appointment') ? 'openinghours' : $entity['type'];
