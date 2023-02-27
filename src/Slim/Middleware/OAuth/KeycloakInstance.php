@@ -76,10 +76,8 @@ class KeycloakInstance
         $realmData = $this->provider::getBasicOptionsFromJsonFile();
         $accessTokenPayload = json_decode(base64_decode($payload), true);
         $clientRoles = array_values($accessTokenPayload['resource_access'][\App::IDENTIFIER]['roles']);
-        if (
-            array_key_exists(\App::IDENTIFIER, $accessTokenPayload['resource_access']) && 
-            array_key_exists('access_granted', $clientRoles)
-        ) {
+        if (array_key_exists(\App::IDENTIFIER, $accessTokenPayload['resource_access']) &&
+            array_key_exists('access_granted', $clientRoles)) {
             throw new \BO\Slim\Exception\OAuthFailed();
         }
     }
