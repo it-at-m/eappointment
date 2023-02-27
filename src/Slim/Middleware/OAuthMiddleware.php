@@ -98,7 +98,8 @@ class OAuthMiddleware
         return $response;
     }
 
-    private function getAuthUrl(ServerRequestInterface $request, $instance){
+    private function getAuthUrl(ServerRequestInterface $request, $instance)
+    {
         $authUrl = $instance->getProvider()->getAuthorizationUrl();
         \BO\Zmsclient\Auth::setOidcProvider($request->getParam('provider'));
         \BO\Zmsclient\Auth::setKey($instance->getProvider()->getState());
