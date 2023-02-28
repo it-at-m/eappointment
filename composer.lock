@@ -221,7 +221,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsdb.git",
-                "reference": "64a00d8c81ae591b6a2aa337ccb048109c718d30"
+                "reference": "fcd95999860ff05d5a50dc6ec2ce101eb08a2271"
             },
             "require": {
                 "aura/sql": "^2.4",
@@ -286,7 +286,7 @@
                 }
             ],
             "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
-            "time": "2023-02-15T15:54:39+00:00"
+            "time": "2023-02-28T11:21:48+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
@@ -346,14 +346,8 @@
             "version": "dev-muc/dev",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.com:eappointment/zmsentities.git",
-                "reference": "4d1cc775e7976cceeea7d85a7bd2a91ebff49e05"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=4d1cc775e7976cceeea7d85a7bd2a91ebff49e05",
-                "reference": "4d1cc775e7976cceeea7d85a7bd2a91ebff49e05",
-                "shasum": ""
+                "url": "https://gitlab.com/eappointment/zmsentities.git",
+                "reference": "f083b73afb1b93d721a11982be4d07abc291252e"
             },
             "require": {
                 "eappointment/mellon": "^2.0.1",
@@ -384,7 +378,11 @@
                     "BO\\Zmsentities\\Tests\\": "tests/Zmsentities/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "command": [
+                    "bin/configure"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -395,7 +393,7 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2023-01-12T15:03:30+00:00"
+            "time": "2023-02-28T11:48:32+00:00"
         },
         {
             "name": "eappointment/zmsslim",
