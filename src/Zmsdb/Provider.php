@@ -62,10 +62,14 @@ class Provider extends Base
             throw new Exception\Provider\ProviderContactMissed();
         }
         $query = new Query\Provider(Query\Base::INSERT);
+        $additionalData = $entity->getAdditionalData() ?? [];
         $query->addValues([
             'source' => $entity->getSource(),
             'id' => $entity->getId(),
             'name' => $entity->getName(),
+            'display_name' => $additionalData && isset($additionalData['displayName'])
+                ? $additionalData['displayName']
+                : $entity->getName(),
             'contact__city' => $contact->getProperty('city'),
             'contact__country' => $contact->getProperty('country'),
             'contact__lat' => $contact->getProperty('lat', 0),
