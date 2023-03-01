@@ -16,6 +16,7 @@ class Process extends Schema\Entity
     public const STATUS_FREE       = 'free';
     public const STATUS_RESERVED   = 'reserved';
     public const STATUS_CONFIRMED  = 'confirmed';
+    public const STATUS_PRECONFIRMED  = 'preconfirmed';
     public const STATUS_QUEUED     = 'queued';
     public const STATUS_CALLED     = 'called';
     public const STATUS_PROCESSING = 'processing';
@@ -377,6 +378,7 @@ class Process extends Schema\Entity
 
     public function setStatusBySettings()
     {
+        error_log("____setStatusBySettings____");
         $scope = new Scope($this->scope);
         if ('called' == $this->status && $this->queue['callCount'] > $scope->getPreference('queue', 'callCountMax')) {
             $this->status = 'missed';
