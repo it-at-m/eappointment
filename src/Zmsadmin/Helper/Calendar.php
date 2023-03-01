@@ -128,6 +128,7 @@ class Calendar
         $oldList = clone $processList;
         $oldList->sortByArrivalTime();
         foreach ($oldList as $process) {
+            error_log("____toProcessListByHour____". $process->status);
             if (in_array($process->status, [ 'confirmed', 'free'])) {
                 $appointment = $process->getFirstAppointment();
                 $hour = (int)$appointment->toDateTime()->format('H');
