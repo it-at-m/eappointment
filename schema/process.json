@@ -321,6 +321,7 @@
       "enum": [
         "free",
         "reserved",
+        "preconfirmed",
         "confirmed",
         "queued",
         "called",
