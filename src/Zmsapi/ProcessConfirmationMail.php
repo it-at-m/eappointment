@@ -29,7 +29,7 @@ class ProcessConfirmationMail extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
-
+error_log("____ProcessConfirmationMail_____");
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new Process($input);
         $process->testValid();
@@ -49,9 +49,10 @@ class ProcessConfirmationMail extends BaseController
     {
         $config = (new Config)->readEntity();
         $department = (new Department())->readByScopeId($process->scope['id']);
+        $status = ($process->isWithAppointment())? 'appointment': 'queued';
+
         $collection = static::getProcessListOverview($process, $config);
 
-        $status = ($process->isWithAppointment()) ? 'appointment' : 'queued';
         $mail = (new \BO\Zmsentities\Mail)
             ->toResolvedEntity($collection, $config, $status)
             ->withDepartment($department);
