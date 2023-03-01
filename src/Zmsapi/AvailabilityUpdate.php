@@ -27,7 +27,7 @@ use BO\Zmsapi\Exception\Availability\AvailabilityNotFound as NotfoundException;
 class AvailabilityUpdate extends BaseController
 {
     /**
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
         RequestInterface $request,

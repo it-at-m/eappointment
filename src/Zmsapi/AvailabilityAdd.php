@@ -30,7 +30,7 @@ class AvailabilityAdd extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
         RequestInterface $request,
