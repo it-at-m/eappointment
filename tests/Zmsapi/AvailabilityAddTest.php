@@ -12,17 +12,10 @@ class AvailabilityAddTest extends Base
         $response = $this->render([], [
             '__body' => '[
                 {
-                      "id": 21202,
-                      "description": "Test Öffnungszeit update",
-                      "scope": {
-                          "id": 312
-                      }
-                  },
-                  {
-                    "id": 1,
-                    "description": "Test Öffnungszeit neu mit id",
+                    "id": 21202,
+                    "description": "Test Öffnungszeit update",
                     "scope": {
-                        "id": 141
+                        "id": 312
                     }
                 },
                 {

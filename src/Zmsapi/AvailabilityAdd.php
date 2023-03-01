@@ -44,11 +44,12 @@ class AvailabilityAdd extends BaseController
         }
         $collection = new Collection();
         DbConnection::getWriteConnection();
-        foreach ($input as $availability) {
-            $entity = new Entity($availability);
+        foreach ($input as $item) {
+            $entity = new Entity($item);
+            $entity->testValid();
             $updatedEntity = $this->writeEntityUpdate($entity);
             $this->writeCalculatedSlots($updatedEntity);
-            $collection[] = $updatedEntity;
+            $collection->addEntity($updatedEntity);
         }
 
         $message = Response\Message::create($request);
@@ -70,11 +71,13 @@ class AvailabilityAdd extends BaseController
     protected function writeEntityUpdate($entity): Entity
     {
         $repository = new AvailabilityRepository();
-        $entity->testValid();
-        $oldentity = $repository->readEntity($entity->id);
-        if ($oldentity && $oldentity->hasId()) {
-            $this->writeSpontaneousEntity($oldentity);
-            $updatedEntity = $repository->updateEntity($entity->id, $entity, 2);
+        $updatedEntity = null;
+        if ($entity->id) {
+            $oldentity = $repository->readEntity($entity->id);
+            if ($oldentity && $oldentity->hasId()) {
+                $this->writeSpontaneousEntity($oldentity);
+                $updatedEntity = $repository->updateEntity($entity->id, $entity, 2);
+            }
         } else {
             $updatedEntity = $repository->writeEntity($entity, 2);
         }
