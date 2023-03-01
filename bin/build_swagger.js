@@ -42,9 +42,9 @@ function validateSwagger() {
 
 function buildSwagger() {
   let version = readFileContent('public/doc/partials/version.yaml') + "\n";
-  let info = readFileContent('public/doc/partials/info.yaml') + "\n";
+  let info = readFileContent('public/doc/partials/info.yaml');
   //append current api version to info
-  info = info + "  version: " + readFileContent("./VERSION");
+  info = info + "\n  version: '" + readFileContent("./VERSION").trim() + "'\n";
   
   let basics = readFileContent('public/doc/partials/basic.yaml') + "\n";
   let paths = {
