@@ -150,7 +150,7 @@ class Process extends Base implements MappingInterface
                     THEN "deleted"
                 WHEN process.StandortID = 0 AND process.AbholortID = 0
                     THEN "blocked"
-                WHEN process.vorlaeufigeBuchung = 1
+                WHEN process.vorlaeufigeBuchung = 1 AND process.bestaetigt = 0 
                     THEN "reserved"
                 WHEN process.nicht_erschienen != 0
                     THEN "missed"
@@ -164,7 +164,9 @@ class Process extends Base implements MappingInterface
                     THEN "called"
                 WHEN process.Uhrzeit = "00:00:00"
                     THEN "queued"
-                WHEN process.vorlaeufigeBuchung = 0
+                WHEN process.vorlaeufigeBuchung = 0 AND process.bestaetigt = 0 
+                    THEN "preconfirmed"
+                WHEN process.vorlaeufigeBuchung = 0 AND process.bestaetigt = 1
                     THEN "confirmed"
                 ELSE "free"
             END'
@@ -442,6 +444,7 @@ class Process extends Base implements MappingInterface
 
     public function addConditionStatus($status, $scopeId = 0)
     {
+        error_log("____addConditionStatus______". $status);
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($status, $scopeId) {
             if ('deleted' == $status) {
                 $query
