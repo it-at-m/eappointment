@@ -221,7 +221,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsdb.git",
-                "reference": "fcd95999860ff05d5a50dc6ec2ce101eb08a2271"
+                "reference": "a051cae721b1c482c199f1884adb610928b6f57d"
             },
             "require": {
                 "aura/sql": "^2.4",
@@ -286,7 +286,7 @@
                 }
             ],
             "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
-            "time": "2023-02-28T11:21:48+00:00"
+            "time": "2023-03-01T15:23:26+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
