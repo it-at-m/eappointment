@@ -35,7 +35,7 @@ class AvailabilityDelete extends BaseController
             (new CalculateSlotsHelper(\App::DEBUG))->writePostProcessingByScope($entity->scope, \App::$now);
         } else {
             $entity = new Entity(['id' => $args['id']]);
-        } 
+        }
 
         $message = Response\Message::create($request);
         $message->data = $entity;
