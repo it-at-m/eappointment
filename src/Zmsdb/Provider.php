@@ -111,6 +111,7 @@ class Provider extends Base
                 'source' => $source,
                 'id' => $provider['id'],
                 'name' => $provider['name'],
+                'display_name' => $provider['dispalayName'] ?? $provider['name'],
                 'contact__city' => $provider['address']['city'],
                 'contact__country' => $provider['address']['city'],
                 'contact__lat' => $provider['geo']['lat'],
