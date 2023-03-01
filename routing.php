@@ -2545,6 +2545,54 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("ProcessUpdate");
 
+    /**
+ *  @swagger
+ *  "/process/{id}/{authKey}/preconfirmation/mail/":
+ *      post:
+ *          summary: send mail on preconfirmed process. Depending on config, if no mail is send, an empty mail is returned.
+ *          tags:
+ *              - process
+ *              - mail
+ *          parameters:
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: authKey
+ *                  description: authentication key
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: process
+ *                  description: process data for building mail
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/mail.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "forbidden, authkey does not match or status changes, only data may be changed"
+ *              404:
+ *                  description: "process id does not exists"
+ */
+\App::$slim->post(
+    '/process/{id:\d{1,11}}/{authKey}/preconfirmation/mail/',
+    '\BO\Zmsapi\ProcessPreconfirmationMail'
+)
+    ->setName("ProcessPreconfirmationMail");
+
 /**
  *  @swagger
  *  "/process/{id}/{authKey}/confirmation/mail/":

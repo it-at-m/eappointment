@@ -17,7 +17,7 @@ use \BO\Zmsentities\Collection\ProcessList as Collection;
 /**
  * @SuppressWarnings(Coupling)
  */
-class ProcessConfirmationMail extends BaseController
+class ProcessPreconfirmationMail extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -29,13 +29,15 @@ class ProcessConfirmationMail extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
-error_log("____ProcessConfirmationMail_____");
+error_log("____ProcessPreconfirmationMail_____");
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new Process($input);
+        error_log("____ProcessPreconfirmationMail11111_____");
         $process->testValid();
+        error_log("____ProcessPreconfirmationMail2222222_____");
         $this->testProcessData($process);
         $process = (new ProcessRepository())->readEntity($process->id, $process->authKey);
-
+        error_log("____555555ProcessPreconfirmationMail_____");
         $mail = $this->writeMail($process);
         $message = Response\Message::create($request);
         $message->data = ($mail->hasId()) ? $mail : null;
@@ -49,8 +51,8 @@ error_log("____ProcessConfirmationMail_____");
     {
         $config = (new Config)->readEntity();
         $department = (new Department())->readByScopeId($process->scope['id']);
-        $status = ($process->isWithAppointment())? 'appointment': 'queued';
-
+        $status = ($process->isWithAppointment()) ? 'preconfirmed' : 'queued';
+error_log("____writeMail1111_____". $status);
         $collection = static::getProcessListOverview($process, $config);
 
         $mail = (new \BO\Zmsentities\Mail)
@@ -89,12 +91,13 @@ error_log("____ProcessConfirmationMail_____");
             $processList = (new ProcessRepository())->readListByMailAndStatusList(
                 $process->getFirstClient()->email,
                 [
-                    Process::STATUS_CONFIRMED,
+                    Process::STATUS_PRECONFIRMED,
                     Process::STATUS_PICKUP
                 ],
                 2,
                 50
             );
+            
             //add list of found processes without the main process
             $collection->addList($processList->withOutProcessId($process->getId()));
         }
