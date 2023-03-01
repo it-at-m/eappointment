@@ -32,7 +32,7 @@ class AvailabilityDelete extends BaseController
         $entity = $repository->readEntity($args['id'], 2);
 
         if (! $entity) {
-            $entity = new Entity(['id' => $entityId]);
+            $entity = new Entity(['id' => $args['id']]);
         }
         if ($repository->deleteEntity($entity->getId())) {
             (new CalculateSlotsHelper(\App::DEBUG))->writePostProcessingByScope($entity->scope, \App::$now);
