@@ -70,6 +70,7 @@ class ScopeAppointmentsByDay extends BaseController
             $selectedDateTime,
             Helper\GraphDefaults::getProcess()
         );
+        error_log("____readProcessList____");
         // data refinement
         return $processList
             ->toQueueList(\App::$now)
