@@ -39,7 +39,7 @@ class AvailabilityAdd extends BaseController
     ): ResponseInterface {
         (new Helper\User($request))->checkRights();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        if ($input && count($input) === 0) {
+        if (! $input || count($input) === 0) {
             throw new BadRequestException();
         }
         $collection = new Collection();

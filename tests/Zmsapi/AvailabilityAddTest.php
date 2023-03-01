@@ -44,11 +44,11 @@ class AvailabilityAddTest extends Base
         $this->render([], [], []);
     }
 
-    public function testNotFound()
+    public function testEmptyBody()
     {
         $this->setWorkstation();
-        $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityNotFound');
-        $this->expectExceptionCode(404);
+        $this->expectException('\BO\Zmsapi\Exception\BadRequest');
+        $this->expectExceptionCode(400);
         $this->render([], [
             '__body' => '[]'
         ], []);
