@@ -14,7 +14,7 @@ use BO\Zmsdb\Helper\CalculateSlots as CalculateSlotsHelper;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-use BO\Zmsapi\Exception\Availability\AvailabilityNotFound as NotFoundException;
+use BO\Zmsentities\Availability as Entity;
 
 class AvailabilityDelete extends BaseController
 {
@@ -28,13 +28,13 @@ class AvailabilityDelete extends BaseController
         array $args
     ): ResponseInterface {
         (new Helper\User($request))->checkRights();
-        $query = new AvailabilityRepository();
-        $entity = $query->readEntity($args['id'], 2);
+        $repository = new AvailabilityRepository();
+        $entity = $repository->readEntity($args['id'], 2);
 
         if (! $entity) {
-            throw new NotFoundException();
+            $entity = new Entity(['id' => $entityId]);
         }
-        if ($query->deleteEntity($entity->getId())) {
+        if ($repository->deleteEntity($entity->getId())) {
             (new CalculateSlotsHelper(\App::DEBUG))->writePostProcessingByScope($entity->scope, \App::$now);
         }
 

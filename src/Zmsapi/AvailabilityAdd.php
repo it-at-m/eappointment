@@ -20,7 +20,7 @@ use BO\Zmsdb\Connection\Select as DbConnection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-use BO\Zmsapi\Exception\Availability\AvailabilityNotFound as NotFoundException;
+use BO\Zmsapi\Exception\BadRequest as BadRequestException;
 use BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed as UpdateFailedException;
 
 /**
@@ -40,7 +40,7 @@ class AvailabilityAdd extends BaseController
         (new Helper\User($request))->checkRights();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         if ($input && count($input) === 0) {
-            throw new NotFoundException();
+            throw new BadRequestException();
         }
         $collection = new Collection();
         DbConnection::getWriteConnection();
@@ -69,14 +69,14 @@ class AvailabilityAdd extends BaseController
 
     protected function writeEntityUpdate($entity): Entity
     {
-        $query = new AvailabilityRepository();
+        $repository = new AvailabilityRepository();
         $entity->testValid();
-        $oldentity = $query->readEntity($entity->id);
+        $oldentity = $repository->readEntity($entity->id);
         if ($oldentity && $oldentity->hasId()) {
             $this->writeSpontaneousEntity($oldentity);
-            $updatedEntity = $query->updateEntity($entity->id, $entity, 2);
+            $updatedEntity = $repository->updateEntity($entity->id, $entity, 2);
         } else {
-            $updatedEntity = $query->writeEntity($entity, 2);
+            $updatedEntity = $repository->writeEntity($entity, 2);
         }
         if (! $updatedEntity) {
             throw new UpdateFailedException();
