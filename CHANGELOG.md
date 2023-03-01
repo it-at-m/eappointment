@@ -1,5 +1,6 @@
 ## 2.25.00
 * #56756 - refactored cron helper to remove expired reservations with improved logging
+* #56710 - add new method to read Availability that has old double type format with appointment and spontaneous openinghours
 
 ## 2.24.14
 * #54285 - The fetching of operations that are in process has been corrected
