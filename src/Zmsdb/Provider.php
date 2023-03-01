@@ -63,6 +63,7 @@ class Provider extends Base
         }
         $query = new Query\Provider(Query\Base::INSERT);
         $additionalData = $entity->getAdditionalData() ?? [];
+        
         $query->addValues([
             'source' => $entity->getSource(),
             'id' => $entity->getId(),
