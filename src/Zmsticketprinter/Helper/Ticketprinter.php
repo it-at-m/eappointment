@@ -7,11 +7,11 @@
  */
 namespace BO\Zmsticketprinter\Helper;
 
-use BO\Mellon\Validator;
 use BO\Zmsentities\Ticketprinter as Entity;
 use BO\Zmsentities\Organisation;
 use BO\Zmsclient\Ticketprinter as TicketprinterClient;
-use \Psr\Http\Message\RequestInterface;
+use BO\Zmsticketprinter\Exception\OrganisationNotFound as OrganisationNotFoundException;
+use Psr\Http\Message\RequestInterface;
 
 class Ticketprinter
 {
@@ -31,7 +31,7 @@ class Ticketprinter
         $entity = $this->getAssembledEntity();
 
         $hash = $this->readHash($request);
-        if ('' === $hash || false === $hash) {
+        if ('' === $hash) {
             $entity = $this->writeNewWithHash($request, $entity);
         } else {
             $entity = $this->getByHash($hash, $entity);
@@ -85,7 +85,7 @@ class Ticketprinter
     protected function writeNewWithHash(RequestInterface $request, Entity $entity): Entity
     {
         if (null === $this->organisation) {
-            throw new Exception\OrganisationNotFound();
+            throw new OrganisationNotFoundException();
         }
         $entityWithHash = \App::$http->readGetResult(
             '/organisation/'. $this->organisation->getId() . '/hash/',
