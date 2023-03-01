@@ -4342,22 +4342,22 @@
         },
         {
             "name": "helmich/phpunit-json-assert",
-            "version": "v3.4.3",
+            "version": "v3.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/martin-helmich/phpunit-json-assert.git",
-                "reference": "73d72cc86f427ff247c8f356798b0568a185cf53"
+                "reference": "e2ff61f042c6c86566db297f7da13538bfb80140"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/martin-helmich/phpunit-json-assert/zipball/73d72cc86f427ff247c8f356798b0568a185cf53",
-                "reference": "73d72cc86f427ff247c8f356798b0568a185cf53",
+                "url": "https://api.github.com/repos/martin-helmich/phpunit-json-assert/zipball/e2ff61f042c6c86566db297f7da13538bfb80140",
+                "reference": "e2ff61f042c6c86566db297f7da13538bfb80140",
                 "shasum": ""
             },
             "require": {
                 "justinrainbow/json-schema": "^5.0",
                 "php": "^7.2 || ^8.0",
-                "softcreatr/jsonpath": "^0.7.2 || ^0.8"
+                "softcreatr/jsonpath": "^0.7.2"
             },
             "conflict": {
                 "phpunit/phpunit": "<8.0 || >= 10.0"
@@ -4384,7 +4384,7 @@
             "description": "PHPUnit assertions for JSON documents",
             "support": {
                 "issues": "https://github.com/martin-helmich/phpunit-json-assert/issues",
-                "source": "https://github.com/martin-helmich/phpunit-json-assert/tree/v3.4.3"
+                "source": "https://github.com/martin-helmich/phpunit-json-assert/tree/v3.4.2"
             },
             "funding": [
                 {
@@ -4396,7 +4396,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-02-01T09:41:56+00:00"
+            "time": "2021-03-29T06:47:09+00:00"
         },
         {
             "name": "helmich/phpunit-psr7-assert",
