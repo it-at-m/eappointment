@@ -178,16 +178,16 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "2.25.00-rc5",
+            "version": "2.25.00-rc6",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsclient.git",
-                "reference": "00095035b46426bb25a1724cae634a80554112ba"
+                "reference": "1e7dec28972295164e989b19a63da959f26a4d7d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=00095035b46426bb25a1724cae634a80554112ba",
-                "reference": "00095035b46426bb25a1724cae634a80554112ba",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=1e7dec28972295164e989b19a63da959f26a4d7d",
+                "reference": "1e7dec28972295164e989b19a63da959f26a4d7d",
                 "shasum": ""
             },
             "require": {
@@ -231,7 +231,7 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "time": "2023-02-23T11:55:21+00:00"
+            "time": "2023-03-02T13:08:04+00:00"
         },
         {
             "name": "eappointment/zmsdb",
@@ -1881,12 +1881,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "6ab259b93537fda94e80a3e7c545957ce0848052"
+                "reference": "3a45705887412bb03836d4cf363d4c60fa306e82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/6ab259b93537fda94e80a3e7c545957ce0848052",
-                "reference": "6ab259b93537fda94e80a3e7c545957ce0848052",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/3a45705887412bb03836d4cf363d4c60fa306e82",
+                "reference": "3a45705887412bb03836d4cf363d4c60fa306e82",
                 "shasum": ""
             },
             "conflict": {
@@ -2201,7 +2201,7 @@
                 "phpxmlrpc/extras": "<0.6.1",
                 "phpxmlrpc/phpxmlrpc": "<4.9.2",
                 "pimcore/data-hub": "<1.2.4",
-                "pimcore/pimcore": "<=10.5.17",
+                "pimcore/pimcore": "<10.5.18",
                 "pixelfed/pixelfed": "<=0.11.4",
                 "pocketmine/bedrock-protocol": "<8.0.2",
                 "pocketmine/pocketmine-mp": "<4.12.5|>= 4.0.0-BETA5, < 4.4.2",
@@ -2458,7 +2458,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-03-01T00:18:15+00:00"
+            "time": "2023-03-01T23:04:23+00:00"
         },
         {
             "name": "seld/cli-prompt",
