@@ -19,6 +19,7 @@ class Provider extends Base
             'id' => 'provider.id',
             'link' => 'provider.link',
             'name' => 'provider.name',
+            'displayName' => 'provider.display_name',
             'source' => 'provider.source'
         ];
         if ($this->getResolveLevel() > 0) {
