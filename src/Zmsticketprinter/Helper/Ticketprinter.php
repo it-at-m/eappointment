@@ -30,7 +30,7 @@ class Ticketprinter
         $this->organisation = $this->readOrganisation();
         $entity = $this->getAssembledEntity();
 
-        $hash = $this->readHash($request);
+        $hash = static::getHashFromRequest($request);
         if ('' === $hash) {
             $entity = $this->writeNewWithHash($request, $entity);
         } else {
@@ -64,12 +64,12 @@ class Ticketprinter
         return $scopeId;
     }
 
-    public function readHash(RequestInterface $request): string
+    public static function getHashFromRequest(RequestInterface $request): string
     {
         $cookies = $request->getCookieParams();
         $hash = TicketprinterClient::getHash();
-        if (array_key_exists('Ticketprinter', $cookies) && ! $hash) {
-            $hash = $cookies['Ticketprinter'];
+        if (array_key_exists(TicketprinterClient::HASH_COOKIE_NAME, $cookies) && ! $hash) {
+            $hash = $cookies[TicketprinterClient::HASH_COOKIE_NAME];
         }
         return $hash;
     }

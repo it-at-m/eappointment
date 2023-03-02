@@ -17,6 +17,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/home/', '\BO\Zmsticketprinter\Home')
     ->setName("Home");
 
+\App::$slim->get('/status/', '\BO\Zmsticketprinter\Status')
+    ->setName("Status");
+
 \App::$slim->get('/', '\BO\Zmsticketprinter\Index')
     ->setName("Index");
 
