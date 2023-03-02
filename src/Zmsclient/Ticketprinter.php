@@ -22,9 +22,10 @@ class Ticketprinter
                 self::HASH_COOKIE_NAME,
                 $hash,
                 time() + (60*60*24*365*10),
-                $request->getBasePath(),
+                '/',
                 null,
-                false
+                true,
+                true
             );
         }
     }
@@ -52,7 +53,7 @@ class Ticketprinter
     {
         $_COOKIE[self::HOME_URL_COOKIE_NAME] = $url;
         if (!headers_sent()) {
-            setcookie(self::HOME_URL_COOKIE_NAME, $url, 0, $request->getBasePath(), null, false, true);
+            setcookie(self::HOME_URL_COOKIE_NAME, $url, 0, '/', null, true, true);
         }
     }
 
