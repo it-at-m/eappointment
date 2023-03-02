@@ -51,6 +51,7 @@ class AvailabilityAdd extends BaseController
             $this->writeCalculatedSlots($updatedEntity);
             $collection->addEntity($updatedEntity);
         }
+        DbConnection::writeCommit();
 
         $message = Response\Message::create($request);
         $message->data = $collection->getArrayCopy();
@@ -65,7 +66,6 @@ class AvailabilityAdd extends BaseController
         (new SlotRepository)->writeByAvailability($updatedEntity, \App::$now);
         (new CalculateSlotsHelper(\App::DEBUG))
             ->writePostProcessingByScope($updatedEntity->scope, \App::$now);
-        DbConnection::writeCommit();
     }
 
     protected function writeEntityUpdate($entity): Entity

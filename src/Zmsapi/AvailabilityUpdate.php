@@ -45,11 +45,12 @@ class AvailabilityUpdate extends BaseController
             throw new NotfoundException();
         }
 
-        //Workaround for openinghours migration, remove after AP13
+        DbConnection::getWriteConnection();
         $this->writeSpontaneousEntity($availability);
-
         $updatedEntity = (new AvailabilityRepository())->updateEntity($args['id'], $entity, $resolveReferences);
         $this->writeCalculatedSlots($updatedEntity);
+        DbConnection::writeCommit();
+
 
         $message = Response\Message::create($request);
         $message->data = $updatedEntity;
@@ -64,7 +65,6 @@ class AvailabilityUpdate extends BaseController
         (new SlotRepository)->writeByAvailability($updatedEntity, \App::$now);
         (new CalculateSlotsHelper(\App::DEBUG))
             ->writePostProcessingByScope($updatedEntity->scope, \App::$now);
-        DbConnection::writeCommit();
     }
 
     protected function writeSpontaneousEntity(Entity $entity): void
