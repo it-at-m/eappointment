@@ -178,16 +178,16 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "2.25.00-rc6",
+            "version": "2.25.00-rc7",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsclient.git",
-                "reference": "1e7dec28972295164e989b19a63da959f26a4d7d"
+                "reference": "1a4893f5e94fe9947e84308945dc48d1e2e79384"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=1e7dec28972295164e989b19a63da959f26a4d7d",
-                "reference": "1e7dec28972295164e989b19a63da959f26a4d7d",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=1a4893f5e94fe9947e84308945dc48d1e2e79384",
+                "reference": "1a4893f5e94fe9947e84308945dc48d1e2e79384",
                 "shasum": ""
             },
             "require": {
@@ -231,7 +231,7 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "time": "2023-03-02T13:08:04+00:00"
+            "time": "2023-03-03T13:00:05+00:00"
         },
         {
             "name": "eappointment/zmsdb",
@@ -1881,12 +1881,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "3a45705887412bb03836d4cf363d4c60fa306e82"
+                "reference": "2f3a048ff643e4aff8308eaeea738c82dfac0a81"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/3a45705887412bb03836d4cf363d4c60fa306e82",
-                "reference": "3a45705887412bb03836d4cf363d4c60fa306e82",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/2f3a048ff643e4aff8308eaeea738c82dfac0a81",
+                "reference": "2f3a048ff643e4aff8308eaeea738c82dfac0a81",
                 "shasum": ""
             },
             "conflict": {
@@ -2141,7 +2141,7 @@
                 "modx/revolution": "<= 2.8.3-pl|<2.8",
                 "mojo42/jirafeau": "<4.4",
                 "monolog/monolog": ">=1.8,<1.12",
-                "moodle/moodle": "<4.0.5",
+                "moodle/moodle": "<4.0.6|>=4.1-beta,<4.1.1",
                 "mustache/mustache": ">=2,<2.14.1",
                 "namshi/jose": "<2.2",
                 "neoan3-apps/template": "<1.1.1",
@@ -2458,7 +2458,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-03-01T23:04:23+00:00"
+            "time": "2023-03-02T19:04:12+00:00"
         },
         {
             "name": "seld/cli-prompt",
