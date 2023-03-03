@@ -51,7 +51,6 @@ class AvailabilityAdd extends BaseController
             $this->writeCalculatedSlots($updatedEntity);
             $collection->addEntity($updatedEntity);
         }
-        DbConnection::writeCommit();
 
         $message = Response\Message::create($request);
         $message->data = $collection->getArrayCopy();

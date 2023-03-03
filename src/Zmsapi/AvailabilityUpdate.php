@@ -49,8 +49,6 @@ class AvailabilityUpdate extends BaseController
         $this->writeSpontaneousEntity($availability);
         $updatedEntity = (new AvailabilityRepository())->updateEntity($args['id'], $entity, $resolveReferences);
         $this->writeCalculatedSlots($updatedEntity);
-        DbConnection::writeCommit();
-
 
         $message = Response\Message::create($request);
         $message->data = $updatedEntity;
