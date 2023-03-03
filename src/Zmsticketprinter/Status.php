@@ -24,7 +24,6 @@ class Status extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        
         $status['homeurl'] = Home::getHomeUrl($request);
         $status['hash'] = Helper::getHashFromRequest($request);
         if ($status['hash']) {
@@ -38,7 +37,8 @@ class Status extends BaseController
             'page/status.twig',
             array(
                 'title' => 'Status des Ticketprinter',
-                'status' => $status
+                'status' => $status,
+                'cookies' => $request->getCookieParams()
             )
         );
     }

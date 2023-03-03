@@ -9,17 +9,15 @@
 
 <div class="textile">
     <div class="table-responsive">
-        <h2>Homeurl</h2>
-        <p>{{ status.homeurl }}</p>
-    </div>
-</div>
-<div class="textile">
-    <div class="table-responsive">
         <h2>Ticketprinter Settings</h2>
         <table>
             <tr>
                 <td>Aktiviert: </th>
                 <td>{{ status.ticketprinter.enabled ? 1 : 0 }}</td>
+            </tr>
+            <tr>
+                <td>Homeurl: </th>
+                <td>{{ status.homeurl }}</td>
             </tr>
             <tr>
                 <td>Hash: </th>
@@ -41,6 +39,15 @@
                 <td>Zuletzt geändert: </th>
                 <td>{{ status.ticketprinter.lastUpdate|format_date(pattern="EE dd. MMMM Y, HH:mm") }} Uhr</td>
             </tr>
+        <table>
+        <h2>Request Cookies</h2>
+        <table>
+            {% for name, value in cookies %}
+                <tr>
+                    <td>{{ name }}: </th>
+                    <td>{{ value }}</td>
+                </tr>
+            {% endfor %}
         </table>
     </div>
 </div>
