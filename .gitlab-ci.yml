@@ -15,6 +15,7 @@ test-php-73:
         - vendor/bin/importTestData --commit
     variables:
       PHP_VERSION: "7.3"
+      MYSQL_PORT: "tcp://mysql:3306"
       MYSQL_DATABASE: zmsbo
       MYSQL_ROOT_PASSWORD: zmsapi
     only:
