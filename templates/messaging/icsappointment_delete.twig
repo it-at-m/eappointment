@@ -30,7 +30,7 @@ ORGANIZER;CN="{{ process.scope.provider.name }}":MAILTO:{{ process.scope.prefere
 SEQUENCE:0
 LOCATION:{{ process.scope.provider.name }} {{ process.scope.provider.contact.street }} {{ process.scope.provider.contact.streetNumber }}\, {{ process.scope.provider.contact.postalCode }} {{ process.scope.provider.contact.city }}
 GEO:48.85299;2.36885
-SUMMARY:{% trans "Terminabsage:" %} {{ process.id }}
+SUMMARY:{{ "Terminabsage:"|trans }} {{ process.id }}
 DESCRIPTION:{{ message }}
 CLASS:PUBLIC
 DTSTART;TZID=Europe/Berlin:{{ startTime|date("Ymd") }}T{{ startTime|date("His") }}
