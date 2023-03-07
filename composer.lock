@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "532ca067888d51da46c9b349893f4343",
+    "content-hash": "19bdf2f8719948ca310118e1b6b8ee76",
     "packages": [
         {
             "name": "aura/sql",
@@ -178,22 +178,22 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "2.25.00-rc7",
+            "version": "2.25.00",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsclient.git",
-                "reference": "1a4893f5e94fe9947e84308945dc48d1e2e79384"
+                "reference": "0389f5ff5f45d938efc5cde742b2df0059033cc1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=1a4893f5e94fe9947e84308945dc48d1e2e79384",
-                "reference": "1a4893f5e94fe9947e84308945dc48d1e2e79384",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=0389f5ff5f45d938efc5cde742b2df0059033cc1",
+                "reference": "0389f5ff5f45d938efc5cde742b2df0059033cc1",
                 "shasum": ""
             },
             "require": {
                 "eappointment/mellon": "^2.0.1",
-                "eappointment/zmsentities": "dev-berlin-rc-2.25.00 || 2.25.*",
-                "eappointment/zmsslim": "dev-berlin-rc-2.25.00 || 2.25.*",
+                "eappointment/zmsentities": "dev-main || 2.25.*",
+                "eappointment/zmsslim": "dev-main || 2.25.*",
                 "ext-curl": ">=0",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -231,27 +231,27 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "time": "2023-03-03T13:00:05+00:00"
+            "time": "2023-03-07T09:20:09+00:00"
         },
         {
             "name": "eappointment/zmsdb",
-            "version": "2.25.00-rc2",
+            "version": "2.25.00",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsdb.git",
-                "reference": "8fd0087f51a0697977596238ec0ece7ec2947e32"
+                "reference": "388cadb45e62c8cc668da57d2fd3b39bf32a27f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=8fd0087f51a0697977596238ec0ece7ec2947e32",
-                "reference": "8fd0087f51a0697977596238ec0ece7ec2947e32",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=388cadb45e62c8cc668da57d2fd3b39bf32a27f7",
+                "reference": "388cadb45e62c8cc668da57d2fd3b39bf32a27f7",
                 "shasum": ""
             },
             "require": {
                 "aura/sql": "^4",
                 "eappointment/mellon": "^2.6.0",
-                "eappointment/zmsdldb": "dev-berlin-rc-2.25.00 || 2.25.*",
-                "eappointment/zmsentities": "dev-berlin-rc-2.25.00 || 2.25.*",
+                "eappointment/zmsdldb": "dev-main || 2.25.*",
+                "eappointment/zmsentities": "dev-main || 2.25.*",
                 "ext-intl": "*",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -308,20 +308,20 @@
                 }
             ],
             "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
-            "time": "2023-03-01T09:00:54+00:00"
+            "time": "2023-03-07T09:43:55+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "2.25.00-rc1",
+            "version": "2.25.00",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsdldb.git",
-                "reference": "8698c76f197a97d5015ec0fd58f1ad39b279fbf9"
+                "reference": "0696112714ca887bbe625900d2e98a35e44256a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdldb/repository/archive.zip?sha=8698c76f197a97d5015ec0fd58f1ad39b279fbf9",
-                "reference": "8698c76f197a97d5015ec0fd58f1ad39b279fbf9",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdldb/repository/archive.zip?sha=0696112714ca887bbe625900d2e98a35e44256a2",
+                "reference": "0696112714ca887bbe625900d2e98a35e44256a2",
                 "shasum": ""
             },
             "require": {
@@ -361,20 +361,20 @@
                 }
             ],
             "description": "Client for DLDB",
-            "time": "2023-02-09T14:57:01+00:00"
+            "time": "2023-03-07T09:39:55+00:00"
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "2.25.00-rc1",
+            "version": "2.25.00",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsentities.git",
-                "reference": "bad1194f7715b9075dfd7a6c5a5cb5036575fbf7"
+                "reference": "e5bb58933834b4d7c28d44711790d48b95cf496c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=bad1194f7715b9075dfd7a6c5a5cb5036575fbf7",
-                "reference": "bad1194f7715b9075dfd7a6c5a5cb5036575fbf7",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=e5bb58933834b4d7c28d44711790d48b95cf496c",
+                "reference": "e5bb58933834b4d7c28d44711790d48b95cf496c",
                 "shasum": ""
             },
             "require": {
@@ -419,20 +419,20 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2023-02-20T08:45:43+00:00"
+            "time": "2023-03-07T09:07:05+00:00"
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "2.25.00-rc2",
+            "version": "2.25.00",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsslim.git",
-                "reference": "051d328feaa7c07d07583d1b19aa8d7869e74798"
+                "reference": "201035bfccbfdbf959fe84e628bd28bb542cefc0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=051d328feaa7c07d07583d1b19aa8d7869e74798",
-                "reference": "051d328feaa7c07d07583d1b19aa8d7869e74798",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=201035bfccbfdbf959fe84e628bd28bb542cefc0",
+                "reference": "201035bfccbfdbf959fe84e628bd28bb542cefc0",
                 "shasum": ""
             },
             "require": {
@@ -477,7 +477,7 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-            "time": "2023-02-20T13:56:42+00:00"
+            "time": "2023-03-07T09:16:01+00:00"
         },
         {
             "name": "fig/http-message-util",
@@ -537,16 +537,16 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "8.13.6",
+            "version": "8.13.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "5631645d2ca28e4f62daea7baddcba8c90f4bcbf"
+                "reference": "281b12d9091fcd04e9379a67f723179c44b13ec8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/5631645d2ca28e4f62daea7baddcba8c90f4bcbf",
-                "reference": "5631645d2ca28e4f62daea7baddcba8c90f4bcbf",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/281b12d9091fcd04e9379a67f723179c44b13ec8",
+                "reference": "281b12d9091fcd04e9379a67f723179c44b13ec8",
                 "shasum": ""
             },
             "require": {
@@ -605,7 +605,7 @@
                 "issues": "https://github.com/giggsey/libphonenumber-for-php/issues",
                 "source": "https://github.com/giggsey/libphonenumber-for-php"
             },
-            "time": "2023-02-10T10:33:16+00:00"
+            "time": "2023-03-03T14:16:43+00:00"
         },
         {
             "name": "giggsey/locale",
@@ -1881,12 +1881,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "2f3a048ff643e4aff8308eaeea738c82dfac0a81"
+                "reference": "d80ca3aac1b3d4007637306c2effa9af5998d3bd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/2f3a048ff643e4aff8308eaeea738c82dfac0a81",
-                "reference": "2f3a048ff643e4aff8308eaeea738c82dfac0a81",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/d80ca3aac1b3d4007637306c2effa9af5998d3bd",
+                "reference": "d80ca3aac1b3d4007637306c2effa9af5998d3bd",
                 "shasum": ""
             },
             "conflict": {
@@ -1944,7 +1944,7 @@
                 "catfan/medoo": "<1.7.5",
                 "centreon/centreon": "<22.10-beta.1",
                 "cesnet/simplesamlphp-module-proxystatistics": "<3.1",
-                "cockpit-hq/cockpit": "<2.3.9",
+                "cockpit-hq/cockpit": "<=2.3.9",
                 "codeception/codeception": "<3.1.3|>=4,<4.1.22",
                 "codeigniter/framework": "<=3.0.6",
                 "codeigniter4/framework": "<4.2.11",
@@ -1959,7 +1959,7 @@
                 "contao/core-bundle": "<4.9.18|>=4.10,<4.11.7|>=4.13,<4.13.3|= 4.10.0",
                 "contao/listing-bundle": ">=4,<4.4.8",
                 "contao/managed-edition": "<=1.5",
-                "craftcms/cms": "<3.7.55.2|>= 4.0.0-RC1, < 4.2.1",
+                "craftcms/cms": "<4.3.7|>= 4.0.0-RC1, < 4.2.1",
                 "croogo/croogo": "<3.0.7",
                 "cuyz/valinor": "<0.12",
                 "czproject/git-php": "<4.0.3",
@@ -2194,7 +2194,7 @@
                 "phpmyfaq/phpmyfaq": "<=3.1.7",
                 "phpoffice/phpexcel": "<1.8",
                 "phpoffice/phpspreadsheet": "<1.16",
-                "phpseclib/phpseclib": "<2.0.31|>=3,<3.0.7",
+                "phpseclib/phpseclib": "<2.0.31|>=3,<3.0.19",
                 "phpservermon/phpservermon": "<=3.5.2",
                 "phpunit/phpunit": ">=4.8.19,<4.8.28|>=5,<5.6.3",
                 "phpwhois/phpwhois": "<=4.2.5",
@@ -2458,7 +2458,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-03-02T19:04:12+00:00"
+            "time": "2023-03-06T22:04:39+00:00"
         },
         {
             "name": "seld/cli-prompt",
@@ -4342,22 +4342,22 @@
         },
         {
             "name": "helmich/phpunit-json-assert",
-            "version": "v3.4.2",
+            "version": "v3.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/martin-helmich/phpunit-json-assert.git",
-                "reference": "e2ff61f042c6c86566db297f7da13538bfb80140"
+                "reference": "73d72cc86f427ff247c8f356798b0568a185cf53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/martin-helmich/phpunit-json-assert/zipball/e2ff61f042c6c86566db297f7da13538bfb80140",
-                "reference": "e2ff61f042c6c86566db297f7da13538bfb80140",
+                "url": "https://api.github.com/repos/martin-helmich/phpunit-json-assert/zipball/73d72cc86f427ff247c8f356798b0568a185cf53",
+                "reference": "73d72cc86f427ff247c8f356798b0568a185cf53",
                 "shasum": ""
             },
             "require": {
                 "justinrainbow/json-schema": "^5.0",
                 "php": "^7.2 || ^8.0",
-                "softcreatr/jsonpath": "^0.7.2"
+                "softcreatr/jsonpath": "^0.7.2 || ^0.8"
             },
             "conflict": {
                 "phpunit/phpunit": "<8.0 || >= 10.0"
@@ -4384,7 +4384,7 @@
             "description": "PHPUnit assertions for JSON documents",
             "support": {
                 "issues": "https://github.com/martin-helmich/phpunit-json-assert/issues",
-                "source": "https://github.com/martin-helmich/phpunit-json-assert/tree/v3.4.2"
+                "source": "https://github.com/martin-helmich/phpunit-json-assert/tree/v3.4.3"
             },
             "funding": [
                 {
@@ -4396,7 +4396,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-03-29T06:47:09+00:00"
+            "time": "2023-02-01T09:41:56+00:00"
         },
         {
             "name": "helmich/phpunit-psr7-assert",
@@ -4657,16 +4657,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.15.3",
+            "version": "v4.15.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "570e980a201d8ed0236b0a62ddf2c9cbb2034039"
+                "reference": "6bb5176bc4af8bcb7d926f88718db9b96a2d4290"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/570e980a201d8ed0236b0a62ddf2c9cbb2034039",
-                "reference": "570e980a201d8ed0236b0a62ddf2c9cbb2034039",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/6bb5176bc4af8bcb7d926f88718db9b96a2d4290",
+                "reference": "6bb5176bc4af8bcb7d926f88718db9b96a2d4290",
                 "shasum": ""
             },
             "require": {
@@ -4707,9 +4707,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v4.15.3"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.15.4"
             },
-            "time": "2023-01-16T22:05:37+00:00"
+            "time": "2023-03-05T19:49:14+00:00"
         },
         {
             "name": "pdepend/pdepend",
@@ -4964,16 +4964,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "9.2.25",
+            "version": "9.2.26",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "0e2b40518197a8c0d4b08bc34dfff1c99c508954"
+                "reference": "443bc6912c9bd5b409254a40f4b0f4ced7c80ea1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/0e2b40518197a8c0d4b08bc34dfff1c99c508954",
-                "reference": "0e2b40518197a8c0d4b08bc34dfff1c99c508954",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/443bc6912c9bd5b409254a40f4b0f4ced7c80ea1",
+                "reference": "443bc6912c9bd5b409254a40f4b0f4ced7c80ea1",
                 "shasum": ""
             },
             "require": {
@@ -4995,8 +4995,8 @@
                 "phpunit/phpunit": "^9.3"
             },
             "suggest": {
-                "ext-pcov": "*",
-                "ext-xdebug": "*"
+                "ext-pcov": "PHP extension that provides line coverage",
+                "ext-xdebug": "PHP extension that provides line coverage as well as branch and path coverage"
             },
             "type": "library",
             "extra": {
@@ -5029,7 +5029,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.25"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.26"
             },
             "funding": [
                 {
@@ -5037,7 +5037,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-02-25T05:32:00+00:00"
+            "time": "2023-03-06T12:58:08+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
