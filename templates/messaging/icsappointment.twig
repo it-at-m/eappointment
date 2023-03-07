@@ -29,7 +29,7 @@ UID:{{ startTime|date("Ymd") }}-{{ process.id }}
 ORGANIZER;CN="{{ process.scope.provider.name }}":MAILTO:{{ process.scope.preferences.client.emailFrom }}
 SEQUENCE:0
 LOCATION:{{ process.scope.provider.name }} {{ process.scope.provider.contact.street }} {{ process.scope.provider.contact.streetNumber }}\, {{ process.scope.provider.contact.postalCode }} {{ process.scope.provider.contact.city }}
-SUMMARY:{% trans "Berlin-Termin:" %} {{ process.id }}
+SUMMARY:{{ "Berlin-Termin:"|trans }} {{ process.id }}
 DESCRIPTION:{{ message }}
 CLASS:PUBLIC
 DTSTART;TZID=Europe/Berlin:{{ startTime|date("Ymd") }}T{{ startTime|date("His") }}
@@ -37,7 +37,7 @@ DTEND;TZID=Europe/Berlin:{{ endTime|date("Ymd") }}T{{ endTime|date("His") }}
 DTSTAMP:{{ timestamp|date("Ymd") }}T{{ timestamp|date("His") }}
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:{% trans "Berlin-Termin:" %} {{ process.id }}
+DESCRIPTION:{{ "Berlin-Termin:"|trans }} {{ process.id }}
 TRIGGER:-P1D
 END:VALARM
 STATUS:CONFIRMED
