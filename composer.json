@@ -29,9 +29,9 @@
   "require": {
     "php": ">=7.3.0",
     "eappointment/mellon": "^2.6.0",
-    "eappointment/zmsclient": "dev-berlin-rc-2.25.00 || 2.25.*",
-    "eappointment/zmsentities": "dev-berlin-rc-2.25.00 || 2.25.*",
-    "eappointment/zmsslim": "dev-berlin-rc-2.25.00 || 2.25.*",
+    "eappointment/zmsclient": "dev-main || 2.25.*",
+    "eappointment/zmsentities": "dev-main || 2.25.*",
+    "eappointment/zmsslim": "dev-main || 2.25.*",
     "monolog/monolog": "1.*",
     "roave/security-advisories": "dev-master",
     "twig/twig": "3.*",
