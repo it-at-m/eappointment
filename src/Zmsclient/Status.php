@@ -1,7 +1,7 @@
 <?php
 namespace BO\Zmsclient;
 
-use Slim\Http\StatusCode;
+use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -76,7 +76,7 @@ class Status
 
         if (strpos($result, 'CRIT') !== false || strpos($result, 'FATAL') !== false) {
             $response = $response->withStatus(
-                StatusCode::HTTP_INTERNAL_SERVER_ERROR,
+                StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR,
                 'The Server is in a bad condition.'
             );
         }

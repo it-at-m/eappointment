@@ -2,48 +2,66 @@
 
 namespace BO\Zmsclient\Psr7;
 
-use Jgut\Spiral\Client as Transport;
-use Jgut\Spiral\Transport\Curl as Curl;
+use BO\Zmsclient\Exception\ClientCreationException;
+use BO\Zmsclient\Psr17\ResponseFactory;
+use Exception;
+use Slim\Psr7\Factory\StreamFactory;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\OptionsResolver\Exception\InvalidArgumentException;
 
-class Client implements ClientInterface
+class Client
 {
 
     /**
-     * @var Array $curlopt List of curl options like [CURLOPT_TIMEOUT => 10]
+     * @var array $curlopt List of curl options like [CURLOPT_TIMEOUT => 10]
+     *      defined with each component's bootstrap.php
      */
     public static $curlopt = [];
 
-    protected static $curlClient = null;
-
     /**
-     * @param \Psr\Http\Message\RequestInterface $request
-     * @param Array $curlopts Additional or special curl options
+     * @param RequestInterface $request
+     * @param array $curlOptions Additional or special curl options
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
+     * @throws RequestException|ClientCreationException|ClientExceptionInterface
      */
-    public static function readResponse(\Psr\Http\Message\RequestInterface $request, array $curlopts = array())
+    public static function readResponse(RequestInterface $request, array $curlOptions = array()): ResponseInterface
     {
-        $transport = static::getClient($curlopts);
+        $client = static::getCurlClient($curlOptions);
+
         try {
-            return $transport->request($request, new Response());
-        } catch (\Exception $exception) {
-            throw new RequestException($exception->getMessage(), $request);
+            return $client->sendRequest($request);
+        } catch (Exception $exception) {
+            throw new RequestException($exception->getMessage(), $request, $exception);
         }
     }
 
-    public static function getClient($curlopts)
+    /**
+     * @param $curlOptions
+     * @return \Http\Client\Curl\Client
+     * @throws ClientCreationException
+     */
+    public static function getCurlClient($curlOptions): ClientInterface
     {
-        $curlopts = $curlopts + static::$curlopt;
-        if (!isset($curlopts[CURLOPT_USERAGENT])) {
-            $curlopts[CURLOPT_USERAGENT] =
+        $curlOptions = $curlOptions + static::$curlopt;
+        if (!isset($curlOptions[CURLOPT_USERAGENT])) {
+            $curlOptions[CURLOPT_USERAGENT] =
                 'Client' . (defined("\App::IDENTIFIER") ? constant("\App::IDENTIFIER") : 'ZMS');
         }
-        if (null === static::$curlClient) {
-            $curl = Curl::createFromDefaults();
-            $curl->setOptions($curlopts);
-            $transport = new Transport($curl);
-            static::$curlClient = $transport;
+
+        try {
+            $client = new \Http\Client\Curl\Client(
+                new ResponseFactory(),
+                new StreamFactory(),
+                $curlOptions
+            );
+        } catch (InvalidArgumentException $exception) {
+            throw new ClientCreationException($exception->getMessage(), 0, $exception);
         }
-        return static::$curlClient;
+
+        return $client;
     }
 }

@@ -2,11 +2,13 @@
 
 namespace BO\Zmsclient\Tests;
 
+use BO\Zmsclient\Http;
 use BO\Zmsclient\Psr7\Client;
 use BO\Zmsclient\Psr7\Request;
 use BO\Zmsclient\Psr7\Uri;
 use BO\Slim\Middleware\Validator;
 use \BO\Zmsclient\GraphQL\GraphQLInterpreter;
+use Slim\Psr7\Factory\StreamFactory;
 
 class GraphQLTest extends Base
 {
@@ -15,7 +17,7 @@ class GraphQLTest extends Base
     public function testBasic()
     {
         $uri = new Uri(self::$http_baseurl . '/process/82252/12a2/?gql={id,amendment}');
-        $request = new Request('GET', $uri);
+        $request = Http::createRequest('GET', $uri);
         $request = Validator::withValidator($request);
        
         $validator = $request->getAttribute('validator');
@@ -27,9 +29,9 @@ class GraphQLTest extends Base
         $responseData = json_decode((string)$response->getBody(), true);
         $responseData['data'] = $graphqlInterpreter->setJson(json_encode($responseData['data']));
 
-        $body = new \Slim\Http\Body(fopen('php://temp', 'r+'));
+        $body = (new StreamFactory())->createStream();
         $body->write(json_encode($responseData));
-        $response = new \Slim\Http\Response(200, null, $body);
+        $response = new \BO\Slim\Response(200, null, $body);
 
         $this->assertStringContainsString('"id":"82252","amendment":""', (string)$response->getBody());
         $this->assertStringNotContainsString('scope', (string)$response->getBody());
@@ -39,7 +41,7 @@ class GraphQLTest extends Base
     public function testCollection()
     {
         $uri = new Uri(self::$http_baseurl . '/scope/?gql={id}');
-        $request = new Request('GET', $uri);
+        $request = Http::createRequest('GET', $uri);
         $request = Validator::withValidator($request);
        
         $validator = $request->getAttribute('validator');
@@ -51,9 +53,9 @@ class GraphQLTest extends Base
         $responseData = json_decode((string)$response->getBody(), true);
         $responseData['data'] = $graphqlInterpreter->setJson(json_encode($responseData['data']));
 
-        $body = new \Slim\Http\Body(fopen('php://temp', 'r+'));
+        $body = (new StreamFactory())->createStream();
         $body->write(json_encode($responseData));
-        $response = new \Slim\Http\Response(200, null, $body);
+        $response = new \BO\Slim\Response(200, null, $body);
 
         $this->assertStringContainsString('"id":"123"', (string)$response->getBody());
         $this->assertStringNotContainsString('contact', (string)$response->getBody());
@@ -66,7 +68,7 @@ class GraphQLTest extends Base
     public function testSubNode()
     {
         $uri = new Uri(self::$http_baseurl . '/process/82252/12a2/?gql={scope{id}}');
-        $request = new Request('GET', $uri);
+        $request = Http::createRequest('GET', $uri);
         $request = Validator::withValidator($request);
        
         $validator = $request->getAttribute('validator');
@@ -78,9 +80,9 @@ class GraphQLTest extends Base
         $responseData = json_decode((string)$response->getBody(), true);
         $responseData['data'] = $graphqlInterpreter->setJson(json_encode($responseData['data']));
 
-        $body = new \Slim\Http\Body(fopen('php://temp', 'r+'));
+        $body = (new StreamFactory())->createStream();
         $body->write(json_encode($responseData));
-        $response = new \Slim\Http\Response(200, null, $body);
+        $response = new \BO\Slim\Response(200, null, $body);
 
         $this->assertStringNotContainsString('amendment', (string)$response->getBody());
         $this->assertStringContainsString('"scope":{"id":"141"}', (string)$response->getBody());
@@ -91,7 +93,7 @@ class GraphQLTest extends Base
         $this->expectException('\BO\Zmsclient\GraphQL\GraphQLException');
         $this->expectExceptionMessage('No valid graphql');
         $uri = new Uri(self::$http_baseurl . '/process/82252/12a2/?gql={');
-        $request = new Request('GET', $uri);
+        $request = Http::createRequest('GET', $uri);
         $request = Validator::withValidator($request);
        
         $validator = $request->getAttribute('validator');
@@ -108,7 +110,7 @@ class GraphQLTest extends Base
         $this->expectException('\BO\Zmsclient\GraphQL\GraphQLException');
         $this->expectExceptionMessage('No content for graph');
         $uri = new Uri(self::$http_baseurl . '/process/82252/12a2/?gql=');
-        $request = new Request('GET', $uri);
+        $request = Http::createRequest('GET', $uri);
         $request = Validator::withValidator($request);
        
         $validator = $request->getAttribute('validator');
@@ -125,7 +127,7 @@ class GraphQLTest extends Base
         $this->expectException('\BO\Zmsclient\GraphQL\GraphQLException');
         $this->expectExceptionMessage('Curly bracket match problem, too many closing brackets');
         $uri = new Uri(self::$http_baseurl . '/process/82252/12a2/?gql={scope{id}}}');
-        $request = new Request('GET', $uri);
+        $request = Http::createRequest('GET', $uri);
         $request = Validator::withValidator($request);
        
         $validator = $request->getAttribute('validator');
