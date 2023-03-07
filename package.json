@@ -60,7 +60,7 @@
   },
   "dependencies": {
     "bo-layout-admin-js": "https://gitlab.com/eappointment/includes/layout-admin-js.git#2.24.11",
-    "bo-layout-admin-scss": "https://gitlab.com/eappointment/includes/layout-admin-scss.git#1e1be6ae",
+    "bo-layout-admin-scss": "gitlab:eappointment/includes/layout-admin-scss#da9e3982d5e005ee4ec32d941dd5f601208d0d67",
     "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities.git#2.24.11"
   }
 }
