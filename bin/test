@@ -26,9 +26,16 @@ else
     PHPFILES="src/"
     echo "Checking $PHPFILES"
 fi
-$ROOT/vendor/bin/phpcs --standard=psr2 $PHPFILES || exit 1
-$ROOT/vendor/bin/phpmd $ROOT/src text phpmd.rules.xml || exit 1
 
 docker-compose up -d
-$ROOT/vendor/bin/phpunit -v
+
+docker exec zmsclient_test_1 vendor/bin/phpcs --standard=psr2 $PHPFILES
+if [ $? -eq 0 ]; then
+  echo $PHPFILES;
+    docker exec zmsclient_test_1 vendor/bin/phpmd src/ text phpmd.rules.xml
+fi
+if [ $? -eq 0 ]; then
+    docker exec zmsclient_test_1 vendor/bin/phpunit -v
+fi
+
 docker-compose down

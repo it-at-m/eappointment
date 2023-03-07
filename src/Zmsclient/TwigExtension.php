@@ -7,6 +7,7 @@
 namespace BO\Zmsclient;
 
 use \BO\Mellon\Validator;
+use Psr\Container\ContainerInterface;
 
 /**
   * Extension for Twig and Slim
@@ -14,10 +15,10 @@ use \BO\Mellon\Validator;
   *  @SuppressWarnings(PublicMethod)
   *  @SuppressWarnings(TooManyMethods)
   */
-class TwigExtension extends \Twig_Extension
+class TwigExtension extends \Twig\Extension\AbstractExtension
 {
     /**
-     * @var \Slim\Http\Container
+     * @var ContainerInterface
      */
     private $container;
 
@@ -35,31 +36,22 @@ class TwigExtension extends \Twig_Extension
     {
         $safe = array('is_safe' => array('html'));
         return array(
-            new \Twig_SimpleFunction('dumpHttpLog', array($this, 'dumpHttpLog'), $safe),
+            new \Twig\TwigFunction('dumpHttpLog', array($this, 'dumpHttpLog'), $safe),
         );
     }
 
     public function dumpHttpLog()
     {
-        \D::config([
-            "display.show_call_info" => false,
-            "display.show_version" => false,
-            "sorting.arrays" => false,
-            "display.cascade" => [5,10,10],
-        ]);
         $output = '<h2>HTTP API-Log</h2>'
             .' <p>For debugging: This log contains HTTP calls. <strong>DISABLE FOR PRODUCTION!</strong></p>';
         foreach (Http::$log as $entry) {
             if ($entry instanceof \Psr\Http\Message\RequestInterface) {
-                $settings = new \D\DumpSettings(\D::OB, "Request " . $entry->getMethod() . " " . $entry->getUri());
                 $entry = $this->formatRequest($entry);
             } elseif ($entry instanceof \Psr\Http\Message\ResponseInterface) {
-                $settings = new \D\DumpSettings(\D::OB, "Response");
                 $entry = $this->formatResponse($entry);
-            } else {
-                $settings = new \D\DumpSettings(\D::OB);
             }
-            $output .= \D::UMP($entry, $settings);
+
+            $output .= \Tracy\Debugger::dump($entry, true);
         }
         return $output;
     }
