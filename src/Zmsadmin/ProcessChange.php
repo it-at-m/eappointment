@@ -43,7 +43,6 @@ class ProcessChange extends BaseController
         }
         
         $process = static::writeChangedProcess($input, $oldProcess, $newProcess);
-        error_log("____ProcessChange_____". $process->getStatus());
         $queryParams = ('confirmed' == $process->getStatus()) ?
             ['selectedprocess' => $process, 'success' => 'process_changed'] :
             [];
@@ -156,7 +155,6 @@ class ProcessChange extends BaseController
 
     protected static function writeConfirmedMailAndNotification($input, $newProcess)
     {
-        error_log("____writeConfirmedMailAndNotification_____". $newProcess->getStatus());
         if ('confirmed' == $newProcess->getStatus()) {
             Helper\AppointmentFormHelper::updateMailAndNotification($input, $newProcess);
         }
