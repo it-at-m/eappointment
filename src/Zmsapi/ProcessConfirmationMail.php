@@ -29,7 +29,6 @@ class ProcessConfirmationMail extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
-error_log("____ProcessConfirmationMail_____");
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new Process($input);
         $process->testValid();

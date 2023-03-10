@@ -29,15 +29,11 @@ class ProcessPreconfirmationMail extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
-error_log("____ProcessPreconfirmationMail_____");
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new Process($input);
-        error_log("____ProcessPreconfirmationMail11111_____");
         $process->testValid();
-        error_log("____ProcessPreconfirmationMail2222222_____");
         $this->testProcessData($process);
         $process = (new ProcessRepository())->readEntity($process->id, $process->authKey);
-        error_log("____555555ProcessPreconfirmationMail_____");
         $mail = $this->writeMail($process);
         $message = Response\Message::create($request);
         $message->data = ($mail->hasId()) ? $mail : null;
@@ -52,7 +48,6 @@ error_log("____ProcessPreconfirmationMail_____");
         $config = (new Config)->readEntity();
         $department = (new Department())->readByScopeId($process->scope['id']);
         $status = ($process->isWithAppointment()) ? 'preconfirmed' : 'queued';
-error_log("____writeMail1111_____". $status);
         $collection = static::getProcessListOverview($process, $config);
 
         $mail = (new \BO\Zmsentities\Mail)

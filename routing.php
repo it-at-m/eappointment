@@ -3072,6 +3072,47 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("ProcessReserve");
 
+    /**
+ *  @swagger
+ *  "/process/status/preconfirmed/":
+ *      post:
+ *          summary: Try to preconfirmed a process, changes status from reservered to preconfirmed
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: process
+ *                  description: process data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *          responses:
+ *              200:
+ *                  description: process is preconfirmed, notifications and mails sent according to preferences
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "authkey does not match"
+ *              404:
+ *                  x-since: 2.12
+ *                  description: "given process is not reserved anymore"
+ */
+\App::$slim->post(
+    '/process/status/preconfirmed/',
+    '\BO\Zmsapi\ProcessPreconfirm'
+)
+    ->setName("ProcessPreconfirm");
+
+
 /**
  *  @swagger
  *  "/process/status/confirmed/":

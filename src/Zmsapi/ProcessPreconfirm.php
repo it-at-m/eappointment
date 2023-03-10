@@ -13,7 +13,7 @@ use \BO\Zmsdb\Process;
 /**
  * @SuppressWarnings(CouplingBetweenObjects)
  */
-class ProcessConfirm extends BaseController
+class ProcessPreconfirm extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -39,7 +39,7 @@ class ProcessConfirm extends BaseController
         
         $process = (new Process())->updateProcessStatus(
             $process,
-            'confirmed',
+            'preconfirmed',
             \App::$now,
             $resolveReferences,
             $userAccount
