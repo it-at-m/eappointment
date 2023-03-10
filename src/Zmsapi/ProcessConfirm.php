@@ -25,7 +25,6 @@ class ProcessConfirm extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
-        //error_log("_____ProcessConfirm______");
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(3)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
@@ -40,7 +39,7 @@ class ProcessConfirm extends BaseController
         
         $process = (new Process())->updateProcessStatus(
             $process,
-            'preconfirmed',
+            'confirmed',
             \App::$now,
             $resolveReferences,
             $userAccount
@@ -50,7 +49,6 @@ class ProcessConfirm extends BaseController
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
-        //error_log("____END_ProcessConfirm_EDN_____". $process->status);
         return $response;
     }
 
