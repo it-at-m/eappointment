@@ -27,6 +27,7 @@ class Process extends Base implements MappingInterface
             process.IPTimeStamp = 0,
             process.NutzerID = 0,
             process.vorlaeufigeBuchung = 1,
+            process.bestaetigt = 1,
             process.absagecode = 'deref!0',
             process.EMail = '',
             process.NutzerID = 0
@@ -444,7 +445,6 @@ class Process extends Base implements MappingInterface
 
     public function addConditionStatus($status, $scopeId = 0)
     {
-        error_log("____addConditionStatus______". $status);
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($status, $scopeId) {
             if ('deleted' == $status) {
                 $query
@@ -505,6 +505,16 @@ class Process extends Base implements MappingInterface
                     ->andWith('process.Abholer', '=', 0)
                     ->andWith('process.StandortID', '!=', 0)
                     ->andWith('process.Uhrzeit', '!=', '00:00:00')
+                    ->andWith('process.bestaetigt', '=', 1)
+                    ->andWith('process.IPTimeStamp', '!=', 0);
+            }
+            if ('preconfirmed' == $status) {
+                $query
+                    ->andWith('process.vorlaeufigeBuchung', '=', 0)
+                    ->andWith('process.Abholer', '=', 0)
+                    ->andWith('process.StandortID', '!=', 0)
+                    ->andWith('process.Uhrzeit', '!=', '00:00:00')
+                    ->andWith('process.bestaetigt', '=', 0)
                     ->andWith('process.IPTimeStamp', '!=', 0);
             }
         });
@@ -711,6 +721,14 @@ class Process extends Base implements MappingInterface
         if ($process->status == 'missed') {
             $data['nicht_erschienen'] = 1;
         }
+        if($process->status == 'confirmed'){
+            $data['bestaetigt'] = 1;
+        }
+        if($process->status == 'preconfirmed'){
+            $data['bestaetigt'] = 0;
+            $data['vorlaeufigeBuchung'] = 1;
+        }
+        
         $this->addValues($data);
     }
 

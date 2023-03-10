@@ -12,7 +12,6 @@ class ProcessStatus extends \BO\Zmsdb\Process
         $resolveReferences,
         $userAccount
     ) {
-        //error_log("____111writeUpdatedStatus____");
         $query = new \BO\Zmsdb\Query\Process(\BO\Zmsdb\Query\Base::UPDATE);
         $query->addConditionProcessId($process['id']);
         $query->addConditionAuthKey($process['authKey']);
@@ -25,10 +24,8 @@ class ProcessStatus extends \BO\Zmsdb\Process
 
         $entity = call_user_func_array(array($this, $statusList[$status]), array($process));
         $query->addValuesStatusData($entity, $dateTime);
-        
         $checksum = ($userAccount) ? sha1($process->id . '-' . $userAccount->getId()) : '';
         Log::writeLogEntry("UPDATE (ProcessStatus::writeUpdatedStatus) $process $checksum ", $process->id);
-
         $this->writeItem($query, 'process', $query::TABLE);
         $this->perform(\BO\Zmsdb\Query\Process::QUERY_UPDATE_FOLLOWING_PROCESS, [
             'reserved' => ($process->status == 'reserved') ? 1 : 0,
@@ -36,7 +33,6 @@ class ProcessStatus extends \BO\Zmsdb\Process
         ]);
         $process = $this->readEntity($process['id'], $process['authKey'], $resolveReferences);
         $process['status'] = $this->readProcessStatus($process['id'], $process['authKey']);
-        //error_log("____444writeUpdatedStatus____");
         return $process;
     }
 
@@ -71,7 +67,6 @@ class ProcessStatus extends \BO\Zmsdb\Process
             'blocked' => $this->isBlockedProcess($processData),
             'deleted' => $this->isDeletedProcess($processData),
         ];
-        //error_log("____statusList____" . json_encode($statusList));
         foreach ($statusList as $statusType => $statusCheck) {
             if ($statusCheck) {
                 $status = $statusType;
@@ -132,7 +127,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
     protected function isPreconfirmedProcess($process)
     {
         return ($process['Name'] != 'dereferenced'
-            && $process['vorlaeufigeBuchung'] == 0
+            && $process['vorlaeufigeBuchung'] == 1
             && $process['StandortID'] != 0
             && $process['bestaetigt'] == 0
             && empty($process['istFolgeterminvon'])
@@ -148,7 +143,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
     {
         return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 0
-            //&& $process['bestaetigt'] == 1
+            && $process['bestaetigt'] == 1
             && $process['StandortID'] != 0
             && empty($process['istFolgeterminvon'])
         );

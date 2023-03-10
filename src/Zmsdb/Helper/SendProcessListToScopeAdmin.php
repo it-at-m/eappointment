@@ -37,7 +37,6 @@ class SendProcessListToScopeAdmin
             if ($commit) {
                 $processList = (new \BO\Zmsdb\Process)
                     ->readProcessListByScopeAndTime($scope->getId(), $this->dateTime, 1);
-                    error_log("____startProcessing____");
                 $processList = $processList
                    ->toQueueList($this->dateTime)
                    ->withStatus(array('confirmed', 'queued', 'reserved'))
