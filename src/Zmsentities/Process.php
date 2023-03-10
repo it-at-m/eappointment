@@ -378,7 +378,6 @@ class Process extends Schema\Entity
 
     public function setStatusBySettings()
     {
-        error_log("____setStatusBySettings____");
         $scope = new Scope($this->scope);
         if ('called' == $this->status && $this->queue['callCount'] > $scope->getPreference('queue', 'callCountMax')) {
             $this->status = 'missed';
