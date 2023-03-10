@@ -48,7 +48,7 @@ class View extends BaseView {
 
     setWaitingClients(data) {
         var waitingClients = $(data).filter("div#waitingClients").text();
-        if (0 < waitingClients) {
+        if (0 <= waitingClients) {
             $("#wartende").html(waitingClients);
         }
     }
