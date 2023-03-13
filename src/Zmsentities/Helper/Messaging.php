@@ -71,7 +71,8 @@ class Messaging
             'deleted' => 'mail_delete.twig',
             'blocked' => 'mail_delete.twig',
             'survey' => 'mail_survey.twig',
-            'overview' => 'mail_processlist_overview.twig'
+            'overview' => 'mail_processlist_overview.twig',
+            'preconfirmed' => 'mail_preconfirmed.twig'
         ),
         'ics' => array(
             'appointment' => 'icsappointment.twig',

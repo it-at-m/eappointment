@@ -163,6 +163,11 @@ class Session extends Schema\Entity
         return ('confirmed' == $this->getStatus()) ? true : false;
     }
 
+    public function isPreconfirmed()
+    {
+        return ('preconfirmed' == $this->getStatus()) ? true : false;
+    }
+
     public function isFinished()
     {
         return ('finished' == $this->getStatus()) ? true : false;
