@@ -5,7 +5,7 @@
 {{ block("salutation_german") }}
 {% set confirmLink = config.appointments.urlAppointments ~ 'confirm/' ~ appointmentLink  %}
 vielen Dank für die Terminanfrage.<br /><br />
-Klicken Sie bitte auf den unteren stehenden Link, um den Termin am {{ plannedProcess.getFirstAppointment.date|localizeddate("short","none",NULL,NULL,"EEEE, dd. MMMM y") }}{% if not isQueued %} um {{ plannedProcess.getFirstAppointment.date|date("H:i") }} Uhr{% endif %} verbindlich zu reservieren.<br /><br />
+Klicken Sie bitte auf den unteren stehenden Link, um den Termin am {{ (date|default(getNow))|localizeddate("short","none",NULL,NULL,"EEEE, dd. MMMM y") }}{% if not isQueued %} um {{ (date|default(getNow))|date("H:i") }} Uhr{% endif %} verbindlich zu reservieren.<br /><br />
 <strong><a href="{{ confirmLink }}" target="_blank">Termin bestätigen</a></strong>  <br /><br />
 <h4>Bitte beachten Sie, dass Ihre Terminanfrage ohne eine Bestätigung nach Ablauf von einer Stunde gelöscht wird.</h4>
 Nach Aktivierung des Termins erhalten Sie eine Bestätigung mit der Terminnummer und weiteren Einzelheiten, die Sie für Ihre Vorsprache benötigen.<br /><br />
