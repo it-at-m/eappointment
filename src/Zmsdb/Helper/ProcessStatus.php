@@ -18,15 +18,14 @@ class ProcessStatus extends \BO\Zmsdb\Process
 
         $statusList = [
             'reserved' => 'setStatusReserved',
-            'confirmed' => 'setStatusConfirmed'
+            'confirmed' => 'setStatusConfirmed',
+            'preconfirmed' => 'setStatusPreconfirmed'
         ];
 
         $entity = call_user_func_array(array($this, $statusList[$status]), array($process));
         $query->addValuesStatusData($entity, $dateTime);
-        
         $checksum = ($userAccount) ? sha1($process->id . '-' . $userAccount->getId()) : '';
         Log::writeLogEntry("UPDATE (ProcessStatus::writeUpdatedStatus) $process $checksum ", $process->id);
-        
         $this->writeItem($query, 'process', $query::TABLE);
         $this->perform(\BO\Zmsdb\Query\Process::QUERY_UPDATE_FOLLOWING_PROCESS, [
             'reserved' => ($process->status == 'reserved') ? 1 : 0,
@@ -54,10 +53,12 @@ class ProcessStatus extends \BO\Zmsdb\Process
             LIMIT 1
             '
         );
+        
         $statusList = [
             'free' => true,
             'reserved' => $this->isReservedProcess($processData),
             'confirmed' => $this->isConfirmedProcess($processData),
+            'preconfirmed' => $this->isPreconfirmedProcess($processData),
             'queued' => $this->isQueuedProcess($processData),
             'called' => $this->isCalledProcess($processData),
             'processing' => $this->isProcessingProcess($processData),
@@ -72,6 +73,12 @@ class ProcessStatus extends \BO\Zmsdb\Process
             }
         }
         return $status;
+    }
+
+    protected function setStatusPreconfirmed($process)
+    {
+        $process['status'] = $process::STATUS_PRECONFIRMED;
+        return $process;
     }
 
     protected function setStatusConfirmed($process)
@@ -117,10 +124,26 @@ class ProcessStatus extends \BO\Zmsdb\Process
      *
      * @return Bool
      */
+    protected function isPreconfirmedProcess($process)
+    {
+        return ($process['Name'] != 'dereferenced'
+            && $process['vorlaeufigeBuchung'] == 1
+            && $process['StandortID'] != 0
+            && $process['bestaetigt'] == 0
+            && empty($process['istFolgeterminvon'])
+        );
+    }
+
+    /**
+     * check if it is a confirmed appointment
+     *
+     * @return Bool
+     */
     protected function isConfirmedProcess($process)
     {
         return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 0
+            && $process['bestaetigt'] == 1
             && $process['StandortID'] != 0
             && empty($process['istFolgeterminvon'])
         );
