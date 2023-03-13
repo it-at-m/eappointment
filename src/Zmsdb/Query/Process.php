@@ -27,6 +27,7 @@ class Process extends Base implements MappingInterface
             process.IPTimeStamp = 0,
             process.NutzerID = 0,
             process.vorlaeufigeBuchung = 1,
+            process.bestaetigt = 1,
             process.absagecode = 'deref!0',
             process.EMail = '',
             process.NutzerID = 0
@@ -150,7 +151,7 @@ class Process extends Base implements MappingInterface
                     THEN "deleted"
                 WHEN process.StandortID = 0 AND process.AbholortID = 0
                     THEN "blocked"
-                WHEN process.vorlaeufigeBuchung = 1
+                WHEN process.vorlaeufigeBuchung = 1 AND process.bestaetigt = 0 
                     THEN "reserved"
                 WHEN process.nicht_erschienen != 0
                     THEN "missed"
@@ -164,7 +165,9 @@ class Process extends Base implements MappingInterface
                     THEN "called"
                 WHEN process.Uhrzeit = "00:00:00"
                     THEN "queued"
-                WHEN process.vorlaeufigeBuchung = 0
+                WHEN process.vorlaeufigeBuchung = 0 AND process.bestaetigt = 0 
+                    THEN "preconfirmed"
+                WHEN process.vorlaeufigeBuchung = 0 AND process.bestaetigt = 1
                     THEN "confirmed"
                 ELSE "free"
             END'
@@ -502,6 +505,16 @@ class Process extends Base implements MappingInterface
                     ->andWith('process.Abholer', '=', 0)
                     ->andWith('process.StandortID', '!=', 0)
                     ->andWith('process.Uhrzeit', '!=', '00:00:00')
+                    ->andWith('process.bestaetigt', '=', 1)
+                    ->andWith('process.IPTimeStamp', '!=', 0);
+            }
+            if ('preconfirmed' == $status) {
+                $query
+                    ->andWith('process.vorlaeufigeBuchung', '=', 0)
+                    ->andWith('process.Abholer', '=', 0)
+                    ->andWith('process.StandortID', '!=', 0)
+                    ->andWith('process.Uhrzeit', '!=', '00:00:00')
+                    ->andWith('process.bestaetigt', '=', 0)
                     ->andWith('process.IPTimeStamp', '!=', 0);
             }
         });
@@ -708,6 +721,14 @@ class Process extends Base implements MappingInterface
         if ($process->status == 'missed') {
             $data['nicht_erschienen'] = 1;
         }
+        if($process->status == 'confirmed'){
+            $data['bestaetigt'] = 1;
+        }
+        if($process->status == 'preconfirmed'){
+            $data['bestaetigt'] = 0;
+            $data['vorlaeufigeBuchung'] = 1;
+        }
+        
         $this->addValues($data);
     }
 
