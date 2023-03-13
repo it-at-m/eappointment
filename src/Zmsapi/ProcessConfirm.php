@@ -25,6 +25,7 @@ class ProcessConfirm extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
+        
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(3)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
