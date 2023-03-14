@@ -11,6 +11,20 @@
   "scripts": {
     "command": "bin/configure"
   },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsclient"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsslim"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsentities"
+    }
+  ],
   "require-dev": {
     "phpmd/phpmd": "@stable",
     "squizlabs/php_codesniffer": "*",
@@ -25,8 +39,7 @@
     "monolog/monolog": "1.*",
     "league/csv": "^9.0",
     "psr/http-message": "^1.0",
-    "container-interop/container-interop": "^1.2",
-    "roave/security-advisories": "dev-master"
+    "container-interop/container-interop": "^1.2"
   },
   "bin": [],
   "autoload": {
