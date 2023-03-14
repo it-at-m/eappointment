@@ -10,10 +10,18 @@
     ],
     "repositories": [
         {
-            "type": "git",
-            "url": "https://gitlab.com/eappointment/zmsentities.git"
+          "type": "vcs",
+          "url": "https://gitlab.com/eappointment/zmsentities"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/eappointment/zmsdldb"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/eappointment/mellon"
         }
-    ],
+      ],
     "require": {
         "php": ">=7.3.0",
         "ext-mbstring": ">=0",
@@ -23,7 +31,6 @@
         "eappointment/zmsentities": "dev-muc/dev",
         "eappointment/mellon": "^2.6.0",
         "aura/sql": "^2.4",
-        "roave/security-advisories": "dev-master",
         "solution10/sql": "^1.3"
     },
     "bin": [
