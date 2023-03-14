@@ -246,6 +246,19 @@
                             </pre>
                             </div>
                     </fieldset>
+
+                    <fieldset>
+                        <div class="panel--light">
+                            <h3>Betreff: {% include "@zmsentities/messaging/subjects.twig" with {
+                                "status": "preconfirmed"
+                            } %}</h3>
+                            <pre class="admin">
+                                {% include "@zmsentities/messaging/mail_preconfirmed.twig" with {
+                                    "process": processExample
+                                } %}
+                            </pre>
+                            </div>
+                    </fieldset>
                 </div>
             </div>
         {% endblock %}

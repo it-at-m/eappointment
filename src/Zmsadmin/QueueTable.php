@@ -10,7 +10,7 @@ use \BO\Zmsentities\Collection\QueueList;
 
 class QueueTable extends BaseController
 {
-    protected $processStatusList = ['confirmed', 'queued', 'reserved', 'deleted'];
+    protected $processStatusList = ['preconfirmed','confirmed', 'queued', 'reserved', 'deleted'];
 
     /**
      * @SuppressWarnings(Param)
@@ -49,7 +49,7 @@ class QueueTable extends BaseController
 
         // data refinement
         $queueList = $processList->toQueueList(\App::$now);
-        $queueListVisible = $queueList->withStatus(['confirmed', 'queued', 'reserved', 'deleted']);
+        $queueListVisible = $queueList->withStatus(['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted']);
         $queueListMissed = $queueList->withStatus(['missed']);
 
         // rendering
