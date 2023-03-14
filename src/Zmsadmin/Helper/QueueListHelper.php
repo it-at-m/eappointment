@@ -17,7 +17,7 @@ class QueueListHelper
 
     protected static $queueList = null;
 
-    protected static $status = ['confirmed', 'queued', 'reserved', 'deleted', 'fake'];
+    protected static $status = ['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted', 'fake'];
 
     protected static $missedStatus = ['missed'];
 
