@@ -1,6 +1,8 @@
 {% block german %}
     {% if status == 'confirmed' or status == 'appointment' %}
     Terminbestätigung
+    {% elseif status == 'preconfirmed' %}
+    Aktivierungslink für Ihren Termin
     {% elseif status == 'reminder' %}
     Terminerinnerung
     {% elseif (status == 'deleted' or status == 'blocked') and not initiator %}
