@@ -37,6 +37,7 @@ class ProcessConfirm extends BaseController
         if ('reserved' != $process->status) {
             throw new Exception\Process\ProcessNotReservedAnymore();
         }
+        
         $process = (new Process())->updateProcessStatus(
             $process,
             'confirmed',

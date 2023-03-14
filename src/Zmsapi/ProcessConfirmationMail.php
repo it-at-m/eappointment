@@ -51,7 +51,7 @@ class ProcessConfirmationMail extends BaseController
         $department = (new Department())->readByScopeId($process->scope['id']);
         $collection = static::getProcessListOverview($process, $config);
 
-        $status = ($process->isWithAppointment()) ? 'appointment' : 'queued';
+        $status = ($process->isWithAppointment())? 'appointment': 'queued';
         $mail = (new \BO\Zmsentities\Mail)
             ->toResolvedEntity($collection, $config, $status)
             ->withDepartment($department);
