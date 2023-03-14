@@ -10,20 +10,24 @@
   ],
   "repositories": [
     {
-      "type": "git",
-      "url": "https://gitlab.com/eappointment/zmsclient.git"
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsclient"
     },
     {
-      "type": "git",
-      "url": "https://gitlab.com/eappointment/zmsslim.git"
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsslim"
     },
     {
-      "type": "git",
-      "url": "https://gitlab.com/eappointment/zmsdb.git"
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsdb"
     },
     {
-      "type": "git",
-      "url": "https://gitlab.com/eappointment/zmsentities.git"
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsentities"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsdldb"
     }
   ],
   "require-dev": {
@@ -42,8 +46,7 @@
     "eappointment/zmsentities": "dev-muc/dev",
     "monolog/monolog": "1.*",
     "ulrichsg/getopt-php": "^2.3",
-    "league/climate": "^3.2",
-    "roave/security-advisories": "dev-master"
+    "league/climate": "^3.2"
   },
   "scripts": {
     "clean": "rm -f public/doc/assets/*.* && rm -f public/_test/assets/*.*",
