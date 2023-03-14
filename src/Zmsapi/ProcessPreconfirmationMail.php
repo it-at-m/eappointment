@@ -17,7 +17,7 @@ use \BO\Zmsentities\Collection\ProcessList as Collection;
 /**
  * @SuppressWarnings(Coupling)
  */
-class ProcessConfirmationMail extends BaseController
+class ProcessPreconfirmationMail extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -29,13 +29,11 @@ class ProcessConfirmationMail extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
-
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new Process($input);
         $process->testValid();
         $this->testProcessData($process);
         $process = (new ProcessRepository())->readEntity($process->id, $process->authKey);
-
         $mail = $this->writeMail($process);
         $message = Response\Message::create($request);
         $message->data = ($mail->hasId()) ? $mail : null;
@@ -49,9 +47,9 @@ class ProcessConfirmationMail extends BaseController
     {
         $config = (new Config)->readEntity();
         $department = (new Department())->readByScopeId($process->scope['id']);
+        $status = ($process->isWithAppointment()) ? 'preconfirmed' : 'queued';
         $collection = static::getProcessListOverview($process, $config);
 
-        $status = ($process->isWithAppointment())? 'appointment': 'queued';
         $mail = (new \BO\Zmsentities\Mail)
             ->toResolvedEntity($collection, $config, $status)
             ->withDepartment($department);
@@ -88,12 +86,13 @@ class ProcessConfirmationMail extends BaseController
             $processList = (new ProcessRepository())->readListByMailAndStatusList(
                 $process->getFirstClient()->email,
                 [
-                    Process::STATUS_CONFIRMED,
+                    Process::STATUS_PRECONFIRMED,
                     Process::STATUS_PICKUP
                 ],
                 2,
                 50
             );
+            
             //add list of found processes without the main process
             $collection->addList($processList->withOutProcessId($process->getId()));
         }
