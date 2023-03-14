@@ -51,7 +51,7 @@ class Valid extends \BO\Mellon\Parameter
      *
      * @return self
      */
-    protected function validate($message, $filter, $options = null)
+    protected function validate($message, $filter, $options = 0)
     {
         if (null !== $this->value) {
             $this->validated = true;
