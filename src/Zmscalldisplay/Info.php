@@ -25,8 +25,7 @@ class Info extends BaseController
         $calldisplay = new Helper\Calldisplay($request);
         $queueListFull = \App::$http
             ->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false))
-            ->getCollection()
-            ->withStatus(Helper\Calldisplay::WAITING_STATUS);
+            ->getCollection();
 
         $fakeEntity = $queueListFull->getFakeOrLastWaitingnumber();
         $waitingClientsBefore = $queueListFull->getQueuePositionByNumber($fakeEntity->number);
