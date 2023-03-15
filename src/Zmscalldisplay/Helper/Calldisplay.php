@@ -18,6 +18,8 @@ class Calldisplay
     protected $isEntityResolved = false;
 
     const DEFAULT_STATUS = ['called', 'pickup', 'processing'];
+    const WAITING_STATUS = ['confirmed', 'queued', 'called', 'pending'];
+
 
     /**
      * @param Request|RequestInterface $request
