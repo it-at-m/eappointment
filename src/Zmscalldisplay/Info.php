@@ -20,17 +20,14 @@ class Info extends BaseController
      */
     public function readResponse(
         RequestInterface $request,
-        ResponseInterface $response,
-        array $args
+        ResponseInterface $response
     ) {
         $calldisplay = new Helper\Calldisplay($request);
         $queueListFull = \App::$http
             ->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false))
-            ->getCollection()
-            ->withStatus(['called','confirmed', 'queued', 'reserved', 'deleted', 'fake', 'pickup', 'processing']);
-
+            ->getCollection();
         $fakeEntity = $queueListFull->getFakeOrLastWaitingnumber();
-        $waitingClientsBefore = $queueListFull->getQueuePositionByNumber($fakeEntity->number);
+        $waitingClientsBefore = $queueListFull->getQueuePositionByNumber($fakeEntity->number) + 1;
 
         return Render::withHtml(
             $response,
