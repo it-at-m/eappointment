@@ -45,13 +45,13 @@ class Valid extends \BO\Mellon\Parameter
     /**
      * validate a value using PHP builtin function filter_var()
      *
-     * @param String $message error message in case of failure
-     * @param Const $filter see documentation for filter_var()
-     * @param Array|Const $options see documentation for filter_var()
+     * @param mixed $message error message in case of failure
+     * @param Int|Const $filter see documentation for filter_var()
+     * @param Int|Array|Const $options see documentation for filter_var()
      *
      * @return self
      */
-    protected function validate($message, $filter, $options = null)
+    protected function validate($message, $filter, $options = 0)
     {
         if (null !== $this->value) {
             $this->validated = true;
