@@ -20,9 +20,9 @@ class View extends BaseView {
         new AnalogClock();
         const ajaxopt = {
             type: "POST",
-            url: this.getUrl('/info/'),
+            url: this.getUrl('/waitinginfo/'),
             data: window.bo.zmscalldisplay,
-            timeout: ((window.bo.zmscalldisplay.queue.timeUntilOld * 1000) - 100)
+            timeout: ((window.bo.zmscalldisplay.queue.timeWaitingInfo * 1000) - 100)
         };
         $.ajax(ajaxopt)
             .done(data => {
@@ -37,7 +37,7 @@ class View extends BaseView {
     }
 
     setInterval() {
-        var reloadTime = window.bo.zmscalldisplay.queue.timeUntilOld;
+        var reloadTime = window.bo.zmscalldisplay.queue.timeWaitingInfo;
         setTimeout(this.load, reloadTime * 1000);
     }
 
