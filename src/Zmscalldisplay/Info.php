@@ -39,7 +39,7 @@ class Info extends BaseController
             ->getLast()
             ->waitingTimeEstimate;
 
-        $waitingTimeOptimistic = $queueListFull
+        $waitingTimeOptim = $queueListFull
             ->withoutStatus(Collection::STATUS_FAKE)
             ->getCountWithWaitingTime()
             ->getLast()
@@ -52,7 +52,7 @@ class Info extends BaseController
                 'calldisplay' => $calldisplay,
                 'waitingClients' => $waitingClientsBefore,
                 'waitingTime' => $waitingTimeFull,
-                'waitingTimeOptimistic' => $waitingTimeOptimistic,
+                'waitingTimeOptimistic' => $waitingTimeOptim,
             )
         );
     }
