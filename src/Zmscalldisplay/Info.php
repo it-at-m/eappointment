@@ -10,6 +10,7 @@ namespace BO\Zmscalldisplay;
 use BO\Slim\Render;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use BO\Zmsentities\Collection\QueueList as Collection;
 
 class Info extends BaseController
 {
@@ -27,8 +28,22 @@ class Info extends BaseController
             ->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false))
             ->getCollection();
 
-        $fakeEntity = $queueListFull->getFakeOrLastWaitingnumber();
-        $waitingClientsBefore = $queueListFull->getQueuePositionByNumber($fakeEntity->number);
+        $waitingClientsBefore = $queueListFull
+            ->withoutStatus(Collection::STATUS_FAKE)
+            ->getCountWithWaitingTime()
+            ->count();
+
+        $waitingTimeFull = $queueListFull
+            ->withoutStatus(Collection::STATUS_FAKE)
+            ->getCountWithWaitingTime()
+            ->getLast()
+            ->waitingTimeEstimate;
+
+        $waitingTimeOptimistic = $queueListFull
+            ->withoutStatus(Collection::STATUS_FAKE)
+            ->getCountWithWaitingTime()
+            ->getLast()
+            ->waitingTimeOptimistic;
 
         return Render::withHtml(
             $response,
@@ -36,8 +51,8 @@ class Info extends BaseController
             array(
                 'calldisplay' => $calldisplay,
                 'waitingClients' => $waitingClientsBefore,
-                'waitingTime' => $fakeEntity->waitingTimeEstimate,
-                'waitingTimeOptimistic' => $fakeEntity->waitingTimeOptimistic,
+                'waitingTime' => $waitingTimeFull,
+                'waitingTimeOptimistic' => $waitingTimeOptimistic,
             )
         );
     }
