@@ -1,3 +1,6 @@
+## 2.25.01
+* #56796 - the calculation of the waiting time and the number of waiting persons has been revised - only operations that have a real waiting time will be considered
+
 ## 2.24.14
 * fixed some css behaviour on multicolumns in different screen sizes
 
