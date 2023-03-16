@@ -12,6 +12,14 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     const FAKE_WAITINGNUMBER = -1;
 
+    const STATUS_IGNORE = ['called', 'processing', 'missed', 'deleted', 'pickup', 'reserved'];
+
+    const STATUS_APPEND = ['missed', 'deleted'];
+
+    const STATUS_CALLED = ['called', 'processing', 'pickup'];
+
+    const STATUS_FAKE = ['fake'];
+
     protected $processTimeAverage;
 
     protected $workstationCount;
@@ -52,9 +60,9 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
     ) {
         $this->setWaitingTimePreferences($processTimeAverage, $workstationCount);
         $queueFull = $this->withWaitingTime($dateTime);
-        $queueWithWaitingTime = $queueFull->withStatus(['called', 'processing', 'pickup']);
-        $queueAppend = $queueFull->withStatus(['missed', 'deleted']);
-        $queueFull = $queueFull->withoutStatus(['called', 'processing', 'missed', 'deleted', 'pickup']);
+        $queueWithWaitingTime = $queueFull->withStatus(self::STATUS_CALLED);
+        $queueAppend = $queueFull->withStatus(self::STATUS_APPEND);
+        $queueFull = $queueFull->withoutStatus(self::STATUS_IGNORE);
         if ($createFake) {
             $queueFull = $queueFull->withFakeWaitingnumber($dateTime);
         }
