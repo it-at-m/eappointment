@@ -129,7 +129,10 @@ class Messaging
             'process' => $mainProcess,
             'processList' => $collection->sortByAppointmentDate(),
             'config' => $config,
-            'initiator' => $initiator
+            'initiator' => $initiator,
+            // I copied the following line from the repo muenchner-customizations
+            // I will now remove the file Messaging.php from muenchner-customizations in order to prevent future confusions like we had yesterday
+            'appointmentLink' => base64_encode(json_encode(['id' => $mainProcess->id, 'authKey' => $mainProcess->authKey]))
         ];
 
         $message = self::twigView()->render('messaging/' . $template, $parameters);
@@ -188,8 +191,8 @@ class Messaging
     public static function getMailSubject(
         Process $process,
         Config $config,
-        $initiator = null,
-        $status = 'appointment'
+                $initiator = null,
+                $status = 'appointment'
     ) {
         $appointment = $process->getFirstAppointment();
         $template = 'subjects.twig';
@@ -211,9 +214,9 @@ class Messaging
     public static function getMailIcs(
         Process $process,
         Config $config,
-        $status = 'appointment',
-        $initiator = null,
-        $now = false
+                $status = 'appointment',
+                $initiator = null,
+                $now = false
     ) {
         $ics = new \BO\Zmsentities\Ics();
         $template = self::getTemplate('ics', $status);
