@@ -17,7 +17,7 @@ class QueueDestinationTest extends Base
                 'function' => 'readPostResult',
                 'url' => '/calldisplay/queue/',
                 'parameters' => [
-                    'statusList' => ['called', 'pickup', 'processing']
+                    'statusList' => ['called', 'pickup']
                 ],
                 'response' => $this->readFixture("GET_queue_multipleDestination.json")
             ]
