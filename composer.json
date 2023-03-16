@@ -10,12 +10,12 @@
     ],
     "repositories": [
         {
-          "type": "vcs",
-          "url": "https://gitlab.com/eappointment/zmsentities"
+          "type": "path",
+          "url": "../zmsentities"
         },
         {
-            "type": "vcs",
-            "url": "https://gitlab.com/eappointment/zmsdldb"
+            "type": "path",
+            "url": "../zmsdldb"
         },
         {
             "type": "vcs",
@@ -27,8 +27,8 @@
         "ext-mbstring": ">=0",
         "ext-json": ">=1.0",
         "ext-pcre": ">=0",
-        "eappointment/zmsdldb": "dev-main || ^2.0",
-        "eappointment/zmsentities": "dev-muc/dev",
+        "eappointment/zmsdldb": "@dev",
+        "eappointment/zmsentities": "@dev",
         "eappointment/mellon": "^2.6.0",
         "aura/sql": "^2.4",
         "solution10/sql": "^1.3"
@@ -38,6 +38,7 @@
         "bin/calculateSlots",
         "bin/calculateDayOffList",
         "bin/deallocateAppointmentData",
+        "bin/deleteUnconfirmedAppointmentData",
         "bin/deleteAppointmentData",
         "bin/deleteBlacklistedMail",
         "bin/deleteDayoffData",
