@@ -1,3 +1,6 @@
+## 2.25.01
+* #56796 - added additional constants to narrow the queue by status across different repositories
+
 ## 2.24.14
 * #54285 - filter processList by given timestamp
 
