@@ -9,9 +9,9 @@ class UnconfirmedAppointmentDeleteByCron
 {
     protected $verbose = false;
 
-    protected $limit = 2000;
+    protected $limit = 10;
 
-    protected $loopCount = 500;
+    protected $loopCount = 5;
 
     protected $time;
 
@@ -24,13 +24,7 @@ class UnconfirmedAppointmentDeleteByCron
     public function __construct(\DateTimeInterface $now, $verbose = false)
     {
         $this->now = $now;
-        $deleteInSeconds = (24 * 60 * 60) * $timeIntervalDays;
-        $time = new \DateTimeImmutable();
-        $this->time = $time->setTimestamp($now->getTimestamp() - $deleteInSeconds);
-        if ($verbose) {
-            $this->log("INFO: Deleting appointments older than " . $this->time->format('c'));
-            $this->verbose = true;
-        }
+        $this->verbose = $verbose;
     }
 
     protected function log($message)
@@ -63,7 +57,11 @@ class UnconfirmedAppointmentDeleteByCron
 
     protected function deleteUnconfirmedProcesses($commit) {
         $time = new \DateTimeImmutable();
-        $deleteFromTime = $time->setTimestamp($this->now->getTimestamp() - 3600);
+        $deleteFromTime = $time->setTimestamp($this->now->getTimestamp() - 600);
+
+        if ($this->verbose) {
+            $this->log("INFO: Deleting appointments older than " . $deleteFromTime->format('c'));
+        }
 
         $count = $this->deleteByCallback($commit, function ($limit, $offset) use ($deleteFromTime) {
             $query = new \BO\Zmsdb\Process();
