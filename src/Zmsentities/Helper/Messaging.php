@@ -129,7 +129,14 @@ class Messaging
             'process' => $mainProcess,
             'processList' => $collection->sortByAppointmentDate(),
             'config' => $config,
-            'initiator' => $initiator
+            'initiator' => $initiator,
+            // I copied the following line from the repo muenchner-customizations
+            // I will now remove the file Messaging.php from muenchner-customizations
+            // in order to prevent future confusions like we had yesterday
+            'appointmentLink' => base64_encode(json_encode([
+                'id' => $mainProcess->id,
+                'authKey' => $mainProcess->authKey
+            ]))
         ];
 
         $message = self::twigView()->render('messaging/' . $template, $parameters);
