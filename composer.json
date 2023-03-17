@@ -38,6 +38,7 @@
         "bin/calculateSlots",
         "bin/calculateDayOffList",
         "bin/deallocateAppointmentData",
+        "bin/deleteUnconfirmedAppointmentData",
         "bin/deleteAppointmentData",
         "bin/deleteBlacklistedMail",
         "bin/deleteDayoffData",
