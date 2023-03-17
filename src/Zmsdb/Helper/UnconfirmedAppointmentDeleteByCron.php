@@ -65,7 +65,7 @@ class UnconfirmedAppointmentDeleteByCron
 
         $count = $this->deleteByCallback($commit, function ($limit, $offset) use ($deleteFromTime) {
             $query = new \BO\Zmsdb\Process();
-            $processList = $query->readExpiredProcessListByStatus($deleteFromTime, 'preconfirmed', $limit, $offset);
+            $processList = $query->readUnconfirmedProcessList($deleteFromTime, $limit, $offset);
             return $processList;
         });
         $this->count['preconfirmed'] = $count;
