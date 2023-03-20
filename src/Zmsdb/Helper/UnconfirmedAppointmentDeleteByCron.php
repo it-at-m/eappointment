@@ -57,7 +57,8 @@ class UnconfirmedAppointmentDeleteByCron
         $this->log("\nSUMMARY: Deleted processes: ".var_export($this->count, true));
     }
 
-    protected function deleteUnconfirmedProcesses($commit) {
+    protected function deleteUnconfirmedProcesses($commit) 
+    {
         $time = new \DateTimeImmutable();
         $deleteFromTime = $time->setTimestamp($this->now->getTimestamp() - $this->expiryInterval);
 
