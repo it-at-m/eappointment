@@ -9,9 +9,11 @@ class UnconfirmedAppointmentDeleteByCron
 {
     protected $verbose = false;
 
-    protected $limit = 10;
+    protected $limit = 1000;
 
-    protected $loopCount = 5;
+    protected $loopCount = 100;
+
+    protected $expiryInterval = 600;
 
     protected $time;
 
@@ -55,9 +57,10 @@ class UnconfirmedAppointmentDeleteByCron
         $this->log("\nSUMMARY: Deleted processes: ".var_export($this->count, true));
     }
 
-    protected function deleteUnconfirmedProcesses($commit) {
+    protected function deleteUnconfirmedProcesses($commit)
+    {
         $time = new \DateTimeImmutable();
-        $deleteFromTime = $time->setTimestamp($this->now->getTimestamp() - 600);
+        $deleteFromTime = $time->setTimestamp($this->now->getTimestamp() - $this->expiryInterval);
 
         if ($this->verbose) {
             $this->log("INFO: Deleting appointments older than " . $deleteFromTime->format('c'));
