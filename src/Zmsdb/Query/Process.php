@@ -721,10 +721,10 @@ class Process extends Base implements MappingInterface
         if ($process->status == 'missed') {
             $data['nicht_erschienen'] = 1;
         }
-        if($process->status == 'confirmed') {
+        if ($process->status == 'confirmed') {
             $data['bestaetigt'] = 1;
         }
-        if($process->status == 'preconfirmed') {
+        if ($process->status == 'preconfirmed') {
             $data['bestaetigt'] = 0;
             $data['vorlaeufigeBuchung'] = 1;
         }
