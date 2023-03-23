@@ -60,7 +60,6 @@ class WorkstationProcessPreCallTest extends Base
 
     public function testRenderingAssignedDepartmentsFailed()
     {
-        $this->expectException('BO\Zmsentities\Exception\WorkstationMissingAssignedDepartments');
         $this->setApiCalls(
             [
                 [
@@ -69,7 +68,12 @@ class WorkstationProcessPreCallTest extends Base
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_empty.json")
                 ]
-            ]
+                ,
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/82252/',
+                    'response' => $this->readFixture("GET_process_spontankunde_empty_name.json")
+                ]            ]
         );
         $this->render($this->arguments, ['exclude' => '999999'], []);
     }
