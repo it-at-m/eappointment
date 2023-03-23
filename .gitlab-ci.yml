@@ -1,6 +1,33 @@
 include:
     remote: https://gitlab.com/eappointment/php-base/-/raw/main/template-php-ci.yml
 
+
+
+.test-php:
+    stage: test
+    variables:
+      PHP_VERSION: 7.3
+    image: registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-dev
+    cache:
+        key: "zmsbase"
+        paths:
+            - cache
+    script:
+        - $CLI_COMPOSER
+#temporary disabling this, I am focusing on php unit tests now        
+#        - $CLI_PHPCS
+#        - $CLI_PHPMD
+        - docker-php-ext-enable xdebug
+        - $CLI_PHPUNIT $CLI_PHPUNIT_PARAM
+    coverage: '/^\s*Lines:\s*\d+.\d+\%/'
+    artifacts:
+        paths:
+            - public/_tests
+        expire_in: 7d
+        reports:
+            junit: public/_tests/junit.xml
+
+
 test-php-73:
     extends: .test-php
     allow_failure: false
