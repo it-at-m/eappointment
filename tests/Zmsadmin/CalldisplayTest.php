@@ -35,7 +35,11 @@ class CalldisplayTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString(
-            'Aufrufanzeige Standortauswahl - Berlin - Charlottenburg-Wilmersdorf',
+            'Aufrufanzeige Standortauswahl',
+            (string)$response->getBody()
+        );
+        $this->assertStringContainsString(
+            'Charlottenburg-Wilmersdorf',
             (string)$response->getBody()
         );
         $this->assertStringContainsString('Bürgeramt Heerstraße', (string)$response->getBody());
