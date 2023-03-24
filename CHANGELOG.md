@@ -1,3 +1,6 @@
+## 2.25.01
+* #56991 - The curl option for setting up an API proxy server has been added to the configuration
+
 ## v2.24.11
 * #55684 - removed berlin logo from background graphics
 
