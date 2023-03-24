@@ -1,5 +1,6 @@
 ## 2.25.01
 * #56796 - the calculation of the waiting time and the number of waiting persons has been revised - only operations that have a real waiting time will be considered
+* #56991 - The curl option for setting up an API proxy server has been added to the configuration
 
 ## 2.24.14
 * fixed some css behaviour on multicolumns in different screen sizes
