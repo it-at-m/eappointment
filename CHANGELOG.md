@@ -1,3 +1,6 @@
+## 2.25.01
+* #56991 - The curl option for setting up an API proxy server has been added to the configuration
+
 ## 2.24.13
 * #56260 - fixed login process with schema validation
 
