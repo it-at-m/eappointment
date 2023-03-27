@@ -13,8 +13,6 @@ class UnconfirmedAppointmentDeleteByCron
 
     protected $loopCount = 100;
 
-    protected $expiryInterval = 600;
-
     protected $time;
 
     protected $now;
@@ -27,6 +25,7 @@ class UnconfirmedAppointmentDeleteByCron
     {
         $this->now = $now;
         $this->verbose = $verbose;
+        $this->scopeList = (new \BO\Zmsdb\Scope)->readList();
     }
 
     protected function log($message)
@@ -59,19 +58,20 @@ class UnconfirmedAppointmentDeleteByCron
 
     protected function deleteUnconfirmedProcesses($commit)
     {
-        $time = new \DateTimeImmutable();
-        $deleteFromTime = $time->setTimestamp($this->now->getTimestamp() - $this->expiryInterval);
-
         if ($this->verbose) {
             $this->log("INFO: Deleting appointments older than " . $deleteFromTime->format('c'));
         }
-
-        $count = $this->deleteByCallback($commit, function ($limit, $offset) use ($deleteFromTime) {
-            $query = new \BO\Zmsdb\Process();
-            $processList = $query->readUnconfirmedProcessList($deleteFromTime, $limit, $offset);
-            return $processList;
-        });
-        $this->count['preconfirmed'] = $count;
+        foreach ($this->scopeList as $scope) {
+            $count = $this->deleteByCallback($commit, function ($limit, $offset) use ($scope) {
+                $query = new \BO\Zmsdb\Process();
+                $activationDuration = $scope->toProperty()->preferences->appointment->activationDuration->get();
+                $time = new \DateTimeImmutable();
+                $deleteFromTime =   $time->setTimestamp($this->now->getTimestamp() - ($activationDuration * 60));
+                $processList = $query->readUnconfirmedProcessList($deleteFromTime, $scope->id, $limit, $offset);
+                return $processList;
+            });
+            $this->count['preconfirmed'] = $count;
+        }
     }
 
 

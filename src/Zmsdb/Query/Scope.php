@@ -145,6 +145,7 @@ class Scope extends Base implements MappingInterface
             'preferences__appointment__endInDaysDefault' => 'scope.Termine_bis',
             'preferences__appointment__multipleSlotsEnabled' => 'scope.mehrfachtermine',
             'preferences__appointment__reservationDuration' => 'scope.reservierungsdauer',
+            'preferences__appointment__activationDuration' => 'scope.aktivierungsdauer',
             'preferences__appointment__startInDaysDefault' => 'scope.Termine_ab',
             'preferences__appointment__notificationConfirmationEnabled' =>
                 self::expression('scopesms.enabled && scopesms.Absender != "" && scopesms.internetbestaetigung'),
@@ -281,6 +282,7 @@ class Scope extends Base implements MappingInterface
         $data['mehrfachtermine'] = $entity->getPreference('appointment', 'multipleSlotsEnabled', true);
         // notificationConfirmationEnabled and notificationHeadsUpEnabled are saved in department!
         $data['reservierungsdauer'] = $entity->getPreference('appointment', 'reservationDuration');
+        $data['aktivierungsdauer'] = $entity->getPreference('appointment', 'activationDuration');
         $data['qtv_url'] = $entity->getPreference('client', 'alternateAppointmentUrl');
         $data['anmerkungPflichtfeld'] = $entity->getPreference('client', 'amendmentActivated', true);
         $data['anmerkungLabel'] = $entity->getPreference('client', 'amendmentLabel');
