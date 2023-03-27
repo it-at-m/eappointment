@@ -251,6 +251,19 @@
                     ) }}
 
                     {{ formgroup(
+                        {"label": "Aktivierungsdauer:", "description": "In Minuten. Mindestens 15 Minuten, nach Ablauf dieser Zeit werden nicht aktivierte Termine wieder freigegeben."},
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "name": "preferences[appointment][activationDuration]",
+                                "value": scope.preferences.appointment.activationDuration|default(60),
+                                "maxlength": 4,
+                                "width": 1
+                            }
+                        }]
+                    ) }}
+
+                    {{ formgroup(
                         {"label": "Löschverzögerung:", "description": "In Minuten. Nach Ablauf dieser Zeit werden abgesagte Termine freigegeben."},
                         [{
                             "type":"input",
