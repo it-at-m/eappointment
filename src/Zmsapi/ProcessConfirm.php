@@ -25,7 +25,7 @@ class ProcessConfirm extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
-        
+
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(3)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
@@ -34,8 +34,8 @@ class ProcessConfirm extends BaseController
 
         $userAccount = (new Helper\User($request))->readWorkstation()->getUseraccount();
         $process = (new Process())->readEntity($entity->id, $entity->authKey);
-        if ('reserved' != $process->status) {
-            throw new Exception\Process\ProcessNotReservedAnymore();
+        if ('preconfirmed' != $process->status) {
+            throw new Exception\Process\ProcessNotPreconfirmedAnymore();
         }
         
         $process = (new Process())->updateProcessStatus(
