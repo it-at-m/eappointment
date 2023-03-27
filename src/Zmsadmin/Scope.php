@@ -55,7 +55,7 @@ class Scope extends BaseController
                 ]);
             }
         }
-
+  
         return \BO\Slim\Render::withHtml(
             $response,
             'page/scope.twig',

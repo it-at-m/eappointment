@@ -92,16 +92,16 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "v2.06.00",
+            "version": "v2.06.01",
             "source": {
                 "type": "git",
-                "url": "https://gitlab.com/eappointment/mellon.git",
-                "reference": "dbc7c67407aa76887c94e29b76d5659ae221f4a9"
+                "url": "git@gitlab.com:eappointment/mellon.git",
+                "reference": "e53bac1fcc45f1a86db2c24b5352a2a3aa74d2f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fmellon/repository/archive.zip?sha=dbc7c67407aa76887c94e29b76d5659ae221f4a9",
-                "reference": "dbc7c67407aa76887c94e29b76d5659ae221f4a9",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fmellon/repository/archive.zip?sha=e53bac1fcc45f1a86db2c24b5352a2a3aa74d2f8",
+                "reference": "e53bac1fcc45f1a86db2c24b5352a2a3aa74d2f8",
                 "shasum": ""
             },
             "require": {
@@ -131,10 +131,7 @@
                 }
             ],
             "description": "Validator for parameters and validation helper",
-            "support": {
-                "issues": "https://gitlab.com/api/v4/projects/32828983/issues"
-            },
-            "time": "2022-01-14T16:16:00+00:00"
+            "time": "2023-03-15T10:32:54+00:00"
         },
         {
             "name": "eappointment/zmsclient",
@@ -200,12 +197,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "aa005de098f40133cdc9a474a132b2ac382e7aa2"
+                "reference": "df28d0ef5d03ac816fbc8d430c5d6ed9d55f60eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=aa005de098f40133cdc9a474a132b2ac382e7aa2",
-                "reference": "aa005de098f40133cdc9a474a132b2ac382e7aa2",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=df28d0ef5d03ac816fbc8d430c5d6ed9d55f60eb",
+                "reference": "df28d0ef5d03ac816fbc8d430c5d6ed9d55f60eb",
                 "shasum": ""
             },
             "require": {
@@ -251,7 +248,7 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2023-03-14T09:50:53+00:00"
+            "time": "2023-03-27T10:36:31+00:00"
         },
         {
             "name": "eappointment/zmsslim",
