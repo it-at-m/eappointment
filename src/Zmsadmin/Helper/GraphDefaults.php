@@ -116,6 +116,7 @@ EOS;
     source
     contact
     shortName
+    hint
     dayoff {
         date
     }
