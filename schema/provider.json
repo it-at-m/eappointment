@@ -57,7 +57,7 @@
         "displayName": {
             "default": "",
             "type": "string",
-            "description": "displayName"
+            "description": "provider display name"
         }
     }
 }
