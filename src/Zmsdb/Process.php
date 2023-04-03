@@ -749,17 +749,19 @@ class Process extends Base implements Interfaces\ResolveReferences
         $statement = $this->fetchStatement($selectQuery);
         return $this->readList($statement, $resolveReferences);
     }
-
     public function readUnconfirmedProcessList(
         \DateTimeInterface $expirationDate,
+        $scopeId = 0,
         $limit = 500,
         $offset = null,
         $resolveReferences = 0
     ) {
+        
         $selectQuery = new Query\Process(Query\Base::SELECT);
         $selectQuery
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
+            ->addConditionScopeId($scopeId)
             ->addConditionProcessExpiredIPTimeStamp($expirationDate)
             ->addConditionStatus('preconfirmed')
             ->addConditionIgnoreSlots()
