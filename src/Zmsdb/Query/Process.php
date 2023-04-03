@@ -26,7 +26,7 @@ class Process extends Base implements MappingInterface
             process.IPadresse = '',
             process.IPTimeStamp = 0,
             process.NutzerID = 0,
-            process.vorlaeufigeBuchung = 1,
+            process.vorlaeufigeBuchung = 0,
             process.bestaetigt = 1,
             process.absagecode = 'deref!0',
             process.EMail = '',
@@ -726,7 +726,6 @@ class Process extends Base implements MappingInterface
         }
         if ($process->status == 'preconfirmed') {
             $data['bestaetigt'] = 0;
-            $data['vorlaeufigeBuchung'] = 0;
         }
         
         $this->addValues($data);
