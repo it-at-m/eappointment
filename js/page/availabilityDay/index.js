@@ -10,7 +10,7 @@ import TableView from './timetable/tableview.js'
 import SaveBar from './saveBar'
 import AccordionLayout from './layouts/accordion'
 import PageLayout from './layouts/page'
-import { inArray } from '../../lib/utils'
+import { inArray, showSpinner, hideSpinner } from '../../lib/utils'
 
 import {
     getInitialState,
@@ -112,6 +112,7 @@ class AvailabilityPage extends Component {
     }
 
     onSaveUpdates() {
+        showSpinner();
         const sendData = this.state.availabilitylist.map(availability => {
             const sendAvailability = Object.assign({}, availability)
             if (availability.tempId) {
@@ -133,6 +134,7 @@ class AvailabilityPage extends Component {
             }, () => {
                 this.successElement.scrollIntoView();
             })
+            hideSpinner();
         }).fail((err) => {
             if (err.status === 404) {
                 console.log('404 error, ignored')
@@ -140,6 +142,7 @@ class AvailabilityPage extends Component {
             } else {
                 console.log('save error', err)
             }
+            hideSpinner();
         })
     }
 
@@ -156,6 +159,7 @@ class AvailabilityPage extends Component {
 
     onDeleteAvailability(availability) {
         console.log('Deleting', availability)
+        showSpinner();
         const ok = confirm('Soll diese Öffnungszeit wirklich gelöscht werden?')
         const id = availability.id
         if (ok) {
@@ -168,9 +172,11 @@ class AvailabilityPage extends Component {
                     this.refreshData()
                     this.getConflictList(),
                     this.getValidationList()
-                })
+                });
+                hideSpinner();
             }).fail(err => {
-                console.log('delete error', err)
+                console.log('delete error', err);
+                hideSpinner();
             })
         }
     }
