@@ -175,7 +175,7 @@
             {
                 "type":"checkbox",
                 "parameter": {
-                    "label": "nur Systemnutzung",
+                    "label": "Sachbearbeitung",
                     "name": "rights[basic]",
                     "value": 1,
                     "checked" : 1,
@@ -185,76 +185,16 @@
             }
         ] %}
 
-        {% if workstation.useraccount.rights.sms %}
-            {% set rightsCheckboxes = rightsCheckboxes|merge([
-                {
-                    "type":"checkbox",
-                    "parameter": {
-                        "label": "SMS-Nutzung",
-                        "name": "rights[sms]",
-                        "value": 1,
-                        "checked" : userAccount.rights.sms,
-                        "id": "check_rights_2"
-                    }
-                }
-            ]) %}
-        {% endif %}
-
-        {% if workstation.useraccount.rights.ticketprinter %}
-            {% set rightsCheckboxes = rightsCheckboxes|merge([
-                {
-                    "type":"checkbox",
-                    "parameter": {
-                        "label": "Kiosk ein- und ausschalten",
-                        "name": "rights[ticketprinter]",
-                        "value": 1,
-                            "checked" : userAccount.rights.ticketprinter,
-                        "id": "check_rights_3"
-                    }
-                }
-            ]) %}
-        {% endif %}
-
-        {% if workstation.useraccount.rights.availability %}
-            {% set rightsCheckboxes = rightsCheckboxes|merge([
-                {
-                    "type":"checkbox",
-                    "parameter": {
-                        "label": "Öffnungszeiten einrichten",
-                        "name": "rights[availability]",
-                        "value": 1,
-                            "checked" : userAccount.rights.availability,
-                        "id": "check_rights_4"
-                    }
-                }
-            ]) %}
-        {% endif %}
-
         {% if workstation.useraccount.rights.scope %}
             {% set rightsCheckboxes = rightsCheckboxes|merge([
                 {
                     "type":"checkbox",
                     "parameter": {
-                        "label": "Standorte bearbeiten",
+                        "label": "Terminadministration",
                         "name": "rights[scope]",
                         "value": 1,
                             "checked" : userAccount.rights.scope,
                         "id": "check_rights_5"
-                    }
-                }
-            ]) %}
-        {% endif %}
-
-        {% if workstation.useraccount.rights.useraccount %}
-            {% set rightsCheckboxes = rightsCheckboxes|merge([
-                {
-                    "type":"checkbox",
-                    "parameter": {
-                        "label": "Nutzer/Cluster/Kommunikation einrichten",
-                        "name": "rights[useraccount]",
-                        "value": 1,
-                            "checked" : userAccount.rights.useraccount,
-                        "id": "check_rights_6"
                     }
                 }
             ]) %}
@@ -265,41 +205,11 @@
                 {
                     "type":"checkbox",
                     "parameter": {
-                        "label": "Standortcluster bearbeiten",
+                        "label": "Fachliche Administration",
                         "name": "rights[cluster]",
                         "value": 1,
                             "checked" : userAccount.rights.cluster,
                         "id": "check_rights_7"
-                    }
-                }
-            ]) %}
-        {% endif %}
-
-        {% if workstation.useraccount.rights.department %}
-            {% set rightsCheckboxes = rightsCheckboxes|merge([
-                {
-                    "type":"checkbox",
-                    "parameter": {
-                        "label": "Behörden einrichten",
-                        "name": "rights[department]",
-                        "value": 1,
-                            "checked" : userAccount.rights.department,
-                        "id": "check_rights_8"
-                    }
-                }
-            ]) %}
-        {% endif %}
-
-        {% if workstation.useraccount.rights.organisation %}
-            {% set rightsCheckboxes = rightsCheckboxes|merge([
-                {
-                    "type":"checkbox",
-                    "parameter": {
-                        "label": "Bezirke einrichten",
-                        "name": "rights[organisation]",
-                        "value": 1,
-                            "checked" : userAccount.rights.organisation,
-                        "id": "check_rights_9"
                     }
                 }
             ]) %}
@@ -310,7 +220,7 @@
                 {
                     "type":"checkbox",
                     "parameter": {
-                        "label": "Superuser",
+                        "label": "Technische Administration",
                         "name": "rights[superuser]",
                         "value": 1,
                             "checked" : userAccount.rights.superuser,
