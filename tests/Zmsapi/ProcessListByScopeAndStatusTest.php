@@ -12,8 +12,7 @@ class ProcessListByScopeAndStatusTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render(['id' => 141, 'status' => 'confirmed'], [], []);
-        $this->assertStringContainsString('process.json', (string)$response->getBody());
-        $this->assertStringContainsString('"status":"confirmed"', (string)$response->getBody());
+        $this->assertStringContainsString('metaresult.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

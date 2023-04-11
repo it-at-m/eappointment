@@ -64,11 +64,14 @@ class WorkstationLogin extends BaseController
 
     public static function testLoginHash($workstation)
     {
-        $logInHash = (new Workstation)->readLoggedInHashByName($workstation->getUseraccount()->id);
-        if (null !== $logInHash) {
-            $exception = new \BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn();
-            $exception->data = $workstation;
-            throw $exception;
+        $useraccount = $workstation->getUseraccount();
+        if (isset($useraccount->id)) {
+            $logInHash = (new Workstation)->readLoggedInHashByName($useraccount->id);
+            if (null !== $logInHash) {
+                $exception = new \BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn();
+                $exception->data = $workstation;
+                throw $exception;
+            }
         }
     }
 }
