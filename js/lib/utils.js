@@ -200,7 +200,7 @@ export const forceHttps = () => {
 }
 
 export const showSpinner = ($container = null) => {
-    var loaderContainer = $('#main');
+    var loaderContainer = $('#main-content');
     if ($container !== null) {
         loaderContainer = $container.find('.body').first();
     }
