@@ -6,9 +6,8 @@ test-php-73:
     allow_failure: false
     before_script:
         - $CLI_COMPOSER
-#temporary disabling this, I am focusing on php unit tests now
-#        - npm install
-#        - make css
+        - npm install
+        - make css
     variables:
         PHP_VERSION: "7.3"
     only:
