@@ -23,7 +23,7 @@
         "source",
         "name"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
         "contact": {
             "$ref": "contact.json"

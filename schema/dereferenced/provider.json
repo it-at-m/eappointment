@@ -23,7 +23,7 @@
         "source",
         "name"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
         "contact": {
             "description": "A contact is a collection of contact informations to find or to contact a natural person or an entity.",
@@ -39,7 +39,7 @@
                 "street": "Zaunstraße",
                 "streetNumber": "1"
             },
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "city": {
                     "default": "",
