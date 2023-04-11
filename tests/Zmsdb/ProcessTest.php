@@ -249,7 +249,7 @@ class ProcessTest extends Base
 
         $this->assertEntity("\\BO\\Zmsentities\\Process", $processNew);
         $this->assertEquals(25892, $processNew->getId());
-        $this->assertEquals('reserved', $processNew->getStatus());
+        $this->assertEquals('preconfirmed', $processNew->getStatus());
         $this->assertEquals('2016-05-27 08:00:00', $oldStartTime);
         $this->assertEquals('2016-05-30 08:00:00', $newStartTime);
         $this->assertEquals(4, $processNewEntityList->count());
@@ -362,12 +362,13 @@ class ProcessTest extends Base
             'missed',
             'queued',
             'confirmed',
+            'preconfirmed',
             'blocked',
             'deleted',
             'reserved',
             'processing'
         ];
-        $collection =(new Query)->readProcessListByScopeAndStatus(141, 'confirmed');
+        $collection =(new Query)->readProcessListByScopeAndStatus(141, 'preconfirmed');
         $this->assertEntityList("\\BO\\Zmsentities\\Process", $collection);
         $this->assertEquals(1000, $collection->count());
         foreach ($statusArray as $status) {
@@ -551,8 +552,7 @@ class ProcessTest extends Base
     {
         $query = new Query();
         $processList = $query->readListByMailAndStatusList('zms@service.berlinonline.de', [
-            Entity::STATUS_CONFIRMED,
-            Entity::STATUS_PICKUP
+            'preconfirmed',
         ], 0, 5);
         self::assertEquals('zms@service.berlinonline.de', $processList->getFirst()->getFirstClient()->email);
         self::assertEquals(5, $processList->count());
