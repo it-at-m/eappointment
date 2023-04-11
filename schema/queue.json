@@ -69,6 +69,7 @@
             "type": "string",
             "enum": [
                 "confirmed",
+                "preconfirmed",
                 "queued",
                 "called",
                 "deleted",
