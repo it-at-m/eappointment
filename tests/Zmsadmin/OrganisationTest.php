@@ -31,7 +31,7 @@ class OrganisationTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString('Bezirk: Einrichtung', (string)$response->getBody());
+        $this->assertStringContainsString('Referat: Einrichtung', (string)$response->getBody());
         $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }

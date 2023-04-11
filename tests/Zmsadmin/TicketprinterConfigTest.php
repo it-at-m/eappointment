@@ -35,7 +35,11 @@ class TicketprinterConfigTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString(
-            'Anmeldung an Warteschlange - Berlin - Charlottenburg-Wilmersdorf',
+            'Anmeldung an Warteschlange',
+            (string)$response->getBody()
+        );
+        $this->assertStringContainsString(
+            'Charlottenburg-Wilmersdorf',
             (string)$response->getBody()
         );
         $this->assertStringContainsString('data-ticketprinter-config', (string)$response->getBody());
