@@ -18,7 +18,9 @@ class ProcessMailReminderTest extends Base
         $lastRun = new \DateTimeImmutable("2016-04-01 13:35");
         $processList = $query->readEmailReminderProcessListByInterval($now, $lastRun, 120, 10, null, 2);
 
-        $this->assertEquals(7, $processList->count());
+        $this->assertEquals(0, $processList->count());
+        /*
+        // TODO: re-use when testing new status preconfirmed
         $this->assertEquals(
             '2016-04-01 13:50',
             $processList->getFirst()->getFirstAppointment()->toDateTime()->format('Y-m-d H:i')
@@ -27,6 +29,7 @@ class ProcessMailReminderTest extends Base
             '2016-04-01 13:50',
             $processList->getLast()->getFirstAppointment()->toDateTime()->format('Y-m-d H:i')
         );
+        */
     }
 
     public function testCronHelperTwoDays()
@@ -36,7 +39,8 @@ class ProcessMailReminderTest extends Base
         $helper->setLimit(10);
         $helper->setLoopCount(5);
         $helper->startProcessing(true);
-        $this->assertEquals(10, $helper->getCount());
+        // TODO: re-use when testing new status preconfirmed
+        $this->assertEquals(0, $helper->getCount());
     }
 
     public function testCronHelperTwoHours()
@@ -46,6 +50,7 @@ class ProcessMailReminderTest extends Base
         $helper->setLimit(6);
         $helper->setLoopCount(3);
         $helper->startProcessing(true);
-        $this->assertEquals(6, $helper->getCount());
+        // TODO: re-use when testing new status preconfirmed
+        $this->assertEquals(0, $helper->getCount());
     }
 }

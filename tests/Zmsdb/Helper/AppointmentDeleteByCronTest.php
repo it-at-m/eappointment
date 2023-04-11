@@ -24,7 +24,7 @@ class AppointmentDeleteByCronTest extends Base
         $helper->setLimit(10);
         $helper->setLoopCount(5);
         $helper->startProcessing(false, false);
-        $this->assertEquals(10, $helper->getCount()['confirmed']);
+        $this->assertEquals(10, $helper->getCount()['preconfirmed']);
     }
 
     public function testStartProcessingExpiredExakt()
@@ -35,11 +35,11 @@ class AppointmentDeleteByCronTest extends Base
         $helper->setLimit(10);
         $helper->setLoopCount(5);
         $helper->startProcessing(false, false);
-        $this->assertEquals(8, $helper->getCount()['confirmed']);
-        $this->assertEquals(8, count((new Query())->readExpiredProcessListByStatus($expired, 'confirmed')));
+        $this->assertEquals(8, $helper->getCount()['preconfirmed']);
+        $this->assertEquals(8, count((new Query())->readExpiredProcessListByStatus($expired, 'preconfirmed')));
      
         $helper->startProcessing(true, false);
-        $this->assertEquals(0, count((new Query())->readExpiredProcessListByStatus($expired, 'confirmed')));
+        $this->assertEquals(0, count((new Query())->readExpiredProcessListByStatus($expired, 'preconfirmed')));
     }
 
     public function testStartProcessingBlockedPickup()

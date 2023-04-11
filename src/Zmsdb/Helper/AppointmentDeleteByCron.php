@@ -20,6 +20,7 @@ class AppointmentDeleteByCron
         "reserved",
         "deleted",
         "confirmed",
+        "preconfirmed",
         "queued",
         "called",
         "missed",
