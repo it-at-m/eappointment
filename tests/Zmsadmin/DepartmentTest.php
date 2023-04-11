@@ -101,7 +101,9 @@ class DepartmentTest extends Base
                   'date' => '01.04.2016',
                 ),
             ),
-            'save' => 'save'
+            'save' => 'save',
+            'sendEmailReminderMinutesBefore' => 10,
+            'sendEmailReminderEnabled' => false,
         ], [], 'POST');
         $this->assertRedirect($response, '/department/74/?success=department_saved');
         $this->assertEquals(302, $response->getStatusCode());
