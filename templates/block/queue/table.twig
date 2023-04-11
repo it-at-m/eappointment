@@ -102,7 +102,7 @@
                             {% set hideWithOutAppointment = true %}
                         {% endif %}
                         {% if not hideWithOutAppointment %}
-                        <tr class="{{ tense }} {{ item.queue.status }}" title="{% if item.queue.status == "reserved" or item.queue.status == "preconfirmed" %}{% trans %}Der Termin ist vorübergehend reserviert und wird ohne Bestätigung in wenigen Minuten gelöscht{% endtrans %}{% endif %}">
+                        <tr class="{{ tense }} {{ item.queue.status }} {{ item.queue.status == 'preconfirmed' ? 'reserved' : '' }} " title="{% if item.queue.status == "reserved" or item.queue.status == "preconfirmed" %}{% trans %}Der Termin ist vorübergehend reserviert und wird ohne Bestätigung in wenigen Minuten gelöscht{% endtrans %}{% endif %}">
                             {#<td class="queue-status" title="{{ statusTitle }}"></td>#}
                             <td>
                                 {% if clusterEnabled %}
