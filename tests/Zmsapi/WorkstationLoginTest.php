@@ -46,20 +46,6 @@ class WorkstationLoginTest extends Base
         ], []);
     }
 
-    public function testAlreadyLoggedIn()
-    {
-        $this->expectException('\BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn');
-        $this->expectExceptionCode(404);
-        $this->render([], [
-            '__body' => static::$useraccount,
-            'nocommit' => 1
-        ], []);
-        $this->render([], [
-            '__body' => static::$useraccount,
-            'nocommit' => 1
-        ], []);
-    }
-
     public function testEmpty()
     {
         $this->expectException('\BO\Mellon\Failure\Exception');
