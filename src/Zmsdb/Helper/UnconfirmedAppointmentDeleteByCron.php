@@ -50,7 +50,7 @@ class UnconfirmedAppointmentDeleteByCron
         $this->loopCount = $loopCount;
     }
 
-    public function startProcessing($commit, $pending = false)
+    public function startProcessing($commit)
     {
         $this->deleteUnconfirmedProcesses($commit);
         $this->log("\nSUMMARY: Deleted processes: ".var_export($this->count, true));
@@ -94,7 +94,7 @@ class UnconfirmedAppointmentDeleteByCron
         return $processCount;
     }
 
-    protected function removeProcess(\BO\Zmsentities\Process $process, $commit, $processCount)
+    protected function removeProcess(\BO\Zmsentities\Process $process, $commit)
     {
         $verbose = $this->verbose;
         if (in_array($process->status, $this->statusListForDeletion)) {
