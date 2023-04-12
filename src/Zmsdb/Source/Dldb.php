@@ -81,7 +81,10 @@ class Dldb extends \BO\Zmsdb\Base
                     }
 
                     $availability->slotTimeInMinutes = $providerData['slotTimeInMinutes'];
-                    $updatedEntity = (new \BO\Zmsdb\Availability())->updateEntity($availability->getId(), $availability, 2);
+                    
+                    $updatedEntity = 
+                        (new \BO\Zmsdb\Availability())->updateEntity($availability->getId(), $availability, 2);
+
                     (new \BO\Zmsdb\Slot)->writeByAvailability($updatedEntity, \App::$now);
                     (new \BO\Zmsdb\Helper\CalculateSlots(\App::DEBUG))
                         ->writePostProcessingByScope($updatedEntity->scope, \App::$now);
