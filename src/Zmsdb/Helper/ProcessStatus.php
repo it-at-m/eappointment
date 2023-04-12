@@ -3,6 +3,9 @@ namespace BO\Zmsdb\Helper;
 
 use \BO\Zmsdb\Log;
 
+/**
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ */
 class ProcessStatus extends \BO\Zmsdb\Process
 {
     public function writeUpdatedStatus(
