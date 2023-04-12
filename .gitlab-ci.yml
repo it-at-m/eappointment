@@ -6,7 +6,7 @@ test-php-73:
     allow_failure: false
     before_script:
         - $CLI_COMPOSER
-        - npm install
+        - npm install --legacy-peer-deps
         - make css
     variables:
         PHP_VERSION: "7.3"
