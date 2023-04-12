@@ -7,8 +7,10 @@ namespace BO\Zmsadmin;
 
 use BO\Zmsclient\Http;
 
-define('ZMS_ADMIN_TEMPLATE_FOLDER', 
-    getenv('ZMS_ADMIN_TEMPLATE_FOLDER') ? getenv('ZMS_ADMIN_TEMPLATE_FOLDER') : '/templates/');
+define(
+'ZMS_ADMIN_TEMPLATE_FOLDER',
+getenv('ZMS_ADMIN_TEMPLATE_FOLDER') ? getenv('ZMS_ADMIN_TEMPLATE_FOLDER') : '/templates/'
+);
 
 class Application extends \BO\Slim\Application
 {
