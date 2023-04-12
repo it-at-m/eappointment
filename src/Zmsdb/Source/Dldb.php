@@ -65,8 +65,6 @@ class Dldb extends \BO\Zmsdb\Base
         foreach ($providers as $provider) {
             $providerData = $provider->data;
 
-            var_dump($providerData);
-
             if (!isset($providerData['forceSlotTimeUpdate']) || !$providerData['forceSlotTimeUpdate']) {
                 continue;
             }
