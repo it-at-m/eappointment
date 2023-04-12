@@ -130,7 +130,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
     protected function isPreconfirmedProcess($process)
     {
         return ($process['Name'] != 'dereferenced'
-            && $process['vorlaeufigeBuchung'] == 1
+            && $process['vorlaeufigeBuchung'] == 0
             && $process['StandortID'] != 0
             && $process['bestaetigt'] == 0
             && empty($process['istFolgeterminvon'])
