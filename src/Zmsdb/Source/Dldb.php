@@ -81,7 +81,6 @@ class Dldb extends \BO\Zmsdb\Base
                     }
 
                     $availability->slotTimeInMinutes = $providerData['slotTimeInMinutes'];
-                    
                     $updatedEntity = 
                         (new \BO\Zmsdb\Availability())->updateEntity($availability->getId(), $availability, 2);
 
