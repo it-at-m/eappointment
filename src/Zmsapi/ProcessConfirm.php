@@ -34,7 +34,7 @@ class ProcessConfirm extends BaseController
 
         $userAccount = (new Helper\User($request))->readWorkstation()->getUseraccount();
         $process = (new Process())->readEntity($entity->id, $entity->authKey);
-        if ('preconfirmed' != $process->status) {
+        if ('preconfirmed' != $process->status && 'reserved' != $process->status) {
             throw new Exception\Process\ProcessNotPreconfirmedAnymore();
         }
         

@@ -213,6 +213,9 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
+            "support": {
+                "source": "https://gitlab.com/eappointment/zmsclient/-/tree/muc/dev"
+            },
             "time": "2023-04-13T10:59:26+00:00"
         },
         {
@@ -221,12 +224,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsdb.git",
-                "reference": "015517f30230f38094c98fc84f1c1b084efd214b"
+                "reference": "3d9ed1e9d11a66776c194fa4c6c3594d8df9f3a6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=015517f30230f38094c98fc84f1c1b084efd214b",
-                "reference": "015517f30230f38094c98fc84f1c1b084efd214b",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=3d9ed1e9d11a66776c194fa4c6c3594d8df9f3a6",
+                "reference": "3d9ed1e9d11a66776c194fa4c6c3594d8df9f3a6",
                 "shasum": ""
             },
             "require": {
@@ -292,7 +295,10 @@
                 }
             ],
             "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
-            "time": "2023-04-13T13:31:39+00:00"
+            "support": {
+                "source": "https://gitlab.com/eappointment/zmsdb/-/tree/muc/dev"
+            },
+            "time": "2023-04-11T11:49:57+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
@@ -355,6 +361,9 @@
                 }
             ],
             "description": "Client for DLDB",
+            "support": {
+                "source": "https://gitlab.com/eappointment/zmsdldb/-/tree/2.24.14"
+            },
             "time": "2023-02-07T12:33:37+01:00"
         },
         {
@@ -414,6 +423,9 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
+            "support": {
+                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc/dev"
+            },
             "time": "2023-04-11T11:47:17+00:00"
         },
         {
@@ -472,6 +484,9 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
+            "support": {
+                "source": "https://gitlab.com/eappointment/zmsslim/-/tree/muc-test"
+            },
             "time": "2023-02-27T12:59:22+00:00"
         },
         {
@@ -6180,5 +6195,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }

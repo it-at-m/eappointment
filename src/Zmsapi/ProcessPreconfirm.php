@@ -47,7 +47,7 @@ class ProcessPreconfirm extends BaseController
         );
         $message = Response\Message::create($request);
         $message->data = $process;
-
+        
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
