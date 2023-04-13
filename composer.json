@@ -10,14 +10,18 @@
     ],
     "repositories": [
         {
-            "type": "git",
-            "url": "https://gitlab.com/eappointment/zmsslim.git"
+          "type": "vcs",
+          "url": "https://gitlab.com/eappointment/zmsentities"
         },
         {
-            "type": "git",
-            "url": "https://gitlab.com/eappointment/zmsentities.git"
+            "type": "vcs",
+            "url": "https://gitlab.com/eappointment/zmsslim"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/eappointment/mellon"
         }
-    ],
+      ],
     "require": {
         "php": ">=7.3.0",
         "ext-curl": ">=0",
@@ -29,7 +33,6 @@
         "eappointment/mellon": "^2.0.1",
         "psr/http-message": "^1.0",
         "aronduby/dump": "^0.9",
-        "roave/security-advisories": "dev-master",
         "juliangut/spiral": "0.4"
     },
     "scripts": {
