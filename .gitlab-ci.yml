@@ -1,17 +1,50 @@
 include:
     remote: https://gitlab.com/eappointment/php-base/-/raw/main/template-php-ci.yml
 
+.test-php-custom:
+    stage: test
+    variables:
+      PHP_VERSION: 7.3
+    image: registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-dev
+    cache:
+        key: "zmsbase"
+        paths:
+            - cache
+    script:
+        - echo "Starting----------------------------------------------------------------"
+        - $CLI_COMPOSER
+        - echo "After composer ----------------------------------------------------------------"
+        - $CLI_PHPCS
+        - echo "After CS----------------------------------------------------------------"
+        - $CLI_PHPMD
+        - echo "After MD ----------------------------------------------------------------"
+        - docker-php-ext-enable xdebug
+        - echo "Before PHPUNIT -----------------------------------------------------------------------------------------------"
+        - $CLI_PHPUNIT $CLI_PHPUNIT_PARAM
+    coverage: '/^\s*Lines:\s*\d+.\d+\%/'
+    artifacts:
+        paths:
+            - public/_tests
+        expire_in: 7d
+        reports:
+            junit: public/_tests/junit.xml
+
+
 test-php-73:
-    extends: .test-php
+    extends: .test-php-custom
     allow_failure: false
     services:
         - name: mariadb:10.1
           alias: mysql
           command: ["mysqld", "--general-log=1", "--general-log-file=/var/log/mysql/general.log"]
     before_script:
+        - echo "Before script Starting----------------------------------------------------------------"
         - $CLI_COMPOSER
+        - echo "Before script Starting2----------------------------------------------------------------"
         - rm -rf data
+        - echo "Before script Starting3----------------------------------------------------------------"
         - ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
+        - echo "Before script Starting4----------------------------------------------------------------"
         - vendor/bin/importTestData --commit
     variables:
       PHP_VERSION: "7.3"
@@ -19,7 +52,7 @@ test-php-73:
       MYSQL_ROOT_PASSWORD: zmsapi
     only:
         changes:
-            #- .gitlab-ci.yml
+            - .gitlab-ci.yml
             - composer.lock
             - composer.json
             - schema/**/*
