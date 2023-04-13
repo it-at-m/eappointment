@@ -177,8 +177,10 @@
                             <td>
                                 {{ item.amendment|decodeEntities|raw }}
                                 <p class="queue-table-amendment-time">
-                                    {% if item.queue.status == "reserved" or item.queue.status == "preconfirmed" %}
+                                    {% if item.queue.status == "reserved" %}
                                         {% trans %}reserviert am{% endtrans %}
+                                    {% elseif item.queue.status == "preconfirmed" %}
+                                        {% trans %}Aktivierung ausstehend ab{% endtrans %}
                                     {% elseif item.queue.status == "deleted" %}
                                         {% trans %}wird freigegeben ab{% endtrans %}
                                     {% else %}
