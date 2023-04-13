@@ -4,6 +4,10 @@ namespace BO\Slim\Middleware;
 use \Psr\Http\Message\ServerRequestInterface;
 use \Psr\Http\Message\ResponseInterface;
 
+/**
+ * @SuppressWarnings(PHPMD)
+ */
+
 class OAuthMiddleware
 {
     /**
