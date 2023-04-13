@@ -13,6 +13,10 @@ use Psr\Http\Message\ResponseInterface;
 use UnexpectedValueException;
 use Exception;
 
+/**
+ * @SuppressWarnings(PHPMD)
+ */
+
 class Provider extends AbstractProvider
 {
     use BearerAuthorizationTrait;
