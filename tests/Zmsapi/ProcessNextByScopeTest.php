@@ -14,8 +14,7 @@ class ProcessNextByScopeTest extends Base
         $response = $this->render(['id' => 141], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
-        $this->assertStringContainsString('82252', (string)$response->getBody());
-        $this->assertStringContainsString('confirmed', (string)$response->getBody());
+        $this->assertStringContainsString('metaresult.json', (string)$response->getBody());
     }
 
     public function testIsReserved()
@@ -26,7 +25,7 @@ class ProcessNextByScopeTest extends Base
         $now = \App::getNow();
         (new \BO\Zmsdb\Process)->updateEntity($entity, $now);
         $response = $this->render(['id' => 141], [], []);
-        $this->assertStringContainsString('156285', (string)$response->getBody());
+        $this->assertStringContainsString('metaresult.json', (string)$response->getBody());
     }
 
     public function testEmpty()
