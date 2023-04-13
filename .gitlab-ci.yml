@@ -11,15 +11,10 @@ include:
         paths:
             - cache
     script:
-        - echo "Starting----------------------------------------------------------------"
         - $CLI_COMPOSER
-        - echo "After composer ----------------------------------------------------------------"
         - $CLI_PHPCS
-        - echo "After CS----------------------------------------------------------------"
         - $CLI_PHPMD
-        - echo "After MD ----------------------------------------------------------------"
         - docker-php-ext-enable xdebug
-        - echo "Before PHPUNIT -----------------------------------------------------------------------------------------------"
         - $CLI_PHPUNIT $CLI_PHPUNIT_PARAM
     coverage: '/^\s*Lines:\s*\d+.\d+\%/'
     artifacts:
@@ -38,13 +33,9 @@ test-php-73:
           alias: mysql
           command: ["mysqld", "--general-log=1", "--general-log-file=/var/log/mysql/general.log"]
     before_script:
-        - echo "Before script Starting----------------------------------------------------------------"
         - $CLI_COMPOSER
-        - echo "Before script Starting2----------------------------------------------------------------"
         - rm -rf data
-        - echo "Before script Starting3----------------------------------------------------------------"
         - ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
-        - echo "Before script Starting4----------------------------------------------------------------"
         - vendor/bin/importTestData --commit
     variables:
       PHP_VERSION: "7.3"
