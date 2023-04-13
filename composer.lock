@@ -163,12 +163,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsclient.git",
-                "reference": "18568be5cd7aea3f898343e2ae8908135be3380c"
+                "reference": "e05cdd8e21ce4fe19e1970954fdcf3e05a52ad41"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=18568be5cd7aea3f898343e2ae8908135be3380c",
-                "reference": "18568be5cd7aea3f898343e2ae8908135be3380c",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=e05cdd8e21ce4fe19e1970954fdcf3e05a52ad41",
+                "reference": "e05cdd8e21ce4fe19e1970954fdcf3e05a52ad41",
                 "shasum": ""
             },
             "require": {
@@ -213,7 +213,10 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "time": "2023-03-14T11:13:07+01:00"
+            "support": {
+                "source": "https://gitlab.com/eappointment/zmsclient/-/tree/muc/dev"
+            },
+            "time": "2023-04-13T10:59:26+00:00"
         },
         {
             "name": "eappointment/zmsdb",
@@ -221,12 +224,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsdb.git",
-                "reference": "68a16369a97cc9172237b92cf468da082ca98942"
+                "reference": "3d9ed1e9d11a66776c194fa4c6c3594d8df9f3a6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=68a16369a97cc9172237b92cf468da082ca98942",
-                "reference": "68a16369a97cc9172237b92cf468da082ca98942",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=3d9ed1e9d11a66776c194fa4c6c3594d8df9f3a6",
+                "reference": "3d9ed1e9d11a66776c194fa4c6c3594d8df9f3a6",
                 "shasum": ""
             },
             "require": {
@@ -292,7 +295,10 @@
                 }
             ],
             "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
-            "time": "2023-04-03T09:46:37+00:00"
+            "support": {
+                "source": "https://gitlab.com/eappointment/zmsdb/-/tree/muc/dev"
+            },
+            "time": "2023-04-11T11:49:57+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
@@ -355,6 +361,9 @@
                 }
             ],
             "description": "Client for DLDB",
+            "support": {
+                "source": "https://gitlab.com/eappointment/zmsdldb/-/tree/2.24.14"
+            },
             "time": "2023-02-07T12:33:37+01:00"
         },
         {
@@ -363,12 +372,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "b279f8f8aacd9bd5f6fb7ba546505f46e97280fd"
+                "reference": "e8c33e48ac4234c672a600eeac723bec9fff5f48"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=b279f8f8aacd9bd5f6fb7ba546505f46e97280fd",
-                "reference": "b279f8f8aacd9bd5f6fb7ba546505f46e97280fd",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=e8c33e48ac4234c672a600eeac723bec9fff5f48",
+                "reference": "e8c33e48ac4234c672a600eeac723bec9fff5f48",
                 "shasum": ""
             },
             "require": {
@@ -414,7 +423,10 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2023-04-04T13:27:59+00:00"
+            "support": {
+                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc/dev"
+            },
+            "time": "2023-04-11T11:47:17+00:00"
         },
         {
             "name": "eappointment/zmsslim",
@@ -472,6 +484,9 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
+            "support": {
+                "source": "https://gitlab.com/eappointment/zmsslim/-/tree/muc-test"
+            },
             "time": "2023-02-27T12:59:22+00:00"
         },
         {
@@ -589,16 +604,16 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "8.13.8",
+            "version": "8.13.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "2d3f07bb56daa44b9a2f5ff72e41db762f9573d1"
+                "reference": "7cb665df423d453a1fd8e3af50cd4df55ed31c94"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/2d3f07bb56daa44b9a2f5ff72e41db762f9573d1",
-                "reference": "2d3f07bb56daa44b9a2f5ff72e41db762f9573d1",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/7cb665df423d453a1fd8e3af50cd4df55ed31c94",
+                "reference": "7cb665df423d453a1fd8e3af50cd4df55ed31c94",
                 "shasum": ""
             },
             "require": {
@@ -657,20 +672,20 @@
                 "issues": "https://github.com/giggsey/libphonenumber-for-php/issues",
                 "source": "https://github.com/giggsey/libphonenumber-for-php"
             },
-            "time": "2023-03-27T15:36:27+00:00"
+            "time": "2023-04-11T13:48:23+00:00"
         },
         {
             "name": "giggsey/locale",
-            "version": "2.3",
+            "version": "2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/Locale.git",
-                "reference": "5f035523740be40d40ac768a123c9bcc1ae12f56"
+                "reference": "a6b33dfc9e8949b7e28133c4628b29cd9f1850bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/Locale/zipball/5f035523740be40d40ac768a123c9bcc1ae12f56",
-                "reference": "5f035523740be40d40ac768a123c9bcc1ae12f56",
+                "url": "https://api.github.com/repos/giggsey/Locale/zipball/a6b33dfc9e8949b7e28133c4628b29cd9f1850bb",
+                "reference": "a6b33dfc9e8949b7e28133c4628b29cd9f1850bb",
                 "shasum": ""
             },
             "require": {
@@ -709,9 +724,9 @@
             "description": "Locale functions required by libphonenumber-for-php",
             "support": {
                 "issues": "https://github.com/giggsey/Locale/issues",
-                "source": "https://github.com/giggsey/Locale/tree/2.3"
+                "source": "https://github.com/giggsey/Locale/tree/2.4"
             },
-            "time": "2022-10-19T20:03:30+00:00"
+            "time": "2023-04-13T07:40:58+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1736,21 +1751,21 @@
         },
         {
             "name": "psr/http-client",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/http-client.git",
-                "reference": "2dfb5f6c5eff0e91e20e913f8c5452ed95b86621"
+                "reference": "0955afe48220520692d2d09f7ab7e0f93ffd6a31"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/http-client/zipball/2dfb5f6c5eff0e91e20e913f8c5452ed95b86621",
-                "reference": "2dfb5f6c5eff0e91e20e913f8c5452ed95b86621",
+                "url": "https://api.github.com/repos/php-fig/http-client/zipball/0955afe48220520692d2d09f7ab7e0f93ffd6a31",
+                "reference": "0955afe48220520692d2d09f7ab7e0f93ffd6a31",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.0 || ^8.0",
-                "psr/http-message": "^1.0"
+                "psr/http-message": "^1.0 || ^2.0"
             },
             "type": "library",
             "extra": {
@@ -1770,7 +1785,7 @@
             "authors": [
                 {
                     "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
+                    "homepage": "https://www.php-fig.org/"
                 }
             ],
             "description": "Common interface for HTTP clients",
@@ -1782,27 +1797,27 @@
                 "psr-18"
             ],
             "support": {
-                "source": "https://github.com/php-fig/http-client/tree/master"
+                "source": "https://github.com/php-fig/http-client/tree/1.0.2"
             },
-            "time": "2020-06-29T06:28:15+00:00"
+            "time": "2023-04-10T20:12:12+00:00"
         },
         {
             "name": "psr/http-factory",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/http-factory.git",
-                "reference": "12ac7fcd07e5b077433f5f2bee95b3a771bf61be"
+                "reference": "e616d01114759c4c489f93b099585439f795fe35"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/http-factory/zipball/12ac7fcd07e5b077433f5f2bee95b3a771bf61be",
-                "reference": "12ac7fcd07e5b077433f5f2bee95b3a771bf61be",
+                "url": "https://api.github.com/repos/php-fig/http-factory/zipball/e616d01114759c4c489f93b099585439f795fe35",
+                "reference": "e616d01114759c4c489f93b099585439f795fe35",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.0.0",
-                "psr/http-message": "^1.0"
+                "psr/http-message": "^1.0 || ^2.0"
             },
             "type": "library",
             "extra": {
@@ -1822,7 +1837,7 @@
             "authors": [
                 {
                     "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
+                    "homepage": "https://www.php-fig.org/"
                 }
             ],
             "description": "Common interfaces for PSR-7 HTTP message factories",
@@ -1837,9 +1852,9 @@
                 "response"
             ],
             "support": {
-                "source": "https://github.com/php-fig/http-factory/tree/master"
+                "source": "https://github.com/php-fig/http-factory/tree/1.0.2"
             },
-            "time": "2019-04-30T12:38:16+00:00"
+            "time": "2023-04-10T20:10:41+00:00"
         },
         {
             "name": "psr/http-message",
@@ -6180,5 +6195,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
