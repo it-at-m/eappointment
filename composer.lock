@@ -106,7 +106,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "e5a71f90be66078da9a46aac428de007165a9f12"
+                "reference": "e8c33e48ac4234c672a600eeac723bec9fff5f48"
             },
             "require": {
                 "eappointment/mellon": "^2.0.1",
@@ -118,7 +118,6 @@
                 "league/html-to-markdown": "^5.0",
                 "league/json-guard": "^1.0",
                 "php": ">=7.3.0",
-                "roave/security-advisories": "dev-master",
                 "twig/extensions": "*",
                 "twig/twig": "^2.14"
             },
@@ -152,7 +151,7 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2022-11-30T09:26:18+00:00"
+            "time": "2023-04-11T11:47:17+00:00"
         },
         {
             "name": "eappointment/zmsslim",
