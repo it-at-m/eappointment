@@ -6,6 +6,10 @@ use \Psr\Http\Message\ServerRequestInterface;
 use \Psr\Http\Message\ResponseInterface;
 use League\OAuth2\Client\Token\AccessToken;
 
+/**
+ * @SuppressWarnings(PHPMD)
+ */
+
 class KeycloakInstance
 {
     protected $provider = null;
