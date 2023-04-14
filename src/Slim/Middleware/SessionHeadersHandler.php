@@ -3,7 +3,9 @@ namespace BO\Slim\Middleware;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
+use BO\Slim\Factory\ResponseFactory;
 
 /**
  *
@@ -117,7 +119,7 @@ class SessionHeadersHandler
      * @return Response
      *
      */
-    public function __invoke(Request $request, Response $response, callable $next)
+    public function __invoke(Request $request, ?RequestHandlerInterface $next)
     {
         // retain the incoming session id
         $oldId = '';
@@ -130,7 +132,9 @@ class SessionHeadersHandler
 
         // invoke the next middleware
         if (null !== $next) {
-            $response = $next($request, $response);
+            $response = $next->handle($request);
+        } else {
+            $response = (new ResponseFactory())->createResponse();
         }
 
         // record the current time

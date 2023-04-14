@@ -26,8 +26,10 @@ class Language
         $this->currentLocale = $this->getLocale($this->getCurrentLanguage());
         $this->setCurrentLocale();
         $defaultLang = $this->getDefault();
-        
-        if (\App::MULTILANGUAGE) {
+
+        if (\App::MULTILANGUAGE
+            || (strlen($fallbackLocale) > 0 && strlen($this->currentLocale) > 0 && strlen($defaultLang) > 0)
+        ) {
             if (null === self::$translatorInstance) {
                 self::$translatorInstance = (new LanguageTranslator(
                     $fallbackLocale,
@@ -105,16 +107,16 @@ class Language
     }
 
     // Detect current language based on request URI or Parameter
-    protected function getLanguageFromRequest($request = null)
+    protected function getLanguageFromRequest(RequestInterface $request)
     {
         $language = $this->getLanguageFromUri($request);
-        if (null !== $request) {
-            $route = $request->getAttribute('route');
-            if ($route && $route instanceof \Slim\Route) {
-                $lang = $route->getArgument('lang');
-                $language = (!empty($lang)) ? $lang : $language;
-            }
+        $route = $request->getAttribute('route');
+
+        if ($route instanceof \Slim\Routing\Route) {
+            $lang = $route->getArgument('lang');
+            $language = (!empty($lang)) ? $lang : $language;
         }
+
         return $language;
     }
 
