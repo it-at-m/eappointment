@@ -4,6 +4,8 @@ namespace BO\Slim\Middleware;
 
 use \Psr\Http\Message\ServerRequestInterface;
 use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use BO\Slim\Factory\ResponseFactory;
 
 class Validator
 {
@@ -12,12 +14,14 @@ class Validator
      */
     public function __invoke(
         ServerRequestInterface $request,
-        ResponseInterface $response,
-        callable $next
+        ?RequestHandlerInterface $next
     ) {
         if (null !== $next) {
-            $response = $next(self::withValidator($request), $response);
+            $response = $next->handle(self::withValidator($request));
+        } else {
+            $response = (new ResponseFactory())->createResponse();
         }
+
         return $response;
     }
 

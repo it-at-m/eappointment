@@ -14,6 +14,8 @@ namespace BO\Slim\Middleware;
 
 use \Psr\Http\Message\ServerRequestInterface;
 use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use BO\Slim\Factory\ResponseFactory;
 
 class HttpBasicAuth
 {
@@ -46,20 +48,19 @@ class HttpBasicAuth
         };
     }
 
-    public function __invoke(
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-        callable $next
-    ): ResponseInterface {
+    public function __invoke(ServerRequestInterface $request, RequestHandlerInterface $next): ResponseInterface
+    {
         $serverParams = $request->getServerParams();
         $authUser = $serverParams['PHP_AUTH_USER'] ?? '';
         $authPass = $serverParams['PHP_AUTH_PW'] ?? '';
+
         if ($this->isAuthorized->call($this, $authUser, $authPass)) {
-            $response = $next($request, $response);
+            $response = $next->handle($request);
         } else {
-            $response = $response->withStatus(401);
+            $response = (new ResponseFactory())->createResponse(401, 'Unauthorized');
             $response = $response->withHeader('WWW-Authenticate', sprintf('Basic realm="%s"', $this->realm));
         }
+
         return $response;
     }
 }

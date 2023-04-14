@@ -18,7 +18,8 @@ class DateTimeFormatTest extends TestCase
     public function testTwigDateFormat()
     {
         $twigExtensionsClass = \App::$slim
-            ->getContainer()->view
+            ->getContainer()
+            ->get('view')
             ->getEnvironment()
             ->getExtension('\BO\Slim\TwigExtension');
         $date = new \StdClass();
