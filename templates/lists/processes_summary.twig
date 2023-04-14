@@ -11,7 +11,7 @@ diesen <strong>unbedingt</strong> über den Änderungs/Absage-Link abzusagen, da
 {% for plannedProcess in processList %}
 {% set changeLink  = config.appointments.urlChange ~ '?process=' ~ plannedProcess.id ~ '&authKey=' ~ plannedProcess.authKey %}
 <div style="background: #efefef; border: 1px solid #dddddd; padding:10px;">
-<strong>Zeit:</strong> am {{ plannedProcess.getFirstAppointment.date|localizeddate("short","none",NULL,NULL,"EEEE, dd. MMMM y") }}{% if not isQueued %} um {{ plannedProcess.getFirstAppointment.date|date("H:i") }} Uhr{% endif %}<br />
+<strong>Zeit:</strong> am {{ plannedProcess.getFirstAppointment.date|format_datetime("short","none","EEEE, dd. MMMM y") }}{% if not isQueued %} um {{ plannedProcess.getFirstAppointment.date|date("H:i") }} Uhr{% endif %}<br />
 <strong>Ort:</strong> {{ plannedProcess.scope.provider.name ~ ", " ~ plannedProcess.scope.provider.contact.street ~ " "  ~ plannedProcess.scope.provider.contact.streetNumber ~", " ~ plannedProcess.scope.provider.contact.postalCode ~ " " ~ plannedProcess.scope.provider.contact.city }}<br />
 {% if plannedProcess.requests|length > 1 %}
 {% set requestalias = "Dienstleistungen" %}

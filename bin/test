@@ -5,6 +5,11 @@ REALPATH=$([[ "$REALPATH" =~ 'readlink' ]] && echo "$REALPATH -e" || echo "$REAL
 DIR=$(dirname $($REALPATH ${BASH_SOURCE[0]}))
 ROOT=$($REALPATH $DIR/..)
 BASE=$($REALPATH $DIR/../../../..)
+
+if [ ! -d "$BASE/vendor" ]; then
+  BASE=$ROOT
+fi
+
 LOG=$ROOT/schemavalidation.log
 
 echo "Testing json schemas"

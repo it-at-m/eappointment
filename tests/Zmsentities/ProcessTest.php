@@ -366,8 +366,8 @@ class ProcessTest extends EntityCommonTests
         $collection->addEntity($entity2);
 
         $processListByTime = $collection->toProcessListByTime();
-        $this->assertTrue(
-            array_key_exists('1447869171', $processListByTime->sortByTimeKey()),
+        $this->assertArrayHasKey(
+            '1447869171', (array) $processListByTime->sortByTimeKey(),
             'Failed to create process list by time'
         );
         $this->assertEquals(123456, $collection->getFirst()->id, 'First process not found in process list');
@@ -648,7 +648,7 @@ class ProcessTest extends EntityCommonTests
     {
         $entity = $this->getExample();
         $entity = $entity->withResolveLevel(0);
-        $this->assertTrue(array_key_exists('$ref', $entity->requests->getFirst()));
+        $this->assertArrayHasKey('$ref', (array) $entity->requests->getFirst());
     }
 
     public function getFormValidatorManageProcess($process, $validator)
