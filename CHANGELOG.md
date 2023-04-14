@@ -1,3 +1,23 @@
+## 2.25.01
+* #56796 - added additional constants to narrow the queue by status across different repositories
+
+## 2.24.14
+* #54285 - filter processList by given timestamp
+
+## 2.24.13
+* #56121 - getSummerizedSlotCount with tempId if unsaved new availability exists
+* #56079 - remove wrong slotcount calculation in requestrealationlist
+* Opening Hours Interface: fixed calculation of busy slots for availabilities
+* #55398 - oidc userdata generic from different provider but keycloak
+* #55398 - useraccount openid data with random inital password by name and email chars
+* #55398 - add useraccount method to create entity from openid ownerdata
+* #55910 - refactored slotcount calculation from requestrelation list
+* #55778 - new client check for familyName property
+* #55778 - remove only personal data from process
+* #55625 - Mailing texts were adapted in terms of content
+* #55532 - additional description for useraccounts id minLength
+* #55532 - add json schema constraint to useraccounts departments property
+
 ## 2.24.12
 
 * #55778 - Personal customer data removal made possible

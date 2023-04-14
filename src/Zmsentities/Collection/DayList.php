@@ -95,8 +95,8 @@ class DayList extends Base implements JsonUnindexed
     {
         $this->uasort(function ($dayA, $dayB) {
             return (
-                (new \DateTimeImmutable($dayA['year'].'-'.$dayA['month'].'-'.$dayA['day'])) >
-                (new \DateTimeImmutable($dayB['year'].'-'.$dayB['month'].'-'.$dayB['day']))
+                intval($dayA['year'] . $dayA['month'] . $dayA['day']) -
+                intval($dayB['year'] . $dayB['month'] . $dayB['day'])
             );
         });
         return $this;
