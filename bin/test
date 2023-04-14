@@ -9,8 +9,17 @@ EHIGH="\033[49;1;32m"
 EERROR="\033[49;1;31m"
 EEND="\033[00m"
 
+if [ ! -d "$BASE/vendor" ]
+then
+	BASE=$ROOT
+fi
+
 echo "Testing application"
 cd $ROOT
+
+if [ ! -d "$BASE/vendor" ]; then
+  BASE=$ROOT
+fi
 
 GITFILES=$(git diff --cached --name-only --diff-filter=AM|xargs)
 PHPFILES=$(git diff --cached --name-only --diff-filter=AM|grep "\.php"|xargs)

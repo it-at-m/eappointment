@@ -23,8 +23,8 @@ if (class_exists('\App') && isset(\App::$now)) {
     $now = new \DateTimeImmutable('now');
 }
 
-$job = new \BO\Zmsdb\Helper\ReservedDataDeleteByCron($now, $verbose);
-$job->startProcessing($commit);
+$job = new \BO\Zmsdb\Helper\ReservedDataDeleteByCron($now, (bool) $verbose, !$commit);
+$job->startProcessing();
 
 if (!$commit) {
     error_log("Use with --commit to delete entries.");
