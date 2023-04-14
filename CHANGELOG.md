@@ -1,3 +1,14 @@
+## 2.25.00
+* #56756 - refactored cron helper to remove expired reservations with improved logging
+* #56710 - add new method to read Availability that has old double type format with appointment and spontaneous openinghours
+
+## 2.24.14
+* #54285 - The fetching of operations that are in process has been corrected
+* #56588 - The resolution of the references of the location has been increased to 2 so that the service provider contact is available in the reminder email
+
+## 2.24.13
+* #56079 - Revert changes for required slot calculation
+
 ## 2.24.12
 * #55778 - Updating a process without the possibility to change the appointment time and location
 * #55778 - Revision of the assignment of appointment data and follow-up appointments 

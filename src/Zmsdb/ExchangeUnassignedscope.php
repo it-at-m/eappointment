@@ -13,7 +13,7 @@ class ExchangeUnassignedscope extends Base
         $entity->addDictionaryEntry('StandortID', 'string', 'ID of a scope', 'scope.id');
         $entity->addDictionaryEntry('Bezeichnung', 'string', 'name of a scope');
         $entity->addDictionaryEntry('TerminAnzahl', 'number', 'number of appointments');
-        $entity->addDictionaryEntry('TerminDaten', 'sting', 'date of appointments');
+        $entity->addDictionaryEntry('TerminDaten', 'string', 'date of appointments');
 
         $raw = $this
             ->getReader()

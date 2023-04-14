@@ -11,10 +11,10 @@ class Availability extends Base implements Interfaces\ResolveReferences
 {
     public static $cache = [];
 
-    public function readEntity($availabilityId, $resolveReferences = 0, $disableCache = false)
+    public function readEntity($availabilityId, $resolveReferences = 0, $preferCache = false)
     {
         $cacheKey = "$availabilityId-$resolveReferences";
-        if (!$disableCache && !array_key_exists($cacheKey, self::$cache)) {
+        if (!$preferCache || !array_key_exists($cacheKey, self::$cache)) {
             $query = new Query\Availability(Query\Base::SELECT);
             $query
                 ->addEntityMapping()
@@ -40,6 +40,19 @@ class Availability extends Base implements Interfaces\ResolveReferences
     public function readLock($availabilityId)
     {
         return $this->perform(Query\Availability::QUERY_GET_LOCK, ['availabilityId' => $availabilityId]);
+    }
+
+    public function readEntityDoubleTypes($availabilityId, $resolveReferences = 0)
+    {
+        $query = new Query\Availability(Query\Base::SELECT);
+        $query
+            ->addEntityMapping('openinghours')
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionAvailabilityId($availabilityId)
+            ->addConditionDoubleTypes();
+        $availability = $this->fetchOne($query, new Entity());
+        $availability = $this->readResolvedReferences($availability, $resolveReferences);
+        return ($availability->hasId()) ? $availability : null;
     }
 
     public function readList(
