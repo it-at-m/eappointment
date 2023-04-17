@@ -7,6 +7,8 @@ define('ZMS_API_PASSWORD_MESSAGING', getenv('ZMS_API_PASSWORD_MESSAGING')
     ? getenv('ZMS_API_PASSWORD_MESSAGING')
     : 'examplepassword');
 
+define('ZMS_API_PROXY', getenv('ZMS_API_PROXY') ? getenv('ZMS_API_PROXY') : NULL);
+
 class App extends \BO\Zmsmessaging\Application
 {
     const APP_PATH = APP_PATH;
@@ -27,6 +29,7 @@ class App extends \BO\Zmsmessaging\Application
      public static $http_curl_config = array(
         CURLOPT_SSL_VERIFYPEER => false, // Internal certificates are self-signed
         CURLOPT_TIMEOUT => 10,
+        CURLOPT_PROXY => ZMS_API_PROXY,
         // CURLOPT_VERBOSE => true
     );
 }
