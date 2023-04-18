@@ -80,7 +80,7 @@ class KeycloakInstance
         $realmData = $this->provider::getBasicOptionsFromJsonFile();
         $accessTokenPayload = json_decode(base64_decode($payload), true);
         $clientRoles = array();
-        if(is_array($accessTokenPayload['resource_access']) ){
+        if (is_array($accessTokenPayload['resource_access'])) {
             $clientRoles = array_values($accessTokenPayload['resource_access'][\App::IDENTIFIER]['roles']);
         }
         if (!in_array($realmData['accessRole'], $clientRoles)) {
