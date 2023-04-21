@@ -1,43 +1,47 @@
+# ZMS Messaging
+
+[![pipeline status](https://gitlab.com/eappointment/zmsmessaging/badges/main/pipeline.svg)](https://gitlab.com/eappointment/zmsmessaging/-/commits/main)
+[![coverage report](https://gitlab.com/eappointment/zmsmessaging/badges/main/coverage.svg)](https://eappointment.gitlab.io/zmsmessaging/_tests/coverage/index.html)
+
 # ZMS HTTP messaging
 
 Use this library to messaging email and notifications.
 
 ## Requirements
 
-* PHP 5.4+
+* PHP 7.3+
 
 ## Installation
 
-Usually this module is required by other modules and does not need any special installation. Add the following lines to your composer.json:
+The variable `$WEBROOT` represents the parent path to install the application.
 
-```json
-{
-  "require": {
-    "bo/zmsmessaging": "^1.*"
-  }
-}
+```bash
+    cd $WEBROOT
+    git clone https://gitlab.com/eappointment/zmsmessaging.git
+    cd zmsmessaging
+    make live
+    cp config.example.php config.php
 ```
-
-## Usage
-
-```php
-
-```
-
-## Testing
-
-Testing is automated on committing changes. If you want to run the test without a commit, type the following:
-
-    bin/test
-
-If you want to view a coverage report, you need php-xdebug to generate the report with the following command:
-
-    make coverage
-
-The report is located under `./coverage/index.html`.
 
 ## Development
 
 For development, additional modules are required. Commits from a live environment require to ignore the pre-commit hooks.
+For local development do
 
+```bash
+    ...
     make dev
+    ...
+```
+
+## Configuration
+
+Edit the `config.php` and add/change settings for accessing the API.
+
+## Testing
+
+To test application run the following command:
+
+    bin/test
+
+For a detailed project description, see https://gitlab.com/eappointment/eappointment
