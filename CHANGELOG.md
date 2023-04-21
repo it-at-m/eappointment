@@ -2,7 +2,7 @@
 * #56991 - The curl option for setting up an API proxy server has been added to the configuration
 
 ## 2.24.14
-
+* #56299 - remove invalid email from queue automatically
 * #37 - Rejecting mail with invalid Content-Transfer-Encoding fixed
 
 ## 2.24.10
