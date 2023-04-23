@@ -1,21 +1,16 @@
 include:
     remote: https://gitlab.com/eappointment/php-base/-/raw/main/template-php-ci.yml
 
-
-
 test-php-73:
     extends: .test-php
     allow_failure: false
     variables:
-        PHP_VERSION: "7.3"
-    before_script:
-        - $CLI_COMPOSER
+      PHP_VERSION: "7.3"
     only:
         changes:
             - .gitlab-ci.yml
             - composer.lock
             - composer.json
-            - schema/**/*
             - templates/**/*
             - src/**/*
             - tests/**/*.{json,php}
@@ -52,8 +47,6 @@ pages:
         changes:
             - src/**/*
             - tests/**/*.{json,php}
-            - routing.php
-            - .gitlab-ci.yml
     environment:
         name: analytics
         url: https://eappointment.gitlab.io/zmsmessaging
