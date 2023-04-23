@@ -8,17 +8,5 @@
     },
     "data": {
         "queryString": "INSERT INTO `log` SET `message`=:message, `reference_id`=:referenceId, `type`=:type"
-    },
-    "profiler": [
-        {
-            "duration": 0.0048110485076904,
-            "function": "perform",
-            "statement": "INSERT INTO `log` SET `message`=:message, `reference_id`=:referenceId, `type`=:type",
-            "bind_values": {
-                "message": "MTA successful, subject=Example Mail [lib]",
-                "referenceId": 123456,
-                "type": "buerger"
-            }
-        }
-    ]
+    }
 }

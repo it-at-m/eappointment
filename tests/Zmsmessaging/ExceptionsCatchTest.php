@@ -33,7 +33,7 @@ class ExceptionsCatchTest extends Base
 
         \App::$messaging = new \BO\Zmsmessaging\Mail();
         $resultList = \App::$messaging->initQueueTransmission();
-        $this->assertTrue(0 == count($resultList));
+        $this->assertEquals(0, count($resultList));
         foreach (\BO\Zmsmessaging\BaseController::getLogList() as $key => $value) {
             if (strpos($value, 'PHPMailer Failure') !== false) {
                 $this->assertStringContainsString('Die Adresse ist ungültig:  (From)', $value);
@@ -51,6 +51,12 @@ class ExceptionsCatchTest extends Base
     {
         $this->setApiCalls(
             [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
+                    'response' => $this->readFixture("GET_config.json"),
+                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/log/process/123456/',
@@ -120,6 +126,12 @@ class ExceptionsCatchTest extends Base
     {
         $this->setApiCalls(
             [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
+                    'response' => $this->readFixture("GET_config.json"),
+                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/log/process/123456/',

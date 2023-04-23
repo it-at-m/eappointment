@@ -159,7 +159,7 @@
         "clients": [
           {
             "familyName": "Max Mustermann",
-            "email": "max@example.com",
+            "email": "max@@example.com",
             "telephone": "030 115"
           }
         ],
@@ -224,7 +224,7 @@
       "subject": "Example Mail",
       "client": {
         "familyName": "Max Mustermann",
-        "email": "max@example.com"
+        "email": "max@@example.com"
       }
     }
   }
