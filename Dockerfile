@@ -7,4 +7,3 @@ RUN make live
 
 FROM registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-base
 COPY --from=build --chown=0:0 /var/www/html /var/www/html
-RUN chmod -R 1777 /var/www/html/data
