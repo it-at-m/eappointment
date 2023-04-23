@@ -40,5 +40,11 @@
     "phpspec/prophecy-phpunit": "^2.0.0",
     "phpmd/phpmd": "^2.3",
     "squizlabs/php_codesniffer": "^2.4"
-  }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/berlinonline/slim-psr7"
+    }
+  ]
 }
