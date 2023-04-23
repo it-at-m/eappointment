@@ -1,6 +1,3 @@
-COMPOSER=php -d suhosin.executor.include.whitelist=phar bin/composer.phar
-
-.PHONY: help now dev live watch
 
 help: # This help
 	@echo "Possible Targets:"
@@ -8,18 +5,21 @@ help: # This help
 
 now: # Dummy target
 
-dev: # init development system
-	COMPOSER=composer.devel.json $(COMPOSER) update
+fix: # run code fixing
+	php ../../bin/phpcbf --standard=psr2 src/
+	php ../../bin/phpcbf --standard=psr2 tests/
 
 live: # init live system, delete unnecessary libs
-	$(COMPOSER) install --no-dev --prefer-dist
+	composer install --no-dev --prefer-dist
 
-fix: # run code fixing
-	php vendor/bin/phpcbf --standard=psr2 src/
-	php vendor/bin/phpcbf --standard=psr2 tests/
+dev: # init development system
+	composer update
 
 coverage:
-	php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html public/_tests/coverage/
+	php ../../bin/phpunit --coverage-html public/_tests/coverage/
 
 paratest: # init parallel unit testing with 5 processes
-	vendor/bin/paratest --coverage-html public/_tests/coverage/
+	../../bin/paratest --coverage-html public/_tests/coverage/
+
+test:
+	bin/test
