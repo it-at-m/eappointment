@@ -46,7 +46,7 @@ class Exception extends \Exception
     ) {
         $this->response = $response;
         $this->request = $request;
-        $code = null;
+        $code = $this->code ?? null;
         if (null !== $response) {
             $code = $response->getStatusCode();
         }

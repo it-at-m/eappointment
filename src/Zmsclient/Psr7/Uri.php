@@ -2,10 +2,12 @@
 
 namespace BO\Zmsclient\Psr7;
 
+use Slim\Psr7\Factory\UriFactory;
+
 /**
  * Layer to change PSR7 implementation if necessary
  */
-class Uri extends \Slim\Http\Uri implements \Psr\Http\Message\UriInterface
+class Uri extends \Slim\Psr7\Uri implements \Psr\Http\Message\UriInterface
 {
     public function __construct(
         $schemeOrUri = '',
@@ -20,7 +22,7 @@ class Uri extends \Slim\Http\Uri implements \Psr\Http\Message\UriInterface
         if ($host !== null) {
             parent::__construct($schemeOrUri, $host, $port, $path, $query, $fragment, $user, $password);
         } else {
-            $temp = $this->createFromString($schemeOrUri);
+            $temp = (new UriFactory)->createUri($schemeOrUri);
             $this->scheme = $temp->scheme;
             $this->host = $temp->host;
             $this->port = $temp->port;
