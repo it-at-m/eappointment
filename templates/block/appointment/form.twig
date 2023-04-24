@@ -333,6 +333,7 @@
                                     }
                                 }]
                             ) }}
+                            <button type="button" class="link clear-list" name="clear-list" accesskey="l">Liste leeren</button>
                         </div>
                         {% else %}
                         <div class="message-info">
@@ -341,11 +342,9 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="grid__item">
-                    <small>*) Felder mit einem Stern müssen ausgefüllt werden. Außer für Spontankunden.</small>
-                    <div data-form-buttons>
-                        {% include "block/appointment/formButtons.twig" %}
-                    </div>
+                <small>*) Felder mit einem Stern müssen ausgefüllt werden. Außer für Spontankunden.</small>
+                <div data-form-buttons>
+                    {% include "block/appointment/formButtons.twig" %}
                 </div>
             </div>
         </form>

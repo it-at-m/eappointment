@@ -10,10 +10,10 @@ import calendarNavigation from '../widgets/calendarNavigation'
 import * as constants from './index.js'
 
 const TableView = (props) => {
-    const { onDelete, onSelect, onAbort, timestamp, availabilities, data } = props;
+    const { onDelete, onSelect, onAbort, timestamp, availabilityList, data } = props;
     const titleTime = moment(timestamp, 'X').format('dddd, DD.MM.YYYY')
     const TableBody = <TableBodyLayout
-        availabilities={availabilities}
+        availabilityList={availabilityList}
         data={data}
         onDelete={onDelete}
         onSelect={onSelect}
@@ -39,7 +39,7 @@ TableView.propTypes = {
     timestamp: PropTypes.number,
     links: PropTypes.object,
     data: PropTypes.object,
-    availabilities: PropTypes.array,
+    availabilityList: PropTypes.array,
     onNewAvailability: PropTypes.func,
     onDelete: PropTypes.func.isRequired,
     onSelect: PropTypes.func.isRequired,

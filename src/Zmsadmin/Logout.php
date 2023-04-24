@@ -19,18 +19,15 @@ class Logout extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        if (! $request->getParam('state')) {
-            try {
-                $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
-                \App::$http->readDeleteResult('/workstation/login/'. $workstation->useraccount['id'] .'/')->getEntity();
-            } catch (\BO\Zmsclient\Exception $exception) {
-                if ("BO\Zmsentities\Exception\UseraccountMissingLogin" !== $exception->template) {
-                    throw $exception;
-                }
+        try {
+            $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
+            \App::$http->readDeleteResult('/workstation/login/'. $workstation->useraccount['id'] .'/')->getEntity();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if ("BO\Zmsentities\Exception\UseraccountMissingLogin" !== $exception->template) {
+                throw $exception;
             }
-            \BO\Zmsclient\Auth::removeKey();
-            \BO\Zmsclient\Auth::removeOidcProvider();
         }
+        \BO\Zmsclient\Auth::removeKey();
         return \BO\Slim\Render::withHtml(
             $response,
             'page/logout.twig',

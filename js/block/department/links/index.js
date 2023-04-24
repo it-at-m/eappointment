@@ -76,7 +76,7 @@ const renderLink = (organisationId, link, index, onChange, onDeleteClick) => {
             </td>
             <td className="link-item__settings">
                 <div className="form-check">
-                    <a href="#" className="icon" title="Link entfernen" onClick={onDelete}>
+                    <a href="#" className="icon" title="Link entfernen" aria-label="Link entfernen" onClick={onDelete}>
                         <i className="far fa-trash-alt" aria-hidden="true"></i>
                     </a>
                 </div>
@@ -148,7 +148,7 @@ class LinksView extends Component {
             <div className="department-links__list table-responsive-wrapper">
                 <div className="table-action-link">
                     <button className="link button-default" onClick={onNewClick} >
-                        <i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer Link
+                        <i className="fas fa-plus-square color-positive"></i> Neuer Link
                     </button>
                 </div>
                 <table className="table--base clean">
@@ -165,7 +165,7 @@ class LinksView extends Component {
                 </table>
                 <div className="table-action-link">
                     <button className="link button-default" onClick={onNewClick} >
-                        <i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer Link
+                        <i className="fas fa-plus-square color-positive"></i> Neuer Link
                     </button>
                 </div>
             </div>

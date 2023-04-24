@@ -8,17 +8,24 @@
 use BO\Slim\Helper;
 use \Psr\Http\Message\RequestInterface;
 use \Psr\Http\Message\ResponseInterface;
+use Slim\Routing\RouteCollectorProxy;
 
 /*
  * ---------------------------------------------------------------------------
  * Availability
  * -------------------------------------------------------------------------
  */
- \App::$slim->post('/availability/', \BO\Zmsadmin\AvailabilityUpdate::class)
-     ->setName("AvailabilityUpdate");
+ \App::$slim->post('/availability/', \BO\Zmsadmin\AvailabilityUpdateList::class)
+     ->setName("AvailabilityUpdateList");
+
+ \App::$slim->post('/availability/slots/', \BO\Zmsadmin\Helper\AvailabilityCalcSlots::class)
+     ->setName("AvailabilityCalcSlots");
 
  \App::$slim->get('/availability/delete/{id:\d{1,11}}/', \BO\Zmsadmin\AvailabilityDelete::class)
      ->setName("AvailabilityDelete");
+
+ \App::$slim->post('/availability/save/{id:\d{1,11}}/', \BO\Zmsadmin\AvailabilityUpdateSingle::class)
+     ->setName("AvailabilityUpdateSingle");
 
  \App::$slim->post('/availability/conflicts/', \BO\Zmsadmin\AvailabilityConflicts::class)
      ->setName("AvailabilityConflicts");
@@ -115,16 +122,13 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/workstation/quicklogin/', \BO\Zmsadmin\QuickLogin::class)
     ->setName("quickLogin");
 
-\App::$slim->map(['GET','POST'], '/oidc/', \BO\Zmsadmin\Oidc::class)
-    ->setName("oidc")->add(new \BO\Slim\Middleware\OAuthMiddleware('login'));
-
 /*
  * ---------------------------------------------------------------------------
  * Logout
  * -------------------------------------------------------------------------
  */
 \App::$slim->get('/logout/', \BO\Zmsadmin\Logout::class)
-    ->setName("logout")->add(new \BO\Slim\Middleware\OAuthMiddleware('logout'));
+    ->setName("logout");
 
 /*
  * ---------------------------------------------------------------------------
@@ -184,37 +188,37 @@ use \Psr\Http\Message\ResponseInterface;
  * -------------------------------------------------------------------------
  */
 
-\App::$slim->group('/pickup', function () {
-    \App::$slim->get('/', \BO\Zmsadmin\Pickup::class)
+\App::$slim->group('/pickup', function (RouteCollectorProxy $group) {
+    $group->get('/', \BO\Zmsadmin\Pickup::class)
         ->setName("pickup");
 
-    \App::$slim->get('/queue/', \BO\Zmsadmin\PickupQueue::class)
+    $group->get('/queue/', \BO\Zmsadmin\PickupQueue::class)
         ->setName("pickup_queue");
 
-    \App::$slim->get('/delete/{id:\d+}/', \BO\Zmsadmin\PickupDelete::class)
+    $group->get('/delete/{id:\d+}/', \BO\Zmsadmin\PickupDelete::class)
         ->setName("pickup_delete");
 
-    \App::$slim->map(['GET','POST'], '/handheld/', \BO\Zmsadmin\PickupHandheld::class)
+    $group->map(['GET','POST'], '/handheld/', \BO\Zmsadmin\PickupHandheld::class)
         ->setName("pickup_handheld");
 
-    \App::$slim->get('/keyboard/', \BO\Zmsadmin\PickupKeyboard::class)
+    $group->get('/keyboard/', \BO\Zmsadmin\PickupKeyboard::class)
         ->setName("pickup_keyboard");
 
-    \App::$slim->get('/spreadsheet/', \BO\Zmsadmin\PickupSpreadSheet::class)
+    $group->get('/spreadsheet/', \BO\Zmsadmin\PickupSpreadSheet::class)
         ->setName("pickup_spreadsheet");
 
-    \App::$slim->get('/mail/', \BO\Zmsadmin\PickupMail::class)
+    $group->get('/mail/', \BO\Zmsadmin\PickupMail::class)
         ->setName("pickup_mail");
 
-    \App::$slim->get('/notification/', \BO\Zmsadmin\PickupNotification::class)
+    $group->get('/notification/', \BO\Zmsadmin\PickupNotification::class)
         ->setName("pickup_notification");
 
-    \App::$slim->get('/call/{id:\d+}/', \BO\Zmsadmin\PickupCall::class)
+    $group->get('/call/{id:\d+}/', \BO\Zmsadmin\PickupCall::class)
         ->setName("pickup_call");
 
-    \App::$slim->get('/call/cancel/', \BO\Zmsadmin\PickupCallCancel::class)
+    $group->get('/call/cancel/', \BO\Zmsadmin\PickupCallCancel::class)
         ->setName("pickup_call_cancel");
-})->add(new \BO\Slim\Middleware\OAuthMiddleware('refresh'));
+});
 
 /*
  * ---------------------------------------------------------------------------
@@ -256,40 +260,40 @@ use \Psr\Http\Message\ResponseInterface;
  * -------------------------------------------------------------------------
  */
 
-\App::$slim->group('/scope', function () {
-    \App::$slim->map(['GET','POST'], '/{id:\d+}/', \BO\Zmsadmin\Scope::class)
+\App::$slim->group('/scope', function (RouteCollectorProxy $group) {
+    $group->map(['GET','POST'], '/{id:\d+}/', \BO\Zmsadmin\Scope::class)
         ->setName("scope");
 
-    \App::$slim->get('/{id:\d+}/process/{date:\d\d\d\d-\d\d-\d\d}/', \BO\Zmsadmin\ScopeAppointmentsByDay::class)
+    $group->get('/{id:\d+}/process/{date:\d\d\d\d-\d\d-\d\d}/', \BO\Zmsadmin\ScopeAppointmentsByDay::class)
         ->setName("scopeAppointmentsByDay");
 
-    \App::$slim->get('/{id:\d+}/process/{date:\d\d\d\d-\d\d-\d\d}/xlsx/', \BO\Zmsadmin\ScopeAppointmentsByDayXlsExport::class)
-        ->setName("scopeAppointmentsByDayXls");
+    $group->get('/{id:\d+}/process/{date:\d\d\d\d-\d\d-\d\d}/spreadsheet/', \BO\Zmsadmin\ScopeAppointmentsByDayXlsExport::class)
+        ->setName("scopeAppointmentsByDaySpreadsheet");
 
-    \App::$slim->get('/delete/{id:\d+}/', \BO\Zmsadmin\ScopeDelete::class)
+    $group->get('/delete/{id:\d+}/', \BO\Zmsadmin\ScopeDelete::class)
         ->setName("scopeDelete");
 
-    \App::$slim->get('/{id:\d+}/availability/day/{date:\d\d\d\d-\d\d-\d\d}/', \BO\Zmsadmin\ScopeAvailabilityDay::class)
+    $group->get('/{id:\d+}/availability/day/{date:\d\d\d\d-\d\d-\d\d}/', \BO\Zmsadmin\ScopeAvailabilityDay::class)
         ->setName("scopeAvailabilityDay");
 
-    \App::$slim->get('/{id:\d+}/availability/day/{date:\d\d\d\d-\d\d-\d\d}/conflicts/', \BO\Zmsadmin\ScopeAvailabilityDayConflicts::class)
+    $group->get('/{id:\d+}/availability/day/{date:\d\d\d\d-\d\d-\d\d}/conflicts/', \BO\Zmsadmin\ScopeAvailabilityDayConflicts::class)
         ->setName("scopeAvailabilityDayConflict");
 
-    \App::$slim->get('/{id:\d+}/availability/month/[{date:\d\d\d\d-\d\d}/]', \BO\Zmsadmin\ScopeAvailabilityMonth::class)
+    $group->get('/{id:\d+}/availability/month/[{date:\d\d\d\d-\d\d}/]', \BO\Zmsadmin\ScopeAvailabilityMonth::class)
         ->setName("scopeAvailabilityMonth");
 
-    \App::$slim->map(['GET','POST'], '/{id:\d+}/emergency/', \BO\Zmsadmin\ScopeEmergency::class)
+    $group->map(['GET','POST'], '/{id:\d+}/emergency/', \BO\Zmsadmin\ScopeEmergency::class)
         ->setName("scope_emergency");
 
-    \App::$slim->post('/{id:\d+}/emergency/respond/', \BO\Zmsadmin\ScopeEmergencyResponse::class)
+    $group->post('/{id:\d+}/emergency/respond/', \BO\Zmsadmin\ScopeEmergencyResponse::class)
         ->setName('scope_emergency_response');
 
-    \App::$slim->get('/ticketprinter/', \BO\Zmsadmin\TicketprinterConfig::class)
+    $group->get('/ticketprinter/', \BO\Zmsadmin\TicketprinterConfig::class)
         ->setName("ticketprinter");
 
-    \App::$slim->map(['GET', 'POST'], '/{id:\d+}/ticketprinter/', \BO\Zmsadmin\TicketprinterStatusByScope::class)
+    $group->map(['GET', 'POST'], '/{id:\d+}/ticketprinter/', \BO\Zmsadmin\TicketprinterStatusByScope::class)
         ->setName("ticketprinterStatusByScope");
-})->add(new \BO\Slim\Middleware\OAuthMiddleware('refresh'));
+});
 
 /*
  * ---------------------------------------------------------------------------

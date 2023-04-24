@@ -46,7 +46,7 @@ class Scope extends BaseController
         $department = \App::$http->readGetResult('/scope/' . $entityId . '/department/')->getEntity();
         $callDisplayImage = \App::$http->readGetResult('/scope/'. $entityId .'/imagedata/calldisplay/')->getEntity();
         $input = $request->getParsedBody();
-        if ($request->isPost()) {
+        if ($request->getMethod() === 'POST') {
             $result = $this->testUpdateEntity($input, $entityId);
             if ($result instanceof Entity) {
                 $this->writeUploadedImage($request, $entityId, $input);
@@ -107,7 +107,7 @@ class Scope extends BaseController
         } catch (\BO\Zmsclient\Exception $exception) {
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
             if ('' != $exception->template
-                && \App::$slim->getContainer()->view->getLoader()->exists($template)
+                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
             ) {
                 return [
                     'template' => $template,

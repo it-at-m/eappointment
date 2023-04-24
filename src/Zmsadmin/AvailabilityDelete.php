@@ -9,6 +9,8 @@ namespace BO\Zmsadmin;
 use BO\Zmsentities\Availability;
 use BO\Zmsentities\Collection\AvailabilityList;
 
+use BO\Mellon\Validator;
+
 /**
  * Delete availability, API proxy
  *
@@ -24,7 +26,8 @@ class AvailabilityDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $result = \App::$http->readDeleteResult('/availability/' . $args['id'] . '/');
+        $entityId = Validator::value($args['id'])->isNumber()->getValue();
+        $result = \App::$http->readDeleteResult('/availability/' . $entityId . '/');
         return $result->getResponse();
     }
 }

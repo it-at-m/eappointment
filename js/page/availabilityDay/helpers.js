@@ -2,21 +2,32 @@ import moment from 'moment'
 
 export const getStateFromProps = props => {
     return {
-        availabilitylistslices: props.availabilitylistslices.map(item => {
-            return Object.assign({}, item, {
-                maxSlots: props.maxslots[item.id] || 0,
-                busySlots: props.busyslots[item.id] || 0
-            })
-        }),
+        availabilitylistslices: writeSlotCalculationIntoAvailability(
+            props.availabilitylist, 
+            props.maxslots, 
+            props.busyslots
+        ),
         availabilitylist: props.availabilitylist,
         conflicts: props.conflicts,
-        today: props.today    }
+        today: props.today,
+        busyslots: props.busyslots
+    }
+}
+
+export const writeSlotCalculationIntoAvailability = (availabilitylist, maxslots, busyslots) => {
+    return availabilitylist.map(item => {
+        let itemId = item.id ? item.id : item.tempId;
+        return Object.assign({}, item, {
+            maxSlots: maxslots[itemId] || 0,
+            busySlots: busyslots[itemId] || 0
+        })
+    })
 }
 
 export const mergeAvailabilityListIntoState = (state, list) => list.reduce(updateAvailabilityInState, state)
 
 /**
- * Compare two availabilities if they are the same using ID
+ * Compare two availabilityList if they are the same using ID
  */
 const equalIds = (a, b) => {
     return (a.id && b.id && a.id === b.id) || (a.tempId && b.tempId && a.tempId === b.tempId)

@@ -26,7 +26,7 @@ class Profile extends BaseController
         $error = $request->getAttribute('validator')->getParameter('error')->isString()->getValue();
         $entity = new Entity($workstation->useraccount);
 
-        if ($request->isPost()) {
+        if ($request->getMethod() === 'POST') {
             $input = $request->getParsedBody();
             $result = $this->writeUpdatedEntity($input, $entity->getId());
             if ($result instanceof Entity) {
@@ -35,8 +35,7 @@ class Profile extends BaseController
                 ]);
             }
         }
-        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
-        $allowedProviderList = array_filter(explode(',', $config->getPreference('oidc', 'provider')));
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/profile.twig',
@@ -48,11 +47,7 @@ class Profile extends BaseController
                 'success' => $confirmSuccess,
                 'error' => $error,
                 'exception' => (isset($result)) ? $result : null,
-                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
-                'isFromOidc' => (
-                    count($allowedProviderList) &&
-                    in_array($entity->getOidcProviderFromName(), $allowedProviderList)
-                )
+                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema))
             )
         );
     }
@@ -66,7 +61,7 @@ class Profile extends BaseController
         } catch (\BO\Zmsclient\Exception $exception) {
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
             if ('' != $exception->template
-                && \App::$slim->getContainer()->view->getLoader()->exists($template)
+                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
             ) {
                 return [
                     'template' => $template,

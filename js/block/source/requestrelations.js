@@ -116,7 +116,7 @@ class RequestRelationView extends Component {
                         </tfoot>
                     </table>
                     <div className="table-actions">
-                        <button className="link button-default requestrelation--new" onClick={onNewClick}><i className="fas fa-plus-square color-positive" aria-hidden="true"></i> {this.props.labelsrequestrelation.new}</button>
+                        <button className="link button-default requestrelation--new" onClick={onNewClick}><i className="fas fa-plus-square color-positive"></i> {this.props.labelsrequestrelation.new}</button>
                     </div>
                 </div>
             </fieldset>

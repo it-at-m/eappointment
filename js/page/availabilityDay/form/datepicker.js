@@ -203,7 +203,6 @@ class AvailabilityDatePicker extends Component
     handleCalendarIcon(event) {
         event.preventDefault();
         this.openDatePicker()
-        console.log(this.datepicker.input)
         this.datepicker.input.focus();
     }
 
@@ -293,10 +292,14 @@ class AvailabilityDatePicker extends Component
                                 strictParsing={true}
                                 open={this.state.datePickerIsOpen}
                                 ref={(datepicker) => { this.datepicker = datepicker }} 
-
+                                chooseDayAriaLabelPrefix="Datumsauswahl"
+                                disabledDayAriaLabelPrefix="Nicht auswählbar"
+                                previousMonthAriaLabel="vorheriger Monat"
+                                nextMonthAriaLabel="nächster Monat"
+                                monthAriaLabelPrefix="Monat"
                             />
-                            <a aria-describedby={"help_" + this.props.attributes.id} href="#" className="calendar-placement icon" title={"startDate" == this.props.name ? "Kalender Datum von öffnen" : "Kalender Datum bis öffnen"} onClick={this.handleCalendarIcon} onKeyDown={this.dpKeyDownHandler}>
-                                <i className="far fa-calendar-alt" alt={"startDate" == this.props.name ? "Kalender Datum von öffnen" : "Kalender Datum bis öffnen"} />
+                            <a aria-describedby={"help_" + this.props.attributes.id} href="#" aria-label={"startDate" == this.props.name ? "Kalender Datum von öffnen" : "Kalender Datum bis öffnen"} className="calendar-placement icon" title={"startDate" == this.props.name ? "Kalender Datum von öffnen" : "Kalender Datum bis öffnen"} onClick={this.handleCalendarIcon} onKeyDown={this.dpKeyDownHandler}>
+                                <i className="far fa-calendar-alt" aria-hidden="true" />
                             </a>
                         </div>
                         <Description attributes={{ "id": "help_" + this.props.attributes.id }} value="Eingabe des Datums im Format TT.MM.YYYY"></Description>
@@ -335,8 +338,8 @@ class AvailabilityDatePicker extends Component
                                 open={this.state.timePickerIsOpen}
                                 ref={(timepicker) => { this.timepicker = timepicker }} 
                             />
-                            <a href="#" aria-describedby={"help_" + this.props.attributes.id + "_time"} className="calendar-placement icon" title={"startDate" == this.props.name ? "Uhrzeit von wählen" : "Uhrzeit bis wählen"} onClick={this.handleClockIcon} onKeyDown={this.tpKeyDownHandler}>
-                                <i className="far fa-clock" alt="Uhrzeitauswahl öffnen" />
+                            <a href="#" aria-describedby={"help_" + this.props.attributes.id + "_time"} aria-label="Uhrzeitauswahl öffnen" className="calendar-placement icon" title={"startDate" == this.props.name ? "Uhrzeit von wählen" : "Uhrzeit bis wählen"} onClick={this.handleClockIcon} onKeyDown={this.tpKeyDownHandler}>
+                                <i className="far fa-clock" aria-hidden="true" />
                             </a>
                         </div>
                         <Description attributes={{ "id": "help_" + this.props.attributes.id + "_time" }} value="Eingabe der Uhrzeit im Format HH:MM"></Description>

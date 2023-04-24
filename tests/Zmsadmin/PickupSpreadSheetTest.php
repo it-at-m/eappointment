@@ -99,7 +99,7 @@ class PickupSpreadSheetTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString(
-            'download; filename="abholer_Buergeramt_Heerstrasse.xlsx',
+            'download; filename="abholer_Buergeramt_Heerstrasse.csv',
             $response->getHeader('Content-Disposition')[0]
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -234,7 +234,7 @@ class PickupSpreadSheetTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString(
-            'download; filename="abholer_Buergeramt_Heerstrasse.xlsx',
+            'download; filename="abholer_Buergeramt_Heerstrasse.csv',
             $response->getHeader('Content-Disposition')[0]
         );
         $this->assertEquals(200, $response->getStatusCode());

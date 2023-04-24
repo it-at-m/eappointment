@@ -7,7 +7,7 @@ import Datepicker from '../../../lib/inputs/date'
 const renderDay = (day, index, onChange, onDeleteClick) => {
     const formName = `dayoff[${index}]`
     const onChangeName = (_, value) => onChange(index, 'name', value)
-    const onChangeDate = (_, value) => onChange(index, 'date', value)
+    const onChangeDate = (value) => onChange(index, 'date', value)
     const onDelete = ev => {
         ev.preventDefault()
         onDeleteClick(index)
@@ -39,8 +39,8 @@ const renderDay = (day, index, onChange, onDeleteClick) => {
             </td>
             <td className="daysoff-item__delete" style={tdStyle}>
                 <div>
-                    <a href="#" className="icon" title="Tag entfernen" onClick={onDelete}>
-                        <i className="far fa-trash-alt" aria-hidden="true"></i> 
+                    <a href="#" className="icon" title="Tag entfernen" aria-label="Tag entfernen" onClick={onDelete}>
+                        <i className="far fa-trash-alt" aria-hidden="true"></i>
                     </a>
                 </div>
             </td>
@@ -88,8 +88,6 @@ class DaysOffView extends Component {
     }
 
     render() {
-        console.log('DaysOffView::render', this.state)
-
         const onNewClick = ev => {
             ev.preventDefault()
             this.addNewItem()
@@ -107,7 +105,7 @@ class DaysOffView extends Component {
             <div className="daysoff table-responsive-wrapper">
                 <div className="table-action-link">
                     <button className="link button-default" onClick={onNewClick} >
-                        <i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer freier Tag
+                        <i className="fas fa-plus-square color-positive"></i> Neuer freier Tag
                     </button>
                 </div>
                 <table className="table--base clean">
@@ -124,7 +122,7 @@ class DaysOffView extends Component {
                 </table>
                 <div className="table-action-link">
                     <button className="link button-default" onClick={onNewClick} >
-                        <i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer freier Tag
+                        <i className="fas fa-plus-square color-positive"></i> Neuer freier Tag
                     </button>
                 </div>
             </div>

@@ -25,6 +25,14 @@
       "url": "https://gitlab.com/eappointment/zmsentities"
     }
   ],
+  "config": {
+    "platform": {
+        "php": "7.3"
+    },
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
+  },
   "require-dev": {
     "phpmd/phpmd": "@stable",
     "squizlabs/php_codesniffer": "*",
@@ -33,13 +41,16 @@
     "phpspec/prophecy-phpunit": "^2.0.0"
   },
   "require": {
-    "eappointment/zmsclient": "dev-muc/dev",
-    "eappointment/zmsslim": "dev-muc/dev",
-    "eappointment/zmsentities": "dev-muc/dev",
+    "eappointment/mellon": "^2.6.0",
+    "eappointment/zmsclient": "dev-muc-merge-2-25-from-berlin",
+    "eappointment/zmsslim": "dev-muc-merge-2-25-from-berlin",
+    "eappointment/zmsentities": "dev-muc-merge-2-25-from-berlin",
     "monolog/monolog": "1.*",
     "league/csv": "^9.0",
     "psr/http-message": "^1.0",
-    "container-interop/container-interop": "^1.2"
+    "container-interop/container-interop": "^1.2",
+    "twig/intl-extra": "^3.4",
+    "twig/twig": "3.*"
   },
   "bin": [],
   "autoload": {

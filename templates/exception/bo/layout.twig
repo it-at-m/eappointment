@@ -34,7 +34,7 @@
             </h3>
             {% endif %}
             <p>
-                <i alt="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" title="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" class='fas fa-exclamation-circle'></i> {% trans %}Fehler{% endtrans %}: {{ message|trans }}
+                <i aria-hidden="true" title="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" class="fas fa-exclamation-circle"></i> {% trans %}Fehler{% endtrans %}: {{ message|trans }}
             </p>
             {% if showlinks or abort %}
             <div class="form-actions" style="margin-top:0;">

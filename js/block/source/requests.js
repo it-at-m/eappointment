@@ -169,7 +169,7 @@ class RequestsView extends Component {
                     </tfoot>
                 </table>
                 <div className="table-actions">
-                    <button className="link button-default" onClick={onNewClick}><i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neue Dienstleistung</button>
+                    <button className="link button-default" onClick={onNewClick}><i className="fas fa-plus-square color-positive"></i> Neue Dienstleistung</button>
                 </div>
             </div>
         )

@@ -19,7 +19,7 @@ class PickupHandheld extends PickupQueue
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $selectedProcess = null;
-        if ($request->isPost()) {
+        if ($request->getMethod() === 'POST') {
             $input = $request->getParsedBody();
             $selectedProcess = $input['inputNumber'];
         }

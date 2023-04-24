@@ -14,9 +14,9 @@ class QuickLogin extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
+     * @param \Psr\Http\Message\RequestInterface|\BO\Slim\Request $request
      * @return String
      */
-
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -47,7 +47,8 @@ class QuickLogin extends BaseController
         $workstation->hint = $loginData['hint']['value'];
         $workstation->name = $loginData['workstation']['value'];
         $workstation = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
-        $basePath = $request->getUri()->getBasePath();
+        $basePath = $request->getBasePath();
+
         return $response->withRedirect($basePath .'/'. trim($loginData['redirectUrl']['value'], "/"));
     }
 }
