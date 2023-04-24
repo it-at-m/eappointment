@@ -229,7 +229,7 @@ class TicketPrinterConfigView extends Component {
                         </Controls>
                     </FormGroup>
                     <div className="form-actions">
-                        <a href={generatedUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen</a>
+                        <a href={generatedUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt"></i> Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen</a>
                     </div>
                 </fieldset>
             </form >
@@ -241,7 +241,9 @@ TicketPrinterConfigView.propTypes = {
     departments: PropTypes.array,
     organisation: PropTypes.object,
     config: PropTypes.shape({
-        ticketprinter: PropTypes.object
+        ticketprinter: PropTypes.shape({
+            baseUrl: PropTypes.object
+        })
     })
 }
 

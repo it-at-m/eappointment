@@ -55,7 +55,7 @@ class Accordion extends Component
         }
         
         const renderAccordionBody = () => {
-            return this.props.availabilities.map((availability, index) => {
+            return this.props.availabilityList.map((availability, index) => {
                 if (! availability.id && ! availability.tempId) {
                     availability.tempId = `spontaneous_ID_${index}`
                 }
@@ -91,6 +91,11 @@ class Accordion extends Component
                     ev.preventDefault()
                     this.props.onDelete(availability)
                 }
+
+                const onUpdateSingle = ev => {
+                    ev.preventDefault()
+                    this.props.onUpdateSingle(availability)
+                }
         
                 let title = accordionTitle(availability);
 
@@ -105,6 +110,13 @@ class Accordion extends Component
                         }
                     }))
                 })
+                let errorList = []
+                Object.values(this.props.errorList).map(item => {
+                    if (item.id == eventId) {
+                        errorList.push(item); 
+                    }
+                })
+
                 return (
                     <section key={index} className="accordion-section" style={hasConflict(eventId) || hasError(eventId) ? { border: "1px solid #9B0000"} : null}>
                         <h3 className="accordion__heading" role="heading" title={title}>
@@ -116,7 +128,7 @@ class Accordion extends Component
                             <AvailabilityForm 
                                 data={availability}
                                 selectedAvailability={this.props.data}
-                                availabilityList={this.props.availabilities}
+                                availabilityList={this.props.availabilityList}
                                 today={this.props.today}
                                 selectedDate={moment(this.props.timestamp, 'X').startOf('day').unix()}
                                 handleChange={this.props.handleChange}
@@ -124,8 +136,9 @@ class Accordion extends Component
                                 onCopy={onCopy}
                                 onExclusion={onExclusion}
                                 onEditInFuture={onEditInFuture}
+                                onUpdateSingle={onUpdateSingle}
                                 onDelete={onDelete}
-                                errorList={hasError(eventId) ? this.props.errorList : {}}
+                                errorList={hasError(eventId) ? errorList : {}}
                                 conflictList={hasConflict(eventId) ? Object.assign({}, conflictList): {}}
                             />
                         </div>
@@ -150,7 +163,7 @@ class Accordion extends Component
 
 Accordion.propTypes = {
     data: PropTypes.object,
-    availabilities: PropTypes.array,
+    availabilityList: PropTypes.array,
     errorList: PropTypes.object,
     conflictList: PropTypes.object,
     today: PropTypes.number,
@@ -159,6 +172,7 @@ Accordion.propTypes = {
     handleChange: PropTypes.func,
     onPublish: PropTypes.func,
     onDelete: PropTypes.func,
+    onUpdateSingle: PropTypes.func,
     onAbort: PropTypes.func,
     onNew: PropTypes.func,
     onCopy: PropTypes.func,

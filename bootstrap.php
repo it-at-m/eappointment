@@ -1,8 +1,10 @@
 <?php
+// phpcs:disable PSR1.Files.SideEffects
 // define the application path as single global constant
 define("APP_PATH", realpath(__DIR__));
 
 chdir(__DIR__);
+
 // use autoloading offered by composer, see composer.json for path settings
 if (file_exists(APP_PATH . '/vendor/autoload.php')) {
     define('VENDOR_PATH', APP_PATH . '/vendor');
@@ -16,9 +18,7 @@ require(APP_PATH . '/config.php');
 
 // Set option for environment, routing, logging and templating
 \BO\Slim\Bootstrap::init();
-\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\TextExtension());
-\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\I18nExtension());
-\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\IntlExtension());
+\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extra\Intl\IntlExtension());
 
 \App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL);
 \BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
@@ -32,7 +32,8 @@ require(APP_PATH . '/config.php');
 \BO\Slim\Bootstrap::addTwigTemplateDirectory('zmsentities', \BO\Zmsentities\Helper\TemplateFinder::getTemplatePath());
 
 // add slim middleware
-\App::$slim->add(new \BO\Slim\Middleware\TrailingSlash());
+$errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
+$errorMiddleware->setDefaultErrorHandler(new \BO\Zmsadmin\Helper\TwigExceptionHandler());
 
 // load routing
 \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');

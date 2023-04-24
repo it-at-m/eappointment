@@ -1,7 +1,12 @@
 import moment from 'moment'
 
 const validate = (data, props) => {
+    const currentTime = new Date()
     const today = moment(props.today, 'X')
+    today.set('hour', currentTime.getHours())
+    today.set('minute', currentTime.getMinutes())
+    today.set('second', currentTime.getSeconds())
+
     const selectedDate = moment(props.timestamp, 'X')
     const yesterday = selectedDate.startOf('day').clone().subtract(1, 'days')
     const tomorrow = selectedDate.startOf('day').clone().add(1, 'days')

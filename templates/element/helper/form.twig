@@ -217,7 +217,7 @@
         {% if item.options is iterable %}
         <optgroup label="{{ item.name }}">
             {% for option in item.options %}
-            <option title="{{ option.name }}" {% if option.selected or args.value == option.value %}selected="selected"{% endif %}
+            <option title="{{ option.name }}" {% if option.selected or (args.value and args.value == option.value) %}selected="selected"{% endif %}
             {% if option.data %}
                 {{ self.getDataAttributes(option.data) }}
             {% endif %}
@@ -225,7 +225,7 @@
             {% endfor %}
         </optgroup>
 		{% else %}
-        <option title="{{ item.name }}" {% if item.selected or args.value == item.value %}selected="selected" aria-selected="true"{% endif %}
+        <option title="{{ item.name }}" {% if item.selected or (args.value and args.value == item.value) %}selected="selected" {% endif %}
         {% if item.data %}
             {{ self.getDataAttributes(item.data) }}
         {% endif %}
@@ -253,13 +253,12 @@
     {% import _self as self %}
         <div{% if args.ariaLive %} aria-live="{{ args.ariaLive }}"{% endif %} class="checkboxdeselect" {% if fieldId %} id="{{ fieldId }}" {% endif %}>
             {{- self._checkboxselectinner(args) -}}
-            <button type="button" class="link clear-list" name="clear-list" accesskey="l">Liste leeren</button>
         </div>
 {% endmacro %}
 
 {% macro _checkboxselectinner(args) %}
     {% import _self as self %}
-    <ul aria-label="{{ args.ariaLabel|default('Liste') }}" class="checkbox-list inner"{% if args.height %} style="height:{{args.height}}; overflow: auto;"{% endif %}>             
+    <ul aria-label="{{ args.ariaLabel|default('Liste') }}" class="checkbox-list inner"{% if args.height %} style="height:{{args.height}}; overflow: auto; margin: 0px"{% endif %}>             
     {% for item in args.options %}
         {% if item.options is iterable %}
         <ul class="form-check group checkbox-list" aria-label="{{ args.ariaLabel|default('Liste') }}">
@@ -332,7 +331,10 @@
     {% if fieldId %} 
         {% set describeId = fieldId %}        
     {% endif %}
+
+    {% if args.id or fieldId %}
     id="{{ describeId }}"
+    {% endif %}
 
     {% if groupargs.errors or groupargs.description %}
 aria-describedby="{%
@@ -475,7 +477,7 @@ aria-describedby="{%
     <div id="error_{{ fieldId }}" class="message message--error" role="alert">
     <ul class="list--clean">
         {% for message in messages %}
-            <li><i alt="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" title="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" class='fas fa-exclamation-circle'
+            <li><i aria-hidden="true" title="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" class="fas fa-exclamation-circle"
                 ></i> {% trans %}Fehler{% endtrans %}: {{ message|trans }}</li>
         {% endfor %}
     </ul>

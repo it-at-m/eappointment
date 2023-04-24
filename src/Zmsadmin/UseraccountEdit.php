@@ -11,7 +11,6 @@ namespace BO\Zmsadmin;
 use BO\Zmsentities\Schema\Loader;
 use BO\Zmsentities\Useraccount as Entity;
 use BO\Mellon\Validator;
-use BO\Zmsclient\Auth;
 
 class UseraccountEdit extends BaseController
 {
@@ -31,7 +30,7 @@ class UseraccountEdit extends BaseController
         $userAccount = \App::$http->readGetResult('/useraccount/'. $userAccountName .'/')->getEntity();
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
 
-        if ($request->isPost()) {
+        if ($request->getMethod() === 'POST') {
             $input = $request->getParsedBody();
             $result = $this->writeUpdatedEntity($input, $userAccountName);
             if ($result instanceof Entity) {
@@ -42,9 +41,6 @@ class UseraccountEdit extends BaseController
                 );
             }
         }
-
-        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
-        $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider'));
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -58,8 +54,6 @@ class UseraccountEdit extends BaseController
                 'title' => 'Nutzer: Einrichtung und Administration','menuActive' => 'useraccount',
                 'exception' => (isset($result)) ? $result : null,
                 'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
-                'oidcProviderList' => array_filter($allowedProviderList),
-                'isFromOidc' => in_array($userAccount->getOidcProviderFromName(), $allowedProviderList)
             ]
         );
     }
@@ -73,7 +67,7 @@ class UseraccountEdit extends BaseController
         } catch (\BO\Zmsclient\Exception $exception) {
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
             if ('' != $exception->template
-                && \App::$slim->getContainer()->view->getLoader()->exists($template)
+                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
             ) {
                 return [
                     'template' => $template,

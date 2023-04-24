@@ -72,6 +72,17 @@ class ValidationHandler extends BaseView {
     hasErrors() {
         return (0 < Object.keys(this.errors).length) ? true : false;
     }
+
+    static hasMessage(response) {
+        var content = $(response).filter('.message');
+        if (content.length == 0) {
+            var message = $(response).find('.message');
+            if (message.length > 0) {
+                content = message;
+            }
+        } 
+        return (content.length > 0);
+    }
 }
 
 export default ValidationHandler

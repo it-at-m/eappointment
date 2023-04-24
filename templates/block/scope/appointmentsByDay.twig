@@ -2,22 +2,26 @@
     {% from 'element/helper/form.twig' import formgroup, formbutton %}
     {% block board_title %} {{title}}{% endblock %}
     {% block board_body %}
-        <style>
-            .board__body {padding:0px; margin:0px}
-            table {width: 100%;}
-            table th, table td {display: table-cell; white-space: nowrap; padding: 0px 10px; text-align:left;}
-            h1 {margin: 0px;}
-            td.wrap {white-space: break-spaces;}
-            @media print {
-                .navigation-primary, .one-sixths {display:none !important;}
-                .grid {display:block !important;}
-                .five-sixths {width: 100% !important; margin:0px; padding:0px;}
-                #page-wrapper {margin:0px; padding:0px;}
-                table {margin:0px; padding:0px;}
-                table th, table td { display: table-cell; white-space: nowrap; padding: 0px 10px; text-align:left; vertical-align: top;}
-                .board {margin:0px; padding:0px;}
-            }
-        </style>
+        <script>
+            let cssDef2 = '.board__body {padding:0px; margin:0px}';
+                cssDef2 += 'table {width: 100%;}';
+                cssDef2 += 'table th, table td {display: table-cell; white-space: nowrap; padding: 0px 10px; text-align:left;}';
+                cssDef2 += 'h1 {margin: 0px;}';
+                cssDef2 += 'td.wrap {white-space: break-spaces;}';
+                cssDef2 += '@media print {';
+                cssDef2 += ' .navigation-primary, .one-sixths {display:none !important;}';
+                cssDef2 += ' .grid {display:block !important;}';
+                cssDef2 += ' .five-sixths {width: 100% !important; margin:0px; padding:0px;}';
+                cssDef2 += ' #page-wrapper {margin:0px; padding:0px;}';
+                cssDef2 += ' table {margin:0px; padding:0px;}';
+                cssDef2 += ' table th, table td { display: table-cell; white-space: nowrap; padding: 0px 10px; text-align:left; vertical-align: top;}';
+                cssDef2 += ' .board {margin:0px; padding:0px;}';
+                cssDef2 += '}';
+            let style2 = document.createElement('style');
+
+            style2.appendChild(document.createTextNode(cssDef2));
+            document.head.appendChild(style2);
+        </script>
         <table>
             <thead>
                 <tr>

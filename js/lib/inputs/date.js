@@ -38,14 +38,17 @@ class Datepicker extends React.Component {
     keyDownHandler(event) {
         if (event.key === 'Enter') {
             event.preventDefault()
-            this.openDatePicker() 
+            if (this.state.datePickerIsOpen) {
+                this.closeDatePicker() 
+            } else {
+                this.openDatePicker()
+            }
         }
     }
 
     handleIcon(event) {
         event.preventDefault();
         this.openDatePicker()
-        this.datepicker.input.focus();
     }
 
     handleChange(date) {
@@ -60,6 +63,7 @@ class Datepicker extends React.Component {
         this.setState({
             datePickerIsOpen: true,
         });
+        this.datepicker.input.focus();
     }
 
     closeDatePicker() {
@@ -85,9 +89,14 @@ class Datepicker extends React.Component {
                     strictParsing={true}
                     open={this.state.datePickerIsOpen}
                     ref={(datepicker) => { this.datepicker = datepicker }} 
+                    chooseDayAriaLabelPrefix="Datumsauswahl"
+                    disabledDayAriaLabelPrefix="Nicht auswählbar"
+                    previousMonthAriaLabel="vorheriger Monat"
+                    nextMonthAriaLabel="nächster Monat"
+                    monthAriaLabelPrefix="Monat"
                 />
-                <a href="#" className="calendar-placement icon" title="Kalender öffnen" onClick={this.handleIcon} onKeyDown={this.keyDownHandler}>
-                    <i className="far fa-calendar-alt" alt="Kalender öffnen" />
+                <a href="#" className="calendar-placement icon" title="Kalender öffnen" aria-label="Kalender öffnen" onClick={this.handleIcon} onKeyDown={this.keyDownHandler}>
+                    <i className="far fa-calendar-alt" aria-hidden="true" />
                 </a>
             </div>
             

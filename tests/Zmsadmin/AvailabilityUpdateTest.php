@@ -45,7 +45,7 @@ class AvailabilityUpdateTest extends Base
         }'
     ];
 
-    protected $classname = "AvailabilityUpdate";
+    protected $classname = "AvailabilityUpdateList";
 
     public function testRendering()
     {

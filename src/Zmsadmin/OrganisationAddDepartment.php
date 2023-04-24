@@ -23,7 +23,7 @@ class OrganisationAddDepartment extends BaseController
         $input = $request->getParsedBody();
         $organisationId = Validator::value($args['id'])->isNumber()->getValue();
         $organisation = \App::$http->readGetResult('/organisation/' . $organisationId . '/')->getEntity();
-        if ($request->isPost()) {
+        if ($request->getMethod() === 'POST') {
             $input = $this->withCleanupLinks($input);
             $input = $this->withCleanupDayoffs($input);
             $entity = (new Entity($input))->withCleanedUpFormData();

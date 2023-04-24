@@ -26,16 +26,14 @@ class Index extends BaseController
         } catch (\Exception $workstationexception) {
             $workstation = null;
         }
-        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
         $input = $request->getParsedBody();
-        $oidclogin = $request->getAttribute('validator')->getParameter('oidclogin')->isString()->getValue();
-        if ($request->isPost()) {
+        if ($request->getMethod() === 'POST') {
             $loginData = $this->testLogin($input);
             if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
                 \BO\Zmsclient\Auth::setKey($loginData->authkey);
                 return \BO\Slim\Render::redirect('workstationSelect', array(), array());
             }
-            \BO\Slim\Render::withHtml(
+            return \BO\Slim\Render::withHtml(
                 $response,
                 'page/index.twig',
                 array(
@@ -43,11 +41,13 @@ class Index extends BaseController
                 'loginfailed' => true,
                 'workstation' => null,
                 'exception' => $loginData,
-                'showloginform' => true,
-                'oidcproviderlist' => $this->getProviderList($config)
+                'showloginform' => true
                 )
             );
         }
+        $config = (! $workstation)
+            ? \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity()
+            : null;
         return \BO\Slim\Render::withHtml(
             $response,
             'page/index.twig',
@@ -55,9 +55,7 @@ class Index extends BaseController
                 'title' => 'Anmeldung',
                 'config' => $config,
                 'workstation' => $workstation,
-                'oidcproviderlist' => $this->getProviderList($config),
-                'oidclogin' => $oidclogin,
-                'showloginform' => (! $oidclogin)
+                'showloginform' => true
             )
         );
     }
@@ -86,7 +84,7 @@ class Index extends BaseController
                 \BO\Zmsclient\Auth::setKey($exception->data['authkey']);
                 throw $exception;
             } elseif ('' != $exception->template
-                && \App::$slim->getContainer()->view->getLoader()->exists($template)
+                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
             ) {
                 $exceptionData = [
                   'template' => $template,
@@ -97,20 +95,5 @@ class Index extends BaseController
             }
         }
         return $exceptionData;
-    }
-
-    private function getProviderList($config)
-    {
-        $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider'));
-        $oidcproviderlist = [];
-        foreach (\BO\Slim\Middleware\OAuthMiddleware::$authInstances as $provider => $authInstance) {
-            if (0 < count($allowedProviderList) &&
-                class_exists($authInstance) &&
-                in_array($provider, $allowedProviderList)
-            ) {
-                $oidcproviderlist[] = $provider;
-            }
-        }
-        return $oidcproviderlist;
     }
 }

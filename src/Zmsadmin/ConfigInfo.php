@@ -39,7 +39,7 @@ class ConfigInfo extends BaseController
         $processListExample->addEntity($processExample2);
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
 
-        if ($request->isPost()) {
+        if ($request->getMethod() === 'POST') {
             $input = $request->getParsedBody();
             $entity = clone $config;
             $entity->setPreference($input['key'], $input['property'], $input['value']);

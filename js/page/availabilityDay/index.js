@@ -11,10 +11,12 @@ import SaveBar from './saveBar'
 import AccordionLayout from './layouts/accordion'
 import PageLayout from './layouts/page'
 import { inArray, showSpinner, hideSpinner } from '../../lib/utils'
+import ExceptionHandler from '../../lib/exceptionHandler';
 
 import {
     getInitialState,
     getStateFromProps,
+    writeSlotCalculationIntoAvailability,
     getNewAvailability,
     mergeAvailabilityListIntoState,
     updateAvailabilityInState,
@@ -49,6 +51,7 @@ class AvailabilityPage extends Component {
     }
 
     componentDidMount() {
+        this.getValidationList()
         this.unloadHandler = ev => {
             const confirmMessage = "Es wurden nicht alle Änderungen gespeichert. Diese gehen beim schließen verloren."
             if (this.state.stateChanged) {
@@ -63,22 +66,6 @@ class AvailabilityPage extends Component {
     componentDidUnMount() {
         window.removeEventListener('beforeunload', this.unloadHandler)
     }
-
-    /* not in use anymore
-    onUpdateAvailability(availability) {
-        let state = {};
-        if (availability.__modified || this.state.stateChanged) {
-            state = Object.assign(state, updateAvailabilityInState(this.state, availability), {
-                selectedAvailability: null
-            })
-        } else {
-            state = { selectedAvailability: null }
-        }
-        this.setState(state);
-        $('body').scrollTop(0);
-        return state;
-    }
-    */
 
     onPublishAvailability() {
         let state = {};
@@ -97,13 +84,11 @@ class AvailabilityPage extends Component {
             const newProps = {
                 conflicts: data.conflicts,
                 availabilitylist: data.availabilityList,
-                availabilitylistslices: data.availabilityListSlices,
                 busyslots: data.busySlotsForAvailabilities,
                 maxslots: data.maxSlotsForAvailabilities
             }
             this.setState(Object.assign({}, getStateFromProps(Object.assign({}, this.props, newProps)), {
-                stateChanged: false,
-                selectedAvailability: null
+                stateChanged: false
             }))
 
         }).fail(err => {
@@ -112,38 +97,54 @@ class AvailabilityPage extends Component {
     }
 
     onSaveUpdates() {
-        showSpinner();
-        const sendData = this.state.availabilitylist.map(availability => {
-            const sendAvailability = Object.assign({}, availability)
-            if (availability.tempId) {
-                delete sendAvailability.tempId
-            }
-            return sendAvailability
-        }).map(cleanupAvailabilityForSave)
-            
-        console.log('Saving updates', sendData)
+        const ok = confirm('Möchten Sie wirklich die Änderungen aller Öffnungszeiten speichern?')
+        if (ok) {
+            showSpinner();
+            const sendData = this.state.availabilitylist.filter((availability) => {
+                return (
+                    (availability.__modified || 
+                    availability.tempId && availability.tempId.includes('__temp__'))) &&
+                    ! this.hasErrors(availability)
+            }).map(availability => {
+                const sendAvailability = Object.assign({}, availability)
+                if (availability.tempId) {
+                    delete sendAvailability.tempId
+                }
+                return sendAvailability;
+            }).map(cleanupAvailabilityForSave)
+                
+            console.log('Saving updates', sendData)
 
-        $.ajax(`${this.props.links.includeurl}/availability/`, {
-            method: 'POST',
-            data: JSON.stringify(sendData)
-        }).done((success) => {
-            console.log('save success', success)
-            this.refreshData()
-            this.setState({
-                lastSave: new Date().getTime(),
-            }, () => {
-                this.successElement.scrollIntoView();
-            })
-            hideSpinner();
-        }).fail((err) => {
-            if (err.status === 404) {
-                console.log('404 error, ignored')
+            $.ajax(`${this.props.links.includeurl}/availability/`, {
+                method: 'POST',
+                data: JSON.stringify(sendData)
+            }).done((success) => {
+                console.log('save success', success)
                 this.refreshData()
-            } else {
-                console.log('save error', err)
-            }
+                this.setState({
+                    lastSave: new Date().getTime(),
+                }, () => {
+                    this.successElement.scrollIntoView();
+                })
+                hideSpinner();
+            }).fail((err) => {
+                let isException = err.responseText.toLowerCase().includes('exception');
+                if (err.status >= 500 && isException) {
+                    new ExceptionHandler($('.opened'), {
+                        code: err.status,
+                        message: err.responseText
+                    });
+                } else if (err.status === 404) {
+                    console.log('404 error, ignored')
+                } else {
+                    console.log('save all error', err)
+                }
+                this.getValidationList();
+                hideSpinner();
+            })
+        } else {
             hideSpinner();
-        })
+        }
     }
 
 
@@ -152,9 +153,53 @@ class AvailabilityPage extends Component {
             selectedTab: this.state.selectedTab
         }), () => {
             this.refreshData()
-            this.getConflictList(),
             this.getValidationList()
         })
+    }
+
+    onUpdateSingleAvailability(availability) {
+        console.log('Saving single availability', availability)
+        showSpinner();
+        const ok = confirm('Soll diese Öffnungszeit wirklich aktualisiert werden?')
+        const id = availability.id
+        if (ok) {
+            let list = [availability];
+            const sendData = list.map(availability => {
+                const sendAvailability = Object.assign({}, availability)
+                if (availability.tempId) {
+                    delete sendAvailability.tempId
+                }
+                return sendAvailability;
+            }).map(cleanupAvailabilityForSave)
+
+            $.ajax(`${this.props.links.includeurl}/availability/save/${id}/`, {
+                method: 'POST',
+                data: JSON.stringify(sendData[0])
+            }).done((data) => {
+                console.log('single update success data: ', data)
+                this.refreshData()
+                this.setState({
+                    lastSave: new Date().getTime(),
+                }, () => {
+                    this.successElement.scrollIntoView();
+                })
+                hideSpinner();
+            }).fail(err => {
+                let isException = err.responseText.toLowerCase().includes('exception');
+                if (isException) {
+                    new ExceptionHandler($('.opened'), {
+                        code: err.status,
+                        message: err.responseText
+                    });
+                } else {
+                    console.log('update error', err);
+                }
+                this.getValidationList()
+                hideSpinner();
+            })
+        } else {
+            hideSpinner();
+        }
     }
 
     onDeleteAvailability(availability) {
@@ -176,9 +221,20 @@ class AvailabilityPage extends Component {
                 hideSpinner();
             }).fail(err => {
                 console.log('delete error', err);
+                let isException = err.responseText.toLowerCase().includes('exception');
+                if (err.status >= 500 && isException) {
+                    new ExceptionHandler($('.opened'), {
+                        code: err.status,
+                        message: err.responseText
+                    });
+                } else {
+                    console.log('delete error', err);
+                }
                 hideSpinner();
             })
-        }
+        } else {
+            hideSpinner();
+        }        
     }
 
     onCopyAvailability(availability) {
@@ -196,18 +252,23 @@ class AvailabilityPage extends Component {
             mergeAvailabilityListIntoState(this.state, [copyAvailability]),
             { selectedAvailability: copyAvailability, stateChanged: true }
         ), () => {
-            this.getConflictList(),
             this.getValidationList()
         })
     }
 
     onSelectAvailability(availability) {
-        this.setState({
-            selectedAvailability: availability
-        }, () => {
-            this.getConflictList()
-            this.getValidationList()
-        })
+        if (availability || ! this.state.selectedAvailability) {
+            this.setState({
+                selectedAvailability: availability
+            }, () => {
+                this.getValidationList()
+            })
+        } else {
+            this.setState({
+                selectedAvailability: null
+            })
+        }
+        
     }
 
     editExclusionAvailability(availability, startDate, endDate, description, kind) {
@@ -327,11 +388,9 @@ class AvailabilityPage extends Component {
         state = Object.assign(
             state, 
             updateAvailabilityInState(this.state, newAvailability), 
-            { selectedAvailability: newAvailability, stateChanged: false }
+            { selectedAvailability: null, stateChanged: true }
         );
-        this.setState(state, () => {
-            this.getConflictList()
-        });
+        this.setState(state);
         $('body').scrollTop(0);
     }
 
@@ -344,6 +403,22 @@ class AvailabilityPage extends Component {
         if (availability) {
             this.setState({ selectedAvailability: availability })
         }
+    }
+
+    hasErrors(availability) {
+        let hasError = false;
+        let hasConflict = false;
+        Object.values(this.state.errorList).forEach(errorItem => {
+            if (availability.id === errorItem.id)
+                hasError = true;
+        })
+
+        Object.values(this.state.conflictList.conflictIdList).forEach(id => {
+            if (availability.id === id)
+                hasConflict = true;
+        })
+        
+        return (hasError || hasConflict);
     }
 
     getValidationList(list = []) {
@@ -397,8 +472,17 @@ class AvailabilityPage extends Component {
                         this.errorElement.scrollIntoView()
                     }
                 },
-                (error) => {
-                    console.log(error)
+                (err) => {
+                    let isException = err.responseText.toLowerCase().includes('exception');
+                    if (err.status >= 500 && isException) {
+                        new ExceptionHandler($('.opened'), {
+                            code: err.status,
+                            message: err.responseText
+                        });
+                    } else {
+                        console.log('conflict error', err);
+                    }
+                    hideSpinner();
                 }
             )
     }
@@ -416,10 +500,9 @@ class AvailabilityPage extends Component {
         return <ViewComponent
             timestamp={this.props.timestamp}
             conflicts={this.state.conflicts}
-            availabilities={this.state.availabilitylist}
+            availabilityList={this.state.availabilitylistslices || this.state.availabilitylist}
             data={this.state.selectedAvailability}
-            availabilityListSlices={this.state.availabilitylistslices}
-            maxWorkstationCount={this.props.maxworkstationcount}
+            maxWorkstationCount={this.state.maxWorkstationCount || this.props.maxworkstationcount}
             links={this.props.links}
             onSelect={onSelect}
             onDelete={onDelete}
@@ -427,12 +510,49 @@ class AvailabilityPage extends Component {
         />
     }
 
+    readCalculatedAvailabilityList() {
+        $.ajax(`${this.props.links.includeurl}/availability/slots/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            data: JSON.stringify({
+                'availabilityList': this.state.availabilitylist,
+                'busySlots': this.state.busyslots
+            })
+        }).done((responseData) => {
+            let availabilityList =  writeSlotCalculationIntoAvailability(
+                this.state.availabilitylist, 
+                responseData['maxSlots'], 
+                responseData['busySlots']
+            );
+            this.setState({ 
+                availabilitylistslices: availabilityList,
+                maxWorkstationCount: responseData['maxWorkstationCount']
+            })
+        }).fail((err) => {
+            if (err.status === 404) {
+                console.log('404 error, ignored')
+            } else {
+                let isException = err.responseText.toLowerCase().includes('exception');
+                    if (err.status >= 500 && isException) {
+                        new ExceptionHandler($('.opened'), {
+                            code: err.status,
+                            message: err.responseText
+                        });
+                    } else {
+                        console.log('reading calculated availability list error', err);
+                    }
+                    hideSpinner();
+            }
+        })
+    }
+
     handleChange(data) {
         if (data.__modified) {
             clearTimeout(this.timer)
             this.setState(
-                Object.assign({}, updateAvailabilityInState(this.state, data), {selectedAvailability: data}),
+                Object.assign({}, updateAvailabilityInState(this.state, data)),
                 () => {
+                    this.readCalculatedAvailabilityList();
                     if (data.tempId || data.id) {
                         this.timer = setTimeout(() => {
                             this.getConflictList()
@@ -554,6 +674,10 @@ class AvailabilityPage extends Component {
             this.onDeleteAvailability(data)
         }
 
+        const onUpdateSingle = data => {
+            this.onUpdateSingleAvailability(data)
+        }
+
         const onNew = data => {
             this.onNewAvailability(data)
         }
@@ -563,13 +687,14 @@ class AvailabilityPage extends Component {
         }
 
         return <AccordionLayout 
-            availabilities={this.state.availabilitylist}
+            availabilityList={this.state.availabilitylist}
             data={this.state.selectedAvailability}
             today={this.state.today}
             timestamp={this.props.timestamp}
             title=""
             onSelect={onSelect}
             onPublish={this.onPublishAvailability.bind(this)}
+            onUpdateSingle={onUpdateSingle}
             onDelete={onDelete}
             onNew={onNew}
             onAbort={this.onRevertUpdates.bind(this)}
