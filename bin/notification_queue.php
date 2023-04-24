@@ -7,9 +7,9 @@ include(realpath(__DIR__) .'/../bootstrap.php');
 $usage = <<<EOS
 
 Usage: {$argv[0]} [--verbose] --send
-        ATTENTION! Sends emails from queue. USE WITH CAUTION!
-        --send          no dry run, delete processes
-        --verbose       only shows what would be deleted
+        ATTENTION! Sends notifications from queue. USE WITH CAUTION!
+        --send          no dry run, send notifications from queue
+        --verbose       only shows what would be send
 
 EOS;
 

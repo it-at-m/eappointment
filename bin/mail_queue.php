@@ -8,8 +8,8 @@ $usage = <<<EOS
 
 Usage: {$argv[0]} [--verbose] --send
         ATTENTION! Sends emails from queue. USE WITH CAUTION!
-        --send          no dry run, delete processes
-        --verbose       only shows what would be deleted
+        --send          no dry run, sends emails from queue
+        --verbose       only shows what would be send
 
 EOS;
 
