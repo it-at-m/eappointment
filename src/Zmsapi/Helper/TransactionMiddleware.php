@@ -2,8 +2,9 @@
 
 namespace BO\Zmsapi\Helper;
 
-use \Psr\Http\Message\ServerRequestInterface;
-use \Psr\Http\Message\ResponseInterface;
+use BO\Zmsdb\Connection\Select;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class TransactionMiddleware
 {
@@ -11,21 +12,17 @@ class TransactionMiddleware
      * @codeCoverageIgnore
      *
      */
-    public function __invoke(
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-        callable $next
-    ) {
-        \BO\Zmsdb\Connection\Select::setTransaction();
-        if (null !== $next) {
-            try {
-                $response = $next($request, $response);
-            } catch (\Exception $exception) {
-                \BO\Zmsdb\Connection\Select::writeRollback();
-                throw $exception;
-            }
+    public function __invoke(ServerRequestInterface $request, RequestHandlerInterface $next)
+    {
+        Select::setTransaction();
+        try {
+            $response = $next->handle($request);
+        } catch (\Exception $exception) {
+            Select::writeRollback();
+            throw $exception;
         }
-        \BO\Zmsdb\Connection\Select::writeCommit();
+        Select::writeCommit();
+
         return $response;
     }
 }

@@ -45,10 +45,10 @@ class UserAuth
     public static function getUseraccountByAuthMethod($request)
     {
         $useraccount = null;
-        $useraccountQuery = new Useraccount();
         $basicAuth = static::getBasicAuth($request);
         $xAuthKey = static::getXAuthKey($request);
         $useraccountQuery = new Useraccount();
+
         if ($basicAuth && static::testUseraccountExists($basicAuth['username'])) {
             $useraccount = $useraccountQuery
                 ->readEntity($basicAuth['username'])
