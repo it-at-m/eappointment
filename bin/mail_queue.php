@@ -14,7 +14,7 @@ Usage: {$argv[0]} [--verbose] --send
 EOS;
 
 $send = preg_grep('#--?s(end)?#', $argv);
-$verbose = preg_grep('#^--?v(erbose)?$#', $argv);
+$verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
 
 \App::$messaging = new \BO\Zmsmessaging\Mail($verbose);
 
