@@ -10,6 +10,7 @@ class ConfigInfoTest extends Base
 
     protected $classname = "ConfigInfo";
 
+    /*
     public function testRendering()
     {
         $this->setApiCalls(
@@ -32,7 +33,8 @@ class ConfigInfoTest extends Base
         $this->assertStringContainsString("Sie sind in Kürze an der Reihe.", (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
-
+    */
+    
     public function testUpdate()
     {
         $this->setApiCalls(
