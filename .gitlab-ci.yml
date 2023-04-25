@@ -2,7 +2,17 @@ include:
     remote: https://gitlab.com/eappointment/php-base/-/raw/main/template-php-ci.yml
 
 test-php-73:
-    extends: .test-php
+    variables:
+      PHP_VERSION: 7.3
+    image: registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-dev
+    script:
+        - $CLI_COMPOSER
+        - $CLI_PHPCS
+        - $CLI_PHPMD
+        - docker-php-ext-enable xdebug
+        - $CLI_PHPUNIT $CLI_PHPUNIT_PARAM
+    coverage: '/^\s*Lines:\s*\d+.\d+\%/'
+
     allow_failure: false
     before_script:
         - $CLI_COMPOSER
