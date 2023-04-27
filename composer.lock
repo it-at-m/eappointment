@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cf59c8f372ce80c5a1e95e4cbd978af5",
+    "content-hash": "1532eabc469a4bc969f65811129a61a1",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -117,22 +117,22 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-berlin-2.25.02",
+            "version": "2.25.01",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsclient.git",
-                "reference": "0fc0ee6f532c8d68ce83dd7fac2c9cf1eba07370"
+                "reference": "fbdbd873fe2c5a12ec8426800234e387dd374b2c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=0fc0ee6f532c8d68ce83dd7fac2c9cf1eba07370",
-                "reference": "0fc0ee6f532c8d68ce83dd7fac2c9cf1eba07370",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=fbdbd873fe2c5a12ec8426800234e387dd374b2c",
+                "reference": "fbdbd873fe2c5a12ec8426800234e387dd374b2c",
                 "shasum": ""
             },
             "require": {
                 "eappointment/mellon": "^2.0.1",
-                "eappointment/zmsentities": "dev-berlin-2.25.02",
-                "eappointment/zmsslim": "dev-berlin-2.25.02",
+                "eappointment/zmsentities": "2.25.01",
+                "eappointment/zmsslim": "2.25.01",
                 "ext-curl": ">=0",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -141,6 +141,7 @@
                 "php-http/curl-client": "^2.2",
                 "psr/http-message": "^1.0",
                 "roave/security-advisories": "dev-master",
+                "slim/psr7": "^1.5",
                 "tracy/tracy": "^2.9",
                 "twig/twig": "3.*"
             },
@@ -169,20 +170,20 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "time": "2023-04-20T09:27:46+00:00"
+            "time": "2023-04-17T08:37:45+00:00"
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-berlin-2.25.02",
+            "version": "2.25.01",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsentities.git",
-                "reference": "62239d90de8a5748c5aece2a55326e488e5f9e99"
+                "reference": "bd5462e9a4398c8a54e01247cd678e1b26ee03c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=62239d90de8a5748c5aece2a55326e488e5f9e99",
-                "reference": "62239d90de8a5748c5aece2a55326e488e5f9e99",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=bd5462e9a4398c8a54e01247cd678e1b26ee03c3",
+                "reference": "bd5462e9a4398c8a54e01247cd678e1b26ee03c3",
                 "shasum": ""
             },
             "require": {
@@ -227,20 +228,20 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2023-04-23T12:49:58+00:00"
+            "time": "2023-04-17T08:12:42+00:00"
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-berlin-2.25.02",
+            "version": "2.25.01",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsslim.git",
-                "reference": "91149f24cb971bf1d08c598882278c6941514dd5"
+                "reference": "b51bb73ec638851a79d130d2479b045a7c78ed45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=91149f24cb971bf1d08c598882278c6941514dd5",
-                "reference": "91149f24cb971bf1d08c598882278c6941514dd5",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=b51bb73ec638851a79d130d2479b045a7c78ed45",
+                "reference": "b51bb73ec638851a79d130d2479b045a7c78ed45",
                 "shasum": ""
             },
             "require": {
@@ -250,7 +251,7 @@
                 "monolog/monolog": "1.*",
                 "php": ">=7.3.0",
                 "slim/http-cache": "1.*",
-                "slim/psr7": "1.7",
+                "slim/psr7": "^1.5",
                 "slim/slim": "4.*",
                 "slim/twig-view": "3.*",
                 "symfony/translation": "^5.2",
@@ -285,7 +286,7 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-            "time": "2023-04-20T09:24:18+00:00"
+            "time": "2023-04-17T08:33:26+00:00"
         },
         {
             "name": "fig/http-message-util",
@@ -829,16 +830,16 @@
         },
         {
             "name": "php-http/discovery",
-            "version": "1.15.3",
+            "version": "1.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-http/discovery.git",
-                "reference": "3ccd28dd9fb34b52db946abea1b538568e34eae8"
+                "reference": "bd810d15957cf165230e65d9e1a130793265e3b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-http/discovery/zipball/3ccd28dd9fb34b52db946abea1b538568e34eae8",
-                "reference": "3ccd28dd9fb34b52db946abea1b538568e34eae8",
+                "url": "https://api.github.com/repos/php-http/discovery/zipball/bd810d15957cf165230e65d9e1a130793265e3b7",
+                "reference": "bd810d15957cf165230e65d9e1a130793265e3b7",
                 "shasum": ""
             },
             "require": {
@@ -846,7 +847,8 @@
                 "php": "^7.1 || ^8.0"
             },
             "conflict": {
-                "nyholm/psr7": "<1.0"
+                "nyholm/psr7": "<1.0",
+                "zendframework/zend-diactoros": "*"
             },
             "provide": {
                 "php-http/async-client-implementation": "*",
@@ -871,7 +873,10 @@
             "autoload": {
                 "psr-4": {
                     "Http\\Discovery\\": "src/"
-                }
+                },
+                "exclude-from-classmap": [
+                    "src/Composer/Plugin.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -897,9 +902,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-http/discovery/issues",
-                "source": "https://github.com/php-http/discovery/tree/1.15.3"
+                "source": "https://github.com/php-http/discovery/tree/1.17.0"
             },
-            "time": "2023-03-31T14:40:37+00:00"
+            "time": "2023-04-26T15:39:13+00:00"
         },
         {
             "name": "php-http/httplug",
@@ -1639,12 +1644,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "6b458abe955f78a76ebe1ab22c8739ae625221f8"
+                "reference": "d6028f338053ae05b3c526fffe475bb45b8d676d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/6b458abe955f78a76ebe1ab22c8739ae625221f8",
-                "reference": "6b458abe955f78a76ebe1ab22c8739ae625221f8",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/d6028f338053ae05b3c526fffe475bb45b8d676d",
+                "reference": "d6028f338053ae05b3c526fffe475bb45b8d676d",
                 "shasum": ""
             },
             "conflict": {
@@ -1673,7 +1678,7 @@
                 "awesome-support/awesome-support": "<=6.0.7",
                 "aws/aws-sdk-php": ">=3,<3.2.1",
                 "azuracast/azuracast": "<0.18",
-                "backdrop/backdrop": "<=1.23",
+                "backdrop/backdrop": "<1.24.2",
                 "badaso/core": "<2.7",
                 "bagisto/bagisto": "<0.1.5",
                 "barrelstrength/sprout-base-email": "<1.2.7",
@@ -1715,12 +1720,12 @@
                 "concrete5/concrete5": "<=9.1.3|>= 9.0.0RC1, < 9.1.3",
                 "concrete5/core": "<8.5.8|>=9,<9.1",
                 "contao-components/mediaelement": ">=2.14.2,<2.21.1",
-                "contao/contao": ">=4,<4.4.56|>=4.5,<4.9.18|>=4.10,<4.11.7|>=4.13,<4.13.3",
+                "contao/contao": ">=4,<4.4.56|>=4.5,<4.9.40|>=4.10,<4.11.7|>=4.13,<4.13.21|>=5.1,<5.1.4",
                 "contao/core": ">=2,<3.5.39",
-                "contao/core-bundle": "<4.9.18|>=4.10,<4.11.7|>=4.13,<4.13.3|= 4.10.0",
+                "contao/core-bundle": "<4.9.40|>=4.10,<4.11.7|>=4.13,<4.13.21|>=5.1,<5.1.4|= 4.10.0",
                 "contao/listing-bundle": ">=4,<4.4.8",
                 "contao/managed-edition": "<=1.5",
-                "craftcms/cms": "<3.7.64|>= 4.0.0-RC1, < 4.3.7|>= 4.0.0-RC1, < 4.2.1",
+                "craftcms/cms": "<3.7.68|>= 4.0.0-RC1, < 4.3.7|>= 4.0.0-RC1, < 4.2.1",
                 "croogo/croogo": "<3.0.7",
                 "cuyz/valinor": "<0.12",
                 "czproject/git-php": "<4.0.3",
@@ -1792,7 +1797,7 @@
                 "fooman/tcpdf": "<6.2.22",
                 "forkcms/forkcms": "<5.11.1",
                 "fossar/tcpdf-parser": "<6.2.22",
-                "francoisjacquet/rosariosis": "<10.8.2",
+                "francoisjacquet/rosariosis": "<10.9.3",
                 "frappant/frp-form-answers": "<3.1.2|>=4,<4.0.2",
                 "friendsofsymfony/oauth2-php": "<1.3",
                 "friendsofsymfony/rest-bundle": ">=1.2,<1.2.2",
@@ -1864,7 +1869,7 @@
                 "krayin/laravel-crm": "<1.2.2",
                 "kreait/firebase-php": ">=3.2,<3.8.1",
                 "la-haute-societe/tcpdf": "<6.2.22",
-                "laminas/laminas-diactoros": "<2.11.1",
+                "laminas/laminas-diactoros": "<2.18.1|>=2.24,<2.24.2|>=2.25,<2.25.2|= 2.23.0|= 2.22.0|= 2.21.0|= 2.20.0|= 2.19.0",
                 "laminas/laminas-form": "<2.17.1|>=3,<3.0.2|>=3.1,<3.1.1",
                 "laminas/laminas-http": "<2.14.2",
                 "laravel/fortify": "<1.11.1",
@@ -1900,7 +1905,7 @@
                 "melisplatform/melis-front": "<5.0.1",
                 "mezzio/mezzio-swoole": "<3.7|>=4,<4.3",
                 "mgallegos/laravel-jqgrid": "<=1.3",
-                "microweber/microweber": "<1.3.3",
+                "microweber/microweber": "<1.3.4",
                 "miniorange/miniorange-saml": "<1.4.3",
                 "mittwald/typo3_forum": "<1.2.1",
                 "mobiledetect/mobiledetectlib": "<2.8.32",
@@ -1980,7 +1985,7 @@
                 "prestashop/blockwishlist": ">=2,<2.1.1",
                 "prestashop/contactform": ">=1.0.1,<4.3",
                 "prestashop/gamification": "<2.3.2",
-                "prestashop/prestashop": "<8.0.1",
+                "prestashop/prestashop": "<8.0.4",
                 "prestashop/productcomments": "<5.0.2",
                 "prestashop/ps_emailsubscription": "<2.6.1",
                 "prestashop/ps_facetedsearch": "<3.4.1",
@@ -2017,12 +2022,12 @@
                 "shopware/storefront": "<=6.4.8.1",
                 "shopxo/shopxo": "<2.2.6",
                 "showdoc/showdoc": "<2.10.4",
-                "silverstripe/admin": ">=1,<1.11.3",
+                "silverstripe/admin": "<1.12.7",
                 "silverstripe/assets": ">=1,<1.11.1",
                 "silverstripe/cms": "<4.11.3",
                 "silverstripe/comments": ">=1.3,<1.9.99|>=2,<2.9.99|>=3,<3.1.1",
                 "silverstripe/forum": "<=0.6.1|>=0.7,<=0.7.3",
-                "silverstripe/framework": "<4.11.14",
+                "silverstripe/framework": "<4.12.5",
                 "silverstripe/graphql": "<3.5.2|>=4-alpha.1,<4-alpha.2|>=4.1.1,<4.1.2|>=4.2.2,<4.2.3|= 4.0.0-alpha1",
                 "silverstripe/hybridsessions": ">=1,<2.4.1|>=2.5,<2.5.1",
                 "silverstripe/registry": ">=2.1,<2.1.2|>=2.2,<2.2.1",
@@ -2235,7 +2240,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-04-21T22:04:02+00:00"
+            "time": "2023-04-26T20:04:23+00:00"
         },
         {
             "name": "slim/http-cache",
@@ -6466,9 +6471,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "eappointment/zmsclient": 20,
-        "eappointment/zmsentities": 20,
-        "eappointment/zmsslim": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
