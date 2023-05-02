@@ -109,7 +109,7 @@
         "provider",
         "shortName"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
         "contact": {
             "$ref": "contact.json"
@@ -143,7 +143,7 @@
             "properties": {
                 "appointment": {
                     "type": "object",
-                    "additionalProperties": false,
+                    "additionalProperties": true,
                     "properties": {
                         "deallocationDuration": {
                             "type": "number",
