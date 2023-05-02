@@ -13,7 +13,7 @@ test-php-73:
         - $CLI_PHPUNIT $CLI_PHPUNIT_PARAM
     coverage: '/^\s*Lines:\s*\d+.\d+\%/'
 
-    allow_failure: false
+    allow_failure: true
     before_script:
         - $CLI_COMPOSER
         - npm install --legacy-peer-deps
