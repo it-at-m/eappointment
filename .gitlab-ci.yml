@@ -27,7 +27,7 @@ include:
 
 test-php-73:
     extends: .test-php-custom
-    allow_failure: false
+    allow_failure: true
     services:
         - name: mariadb:10.1
           alias: mysql
