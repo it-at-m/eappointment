@@ -26,7 +26,11 @@ class Index extends BaseController
         } catch (\Exception $workstationexception) {
             $workstation = null;
         }
+        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();     
+        error_log('\n\r we did get the config here: ------------------------------------------------------------------------------');
+        error_log(print_r($config,true));   
         $input = $request->getParsedBody();
+        $oidclogin = $request->getAttribute('validator')->getParameter('oidclogin')->isString()->getValue();
         if ($request->getMethod() === 'POST') {
             $loginData = $this->testLogin($input);
             if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
@@ -41,13 +45,11 @@ class Index extends BaseController
                 'loginfailed' => true,
                 'workstation' => null,
                 'exception' => $loginData,
-                'showloginform' => true
+                'showloginform' => true,
+                'oidcproviderlist' => $this->getProviderList($config)
                 )
             );
         }
-        $config = (! $workstation)
-            ? \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity()
-            : null;
         return \BO\Slim\Render::withHtml(
             $response,
             'page/index.twig',
@@ -55,7 +57,9 @@ class Index extends BaseController
                 'title' => 'Anmeldung',
                 'config' => $config,
                 'workstation' => $workstation,
-                'showloginform' => true
+                'oidcproviderlist' => $this->getProviderList($config),
+                'oidclogin' => $oidclogin,
+                'showloginform' => (! $oidclogin)                
             )
         );
     }
@@ -96,4 +100,20 @@ class Index extends BaseController
         }
         return $exceptionData;
     }
+
+    protected function getProviderList($config)
+    {
+        $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider'));
+        $oidcproviderlist = [];
+        foreach (\BO\Slim\Middleware\OAuthMiddleware::$authInstances as $provider => $authInstance) {
+            if (0 < count($allowedProviderList) &&
+                class_exists($authInstance) &&
+                in_array($provider, $allowedProviderList)
+            ) {
+                $oidcproviderlist[] = $provider;
+            }
+        }
+        return $oidcproviderlist;
+    }
+
 }
