@@ -3,6 +3,8 @@ namespace BO\Slim\Middleware;
 
 use \Psr\Http\Message\ServerRequestInterface;
 use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use BO\Slim\Factory\ResponseFactory;
 
 /**
  * @SuppressWarnings(PHPMD)
@@ -52,22 +54,21 @@ class OAuthMiddleware
      */
     public function __invoke(
         ServerRequestInterface $request,
-        ResponseInterface $response,
-        callable $next
+        RequestHandlerInterface  $next
     ) {
+        $response = (new ResponseFactory())->createResponse(200, '');        
         $request = $request->withAttribute('authentificationHandler', $this->authentificationHandler);
-        $oidcProviderName = ($request->getQueryParam('provider')) ?
-            $request->getQueryParam('provider') :
-            \BO\Zmsclient\Auth::getOidcProvider();
+        $queryParams = $request->getQueryParams();
+        $oidcProviderName = isset($queryParams['provider']) ? $queryParams['provider'] : \BO\Zmsclient\Auth::getOidcProvider();
         if ($oidcProviderName) {
             $oidcInstance = static::$authInstances[$oidcProviderName];
             $instance = new $oidcInstance();
-            $response = $this->{$this->handlerCall}($request, $response, $instance);
+            $response = $this->{$this->handlerCall}($request, $response, $instance, $next);
         }
-        return $next($request, $response);
+        return $response;
     }
 
-    private function handleLogin(ServerRequestInterface $request, ResponseInterface $response, $instance)
+    private function handleLogin(ServerRequestInterface $request, ResponseInterface $response, $instance, $next)
     {
         if (! $request->getParam("code") && '' == \BO\Zmsclient\Auth::getKey()) {
             return $response->withRedirect($this->getAuthUrl($request, $instance), 301);
@@ -77,7 +78,9 @@ class OAuthMiddleware
             return $response->withRedirect($this->getAuthUrl($request, $instance), 301);
         }
         if ('login' == $request->getAttribute('authentificationHandler')) {
-            return $instance->doLogin($request, $response);
+            $instance->doLogin($request, $response);
+            $response = $next->handle($request);
+            return $response;
         }
         return $response;
     }
