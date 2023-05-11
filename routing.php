@@ -122,6 +122,11 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->get('/workstation/quicklogin/', \BO\Zmsadmin\QuickLogin::class)
     ->setName("quickLogin");
 
+\App::$slim->map(['GET','POST'], '/oidc/', \BO\Zmsadmin\Oidc::class)
+    ->setName("oidc")->add(new \BO\Slim\Middleware\OAuthMiddleware('login'));
+
+
+
 /*
  * ---------------------------------------------------------------------------
  * Logout
