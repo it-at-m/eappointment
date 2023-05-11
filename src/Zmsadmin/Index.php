@@ -27,8 +27,6 @@ class Index extends BaseController
             $workstation = null;
         }
         $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();     
-        error_log('\n\r we did get the config here: ------------------------------------------------------------------------------');
-        error_log(print_r($config,true));   
         $input = $request->getParsedBody();
         $oidclogin = $request->getAttribute('validator')->getParameter('oidclogin')->isString()->getValue();
         if ($request->getMethod() === 'POST') {
