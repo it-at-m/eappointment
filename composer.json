@@ -1,0 +1,54 @@
+{
+  "name": "bo/zmsstatistic",
+  "description": "Frontend for ZMS neo statistics",
+  "license": "commercial",
+  "authors": [
+    {
+      "name": "Mathias Fischer",
+      "email": "mathias.fischer@berlinonline.de"
+    }
+  ],
+  "scripts": {
+    "command": "bin/configure"
+  },
+  "config": {
+      "platform": {
+          "php": "7.3"
+      },
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
+  },
+  "require-dev": {
+    "phpmd/phpmd": "@stable",
+    "squizlabs/php_codesniffer": "*",
+    "phpunit/phpunit": "^9.5.4",
+    "helmich/phpunit-psr7-assert": "^4.3.0",
+    "phpspec/prophecy-phpunit": "^2.0.0"
+  },
+  "require": {
+    "eappointment/mellon": "^2.6.0",
+    "eappointment/zmsentities": "dev-berlin-2.25.03",
+    "eappointment/zmsslim": "dev-berlin-2.25.03",
+    "eappointment/zmsclient": "dev-berlin-2.25.03",
+    "monolog/monolog": "1.*",
+    "phpoffice/phpspreadsheet": "^1.0",
+    "roave/security-advisories": "dev-master",
+    "twig/twig": "3.*",
+    "twig/intl-extra": "^3.4",
+    "ext-intl": "*"
+  },
+  "bin": [],
+  "autoload": {
+    "psr-4": {
+      "BO\\Zmsstatistic\\": "src/Zmsstatistic/",
+      "BO\\Zmsstatistic\\Tests\\": "tests/Zmsstatistic/"
+    }
+  },
+  "repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/berlinonline/slim-psr7"
+    }
+  ]
+}
