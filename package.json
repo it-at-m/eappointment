@@ -35,6 +35,8 @@
     "parcel": "^2.7.0"
   },
   "dependencies": {
-    "bo-layout-statistic": "git+https://gitlab+deploy-token-94:wqa-8barWx8VyXwsQwUU@gitlab.berlinonline.net/land-intranet/layout-statistic.git#master"
+    "bo-layout-admin-scss": "https://gitlab.com/eappointment/includes/layout-admin-scss.git#2.24.14",
+    "bo-layout-admin-js": "https://gitlab.com/eappointment/includes/layout-admin-js.git#2.24.14",
+    "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities.git#2.24.14"
   }
 }
