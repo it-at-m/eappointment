@@ -1,7 +1,7 @@
 {
-  "name": "bo/zmsstatistic",
-  "description": "Frontend for ZMS neo statistics",
-  "license": "commercial",
+  "name": "eappointment/zmsstatistic",
+  "description": "Frontend for ZMS statistics",
+  "license": "EUPL-1.2",
   "authors": [
     {
       "name": "Mathias Fischer",
