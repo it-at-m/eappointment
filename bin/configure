@@ -18,7 +18,6 @@ then
 fi
 test -d $ROOT/cache && chmod -fR a+rwX $ROOT/cache || echo "Could not chmod cache files"
 
-git config --global --add safe.directory '*'
 VERSION=`git describe --tags --always`
 echo $VERSION > $ROOT/VERSION
 echo " $VERSION"
