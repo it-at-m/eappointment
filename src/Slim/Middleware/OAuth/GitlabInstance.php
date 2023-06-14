@@ -83,7 +83,7 @@ class GitlabInstance
 
     private function writeTokenToSession($token)
     {
-        $realmData = $this->provider::getBasicOptionsFromJsonFile();
+        $realmData = $this->provider->getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
         $sessionHandler->open('/'. $realmData['realm'] . '/', $realmData['clientName']);
         $sessionHandler->write(\BO\Zmsclient\Auth::getKey(), serialize($token), ['oidc' => true]);
@@ -92,7 +92,7 @@ class GitlabInstance
 
     private function writeDeleteSession()
     {
-        $realmData = $this->provider::getBasicOptionsFromJsonFile();
+        $realmData = $this->provider->getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
         $sessionHandler->open('/'. $realmData['realm'] . '/', $realmData['clientName']);
         $sessionHandler->destroy(\BO\Zmsclient\Auth::getKey());
@@ -100,7 +100,7 @@ class GitlabInstance
 
     private function readTokenDataFromSession()
     {
-        $realmData = $this->provider::getBasicOptionsFromJsonFile();
+        $realmData = $this->provider->getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
         $sessionHandler->open('/'. $realmData['realm'] . '/', $realmData['clientName']);
         $tokenData = unserialize($sessionHandler->read(\BO\Zmsclient\Auth::getKey(), ['oidc' => true]));
