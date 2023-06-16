@@ -37,6 +37,12 @@ class Application extends \BO\Slim\Application
         )
     );
 
+    /**
+     * image preferences
+     */
+
+    public static $isImageAllowed = false;
+
     /*
      * -----------------------------------------------------------------------
      * ZMS API access
