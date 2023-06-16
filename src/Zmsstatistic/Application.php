@@ -41,7 +41,7 @@ class Application extends \BO\Slim\Application
      * image preferences
      */
 
-     public static $isImageAllowed = false;
+    public static $isImageAllowed = false;
 
     /*
      * -----------------------------------------------------------------------
