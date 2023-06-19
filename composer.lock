@@ -442,12 +442,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "5e4c0b1160cbcb540202495bc72c4dd33449fe78"
+                "reference": "e5e2bf390aa90f55c8da7453714a2478697a3068"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=5e4c0b1160cbcb540202495bc72c4dd33449fe78",
-                "reference": "5e4c0b1160cbcb540202495bc72c4dd33449fe78",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=e5e2bf390aa90f55c8da7453714a2478697a3068",
+                "reference": "e5e2bf390aa90f55c8da7453714a2478697a3068",
                 "shasum": ""
             },
             "require": {
@@ -498,7 +498,7 @@
             "support": {
                 "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-merge-2-25-from-berlin"
             },
-            "time": "2023-06-05T10:34:29+00:00"
+            "time": "2023-06-19T14:39:22+02:00"
         },
         {
             "name": "eappointment/zmsslim",
