@@ -34,7 +34,7 @@ class SendNotificationTest extends Base
             } else {
                 $this->assertStringContainsString('Content-Transfer-Encoding: base64', trim($notification['mime']));
                 $this->assertStringContainsString(
-                    'sms=+4917012345678@example.com',
+                    'sms=+4917012345678@sms.verwalt-berlin.de',
                     json_encode($notification['recipients'])
                 );
             }
