@@ -6,6 +6,9 @@
  */
 namespace BO\Zmsmessaging;
 
+/**
+ * @SuppressWarnings("TooManyFields")
+ */
 class Application
 {
 
@@ -59,4 +62,24 @@ class Application
      * Mail settings
      */
     public static $mails_per_minute = 300;
+
+    /*
+     * -----------------------------------------------------------------------
+     * SMTP settings
+     */
+    public static $smtp_enabled = false;
+
+    public static $smtp_host = null;
+
+    public static $smtp_port = null;
+
+    public static $smtp_auth_enabled = true;
+
+    public static $smtp_auth_method = null;
+
+    public static $smtp_username = null;
+
+    public static $smtp_password = null;
+
+    public static $smtp_skip_tls_verify = false;
 }

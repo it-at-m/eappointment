@@ -139,32 +139,23 @@ class Notification extends BaseController
         $mailer->AllowEmpty = true;
         $mailer->XMailer = \App::IDENTIFIER;
 
-        #to test via gmail
-        /*
-        $mailer->IsSMTP();
-        $mailer->SMTPDebug  = 1;
-        $mailer->SMTPAuth   = true;
-        $mailer->SMTPSecure = "tls";
-        $mailer->Port       = 587;
-        $mailer->Host       = "smtp.gmail.com";
-        $mailer->Username   = "";
-        $mailer->Password   = "";
-        $mailer->AddAddress("", "");
-        $mailer->FromName   = "";
-        */
-        /*
-        #to test via kasserver
-        $mailer->IsSMTP();
-        $mailer->SMTPDebug  = 1;
-        $mailer->SMTPAuth   = true;
-        $mailer->SMTPSecure = "tls";
-        $mailer->Port       = 587;
-        $mailer->Host       = "w00b3688.kasserver.com";
-        $mailer->Username   = "";
-        $mailer->Password   = "";
-        $mailer->AddAddress("", "");
-        $mailer->FromName   = "";
-        */
+        if (\App::$smtp_enabled) {
+            $mailer->IsSMTP();
+            $mailer->SMTPAuth = \App::$smtp_auth_enabled;
+            $mailer->SMTPSecure = \App::$smtp_auth_method;
+            $mailer->Port = \App::$smtp_port;
+            $mailer->Host = \App::$smtp_host;
+            $mailer->Username = \App::$smtp_username;
+            $mailer->Password = \App::$smtp_password;
+            if (\App::$smtp_skip_tls_verify) {
+                $mailer->SMTPOptions['ssl'] = [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true,
+                ];
+            }
+        }
+
         return $mailer;
     }
 }

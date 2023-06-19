@@ -129,6 +129,10 @@ class Mail extends BaseController
         return $mailer;
     }
 
+    /**
+     * @SuppressWarnings("CyclomaticComplexity")
+     * @SuppressWarnings("NPathComplexity")
+     */
     protected function readMailer(\BO\Zmsentities\Mail $entity)
     {
         $this->log("Build Mailer: testEntity() - ". \App::$now->format('c'));
@@ -170,6 +174,24 @@ class Mail extends BaseController
                 "text/calendar; charset=utf-8; method=REQUEST"
             );
         }
+
+        if (\App::$smtp_enabled) {
+            $mailer->IsSMTP();
+            $mailer->SMTPAuth = \App::$smtp_auth_enabled;
+            $mailer->SMTPSecure = \App::$smtp_auth_method;
+            $mailer->Port = \App::$smtp_port;
+            $mailer->Host = \App::$smtp_host;
+            $mailer->Username = \App::$smtp_username;
+            $mailer->Password = \App::$smtp_password;
+            if (\App::$smtp_skip_tls_verify) {
+                $mailer->SMTPOptions['ssl'] = [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true,
+                ];
+            }
+        }
+
         return $mailer;
     }
 }
