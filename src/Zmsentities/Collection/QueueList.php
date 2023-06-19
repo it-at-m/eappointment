@@ -12,7 +12,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     const FAKE_WAITINGNUMBER = -1;
 
-    const STATUS_IGNORE = ['called', 'processing', 'missed', 'deleted', 'pickup', 'reserved'];
+    const STATUS_IGNORE = ['called', 'processing', 'missed', 'deleted', 'pickup'];
 
     const STATUS_APPEND = ['missed', 'deleted'];
 
