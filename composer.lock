@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4b33cb17e5482446311e0a309827b5c1",
+    "content-hash": "7cf519174c0e467b3dc737de6353b0cc",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -178,22 +178,22 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-berlin-2.25.03",
+            "version": "dev-berlin-2.25.04",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsclient.git",
-                "reference": "49826978deef4b716add1c5617e3b071927f0062"
+                "reference": "6216cefd0bc2c0c73745d458fdf34f1d214bcd25"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=49826978deef4b716add1c5617e3b071927f0062",
-                "reference": "49826978deef4b716add1c5617e3b071927f0062",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=6216cefd0bc2c0c73745d458fdf34f1d214bcd25",
+                "reference": "6216cefd0bc2c0c73745d458fdf34f1d214bcd25",
                 "shasum": ""
             },
             "require": {
                 "eappointment/mellon": "^2.0.1",
-                "eappointment/zmsentities": "dev-berlin-2.25.03",
-                "eappointment/zmsslim": "dev-berlin-2.25.03",
+                "eappointment/zmsentities": "dev-berlin-2.25.04",
+                "eappointment/zmsslim": "dev-berlin-2.25.04",
                 "ext-curl": ">=0",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -230,20 +230,20 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "time": "2023-06-09T06:12:34+00:00"
+            "time": "2023-06-20T07:30:37+00:00"
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-berlin-2.25.03",
+            "version": "dev-berlin-2.25.04",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsentities.git",
-                "reference": "f59a558be734f85b9c2c7ccbae7127c9e3bd1db4"
+                "reference": "17bf0ec9840d019126e922e8ee418eefeb002993"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=f59a558be734f85b9c2c7ccbae7127c9e3bd1db4",
-                "reference": "f59a558be734f85b9c2c7ccbae7127c9e3bd1db4",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=17bf0ec9840d019126e922e8ee418eefeb002993",
+                "reference": "17bf0ec9840d019126e922e8ee418eefeb002993",
                 "shasum": ""
             },
             "require": {
@@ -289,20 +289,20 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2023-06-09T06:09:00+00:00"
+            "time": "2023-06-19T12:43:21+00:00"
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-berlin-2.25.03",
+            "version": "dev-berlin-2.25.04",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsslim.git",
-                "reference": "59dc9b5eb98a77db7b886dd029cb39bb40f61710"
+                "reference": "27ae37164660783f9234edce359a08c0625d18b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=59dc9b5eb98a77db7b886dd029cb39bb40f61710",
-                "reference": "59dc9b5eb98a77db7b886dd029cb39bb40f61710",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=27ae37164660783f9234edce359a08c0625d18b4",
+                "reference": "27ae37164660783f9234edce359a08c0625d18b4",
                 "shasum": ""
             },
             "require": {
@@ -348,7 +348,7 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-            "time": "2023-06-08T08:42:59+00:00"
+            "time": "2023-06-16T07:40:53+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",
@@ -1193,16 +1193,16 @@
         },
         {
             "name": "php-http/discovery",
-            "version": "1.18.1",
+            "version": "1.19.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-http/discovery.git",
-                "reference": "f258b3a1d16acb7b21f3b42d7a2494a733365237"
+                "reference": "1856a119a0b0ba8da8b5c33c080aa7af8fac25b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-http/discovery/zipball/f258b3a1d16acb7b21f3b42d7a2494a733365237",
-                "reference": "f258b3a1d16acb7b21f3b42d7a2494a733365237",
+                "url": "https://api.github.com/repos/php-http/discovery/zipball/1856a119a0b0ba8da8b5c33c080aa7af8fac25b4",
+                "reference": "1856a119a0b0ba8da8b5c33c080aa7af8fac25b4",
                 "shasum": ""
             },
             "require": {
@@ -1265,9 +1265,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-http/discovery/issues",
-                "source": "https://github.com/php-http/discovery/tree/1.18.1"
+                "source": "https://github.com/php-http/discovery/tree/1.19.0"
             },
-            "time": "2023-05-17T08:53:10+00:00"
+            "time": "2023-06-19T08:45:36+00:00"
         },
         {
             "name": "php-http/httplug",
@@ -2029,12 +2029,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "601b276d21df95e49f1802c7432b788cfaac15a8"
+                "reference": "e47f876d3b2df4a1354964c32820b4d7c10b8675"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/601b276d21df95e49f1802c7432b788cfaac15a8",
-                "reference": "601b276d21df95e49f1802c7432b788cfaac15a8",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/e47f876d3b2df4a1354964c32820b4d7c10b8675",
+                "reference": "e47f876d3b2df4a1354964c32820b4d7c10b8675",
                 "shasum": ""
             },
             "conflict": {
@@ -2110,7 +2110,7 @@
                 "contao/core-bundle": "<4.9.40|>=4.10,<4.11.7|>=4.13,<4.13.21|>=5.1,<5.1.4|= 4.10.0",
                 "contao/listing-bundle": ">=4,<4.4.8",
                 "contao/managed-edition": "<=1.5",
-                "craftcms/cms": ">= 4.0.0-RC1, < 4.4.12|>= 4.0.0-RC1, <= 4.4.5|>= 4.0.0-RC1, <= 4.4.6|<=3.8.5|>=4,<4.4.6|>= 4.0.0-RC1, < 4.4.6|>= 4.0.0-RC1, < 4.3.7|>= 4.0.0-RC1, < 4.2.1",
+                "craftcms/cms": "<4.4.6|>= 4.0.0-RC1, < 4.4.12|>= 4.0.0-RC1, <= 4.4.5|>= 4.0.0-RC1, <= 4.4.6|>= 4.0.0-RC1, < 4.4.6|>= 4.0.0-RC1, < 4.3.7|>= 4.0.0-RC1, < 4.2.1",
                 "croogo/croogo": "<3.0.7",
                 "cuyz/valinor": "<0.12",
                 "czproject/git-php": "<4.0.3",
@@ -2195,7 +2195,7 @@
                 "funadmin/funadmin": "<=3.2",
                 "gaoming13/wechat-php-sdk": "<=1.10.2",
                 "genix/cms": "<=1.1.11",
-                "getgrav/grav": "<1.7.34",
+                "getgrav/grav": "<1.7.42",
                 "getkirby/cms": "= 3.8.0|<3.5.8.2|>=3.6,<3.6.6.2|>=3.7,<3.7.5.1",
                 "getkirby/panel": "<2.5.14",
                 "getkirby/starterkit": "<=3.7.0.2",
@@ -2230,6 +2230,7 @@
                 "illuminate/view": "<6.20.42|>=7,<7.30.6|>=8,<8.75",
                 "impresscms/impresscms": "<=1.4.3",
                 "in2code/femanager": "<5.5.3|>=6,<6.3.4|>=7,<7.1",
+                "in2code/ipandlanguageredirect": "<5.1.2",
                 "in2code/lux": "<17.6.1|>=18,<24.0.2",
                 "innologi/typo3-appointments": "<2.0.6",
                 "intelliants/subrion": "<=4.2.1",
@@ -2446,7 +2447,7 @@
                 "ssddanbrown/bookstack": "<22.2.3",
                 "statamic/cms": "<3.2.39|>=3.3,<3.3.2",
                 "stormpath/sdk": ">=0,<9.9.99",
-                "studio-42/elfinder": "<2.1.59",
+                "studio-42/elfinder": "<2.1.62",
                 "subrion/cms": "<=4.2.1",
                 "sukohi/surpass": "<1",
                 "sulu/sulu": "= 2.4.0-RC1|<1.6.44|>=2,<2.2.18|>=2.3,<2.3.8",
@@ -2510,6 +2511,7 @@
                 "topthink/framework": "<6.0.14",
                 "topthink/think": "<=6.1.1",
                 "topthink/thinkphp": "<=3.2.3",
+                "tpwd/ke_search": "<4.0.3|>=4.1,<4.6.6|>=5,<5.0.2",
                 "tribalsystems/zenario": "<=9.3.57595",
                 "truckersmp/phpwhois": "<=4.3.1",
                 "ttskch/pagination-service-provider": "<1",
@@ -2629,7 +2631,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-06-14T05:04:21+00:00"
+            "time": "2023-06-16T20:04:13+00:00"
         },
         {
             "name": "slim/http-cache",
