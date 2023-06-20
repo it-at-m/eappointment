@@ -125,12 +125,12 @@ class BaseController
 
         if ($entity instanceof Mail) {
             $isMail = Validator::value($entity->getRecipient())->isMail()->getValue();
-            if (!isMail) {
+            if (!$isMail) {
                 throw new \BO\Zmsmessaging\Exception\InvalidMailAddress();
             }
             if (\App::$verify_dns_enabled) {
                 $hasDns = Validator::value($entity->getRecipient())->isMail()->hasDNS()->getValue();
-                if (!hasDNS) {
+                if (!$hasDNS) {
                     throw new \BO\Zmsmessaging\Exception\InvalidMailAddress();
                 }
             }
