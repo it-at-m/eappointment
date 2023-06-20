@@ -130,7 +130,7 @@ class BaseController
             }
             if (\App::$verify_dns_enabled) {
                 $hasDns = Validator::value($entity->getRecipient())->isMail()->hasDNS()->getValue();
-                if (!$hasDNS) {
+                if (!$hasDns) {
                     throw new \BO\Zmsmessaging\Exception\InvalidMailAddress();
                 }
             }
