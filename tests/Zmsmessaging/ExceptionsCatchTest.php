@@ -40,9 +40,7 @@ class ExceptionsCatchTest extends Base
             } elseif (strpos($value, 'Zmsmessaging.ERROR') !== false) {
                 $this->assertStringContainsString('No valid mailer', $value);
             } elseif (strpos($value, 'Exception Failure') !== false) {
-                if (\App::$verify_dns_enabled) {
-                    $this->assertStringContainsString('No valid email exists', $value);
-                }
+                $this->assertStringContainsString('No valid email exists', $value);
             } else {
                 $this->assertFalse(strpos($value, 'PHPMailer Failure') !== false);
             }
