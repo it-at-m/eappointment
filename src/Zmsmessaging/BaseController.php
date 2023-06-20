@@ -123,7 +123,7 @@ class BaseController
             throw new \BO\Zmsmessaging\Exception\MailWithoutContent();
         }
 
-        if (\App::$smtp_verify_dns_enabled) {
+        if (\App::$verify_dns_enabled) {
             if ($entity instanceof Mail
                 &&
                 !Validator::value($entity->getRecipient())->isMail()->hasDNS()->getValue()
