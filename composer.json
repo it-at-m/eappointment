@@ -47,11 +47,11 @@
     "helmich/phpunit-psr7-assert": "^4.3.0"
   },
   "require": {
-    "eappointment/zmsslim": "dev-muc-merge-2-25-from-berlin",
-    "eappointment/zmsclient": "dev-muc-merge-2-25-from-berlin",
+    "eappointment/zmsslim": "dev-muc-test",
+    "eappointment/zmsclient": "dev-muc-test",
     "eappointment/zmsdldb": "dev-main || 2.25.*",
-    "eappointment/zmsdb": "dev-muc-merge-2-25-from-berlin",
-    "eappointment/zmsentities": "dev-muc-merge-2-25-from-berlin",
+    "eappointment/zmsdb": "dev-muc-test",
+    "eappointment/zmsentities": "dev-muc-test",
     "monolog/monolog": "1.*",
     "ulrichsg/getopt-php": "^2.3",
     "league/climate": "^3.2"
