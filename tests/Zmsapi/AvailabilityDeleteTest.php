@@ -24,7 +24,7 @@ class AvailabilityDeleteTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render(['id' => 1], [], []);
-        $this->assertStringContainsString('Not found', (string)$response->getBody());
+        $this->assertStringContainsString('availability.json","id":1', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 }

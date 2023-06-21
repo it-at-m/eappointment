@@ -2,8 +2,8 @@
 
 namespace BO\Zmsapi\Helper;
 
-use \Psr\Http\Message\ServerRequestInterface;
-use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 /**
  * @codeCoverageIgnore
@@ -11,17 +11,12 @@ use \Psr\Http\Message\ResponseInterface;
  */
 class LogOperatorMiddleware
 {
-    public function __invoke(
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-        callable $next
-    ) {
+    public function __invoke(ServerRequestInterface $request, RequestHandlerInterface $next)
+    {
         $authority = $request->getUri()->getAuthority();
         \BO\Zmsdb\Log::$operator = $this->getAuthorityWithoutPassword($authority) . '@' . gethostname();
-        if (null !== $next) {
-            $response = $next($request, $response);
-        }
-        return $response;
+
+        return $next->handle($request);
     }
 
     private function getAuthorityWithoutPassword($authority)

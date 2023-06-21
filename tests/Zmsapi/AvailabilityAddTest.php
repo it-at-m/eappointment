@@ -12,17 +12,10 @@ class AvailabilityAddTest extends Base
         $response = $this->render([], [
             '__body' => '[
                 {
-                      "id": 21202,
-                      "description": "Test Öffnungszeit update",
-                      "scope": {
-                          "id": 312
-                      }
-                  },
-                  {
-                    "id": 1,
-                    "description": "Test Öffnungszeit neu mit id",
+                    "id": 21202,
+                    "description": "Test Öffnungszeit update",
                     "scope": {
-                        "id": 141
+                        "id": 312
                     }
                 },
                 {
@@ -44,11 +37,11 @@ class AvailabilityAddTest extends Base
         $this->render([], [], []);
     }
 
-    public function testNotFound()
+    public function testEmptyBody()
     {
         $this->setWorkstation();
-        $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityNotFound');
-        $this->expectExceptionCode(404);
+        $this->expectException('\BO\Zmsapi\Exception\BadRequest');
+        $this->expectExceptionCode(400);
         $this->render([], [
             '__body' => '[]'
         ], []);
