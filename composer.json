@@ -15,11 +15,13 @@
         "ext-json": ">=1.0",
         "ext-pcre": ">=0",
         "eappointment/mellon": "^2.0.1",
-        "twig/twig": "^2.14",
-        "twig/extensions": "*",
+        "twig/twig": "3.*",
         "league/json-guard": "^1.0",
         "league/html-to-markdown": "^5.0",
-        "giggsey/libphonenumber-for-php": "^8.8.4"
+        "giggsey/libphonenumber-for-php": "^8.8.4",
+        "twig/intl-extra": "^3.4",
+        "symfony/translation": "^5.4",
+        "symfony/twig-bridge": "^5.4"
     },
     "scripts": {
         "command": "bin/configure"

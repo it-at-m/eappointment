@@ -48,8 +48,8 @@ class SourceTest extends EntityCommonTests
         // empty
         $entity = (new $this->entityclass())->getExample();
         $entity->save = 'submit';
-        $entity->providers[0]['data'] = 0;
-        $entity->requests[0]['data'] = 0;
+        $entity->providers[0]['data'] = null;
+        $entity->requests[0]['data'] = null;
         $entity = $entity->withCleanedUpFormData();
         $this->assertNull($entity->getProviderList()->getFirst()->getAdditionalData());
         $this->assertNull($entity->getRequestList()->getFirst()->getAdditionalData());
