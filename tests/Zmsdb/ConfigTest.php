@@ -25,7 +25,7 @@ class ConfigTest extends Base
         $config = $query->updateEntity($entity);
         $query->deleteProperty('test');
         $config = $query->readEntity();
-        $this->assertFalse(array_key_exists('test', $config));
+        $this->assertArrayNotHasKey('test', (array) $config);
     }
 
     public function testReadProperty()
