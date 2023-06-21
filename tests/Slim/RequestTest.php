@@ -2,6 +2,11 @@
 
 namespace BO\Slim\Tests;
 
+use BO\Slim\Request;
+use Slim\Psr7\Headers;
+use Slim\Psr7\Stream;
+use Slim\Psr7\Uri;
+
 class RequestTest extends Base
 {
 
@@ -55,5 +60,29 @@ class RequestTest extends Base
             '__file' => ['./lang/de.json']
         ], $method);
         $this->assertEquals('./lang/de.json', $request->getUploadedFiles()[0]);
+    }
+
+    public function testGetBasePath()
+    {
+        $uri = new Uri('http', 'localhost', 80, '/admin/account/');
+        $serverParams = [
+            'REQUEST_URI' => '/admin/account/',
+            'SCRIPT_NAME' => '/admin/index.php',
+        ];
+        $request = new Request('GET', $uri, new Headers([]), [], $serverParams, new Stream(fopen('php://temp', 'wb+')));
+
+        self::assertSame('/admin', $request->getBasePath());
+    }
+
+    public function testGetBaseUrl()
+    {
+        $uri = new Uri('https', 'localhost', 80, '/admin/account/');
+        $serverParams = [
+            'REQUEST_URI' => '/admin/account/',
+            'SCRIPT_NAME' => '/admin/index.php',
+        ];
+        $request = new Request('GET', $uri, new Headers([]), [], $serverParams, new Stream(fopen('php://temp', 'wb+')));
+
+        self::assertSame('https://localhost:80/admin', $request->getBaseUrl());
     }
 }

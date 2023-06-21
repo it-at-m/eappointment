@@ -5,6 +5,10 @@
 
 namespace BO\Slim\Middleware;
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use Slim\Routing\RouteContext;
+
 class Route
 {
     protected $container;
@@ -14,15 +18,14 @@ class Route
         $this->container = $container;
     }
 
-    public function getInfo($request, $response, $next)
+    public function getInfo($request, RequestHandlerInterface $next): ResponseInterface
     {
-        $routeInstance = $request->getAttribute('route');
-        if ($routeInstance instanceof \Slim\Route) {
-            $routeName = $routeInstance->getName();
-            $routeName = explode('__', $routeName);
-            $this->container['currentRoute'] = (isset($routeName[1])) ? $routeName[1] : $routeName[0];
+        $routeInstance = $request->getAttribute(RouteContext::ROUTE);
+        if ($routeInstance instanceof \Slim\Routing\Route) {
+            $this->container['currentRoute'] = $routeInstance->getName();
             $this->container['currentRouteParams'] = $routeInstance->getArguments();
         }
-        return $next($request, $response);
+
+        return $next->handle($request);
     }
 }

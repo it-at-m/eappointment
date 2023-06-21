@@ -25,7 +25,7 @@ class BootstrapTest extends TestCase
     {
         \BO\Slim\Bootstrap::init();
         \BO\Slim\Bootstrap::addTwigTemplateDirectory('dldb', \App::APP_PATH . '/Slim/templates/dldb/');
-        $twigView = \App::$slim->getContainer()->view;
+        $twigView = \App::$slim->getContainer()->get('view');
         $this->assertStringContainsString('templates/dldb', $twigView->getLoader()->getPaths('dldb')[0]);
     }
 }

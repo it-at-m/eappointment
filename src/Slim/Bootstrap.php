@@ -1,6 +1,17 @@
 <?php
 namespace BO\Slim;
 
+use App;
+use Monolog\Formatter\JsonFormatter;
+use Monolog\Handler\ErrorLogHandler;
+use Monolog\Logger;
+use Slim\HttpCache\CacheProvider;
+use BO\Slim\Factory\ResponseFactory;
+use BO\Slim\Factory\ServerRequestFactory;
+use Slim\Views\Twig;
+use Twig\Extension\DebugExtension;
+use Twig\Loader\FilesystemLoader;
+
 /**
  * @SuppressWarnings(Coupling)
  * Bootstrapping connects the classes, so coupling should be ignored
@@ -16,9 +27,9 @@ class Bootstrap
         Profiler::init();
         $bootstrap = self::getInstance();
         $bootstrap->configureAppStatics();
+        $bootstrap->configureLogger(App::DEBUGLEVEL, App::IDENTIFIER);
         $bootstrap->configureSlim();
         $bootstrap->configureLocale();
-        $bootstrap->configureLogger();
         Profiler::add("Init");
     }
 
@@ -31,29 +42,29 @@ class Bootstrap
     protected function configureAppStatics()
     {
         if (getenv('ZMS_URL_SIGNATURE_KEY') !== false) {
-            \App::$urlSignatureSecret = getenv('ZMS_URL_SIGNATURE_KEY');
+            App::$urlSignatureSecret = getenv('ZMS_URL_SIGNATURE_KEY');
         }
     }
 
     protected function configureLocale(
-        $charset = \App::CHARSET,
-        $timezone = \App::TIMEZONE
+        $charset = App::CHARSET,
+        $timezone = App::TIMEZONE
     ) {
         ini_set('default_charset', $charset);
         date_default_timezone_set($timezone);
         mb_internal_encoding($charset);
-        \App::$now = (! \App::$now) ? new \DateTimeImmutable() : \App::$now;
+        App::$now = (! App::$now) ? new \DateTimeImmutable() : App::$now;
     }
 
     protected static $debuglevels = array(
-        'DEBUG'     => \Monolog\Logger::DEBUG,
-        'INFO'      => \Monolog\Logger::INFO,
-        'NOTICE'    => \Monolog\Logger::NOTICE,
-        'WARNING'   => \Monolog\Logger::WARNING,
-        'ERROR'     => \Monolog\Logger::ERROR,
-        'CRITICAL'  => \Monolog\Logger::CRITICAL,
-        'ALERT'     => \Monolog\Logger::ALERT,
-        'EMERGENCY' => \Monolog\Logger::EMERGENCY,
+        'DEBUG'     => Logger::DEBUG,
+        'INFO'      => Logger::INFO,
+        'NOTICE'    => Logger::NOTICE,
+        'WARNING'   => Logger::WARNING,
+        'ERROR'     => Logger::ERROR,
+        'CRITICAL'  => Logger::CRITICAL,
+        'ALERT'     => Logger::ALERT,
+        'EMERGENCY' => Logger::EMERGENCY,
     );
 
     protected function parseDebugLevel($level)
@@ -61,77 +72,69 @@ class Bootstrap
         return isset(static::$debuglevels[$level]) ? static::$debuglevels[$level] : static::$debuglevels['DEBUG'];
     }
 
-    protected function configureLogger(
-        $level = \App::DEBUGLEVEL,
-        $identifier = \App::IDENTIFIER
-    ) {
-        \App::$log = new \Monolog\Logger($identifier);
+    protected function configureLogger(string $level, string $identifier): void
+    {
+        App::$log = new Logger($identifier);
         $level = $this->parseDebugLevel($level);
-        $handler = new \Monolog\Handler\ErrorLogHandler(\Monolog\Handler\ErrorLogHandler::OPERATING_SYSTEM, $level);
-        $handler->setFormatter(new \Monolog\Formatter\JsonFormatter());
-        \App::$log->pushHandler($handler);
+        $handler = new ErrorLogHandler(ErrorLogHandler::OPERATING_SYSTEM, $level);
+        $handler->setFormatter(new JsonFormatter());
+        App::$log->pushHandler($handler);
     }
 
     protected function configureSlim()
     {
-        // configure slim
-        \App::$slim = new SlimApp(array(
-            'debug' => \App::DEBUG,
-            'cache' => function () {
-                return new \Slim\HttpCache\CacheProvider();
-            },
-            'settings' => [
-                'determineRouteBeforeAppMiddleware' => true,
-                'displayErrorDetails' => true,
-                'logger' => [
-                    'name' => 'slim-app',
-                    'level' => $this->parseDebugLevel(\App::DEBUGLEVEL),
-                ],
-            ],
-        ));
-        $container = \App::$slim->getContainer();
+        $container = $this->buildContainer();
+
+        // instantiate slim
+        App::$slim = new SlimApp(
+            new ResponseFactory(),
+            $container
+        );
+        App::$slim->determineBasePath();
+
+        $container->set('router', App::$slim->getRouteCollector());
+
         // Configure caching
-        \App::$slim->add(new \Slim\HttpCache\Cache('public', 300));
-        \App::$slim->add(new Middleware\IpAddress(true, true));
-        \App::$slim->add(new Middleware\Validator());
-        \App::$slim->add(new Middleware\Profiler());
-        \App::$slim->add('BO\Slim\Middleware\Route:getInfo');
-        // configure slim views with twig
-        $container['view'] = function () {
-            return self::getTwigView();
-        };
-        self::addTwigExtension(new \Slim\Views\TwigExtension(
-            $container['router'],
-            $container['request']->getUri()
-        ));
-        self::addTwigExtension(new \BO\Slim\TwigExtensionsAndFilter(
+        App::$slim->add(new \Slim\HttpCache\Cache('public', 300));
+        App::$slim->add(new Middleware\Validator());
+        App::$slim->add('BO\Slim\Middleware\Route:getInfo');
+        App::$slim->addRoutingMiddleware();
+        App::$slim->add(new Middleware\Profiler());
+        App::$slim->add(new Middleware\IpAddress(true, true));
+        App::$slim->add(new Middleware\ZmsSlimRequest());
+        App::$slim->add(new Middleware\TrailingSlash());
+
+        $errorMiddleware = App::$slim->addErrorMiddleware(App::DEBUG, App::LOG_ERRORS, App::LOG_DETAILS, App::$log);
+        $container->set('errorMiddleware', $errorMiddleware);
+
+        self::addTwigExtension(new TwigExtensionsAndFilter(
             $container
         ));
-        self::addTwigExtension(new \Twig\Extension\DebugExtension());
+        self::addTwigExtension(new DebugExtension());
 
-        \App::$slim->get('__noroute', function () {
-            throw new Exception('Route missing');
+        App::$slim->get('__noroute', function () {
+            throw new \Exception('Route missing');
         })->setName('noroute');
     }
 
-    public static function getTwigView()
+    public static function getTwigView(): Twig
     {
-        $template_path = (is_array(\App::TEMPLATE_PATH)) ? \App::TEMPLATE_PATH : \App::APP_PATH  . \App::TEMPLATE_PATH;
-        $view = new \Slim\Views\Twig(
-            $template_path,
+        $templatePath = (is_array(App::TEMPLATE_PATH)) ? App::TEMPLATE_PATH : [App::APP_PATH  . App::TEMPLATE_PATH];
+
+        return new Twig(
+            new FilesystemLoader($templatePath),
             [
                 'cache' => self::readCacheDir(),
-                'debug' => \App::DEBUG,
+                'debug' => App::DEBUG,
             ]
         );
-        return $view;
     }
 
     public static function readCacheDir()
     {
         $path = false;
-        if (\App::TWIG_CACHE) {
-            $path = \App::APP_PATH . \App::TWIG_CACHE;
+        if (App::TWIG_CACHE) {
+            $path = App::APP_PATH . App::TWIG_CACHE;
             $userinfo = posix_getpwuid(posix_getuid());
             $user = $userinfo['name'];
             $githead = Git::readCurrentHash();
@@ -146,26 +149,27 @@ class Bootstrap
 
     public static function addTwigExtension($extension)
     {
-        $twig = \App::$slim->getContainer()->view;
+        /** @var Twig $twig */
+        $twig = App::$slim->getContainer()->get('view');
         $twig->addExtension($extension);
     }
 
     public static function addTwigFilter($filter)
     {
-        $twig = \App::$slim->getContainer()->view;
+        $twig = App::$slim->getContainer()->get('view');
         $twig->getEnvironment()->addFilter($filter);
     }
 
     public static function addTwigTemplateDirectory($namespace, $path)
     {
-        $twig = \App::$slim->getContainer()->view;
+        $twig = App::$slim->getContainer()->get('view');
         $loader = $twig->getLoader();
         $loader->addPath($path, $namespace);
     }
 
     public static function loadRouting($filename)
     {
-        $container = \App::$slim->getContainer();
+        $container = App::$slim->getContainer();
         $cacheFile = static::readCacheDir();
         if ($cacheFile) {
             $cacheFile = $cacheFile . '/routing.cache';
@@ -177,5 +181,23 @@ class Bootstrap
             }
         }
         require($filename);
+    }
+
+    /**
+     * @return Container
+     */
+    protected function buildContainer(): Container
+    {
+        $container = new Container();
+        $container->set('debug', App::DEBUG);
+        $container->set('cache', new CacheProvider());
+        $container->set('settings', []);
+
+        // configure slim views with twig
+        $container->set('view', self::getTwigView());
+
+        $container->set('request', ServerRequestFactory::createFromGlobals());
+
+        return $container;
     }
 }

@@ -46,7 +46,8 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
     public function getTwigExtensions()
     {
         return $twigExtensionsClass = \App::$slim
-            ->getContainer()->view
+            ->getContainer()
+            ->get('view')
             ->getEnvironment()
             ->getExtension('\BO\Slim\TwigExtension');
     }
