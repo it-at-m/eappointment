@@ -75,7 +75,7 @@ class SessionHandler implements \SessionHandlerInterface
         if (isset($params['oidc']) && 1 == $params['oidc'] && $session) {
             $session = $session->withOidcDataOnly();
         }
-        return ($session && array_key_exists('content', $session)) ? serialize($session->getContent()) : '';
+        return ($session && isset($session['content'])) ? serialize($session->getContent()) : '';
     }
 
     public function write($sessionId, $sessionData, $params = [])

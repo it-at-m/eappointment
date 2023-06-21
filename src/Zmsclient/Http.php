@@ -2,63 +2,63 @@
 
 namespace BO\Zmsclient;
 
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\UriInterface;
+use Slim\Psr7\Headers;
+
 /**
+ * Adapter & Decorator Class to use the Psr7\Client
+ *
  * Access api method_exists
+ * @SuppressWarnings(Coupling)
  */
 class Http
 {
     /**
-     * @var Psr7\ClientInterface $client
+     * @var Psr7\ClientInterface|null
      */
     protected $client = null;
 
     /**
-     * @var String $http_username
+     * @var string
      */
-    protected $http_username = null;
+    protected $http_baseurl = '';
 
     /**
-     * @var String $http_password
-     */
-    protected $http_password = null;
-
-    /**
-     * @var String $http_baseurl
-     */
-    protected $http_baseurl = null;
-
-    /**
-     * @var Boolean $authEnabled with authentification request if true
+     * @var bool
+     * with authentification request if true
      */
     public static $authEnabled = true;
 
     /**
-     * @var Psr7\Uri $uri
+     * @var Psr7\Uri|null
      */
     protected $uri = null;
 
     /**
-     * @var Boolean $logEnabled Log requests and responses if true
+     * @var bool
+     * Log requests and responses if true
      */
     public static $logEnabled = true;
 
     /**
-     * @var Array $log Contains a list of requests and responses if logging is enabled
+     * @var array
+     * Contains a list of requests and responses if logging is enabled
      */
     public static $log = [];
 
     /**
-     * @var String $apikeyString
+     * @var string|null
      */
     protected $apikeyString = null;
 
     /**
-     * @var String $apikeyString
+     * @var string|null
      */
     protected $workflowkeyString = null;
 
     /**
-     * @var Int $jsonCompressLevel
+     * @var int|null
      */
     public static $jsonCompressLevel = null;
 
@@ -68,10 +68,10 @@ class Http
      */
     public function __construct($baseUrl, Psr7\ClientInterface $client = null)
     {
-        $this->http_baseurl = parse_url($baseUrl, PHP_URL_PATH);
+        $this->http_baseurl = parse_url($baseUrl, PHP_URL_PATH) ?? '';
         $this->uri = new Psr7\Uri();
-        $this->uri = $this->uri->withScheme(parse_url($baseUrl, PHP_URL_SCHEME));
-        $this->uri = $this->uri->withHost(parse_url($baseUrl, PHP_URL_HOST));
+        $this->uri = $this->uri->withScheme(parse_url($baseUrl, PHP_URL_SCHEME) ?? '');
+        $this->uri = $this->uri->withHost(parse_url($baseUrl, PHP_URL_HOST) ?? '');
         $port = parse_url($baseUrl, PHP_URL_PORT);
         if ($port) {
             $this->uri = $this->uri->withPort($port);
@@ -119,7 +119,7 @@ class Http
         if (self::$logEnabled) {
             self::$log[] = $request;
             self::$log[] = $response;
-            $responseSizeKb = round(strlen($response) / 1024);
+            $responseSizeKb = round(strlen($response->getBody()->getContents()) / 1024);
             self::$log[] = "Response ($responseSizeKb kb) time in s: " . round(microtime(true) - $startTime, 3);
         }
         return $response;
@@ -167,9 +167,9 @@ class Http
      * Creates a GET-Http-Request and fetches the response
      *
      * @param String $relativeUrl
-     * @param Array $getParameters (optional)
+     * @param array|null $getParameters (optional)
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return Result
      */
     public function readGetResult($relativeUrl, array $getParameters = null, $xToken = null)
     {
@@ -177,10 +177,12 @@ class Http
         if (null !== $getParameters) {
             $uri = $uri->withQuery(http_build_query($getParameters));
         }
-        $request = new Psr7\Request('GET', $uri);
+        $request = self::createRequest('GET', $uri);
+
         if (null !== $xToken) {
             $request = $request->withHeader('X-Token', $xToken);
         }
+
         return $this->readResult($request);
     }
 
@@ -191,7 +193,7 @@ class Http
      * @param \BO\Zmsentities\Schema\Entity $entity
      * @param Array $getParameters (optional)
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return Result
      */
     public function readPostResult($relativeUrl, $entity, array $getParameters = null)
     {
@@ -199,10 +201,11 @@ class Http
         if (null !== $getParameters) {
             $uri = $uri->withQuery(http_build_query($getParameters));
         }
-        $request = new Psr7\Request('POST', $uri);
+        $request = self::createRequest('POST', $uri);
         $body = new Psr7\Stream();
         $body->write(json_encode($entity));
         $request = $request->withBody($body);
+
         return $this->readResult($request);
     }
 
@@ -212,7 +215,7 @@ class Http
      * @param String $relativeUrl
      * @param Array $getParameters (optional)
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return Result
      */
     public function readDeleteResult($relativeUrl, array $getParameters = null)
     {
@@ -220,7 +223,8 @@ class Http
         if (null !== $getParameters) {
             $uri = $uri->withQuery(http_build_query($getParameters));
         }
-        $request = new Psr7\Request('DELETE', $uri);
+        $request = self::createRequest('DELETE', $uri);
+
         return $this->readResult($request);
     }
 
@@ -244,5 +248,11 @@ class Http
             }
         }
         return $result;
+    }
+
+    public static function createRequest(string $method, UriInterface $uri): RequestInterface
+    {
+        $request = new Psr7\Request($method, $uri, 'php://memory', new Headers([], []));
+        return $request;
     }
 }

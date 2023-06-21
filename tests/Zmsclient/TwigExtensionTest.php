@@ -10,7 +10,7 @@ class TwigExtensionTest extends Base
         $extension = new \BO\Zmsclient\TwigExtension($mock);
 
         foreach ($extension->getFunctions() as $twigFunction) {
-            $this->assertInstanceOf('Twig_SimpleFunction', $twigFunction);
+            $this->assertInstanceOf(\Twig\TwigFunction::class, $twigFunction);
         };
 
         $this->assertEquals('bozmsclientExtension', $extension->getName());
