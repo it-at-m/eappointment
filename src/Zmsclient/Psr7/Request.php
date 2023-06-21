@@ -2,20 +2,22 @@
 
 namespace BO\Zmsclient\Psr7;
 
-use Slim\Interfaces\Http\HeadersInterface;
-use Slim\Http\Headers;
+use Slim\Psr7\Interfaces\HeadersInterface;
+use Slim\Psr7\Headers;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\StreamInterface;
+use BO\Slim\Request as SlimRequest;
 
 /**
  * Layer to change PSR7 implementation if necessary
+ * @SuppressWarnings(Superglobals)
  */
-class Request extends \Slim\Http\Request implements \Psr\Http\Message\ServerRequestInterface
+class Request extends SlimRequest implements \Psr\Http\Message\ServerRequestInterface
 {
     public function __construct($method = null, $uri = null, $body = 'php://memory', $headers = array())
     {
         $cookies = [];
-        $serverParams = [];
+        $serverParams = $_SERVER;
         $uploadedFiles = [];
         if (!$uri instanceof UriInterface) {
             $uri = new Uri($uri);

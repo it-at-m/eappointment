@@ -2,6 +2,7 @@
 
 namespace BO\Zmsclient\Tests;
 
+use BO\Zmsclient\Http;
 use PHPUnit\Framework\TestCase;
 
 abstract class Base extends TestCase
@@ -12,6 +13,7 @@ abstract class Base extends TestCase
      */
     public static $http_baseurl = null;
 
+    /** @var Http|null */
     protected static $http_client = null;
 
     public function setUp(): void
@@ -46,6 +48,6 @@ abstract class Base extends TestCase
 
     protected function createTwigMockup()
     {
-        return new \Twig_Environment($this->getMockBuilder('Twig_LoaderInterface')->getMock());
+        return new \Twig\Environment($this->getMockBuilder(\Twig\Loader\LoaderInterface::class)->getMock());
     }
 }
