@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7aff7d5b2f9c9b635ddd13eecf7abec1",
+    "content-hash": "689c55ff21de67c0870081b140f4a256",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -223,23 +223,23 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-muc-merge-2-25-from-berlin",
+            "version": "dev-muc-test",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsclient.git",
-                "reference": "d88c58e5f48d8ea8343f77c83768301f0c8911c2"
+                "reference": "1f7752d4f9f5d37005513b0c00533d58401ff9e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=d88c58e5f48d8ea8343f77c83768301f0c8911c2",
-                "reference": "d88c58e5f48d8ea8343f77c83768301f0c8911c2",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=1f7752d4f9f5d37005513b0c00533d58401ff9e0",
+                "reference": "1f7752d4f9f5d37005513b0c00533d58401ff9e0",
                 "shasum": ""
             },
             "require": {
                 "aronduby/dump": "^0.9",
                 "eappointment/mellon": "^2.0.1",
-                "eappointment/zmsentities": "dev-muc-merge-2-25-from-berlin",
-                "eappointment/zmsslim": "dev-muc-merge-2-25-from-berlin",
+                "eappointment/zmsentities": "dev-muc-test",
+                "eappointment/zmsslim": "dev-muc-test",
                 "ext-curl": ">=0",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -282,29 +282,29 @@
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsclient/-/tree/muc-merge-2-25-from-berlin"
+                "source": "https://gitlab.com/eappointment/zmsclient/-/tree/muc-test"
             },
-            "time": "2023-04-24T07:55:27+00:00"
+            "time": "2023-06-21T08:49:12+00:00"
         },
         {
             "name": "eappointment/zmsdb",
-            "version": "dev-muc-merge-2-25-from-berlin",
+            "version": "dev-muc-test",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsdb.git",
-                "reference": "c1a19e1bd03f98ca17e0f71d585b822ee65a6c74"
+                "reference": "284a11834deb4644b6da76ab8fdfeafb8850b8c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=c1a19e1bd03f98ca17e0f71d585b822ee65a6c74",
-                "reference": "c1a19e1bd03f98ca17e0f71d585b822ee65a6c74",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=284a11834deb4644b6da76ab8fdfeafb8850b8c2",
+                "reference": "284a11834deb4644b6da76ab8fdfeafb8850b8c2",
                 "shasum": ""
             },
             "require": {
                 "aura/sql": "^4",
                 "eappointment/mellon": "^2.6.0",
                 "eappointment/zmsdldb": "dev-main || 2.25.*",
-                "eappointment/zmsentities": "dev-muc-merge-2-25-from-berlin",
+                "eappointment/zmsentities": "dev-muc-test",
                 "ext-intl": "*",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -366,22 +366,22 @@
             ],
             "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsdb/-/tree/muc-merge-2-25-from-berlin"
+                "source": "https://gitlab.com/eappointment/zmsdb/-/tree/muc-test"
             },
-            "time": "2023-04-14T11:47:46+00:00"
+            "time": "2023-06-21T08:25:56+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "2.25.02",
+            "version": "2.25.03",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsdldb.git",
-                "reference": "dafe56ad47d833fd08590c2995965f99f9bd50d7"
+                "reference": "6e39ba263e5bb719334a949a836bbb7eb3447782"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdldb/repository/archive.zip?sha=dafe56ad47d833fd08590c2995965f99f9bd50d7",
-                "reference": "dafe56ad47d833fd08590c2995965f99f9bd50d7",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdldb/repository/archive.zip?sha=6e39ba263e5bb719334a949a836bbb7eb3447782",
+                "reference": "6e39ba263e5bb719334a949a836bbb7eb3447782",
                 "shasum": ""
             },
             "require": {
@@ -432,22 +432,22 @@
             ],
             "description": "Client for DLDB",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsdldb/-/tree/2.25.02"
+                "source": "https://gitlab.com/eappointment/zmsdldb/-/tree/2.25.03"
             },
-            "time": "2023-05-05T11:04:08+00:00"
+            "time": "2023-06-19T13:38:05+00:00"
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-muc-merge-2-25-from-berlin",
+            "version": "dev-muc-test",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "e5e2bf390aa90f55c8da7453714a2478697a3068"
+                "reference": "65eed196372d9ae155a4743b47746d6d47220a85"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=e5e2bf390aa90f55c8da7453714a2478697a3068",
-                "reference": "e5e2bf390aa90f55c8da7453714a2478697a3068",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=65eed196372d9ae155a4743b47746d6d47220a85",
+                "reference": "65eed196372d9ae155a4743b47746d6d47220a85",
                 "shasum": ""
             },
             "require": {
@@ -496,22 +496,22 @@
             ],
             "description": "Entity definitions for eappoinment",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-merge-2-25-from-berlin"
+                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-test"
             },
-            "time": "2023-06-19T14:39:22+02:00"
+            "time": "2023-06-21T08:17:07+00:00"
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-muc-merge-2-25-from-berlin",
+            "version": "dev-muc-test",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsslim.git",
-                "reference": "efa4b56a4fc97388672d53f29642c67cac42a23c"
+                "reference": "9ed76b5009be197a9f5435bee5955d78e644e18f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=efa4b56a4fc97388672d53f29642c67cac42a23c",
-                "reference": "efa4b56a4fc97388672d53f29642c67cac42a23c",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=9ed76b5009be197a9f5435bee5955d78e644e18f",
+                "reference": "9ed76b5009be197a9f5435bee5955d78e644e18f",
                 "shasum": ""
             },
             "require": {
@@ -562,9 +562,9 @@
             ],
             "description": "Basic configuration for a slim framework",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsslim/-/tree/muc-merge-2-25-from-berlin"
+                "source": "https://gitlab.com/eappointment/zmsslim/-/tree/muc-test"
             },
-            "time": "2023-06-14T14:20:31+02:00"
+            "time": "2023-06-21T08:28:03+00:00"
         },
         {
             "name": "fig/http-message-util",
