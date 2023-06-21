@@ -32,13 +32,6 @@ class UseraccountEditTest extends Base
                     'url' => '/owner/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_owner.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/config/',
-                    'parameters' => [],
-                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
-                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
@@ -46,51 +39,13 @@ class UseraccountEditTest extends Base
         $this->assertStringContainsString('value="testuser"', (string)$response->getBody());
         $this->assertStringContainsString('Nutzer: Einrichtung und Administration', (string)$response->getBody());
         $this->assertStringNotContainsString(
-            'Dieser Nutzer wurde über einen OpenID Connect Anbieter angelegt.', 
-            (string)$response->getBody());
-        $this->assertStringContainsString(
-            'Passwortwiederholung', 
-            (string)$response->getBody());
-        $this->assertEquals(200, $response->getStatusCode());
-    }
-
-    public function testRenderingOidcProvider()
-    {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/useraccount/testuser/',
-                    'response' => $this->readFixture("GET_useraccount_testuser_oidc.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/owner/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_owner.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/config/',
-                    'parameters' => [],
-                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
-                    'response' => $this->readFixture("GET_config.json"),
-                ]
-            ]
+            'Dieser Nutzer wurde über einen OpenID Connect Anbieter angelegt.',
+            (string)$response->getBody()
         );
-        $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString(
-            'Dieser Nutzer wurde über einen OpenID Connect Anbieter angelegt.', 
-            (string)$response->getBody());
-        $this->assertStringNotContainsString(
-            'Passwortwiederholung', 
-            (string)$response->getBody());
+            'Passwortwiederholung',
+            (string)$response->getBody()
+        );
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -176,13 +131,6 @@ class UseraccountEditTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/useraccount/testuser/',
                     'exception' => $exception
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/config/',
-                    'parameters' => [],
-                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
-                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
@@ -242,13 +190,6 @@ class UseraccountEditTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/useraccount/testuser/',
                     'exception' => $exception
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/config/',
-                    'parameters' => [],
-                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
-                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );

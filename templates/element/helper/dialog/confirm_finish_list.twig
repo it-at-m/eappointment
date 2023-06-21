@@ -1,7 +1,7 @@
 
 
 {% embed "block/scaffholding/board.twig" with {'class': 'dialog'} %}
-    {% block board_title %}Alle Abholer löschen{% endblock %}
+    {% block board_title %}<i aria-hidden="true" title="{{ ("Alle Abholer löschen")|trans }}" class="fas fa-info-circle"></i> {{ ("Alle Abholer löschen")|trans }}{% endblock %}
     {% block board_body %}
         {% set message = "Wollen Sie wirklich alle Abholer aus dieser Liste löschen?" %}
         <p>

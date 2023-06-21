@@ -367,12 +367,15 @@ class View extends BaseView {
         })
     }
 
-    onResetProcess($container, event) {
+    onResetProcess(event) {
         let selectedProcess = $(event.currentTarget).data('id');
-        this.loadContent(`${this.includeUrl}/process/queue/reset/?selectedprocess=${selectedProcess}&selecteddate=${this.selectedDate}`, 'GET', null, $container).then(() => {
-            if ('counter' == this.page)
-                this.loadQueueInfo();
-        });
+        let url = `${this.includeUrl}/process/queue/reset/?selectedprocess=${selectedProcess}&selecteddate=${this.selectedDate}`
+        this.loadCall(url).then((response) => this.loadMessage(response, () => {
+                this.loadQueueTable();
+                if ('counter' == this.page)
+                    this.loadQueueInfo();
+            }, null, event.currentTarget)
+        );
     }
 
     onEditProcess(event) {

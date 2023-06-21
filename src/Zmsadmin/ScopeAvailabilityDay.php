@@ -62,7 +62,6 @@ class ScopeAvailabilityDay extends BaseController
         return [
             'scope' => $scope,
             'availabilityList' => $availabilityList->getArrayCopy(),
-            'availabilityListSlices' => $availabilityList->withCalculatedSlots()->getArrayCopy(),
             'conflicts' => ($conflictList) ? $conflictList
                 ->setConflictAmendment()
                 ->getArrayCopy() : [],

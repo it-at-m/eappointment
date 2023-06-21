@@ -46,7 +46,6 @@ import stickytrigger from 'bo-layout-admin-js/behavior/form-actions--sticky-trig
 import navigationprimary from 'bo-layout-admin-js/behavior/navigation-primary';
 import datepicker from 'bo-layout-admin-js/behavior/datepicker';
 import infotext from 'bo-layout-admin-js/behavior/form-infotext-flyin';
-import hamburger from 'bo-layout-admin-js/behavior/hamburger';
 import metanavi from 'bo-layout-admin-js/behavior/header-metanavi-popup';
 import formalerts from 'bo-layout-admin-js/behavior/formalerts-flyin';
 
@@ -59,7 +58,6 @@ function loadResources() {
     stickytrigger();
     infotext();
     formalerts();
-    hamburger();
     metanavi();
     navigationprimary();
 }

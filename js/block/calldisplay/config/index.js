@@ -45,6 +45,7 @@ class CallDisplayConfigView extends Component {
             }),
             queueStatus: 'all',
             template: 'defaultplatz',
+            webtemplate: 'defaultplatz',
             hmac: '',
             enableQrCode: false,
             showQrCode: false
@@ -81,12 +82,12 @@ class CallDisplayConfigView extends Component {
 
     buildWebcalldisplayUrl() {
         const baseUrl  = this.props.config.webcalldisplay.baseUrl
-        let parameters = this.buildParameters(true);
+        let parameters = this.buildParameters(true, 'webcalldisplay');
 
         return `${this.buildHost()}${baseUrl}?${parameters.join('&')}`
     }
 
-    buildParameters(hashParameters) {
+    buildParameters(hashParameters, target = 'calldisplay') {
         const collections = this.getSelectedItemsCollection(this.state)
         let queryParts = []
 
@@ -102,8 +103,12 @@ class CallDisplayConfigView extends Component {
             queryParts.push(`queue[status]=${this.state.queueStatus}`)
         }
 
-        if (this.state.template !== 'default') {
+        if (target == 'calldisplay' && this.state.template !== 'default') {
             queryParts.push(`template=${this.state.template}`)
+        }
+
+        if (target == 'webcalldisplay' && this.state.template !== 'default') {
+            queryParts.push(`template=${this.state.webtemplate}`)
         }
 
         if (! hashParameters && this.state.enableQrCode) {
@@ -276,6 +281,12 @@ class CallDisplayConfigView extends Component {
             })
         }
 
+        const onWebTemplateStatusChange = (_, value) => {
+            this.setState({
+                webtemplate: value
+            })
+        }
+
         return (
             <form className="form--base form-group calldisplay-config">
                 {this.state.departments.map(this.renderDepartment.bind(this))}
@@ -294,7 +305,7 @@ class CallDisplayConfigView extends Component {
                     </Controls>
                 </FormGroup>
                 <FormGroup>
-                    <Label attributes={{ "htmlFor": "calldisplayLayout" }} value="Layout"></Label>
+                    <Label attributes={{ "htmlFor": "calldisplayLayout" }} value="Layout Aufrufanzeige"></Label>
                     <Controls>
                         <Select
                             attributes={{ "id": "calldisplayLayout" }}
@@ -321,8 +332,27 @@ class CallDisplayConfigView extends Component {
                     </Controls>
                 </FormGroup>
                 <div className="form-actions">
-                    <a href={calldisplayUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> Aktuelle Konfiguration in einem neuen Fenster öffnen</a>
+                    <a href={calldisplayUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt"></i> Aktuelle Konfiguration in einem neuen Fenster öffnen</a>
                 </div>
+
+                <FormGroup>
+                    <Label attributes={{ "htmlFor": "webcalldisplayLayout" }} value="Layout mobile Aufrufanzeige"></Label>
+                    <Controls>
+                        <Select
+                            attributes={{ "id": "webcalldisplayLayout" }}
+                            options={[
+                                { name: 'Uhrzeit, 6-12 Aufrufe | Platz', value: 'defaultplatz' },
+                                { name: 'Uhrzeit, 6-12 Aufrufe | Raum', value: 'defaultraum' },
+                                { name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe | Platz', value: 'nrwaitplatz' },
+                                { name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe | Raum', value: 'nrwaitraum' },
+                                { name: 'Legacy', value: 'legacy' },
+                                { name: 'Lokal', value: 'local' },
+                                { name: 'Allgemein', value: 'usual' },
+                            ]}
+                            value={this.state.webtemplate}
+                            onChange={onWebTemplateStatusChange} />
+                    </Controls>
+                </FormGroup>
                 <FormGroup>
                     <Label attributes={{ "htmlFor": "webcalldisplayUrl" }} value="Webcall Display URL"></Label>
                     <Controls>
@@ -332,8 +362,8 @@ class CallDisplayConfigView extends Component {
                     </Controls>
                 </FormGroup>
                 <div className="form-actions">
-                    <button className="button" aria-hidden="true" onClick={(event) => {event.preventDefault(); this.toggleQrCodeView();}}>QR-Code anzeigen / drucken</button>
-                    <a href={webcalldisplayUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt" aria-hidden="true"></i> in der mobilen Anzeige öffnen</a>
+                    <button className="button" onClick={(event) => {event.preventDefault(); this.toggleQrCodeView();}}>QR-Code anzeigen / drucken</button>
+                    <a href={webcalldisplayUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt"></i> in der mobilen Anzeige öffnen</a>
                 </div>
                 { this.state.showQrCode ? <QrCodeView text='QrCode für die mobile Ansicht des Aufrufsystems' targetUrl={webcalldisplayUrl} togglePopup={this.toggleQrCodeView.bind(this)} /> : null }
             </form>
@@ -346,8 +376,12 @@ CallDisplayConfigView.propTypes = {
     departments: PropTypes.array,
     organisation: PropTypes.object,
     config: PropTypes.shape({
-        calldisplay: PropTypes.object,
-        webcalldisplay: PropTypes.object
+        calldisplay: PropTypes.shape({
+            baseUrl: PropTypes.object
+        }),
+        webcalldisplay: PropTypes.shape({
+            baseUrl: PropTypes.object
+        })
     })
 }
 

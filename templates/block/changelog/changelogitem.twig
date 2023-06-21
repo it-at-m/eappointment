@@ -14,6 +14,129 @@
             </ul>
         </div>
         #}
+         <div class="changelog-item">
+            <h3>Version 2.25.00 <small>(15. März 2023)</small></h3>
+            <ul>
+                <li><strong>Sicherheit</strong> <span>Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt.</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Die Öffnungszeiten werden nur noch aktualisiert, wenn es Änderungen an diesen gab</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Verbesserte Validierung von Öffnungszeiten, Filterung von Konflikten und Fehlern nach Öffnungszeiten-ID</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Verbesserte Handhabung von Öffnungszeiten für Spontankunden - Speichern von Einzelterminen bei Bedarf anstatt ausschließlich Speichern der kompletten Liste</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Download aller Bürgertermine des Tages auf der Standortauswahlseite korrigiert.</span></li>                
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.14 <small>(15. Februar 2023)</small></h3>
+            <ul>
+                <li><strong>Sicherheit</strong> <span>Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt.</span></li>
+                <li><strong>Barrierefreiheit</strong> <span>Weitere W3C Warnungen wurden korrigiert</span></li>
+                <li><strong>Administration</strong> <span>Beim Sichern von Öffnungszeitänderungen wird nun eine Ladeanzeige über die Seite gelegt bis die Bearbeitung im Hintergrund abgeschlossen ist</span></li>
+                <li><strong>Administration</strong> <span>Wartelisten und Abholerlisten werden nun als CSV-Export angeboten um eine bessere Kompatibilität herzustellen, Umlautprobleme wurden behoben</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.13 <small>(14. Dezember 2022)</small></h3>
+            <ul>
+                <li><strong>Administration</strong> <span>Konfiguration der Webcalldisplay-Url in der Konfiguration mit den zugehörigen Templates.</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Kalenderlegende ist nun unter dem Kalender auf der Sachbearbeiter- und Tresenansicht verfügbar</span></li>
+                <li><strong>Barrierefreiheit</strong> <span>Diverse Barrierefreiheitsanpassungen und W3C Warnungen wurden korrigiert sowie Verbesserung der Tastaturbedienung</span></li>
+                <li><strong>Administration</strong> <span>Bearbeiten/Auswahl von Öffnungszeiten wurde verbessert und die Anzahl der Konfliktberechnungen reduziert um die Leistung zu verbessern</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Das Aktualisieren der Warteschlange über den Button am Ende der Liste ist nun auch per Tastaturbedienung möglich</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Anzeige einer Fehlermeldung als Dialog, wenn ein Termin mit der aktuellen Auswahl/Änderung nicht mehr möglich ist</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Lightbox-Dialoge für Informations- und Erfolgsmeldungen überarbeitet</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.12 <small>(16. November 2022)</small></h3>
+            <ul>
+                <li><strong>Barrierefreiheit</strong> <span>Verbesserte akustische Aktionsbeschreibungen für Blinde Nutzer; die Darstellung der Öffnungszeiten wurde verbessert und barrierefreier gestaltet; Verbesserungen für Screenreader</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.11 <small>(19. Oktober 2022)</small></h3>
+            <ul>
+                <li><strong>Barrierefreiheit</strong> <span>Überschriften hinzugefügt, Kontrastdarstellung überarbeitet, Fehlermeldungen klar als Fehler gekennzeichnet; Auflistungen werden nun korrekt als Listen ausgegeben; die Kalender- und Uhrzeitenauswahlboxen haben nun ein zusätzliches klickbares Symbol zum Öffnen der Auswahl</span></li>
+                <li><strong>Administration</strong> <span>Tabellenaktionen werden nun auch oberhalb der Tabellen platziert, um langes Scrollen zu vermeiden</span></li>
+                <li><strong>Administration</strong> <span>Überarbeitung der Darstellung von E-Mail-Vorlagen in der Systemkonfiguration</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.10 <small>(21. September 2022)</small></h3>
+            <ul>
+                <li><strong>Nutzerlogin</strong> <span>OpenID-Connect (OIDC) als zusätzliche Login-Lösung getestet</span></li>
+                <li><strong>Administration</strong> <span>Ansicht der Mailing-Konfigurationen wurde um die Terminübersichten erweitert</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Die Berechnung der Benachrichtigungsvorlaufzeit beim Termin erstellen wurde korrigiert</span></li>
+            </ul>
+        </div>
+
+        {% if not shortchangelog %}
+
+        <div class="changelog-item">
+            <h3>Version 2.24.09 <small>(17. August 2022)</small></h3>
+            <ul>
+                <li><strong>Administration</strong> <span>Links und Feiertage, die einer Behörde zugeordnet werden können, werden nun auf ihre Existenz geprüft.</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Für Spontankunden wird jetzt eine separate SMS-Nachricht gesendet, wenn deren Vorgänge abgesagt bzw. gelöscht werden</span></li>
+                <li><strong>Administration</strong> <span>Konfigurationsvariablen können nun vom Superuser geändert werden</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.08 <small>(15. Juni 2022)</small></h3>
+            <ul>
+                <li><strong>Sicherheit</strong> <span>Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt.</span></li>
+                <li><strong>Warteschlange</strong> <span>Die Berechnung der Wartezeit von Spontankunden wurde korrigiert</span></li>
+                <li><strong>Performance</strong> <span>Die Erstellung und Berechnung der Erinnungsmails an Terminkunden wurde verbessert und beschleunigt</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.07 <small>(18. Mai 2022)</small></h3>
+            <ul>
+                <li><strong>Statistik</strong> <span>Zusätzliche statistische Auswertungen für die Eigentümerebene für Dienstleistungen, SMS-Benachrichtigungen, Wartestatistiken</span></li>
+                
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.06 <small>(20. April 2022)</small></h3>
+            <ul>
+                <li><strong>Sicherheit</strong> <span>Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt.</span></li>
+                <li><strong>Termin E-Mails</strong> <span>Die ausgewählten Dienstleistungen eines Termins sind in den E-Mailbenachrichtigungen nun als Link hinterlegt</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.05 <small>(16. März 2022)</small></h3>
+            <ul>
+                <li><strong>Öffnungszeiten</strong> <span>Verbesserte und erweiterte Prüfung auf Konflikte beim Anlegen und Ändern von Öffnungszeiten</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>SlotCount auch für spontane Kunden anzeigen</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.04 <small>(19. Januar 2022)</small></h3>
+            <ul>
+                <li><strong>Sachbearbeiter</strong> <span>Spontankunden können nun korrekt aufgerufen werden und aufgerufene Vorgänge werden nicht bei Abbruch als aufgerufen gezählt</span></li>
+                <li><strong>Abholeransicht</strong> <span>In Abholerlisten mit mehr als 500 Einträgen kann nun navigiert werden um weitere Einträge anzuzeigen. Der Download der Abholerliste ist auf 3000 Einträge beschränkt</span></li>
+                <li><strong>Performance</strong> <span>Im Adminbereich wurden die Antwort-Inhalte der API-Abfragen reduziert um eine bessere Leistung zu erreichen</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Dem letzte Termin des Tages können nun auch weitere Slots zugeordnet werden, außerdem werden doppelte Konflikte beim aktualisieren eines Termins nicht mehr angezeigt</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Beim Aktualisieren eines Vorgangs wird nun geprüft ob dem Standort die angegebene Dienstleistung zugeordnet ist.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.03 <small>(15. Dezember 2021)</small></h3>
+            <ul>
+                <li><strong>Sicherheit</strong> <span>Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt.</span></li>
+                <li><strong>Tresen</strong> <span>In der Tresenansicht funktioniert nun die Auswahl des Standortes bei ausgewähltem Cluster</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Das Löschen eines Nutzers muss nun bestätigt werden und mehrfache Erfolgsmeldungen sind entfernt</span></li>
+                <li><strong>Sachbearbeiter</strong> Beim Löschen eines Vorgangs wird geprüft ob der Vorgang SMS oder Email als Bestätigung empfängt</span></li>
+            </ul>
+        </div>
 
         <div class="changelog-item">
             <h3>Version 2.24.02 <small>(17. November 2021)</small></h3>
@@ -140,8 +263,6 @@
                 <li><strong>Terminbestätigung</strong> <span>Bestätigungen für die erste Woche des nächsten Jahres (30. + 31. Dezember 2019) enthalten jetzt die korrekte Jahreszahl.</span></li>
             </ul>
         </div>
-
-        {% if not shortchangelog %}
 
         <div class="changelog-item">
             <h3>Version 2.22.00 <small>(11. September 2019)</small></h3>

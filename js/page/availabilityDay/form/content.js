@@ -18,12 +18,19 @@ const FormContent = (props) => {
         setErrorRef
     } = props;
     
-    const calenderDisabled = data.type && data.slotTimeInMinutes ? false : true
+    const calenderDisabled = data.type && data.slotTimeInMinutes ? false : true;
+    const isUnsafedSpontaneous = data.id == 0;
+
     return (
         <div>
             <ErrorBar errorList={errorList} conflictList={conflictList} setErrorRef={setErrorRef} />
             <form className="form--base">
                 <fieldset>
+                    {isUnsafedSpontaneous ? 
+                    <div className="message message-info">
+                        Diese Öffnungszeit ist eine mit einer Termin-Öffnungszeit verbundenen Spontankunden-Öffnungszeit und hat noch keine eigene ID. Sie können diese Öffnungszeit erst einzeln aktualisieren, wenn sie die dazugehörige Termin-Öffnungszeit mit einmal initial aktualisiert haben.
+                    </div> : null
+                    }
                     <div className="panel--heavy">
                         <FormGroup>
                             <Label attributes={{"htmlFor": "AvDayDescription"}}>Anmerkung</Label> 
@@ -34,8 +41,7 @@ const FormContent = (props) => {
                                     value={data.description} 
                                     {...{ onChange }} 
                                 />
-                                <Description attributes={{ "id": "help_AvDayDescription" }} value="Optionale Angabe zur Kennzeichnung des Termins.">
-                                    {data.id ? " Die ID der Öffnungszeit ist " + data.id : " Die Öffnungszeit hat noch keine ID"}
+                                <Description attributes={{ "id": "help_AvDayDescription" }}>Optionale Angabe zur Kennzeichnung des Termins. {data.id > 0 ? "Die ID der Öffnungszeit ist " + data.id : " Die Öffnungszeit hat noch keine ID"}.
                                 </Description>
                             </Controls>
                         </FormGroup>
@@ -46,6 +52,8 @@ const FormContent = (props) => {
                                     attributes={{ disabled: data.id ? 'disabled' : null, "id": "AvDayType" }}
                                     value={data.type ? data.type : 0} {...{ onChange }}
                                     options={availabilityTypes} />
+                                    <Description attributes={{ "id": "help_AvDayTypDescription" }}>Typ der Öffnungszeit.
+                                </Description>
                             </Controls>
                         </FormGroup>
                     </div>
@@ -150,71 +158,70 @@ const FormContent = (props) => {
                         </FormGroup>
                     </div>
                 </fieldset>
-
+                {data.type !== 'openinghours' ?
                 <fieldset>
                     <div className="panel--heavy">
-                        {data.type !== 'openinghours' ? <legend>Terminarbeitsplätze</legend> : null}
-                        {data.type !== 'openinghours' ?
-                            <div>
-                                <FormGroup>
-                                    <Label attributes={{"htmlFor": "WsCountIntern"}}>Insgesamt</Label>
-                                    <Controls>
-                                        <Inputs.Select name="workstationCount_intern"
-                                            value={data.workstationCount_intern}
-                                            attributes={{"id": "WsCountIntern"}}
-                                            {...{ onChange }}
-                                            options={range(0, 50).map(n => {
-                                                let workstation = (n == 1) ? "Arbeitsplatz" : "Arbeitsplätze";
-                                                return {
-                                                    title: `${n} ${workstation}`,
-                                                    value: `${n}`,
-                                                    name: `${n} ${workstation}`
-                                                }
-                                            })} />
-                                    </Controls>
-                                </FormGroup>
+                        <legend>Terminarbeitsplätze</legend>
+                        <div>
+                            <FormGroup>
+                                <Label attributes={{"htmlFor": "WsCountIntern"}}>Insgesamt</Label>
+                                <Controls>
+                                    <Inputs.Select name="workstationCount_intern"
+                                        value={data.workstationCount_intern}
+                                        attributes={{"id": "WsCountIntern"}}
+                                        {...{ onChange }}
+                                        options={range(0, 50).map(n => {
+                                            let workstation = (n == 1) ? "Arbeitsplatz" : "Arbeitsplätze";
+                                            return {
+                                                title: `${n} ${workstation}`,
+                                                value: `${n}`,
+                                                name: `${n} ${workstation}`
+                                            }
+                                        })} />
+                                </Controls>
+                            </FormGroup>
 
-                                <FormGroup>
-                                    <Label attributes={{"htmlFor": "WsCountCallcenter"}}>Callcenter</Label>
-                                    <Controls>
-                                        <Inputs.Select name="workstationCount_callcenter"
-                                            value={data.workstationCount_callcenter}
-                                            attributes={{"id": "WsCountCallcenter", "aria-describedby": "help_WsCountCallcenter"}}
-                                            {...{ onChange }}
-                                            options={range(0, data.workstationCount_intern).map(n => {
-                                                let workstation = (n == 1) ? "Arbeitsplatz" : "Arbeitsplätze";
-                                                return {
-                                                    title: `${n} ${workstation}`,
-                                                    value: `${n}`,
-                                                    name: `${n} ${workstation}`
-                                                }
-                                            })} />
-                                        <Description attributes={{"id": "help_WsCountCallcenter"}}>Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Callcenter zur Verfügung gestellt werden.</Description>
-                                    </Controls>
-                                </FormGroup>
+                            <FormGroup>
+                                <Label attributes={{"htmlFor": "WsCountCallcenter"}}>Callcenter</Label>
+                                <Controls>
+                                    <Inputs.Select name="workstationCount_callcenter"
+                                        value={data.workstationCount_callcenter}
+                                        attributes={{"id": "WsCountCallcenter", "aria-describedby": "help_WsCountCallcenter"}}
+                                        {...{ onChange }}
+                                        options={range(0, data.workstationCount_intern).map(n => {
+                                            let workstation = (n == 1) ? "Arbeitsplatz" : "Arbeitsplätze";
+                                            return {
+                                                title: `${n} ${workstation}`,
+                                                value: `${n}`,
+                                                name: `${n} ${workstation}`
+                                            }
+                                        })} />
+                                    <Description attributes={{"id": "help_WsCountCallcenter"}}>Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Callcenter zur Verfügung gestellt werden.</Description>
+                                </Controls>
+                            </FormGroup>
 
-                                <FormGroup>
-                                    <Label attributes={{"htmlFor": "WsCountPublic"}}>Internet</Label>
-                                    <Controls>
-                                        <Inputs.Select name="workstationCount_public"
-                                            value={data.workstationCount_public}
-                                            attributes={{"id": "WsCountPublic", "aria-describedby": "help_WsCountPublic"}}
-                                            {...{ onChange }}
-                                            options={range(0, data.workstationCount_intern).map(n => {
-                                                let workstation = (n == 1) ? "Arbeitsplatz" : "Arbeitsplätze";
-                                                return {
-                                                    title: `${n} ${workstation}`,
-                                                    value: `${n}`,
-                                                    name: `${n} ${workstation}`
-                                                }
-                                            })} />
-                                        <Description attributes={{"htmlFor": "help_WsCountPublic"}}>Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Internet zur Verfügung gestellt werden.</Description>
-                                    </Controls>
-                                </FormGroup>
-                            </div>
-                            : null}
+                            <FormGroup>
+                                <Label attributes={{"htmlFor": "WsCountPublic"}}>Internet</Label>
+                                <Controls>
+                                    <Inputs.Select name="workstationCount_public"
+                                        value={data.workstationCount_public}
+                                        attributes={{"id": "WsCountPublic", "aria-describedby": "help_WsCountPublic"}}
+                                        {...{ onChange }}
+                                        options={range(0, data.workstationCount_intern).map(n => {
+                                            let workstation = (n == 1) ? "Arbeitsplatz" : "Arbeitsplätze";
+                                            return {
+                                                title: `${n} ${workstation}`,
+                                                value: `${n}`,
+                                                name: `${n} ${workstation}`
+                                            }
+                                        })} />
+                                    <Description attributes={{"htmlFor": "help_WsCountPublic"}}>Wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Internet zur Verfügung gestellt werden.</Description>
+                                </Controls>
+                            </FormGroup>
                         </div>
-                    </fieldset>
+                    </div>
+                </fieldset>
+                : null}
             </form>
         </div>
     )

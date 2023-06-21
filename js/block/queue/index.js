@@ -62,7 +62,7 @@ class View extends BaseView {
         }).on('click', 'a.process-edit', (ev) => {
             this.onEditProcess(ev)
         }).on('click', 'a.process-reset', (ev) => {
-            this.onResetProcess(this.$main, ev);
+            this.onResetProcess(ev);
         }).on('click', 'a.process-delete', (ev) => {
             this.onConfirm(ev, "confirm_delete", () => { this.onDeleteProcess(ev) });
         }).on('click', '.queue-table .calendar-navigation .pagedaylink', (ev) => {

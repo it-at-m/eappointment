@@ -15,9 +15,9 @@ const GraphView = (props) => {
     const graphBody = <GraphBodyLayout
         showConflicts={props.conflicts.length > 0}
         conflicts={constants.renderConflicts(props.conflicts)}
-        appointments={constants.renderAppointments(props.availabilities, props.maxWorkstationCount, onSelect)}
-        numberOfAppointments={constants.renderNumberOfAppointments(props.availabilityListSlices)}
-        openings={constants.renderOpenings(props.availabilities, onSelect)} 
+        appointments={constants.renderAppointments(props.availabilityList, props.maxWorkstationCount, onSelect)}
+        numberOfAppointments={constants.renderNumberOfAppointments(props.availabilityList, props.maxWorkstationCount)}
+        openings={constants.renderOpenings(props.availabilityList, onSelect)} 
     />
     return (
         <Board className="board--light availability-timetable"
@@ -33,7 +33,7 @@ const GraphView = (props) => {
 
 GraphView.defaultProps = {
     onNewAvailability: () => { },
-    availabilities: [],
+    availabilityList: [],
     conflicts: []
 }
 
@@ -42,8 +42,7 @@ GraphView.propTypes = {
     links: PropTypes.object,
     onNewAvailability: PropTypes.func,
     conflicts: PropTypes.array,
-    availabilities: PropTypes.array,
-    availabilityListSlices: PropTypes.array,
+    availabilityList: PropTypes.array,
     maxWorkstationCount: PropTypes.number,
     onSelect: PropTypes.func.isRequired
 }

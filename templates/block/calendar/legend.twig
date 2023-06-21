@@ -13,16 +13,10 @@
     }
 } %}
 
-<style>
-.calendar-legend .today:after {
-    border-top: 8px solid #0053b4;
-    border-left: 8px solid #0000;
-}
-</style>
-
+<section aria-hidden="true">
 <h2 class="block__heading">{{ ("Legende")|trans }}</h2>
     {% if view == "calendar" %}
-    <section class="block calendar-legend panel--light" aria-hidden="true" style="padding: 1em 1em 0.5em;">
+    <div class="block calendar-legend panel--light" style="padding: 1em 1em 0.5em;">
         <div class="grid" style="font-size:0.9em;">
         {% for key, typeList in legendtypes %}
             <div class="grid__item one-half">
@@ -34,11 +28,11 @@
             </div>
         {% endfor %}
         </div>  
-    </section>      
+    </div>
    
     {% else %}
     
-    <section class="block calendar-legend" aria-hidden="true">
+    <div class="block calendar-legend">
 
     {% for key, typeList in legendtypes %}
     <ul class="list--clean">
@@ -53,8 +47,9 @@
         <li>{{ openingCalendarIcon('T','blue', 1, 'Offen für Terminkunden') }} Offen für Terminkunden</li>
     </ul>
     <ul class="list--clean">
-        <li><i class="fas fa-globe" aria-hidden="true"></i> Buchbar per Internet</li>
-        <li><i class="fas fa-phone" aria-hidden="true"></i> Buchbar per Callcenter</li>
+        <li><i class="fas fa-globe"></i> Buchbar per Internet</li>
+        <li><i class="fas fa-phone"></i> Buchbar per Callcenter</li>
     </ul>
-    </section>
+    </div>
     {% endif %}
+</section>

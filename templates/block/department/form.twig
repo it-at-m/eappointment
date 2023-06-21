@@ -168,7 +168,7 @@
     <fieldset>        
         <legend>Freie Tage</legend>  
         <div class="panel--heavy">
-            <div class="message message--info"><p><i class="fas fa-exclamation-circle" alt="Wichtiger Hinweis" title="Wichtiger Hinweis"></i> <strong>Hinweis</strong>: Beachten Sie, dass Öffnungszeiten für einen einzelnen Tag (z.B. Ausnahmen) die Einstellung von freien Tagen ignorieren.</p></div>
+            <div class="message message--info"><p><i class="fas fa-exclamation-circle" title="Wichtiger Hinweis" aria-hidden="true"></i> <strong>Hinweis</strong>: Beachten Sie, dass Öffnungszeiten für einen einzelnen Tag (z.B. Ausnahmen) die Einstellung von freien Tagen ignorieren.</p></div>
             <div class="daysoff" data-department-daysoff data-days="{{department.dayoff|default([])|json_encode()}}">
             </div>
         </div>

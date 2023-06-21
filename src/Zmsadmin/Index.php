@@ -26,16 +26,16 @@ class Index extends BaseController
         } catch (\Exception $workstationexception) {
             $workstation = null;
         }
-        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();     
         $input = $request->getParsedBody();
         $oidclogin = $request->getAttribute('validator')->getParameter('oidclogin')->isString()->getValue();
-        if ($request->isPost()) {
+        if ($request->getMethod() === 'POST') {
             $loginData = $this->testLogin($input);
             if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
                 \BO\Zmsclient\Auth::setKey($loginData->authkey);
                 return \BO\Slim\Render::redirect('workstationSelect', array(), array());
             }
-            \BO\Slim\Render::withHtml(
+            return \BO\Slim\Render::withHtml(
                 $response,
                 'page/index.twig',
                 array(
@@ -57,7 +57,7 @@ class Index extends BaseController
                 'workstation' => $workstation,
                 'oidcproviderlist' => $this->getProviderList($config),
                 'oidclogin' => $oidclogin,
-                'showloginform' => (! $oidclogin)
+                'showloginform' => (! $oidclogin)                
             )
         );
     }
@@ -86,7 +86,7 @@ class Index extends BaseController
                 \BO\Zmsclient\Auth::setKey($exception->data['authkey']);
                 throw $exception;
             } elseif ('' != $exception->template
-                && \App::$slim->getContainer()->view->getLoader()->exists($template)
+                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
             ) {
                 $exceptionData = [
                   'template' => $template,
@@ -99,7 +99,7 @@ class Index extends BaseController
         return $exceptionData;
     }
 
-    private function getProviderList($config)
+    protected function getProviderList($config)
     {
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider'));
         $oidcproviderlist = [];
@@ -113,4 +113,5 @@ class Index extends BaseController
         }
         return $oidcproviderlist;
     }
+
 }

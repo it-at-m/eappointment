@@ -26,7 +26,7 @@ class UseraccountAdd extends BaseController
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
 
         $input = $request->getParsedBody();
-        if ($request->isPost()) {
+        if ($request->getMethod() === 'POST') {
             $input['password'] = $input['changePassword'][0];
             $result = $this->writeNewEntity($input);
             if ($result instanceof Entity) {
@@ -58,7 +58,7 @@ class UseraccountAdd extends BaseController
                 'exception' => (isset($result)) ? $result : null,
                 'userAccount' => (isset($result)) ? $input : null,
                 'selectedDepartment' => $selectedDepartment,
-                'oidcProviderList' => array_filter($allowedProviderList),
+                'oidcProviderList' => array_filter($allowedProviderList),                
                 'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema))
             ]
         );
@@ -69,14 +69,14 @@ class UseraccountAdd extends BaseController
         $entity = new Entity($input);
         if (isset($input['oidcProvider']) && '' != $input['oidcProvider']) {
             $entity->id = $entity->id. '@' .$input['oidcProvider'];
-        }
+        }        
         $entity = $entity->withCleanedUpFormData(true);
         try {
             $entity = \App::$http->readPostResult('/useraccount/', $entity)->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
             if ('' != $exception->template
-                && \App::$slim->getContainer()->view->getLoader()->exists($template)
+                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
             ) {
                 return [
                     'template' => $template,

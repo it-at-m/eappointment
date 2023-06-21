@@ -27,9 +27,8 @@ class RoutingTest extends Base
 
         $request = static::createBasicRequest('GET', '/workstation/');
         $exception = new \BO\Zmsentities\Exception\UserAccountMissingRights();
-
-        $container = \App::$slim->getContainer()->get('errorHandler');
-        $response = $container($request, $this->getResponse(), $exception);
+        $errorHandler = \App::$slim->getContainer()->get('errorMiddleware')->getDefaultErrorHandler();
+        $response = $errorHandler($request, $exception, true, false, false);
         $this->assertStringContainsString('board exception', (string)$response->getBody());
         $this->assertStringContainsString(
             'Um diese Seite aufzurufen fehlen Ihnen die notwendigen Rechte',
@@ -52,8 +51,8 @@ class RoutingTest extends Base
         );
 
         $request = static::createBasicRequest('GET', '/workstation/');
-        $container = \App::$slim->getContainer()->get('errorHandler');
-        $response = $container($request, $this->getResponse(), $exception, 404);
+        $errorHandler = \App::$slim->getContainer()->get('errorMiddleware')->getDefaultErrorHandler();
+        $response = $errorHandler($request, $exception, true, false, false);
         $this->assertStringContainsString('Es ist ein Fehler aufgetreten', (string)$response->getBody());
     }
 
@@ -73,8 +72,8 @@ class RoutingTest extends Base
         $exception = new \BO\Zmsentities\Exception\ScopeMissingProvider;
         $exception->data = ['scope' => new \BO\Zmsentities\Scope(['id' => 141])];
 
-        $container = \App::$slim->getContainer()->get('errorHandler');
-        $response = $container($request, $this->getResponse(), $exception);
+        $errorHandler = \App::$slim->getContainer()->get('errorMiddleware')->getDefaultErrorHandler();
+        $response = $errorHandler($request, $exception, true, false, false);
         $this->assertStringContainsString('board exception', (string)$response->getBody());
         $this->assertStringContainsString(
             'Dem Standort mit der Id 141 ist kein Dienstleister zugeordnet. Dieser Inhalt kann daher nicht angezeigt werden.',
@@ -96,8 +95,8 @@ class RoutingTest extends Base
         );
 
         $request = static::createBasicRequest('GET', '/workstation/');
-        $container = \App::$slim->getContainer()->get('errorHandler');
-        $response = $container($request, $this->getResponse(), $exception);
+        $errorHandler = \App::$slim->getContainer()->get('errorMiddleware')->getDefaultErrorHandler();
+        $response = $errorHandler($request, $exception, true, false, false);
         $this->assertStringContainsString('board exception', (string)$response->getBody());
         $this->assertStringContainsString(
             'Um diese Seite aufzurufen fehlen Ihnen die notwendigen Rechte',

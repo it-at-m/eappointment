@@ -1,4 +1,38 @@
-## v2.24.12
+## 2.25.00
+* #56710 - Opening hours are now updated only if there were changes to them
+* #56710 - improved validating availability changes, filter conflicts and errors by availability id
+* #56710 - refactored and improved handling openinghours with old double types, saving single on demand
+* Download of all citizen appointments of the day on the site selection page corrected.
+* Fixed some confirmation dialog wordings
+
+## 2.24.14
+* #56608 - use xls instead of xlsx for download waiting queue as file
+* #56514 - added return command when rendering the login post call
+* Unit tests coverage increased
+* #56609 - Moved arrangements in the week table have been corrected
+* #56607 - added in progresss icon while saving and deleting opening times
+* #55533 - many fixes for HTML W3C Validation (including main navigation)
+* #55518 - opening time graph accessibility improvement
+
+## 2.24.13
+* #54692 - Configuration of the webcalldisplay url in the configuration with the associated templates.
+* #55525 - close datepicker on enter also if it is same day
+* #55985 - add calendar legend to counter page
+* #55513 - add title attributes and removed aria-labels. Add icon to navigation with alt attribute for ticketprinter status
+* #55513 - Use temporary ID for slot calculation of a newly created opening time in graph view
+* #55509 - fixed dublicated ids if there are multiple formelements in a loop
+* #55536 - removed aria and role and tabindex attributes
+* #56121 - fixed reselecting, adding and removing availabilities and reduce conflictlist calling
+* #56121 - In the opening hours graph view, the mouse-over descriptions have been adjusted and corrected
+* #55531 - Position of the error message for non-selected services improved
+* #56188 - Keyboard operation improved for accessible navigation and deprecated jQuery functions updated
+* #55534 - PDF manual declared as non-accessible
+* #56111 - Labels for accessibility deposited in German in the Datepicker
+* #56110 - Updating the queue via the button at the end of the list is now also possible via keyboard operation
+* #55530 - Display an error message as a dialog message if it is no longer possible to make an appointment with the current selection"
+* #55519 - Lightbox dialogs for information and success messages revised
+
+## 2.24.12
 * #55539 - aria live describing service list changes
 * #55539 - aria-live attribute only to selected regions
 * #55530 - Accessibility for appointment selection with activated multiple slot option established
@@ -6,7 +40,7 @@
 * #55510 - Added some improvements for screen readers in opening hours
 * #55510 - add aria-describedby attribute to date and timepicker input fields
 
-## v2.24.11
+## 2.24.11
 * #55538, ##55534, #55561 - Adaptations for accessibility, headings added, contrast display revised, error messages clearly marked as errors
 * #55531 - Set the focus on the first error message in the form and revise the label semantic with included error messages
 * #55526 - Table actions are now also placed above the tables to avoid long scrolling
@@ -14,19 +48,19 @@
 * #55509 - Checkboxes and radionbuttons now have a unique ID, the dialog lightboxes now have a focus trap and when closing the lightbox the previous element is focused 
 * #55525 - Datepicker React component reworked with an additional calendar icon
 
-## v2.24.10
+## 2.24.10
 * #55389 - Keycloak OpenID-Connect as additional login solution tested
 * #55117 - View of mailing configurations has been extended with the appointment overviews
 * #31338 - notification headsup time calculated to selected appointment
 
-## v2.24.09
+## 2.24.09
 
 * #55077 Links and holidays that can be assigned to an authority are now checked if they exist
 * #55078 A separate SMS message is now sent for spontaneous customers when their transaction is canceled
 * #34087 Config variables can now be changed by superuser
 
 
-## v2.24.05
+## 2.24.05
 
 * #49206 conflicts are now retrieved from the API by a single controller using a static method
 * #49206 For the output of conflicts during the saving of an process, it is now checked whether an opening time is included in the appointment
@@ -34,7 +68,7 @@
 * #49206 show slotCount also for spontaneous clients
 
 
-## v2.24.04
+## 2.24.04
 
 * #52818 Bugfix: Spontankunden können nun korrekt aufgerufen werden und aufgerufene Vorgänge werden nicht bei Abbruch als aufgerufen gezählt
 * #52297 Bugfix: In Abholerlisten mit mehr als 500 Einträgen kann nun navigiert werden um weitere Einträge anzuzeigen. Der Download der Abholerliste ist auf 3000 Einträge beschränkt
@@ -42,12 +76,12 @@
 * #49206 Bugfix: Dem letzte Termin des Tages können nun auch weitere Slots zugeordnet werden, außerdem werden doppelte Konflikte beim aktualisieren eines Termins nicht mehr angezeigt
 * #48987 Bugfix: Beim Aktualisieren eines Vorgangs wird nun geprüft ob dem Standort die angegebene Dienstleistung zugeordnet ist.
 
-## v2.24.03
+## 2.24.03
 * #52383 Bugfix: In der Tresenansicht funktioniert nun die Auswahl des Standortes bei ausgewähltem Cluster
 * #52247 Bugfix: Das Löschen eines Nutzers muss nun bestätigt werden und mehrfache Erfolgsmeldungen sind entfernt
 * #48480 Beim Löschen eines Vorgangs wird geprüft ob der Vorgang SMS oder Email als Bestätigung empfängt
 
-## v2.24.00
+## 2.24.00
 
 * #49629 Sicherheit: Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt
 * #48174 Bugfix: Abholer und Öffnungszeiten können nun wieder gelöscht werden.
@@ -58,7 +92,7 @@
 * #36703 Bugfix: Die letzten Terminzeiten lassen sich nun korrekt buchen
 * #52301 Bugfix: Excel Download der Tagestermine nun mit Standort im Dateinamen und Drucklayout ist optimiert worden
 
-## v2.23.10
+## 2.23.10
 
 * #47195 Die Checkbox zur E-Mail Bestätigung im Terminformular wird bei Auswahl einer Terminzeit standardmäßig aktiviert und für einen Spontankunden deaktiviert
 * #35754 Das Kopieren von Spontankunden funkioniert nun korrekt
@@ -67,27 +101,27 @@
 * #37117 Bugfix: Terminslots lassen sich nun gleichmäßig auf einen Tag aufteilen in den Öffnungszeiten
 * #35754 Bugfix: TypeError Exceptions bei fehlendem übergebenene Standort wurden behoben, die Auswahl von Standorten bei aktivierter Clusteransicht und das auswählen und bearbeiten von Vorgängen im Cluster wurde verbessert
 
-## v2.23.09
+## 2.23.09
 
 * #46531 Der Sachbearbeiter kann einem Nutzer nur noch Rechte zuordnen, die ihm selbst gewährt sind.
 * #36713 Abholerlisten werden nun nach Namen sortiert
 * #42762 Bei der Statistikerfassung zum Abschluss eines Vorgangs, können nun nicht mehr mehrere Checkboxen und Dienstleistungsauswahl gemeinsam ausgewählt werden
 * #47465 In der Abholerverwaltung können nun Standorte der ganzen Behörde ausgewählt werden
 * #33898 Verbesserte Fehlerbehandlung von Abholern über die direkte Nummerneingabe in der Abholer-Tabletansicht
-## v2.23.08
+## 2.23.08
 
 * #46608 Öffnungszeiten-Seiten werden durch optimierte API-Abfragen schneller geladen
 * #46608 Bugfix: In der Tresen Infobox werden nun die Terminzeiten auch für Nutzer mit Basisrechten angezeigt
 * #46531 Bugfix: Ein Nutzer mit Rechten zum Bearbeiten von Behörden kann nun einen Bezirk öffnen um den Button zum Anlegen einer neuen Behörde bedienen zu können. Andere Informationen oder Aktionen sind ausgeblendet.
 * #44143 Bugfix: Öffnungszeiten die in der Vergangenheit liegen können beim Anlegen von Ausnahmen nicht mehr verändert werden.
 
-## v2.23.07
+## 2.23.07
 
 * #42060 - In der Navigation und den Metalinks sind nun Mouseover Texte zu sehen und die Mouseover Texte in der Kalenderansicht sind jetzt aussagekräftiger mit formatierter Datumsausgabe
 * Bugfix - In der Configübersicht sind nun die Mailings und die dazugehörigen Betreffzeilen korrekt dargestellt und um die Terminerinnerung ergänzt
 * #44182 - Einem Nutzer dem die ausgewählte Behörde nicht zugewiesen ist, darf keinen Standort oder ein Cluster für diese Behörde anlegen. Die Buttons sind deaktiviert und mit einem Mouseover-Text versehen
 
-## v2.23.06
+## 2.23.06
 
 * #44320 Barrierefreies Layout für Öffnungszeiten
 * #44215 Bugfix: Fehlende Labels bei Öffnungszeiten
@@ -101,7 +135,7 @@
 * Bugfix: Im Terminvereinbarungsformular werden freie Termine, welche älter als die aktuelle Zeit sind nicht mehr angezeigt
 
 
-## v2.23.05
+## 2.23.05
 
 * #44173 Bugfix: Freie Tage werden nun nur noch angelegt, wenn ein Name vergeben worden ist
 * #42786 Nach Freigeben/Sperren des Kiosk erscheint jetzt eine Erfolgsmeldung.
@@ -132,7 +166,7 @@
 * #45139 Beim Bearbeiten eines Clusters wurde in der Standortübersicht die Überschrift der letzten Spalte zu Kundenhinweis korrigiert
 * #44176 Vorgänge andere Cluster-Standorte werden nun korrekt aufgerufen und beim Abschluss eines Vorganges kann nun jeder Abholerort ausgewählt werden, der zum Cluster gehört, insofern die Clusteransicht aktiv ist. Die Überschrift in der Abholer-Übersicht wurde dementsprechend angepasst.
 
-## v2.23.04
+## 2.23.04
 
 * #36968 In der Liste der nicht erschienenen Vorgänge wird die Anzahl der Dienstleistungen des Vorgangs nun auch angezeigt
 * #35874 Bugfix: SMS Icons werden wieder korrekt in der Warteschlange dargestellt
@@ -164,21 +198,21 @@
 * #42768 Änderung des Titels bei der Erfassung der Kundendaten
 * #43829 Die Eingabe einer Telefonnummer wird für Spontan- und Terminkunden einheitlich validiert und die Fehlermeldung für eine zu lange Telefonnummer wurde angepasst 
 
-## v2.23.02
+## 2.23.02
 
 * #39321 Überarbeitung nach Barrierefreiheitsprüfung
 
-## v2.23.01
+## 2.23.01
 
 * #38445 Bugfix: Anpassung auf Grund eines Updates der Bibliothek slimframework
 * #38421 Bugfix: Cache-Pfad wird nun anhand der Prozess-NutzerID statt der Skript-NutzerID erstellt
 
-## v2.23.00
+## 2.23.00
 
 * #35447 Auf barrierefreiheit optimiertes Layout für den Admin-Bereich inkl. Tresen und Sachbearbeiterplatz (Öffnungszeiten-Administration ist noch offen)
 * #37713 Bugfix: Korrekte Jahreszahl für die erste Woche im Jahr
 
-## v2.21.00
+## 2.21.00
 
 * #36521 Bugfix: Die Nutzerverwaltung enthält jetzt auch neu angelegte Kunden, nicht mehr nur "Berlin"
 * #36317 Bugfix: Als Fehlerklasse wird statt TypeError jetzt die korrekte Klasse ausgegeben
@@ -190,7 +224,7 @@
 * #36702 Excel-Export am Tresen zeigt Uhrzeiten jetzt in der richtigen Zeitzone an
 * #36656 Beispiel für die Kundenumfrage jetzt unter "Systemkonfiguration"
 
-## v2.20.00
+## 2.20.00
 
 * #36153 Die Status-Seite zeigt jetzt alle Angaben zur Slot-Berechnung, auch wenn keine Fehler vorliegen
 * #35836 Bugfix: Falsche Fehlermeldung beim Löschen eines Kunden ohne Root-Rechte entfernt
@@ -201,7 +235,7 @@
 * #35869 Refactoring: Validierung bei der Terminvereinbarung überarbeitet
 * #36317 Bugfix: Trennung von unterschiedlichen Fehler-Exceptions ab PHP 7.0 implementiert
 
-## v2.19.05
+## 2.19.05
 
 * #35764 Deploy Tokens eingebaut
 * #35668 Bugfix: Zeige keine Termine der Vergangenheit im Wochenkalender
@@ -215,7 +249,7 @@
 * #35803 Bugfix: Hat ein Sonntag eine Öffnungszeit mit buchbaren Terminen ist dieser jetzt im Tresen/Sachbearbeiterplatz auswählbar
 * #35697 Darstellung der Wartezeit jetzt wie in der Aufrufanzeige mit optimistischer - geschätzter Wartezeit
 
-## v2.19.03
+## 2.19.03
 
 * #35007 Template: Missverständliches "aktiviert" in der Standort-Maske entfernt
 * #35314 Ergänzung eines Bestätigung-Dialogs vor dem Löschen eines Termins aus dem Terminvereinbarungsformular heraus
@@ -235,11 +269,11 @@
 * #35306 Wird in der Warteschlangen-Tabelle der Standort gewechselt wird darauf hingewiesen, dass das Terminformular zurückgesetzt wird und es findet nun kein kompletter Seitenreload mehr statt
 * #35699 Bugfix: Spontankunden können jetzt ohne Validierung von Pflichtfelder aktualisiert werden und Erfolgsmeldungen haben nun einen OK-Button
 
-## v2.19.02
+## 2.19.02
 
 * #31487 Bugfix: Funktionen, um einen Termin zu archivieren, wurden überarbeitet und die Kundebefragung sollte wieder funktionieren
 
-## v2.19.01
+## 2.19.01
 
 * #35273 Bugfix: Falsche Fehlermeldung im Tresen korrigiert, wenn bei Standorten keine Dienstleistungen vorhanden sind
 * #35252 Bugfix: Anzahl der Arbeitsplätze bei Spontankunden im Öffnungszeitenformular ausblenden
@@ -261,7 +295,7 @@
 * #35274 Bugfix: Beim Anlegen eines Standortes wird keine Vorauswahl mehr getroffen
 * #35334 Bugfix: Fehlerhafte Parameter im Wochenkalender und in der Kundensuche korrigiert
 
-## v2.19.00
+## 2.19.00
 
 * #31592 Admin-Oberfläche für neue Mandanten zur Pflege von Dienstleistungen und Standorten
 * #34875 Rückmeldungs-Dialoge beim Löschen von Standorten, Behörden und Organisationen
@@ -281,7 +315,7 @@
 
 
 
-## v2.18.02
+## 2.18.02
 
 * #33865 - Access-Key Bugfixes
 * #31392 #34677 - Bugfix bei der Validierung des Formulars zur Terminbuchung 
@@ -292,7 +326,7 @@
 
 
 
-## v2.18.00
+## 2.18.00
 
 * #33871 Nachfrage, bevor ein Nutzer gelöscht wird
 * #34354 Tastaturkürzel für im Handbuch genannte Formulare
@@ -312,13 +346,13 @@
 * #31577 Template: Wording bei abgesagten Terminen in der Tabelle
 
 
-## v2.17.03
+## 2.17.03
 
 * Im Admin unter dem Link "status" (Footer) wird jetzt angezeigt, wann die letzte Berechnung war, wieviele Zeitslots neu berechnet werden müssen und wie alt die älteste Änderung an einer Öffnungszeit ist, die nicht neu berechnet wurde
 * Wording für Standort-Maske, siehe #34094
 
 
 
-## v2.17.02
+## 2.17.02
 
 * Bugfix aus #33497 (Exception wegen fehlender freier Tage bei Administration der Öffnungszeiten im ZMS2, Client-Fehler)
