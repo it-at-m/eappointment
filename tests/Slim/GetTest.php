@@ -30,7 +30,12 @@ class GetTest extends Base
 
     public function testWithLanguageFromRoute()
     {
-        $route = new \Slim\Route('GET', '/unittest/{id}/{lang}/', []);
+        $routeCollector = \App::$slim->getRouteCollector();
+        $route = $routeCollector->map(
+            ['GET'],
+            '/unittest/{id}/{lang}/',
+            []
+        );
         $route->setArguments(['id' => 123, 'lang' => 'en']);
         
         $response = $this->render($this->arguments, [
@@ -64,24 +69,21 @@ class GetTest extends Base
 
     public function testMethodNotAllowed()
     {
-        
         $request = self::createBasicRequest('GET', '/unittest/');
-        $response = \App::$slim->process($request, $this->getResponse());
+        $response = \App::$slim->handle($request);
         $response->getBody()->rewind();
         $this->assertStringContainsString(
-            'Method not allowed. Must be one of: <strong>POST</strong>',
+            'Method not allowed. Must be one of: POST',
             $response->getBody()->getContents()
         );
     }
 
     public function testNotFound()
     {
-        
         $request = self::createBasicRequest('GET', '/notfound/');
-        $response = $this->render([], [], []);
-        $response = \App::$slim->__invoke($request, $response);
+        $response = \App::$slim->handle($request);
         $response->getBody()->rewind();
 
-        $this->assertStringContainsString('Page Not Found', $response->getBody()->getContents());
+        $this->assertStringContainsString('Not Found', $response->getBody()->getContents());
     }
 }

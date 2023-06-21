@@ -51,7 +51,7 @@ class KeycloakInstance
     public function doLogout(ResponseInterface $response)
     {
         $this->writeDeleteSession();
-        $realmData = $this->provider::getBasicOptionsFromJsonFile();
+        $realmData = $this->provider->getBasicOptionsFromJsonFile();
         return $response->withRedirect($realmData['logoutUri'], 301);
     }
 
@@ -77,7 +77,7 @@ class KeycloakInstance
     private function testAccess(AccessToken $token)
     {
         list($header, $payload, $signature)  = explode('.', $token->getToken());
-        $realmData = $this->provider::getBasicOptionsFromJsonFile();
+        $realmData = $this->provider->getBasicOptionsFromJsonFile();
         $accessTokenPayload = json_decode(base64_decode($payload), true);
         $clientRoles = array_values($accessTokenPayload['resource_access'][\App::IDENTIFIER]['roles']);
         if (array_key_exists(\App::IDENTIFIER, $accessTokenPayload['resource_access']) &&
@@ -110,7 +110,7 @@ class KeycloakInstance
 
     private function writeTokenToSession($token)
     {
-        $realmData = $this->provider::getBasicOptionsFromJsonFile();
+        $realmData = $this->provider->getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
         $sessionHandler->open('/'. $realmData['realm'] . '/', $realmData['clientId']);
         $sessionHandler->write(\BO\Zmsclient\Auth::getKey(), serialize($token), ['oidc' => true]);
@@ -119,7 +119,7 @@ class KeycloakInstance
 
     private function writeDeleteSession()
     {
-        $realmData = $this->provider::getBasicOptionsFromJsonFile();
+        $realmData = $this->provider->getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
         $sessionHandler->open('/'. $realmData['realm'] . '/', $realmData['clientId']);
         $sessionHandler->destroy(\BO\Zmsclient\Auth::getKey());
@@ -127,7 +127,7 @@ class KeycloakInstance
 
     private function readTokenDataFromSession()
     {
-        $realmData = $this->provider::getBasicOptionsFromJsonFile();
+        $realmData = $this->provider->getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
         $sessionHandler->open('/'. $realmData['realm'] . '/', $realmData['clientId']);
         $tokenData = unserialize($sessionHandler->read(\BO\Zmsclient\Auth::getKey(), ['oidc' => true]));

@@ -6,6 +6,8 @@
 
 namespace BO\Slim;
 
+use Twig\Extension\AbstractExtension;
+
 /**
   * Extension for Twig and Slim
   *
@@ -14,10 +16,10 @@ namespace BO\Slim;
   *  @SuppressWarnings(Coupling)
   *  @SuppressWarnings(Complexity)
   */
-class TwigExtension extends \Twig_Extension
+class TwigExtension extends AbstractExtension
 {
     /**
-     * @var \Slim\Http\Container
+     * @var \BO\Slim\Container
      */
     private $container;
 
@@ -35,29 +37,29 @@ class TwigExtension extends \Twig_Extension
     {
         $safe = array('is_safe' => array('html'));
         return array(
-            new \Twig_SimpleFunction('urlGet', array($this, 'urlGet')),
-            new \Twig_SimpleFunction('csvProperty', array($this, 'csvProperty')),
-            new \Twig_SimpleFunction('azPrefixList', array($this, 'azPrefixList')),
-            new \Twig_SimpleFunction('azPrefixListCollator', array($this, 'azPrefixListCollator')),
-            new \Twig_SimpleFunction('isValueInArray', array($this, 'isValueInArray')),
-            new \Twig_SimpleFunction('remoteInclude', array($this, 'remoteInclude'), $safe),
-            new \Twig_SimpleFunction('includeUrl', array($this, 'includeUrl')),
-            new \Twig_SimpleFunction('getEsiFromPath', array($this, 'getEsiFromPath')),
-            new \Twig_SimpleFunction('baseUrl', array($this, 'baseUrl')),
-            new \Twig_SimpleFunction('getLanguageDescriptor', array($this, 'getLanguageDescriptor')),
-            new \Twig_SimpleFunction('currentLang', array($this, 'currentLang')),
-            new \Twig_SimpleFunction('currentRoute', array($this, 'currentRoute')),
-            new \Twig_SimpleFunction('currentLocale', array($this, 'currentLocale')),
-            new \Twig_SimpleFunction('currentVersion', array($this, 'currentVersion')),
-            new \Twig_SimpleFunction('formatDateTime', array($this, 'formatDateTime')),
-            new \Twig_SimpleFunction('toTextFormat', array($this, 'toTextFormat')),
-            new \Twig_SimpleFunction('getNow', array($this, 'getNow')),
-            new \Twig_SimpleFunction('isNumeric', array($this, 'isNumeric')),
-            new \Twig_SimpleFunction('dumpAppProfiler', array($this, 'dumpAppProfiler'), $safe),
-            new \Twig_SimpleFunction('getSystemStatus', array($this, 'getSystemStatus'), $safe),
-            new \Twig_SimpleFunction('getClientHost', array($this, 'getClientHost')),
-            new \Twig_SimpleFunction('kindOfPayment', array($this, 'kindOfPayment')),
-            new \Twig_SimpleFunction('isImageAllowed', array($this, 'isImageAllowed')),
+            new \Twig\TwigFunction('urlGet', array($this, 'urlGet')),
+            new \Twig\TwigFunction('csvProperty', array($this, 'csvProperty')),
+            new \Twig\TwigFunction('azPrefixList', array($this, 'azPrefixList')),
+            new \Twig\TwigFunction('azPrefixListCollator', array($this, 'azPrefixListCollator')),
+            new \Twig\TwigFunction('isValueInArray', array($this, 'isValueInArray')),
+            new \Twig\TwigFunction('remoteInclude', array($this, 'remoteInclude'), $safe),
+            new \Twig\TwigFunction('includeUrl', array($this, 'includeUrl')),
+            new \Twig\TwigFunction('getEsiFromPath', array($this, 'getEsiFromPath')),
+            new \Twig\TwigFunction('baseUrl', array($this, 'baseUrl')),
+            new \Twig\TwigFunction('getLanguageDescriptor', array($this, 'getLanguageDescriptor')),
+            new \Twig\TwigFunction('currentLang', array($this, 'currentLang')),
+            new \Twig\TwigFunction('currentRoute', array($this, 'currentRoute')),
+            new \Twig\TwigFunction('currentLocale', array($this, 'currentLocale')),
+            new \Twig\TwigFunction('currentVersion', array($this, 'currentVersion')),
+            new \Twig\TwigFunction('formatDateTime', array($this, 'formatDateTime')),
+            new \Twig\TwigFunction('toTextFormat', array($this, 'toTextFormat')),
+            new \Twig\TwigFunction('getNow', array($this, 'getNow')),
+            new \Twig\TwigFunction('isNumeric', array($this, 'isNumeric')),
+            new \Twig\TwigFunction('dumpAppProfiler', array($this, 'dumpAppProfiler'), $safe),
+            new \Twig\TwigFunction('getSystemStatus', array($this, 'getSystemStatus'), $safe),
+            new \Twig\TwigFunction('getClientHost', array($this, 'getClientHost')),
+            new \Twig\TwigFunction('kindOfPayment', array($this, 'kindOfPayment')),
+            new \Twig\TwigFunction('isImageAllowed', array($this, 'isImageAllowed')),
         );
     }
 
@@ -254,14 +256,14 @@ class TwigExtension extends \Twig_Extension
     {
         $prepend = '';
         $append = '';
-        if (\App::SLIM_DEBUG) {
+        if (\App::DEBUG) {
             $prepend = "<!-- include($uri) -->\n";
             $append = "\n<!-- /include($uri) -->";
         }
         if (\App::ESI_ENABLED) {
             // Varnish does not support https
             $uri = preg_replace('#^(https?:)?//#', 'http://', $uri);
-            if (\App::SLIM_DEBUG) {
+            if (\App::DEBUG) {
                 $prepend = "<!-- replaced uri=$uri --> " . $prepend;
             }
             return $prepend . '<esi:include src="' . $uri . '" />' . $append;
@@ -283,10 +285,11 @@ class TwigExtension extends \Twig_Extension
     public function includeUrl($withUri = true)
     {
         if (null === \App::$includeUrl) {
+            /** @var Request $request */
             $request = $this->container['request'];
-            $uri = (string)$request->getUri()->getBasePath();
+            $uri = (string)$request->getBasePath();
             if ($withUri) {
-                $uri = $request->getUri()->getBaseUrl();
+                $uri = $request->getBaseUrl();
                 $uri = preg_replace('#^https?://[^/]+#', '', $uri); //Do not force protocoll or host
             }
             return Helper::proxySanitizeUri($uri);
@@ -351,12 +354,6 @@ class TwigExtension extends \Twig_Extension
 
     public function dumpAppProfiler()
     {
-        \D::config([
-            "display.show_call_info" => false,
-            "display.show_version" => false,
-            "sorting.arrays" => false,
-            "display.cascade" => [5,10,10],
-        ]);
         $output = '<h2>App Profiles</h2>'
             .' <p>For debugging: This log contains runtime information.
             <strong>DISABLE FOR PRODUCTION!</strong></p><ul>';
@@ -364,8 +361,7 @@ class TwigExtension extends \Twig_Extension
             if ($entry instanceof Profiler) {
                 $output .= "<li>$entry</li>";
             } else {
-                $settings = new \D\DumpSettings(\D::OB);
-                $output .= \D::UMP($entry, $settings);
+                $output .= \Tracy\Debugger::dump($entry, true);
             }
         }
         return $output .'</ul>';
