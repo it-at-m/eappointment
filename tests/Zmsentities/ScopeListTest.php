@@ -56,7 +56,7 @@ class ScopeListTest extends EntityCommonTests
         $collection = new $this->collectionclass();
         $collection->addEntity($entity);
         $lessDataCollection = $collection->withLessData();
-        $this->assertFalse(array_key_exists('preferences', $lessDataCollection->getFirst()));
+        $this->assertArrayNotHasKey('preferences', (array) $lessDataCollection->getFirst());
     }
 
     public function testGetShortestBookableStart()
