@@ -126,7 +126,7 @@ class ExchangeAvailabilityreview extends ExchangeSimpleQuery
         );
         $entity->addDictionaryEntry(
             'buchBis',
-            'sting',
+            'string',
             'Anzahl der Tage, die man maximal im voraus buchen kann'
         );
 

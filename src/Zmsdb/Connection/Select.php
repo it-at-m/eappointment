@@ -149,7 +149,7 @@ class Select
     {
         if (null === self::$readConnection) {
             self::$readConnection = self::createPdoConnection(self::$readSourceName);
-            self::$readProfiler = new \Aura\Sql\Profiler();
+            self::$readProfiler = new \Aura\Sql\Profiler\Profiler();
             self::$readProfiler->setActive(self::$enableProfiling);
             self::$readConnection->setProfiler(self::$readProfiler);
             //self::$readConnection->exec('SET SESSION TRANSACTION READ ONLY');
@@ -206,7 +206,7 @@ class Select
     {
         if (null === self::$writeConnection) {
             self::$writeConnection = self::createPdoConnection(self::$writeSourceName);
-            self::$writeProfiler = new \Aura\Sql\Profiler();
+            self::$writeProfiler = new \Aura\Sql\Profiler\Profiler();
             self::$writeProfiler->setActive(self::$enableProfiling);
             self::$writeConnection->setProfiler(self::$writeProfiler);
             if (self::$useTransaction) {
