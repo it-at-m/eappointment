@@ -1,3 +1,14 @@
+## 2.25.00
+* #56710 - improved behavior while updating and deleting availabilities^Chat has old double type format with appointment and spontaneous openinghours
+
+## 2.24.14
+* #54285 - filter calldisplay queuelistd by given date
+* #56366 - bugfix memory exhaustion dldbget (DLDB Downloads via service.berlin.de)
+* #54285 - filter calldisplay queue by todays date to display only processes within today
+
+## 2.24.13
+* #56079 - Unit Tests for checking multiple services in one appointment have been corrected
+
 ## 2.24.12
 * #55778 - Change of appointment date and location no longer allowed during an update
 

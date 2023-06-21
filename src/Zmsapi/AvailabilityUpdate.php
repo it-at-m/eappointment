@@ -6,32 +6,49 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Availability as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
 
+use BO\Zmsdb\Availability as AvailabilityRepository;
+use BO\Zmsdb\Slot as SlotRepository;
+use BO\Zmsdb\Helper\CalculateSlots as CalculateSlotsHelper;
+use BO\Zmsdb\Connection\Select as DbConnection;
+
+use BO\Zmsentities\Availability as Entity;
+
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
+use BO\Zmsapi\Exception\Availability\AvailabilityNotFound as NotfoundException;
+
+/**
+ * @SuppressWarnings(Coupling)
+ */
 class AvailabilityUpdate extends BaseController
 {
     /**
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
-    ) {
+    ): ResponseInterface {
         (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $entity = new \BO\Zmsentities\Availability($input);
-        $availability = (new Query())->readEntity($args['id'], $resolveReferences);
+        $entity = new Entity($input);
+        $entity->testValid();
+
+        $availability = (new AvailabilityRepository())->readEntity($args['id'], $resolveReferences);
         if (! $availability->hasId()) {
-            throw new Exception\Availability\AvailabilityNotFound();
+            throw new NotfoundException();
         }
-        $updatedEntity = (new Query())->updateEntity($args['id'], $entity, 2);
-        (new \BO\Zmsdb\Slot)->writeByAvailability($updatedEntity, \App::$now);
-        (new \BO\Zmsdb\Helper\CalculateSlots(\App::DEBUG))
-            ->writePostProcessingByScope($updatedEntity->scope, \App::$now);
+
+        DbConnection::getWriteConnection();
+        $this->writeSpontaneousEntity($availability);
+        $updatedEntity = (new AvailabilityRepository())->updateEntity($args['id'], $entity, $resolveReferences);
+        $this->writeCalculatedSlots($updatedEntity);
 
         $message = Response\Message::create($request);
         $message->data = $updatedEntity;
@@ -39,5 +56,25 @@ class AvailabilityUpdate extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
+    }
+
+    protected function writeCalculatedSlots($updatedEntity)
+    {
+        (new SlotRepository)->writeByAvailability($updatedEntity, \App::$now);
+        (new CalculateSlotsHelper(\App::DEBUG))
+            ->writePostProcessingByScope($updatedEntity->scope, \App::$now);
+    }
+
+    protected function writeSpontaneousEntity(Entity $entity): void
+    {
+        $doubleTypesEntity = (new AvailabilityRepository())->readEntityDoubleTypes($entity->id);
+        if ($doubleTypesEntity) {
+            $doubleTypesEntity->workstationCount['intern'] = 0;
+            $doubleTypesEntity->workstationCount['callcenter'] = 0;
+            $doubleTypesEntity->workstationCount['public'] = 0;
+            $doubleTypesEntity['description'] = '';
+            $doubleTypesEntity['type'] = 'openinghours';
+            (new AvailabilityRepository())->writeEntity($doubleTypesEntity);
+        }
     }
 }
