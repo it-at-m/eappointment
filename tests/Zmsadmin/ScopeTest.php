@@ -169,7 +169,7 @@ class ScopeTest extends Base
             ],
             'save' => 'save',
             '__file' => [
-                'uploadCallDisplayImage' => new \Slim\Http\UploadedFile(
+                'uploadCallDisplayImage' => new \Slim\Psr7\UploadedFile(
                     dirname(__FILE__) . '/fixtures/baer.png',
                     'baer.png',
                     'image/png',
@@ -268,7 +268,7 @@ class ScopeTest extends Base
             ],
             'save' => 'save',
             '__file' => array(
-                'uploadCallDisplayImage' => new \Slim\Http\UploadedFile(
+                'uploadCallDisplayImage' => new \Slim\Psr7\UploadedFile(
                     dirname(__FILE__) . '/fixtures/baer.png',
                     'baer.png',
                     'application/json',
@@ -534,7 +534,7 @@ class ScopeTest extends Base
             ],
             'save' => 'save',
             '__file' => [
-                'uploadCallDisplayImage' => new \Slim\Http\UploadedFile(
+                'uploadCallDisplayImage' => new \Slim\Psr7\UploadedFile(
                     dirname(__FILE__) . '/fixtures/baer.png',
                     'baer.png',
                     'image/png',
@@ -637,7 +637,7 @@ class ScopeTest extends Base
             ],
             'save' => 'save',
             '__file' => [
-                'uploadCallDisplayImage' => new \Slim\Http\UploadedFile(
+                'uploadCallDisplayImage' => new \Slim\Psr7\UploadedFile(
                     dirname(__FILE__) . '/fixtures/baer.png',
                     'baer.png',
                     'image/png',

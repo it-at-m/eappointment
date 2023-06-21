@@ -22,9 +22,9 @@ export const headerRight = (links) => {
 export const renderConflicts = (conflicts) => {return conflicts
     .map((data, key) => <ConflictTimeBar key={key} {...{ key, data }} />)}
 
-export const renderNumberOfAppointments = (items) => {return items
+export const renderNumberOfAppointments = (items, maxWorkstationCount) => {return items
     .filter(item => item.type === 'appointment')
-    .map((data, key) => <NumberOfAppointmentsTimeBar key={key} {...{ key, data }} />)}
+    .map((data, key) => <NumberOfAppointmentsTimeBar key={key} {...{ key, data, maxWorkstationCount }} />)}
 
 
 export const renderAppointments = (items, maxWorkstationCount, onSelect) => {return items

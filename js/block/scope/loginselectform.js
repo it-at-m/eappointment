@@ -45,7 +45,7 @@ class View extends BaseView {
 
     downloadAppointments() {
         if (this.scopeId && this.today)  {
-            window.open(`${this.includeUrl}/scope/${this.scopeId}/process/${this.today}/xlsx/`)
+            window.open(`${this.includeUrl}/scope/${this.scopeId}/process/${this.today}/spreadsheet/`)
         } else {
             if (!this.scopeId) {
                 alert('Kein Standort ausgewählt');

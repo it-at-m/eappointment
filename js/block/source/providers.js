@@ -214,7 +214,7 @@ class ProvidersView extends Component {
                     </tfoot>
                 </table>
                 <div className="table-actions">
-                    <button className="link button-default" onClick={onNewClick}><i className="fas fa-plus-square color-positive" aria-hidden="true"></i> Neuer Dienstleister</button>
+                    <button className="link button-default" onClick={onNewClick}><i className="fas fa-plus-square color-positive"></i> Neuer Dienstleister</button>
                 </div>
             </div>
         )

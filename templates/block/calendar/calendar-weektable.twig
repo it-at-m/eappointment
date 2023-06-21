@@ -41,7 +41,7 @@
                     {% for day in dayList.days %}
                         {% set weekday = day.year ~"-"~ day.month ~"-"~ day.day %}
                         <th>
-                            <a href="#" data-weekday="{{ weekday }}">{{ weekday|localizeddate("short","none",NULL,NULL,"EE dd. MMMM y")}}</a>
+                            <a href="#" data-weekday="{{ weekday }}">{{ weekday|format_date(pattern="EE dd. MMMM y")}}</a>
                         </th>
                     {% endfor %}
                 </tr>

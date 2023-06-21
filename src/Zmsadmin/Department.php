@@ -27,7 +27,7 @@ class Department extends BaseController
         $organisation = \App::$http->readGetResult('/department/' . $entityId . '/organisation/')->getEntity();
         $input = $request->getParsedBody();
 
-        if ($request->isPost()) {
+        if ($request->getMethod() === 'POST') {
             $input = $this->withCleanupLinks($input);
             $input = $this->withCleanupDayoffs($input);
             $input = $this->withEmailReminderDefaultValues($input);

@@ -31,7 +31,7 @@ class UseraccountEdit extends BaseController
         $userAccount = \App::$http->readGetResult('/useraccount/'. $userAccountName .'/')->getEntity();
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
 
-        if ($request->isPost()) {
+        if ($request->getMethod() === 'POST') {
             $input = $request->getParsedBody();
             $result = $this->writeUpdatedEntity($input, $userAccountName);
             if ($result instanceof Entity) {
@@ -59,7 +59,7 @@ class UseraccountEdit extends BaseController
                 'exception' => (isset($result)) ? $result : null,
                 'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
                 'oidcProviderList' => array_filter($allowedProviderList),
-                'isFromOidc' => in_array($userAccount->getOidcProviderFromName(), $allowedProviderList)
+                'isFromOidc' => in_array($userAccount->getOidcProviderFromName(), $allowedProviderList)                
             ]
         );
     }
@@ -73,7 +73,7 @@ class UseraccountEdit extends BaseController
         } catch (\BO\Zmsclient\Exception $exception) {
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
             if ('' != $exception->template
-                && \App::$slim->getContainer()->view->getLoader()->exists($template)
+                && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
             ) {
                 return [
                     'template' => $template,

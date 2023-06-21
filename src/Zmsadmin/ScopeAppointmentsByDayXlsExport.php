@@ -7,8 +7,9 @@
  */
 namespace BO\Zmsadmin;
 
-use \League\Csv\Writer;
-use \League\Csv\EscapeFormula;
+use League\Csv\Writer;
+use League\Csv\Reader;
+use League\Csv\EscapeFormula;
 
 /**
  * Handle requests concerning services
@@ -63,16 +64,18 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
                 $queueItem->amendment
             ];
         }
-
         $writer = Writer::createFromString();
+        $writer->setDelimiter(';');
         $writer->addFormatter(new EscapeFormula());
         $writer->insertOne($xlsHeaders);
+        $writer->setOutputBOM(Reader::BOM_UTF8);
         $writer->insertAll($rows);
 
         $response->getBody()->write($writer->toString());
         $fileName = sprintf("Tagesübersicht_%s_%s.csv", $scope->contact['name'], $xlsSheetTitle);
         return $response
-            ->withHeader('Content-Type', 'Content-Type: text/csv; charset=UTF-8')
+            ->withHeader('Content-Type', 'text/csv; charset=UTF-8')
+            ->withHeader('Content-Description', 'File Transfer')
             ->withHeader(
                 'Content-Disposition',
                 sprintf('download; filename="'. $this->convertspecialChars($fileName) .'"')

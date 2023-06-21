@@ -1,7 +1,7 @@
 
 
 {% embed "block/scaffholding/board.twig" with {'class': 'dialog'} %}
-    {% block board_title %}Eintrag kopieren nicht möglich{% endblock %}
+    {% block board_title %}<i aria-hidden="true" title="{{ ("Eintrag kopieren nicht möglich")|trans }}" class="fas fa-info-circle"></i> {{ ("Eintrag kopieren nicht möglich")|trans }}{% endblock %}
     {% block board_body %}
         {% set message = "Dieser Termin kann nicht erneut eingestellt werden, da zu folgender Uhrzeit kein Termin mehr frei ist!" %}
         <p>

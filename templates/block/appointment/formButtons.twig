@@ -2,11 +2,13 @@
 {% if workstation.queue.clusterEnabled == 1 %}
     {% set abortButtonText = "Standort ändern / Abbrechen" %}
 {% endif %}
-<style>
-.button {
-    margin-bottom:5px !important;
-}
-</style>
+
+<script>
+    document.head.appendChild(
+        document.createElement('style').appendChild(document.createTextNode('.button { margin-bottom:5px !important;}'))
+    );
+</script>
+
 <div class="form-actions">
     <div class="right">
         {% if selectedProcess and not isNewAppointment %}

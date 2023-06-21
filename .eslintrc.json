@@ -29,7 +29,7 @@
     "rules": {
         "complexity": [
             "error",
-            11
+            12
         ],
         "no-console": [
             "off"

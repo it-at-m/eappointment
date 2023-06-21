@@ -1,7 +1,7 @@
 
 
 {% embed "block/scaffholding/board.twig" with {'class': 'dialog'} %}
-    {% block board_title %}Config-Einstellung anpassen{% endblock %}
+    {% block board_title %}<i aria-hidden="true" title="{{ ("Config-Einstellung anpassen")|trans }}" class="fas fa-info-circle"></i> {{ ("Config-Einstellung anpassen")|trans }}{% endblock %}
     {% block board_body %}
     {% from 'element/helper/form.twig' import formbutton, formgroup, inputfield %}
 

@@ -63,7 +63,7 @@ class FileUploader
                 $image = new Mimepart();
                 $image->mime = $this->mediaType;
                 $image->base64 = true;
-                $data = file_get_contents($this->uploadFile->file);
+                $data = file_get_contents($this->uploadFile->getFilePath());
                 $image->content = base64_encode($data);
             } else {
                 throw new \Exception('Wrong Mediatype given, use gif, jpg, svg or png');

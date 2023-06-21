@@ -61,7 +61,7 @@ class CalendarWeekTest extends Base
             (string)$response->getBody()
         );
         $this->assertStringContainsString(
-            '<span class="pid" title="Vorgangsnummer">184432</span>', 
+            '<span class="pid" title="Vorgangsnummer">184432</span>',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -115,7 +115,7 @@ class CalendarWeekTest extends Base
             (string)$response->getBody()
         );
         $this->assertStringContainsString(
-            '<span class="pid" title="Vorgangsnummer">184432</span>', 
+            '<span class="pid" title="Vorgangsnummer">184432</span>',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());

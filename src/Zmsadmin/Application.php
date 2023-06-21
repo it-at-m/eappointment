@@ -44,6 +44,8 @@ class Application extends \BO\Slim\Application
     /**
      * language preferences
      */
+    const MULTILANGUAGE = true;
+
     public static $locale = 'de';
     public static $supportedLanguages = array(
          // Default language

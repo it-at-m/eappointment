@@ -1,7 +1,7 @@
 
 
 {% embed "block/scaffholding/board.twig" with {'class': 'dialog'} %}
-    {% block board_title %}{% trans %}Eintrag löschen{% endtrans %}{% endblock %}
+    {% block board_title %}<i aria-hidden="true" title="{{ ("Eintrag löschen")|trans }}" class="fas fa-info-circle"></i> {% trans %}Eintrag löschen{% endtrans %}{% endblock %}
     {% block board_body %}
         <p>
         {% if settings.isWithAppointment %}

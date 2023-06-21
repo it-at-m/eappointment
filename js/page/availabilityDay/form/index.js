@@ -37,6 +37,15 @@ class AvailabilityForm extends Component {
             this.handleChange(name, value)
         }
 
+        const hasConflicts = ((
+                this.props.conflictList.itemList && 
+                Object.keys(this.props.conflictList.itemList).length
+            ) || 
+            (
+                this.props.errorList &&
+                Object.keys(this.props.errorList).length
+        )) ? true : false
+
         return (
             <div>
                 {<FormContent 
@@ -52,7 +61,9 @@ class AvailabilityForm extends Component {
                     onExclusion={this.props.onExclusion}
                     onEditInFuture={this.props.onEditInFuture} 
                     onDelete={this.props.onDelete}
+                    onUpdateSingle={this.props.onUpdateSingle}
                     selectedDate={this.props.selectedDate}
+                    hasConflicts={hasConflicts}
                 />}
             </div>
         )   
@@ -79,7 +90,8 @@ AvailabilityForm.propTypes = {
     onExclusion: PropTypes.func,
     onEditInFuture: PropTypes.func,
     setErrorRef: PropTypes.func,
-    onDelete: PropTypes.func
+    onDelete: PropTypes.func,
+    onUpdateSingle: PropTypes.func
 }
 
 export default AvailabilityForm

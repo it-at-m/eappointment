@@ -6,8 +6,9 @@
 
 namespace BO\Zmsadmin;
 
-use \League\Csv\Writer;
-use \League\Csv\EscapeFormula;
+use League\Csv\Writer;
+use League\Csv\Reader;
+use League\Csv\EscapeFormula;
 
 class PickupSpreadSheet extends BaseController
 {
@@ -44,10 +45,12 @@ class PickupSpreadSheet extends BaseController
         } while (static::$maxSqlLoops > $loop);
 
         $writer = Writer::createFromString();
+        $writer->setDelimiter(';');
         $writer->addFormatter(new EscapeFormula());
         $writer->insertOne(['Abholer','','','','','','','','']);
         $writer->insertOne([$department->name .' - '. $providerName,'','','','','','','','']);
         $writer->insertOne(['','Datum','Nr.','Name','Telefonnr.','eMail','Dienstleistung','Anmerkung']);
+        $writer->setOutputBOM(Reader::BOM_UTF8);
         $writer->insertAll($rows);
 
         $response->getBody()->write($writer->toString());
@@ -55,10 +58,11 @@ class PickupSpreadSheet extends BaseController
         $fileName = 'abholer_'. $providerName;
 
         return $response
-            ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            ->withHeader('Content-Type', 'text/csv; charset=UTF-8')
+            ->withHeader('Content-Description', 'File Transfer')
             ->withHeader(
                 'Content-Disposition',
-                sprintf('download; filename="%s.xlsx"', $this->convertspecialChars($fileName))
+                sprintf('download; filename="%s.csv"', $this->convertspecialChars($fileName))
             );
     }
 

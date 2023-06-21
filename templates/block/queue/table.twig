@@ -14,7 +14,7 @@
         {% endblock %}
 
         {% block board_title_aside %}
-            <strong class="date">{{ selectedDate|localizeddate("short","none",NULL,NULL,"EE dd. MMMM y")}}</strong>
+            <strong class="date">{{ selectedDate|format_date(pattern="EE dd. MMMM y")}}</strong>
             {{ block('calender_navigation_day') }}
         {% endblock %}
 
@@ -54,7 +54,7 @@
                 class="button button--diamond print"
             ><i class="fas fa-print" aria-hidden="true"></i> <span class="aural">Drucken</span></a>
             <a
-                href="{{urlGet('scopeAppointmentsByDayXls', {id: workstation.scope.id, date: selectedDate})}}"
+                href="{{urlGet('scopeAppointmentsByDaySpreadsheet', {id: workstation.scope.id, date: selectedDate})}}"
                 target="_blank"
                 title="Download"
                 class="button button--diamond download"
@@ -284,7 +284,7 @@
             
             <div class="form-actions">
                 <div class="right">
-                    <a title="{% trans %}Warteschlange neu laden{% endtrans %}" class="button button-reload reload"><i class="fas fa-sync" aria-hidden="true"></i> Warteschlange aktualisieren</a>
+                    <button title="{% trans %}Warteschlange neu laden{% endtrans %}" class="button button-reload reload"><i class="fas fa-sync"></i> Warteschlange aktualisieren</button>
                 </div>
             </div>
             {% if (debug)  %}
