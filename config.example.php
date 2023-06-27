@@ -18,7 +18,7 @@ class App extends \BO\Zmsadmin\Application
 
     public static $http_curl_config = [
         CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_TIMEOUT => 25,
+        CURLOPT_TIMEOUT => 300,
         //CURLOPT_VERBOSE => true,
     ];
 }
