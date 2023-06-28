@@ -42,6 +42,19 @@ class Availability extends Base implements Interfaces\ResolveReferences
         return $this->perform(Query\Availability::QUERY_GET_LOCK, ['availabilityId' => $availabilityId]);
     }
 
+    public function readEntityDoubleTypes($availabilityId, $resolveReferences = 0)
+    {
+        $query = new Query\Availability(Query\Base::SELECT);
+        $query
+            ->addEntityMapping('openinghours')
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionAvailabilityId($availabilityId)
+            ->addConditionDoubleTypes();
+        $availability = $this->fetchOne($query, new Entity());
+        $availability = $this->readResolvedReferences($availability, $resolveReferences);
+        return ($availability->hasId()) ? $availability : null;
+    }
+
     public function readList(
         $scopeId,
         $resolveReferences = 0,
@@ -73,7 +86,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
                 $entity->workstationCount['public'] = 0;
                 if ($entity['type'] == 'appointment') {
                     $entity['description'] = '';
-                    $entity->id = 0;
+                    $entity->id = '__spontan__'. $entity->id;
                     $entity['type'] = 'openinghours';
                 }
                 $entity['type'] = ($entity['type'] != 'appointment') ? 'openinghours' : $entity['type'];
