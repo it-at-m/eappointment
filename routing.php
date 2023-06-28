@@ -245,6 +245,48 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/availability/slots/update/":
+ *      post:
+ *          summary: Update slots by availabilitylist
+ *          tags:
+ *              - availability
+ *          parameters:
+ *              -   name: availability
+ *                  description: availabilityList data to update slots
+ *                  in: body
+ *                  schema:
+ *                      type: array
+ *                      items:
+ *                          $ref: "schema/availability.json"
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/availability.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              404:
+ *                  description: "availability id does not exists"
+ */
+\App::$slim->post(
+    '/availability/slots/update/',
+    '\BO\Zmsapi\AvailabilitySlotsUpdate'
+)
+    ->setName("AvailabilitySlotsUpdate");
+
+
+/**
+ *  @swagger
  *  "/availability/{id}/":
  *      delete:
  *          summary: Deletes an availability
