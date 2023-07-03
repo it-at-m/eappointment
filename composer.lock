@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "58ad36d6e4931fed945a49ac1ce115f8",
+    "content-hash": "9b81c54e02683bbdc136830de24d959c",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -178,22 +178,22 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "2.25.04",
+            "version": "dev-berlin-2.25.05",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsclient.git",
-                "reference": "86274f758338bd365f6b122d90b9cf6e81e5520f"
+                "reference": "10a9330040136841cc2403a44ba8fa2c60362192"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=86274f758338bd365f6b122d90b9cf6e81e5520f",
-                "reference": "86274f758338bd365f6b122d90b9cf6e81e5520f",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=10a9330040136841cc2403a44ba8fa2c60362192",
+                "reference": "10a9330040136841cc2403a44ba8fa2c60362192",
                 "shasum": ""
             },
             "require": {
                 "eappointment/mellon": "^2.0.1",
-                "eappointment/zmsentities": "2.25.04",
-                "eappointment/zmsslim": "2.25.04",
+                "eappointment/zmsentities": "dev-berlin-2.25.05",
+                "eappointment/zmsslim": "dev-berlin-2.25.05",
                 "ext-curl": ">=0",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -230,11 +230,11 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "time": "2023-07-03T10:38:20+00:00"
+            "time": "2023-07-03T13:40:38+00:00"
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "2.25.04",
+            "version": "dev-berlin-2.25.05",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsentities.git",
@@ -293,7 +293,7 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "2.25.04",
+            "version": "dev-berlin-2.25.05",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsslim.git",
@@ -7093,6 +7093,9 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "eappointment/zmsentities": 20,
+        "eappointment/zmsslim": 20,
+        "eappointment/zmsclient": 20,
         "roave/security-advisories": 20,
         "phpmd/phpmd": 0
     },
