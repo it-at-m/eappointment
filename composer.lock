@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7cf519174c0e467b3dc737de6353b0cc",
+    "content-hash": "58ad36d6e4931fed945a49ac1ce115f8",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -178,22 +178,22 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-berlin-2.25.04",
+            "version": "2.25.04",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsclient.git",
-                "reference": "9675dbc14b36e874fea453fe6645d71de2a5367c"
+                "reference": "86274f758338bd365f6b122d90b9cf6e81e5520f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=9675dbc14b36e874fea453fe6645d71de2a5367c",
-                "reference": "9675dbc14b36e874fea453fe6645d71de2a5367c",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=86274f758338bd365f6b122d90b9cf6e81e5520f",
+                "reference": "86274f758338bd365f6b122d90b9cf6e81e5520f",
                 "shasum": ""
             },
             "require": {
                 "eappointment/mellon": "^2.0.1",
-                "eappointment/zmsentities": "dev-berlin-2.25.04",
-                "eappointment/zmsslim": "dev-berlin-2.25.04",
+                "eappointment/zmsentities": "2.25.04",
+                "eappointment/zmsslim": "2.25.04",
                 "ext-curl": ">=0",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -230,20 +230,20 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "time": "2023-07-03T09:55:47+00:00"
+            "time": "2023-07-03T10:38:20+00:00"
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-berlin-2.25.04",
+            "version": "2.25.04",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsentities.git",
-                "reference": "2922341d82ea62de4aa2e5074751e3b432bb8c4b"
+                "reference": "a4e09b377ede5188575a590c23568af85b62eaa1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=2922341d82ea62de4aa2e5074751e3b432bb8c4b",
-                "reference": "2922341d82ea62de4aa2e5074751e3b432bb8c4b",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=a4e09b377ede5188575a590c23568af85b62eaa1",
+                "reference": "a4e09b377ede5188575a590c23568af85b62eaa1",
                 "shasum": ""
             },
             "require": {
@@ -289,20 +289,20 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2023-07-03T09:53:07+00:00"
+            "time": "2023-07-03T10:26:33+00:00"
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-berlin-2.25.04",
+            "version": "2.25.04",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsslim.git",
-                "reference": "8320dc10f25aa143c943894d645ade31d48c5c0c"
+                "reference": "c3c47f2138fd626e4be55410532d08d50233775b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=8320dc10f25aa143c943894d645ade31d48c5c0c",
-                "reference": "8320dc10f25aa143c943894d645ade31d48c5c0c",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=c3c47f2138fd626e4be55410532d08d50233775b",
+                "reference": "c3c47f2138fd626e4be55410532d08d50233775b",
                 "shasum": ""
             },
             "require": {
@@ -348,7 +348,7 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-            "time": "2023-06-27T14:37:30+00:00"
+            "time": "2023-07-03T10:33:15+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",
@@ -7093,9 +7093,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "eappointment/zmsentities": 20,
-        "eappointment/zmsslim": 20,
-        "eappointment/zmsclient": 20,
         "roave/security-advisories": 20,
         "phpmd/phpmd": 0
     },
