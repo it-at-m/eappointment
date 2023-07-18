@@ -10,8 +10,6 @@ use BO\Slim\Render;
 use BO\Mellon\Validator;
 
 use BO\Zmsdb\Availability as AvailabilityRepository;
-use BO\Zmsdb\Slot as SlotRepository;
-use BO\Zmsdb\Helper\CalculateSlots as CalculateSlotsHelper;
 use BO\Zmsdb\Connection\Select as DbConnection;
 
 use BO\Zmsentities\Availability as Entity;
@@ -19,6 +17,7 @@ use BO\Zmsentities\Availability as Entity;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
+use BO\Zmsapi\AvailabilitySlotsUpdate;
 use BO\Zmsapi\Exception\Availability\AvailabilityNotFound as NotfoundException;
 
 /**
@@ -48,7 +47,7 @@ class AvailabilityUpdate extends BaseController
         DbConnection::getWriteConnection();
         $this->writeSpontaneousEntity($availability);
         $updatedEntity = (new AvailabilityRepository())->updateEntity($args['id'], $entity, $resolveReferences);
-        $this->writeCalculatedSlots($updatedEntity);
+        AvailabilitySlotsUpdate::writeCalculatedSlots($updatedEntity, true);
 
         $message = Response\Message::create($request);
         $message->data = $updatedEntity;
@@ -56,13 +55,6 @@ class AvailabilityUpdate extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
-    }
-
-    protected function writeCalculatedSlots($updatedEntity)
-    {
-        (new SlotRepository)->writeByAvailability($updatedEntity, \App::$now);
-        (new CalculateSlotsHelper(\App::DEBUG))
-            ->writePostProcessingByScope($updatedEntity->scope, \App::$now);
     }
 
     protected function writeSpontaneousEntity(Entity $entity): void

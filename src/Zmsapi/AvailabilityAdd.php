@@ -13,13 +13,12 @@ use BO\Zmsentities\Availability as Entity;
 use BO\Zmsentities\Collection\AvailabilityList as Collection;
 
 use BO\Zmsdb\Availability as AvailabilityRepository;
-use BO\Zmsdb\Slot as SlotRepository;
-use BO\Zmsdb\Helper\CalculateSlots as CalculateSlotsHelper;
 use BO\Zmsdb\Connection\Select as DbConnection;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
+use BO\Zmsapi\AvailabilitySlotsUpdate;
 use BO\Zmsapi\Exception\BadRequest as BadRequestException;
 use BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed as UpdateFailedException;
 
@@ -48,7 +47,7 @@ class AvailabilityAdd extends BaseController
             $entity = new Entity($item);
             $entity->testValid();
             $updatedEntity = $this->writeEntityUpdate($entity);
-            $this->writeCalculatedSlots($updatedEntity);
+            AvailabilitySlotsUpdate::writeCalculatedSlots($updatedEntity, true);
             $collection->addEntity($updatedEntity);
         }
 
@@ -58,13 +57,6 @@ class AvailabilityAdd extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
-    }
-
-    protected function writeCalculatedSlots($updatedEntity)
-    {
-        (new SlotRepository)->writeByAvailability($updatedEntity, \App::$now);
-        (new CalculateSlotsHelper(\App::DEBUG))
-            ->writePostProcessingByScope($updatedEntity->scope, \App::$now);
     }
 
     protected function writeEntityUpdate($entity): Entity
