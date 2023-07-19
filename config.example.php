@@ -3,6 +3,7 @@
  
 define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://localhost/terminvereinbarung/api/2');
 define('ZMS_IDENTIFIER', getenv('ZMS_IDENTIFIER') ? getenv('ZMS_IDENTIFIER') : 'Zmsadmin-ENV');
+define('ZMS_CURL_TIMEOUT', getenv('ZMS_CURL_TIMEOUT') ? intval(getenv('ZMS_CURL_TIMEOUT')) : 25);
 
 class App extends \BO\Zmsadmin\Application
 {
@@ -18,7 +19,7 @@ class App extends \BO\Zmsadmin\Application
 
     public static $http_curl_config = [
         CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_TIMEOUT => 25,
+        CURLOPT_TIMEOUT => ZMS_CURL_TIMEOUT,
         //CURLOPT_VERBOSE => true,
     ];
 }
