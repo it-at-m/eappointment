@@ -67,7 +67,8 @@ class User
             static::$assignedWorkstation->scope['id'] == $entity->scope['id'] &&
             ! static::$assignedWorkstation->getUseraccount()->isOveraged(\App::$now)
         ) {
-            throw new \BO\Zmsapi\Exception\Workstation\WorkstationAlreadyAssigned();
+            // Allow two users to have same workstation
+            //throw new \BO\Zmsapi\Exception\Workstation\WorkstationAlreadyAssigned();
         }
     }
 
