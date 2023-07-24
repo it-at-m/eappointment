@@ -1,8 +1,8 @@
 {% block queueTable %}
-    {% if queueList|length <= 6 or (tableSettings.maxResults <= 6 and tableSettings.multiColumns == 1) %}
-    {% include "block/queue/table/oneColumn.twig" with {"settings": tableSettings} %}
+    {% if queueList|length <= 1 or (tableSettings.maxResults <= 1 and tableSettings.multiColumns == 1) %}
+        {% include "block/queue/table/oneColumn.twig" with {"settings": tableSettings} %}
     {% else %}
-    {% include "block/queue/table/multiColumn.twig" with {"settings": tableSettings} %}
+        {% include "block/queue/table/multiColumn.twig" with {"settings": tableSettings} %}
     {% endif %}
 
     {# Give ServerTime (\App::$now) from calldisplay to queue call - important for testing #}
