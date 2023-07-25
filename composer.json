@@ -42,9 +42,9 @@
   },
   "require": {
     "eappointment/mellon": "^2.6.0",
-    "eappointment/zmsclient": "dev-muc-test",
-    "eappointment/zmsslim": "dev-muc-test",
-    "eappointment/zmsentities": "dev-muc-test",
+    "eappointment/zmsclient": "dev-muc-main",
+    "eappointment/zmsslim": "dev-muc-main",
+    "eappointment/zmsentities": "dev-muc-main",
     "monolog/monolog": "1.*",
     "league/csv": "^9.0",
     "psr/http-message": "^1.0",
