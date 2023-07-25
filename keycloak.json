@@ -5,6 +5,8 @@
     "logout-redirect-url": "https://localhost/terminvereinbarung/admin",
     "ssl-required": "external",
     "resource": "zms",
+    "ssoSessionMaxLifespan": 120,
+    "ssoSessionMaxLifespanRememberMe": 120,
     "verify-token-audience": true,
     "credentials": {
         "secret": "fc349013-ba75-4345-8b21-f48e9cdf6ef8"
