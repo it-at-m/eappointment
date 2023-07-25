@@ -310,7 +310,7 @@ class CallDisplayConfigView extends Component {
                         <Select
                             attributes={{ "id": "calldisplayLayout" }}
                             options={[
-                                { name: 'Uhrzeit, 4-8 Aufrufe | Tür', value: 'door4-8' },
+                                { name: 'Uhrzeit, 4-8 Aufrufe, nur Zahlen | Tür', value: 'door4-8' },
                                 { name: 'Uhrzeit, 6-12 Aufrufe | Platz', value: 'defaultplatz' },
                                 { name: 'Uhrzeit, 6-12 Aufrufe | Raum', value: 'defaultraum' },
                                 { name: 'Uhrzeit, 6-12 Aufrufe | Tür', value: 'defaultdoor' },                             
@@ -319,7 +319,7 @@ class CallDisplayConfigView extends Component {
                                 { name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe | Raum', value: 'clocknrraum' },
                                 { name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 6-12 Aufrufe | Platz', value: 'clocknrwaitplatz' },
                                 { name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 6-12 Aufrufe | Raum', value: 'clocknrwaitraum' },
-                                { name: '4-8 Aufrufe | Tür', value: 'rawdoor4-8' },
+                                { name: '4-8 Aufrufe, nur Zahlen | Tür', value: 'rawdoor4-8' },
                                 { name: '6-18 Aufrufe | Tür', value: 'raw18door' },
                                 { name: '6-18 Aufrufe | Platz', value: 'raw18platz' }
                             ]}
