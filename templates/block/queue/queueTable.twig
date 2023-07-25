@@ -1,5 +1,5 @@
 {% block queueTable %}
-    {% if queueList|length <= 0 or (tableSettings.maxResults <= 0 and tableSettings.multiColumns == 1) %}
+    {% if tableSettings.multiColumns == 1 or (queueList|length <= tableSettings.maxResults) %}
         {% include "block/queue/table/oneColumn.twig" with {"settings": tableSettings} %}
     {% else %}
         {% include "block/queue/table/multiColumn.twig" with {"settings": tableSettings} %}
