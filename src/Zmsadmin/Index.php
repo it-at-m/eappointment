@@ -32,7 +32,7 @@ class Index extends BaseController
         if ($request->getMethod() === 'POST') {
             $loginData = $this->testLogin($input);
             if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
-                \BO\Zmsclient\Auth::setKey($loginData->authkey);
+                \BO\Zmsclient\Auth::setKey($loginData->authkey, time() + \App::SESSION_DURATION);
                 return \BO\Slim\Render::redirect('workstationSelect', array(), array());
             }
             return \BO\Slim\Render::withHtml(
@@ -83,7 +83,7 @@ class Index extends BaseController
                     'Der Nutzername oder das Passwort wurden falsch eingegeben'
                 ];
             } elseif ('BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn' == $exception->template) {
-                \BO\Zmsclient\Auth::setKey($exception->data['authkey']);
+                \BO\Zmsclient\Auth::setKey($exception->data['authkey'], time() + \App::SESSION_DURATION);
                 throw $exception;
             } elseif ('' != $exception->template
                 && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
