@@ -205,12 +205,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsclient.git",
-                "reference": "103946ff761f1fc0b6f68cf17390b39d1f342961"
+                "reference": "d3ea39de013b834819dba94f42ec520f2abbd0c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=103946ff761f1fc0b6f68cf17390b39d1f342961",
-                "reference": "103946ff761f1fc0b6f68cf17390b39d1f342961",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=d3ea39de013b834819dba94f42ec520f2abbd0c9",
+                "reference": "d3ea39de013b834819dba94f42ec520f2abbd0c9",
                 "shasum": ""
             },
             "require": {
@@ -262,7 +262,7 @@
             "support": {
                 "source": "https://gitlab.com/eappointment/zmsclient/-/tree/muc-main"
             },
-            "time": "2023-07-19T10:52:40+02:00"
+            "time": "2023-07-26T07:47:19+00:00"
         },
         {
             "name": "eappointment/zmsentities",
