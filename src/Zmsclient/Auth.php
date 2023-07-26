@@ -11,11 +11,11 @@ class Auth
      * @SuppressWarnings(Superglobals)
      *
      */
-    public static function setKey($authKey)
+    public static function setKey($authKey, $expires = 0)
     {
         $_COOKIE[self::getCookieName()] = $authKey; // for access in the same process
         if (!headers_sent()) {
-            setcookie(self::getCookieName(), $authKey, 0, '/', null, true, true);
+            setcookie(self::getCookieName(), $authKey, $expires, '/', null, true, true);
         }
     }
 
