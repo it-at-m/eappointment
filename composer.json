@@ -25,7 +25,7 @@
         "eappointment/mellon": "^2.6.0",
         "symfony/translation": "^5.2",
         "symfony/twig-bridge": "^5.2",
-        "stevenmaguire/oauth2-keycloak": "^3.1",
+        "stevenmaguire/oauth2-keycloak": "^4.0",
         "slim/psr7": "^1.5",
         "tracy/tracy": "^2.9"
     },
