@@ -36,7 +36,7 @@ class Slot extends Base
         }
         $slotList = $availability->getSlotList()->withSlotsForAppointment($appointment, $extendSlotList);
         foreach ($slotList as $slot) {
-            $this->readByAvailability($slot, $availability, $appointment->toDateTime(), true);
+            $this->readByAvailability($slot, $availability, $appointment->toDateTime());
         }
         return $slotList;
     }
