@@ -111,8 +111,7 @@ function validateOriginEndTime(today, yesterday, selectedDate, data) {
     }
 
     if (
-        (! isOrigin && endTimestamp < today.unix()) ||
-        (isOrigin && endTimestamp < today.unix() && data.__modified)
+        (! isOrigin && endTimestamp < today.unix()) 
     ) {
         errorList.push({
             type: 'endTimePast', 
