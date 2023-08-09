@@ -45,6 +45,7 @@ class ProcessStatusFree extends Base
                 LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
                 LEFT JOIN slot_hiera h ON h.ancestorID = s.slotID
                     AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
+                INNER JOIN slot s2 on h.slotID = s2.slotID and s2.status = "free"
                 LEFT JOIN slot_process p ON h.slotID = p.slotID
             GROUP BY s.slotID, h.slotID
             ) AS tmp_ancestor
