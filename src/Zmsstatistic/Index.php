@@ -35,7 +35,7 @@ class Index extends BaseController
             $loginData = $this->testLogin($input);
 
             if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
-                Auth::setKey($loginData->authkey, \App::SESSION_DURATION);
+                Auth::setKey($loginData->authkey, time() + \App::SESSION_DURATION);
                 return Render::redirect('workstationSelect', array(), array());
             }
             Render::withHtml(

@@ -128,7 +128,7 @@ class Access extends \BO\Slim\Controller
                     'Der Nutzername oder das Passwort wurden falsch eingegeben'
                 ];
             } elseif ('BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn' == $exception->template) {
-                Auth::setKey($exception->data['authkey'], \App::SESSION_DURATION);
+                Auth::setKey($exception->data['authkey'], time() + \App::SESSION_DURATION);
                 throw $exception;
             } elseif ('' != $exception->template
                 && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
