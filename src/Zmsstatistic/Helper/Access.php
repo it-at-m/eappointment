@@ -12,6 +12,7 @@ use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
 use BO\Zmsentities\Exception\WorkstationMissingScope;
 use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
+use \BO\Zmsentities\Application;
 
 class Access extends \BO\Slim\Controller
 {
@@ -127,7 +128,7 @@ class Access extends \BO\Slim\Controller
                     'Der Nutzername oder das Passwort wurden falsch eingegeben'
                 ];
             } elseif ('BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn' == $exception->template) {
-                Auth::setKey($exception->data['authkey']);
+                Auth::setKey($exception->data['authkey'], \App::SESSION_DURATION);
                 throw $exception;
             } elseif ('' != $exception->template
                 && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
