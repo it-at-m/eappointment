@@ -6,6 +6,11 @@
 
 namespace BO\Zmsstatistic;
 
+define(
+    'ZMS_STATISTIC_SESSION_DURATION',
+    getenv('ZMS_STATISTIC_SESSION_DURATION') ? getenv('ZMS_STATISTIC_SESSION_DURATION') : 28800
+);
+
 class Application extends \BO\Slim\Application
 {
     /**
@@ -17,6 +22,8 @@ class Application extends \BO\Slim\Application
     const DEBUG = false;
 
     const TWIG_CACHE = '/cache/';
+
+    const SESSION_DURATION = ZMS_STATISTIC_SESSION_DURATION;
 
     public static $includeUrl = '/terminvereinbarung/statistic';
     /**
