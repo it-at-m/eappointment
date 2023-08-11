@@ -63,3 +63,4 @@ build-docker:
         - /^[a-z]+[\/-]test(-[a-zA-Z0-9_-]+)?$/
         - /^[a-z]+[\/-]release[\/-][a-zA-Z0-9_-]+$/
         - /^[a-z]+[\/-]prod$/
+        - /^[a-z]+[\/-]main$/
