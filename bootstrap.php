@@ -20,6 +20,8 @@ require(APP_PATH . '/config.php');
 \BO\Slim\Bootstrap::init();
 \BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extra\Intl\IntlExtension());
 
+\BO\Mellon\ValidMail::$disableDnsChecks = true;
+
 \App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL);
 \BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
 
