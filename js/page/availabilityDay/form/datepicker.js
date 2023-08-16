@@ -17,6 +17,7 @@ class AvailabilityDatePicker extends Component
     constructor(props) {
         super(props);
         this.state = {
+            kind: this.props.attributes.kind,            
             availability: this.props.attributes.availability,
             availabilityList: this.props.attributes.availabilitylist,
             minDate: moment.unix(this.props.attributes.availability.startDate).toDate(),
@@ -120,6 +121,9 @@ class AvailabilityDatePicker extends Component
     }
 
     setExcludeTimesForDay() {
+        if (this.state.kind === 'exclusion') {
+            return;
+        }
         var times = []
         this.state.availabilityList.map(availability => {
             if (availability.id !== this.state.availability.id &&
