@@ -274,6 +274,7 @@ class AvailabilityPage extends Component {
     editExclusionAvailability(availability, startDate, endDate, description, kind) {
         (startDate) ? availability.startDate = startDate : null;
         (endDate) ? availability.endDate = endDate : null;
+        availability.__modified = true;
         if (! availability.kind && kind != 'origin') {
             availability.tempId = tempId()
             availability.id = null
@@ -286,6 +287,7 @@ class AvailabilityPage extends Component {
     }
 
     onCreateExclusionForAvailability(availability) {
+        console.log('in onCreateExclusionForAvailability', this.state.availabilitylist);
         const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
         const yesterday = selectedDay.clone().subtract(1, 'days')
         const tomorrow = selectedDay.clone().add(1, 'days')
@@ -336,6 +338,7 @@ class AvailabilityPage extends Component {
                 stateChanged: true 
             }
         ), () => {
+            console.log('in after merging', this.state.availabilitylist);
             this.getConflictList(),
             this.getValidationList()
         })

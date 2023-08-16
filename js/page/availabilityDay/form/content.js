@@ -119,6 +119,7 @@ const FormContent = (props) => {
                             "availabilitylist": availabilityList,
                             "availability": getDataValuesFromForm(data, data.scope),
                             "today": today,
+                            "kind": data.kind,
                             "disabled": calenderDisabled
                         }} name="startDate" {...{ onChange }} />
                         <AvailabilityDatePicker attributes={{
@@ -126,6 +127,7 @@ const FormContent = (props) => {
                             "availabilitylist": availabilityList,
                             "availability": getDataValuesFromForm(data, data.scope),
                             "today": today,
+                            "kind": data.kind,
                             "disabled": calenderDisabled
                         }} name="endDate" {...{ onChange }} />
                     </div>
