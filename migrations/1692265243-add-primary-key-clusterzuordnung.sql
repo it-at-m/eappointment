@@ -1,0 +1,1 @@
+ALTER TABLE `nutzerzuordnung` ADD PRIMARY KEY(`clusterID`, `standortID`);
