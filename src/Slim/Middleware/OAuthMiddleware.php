@@ -59,7 +59,7 @@ class OAuthMiddleware
         $response = (new ResponseFactory())->createResponse(200, '');
         $request = $request->withAttribute('authentificationHandler', $this->authentificationHandler);
         $queryParams = $request->getQueryParams();
-        $oidcProviderName = isset($queryParams['provider']) 
+        $oidcProviderName = isset($queryParams['provider'])
             ? $queryParams['provider'] : \BO\Zmsclient\Auth::getOidcProvider();
         if ($oidcProviderName) {
             $oidcInstance = static::$authInstances[$oidcProviderName];
