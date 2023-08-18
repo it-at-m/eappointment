@@ -1,6 +1,11 @@
 <?php
 namespace BO\Slim;
 
+define(
+    'ZMS_SESSION_DURATION',
+    getenv('ZMS_SESSION_DURATION') ? getenv('ZMS_SESSION_DURATION') : 28800
+);
+
 class Application
 {
 
@@ -21,7 +26,7 @@ class Application
     const DEBUG = false;
     const DEBUGLEVEL = 'WARNING';
     
-    const TOBIASDEBUG = '050123';
+    const SESSION_DURATION = ZMS_SESSION_DURATION;
 
     const LOG_ERRORS = true;
     const LOG_DETAILS = true;

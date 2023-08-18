@@ -109,7 +109,7 @@ class OAuthMiddleware
     {
         $authUrl = $instance->getProvider()->getAuthorizationUrl();
         \BO\Zmsclient\Auth::setOidcProvider($request->getParam('provider'));
-        \BO\Zmsclient\Auth::setKey($instance->getProvider()->getState());
+        \BO\Zmsclient\Auth::setKey($instance->getProvider()->getState(), time() + \App::SESSION_DURATION);
         return $authUrl;
     }
 }
