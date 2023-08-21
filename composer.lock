@@ -182,12 +182,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsclient.git",
-                "reference": "67ba0151a0e71994b260d0d0a40e46a13f3442cf"
+                "reference": "4d96e645fdd0009fe0a42d98905a86c0c9a3e176"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=67ba0151a0e71994b260d0d0a40e46a13f3442cf",
-                "reference": "67ba0151a0e71994b260d0d0a40e46a13f3442cf",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=4d96e645fdd0009fe0a42d98905a86c0c9a3e176",
+                "reference": "4d96e645fdd0009fe0a42d98905a86c0c9a3e176",
                 "shasum": ""
             },
             "require": {
@@ -230,7 +230,7 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "time": "2023-08-17T10:04:56+00:00"
+            "time": "2023-08-21T09:05:30+00:00"
         },
         {
             "name": "eappointment/zmsentities",
@@ -238,12 +238,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsentities.git",
-                "reference": "5a288257fa78d7f6df0ceed47e71cf335faa1140"
+                "reference": "9a92c6c2130651501cdf9381496afd00124a05a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=5a288257fa78d7f6df0ceed47e71cf335faa1140",
-                "reference": "5a288257fa78d7f6df0ceed47e71cf335faa1140",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=9a92c6c2130651501cdf9381496afd00124a05a4",
+                "reference": "9a92c6c2130651501cdf9381496afd00124a05a4",
                 "shasum": ""
             },
             "require": {
@@ -289,7 +289,7 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "time": "2023-08-17T09:57:46+00:00"
+            "time": "2023-08-21T09:04:08+00:00"
         },
         {
             "name": "eappointment/zmsslim",
@@ -297,12 +297,12 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:eappointment/zmsslim.git",
-                "reference": "686dce193944fe3da4829764b9100bc0c7832924"
+                "reference": "c5fac7852d0431154c86f9affb052bf9baef49f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=686dce193944fe3da4829764b9100bc0c7832924",
-                "reference": "686dce193944fe3da4829764b9100bc0c7832924",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=c5fac7852d0431154c86f9affb052bf9baef49f7",
+                "reference": "c5fac7852d0431154c86f9affb052bf9baef49f7",
                 "shasum": ""
             },
             "require": {
@@ -348,7 +348,7 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-            "time": "2023-08-15T12:22:36+00:00"
+            "time": "2023-08-21T09:04:19+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",
@@ -2029,12 +2029,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "f93212dfbd5160f97b808a2988bb549ffbd049b5"
+                "reference": "7a0792500b5d9f0b4d81fba229b191e747bd2ef2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/f93212dfbd5160f97b808a2988bb549ffbd049b5",
-                "reference": "f93212dfbd5160f97b808a2988bb549ffbd049b5",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/7a0792500b5d9f0b4d81fba229b191e747bd2ef2",
+                "reference": "7a0792500b5d9f0b4d81fba229b191e747bd2ef2",
                 "shasum": ""
             },
             "conflict": {
@@ -2103,7 +2103,7 @@
                 "centreon/centreon": "<22.10.0.0-beta1",
                 "cesnet/simplesamlphp-module-proxystatistics": "<3.1",
                 "chriskacerguis/codeigniter-restserver": "<=2.7.1",
-                "cockpit-hq/cockpit": "<2.6.3",
+                "cockpit-hq/cockpit": "<=2.6.3",
                 "codeception/codeception": "<3.1.3|>=4,<4.1.22",
                 "codeigniter/framework": "<3.1.9",
                 "codeigniter4/framework": "<4.3.5",
@@ -2679,7 +2679,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-08-17T00:12:49+00:00"
+            "time": "2023-08-17T20:04:28+00:00"
         },
         {
             "name": "slim/http-cache",
@@ -5499,16 +5499,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.6.10",
+            "version": "9.6.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "a6d351645c3fe5a30f5e86be6577d946af65a328"
+                "reference": "810500e92855eba8a7a5319ae913be2da6f957b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a6d351645c3fe5a30f5e86be6577d946af65a328",
-                "reference": "a6d351645c3fe5a30f5e86be6577d946af65a328",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/810500e92855eba8a7a5319ae913be2da6f957b0",
+                "reference": "810500e92855eba8a7a5319ae913be2da6f957b0",
                 "shasum": ""
             },
             "require": {
@@ -5582,7 +5582,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.10"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.11"
             },
             "funding": [
                 {
@@ -5598,7 +5598,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-07-10T04:04:23+00:00"
+            "time": "2023-08-19T07:10:56+00:00"
         },
         {
             "name": "sebastian/cli-parser",
