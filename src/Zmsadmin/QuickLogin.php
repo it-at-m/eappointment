@@ -42,7 +42,7 @@ class QuickLogin extends BaseController
             }
         }
 
-        \BO\Zmsclient\Auth::setKey($workstation->authkey);
+        \BO\Zmsclient\Auth::setKey($workstation->authkey, time() + \App::SESSION_DURATION);
         $workstation->scope = new \BO\Zmsentities\Scope(array('id' => $loginData['scope']['value']));
         $workstation->hint = $loginData['hint']['value'];
         $workstation->name = $loginData['workstation']['value'];

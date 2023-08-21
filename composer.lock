@@ -205,12 +205,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsclient.git",
-                "reference": "103946ff761f1fc0b6f68cf17390b39d1f342961"
+                "reference": "d3ea39de013b834819dba94f42ec520f2abbd0c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=103946ff761f1fc0b6f68cf17390b39d1f342961",
-                "reference": "103946ff761f1fc0b6f68cf17390b39d1f342961",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=d3ea39de013b834819dba94f42ec520f2abbd0c9",
+                "reference": "d3ea39de013b834819dba94f42ec520f2abbd0c9",
                 "shasum": ""
             },
             "require": {
@@ -262,7 +262,7 @@
             "support": {
                 "source": "https://gitlab.com/eappointment/zmsclient/-/tree/muc-main"
             },
-            "time": "2023-07-19T10:52:40+02:00"
+            "time": "2023-07-26T07:47:19+00:00"
         },
         {
             "name": "eappointment/zmsentities",
@@ -334,12 +334,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsslim.git",
-                "reference": "9ed76b5009be197a9f5435bee5955d78e644e18f"
+                "reference": "501da97d273ad2d110926805ad9971a43f00e232"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=9ed76b5009be197a9f5435bee5955d78e644e18f",
-                "reference": "9ed76b5009be197a9f5435bee5955d78e644e18f",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=501da97d273ad2d110926805ad9971a43f00e232",
+                "reference": "501da97d273ad2d110926805ad9971a43f00e232",
                 "shasum": ""
             },
             "require": {
@@ -352,7 +352,7 @@
                 "slim/psr7": "^1.5",
                 "slim/slim": "4.*",
                 "slim/twig-view": "3.*",
-                "stevenmaguire/oauth2-keycloak": "^3.1",
+                "stevenmaguire/oauth2-keycloak": "^4.0",
                 "symfony/translation": "^5.2",
                 "symfony/twig-bridge": "^5.2",
                 "tracy/tracy": "^2.9",
@@ -392,7 +392,7 @@
             "support": {
                 "source": "https://gitlab.com/eappointment/zmsslim/-/tree/muc-main"
             },
-            "time": "2023-06-21T08:28:03+00:00"
+            "time": "2023-08-18T07:48:49+00:00"
         },
         {
             "name": "fig/http-message-util",
@@ -2565,26 +2565,27 @@
         },
         {
             "name": "stevenmaguire/oauth2-keycloak",
-            "version": "3.2.0",
+            "version": "4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stevenmaguire/oauth2-keycloak.git",
-                "reference": "34e4824f5fa26aa8e90f1258859c75570c12d27a"
+                "reference": "05ead6bb6bcd2b6f96dfae87c769dcd3e5f6129d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stevenmaguire/oauth2-keycloak/zipball/34e4824f5fa26aa8e90f1258859c75570c12d27a",
-                "reference": "34e4824f5fa26aa8e90f1258859c75570c12d27a",
+                "url": "https://api.github.com/repos/stevenmaguire/oauth2-keycloak/zipball/05ead6bb6bcd2b6f96dfae87c769dcd3e5f6129d",
+                "reference": "05ead6bb6bcd2b6f96dfae87c769dcd3e5f6129d",
                 "shasum": ""
             },
             "require": {
-                "firebase/php-jwt": "~4.0|~5.0",
-                "league/oauth2-client": "^2.0"
+                "firebase/php-jwt": "^4.0 || ^5.0 || ^6.0",
+                "league/oauth2-client": "^2.0",
+                "php": "~7.2 || ~8.0"
             },
             "require-dev": {
-                "mockery/mockery": "~0.9",
-                "phpunit/phpunit": "~4.0",
-                "squizlabs/php_codesniffer": "~2.0"
+                "mockery/mockery": "~1.5.0",
+                "phpunit/phpunit": "~9.6.4",
+                "squizlabs/php_codesniffer": "~3.7.0"
             },
             "type": "library",
             "extra": {
@@ -2619,9 +2620,9 @@
             ],
             "support": {
                 "issues": "https://github.com/stevenmaguire/oauth2-keycloak/issues",
-                "source": "https://github.com/stevenmaguire/oauth2-keycloak/tree/3.2.0"
+                "source": "https://github.com/stevenmaguire/oauth2-keycloak/tree/4.0.0"
             },
-            "time": "2022-12-16T12:46:38+00:00"
+            "time": "2023-03-14T09:43:47+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
