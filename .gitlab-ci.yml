@@ -128,12 +128,5 @@ build-docker:
     only:
         - tags
         - main
-        - /^[a-z]+[\/-]bug[\/-][a-zA-Z0-9_-]+$/
-        - /^[a-z]+[\/-]feature[\/-][a-zA-Z0-9_-]+$/
-        - /^[a-z]+[\/-]hotfix[\/-][a-zA-Z0-9_-]+$/
-        - /^[a-z]+[\/-]dev(-[a-zA-Z0-9_-]+)?$/
-        - /^[a-z]+[\/-]test(-[a-zA-Z0-9_-]+)?$/
-        - /^[a-z]+[\/-]release[\/-][a-zA-Z0-9_-]+$/
-        - /^[a-z]+[\/-]prod$/
-        - /^[a-z]+[\/-]main$/
+        - branches        
         
