@@ -122,23 +122,11 @@ pages:
         url: https://eappointment.gitlab.io/zmsapi
 
 build-docker:
-    stage: build
-    image: docker:stable
-    services:
-        - docker:dind
+    extends: .build-docker
     variables:
         PHP_VERSION: "8.0"
-        BUILD_CONTEXT: "."
-    script:
-        - if [ -z ${TAG+x} ]; then TAG="${CI_COMMIT_TAG:=branch-$(echo $CI_COMMIT_BRANCH | sed -e 's/[^a-zA-Z0-9]/-/g')}"; fi
-        - 'echo "Docker Image Tag: $TAG"'
-        - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
-        - docker pull "${CI_REGISTRY_IMAGE}:${TAG}" || true
-        - docker build 
-            --pull
-            --build-arg PHP_VERSION=${PHP_VERSION}
-            --build-arg IMAGE_TAG=${TAG}
-            -t "${CI_REGISTRY_IMAGE}:${TAG}"
-            "$BUILD_CONTEXT"
-        - docker push "${CI_REGISTRY_IMAGE}:${TAG}"
+    only:
+        - tags
+        - main
+        - branches        
         
