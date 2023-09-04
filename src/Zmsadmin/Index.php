@@ -26,7 +26,7 @@ class Index extends BaseController
         } catch (\Exception $workstationexception) {
             $workstation = null;
         }
-        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();     
+        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
         $input = $request->getParsedBody();
         $oidclogin = $request->getAttribute('validator')->getParameter('oidclogin')->isString()->getValue();
         if ($request->getMethod() === 'POST') {
@@ -57,7 +57,7 @@ class Index extends BaseController
                 'workstation' => $workstation,
                 'oidcproviderlist' => $this->getProviderList($config),
                 'oidclogin' => $oidclogin,
-                'showloginform' => (! $oidclogin)                
+                'showloginform' => (! $oidclogin)
             )
         );
     }
@@ -113,5 +113,4 @@ class Index extends BaseController
         }
         return $oidcproviderlist;
     }
-
 }
