@@ -77,12 +77,46 @@ class KeycloakInstance
     private function testAccess(AccessToken $token)
     {
         list($header, $payload, $signature)  = explode('.', $token->getToken());
+
+        // Ensure header, payload, and signature exist
+        if (empty($header)) {
+            throw new \BO\Slim\Exception\OAuthFailed();
+        }
+        if (empty($payload)) {
+            throw new \BO\Slim\Exception\OAuthFailed();
+        }
+        if (empty($signature)) {
+            throw new \BO\Slim\Exception\OAuthFailed();
+        }
+
         $realmData = $this->provider->getBasicOptionsFromJsonFile();
         $accessTokenPayload = json_decode(base64_decode($payload), true);
         $clientRoles = array();
+
+        // Ensure that the payload is correctly decoded
+        if ($accessTokenPayload === null) {
+            throw new \BO\Slim\Exception\OAuthFailed();
+        }
+
+        // Checking for 'resource_access' and ensuring it's an array
+        if (!isset($accessTokenPayload['resource_access']) || !is_array($accessTokenPayload['resource_access'])) {
+            throw new \BO\Slim\Exception\OAuthFailed();
+        }
+
+        // Checking if App Identifier exists
+        if (!isset($accessTokenPayload['resource_access'][\App::IDENTIFIER])) {
+            throw new \BO\Slim\Exception\OAuthFailed();
+        }
+
+        // Checking if roles exist for the app identifier
+        if (!isset($accessTokenPayload['resource_access'][\App::IDENTIFIER]['roles']) || !is_array($accessTokenPayload['resource_access'][\App::IDENTIFIER]['roles'])) {
+            throw new \BO\Slim\Exception\OAuthFailed();
+        }
+
         if (is_array($accessTokenPayload['resource_access'])) {
             $clientRoles = array_values($accessTokenPayload['resource_access'][\App::IDENTIFIER]['roles']);
         }
+            
         if (!in_array($realmData['accessRole'], $clientRoles)) {
             throw new \BO\Slim\Exception\OAuthFailed();
         }
