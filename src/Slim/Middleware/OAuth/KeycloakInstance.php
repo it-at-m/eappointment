@@ -109,7 +109,10 @@ class KeycloakInstance
         }
 
         // Checking if roles exist for the app identifier
-        if (!isset($accessTokenPayload['resource_access'][\App::IDENTIFIER]['roles']) || !is_array($accessTokenPayload['resource_access'][\App::IDENTIFIER]['roles'])) {
+        $resourceAccess = $accessTokenPayload['resource_access'];
+        $appIdentifierRoles = $resourceAccess[\App::IDENTIFIER]['roles'] ?? null;
+
+        if (!$appIdentifierRoles || !is_array($appIdentifierRoles)) {
             throw new \BO\Slim\Exception\OAuthFailed();
         }
 
