@@ -334,12 +334,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsslim.git",
-                "reference": "501da97d273ad2d110926805ad9971a43f00e232"
+                "reference": "87e1a0d1b1863ee659dd4eaf06a7adf99c802af5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=501da97d273ad2d110926805ad9971a43f00e232",
-                "reference": "501da97d273ad2d110926805ad9971a43f00e232",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=87e1a0d1b1863ee659dd4eaf06a7adf99c802af5",
+                "reference": "87e1a0d1b1863ee659dd4eaf06a7adf99c802af5",
                 "shasum": ""
             },
             "require": {
@@ -392,7 +392,7 @@
             "support": {
                 "source": "https://gitlab.com/eappointment/zmsslim/-/tree/muc-main"
             },
-            "time": "2023-08-18T07:48:49+00:00"
+            "time": "2023-09-04T13:00:43+00:00"
         },
         {
             "name": "fig/http-message-util",
