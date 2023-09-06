@@ -33,10 +33,7 @@
     "eappointment/zmsclient": "dev-berlin-2.26.00",
     "monolog/monolog": "1.*",
     "phpoffice/phpspreadsheet": "^1.0",
-    "roave/security-advisories": "dev-master",
-    "twig/twig": "3.*",
-    "twig/intl-extra": "^3.4",
-    "ext-intl": "*"
+    "roave/security-advisories": "dev-master"
   },
   "bin": [],
   "autoload": {
