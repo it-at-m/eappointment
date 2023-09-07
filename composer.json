@@ -23,6 +23,10 @@
     {
       "type": "vcs",
       "url": "https://gitlab.com/eappointment/zmsentities"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/mellon"
     }
   ],
   "config": {
