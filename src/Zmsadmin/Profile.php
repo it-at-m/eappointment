@@ -36,6 +36,13 @@ class Profile extends BaseController
             }
         }
 
+        // TODO: there should be common functions to access configuration and user or account data
+        // Currently we depend on these magic string like "useraccount".
+        // A better approach would be a function called readUserAccountData($accountId)
+        $userAccount = \App::$http->readGetResult('/useraccount/'. $entity->getId() .'/')->getEntity();
+        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+        $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider'));
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/profile.twig',
@@ -47,7 +54,8 @@ class Profile extends BaseController
                 'success' => $confirmSuccess,
                 'error' => $error,
                 'exception' => (isset($result)) ? $result : null,
-                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema))
+                'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
+                'isFromOidc' => in_array($userAccount->getOidcProviderFromName(), $allowedProviderList)                
             )
         );
     }
