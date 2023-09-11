@@ -54,7 +54,7 @@ pages:
 build-docker:
     extends: .build-docker
     variables:
-        PHP_VERSION: "7.3"
+        PHP_VERSION: "8.0"
     only:
         - tags
         - main
