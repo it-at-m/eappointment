@@ -11,7 +11,7 @@ class Day extends Base
 
     const QUERY_CREATE_TEMPORARY_SCOPELIST = '
         CREATE TEMPORARY TABLE calendarscope (
-            scopeID INT,
+            scopeID INT PRIMARY KEY,
             year SMALLINT,
             month TINYINT,
             slotsRequired TINYINT
