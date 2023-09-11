@@ -167,7 +167,11 @@ class Calendar
             }
             ksort($list['hours'][$hour]);
         }
-        ksort($list['hours']);
+
+        if (is_array($list['hours'])) {
+            ksort($list['hours']);
+        }
+
         return $list;
     }
 }
