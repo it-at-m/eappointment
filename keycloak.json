@@ -13,6 +13,6 @@
     "confidential-port": 0,
     "clientId": "zms",
     "clientName": "ZMS",
-    "Access_Role": "Access_Zms",
+    "access-role": "Access_ZMS",
     "version": "18.2.0"
 }
