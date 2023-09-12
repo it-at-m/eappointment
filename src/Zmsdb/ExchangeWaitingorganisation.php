@@ -43,9 +43,9 @@ class ExchangeWaitingorganisation extends Base implements Interfaces\ExchangeSub
                         $subjectid,
                         $entry['datum'],
                         $hour,
-                        $entry[sprintf('wartende_ab_%02s', $hour)],
-                        $entry[sprintf('echte_zeit_ab_%02s', $hour)],
-                        $entry[sprintf('zeit_ab_%02s', $hour)]
+                        $entry[sprintf('wartende_ab_%02s_spontan', $hour)],
+                        $entry[sprintf('echte_zeit_ab_%02s_spontan', $hour)],
+                        $entry[sprintf('zeit_ab_%02s_spontan', $hour)]
                     ]);
                 }
                 $entry = array_shift($raw);
