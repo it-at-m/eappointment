@@ -10,38 +10,38 @@ class ExchangeWaitingscope extends Base
     const TABLE = 'wartenrstatistik';
 
     const WAITING_VALUES = "
-        MAX(echte_zeit_ab_00) as echte_zeit_ab_00,MAX(echte_zeit_ab_01) as echte_zeit_ab_01,
-        MAX(echte_zeit_ab_02) as echte_zeit_ab_02,MAX(echte_zeit_ab_03) as echte_zeit_ab_03,
-        MAX(echte_zeit_ab_04) as echte_zeit_ab_04,MAX(echte_zeit_ab_05) as echte_zeit_ab_05,
-        MAX(echte_zeit_ab_06) as echte_zeit_ab_06,MAX(echte_zeit_ab_07) as echte_zeit_ab_07,
-        MAX(echte_zeit_ab_08) as echte_zeit_ab_08,MAX(echte_zeit_ab_09) as echte_zeit_ab_09,
-        MAX(echte_zeit_ab_10) as echte_zeit_ab_10,MAX(echte_zeit_ab_11) as echte_zeit_ab_11,
-        MAX(echte_zeit_ab_12) as echte_zeit_ab_12,MAX(echte_zeit_ab_13) as echte_zeit_ab_13,
-        MAX(echte_zeit_ab_14) as echte_zeit_ab_14,MAX(echte_zeit_ab_15) as echte_zeit_ab_15,
-        MAX(echte_zeit_ab_16) as echte_zeit_ab_16,MAX(echte_zeit_ab_17) as echte_zeit_ab_17,
-        MAX(echte_zeit_ab_18) as echte_zeit_ab_18,MAX(echte_zeit_ab_19) as echte_zeit_ab_19,
-        MAX(echte_zeit_ab_20) as echte_zeit_ab_20,MAX(echte_zeit_ab_21) as echte_zeit_ab_21,
-        MAX(echte_zeit_ab_22) as echte_zeit_ab_22,MAX(echte_zeit_ab_23) as echte_zeit_ab_23,
-        MAX(zeit_ab_00) as zeit_ab_00,MAX(zeit_ab_01) as zeit_ab_01,MAX(zeit_ab_02) as zeit_ab_02,
-        MAX(zeit_ab_03) as zeit_ab_03,MAX(zeit_ab_04) as zeit_ab_04,MAX(zeit_ab_05) as zeit_ab_05,
-        MAX(zeit_ab_06) as zeit_ab_06,MAX(zeit_ab_07) as zeit_ab_07,MAX(zeit_ab_08) as zeit_ab_08,
-        MAX(zeit_ab_09) as zeit_ab_09,MAX(zeit_ab_10) as zeit_ab_10,MAX(zeit_ab_11) as zeit_ab_11,
-        MAX(zeit_ab_12) as zeit_ab_12,MAX(zeit_ab_13) as zeit_ab_13,MAX(zeit_ab_14) as zeit_ab_14,
-        MAX(zeit_ab_15) as zeit_ab_15,MAX(zeit_ab_16) as zeit_ab_16,MAX(zeit_ab_17) as zeit_ab_17,
-        MAX(zeit_ab_18) as zeit_ab_18,MAX(zeit_ab_19) as zeit_ab_19,MAX(zeit_ab_20) as zeit_ab_20,
-        MAX(zeit_ab_21) as zeit_ab_21,MAX(zeit_ab_22) as zeit_ab_22,MAX(zeit_ab_23) as zeit_ab_23,
-        MAX(wartende_ab_00) as wartende_ab_00,MAX(wartende_ab_01) as wartende_ab_01,
-        MAX(wartende_ab_02) as wartende_ab_02,MAX(wartende_ab_03) as wartende_ab_03,
-        MAX(wartende_ab_04) as wartende_ab_04,MAX(wartende_ab_05) as wartende_ab_05,
-        MAX(wartende_ab_06) as wartende_ab_06,MAX(wartende_ab_07) as wartende_ab_07,
-        MAX(wartende_ab_08) as wartende_ab_08,MAX(wartende_ab_09) as wartende_ab_09,
-        MAX(wartende_ab_10) as wartende_ab_10,MAX(wartende_ab_11) as wartende_ab_11,
-        MAX(wartende_ab_12) as wartende_ab_12,MAX(wartende_ab_13) as wartende_ab_13,
-        MAX(wartende_ab_14) as wartende_ab_14,MAX(wartende_ab_15) as wartende_ab_15,
-        MAX(wartende_ab_16) as wartende_ab_16,MAX(wartende_ab_17) as wartende_ab_17,
-        MAX(wartende_ab_18) as wartende_ab_18,MAX(wartende_ab_19) as wartende_ab_19,
-        MAX(wartende_ab_20) as wartende_ab_20,MAX(wartende_ab_21) as wartende_ab_21,
-        MAX(wartende_ab_22) as wartende_ab_22,MAX(wartende_ab_23) as wartende_ab_23
+        MAX(echte_zeit_ab_00_spontan) as echte_zeit_ab_00_spontan,MAX(echte_zeit_ab_01_spontan) as echte_zeit_ab_01_spontan,
+        MAX(echte_zeit_ab_02_spontan) as echte_zeit_ab_02_spontan,MAX(echte_zeit_ab_03_spontan) as echte_zeit_ab_03_spontan,
+        MAX(echte_zeit_ab_04_spontan) as echte_zeit_ab_04_spontan,MAX(echte_zeit_ab_05_spontan) as echte_zeit_ab_05_spontan,
+        MAX(echte_zeit_ab_06_spontan) as echte_zeit_ab_06_spontan,MAX(echte_zeit_ab_07_spontan) as echte_zeit_ab_07_spontan,
+        MAX(echte_zeit_ab_08_spontan) as echte_zeit_ab_08_spontan,MAX(echte_zeit_ab_09_spontan) as echte_zeit_ab_09_spontan,
+        MAX(echte_zeit_ab_10_spontan) as echte_zeit_ab_10_spontan,MAX(echte_zeit_ab_11_spontan) as echte_zeit_ab_11_spontan,
+        MAX(echte_zeit_ab_12_spontan) as echte_zeit_ab_12_spontan,MAX(echte_zeit_ab_13_spontan) as echte_zeit_ab_13_spontan,
+        MAX(echte_zeit_ab_14_spontan) as echte_zeit_ab_14_spontan,MAX(echte_zeit_ab_15_spontan) as echte_zeit_ab_15_spontan,
+        MAX(echte_zeit_ab_16_spontan) as echte_zeit_ab_16_spontan,MAX(echte_zeit_ab_17_spontan) as echte_zeit_ab_17_spontan,
+        MAX(echte_zeit_ab_18_spontan) as echte_zeit_ab_18_spontan,MAX(echte_zeit_ab_19_spontan) as echte_zeit_ab_19_spontan,
+        MAX(echte_zeit_ab_20_spontan) as echte_zeit_ab_20_spontan,MAX(echte_zeit_ab_21_spontan) as echte_zeit_ab_21_spontan,
+        MAX(echte_zeit_ab_22_spontan) as echte_zeit_ab_22_spontan,MAX(echte_zeit_ab_23_spontan) as echte_zeit_ab_23_spontan,
+        MAX(zeit_ab_00_spontan) as zeit_ab_00_spontan,MAX(zeit_ab_01_spontan) as zeit_ab_01_spontan,MAX(zeit_ab_02_spontan) as zeit_ab_02_spontan,
+        MAX(zeit_ab_03_spontan) as zeit_ab_03_spontan,MAX(zeit_ab_04_spontan) as zeit_ab_04_spontan,MAX(zeit_ab_05_spontan) as zeit_ab_05_spontan,
+        MAX(zeit_ab_06_spontan) as zeit_ab_06_spontan,MAX(zeit_ab_07_spontan) as zeit_ab_07_spontan,MAX(zeit_ab_08_spontan) as zeit_ab_08_spontan,
+        MAX(zeit_ab_09_spontan) as zeit_ab_09_spontan,MAX(zeit_ab_10_spontan) as zeit_ab_10_spontan,MAX(zeit_ab_11_spontan) as zeit_ab_11_spontan,
+        MAX(zeit_ab_12_spontan) as zeit_ab_12_spontan,MAX(zeit_ab_13_spontan) as zeit_ab_13_spontan,MAX(zeit_ab_14_spontan) as zeit_ab_14_spontan,
+        MAX(zeit_ab_15_spontan) as zeit_ab_15_spontan,MAX(zeit_ab_16_spontan) as zeit_ab_16_spontan,MAX(zeit_ab_17_spontan) as zeit_ab_17_spontan,
+        MAX(zeit_ab_18_spontan) as zeit_ab_18_spontan,MAX(zeit_ab_19_spontan) as zeit_ab_19_spontan,MAX(zeit_ab_20_spontan) as zeit_ab_20_spontan,
+        MAX(zeit_ab_21_spontan) as zeit_ab_21_spontan,MAX(zeit_ab_22_spontan) as zeit_ab_22_spontan,MAX(zeit_ab_23_spontan) as zeit_ab_23_spontan,
+        MAX(wartende_ab_00_spontan) as wartende_ab_00_spontan,MAX(wartende_ab_01_spontan) as wartende_ab_01_spontan,
+        MAX(wartende_ab_02_spontan) as wartende_ab_02_spontan,MAX(wartende_ab_03_spontan) as wartende_ab_03_spontan,
+        MAX(wartende_ab_04_spontan) as wartende_ab_04_spontan,MAX(wartende_ab_05_spontan) as wartende_ab_05_spontan,
+        MAX(wartende_ab_06_spontan) as wartende_ab_06_spontan,MAX(wartende_ab_07_spontan) as wartende_ab_07_spontan,
+        MAX(wartende_ab_08_spontan) as wartende_ab_08_spontan,MAX(wartende_ab_09_spontan) as wartende_ab_09_spontan,
+        MAX(wartende_ab_10_spontan) as wartende_ab_10_spontan,MAX(wartende_ab_11_spontan) as wartende_ab_11_spontan,
+        MAX(wartende_ab_12_spontan) as wartende_ab_12_spontan,MAX(wartende_ab_13_spontan) as wartende_ab_13_spontan,
+        MAX(wartende_ab_14_spontan) as wartende_ab_14_spontan,MAX(wartende_ab_15_spontan) as wartende_ab_15_spontan,
+        MAX(wartende_ab_16_spontan) as wartende_ab_16_spontan,MAX(wartende_ab_17_spontan) as wartende_ab_17_spontan,
+        MAX(wartende_ab_18_spontan) as wartende_ab_18_spontan,MAX(wartende_ab_19_spontan) as wartende_ab_19_spontan,
+        MAX(wartende_ab_20_spontan) as wartende_ab_20_spontan,MAX(wartende_ab_21_spontan) as wartende_ab_21_spontan,
+        MAX(wartende_ab_22_spontan) as wartende_ab_22_spontan,MAX(wartende_ab_23_spontan) as wartende_ab_23_spontan
     ";
 
     const QUERY_READ_DAY = '
@@ -127,9 +127,9 @@ class ExchangeWaitingscope extends Base
     {
         $query = sprintf(
             "SELECT
-                `zeit_ab_%s` AS waitingcalculated,
-                `wartende_ab_%s` AS waitingcount,
-                `echte_zeit_ab_%s` AS waitingtime
+                `zeit_ab_%s_spontan` AS waitingcalculated,
+                `wartende_ab_%s_spontan` AS waitingcount,
+                `echte_zeit_ab_%s_spontan` AS waitingtime
              FROM %s
              WHERE `standortid` = :scopeid
                 AND `datum` = :date
@@ -152,9 +152,9 @@ class ExchangeWaitingscope extends Base
         $query = sprintf(
             "UPDATE %s
              SET
-                `zeit_ab_%s`= :waitingcalculated,
-                `wartende_ab_%s` = :waitingcount,
-                `echte_zeit_ab_%s` = :waitingtime
+                `zeit_ab_%s_spontan`= :waitingcalculated,
+                `wartende_ab_%s_spontan` = :waitingcount,
+                `echte_zeit_ab_%s_spontan` = :waitingtime
              WHERE `standortid` = :scopeid
                 AND `datum` = :date
                 AND :hour IS NOT NULL

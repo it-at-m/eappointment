@@ -38,9 +38,9 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
 
             foreach ($raw as $entry) {
                 foreach (range(0, 23) as $hour) {
-                    $waitingcount = $entry[sprintf('wartende_ab_%02s', $hour)];
-                    $waitingtime = $entry[sprintf('echte_zeit_ab_%02s', $hour)];
-                    $waitingcalculated = $entry[sprintf('zeit_ab_%02s', $hour)];
+                    $waitingcount = $entry[sprintf('wartende_ab_%02s_spontan', $hour)];
+                    $waitingtime = $entry[sprintf('echte_zeit_ab_%02s_spontan', $hour)];
+                    $waitingcalculated = $entry[sprintf('zeit_ab_%02s_spontan', $hour)];
                     $entity->addDataSet([
                           $subjectid,
                           $entry['datum'],
