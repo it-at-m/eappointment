@@ -25,7 +25,6 @@ class WorkstationLogin extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        error_log('\n\r we are in login................................................................');
         $validator = $request->getAttribute('validator');
         $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
