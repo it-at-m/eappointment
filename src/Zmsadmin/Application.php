@@ -12,6 +12,11 @@ define(
     getenv('ZMS_ADMIN_TEMPLATE_FOLDER') ? getenv('ZMS_ADMIN_TEMPLATE_FOLDER') : '/templates/'
 );
 
+define(
+    'ZMS_ADMIN_SESSION_DURATION',
+    getenv('ZMS_ADMIN_SESSION_DURATION') ? getenv('ZMS_ADMIN_SESSION_DURATION') : 28800
+);
+
 class Application extends \BO\Slim\Application
 {
     /**
@@ -26,6 +31,7 @@ class Application extends \BO\Slim\Application
 
     const TEMPLATE_PATH = ZMS_ADMIN_TEMPLATE_FOLDER;
 
+    const SESSION_DURATION = ZMS_ADMIN_SESSION_DURATION;
 
     public static $includeUrl = '/terminvereinbarung/admin';
 
