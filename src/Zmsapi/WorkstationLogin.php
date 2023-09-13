@@ -59,6 +59,9 @@ class WorkstationLogin extends BaseController
             \App::getNow(),
             $resolveReferences
         );
+
+        \BO\Zmsdb\Log::writeLogEntry("LOGIN (WorkstattionLogin::getLoggedInWorkstation) ".$useraccount->id, 0);
+
         return $workstation;
     }
 

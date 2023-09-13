@@ -37,6 +37,9 @@ class WorkstationDelete extends BaseController
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+
+        \BO\Zmsdb\Log::writeLogEntry("LOGOUT (WorkstattionDelete::readResponse) ".$args['loginname'], 0);
+
         return $response;
     }
 }
