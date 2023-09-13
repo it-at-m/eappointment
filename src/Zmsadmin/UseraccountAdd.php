@@ -58,7 +58,7 @@ class UseraccountAdd extends BaseController
                 'exception' => (isset($result)) ? $result : null,
                 'userAccount' => (isset($result)) ? $input : null,
                 'selectedDepartment' => $selectedDepartment,
-                'oidcProviderList' => array_filter($allowedProviderList),                
+                'oidcProviderList' => array_filter($allowedProviderList),
                 'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema))
             ]
         );
@@ -69,7 +69,7 @@ class UseraccountAdd extends BaseController
         $entity = new Entity($input);
         if (isset($input['oidcProvider']) && '' != $input['oidcProvider']) {
             $entity->id = $entity->id. '@' .$input['oidcProvider'];
-        }        
+        }
         $entity = $entity->withCleanedUpFormData(true);
         try {
             $entity = \App::$http->readPostResult('/useraccount/', $entity)->getEntity();

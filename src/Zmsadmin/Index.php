@@ -26,13 +26,13 @@ class Index extends BaseController
         } catch (\Exception $workstationexception) {
             $workstation = null;
         }
-        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();     
+        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
         $input = $request->getParsedBody();
         $oidclogin = $request->getAttribute('validator')->getParameter('oidclogin')->isString()->getValue();
         if ($request->getMethod() === 'POST') {
             $loginData = $this->testLogin($input);
             if ($loginData instanceof Workstation && $loginData->offsetExists('authkey')) {
-                \BO\Zmsclient\Auth::setKey($loginData->authkey);
+                \BO\Zmsclient\Auth::setKey($loginData->authkey, time() + \App::SESSION_DURATION);
                 return \BO\Slim\Render::redirect('workstationSelect', array(), array());
             }
             return \BO\Slim\Render::withHtml(
@@ -57,7 +57,7 @@ class Index extends BaseController
                 'workstation' => $workstation,
                 'oidcproviderlist' => $this->getProviderList($config),
                 'oidclogin' => $oidclogin,
-                'showloginform' => (! $oidclogin)                
+                'showloginform' => (! $oidclogin)
             )
         );
     }
@@ -83,7 +83,7 @@ class Index extends BaseController
                     'Der Nutzername oder das Passwort wurden falsch eingegeben'
                 ];
             } elseif ('BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn' == $exception->template) {
-                \BO\Zmsclient\Auth::setKey($exception->data['authkey']);
+                \BO\Zmsclient\Auth::setKey($exception->data['authkey'], time() + \App::SESSION_DURATION);
                 throw $exception;
             } elseif ('' != $exception->template
                 && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
@@ -113,5 +113,4 @@ class Index extends BaseController
         }
         return $oidcproviderlist;
     }
-
 }
