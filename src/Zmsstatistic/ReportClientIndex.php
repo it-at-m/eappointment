@@ -13,12 +13,12 @@ use Psr\Http\Message\ResponseInterface;
 class ReportClientIndex extends BaseController
 {
     protected $totals = [
-        'notificationscount',
-        'notificationscost',
         'clientscount',
         'missed',
         'withappointment',
         'missedwithappointment',
+        'noappointment',
+        'missednoappointment',
         'requestscount'
     ];
 
@@ -38,7 +38,6 @@ class ReportClientIndex extends BaseController
           ->getEntity();
 
         $exchangeClient = null;
-        $exchangeNotification = null;
         if (isset($args['period'])) {
             try {
                 $exchangeClient = \App::$http
@@ -49,25 +48,12 @@ class ReportClientIndex extends BaseController
             } catch (\Exception $exception) {
                 // do nothing
             }
-            try {
-                $exchangeNotification = \App::$http
-                    ->readGetResult(
-                        '/warehouse/notificationscope/' . $scopeId . '/'. $args['period']. '/',
-                        ['groupby' => 'month']
-                    )
-                    ->getEntity()
-                    ->toHashed();
-            } catch (\Exception $exception) {
-                // do nothing
-            }
         }
 
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
             $args['category'] = 'clientscope';
-            if (count($exchangeNotification->data)) {
-                $args['reports'][] = $exchangeNotification;
-            }
+
             if (count($exchangeClient->data)) {
                 $args['reports'][] = $exchangeClient;
             }
@@ -90,7 +76,6 @@ class ReportClientIndex extends BaseController
                 'showAll' => 1,
                 'period' => isset($args['period']) ? $args['period'] : null,
                 'exchangeClient' => $exchangeClient,
-                'exchangeNotification' => $exchangeNotification,
                 'source' => ['entity' => 'ClientIndex'],
                 'workstation' => $this->workstation->getArrayCopy()
             )

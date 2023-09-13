@@ -50,44 +50,44 @@
       },
       {
         "position": 2,
-        "variable": "notificationscount",
-        "type": "number",
-        "description": "Amount of notifications sent",
-        "reference": ""
-      },
-      {
-        "position": 3,
-        "variable": "notificationscost",
-        "type": "string",
-        "description": "Costs of notifications",
-        "reference": ""
-      },
-      {
-        "position": 4,
         "variable": "clientscount",
         "type": "number",
         "description": "Amount of clients",
         "reference": ""
       },
       {
-        "position": 5,
+        "position": 3,
         "variable": "missed",
         "type": "number",
         "description": "Amount of missed clients",
         "reference": ""
       },
       {
-        "position": 6,
+        "position": 4,
         "variable": "withappointment",
         "type": "number",
         "description": "Amount of clients with an appointment",
         "reference": ""
       },
       {
-        "position": 7,
+        "position": 5,
         "variable": "missedwithappointment",
         "type": "number",
         "description": "Amount of missed clients with an appointment",
+        "reference": ""
+      },
+      {
+        "position": 6,
+        "variable": "noappointment",
+        "type": "string",
+        "description": "",
+        "reference": ""
+      },
+      {
+        "position": 7,
+        "variable": "missednoappointment",
+        "type": "string",
+        "description": "",
         "reference": ""
       },
       {
@@ -102,8 +102,8 @@
       [
         "141",
         "2016-04",
-        "135",
-        20.25,
+        "84",
+        "16",
         "84",
         "16",
         "84",
