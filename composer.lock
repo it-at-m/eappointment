@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cd929d33f628e92909e54b0eb476889c",
+    "content-hash": "4829eca36bf34fd0c98e3adcbc5b189b",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -288,16 +288,16 @@
         },
         {
             "name": "eappointment/zmsdb",
-            "version": "dev-muc-prod",
+            "version": "dev-muc-main",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsdb.git",
-                "reference": "4dae6113cd853b4ed5527e6e061b13edb8b88d76"
+                "reference": "40c0ffc1ad975bcde3a6d7df4918b855c11dbefc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=4dae6113cd853b4ed5527e6e061b13edb8b88d76",
-                "reference": "4dae6113cd853b4ed5527e6e061b13edb8b88d76",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=40c0ffc1ad975bcde3a6d7df4918b855c11dbefc",
+                "reference": "40c0ffc1ad975bcde3a6d7df4918b855c11dbefc",
                 "shasum": ""
             },
             "require": {
@@ -366,9 +366,9 @@
             ],
             "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsdb/-/tree/muc-prod"
+                "source": "https://gitlab.com/eappointment/zmsdb/-/tree/muc-main"
             },
-            "time": "2023-08-22T15:31:50+02:00"
+            "time": "2023-09-13T14:27:15+02:00"
         },
         {
             "name": "eappointment/zmsdldb",
