@@ -1,0 +1,18 @@
+{
+    "realm": "KM55",
+    "auth-server-url": "https://ssodev.muenchen.de/auth",
+    "auth-redirect-url": "https://localhost/terminvereinbarung/statistic/oidc/?provider=keycloak",
+    "logout-redirect-url": "https://localhost/terminvereinbarung/statistic",
+    "ssl-required": "external",
+    "resource": "zms",
+    "verify-token-audience": true,
+    "credentials": {
+        "secret": "fc349013-ba75-4345-8b21-f48e9cdf6ef8"
+    },
+    "use-resource-role-mappings": true,
+    "confidential-port": 0,
+    "clientId": "zms",
+    "clientName": "ZMS",
+    "Access_Role": "Access_Zms",
+    "version": "18.2.0"
+}

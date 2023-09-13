@@ -6,6 +6,8 @@
 
 namespace BO\Zmsstatistic;
 
+use BO\Zmsclient\Http;
+
 define(
     'ZMS_STATISTIC_SESSION_DURATION',
     getenv('ZMS_STATISTIC_SESSION_DURATION') ? getenv('ZMS_STATISTIC_SESSION_DURATION') : 28800

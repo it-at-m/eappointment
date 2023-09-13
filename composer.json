@@ -11,10 +11,32 @@
   "scripts": {
     "command": "bin/configure"
   },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsclient"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsslim"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsentities"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/mellon"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/berlinonline/slim-psr7"
+    }
+  ],
   "config": {
-      "platform": {
-          "php": "7.3"
-      },
+    "platform": {
+        "php": "7.3"
+    },
     "allow-plugins": {
       "php-http/discovery": true
     }
@@ -45,11 +67,5 @@
       "BO\\Zmsstatistic\\": "src/Zmsstatistic/",
       "BO\\Zmsstatistic\\Tests\\": "tests/Zmsstatistic/"
     }
-  },
-  "repositories": [
-    {
-        "type": "vcs",
-        "url": "https://github.com/berlinonline/slim-psr7"
-    }
-  ]
+  }
 }

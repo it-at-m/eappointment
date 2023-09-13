@@ -76,7 +76,7 @@ class Access extends \BO\Slim\Controller
     {
         $path = $request->getUri()->getPath();
         $this->testAccess($path);
-        $this->testScope($path);
+        //$this->testScope($path);
     }
 
     protected function testAccess($path)

@@ -1,27 +1,25 @@
 <?php
 /**
- * @package Zmsadmin
+ * @package Zmsstatistic
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
 namespace BO\Zmsstatistic;
 
-use BO\Zmsentities\Workstation as Entity;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use \BO\Mellon\Validator;
+
+use \BO\Zmsentities\Workstation as Entity;
 
 class QuickLogin extends BaseController
 {
-    protected $withAccess = false;
-
     /**
      * @SuppressWarnings(Param)
-     * @return ResponseInterface
+     * @param \Psr\Http\Message\RequestInterface|\BO\Slim\Request $request
+     * @return String
      */
-
     public function readResponse(
-        RequestInterface $request,
-        ResponseInterface $response,
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
         $loginData = Helper\LoginForm::fromQuickLogin();
@@ -48,9 +46,9 @@ class QuickLogin extends BaseController
         $workstation->scope = new \BO\Zmsentities\Scope(array('id' => $loginData['scope']['value']));
         $workstation->hint = $loginData['hint']['value'];
         $workstation->name = $loginData['workstation']['value'];
-        \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
-
+        $workstation = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
         $basePath = $request->getBasePath();
+
         return $response->withRedirect($basePath .'/'. trim($loginData['redirectUrl']['value'], "/"));
     }
 }
