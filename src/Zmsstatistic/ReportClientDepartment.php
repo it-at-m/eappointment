@@ -13,12 +13,12 @@ use Psr\Http\Message\ResponseInterface;
 class ReportClientDepartment extends BaseController
 {
     protected $totals = [
-        'notificationscount',
-        'notificationscost',
         'clientscount',
         'missed',
         'withappointment',
         'missedwithappointment',
+        'noappointment',
+        'missednoappointment',
         'requestscount'
     ];
 

@@ -24,8 +24,11 @@ class WorkstationSelect extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $this->workstation->testDepartmentList();
-
+        /** @var \BO\Zmsentities\Workstation $workstation */
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
+        if (!$workstation->hasId()) {
+            return \BO\Slim\Render::redirect('index', array('error' => 'login_failed'));
+        }
         $input = $request->getParsedBody();
         $formData = [];
         if (is_array($input) && (array_key_exists('scope', $input))) {
