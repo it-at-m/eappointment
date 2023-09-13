@@ -234,7 +234,7 @@ class ReportClientDepartmentTest extends Base
 
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
         $this->assertStringContainsString(
-            '"April";"2016";"Charlottenburg-Wilmersdorf";"Bürgeramt";"Bürgeramt Heerstraße ";"135";"";"";""',
+            '"April";"2016";"Bürgeramt Heerstraße ";"N/A";"N/A";"135";"";"";""',
             $response->getBody()
         );
     }

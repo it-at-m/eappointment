@@ -4,8 +4,6 @@ namespace BO\Zmsstatistic\Tests;
 
 class IndexTest extends Base
 {
-    protected $classname = "Index";
-
     protected $arguments = [ ];
 
     protected $parameters = [
@@ -13,6 +11,8 @@ class IndexTest extends Base
         'password' => 'vorschau',
         'login_form_validate' => 1
     ];
+
+    protected $classname = "Index";
 
     public function testRendering()
     {
@@ -27,13 +27,16 @@ class IndexTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/config/',
                     'parameters' => [],
-                    'xtoken' => \App::CONFIG_SECURE_TOKEN,
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
                     'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
         $response = $this->render([ ], [ ], [ ]);
-        $this->assertStringContainsString('Statistik - Anmeldung für Behördenmitarbeiter', (string) $response->getBody());
+        $this->assertStringContainsString(
+            'Statistik - Anmeldung für Behördenmitarbeiter',
+            (string) $response->getBody()
+        );
     }
 
     public function testLogin()
@@ -49,9 +52,17 @@ class IndexTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
+                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
+    
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
         $this->assertRedirect($response, '/workstation/select/');
         $this->assertEquals(302, $response->getStatusCode());
@@ -59,17 +70,32 @@ class IndexTest extends Base
 
     public function testAlreadyLoggedIn()
     {
+        $this->expectException('\BO\Zmsclient\Exception');
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn';
+        $exception->data['authkey'] = 'unit';
         $this->setApiCalls(
             [
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                    'exception' => $exception
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/login/',
+                    'exception' => $exception
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
+                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
-        $response = $this->render($this->arguments, [], []);
-        $this->assertStringContainsString('Willkommen zurück', (string)$response->getBody());
+        $this->render($this->arguments, $this->parameters, [], 'POST');
     }
 
     public function testLoginFailed()
@@ -96,19 +122,18 @@ class IndexTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/config/',
                     'parameters' => [],
-                    'xtoken' => \App::CONFIG_SECURE_TOKEN,
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
                     'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
         $this->assertStringContainsString(
-            'Das eingegebene Passwort und der Nutzername passen nicht zusammen',
+            'Der Nutzername oder das Passwort wurden falsch eingegeben',
             (string)$response->getBody()
         );
         $this->assertStringContainsString('form-group has-error', (string)$response->getBody());
     }
-
     public function testDoubleLogin()
     {
         $this->expectException('\BO\Zmsclient\Exception');
@@ -126,6 +151,13 @@ class IndexTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
                     'exception' => $exception
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
+                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
