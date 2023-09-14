@@ -58,15 +58,17 @@ class UnconfirmedAppointmentDeleteByCron
 
     protected function deleteUnconfirmedProcesses($commit)
     {
-        if ($this->verbose) {
-            $this->log("INFO: Deleting appointments older than " . $deleteFromTime->format('c'));
-        }
         foreach ($this->scopeList as $scope) {
             $count = $this->deleteByCallback($commit, function ($limit, $offset) use ($scope) {
                 $query = new \BO\Zmsdb\Process();
                 $activationDuration = $scope->toProperty()->preferences->appointment->activationDuration->get();
                 $time = new \DateTimeImmutable();
                 $deleteFromTime =   $time->setTimestamp($this->now->getTimestamp() - ($activationDuration * 60));
+
+                if ($this->verbose) {
+                    $this->log("INFO: Deleting appointments older than " . $deleteFromTime->format('c') . 'limit: ' . $limit . ' offset: ' . $offset);
+                }
+
                 $processList = $query->readUnconfirmedProcessList($deleteFromTime, $scope->id, $limit, $offset);
                 return $processList;
             });
@@ -84,6 +86,11 @@ class UnconfirmedAppointmentDeleteByCron
             if (0 == $processList->count()) {
                 break;
             }
+
+            if ($this->verbose) {
+                $this->log("INFO: ProcessList count " . $processList->count());
+            }
+
             foreach ($processList as $process) {
                 if (!$this->removeProcess($process, $commit, $processCount)) {
                     $startposition++;
