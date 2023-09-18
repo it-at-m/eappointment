@@ -28,9 +28,9 @@
   },
   "require": {
     "eappointment/mellon": "^2.6.0",
-    "eappointment/zmsentities": "dev-berlin-2.26.00",
-    "eappointment/zmsslim": "dev-berlin-2.26.00",
-    "eappointment/zmsclient": "dev-berlin-2.26.00",
+    "eappointment/zmsentities": "2.26.00",
+    "eappointment/zmsslim": "2.26.00",
+    "eappointment/zmsclient": "2.26.00",
     "monolog/monolog": "1.*",
     "phpoffice/phpspreadsheet": "^1.0",
     "roave/security-advisories": "dev-master"
