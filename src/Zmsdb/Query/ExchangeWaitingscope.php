@@ -41,7 +41,39 @@ class ExchangeWaitingscope extends Base
         MAX(wartende_ab_16_spontan) as wartende_ab_16_spontan,MAX(wartende_ab_17_spontan) as wartende_ab_17_spontan,
         MAX(wartende_ab_18_spontan) as wartende_ab_18_spontan,MAX(wartende_ab_19_spontan) as wartende_ab_19_spontan,
         MAX(wartende_ab_20_spontan) as wartende_ab_20_spontan,MAX(wartende_ab_21_spontan) as wartende_ab_21_spontan,
-        MAX(wartende_ab_22_spontan) as wartende_ab_22_spontan,MAX(wartende_ab_23_spontan) as wartende_ab_23_spontan
+        MAX(wartende_ab_22_spontan) as wartende_ab_22_spontan,MAX(wartende_ab_23_spontan) as wartende_ab_23_spontan,
+        MAX(echte_zeit_ab_00_termin) as echte_zeit_ab_00_termin,MAX(echte_zeit_ab_01_termin) as echte_zeit_ab_01_termin,
+        MAX(echte_zeit_ab_02_termin) as echte_zeit_ab_02_termin,MAX(echte_zeit_ab_03_termin) as echte_zeit_ab_03_termin,
+        MAX(echte_zeit_ab_04_termin) as echte_zeit_ab_04_termin,MAX(echte_zeit_ab_05_termin) as echte_zeit_ab_05_termin,
+        MAX(echte_zeit_ab_06_termin) as echte_zeit_ab_06_termin,MAX(echte_zeit_ab_07_termin) as echte_zeit_ab_07_termin,
+        MAX(echte_zeit_ab_08_termin) as echte_zeit_ab_08_termin,MAX(echte_zeit_ab_09_termin) as echte_zeit_ab_09_termin,
+        MAX(echte_zeit_ab_10_termin) as echte_zeit_ab_10_termin,MAX(echte_zeit_ab_11_termin) as echte_zeit_ab_11_termin,
+        MAX(echte_zeit_ab_12_termin) as echte_zeit_ab_12_termin,MAX(echte_zeit_ab_13_termin) as echte_zeit_ab_13_termin,
+        MAX(echte_zeit_ab_14_termin) as echte_zeit_ab_14_termin,MAX(echte_zeit_ab_15_termin) as echte_zeit_ab_15_termin,
+        MAX(echte_zeit_ab_16_termin) as echte_zeit_ab_16_termin,MAX(echte_zeit_ab_17_termin) as echte_zeit_ab_17_termin,
+        MAX(echte_zeit_ab_18_termin) as echte_zeit_ab_18_termin,MAX(echte_zeit_ab_19_termin) as echte_zeit_ab_19_termin,
+        MAX(echte_zeit_ab_20_termin) as echte_zeit_ab_20_termin,MAX(echte_zeit_ab_21_termin) as echte_zeit_ab_21_termin,
+        MAX(echte_zeit_ab_22_termin) as echte_zeit_ab_22_termin,MAX(echte_zeit_ab_23_termin) as echte_zeit_ab_23_termin,
+        MAX(zeit_ab_00_termin) as zeit_ab_00_termin,MAX(zeit_ab_01_termin) as zeit_ab_01_termin,MAX(zeit_ab_02_termin) as zeit_ab_02_termin,
+        MAX(zeit_ab_03_termin) as zeit_ab_03_termin,MAX(zeit_ab_04_termin) as zeit_ab_04_termin,MAX(zeit_ab_05_termin) as zeit_ab_05_termin,
+        MAX(zeit_ab_06_termin) as zeit_ab_06_termin,MAX(zeit_ab_07_termin) as zeit_ab_07_termin,MAX(zeit_ab_08_termin) as zeit_ab_08_termin,
+        MAX(zeit_ab_09_termin) as zeit_ab_09_termin,MAX(zeit_ab_10_termin) as zeit_ab_10_termin,MAX(zeit_ab_11_termin) as zeit_ab_11_termin,
+        MAX(zeit_ab_12_termin) as zeit_ab_12_termin,MAX(zeit_ab_13_termin) as zeit_ab_13_termin,MAX(zeit_ab_14_termin) as zeit_ab_14_termin,
+        MAX(zeit_ab_15_termin) as zeit_ab_15_termin,MAX(zeit_ab_16_termin) as zeit_ab_16_termin,MAX(zeit_ab_17_termin) as zeit_ab_17_termin,
+        MAX(zeit_ab_18_termin) as zeit_ab_18_termin,MAX(zeit_ab_19_termin) as zeit_ab_19_termin,MAX(zeit_ab_20_termin) as zeit_ab_20_termin,
+        MAX(zeit_ab_21_termin) as zeit_ab_21_termin,MAX(zeit_ab_22_termin) as zeit_ab_22_termin,MAX(zeit_ab_23_termin) as zeit_ab_23_termin,
+        MAX(wartende_ab_00_termin) as wartende_ab_00_termin,MAX(wartende_ab_01_termin) as wartende_ab_01_termin,
+        MAX(wartende_ab_02_termin) as wartende_ab_02_termin,MAX(wartende_ab_03_termin) as wartende_ab_03_termin,
+        MAX(wartende_ab_04_termin) as wartende_ab_04_termin,MAX(wartende_ab_05_termin) as wartende_ab_05_termin,
+        MAX(wartende_ab_06_termin) as wartende_ab_06_termin,MAX(wartende_ab_07_termin) as wartende_ab_07_termin,
+        MAX(wartende_ab_08_termin) as wartende_ab_08_termin,MAX(wartende_ab_09_termin) as wartende_ab_09_termin,
+        MAX(wartende_ab_10_termin) as wartende_ab_10_termin,MAX(wartende_ab_11_termin) as wartende_ab_11_termin,
+        MAX(wartende_ab_12_termin) as wartende_ab_12_termin,MAX(wartende_ab_13_termin) as wartende_ab_13_termin,
+        MAX(wartende_ab_14_termin) as wartende_ab_14_termin,MAX(wartende_ab_15_termin) as wartende_ab_15_termin,
+        MAX(wartende_ab_16_termin) as wartende_ab_16_termin,MAX(wartende_ab_17_termin) as wartende_ab_17_termin,
+        MAX(wartende_ab_18_termin) as wartende_ab_18_termin,MAX(wartende_ab_19_termin) as wartende_ab_19_termin,
+        MAX(wartende_ab_20_termin) as wartende_ab_20_termin,MAX(wartende_ab_21_termin) as wartende_ab_21_termin,
+        MAX(wartende_ab_22_termin) as wartende_ab_22_termin,MAX(wartende_ab_23_termin) as wartende_ab_23_termin
     ";
 
     const QUERY_READ_DAY = '
@@ -123,21 +155,26 @@ class ExchangeWaitingscope extends Base
      * For backward compatibility on db table optimization, we have to convert the field name
      * Drawback: No prepared statement using the date
      */
-    public static function getQuerySelectByDateTime(\DateTimeInterface $date)
+    public static function getQuerySelectByDateTime(\DateTimeInterface $date, bool $withAppointment = false)
     {
+        $sufix = $withAppointment ? 'termin' : 'spontan';
+
         $query = sprintf(
             "SELECT
-                `zeit_ab_%s_spontan` AS waitingcalculated,
-                `wartende_ab_%s_spontan` AS waitingcount,
-                `echte_zeit_ab_%s_spontan` AS waitingtime
+                `zeit_ab_%s_%s` AS waitingcalculated,
+                `wartende_ab_%s_%s` AS waitingcount,
+                `echte_zeit_ab_%s_%s` AS waitingtime
              FROM %s
              WHERE `standortid` = :scopeid
                 AND `datum` = :date
                 AND :hour IS NOT NULL
             ",
             $date->format('H'),
+            $sufix,
             $date->format('H'),
+            $sufix,
             $date->format('H'),
+            $sufix,
             self::TABLE
         );
         return $query;
@@ -147,22 +184,27 @@ class ExchangeWaitingscope extends Base
      * For backward compatibility on db table optimization, we have to convert the field name
      * Drawback: No prepared statement using the date
      */
-    public static function getQueryUpdateByDateTime(\DateTimeInterface $date)
+    public static function getQueryUpdateByDateTime(\DateTimeInterface $date, bool $withAppointment = false)
     {
+        $sufix = $withAppointment ? 'termin' : 'spontan';
+
         $query = sprintf(
             "UPDATE %s
              SET
-                `zeit_ab_%s_spontan`= :waitingcalculated,
-                `wartende_ab_%s_spontan` = :waitingcount,
-                `echte_zeit_ab_%s_spontan` = :waitingtime
+                `zeit_ab_%s_%s`= :waitingcalculated,
+                `wartende_ab_%s_%s` = :waitingcount,
+                `echte_zeit_ab_%s_%s` = :waitingtime
              WHERE `standortid` = :scopeid
                 AND `datum` = :date
                 AND :hour IS NOT NULL
             ",
             self::TABLE,
             $date->format('H'),
+            $sufix,
             $date->format('H'),
-            $date->format('H')
+            $sufix,
+            $date->format('H'),
+            $sufix
         );
         return $query;
     }
