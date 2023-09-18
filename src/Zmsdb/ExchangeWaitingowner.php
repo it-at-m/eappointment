@@ -19,9 +19,12 @@ class ExchangeWaitingowner extends Base implements Interfaces\ExchangeSubject
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of an owner', 'owner.id');
         $entity->addDictionaryEntry('date', 'string', 'date of report entry');
         $entity->addDictionaryEntry('hour', 'string', 'hour of report entry');
-        $entity->addDictionaryEntry('waitingcount', 'number', 'amount of waiting clients');
-        $entity->addDictionaryEntry('waitingtime', 'number', 'real waitingtime');
-        $entity->addDictionaryEntry('waitingcalculated', 'number', 'calculated waitingtime');
+        $entity->addDictionaryEntry('waitingcount', 'number', 'amount of waiting spontaneous clients');
+        $entity->addDictionaryEntry('waitingtime', 'number', 'real waitingtime for spontaneous clients');
+        $entity->addDictionaryEntry('waitingcalculated', 'number', 'calculated waitingtime for spontaneous clients');
+        $entity->addDictionaryEntry('waitingcount_termin', 'number', 'amount of waiting clients with termin');
+        $entity->addDictionaryEntry('waitingtime_termin', 'number', 'real waitingtime with termin');
+        $entity->addDictionaryEntry('waitingcalculated_termin', 'number', 'calculated waitingtime with termin');
         $subjectIdList = explode(',', $subjectid);
 
         foreach ($subjectIdList as $subjectid) {
@@ -45,7 +48,10 @@ class ExchangeWaitingowner extends Base implements Interfaces\ExchangeSubject
                         $hour,
                         $entry[sprintf('wartende_ab_%02s_spontan', $hour)],
                         $entry[sprintf('echte_zeit_ab_%02s_spontan', $hour)],
-                        $entry[sprintf('zeit_ab_%02s_spontan', $hour)]
+                        $entry[sprintf('zeit_ab_%02s_spontan', $hour)],
+                        $entry[sprintf('wartende_ab_%02s_termin', $hour)],
+                        $entry[sprintf('echte_zeit_ab_%02s_termin', $hour)],
+                        $entry[sprintf('zeit_ab_%02s_termin', $hour)],
                     ]);
                 }
                 $entry = array_shift($raw);
