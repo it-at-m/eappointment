@@ -123,16 +123,26 @@ class Messaging
             $exception->data = $status;
             throw $exception;
         }
+
+        $requestGroups = [];
+        foreach ($mainProcess->requests as $request) {
+            if (! isset($requestGroups[$request->id])) {
+                $requestGroups[$request->id] = [
+                    'request' => $request,
+                    'count' => 0
+                ];
+            }
+            $requestGroups[$request->id]['count']++;
+        }
+
         $parameters = [
             'date' => $date,
             'client' => $client,
             'process' => $mainProcess,
+            'requestGroups' => $requestGroups,
             'processList' => $collection->sortByAppointmentDate(),
             'config' => $config,
             'initiator' => $initiator,
-            // I copied the following line from the repo muenchner-customizations
-            // I will now remove the file Messaging.php from muenchner-customizations
-            // in order to prevent future confusions like we had yesterday
             'appointmentLink' => base64_encode(json_encode([
                 'id' => $mainProcess->id,
                 'authKey' => $mainProcess->authKey
