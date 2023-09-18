@@ -110,8 +110,8 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
      * the returned entry is save for updating
      */
     public function readByDateTime(
-        \BO\Zmsentities\Scope $scope, 
-        \DateTimeInterface $date, 
+        \BO\Zmsentities\Scope $scope,
+        \DateTimeInterface $date,
         bool $isWithAppointment = false
     ) {
         $sql = Query\ExchangeWaitingscope::getQuerySelectByDateTime($date, $isWithAppointment);
@@ -139,8 +139,11 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
     /**
      * Write calculated waiting time and count of queued processes into statistic
      */
-    public function writeWaitingTimeCalculated(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now, bool $isWithAppointment = false)
-    {
+    public function writeWaitingTimeCalculated(
+        \BO\Zmsentities\Scope $scope,
+        \DateTimeInterface $now,
+        bool $isWithAppointment = false
+    ) {
         $queueList = (new Scope())->readQueueListWithWaitingTime($scope, $now);
         
         $existingEntry = $this->readByDateTime($scope, $now, $isWithAppointment);
@@ -179,8 +182,8 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
     ) {
         $waitingTime = $process->getWaitedMinutes($now);
         $existingEntry = $this->readByDateTime(
-            $process->scope, 
-            $process->getArrivalTime($now), 
+            $process->scope,
+            $process->getArrivalTime($now),
             $process->isWithAppointment()
         );
         $waitingTime = $existingEntry['waitingtime'] > $waitingTime ? $existingEntry['waitingtime'] : $waitingTime;
