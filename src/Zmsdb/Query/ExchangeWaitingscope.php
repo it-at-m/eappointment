@@ -237,7 +237,7 @@ class ExchangeWaitingscope extends Base
      */
     public static function getQuerySelectByDateTime(\DateTimeInterface $date, bool $withAppointment = false)
     {
-        $sufix = $withAppointment ? 'termin' : 'spontan';
+        $suffix = $withAppointment ? 'termin' : 'spontan';
 
         $query = sprintf(
             "SELECT
@@ -250,11 +250,11 @@ class ExchangeWaitingscope extends Base
                 AND :hour IS NOT NULL
             ",
             $date->format('H'),
-            $sufix,
+            $suffix,
             $date->format('H'),
-            $sufix,
+            $suffix,
             $date->format('H'),
-            $sufix,
+            $suffix,
             self::TABLE
         );
         return $query;
@@ -266,7 +266,7 @@ class ExchangeWaitingscope extends Base
      */
     public static function getQueryUpdateByDateTime(\DateTimeInterface $date, bool $withAppointment = false)
     {
-        $sufix = $withAppointment ? 'termin' : 'spontan';
+        $suffix = $withAppointment ? 'termin' : 'spontan';
 
         $query = sprintf(
             "UPDATE %s
@@ -280,11 +280,11 @@ class ExchangeWaitingscope extends Base
             ",
             self::TABLE,
             $date->format('H'),
-            $sufix,
+            $suffix,
             $date->format('H'),
-            $sufix,
+            $suffix,
             $date->format('H'),
-            $sufix
+            $suffix
         );
         return $query;
     }
