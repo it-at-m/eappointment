@@ -14,7 +14,8 @@ class Day extends Base
             scopeID INT,
             year SMALLINT,
             month TINYINT,
-            slotsRequired TINYINT
+            slotsRequired TINYINT,
+            PRIMARY KEY (scopeID, year, month) 
         );
     ';
 
