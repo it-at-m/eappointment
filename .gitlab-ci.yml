@@ -16,20 +16,20 @@ test-php-73:
             - src/**/*
             - tests/**/*.{json,php}
 
-#test-php-81:
-#    extends: .test-php
-#    allow_failure: true
-#    variables:
-#      PHP_VERSION: "8.1"
-#    only:
-#        changes:
-#            - .gitlab-ci.yml
-#            - composer.lock
-#            - composer.json
-#            - schema/**/*
-#            - templates/**/*
-#            - src/**/*
-#            - tests/**/*.{json,php}
+test-php-80:
+    extends: .test-php
+    allow_failure: false
+    variables:
+      PHP_VERSION: "8.0"
+    only:
+        changes:
+            - .gitlab-ci.yml
+            - composer.lock
+            - composer.json
+            - schema/**/*
+            - templates/**/*
+            - src/**/*
+            - tests/**/*.{json,php}
 
 outdated:
     extends: .test-phpoutdated
