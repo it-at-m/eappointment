@@ -15,7 +15,10 @@ class ReportWaitingIndex extends BaseController
     protected $hashset = [
         'waitingcount',
         'waitingtime',
-        'waitingcalculated'
+        'waitingcalculated',
+        'waitingcount_termin',
+        'waitingtime_termin',
+        'waitingcalculated_termin'
     ];
 
     protected $groupfields = [

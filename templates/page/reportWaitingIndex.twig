@@ -30,6 +30,7 @@
                 {% endblock %}
             {% endembed %}
 
+            <h2>Spontankunden</h2>
             {% embed "block/report/board.twig" with {'source':source, 'class': 'board--spaceless', "selected": period} %}
                 {% block board_body %}
                 {% if selected %}
@@ -127,6 +128,107 @@
                     {% endif %}
                 {% endblock %}
             {% endembed %}
+
+            <h2>Terminkunden</h2>
+
+            {% embed "block/report/board.twig" with {'source':source, 'class': 'board--spaceless', "selected": period} %}
+                {% block board_body %}
+                {% if selected %}
+                    {% if exchangeWaiting.period == "day" %}
+                        {% set startDate = "%s-%s-%s"|format(exchangeWaiting.firstDay.year, exchangeWaiting.firstDay.month, exchangeWaiting.firstDay.day) %}
+                        {% set endDate = "%s-%s-%s"|format(exchangeWaiting.lastDay.year, exchangeWaiting.lastDay.month, exchangeWaiting.lastDay.day) %}
+                        {% set month = exchangeWaiting.firstDay.month %} 
+                        {% set year = exchangeWaiting.firstDay.year %}
+                        {% set dateRange = range(startDate|date('j'), endDate|date('j'), 1 ) %}
+                    {% elseif exchangeWaiting.period == "month" %}
+                        {% set startDate = "%s-%s"|format(exchangeWaiting.firstDay.year, exchangeWaiting.firstDay.month) %}
+                        {% set endDate = "%s-%s"|format(exchangeWaiting.lastDay.year, exchangeWaiting.lastDay.month) %}
+                        {% set dateRange = range(startDate|date('n'), endDate|date('n'), 1 ) %}
+                    {% endif %}
+                    <table class="table--base">
+                        <thead>
+                            <tr>
+                                <th class="statistik">
+                                    <span class="keinumbruch">
+                                        {% trans %}Zeitabschnitte{% endtrans %}
+                                    </span>
+                                </th>
+                                {% if exchangeWaiting.period == "day" %}
+                                <th class="statistik">{{ startDate|format_date(pattern="LLL") }}</th>
+                                {% elseif exchangeWaiting.period == "month" %}
+                                <th class="statistik">{{ startDate|date('Y') }}</th>
+                                {% endif %}
+                                {% for date in dateRange %}
+                                    {% if exchangeWaiting.period == "day" %}
+                                        <th class="statistik">&nbsp;{{ "%'02s"|format(date) }}</th>
+                                    {% elseif exchangeWaiting.period == "month" %}
+                                        <th class="statistik">&nbsp;{{ (startDate|date('Y') ~"-"~ "%02d"|format(date))|format_date(pattern="LLL") }}</th>
+                                    {% endif %}
+                                {% endfor %}
+                                </tr>
+                            </thead>
+                        <tbody>
+                            <tr>
+                                <th class="statistik">
+                                    {% trans %}Gemessene Wartezeit{% endtrans %}<br>
+                                    {% trans %}Tagesmaximum{% endtrans %}<br>
+                                    {% trans %}Tagesdurchschnitt{% endtrans %}
+                                </th>
+                                <td class="statistik">
+                                    <br />
+                                    <span class="{% if not exchangeWaiting.data.max.max %}ausgegraut{% endif %}">{{ exchangeWaiting.data.max.max|default("-") }}</span><br>
+                                    <span class="{% if not exchangeWaiting.data.max.average %}ausgegraut{% endif %}">{{ exchangeWaiting.data.max.average|default("-") }}</span>
+                                </td>
+                                {% for date in dateRange %}
+                                    {% if exchangeWaiting.period == "day" %}
+                                            {% set date = "#{year}-#{month}-#{date}"|date('Y-m-d')  %}
+                                    {% elseif exchangeWaiting.period == "month" %}
+                                        {% set date = startDate|date('Y') ~"-"~ "%02d"|format(date) %}
+                                    {% endif %}
+                                    <td>
+                                        <br />
+                                        <span class="{% if not exchangeWaiting.data[date].max %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date].max|default("-") }}</span><br>
+                                        <span class="{% if not exchangeWaiting.data[date].max %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date].average|default("-") }}</span>
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                            {% for hour in 6..21 %}
+                                <tr>
+                                    <th>
+                                        {% trans %}Maxima{% endtrans %} {{ hour }} - {{ hour + 1 }} {% trans %}Uhr{% endtrans %} <br>
+                                        {% trans %}berechnete Zeit{% endtrans %}<br>
+                                        {% trans %}Wartende{% endtrans %}<br>
+                                        {% trans %}gemessene Zeit{% endtrans %}
+                                    </th>
+                                    <td class="statistik report-board--summary{% if not exchangeWaiting.data.max.max %} ausgegraut{% endif %}">
+                                        <br />
+                                        <span class="{% if not exchangeWaiting.data.max[hour].waitingcalculated_termin %}ausgegraut{% endif %}">{{ exchangeWaiting.data.max[hour].waitingcalculated_termin|default("-") }}</span><br>
+                                        <span class="{% if not exchangeWaiting.data.max[hour].waitingcount_termin %}ausgegraut{% endif %}">{{ exchangeWaiting.data.max[hour].waitingcount_termin|default("-") }}</span><br>
+                                        <span class="{% if not exchangeWaiting.data.max[hour].waitingtime_termin %}ausgegraut{% endif %}">{{ exchangeWaiting.data.max[hour].waitingtime_termin|default("-") }}</span>
+                                    </td>
+                                    {% for date in dateRange %}
+                                        {% if exchangeWaiting.period == "day" %}
+                                            {% set date = "#{year}-#{month}-#{date}"|date('Y-m-d')  %}
+                                        {% elseif exchangeWaiting.period == "month" %}
+                                            {% set date = startDate|date('Y') ~"-"~ "%02d"|format(date) %}
+                                        {% endif %}
+                                        <td class="statistik">
+                                            <br />
+                                            <span class="{% if not exchangeWaiting.data[date][hour].waitingcalculated_termin %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date][hour].waitingcalculated_termin|default("-") }}</span><br>
+                                            <span class="{% if not exchangeWaiting.data[date][hour].waitingcount_termin %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date][hour].waitingcount_termin|default("-") }}</span><br>
+                                            <span class="{% if not exchangeWaiting.data[date][hour].waitingtime_termin %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date][hour].waitingtime_termin|default("-") }}</span>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                        {{ block("board_body_noperiod") }}
+                    {% endif %}
+                {% endblock %}
+            {% endembed %}
+
             {% if period %}
             {{ block("advancedInfoWaiting") }}
             {% endif %}
