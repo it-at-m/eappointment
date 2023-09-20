@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4829eca36bf34fd0c98e3adcbc5b189b",
+    "content-hash": "8978a1a78bdc14e700c937ecf35be2e3",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -288,16 +288,16 @@
         },
         {
             "name": "eappointment/zmsdb",
-            "version": "dev-muc-main",
+            "version": "dev-muc/feature/ZMS-1389-wartezeiten-der-terminkunden-in-zms-statistik-darstellen",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsdb.git",
-                "reference": "40c0ffc1ad975bcde3a6d7df4918b855c11dbefc"
+                "reference": "9e578eefe9fd4bb6399309562098cc2c84ca66ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=40c0ffc1ad975bcde3a6d7df4918b855c11dbefc",
-                "reference": "40c0ffc1ad975bcde3a6d7df4918b855c11dbefc",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=9e578eefe9fd4bb6399309562098cc2c84ca66ab",
+                "reference": "9e578eefe9fd4bb6399309562098cc2c84ca66ab",
                 "shasum": ""
             },
             "require": {
@@ -366,9 +366,9 @@
             ],
             "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsdb/-/tree/muc-main"
+                "source": "https://gitlab.com/eappointment/zmsdb/-/tree/muc/feature/ZMS-1389-wartezeiten-der-terminkunden-in-zms-statistik-darstellen"
             },
-            "time": "2023-09-13T14:27:15+02:00"
+            "time": "2023-09-18T15:07:30+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
