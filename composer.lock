@@ -292,12 +292,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsdb.git",
-                "reference": "ad5a79321688cb2a06d6dee41ad41de02be2a8d7"
+                "reference": "59ad15f4d49e896e8df7880eb97b30afa8dff998"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=ad5a79321688cb2a06d6dee41ad41de02be2a8d7",
-                "reference": "ad5a79321688cb2a06d6dee41ad41de02be2a8d7",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=59ad15f4d49e896e8df7880eb97b30afa8dff998",
+                "reference": "59ad15f4d49e896e8df7880eb97b30afa8dff998",
                 "shasum": ""
             },
             "require": {
@@ -368,7 +368,7 @@
             "support": {
                 "source": "https://gitlab.com/eappointment/zmsdb/-/tree/muc/feature/ZMS-1389-wartezeiten-der-terminkunden-in-zms-statistik-darstellen"
             },
-            "time": "2023-09-20T13:09:39+00:00"
+            "time": "2023-09-21T12:15:32+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
