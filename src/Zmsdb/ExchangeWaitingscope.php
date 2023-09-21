@@ -154,7 +154,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
 
         $waitingCount = 0;
         foreach ($queueList as $entity) {
-            if ($entity->arrivalTime->format('H') == $now->format('H')) {
+            if (date('H', $entity->arrivalTime) == $now->format('H')) {
                 $waitingCount++;
             }
         }
