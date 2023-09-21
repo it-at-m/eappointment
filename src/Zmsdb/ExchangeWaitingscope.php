@@ -152,13 +152,16 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             $existingEntry['waitingcalculated']
             : $queueEntry['waitingTimeEstimate'];
 
-        if ($isWithAppointment) {
-            $queueList = $queueList->withAppointment();
-        } else {
-            $queueList = $queueList->withOutAppointment();
+        $waitingCount = 0;
+        foreach ($queueList as $process) {
+            if ($process->getFirstAppointment()->toDateTime()->format('H') == $now->format('H')) {
+                $waitingCount++;
+            }
         }
 
-        $waitingCount = $queueList->withoutStatus(['fake'])->count();
+        if (! $isWithAppointment) {
+            $waitingCount = $queueList->withOutAppointment()->withoutStatus(['fake'])->count();
+        }
 
         $waitingCount = $existingEntry['waitingcount'] > $waitingCount ?
             $existingEntry['waitingcount'] : $waitingCount;
@@ -190,7 +193,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             $process->isWithAppointment()
         );
         $waitingTime = $existingEntry['waitingtime'] > $waitingTime ? $existingEntry['waitingtime'] : $waitingTime;
-        $this->perform(Query\ExchangeWaitingscope::getQueryUpdateByDateTime($now), [
+        $this->perform(Query\ExchangeWaitingscope::getQueryUpdateByDateTime($now, $process->isWithAppointment()), [
             'waitingcalculated' => $existingEntry['waitingcalculated'],
             'waitingcount' => $existingEntry['waitingcount'],
             'waitingtime' => $waitingTime,
