@@ -153,8 +153,8 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             : $queueEntry['waitingTimeEstimate'];
 
         $waitingCount = 0;
-        foreach ($queueList as $queue) {
-            if ($queue->getProcess()->getFirstAppointment()->toDateTime()->format('H') == $now->format('H')) {
+        foreach ($queueList as $entity) {
+            if ($entity->arrivalTime->format('H') == $now->format('H')) {
                 $waitingCount++;
             }
         }
