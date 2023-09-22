@@ -149,9 +149,8 @@ class ProcessStatusArchived extends Process
         $this->writeItem($query);
         $archiveId = $this->getWriter()->lastInsertId();
         Log::writeLogEntry("ARCHIVE (Archive::writeNewArchivedProcess) $archiveId -> $process ", $process->id);
-        if (!$process->toQueue($now)->withAppointment) {
-            (new ExchangeWaitingscope())->writeWaitingTime($process, $now);
-        }
+        (new ExchangeWaitingscope())->writeWaitingTime($process, $now);
+        
         return $this->readArchivedEntity($archiveId, $resolveReferences);
     }
 
