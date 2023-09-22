@@ -154,7 +154,9 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
 
         $waitingCount = 0;
         foreach ($queueList as $entity) {
-            if (date('H', $entity->arrivalTime) == $now->format('H')) {
+            if ($entity->getProcess() 
+                && $entity->getProcess()->getArrivalTime()->format('H') == $now->format('H')
+            ) {
                 $waitingCount++;
             }
         }
@@ -187,6 +189,9 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         \DateTimeInterface $now
     ) {
         $waitingTime = $process->getWaitedMinutes($now);
+        error_log('INFO: process degug: ' . $process);
+        error_log('INFO: process waiting time: ' . $waitingTime);
+        
         $existingEntry = $this->readByDateTime(
             $process->scope,
             $process->getArrivalTime($now),
