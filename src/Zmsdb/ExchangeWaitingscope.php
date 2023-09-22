@@ -152,14 +152,17 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             $existingEntry['waitingcalculated']
             : $queueEntry['waitingTimeEstimate'];
 
+        
         $waitingCount = 0;
-        $queues = $queueList->withAppointment()->withoutStatus(['fake']);
-        foreach ($queues as $queue) {
-            $waitingCount++;
-        }
-
         if (! $isWithAppointment) {
             $waitingCount = $queueList->withOutAppointment()->withoutStatus(['fake'])->count();
+        } else {    
+            $queues = $queueList->withAppointment()->withoutStatus(['fake']);
+            foreach ($queues as $queue) {
+                if ($queue->arrivalTime < $now) {
+                    $waitingCount++;
+                }
+            }
         }
 
         $waitingCount = $existingEntry['waitingcount'] > $waitingCount ?
@@ -192,14 +195,17 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             $process->isWithAppointment()
         );
         $waitingTime = $existingEntry['waitingtime'] > $waitingTime ? $existingEntry['waitingtime'] : $waitingTime;
-        $this->perform(Query\ExchangeWaitingscope::getQueryUpdateByDateTime($now, $process->isWithAppointment()), [
-            'waitingcalculated' => $existingEntry['waitingcalculated'],
-            'waitingcount' => $existingEntry['waitingcount'],
-            'waitingtime' => $waitingTime,
-            'scopeid' => $process->scope->id,
-            'date' => $now->format('Y-m-d'),
-            'hour' => $now->format('H')
-        ]);
+        $this->perform(
+            Query\ExchangeWaitingscope::getQueryUpdateByDateTime($process->getArrivalTime($now), $process->isWithAppointment()), 
+            [
+                'waitingcalculated' => $existingEntry['waitingcalculated'],
+                'waitingcount' => $existingEntry['waitingcount'],
+                'waitingtime' => $waitingTime,
+                'scopeid' => $process->scope->id,
+                'date' => $now->format('Y-m-d'),
+                'hour' => $now->format('H')
+            ]
+        );
         return $this;
     }
 }
