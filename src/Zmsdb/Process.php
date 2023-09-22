@@ -270,13 +270,8 @@ class Process extends Base implements Interfaces\ResolveReferences
         Log::writeLogEntry("CREATE (Process::writeNewProcess) $process $checksum ", $process->id);
         if (!$process->toQueue($dateTime)->withAppointment) {
             (new ExchangeWaitingscope())->writeWaitingTimeCalculated($process->scope, $dateTime, false);
-        } else {
-            (new ExchangeWaitingscope())->writeWaitingTimeCalculated(
-                $process->scope,
-                $process->getArrivalTime($dateTime),
-                true
-            );
         }
+        
         return $process;
     }
 
