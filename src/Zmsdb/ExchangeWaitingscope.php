@@ -152,7 +152,11 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             $existingEntry['waitingcalculated']
             : $queueEntry['waitingTimeEstimate'];
 
-        $waitingCount = $queueList->withAppointment()->withoutStatus(['fake'])->count();
+        $waitingCount = 0;
+        $queues = $queueList->withAppointment()->withoutStatus(['fake']);
+        foreach ($queues as $queue) {
+            $waitingCount++;
+        }
 
         if (! $isWithAppointment) {
             $waitingCount = $queueList->withOutAppointment()->withoutStatus(['fake'])->count();
@@ -182,7 +186,6 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         \DateTimeInterface $now
     ) {
         $waitingTime = $process->getWaitedMinutes($now);
-        $waitingTime = 11;
         $existingEntry = $this->readByDateTime(
             $process->scope,
             $process->getArrivalTime($now),
