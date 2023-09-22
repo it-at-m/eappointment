@@ -271,7 +271,11 @@ class Process extends Base implements Interfaces\ResolveReferences
         if (!$process->toQueue($dateTime)->withAppointment) {
             (new ExchangeWaitingscope())->writeWaitingTimeCalculated($process->scope, $dateTime, false);
         } else {
-            (new ExchangeWaitingscope())->writeWaitingTimeCalculated($process->scope, $dateTime, true);
+            (new ExchangeWaitingscope())->writeWaitingTimeCalculated(
+                $process->scope,
+                $process->getArrivalTime($dateTime),
+                true
+            );
         }
         return $process;
     }

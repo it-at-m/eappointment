@@ -152,7 +152,6 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             $existingEntry['waitingcalculated']
             : $queueEntry['waitingTimeEstimate'];
 
-        
         $waitingCount = 0;
         if (! $isWithAppointment) {
             $waitingCount = $queueList->withOutAppointment()->withoutStatus(['fake'])->count();
