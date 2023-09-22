@@ -66,7 +66,7 @@ class UnconfirmedAppointmentDeleteByCron
                 $deleteFromTime =   $time->setTimestamp($this->now->getTimestamp() - ($activationDuration * 60));
 
                 if ($this->verbose) {
-                    $this->log("INFO: Deleting appointments older than " . 
+                    $this->log("INFO: Deleting appointments older than " .
                         $deleteFromTime->format('c') . 'limit: ' . $limit . ' offset: ' . $offset);
                 }
 
