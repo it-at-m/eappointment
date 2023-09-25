@@ -19,6 +19,13 @@ class ProfileTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
+                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
@@ -57,6 +64,13 @@ class ProfileTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/workstation/password/',
                     'exception' => $exception
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
+                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
