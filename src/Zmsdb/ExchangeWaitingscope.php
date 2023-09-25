@@ -158,7 +158,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         } else {
             $queues = $queueList->withAppointment()->withoutStatus(['fake']);
             foreach ($queues as $queue) {
-                    $waitingCount++;
+                $waitingCount++;
             }
         }
 
