@@ -156,7 +156,15 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         if (! $isWithAppointment) {
             $waitingCount = $queueList->withOutAppointment()->withoutStatus(['fake'])->count();
         } else {
-            $waitingCount = 11;
+            $queues = $queueList->withAppointment()->withoutStatus(['fake']);
+            foreach ($queues as $queue) {
+                if ($queue->getProcess() 
+                    && $queue->getProcess()->getFirstAppointment()->date < $now->getTimestamp()
+                ) {
+                    $waitingCount++;
+                }
+            }
+
         }
 
         $waitingCount = $existingEntry['waitingcount'] > $waitingCount ?
