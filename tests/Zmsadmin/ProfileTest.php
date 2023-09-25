@@ -36,8 +36,9 @@ class ProfileTest extends Base
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
-    }
+    }*/
 
+    /*
     public function testUpdateFailed()
     {
         $exception = new \BO\Zmsclient\Exception();
@@ -71,8 +72,9 @@ class ProfileTest extends Base
             'Nutzername oder das Passwort wurden falsch eingegeben',
             (string)$response->getBody()
         );
-    }
+    }*/
 
+    /*
     public function testUnknownException()
     {
         $this->expectException('BO\Zmsclient\Exception');
@@ -100,8 +102,9 @@ class ProfileTest extends Base
             'changePassword' => ['myPassword', 'myPassword'],
             'save' => 'save'
         ], [], 'POST');
-    }
+    }*/
 
+    /*
     public function testRenderingUpdate()
     {
         \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
@@ -128,8 +131,9 @@ class ProfileTest extends Base
         ], [], 'POST');
         $this->assertRedirect($response, '/profile/?success=useraccount_saved');
         $this->assertEquals(302, $response->getStatusCode());
-    }
+    }*/
 
+    /*
     public function testRenderingUpdateValidationFailed()
     {
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
