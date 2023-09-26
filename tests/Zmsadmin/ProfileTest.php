@@ -10,16 +10,27 @@ class ProfileTest extends Base
 
     protected $classname = "Profile";
 
-    /*
     public function testRendering()
     {
         $this->setApiCalls(
             [
                 [
                     'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
+                    'response' => $this->readFixture("GET_config.json"),
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/useraccount/testadmin/',
+                    'response' => $this->readFixture("GET_useraccount_testadmin.json")
                 ]
             ]
         );
@@ -36,9 +47,7 @@ class ProfileTest extends Base
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
-    }*/
-
-    /*
+    }
     public function testUpdateFailed()
     {
         $exception = new \BO\Zmsclient\Exception();
@@ -51,6 +60,13 @@ class ProfileTest extends Base
             [
                 [
                     'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
+                    'response' => $this->readFixture("GET_config.json"),
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
@@ -59,6 +75,11 @@ class ProfileTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/workstation/password/',
                     'exception' => $exception
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/useraccount/testadmin/',
+                    'response' => $this->readFixture("GET_useraccount_testadmin.json")
                 ]
             ]
         );
@@ -72,9 +93,8 @@ class ProfileTest extends Base
             'Nutzername oder das Passwort wurden falsch eingegeben',
             (string)$response->getBody()
         );
-    }*/
+    }
 
-    /*
     public function testUnknownException()
     {
         $this->expectException('BO\Zmsclient\Exception');
@@ -102,9 +122,8 @@ class ProfileTest extends Base
             'changePassword' => ['myPassword', 'myPassword'],
             'save' => 'save'
         ], [], 'POST');
-    }*/
+    }
 
-    /*
     public function testRenderingUpdate()
     {
         \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
@@ -131,9 +150,8 @@ class ProfileTest extends Base
         ], [], 'POST');
         $this->assertRedirect($response, '/profile/?success=useraccount_saved');
         $this->assertEquals(302, $response->getStatusCode());
-    }*/
+    }
 
-    /*
     public function testRenderingUpdateValidationFailed()
     {
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
@@ -160,5 +178,5 @@ class ProfileTest extends Base
             'changePassword' => ['myPassword', 'myPassword2'],
             'save' => 'save'
         ], [], 'POST');
-    }*/
+    }
 }
