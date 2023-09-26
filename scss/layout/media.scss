@@ -19,6 +19,7 @@ body.noInfoColumn{
         background: url(img/background_anzeige1_1920_behoerde_80.png) top left no-repeat #C8D5E6 !important;
     }
 }
+
 body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
     table-layout: auto !important;
 }
@@ -30,44 +31,55 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
     body{
         background: url(img/background_anzeige1_hoch.png) top left no-repeat #C8D5E6;
     }
+
     .aufrufanzeige .uhr {
-        left:21px;
-        top:154px;
-        width:275px;
+        left: 21px;
+        top: 110px;
+        width: 275px;
+        height: 275px;
     }
+
     .aufrufanzeige .aufrufanzeige_Datum {
-        font-size:20px;
-        left:21px;
-        top:410px;
-        width:275px;
+        font-size: 20px;
+        left: 21px;
+        top: 410px;
+        width: 275px;
     }
+
     .aufrufanzeige .aufrufanzeige_main {
-        left:222px;
-        top:155px;
+        left: 330px;
+        top: 110px;
     }
+
     .aufrufanzeige table.aufrufanzeige_aufruf td,
     .aufrufanzeige table.aufrufanzeige_aufruf th {
         border-right: 4px solid #C8D5E6;
     }
+
     .aufrufanzeige table.aufrufanzeige_aufruf th {
         font-size: 20px;
         line-height: 37px;
     }
+
     .aufrufanzeige table.aufrufanzeige_aufruf th.wartenummer {
-        width:61.5%;
+        width: 61.5%;
     }
+
     .aufrufanzeige table.aufrufanzeige_aufruf {
         width:376px;
     }
+
     .aufrufanzeige .aufrufanzeige_text {
         line-height:26px;
         left: 28px;
         top:699px;
     }
+
     .aufrufanzeige .waitingColumn {
         top:450px;
         left:15px;
     }
+
     .aufrufanzeige .wartende_aktuell {
         font-size:20px;
         width:275px;
@@ -78,22 +90,25 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         width:275px;
     }
 
-	span.terminkundennummer
-	{
-		font-size: 60px;
-		line-height:60px;
-	}
+    span.terminkundennummer {
+        font-size: 50px;
+        line-height: 45px;
+    }
 
-  span.terminkundennummer.smallerFont8Chars {
-    font-size: 45px;
-    line-height:45px;
-  }
+    span.terminkundennummer.smallerFont8Chars {
+        font-size: 30px;
+        line-height: 30px;
+    }
 
-	span.abholeranzeige
-	{
-		font-size: 30px;
-	   line-height: 40px;
-	}
+    span.abholeranzeige {
+        font-size: 30px;
+        line-height: 30px;
+    }
+
+    span.terminkundenanzeige {
+        font-size: 25px;
+        line-height: 25px;
+    }
 }
 
 
@@ -102,61 +117,75 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         background: url(img/background_anzeige1_hoch_1920.png) top left no-repeat #C8D5E6;
         height:1920px;
     }
+
     #main-header .adressangabe {
         font-size:3em;
         left:54px;
         top:22px;
     }
+
     .aufrufanzeige .uhr {
-        left:40px;
-        top:223px;
-        width:350px;
+        left: 40px;
+        top: 160px;
+        width: 350px;
+        height: 350px;
     }
-    .aufrufanzeige .uhr #clock {
-        display:none;
-    }
-    .aufrufanzeige .uhr #clock_medium {
-        display:block;
-    }
+
     .aufrufanzeige .aufrufanzeige_Datum {
-        font-size:28px;
-        left:21px;
-        top:575px;
-        width:350px;
+        font-size: 28px;
+        left: 35px;
+        top: 520px;
+        width: 350px;
     }
+
     .aufrufanzeige .aufrufanzeige_main {
-        left:344px;
-        top:216px;
+        left:420px;
+        top:160px;
     }
+
     .aufrufanzeige table.aufrufanzeige_aufruf td,
     .aufrufanzeige table.aufrufanzeige_aufruf th {
         border-right: 6px solid #C8D5E6;
     }
+
     .aufrufanzeige table.aufrufanzeige_aufruf th {
         font-size: 32px;
         line-height: 54px;
     }
+
     .aufrufanzeige table.aufrufanzeige_aufruf th.wartenummer {
         width:61.5%;
     }
+
     .aufrufanzeige table.einspaltig {
-        width:530px;
+        width: 580px;
     }
+
     .aufrufanzeige table.zweispaltig {
-        width:350px;
+        width:280px;
     }
+
     .aufrufanzeige .aufrufanzeige_text {
         line-height:26px;
         left: 28px;
         top:985px;
         width:350px;
     }
+
     .aufrufanzeige .waitingColumn {
-        top:625px;
-        left:15px;
+        top:580px;
+        left:35px;
     }
-    .aufrufanzeige_text img {height:260px;}
-    .aufrufanzeige_text .qrContainer {width: 100%; text-align: right;}
+
+    .aufrufanzeige_text img {
+        height: 260px;
+    }
+
+    .aufrufanzeige_text .qrContainer {
+        width: 100%;
+        text-align: right;
+    }
+
     .aufrufanzeige .wartende_aktuell {
         font-size:26px;
         width:350px;
@@ -172,10 +201,25 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
 	   line-height: 40px;
 	}
 
-  span.terminkundennummer.smallerFont8Chars {
-    font-size: 50px;
-    line-height:50px;
-  }
+    span.terminkundennummer.abholeranzeige.abholeranzeige {
+        font-size: 40px;
+        line-height: 40px;
+    }
+
+    .zweispaltig span.terminkundennummer,
+    .zweispaltig span.wartenummer, .zweispaltig span.standalone {
+        font-size: 35px;
+        line-height: 35px;
+    }
+
+    table.zweispaltig td.platznummer span.destination {
+        font-size: 25px;
+    }
+
+    span.terminkundenanzeige {
+        font-size: 30px;
+        line-height: 30px;
+    }
 }
 
 @media screen and (min-width:1820px) { /* 1920 * 1080 */
@@ -185,49 +229,62 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         height:1080px;
         overflow: hidden;
     }
+
     #main-header .adressangabe {
         font-size:3em;
         left:54px;
         top:22px;
     }
+
     .aufrufanzeige .uhr {
         left:47px;
         top:160px;
         width:400px;
+        height:400px;
     }
-    .aufrufanzeige .uhr #clock {
-        display:none;
-    }
-    .aufrufanzeige .uhr #clock_big {
-        display:block !important;
-    }
+
     .aufrufanzeige .aufrufanzeige_Datum {
-        font-size:32px;
-        top:580px;
-        width:400px;
+        font-size: 32px;
+        top: 600px;
+        width: 400px;
     }
+
     .aufrufanzeige .aufrufanzeige_main {
-        left:554px;
-        top:162px;
+        left: 500px;
+        top: 160px;
     }
     span.terminkundennummer, span.wartenummer {
         font-size:80px;
         line-height:80px;
     }
+
+    .aufrufanzeige table.zweispaltig {
+        width: 280px;
+    }
+
+    span.terminkundennummer,
+    span.wartenummer, span.standalone {
+        font-size: 80px;
+        line-height: 80px;
+    }
+
     span.terminkundennummer.smallerFont8Chars {
       font-size: 65px;
       line-height:65px;
     }
-    span.abholeranzeige
-	{
-		font-size: 70px;
-	}
+
+    span.abholeranzeige {
+        font-size: 70px;
+    }
+
     .aufrufanzeige table.aufrufanzeige_aufruf th {
         font-size: 32px;
     }
+
     .aufrufanzeige table.aufrufanzeige_aufruf {
-        width:745px;
+        width: 980px;
     }
+
     .aufrufanzeige .aufrufanzeige_text {
         line-height:26px;
         left: 1535px;
@@ -237,8 +294,9 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
     .aufrufanzeige_text img {height:244px;}
 
     .aufrufanzeige .waitingColumn {
-        top:630px;
+        top: 670px;
     }
+
     .aufrufanzeige .wartende_aktuell {
         font-size:32px;
         width:400px;
@@ -253,17 +311,37 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         margin-left:-25px;
     }
     .aufrufanzeige table.zweispaltig {
-        width:440px;
+        width: 450px;
     }
+
     .aufrufanzeige table.zweispaltig th.wartenummer {
         width:60%;
     }
+
     .aufrufanzeige table.zweispaltig th,
     .aufrufanzeige table.zweispaltig td {
         border-right:6px solid #C8D5E6;
     }
-    .zweispaltig span.terminkundennummer {
-        font-size:60px;
+
+    .zweispaltig span.terminkundennummer,
+    .zweispaltig span.wartenummer, .zweispaltig span.standalone {
+        font-size: 60px;
+        line-height: 60px;
     }
-    .puffer {padding-left:40px;}
+
+    table.zweispaltig td.platznummer span.destination {
+        font-size: 35px;
+        line-height: 40px;
+    }
+
+    .puffer {
+        padding-left: 40px;
+    }
+
+    /* ----------------------------------------------
+    qr code
+    ---------------------------------------------- */
+    .qrCode--Headline {
+        margin-top: 40px;
+    }
 }
