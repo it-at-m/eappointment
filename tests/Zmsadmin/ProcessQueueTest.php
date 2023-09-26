@@ -272,7 +272,7 @@ class ProcessQueueTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /*public function testValidationFailed()
+    public function testValidationFailed()
     {
         \App::$now = new \DateTimeImmutable('2016-04-01 19:55:00', new \DateTimeZone('Europe/Berlin'));
         $this->setApiCalls(
@@ -297,13 +297,6 @@ class ProcessQueueTest extends Base
                     'url' => '/scope/141/availability/',
                     'parameters' => ['resolveReferences' => 0],
                     'response' => $this->readFixture("GET_scope_141_availability.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/config/',
-                    'parameters' => [],
-                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
-                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
@@ -318,16 +311,19 @@ class ProcessQueueTest extends Base
             'requests' => [120703]
         ], [], 'POST');
 
-        //print_r((string)$response->getBody(), true);
-        //print("\n\n\n\n");
         $this->assertStringContainsString(
-            "Fehler: Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden.",
+            "Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden.",
             (string)$response->getBody()
         );
+        $this->assertStringContainsString(
+            "Es muss ein aussagekr\u00e4ftiger Name eingegeben werden",
+            (string)$response->getBody()
+        );
+        /*
         $this->assertStringContainsString(
             "keine Mails verschickt werden. Der Host zur Domain nach dem '@' ist nicht erreichbar.",
             (string)$response->getBody()
-        );
+        );*/
         $this->assertEquals(200, $response->getStatusCode());
-    }*/
+    }
 }
