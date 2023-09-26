@@ -1,11 +1,48 @@
 {% block clock %}
-<div id="Uhr" class="uhr">
-    <canvas id="clock" class="CoolClock:themed:120:showSecondHand::{{ getNow()|date("U") * 1000 }} myClock"></canvas>
-    <canvas id="clock_medium" class="CoolClock:themed:160:showSecondHand::{{ getNow()|date("U") * 1000 }} myClock"></canvas>
-    <canvas id="clock_big" class="CoolClock:themed:200:showSecondHand::{{ getNow()|date("U") * 1000 }} myClock"></canvas>
-</div>
+{#<div id="Uhr" class="uhr">
+    <div id="clock_big" class="container"></div>
+    <div id="clock_medium" class="container"></div>
+    <div id="clock" class="container"></div>
+</div>#}
 
-<div id="aufrufanzeige_Datum" class="aufrufanzeige_Datum">
-    {{ getNow()|localizeddate("short","none",NULL,NULL,"EEEE, dd.MM.y") }}<br>
+<div id="Uhr" class="uhr">
+    <div class="clock">
+        <div class="outer-clock-face">
+            <div class="marking marking-one"></div>
+                <div class="marking marking-thin marking-minute-one"></div>
+                <div class="marking marking-thin marking-minute-two"></div>
+                <div class="marking marking-thin marking-minute-three"></div>
+                <div class="marking marking-thin marking-minute-four"></div>
+                 <div class="marking marking-thin marking-minute-five"></div>
+                <div class="marking marking-thin marking-minute-six"></div>
+            <div class="marking marking-two"></div>
+                <div class="marking marking-thin marking-minute-seven"></div>
+                <div class="marking marking-thin marking-minute-eight"></div>
+                <div class="marking marking-thin marking-minute-nine"></div>
+                <div class="marking marking-thin marking-minute-ten"></div>
+                <div class="marking marking-thin marking-minute-eleven"></div>
+                <div class="marking marking-thin marking-minute-twelve"></div>
+            <div class="marking marking-three"></div>
+                <div class="marking marking-thin marking-minute-thirteen"></div>
+                <div class="marking marking-thin marking-minute-fourteen"></div>
+                <div class="marking marking-thin marking-minute-fiveteen"></div>
+                <div class="marking marking-thin marking-minute-sixteen"></div>
+                <div class="marking marking-thin marking-minute-seventeen"></div>
+                <div class="marking marking-thin marking-minute-eighteen"></div>
+            <div class="marking marking-four"></div>
+                <div class="marking marking-thin marking-minute-nineteen"></div>
+                <div class="marking marking-thin marking-minute-twenty"></div>
+                <div class="marking marking-thin marking-minute-twentyone"></div>
+                <div class="marking marking-thin marking-minute-twentytwo"></div>
+                <div class="marking marking-thin marking-minute-twentythree"></div>
+                <div class="marking marking-thin marking-minute-twentyfour"></div>
+            <div class="inner-clock-face">
+                <div class="hand hour-hand"></div>
+                <div class="hand min-hand"></div>
+                <div class="hand second-hand"></div>
+            </div>
+        </div>
+    </div>
 </div>
+<div id="aufrufanzeige_Datum" class="aufrufanzeige_Datum"></div>
 {% endblock %}

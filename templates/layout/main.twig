@@ -30,6 +30,7 @@
             <script type="text/javascript">window.bo.zmscalldisplay.reloadInterval={{ zmscalldisplay.reload }}</script>
             {% endif %}
             <script type="text/javascript">window.bo.zmscalldisplay.queue.timeUntilOld=60</script>
+            <script type="text/javascript">window.bo.zmscalldisplay.queue.timeWaitingInfo=20</script>
             <script type="text/javascript">window.bo.zmscalldisplay.queue.status="{{ queueStatusRequested }}"</script>
             {% block tableLayoutSettings %}{% endblock %}
             {% if debug %}
