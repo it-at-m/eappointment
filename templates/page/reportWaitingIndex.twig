@@ -87,8 +87,8 @@
                                     {% endif %}
                                     <td>
                                         <br />
-                                        <span class="{% if not exchangeWaiting.data[date].max %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date].max|default("-") }}</span><br>
-                                        <span class="{% if not exchangeWaiting.data[date].max %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date].average|default("-") }}</span>
+                                        <span class="{% if not exchangeWaiting.data[date].max_waitingtime %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date].max_waitingtime|default("-") }}</span><br>
+                                        <span class="{% if not exchangeWaiting.data[date].max_waitingtime %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date].average_waitingtime|default("-") }}</span>
                                     </td>
                                 {% endfor %}
                             </tr>
@@ -187,8 +187,8 @@
                                     {% endif %}
                                     <td>
                                         <br />
-                                        <span class="{% if not exchangeWaiting.data[date].max %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date].max|default("-") }}</span><br>
-                                        <span class="{% if not exchangeWaiting.data[date].max %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date].average|default("-") }}</span>
+                                        <span class="{% if not exchangeWaiting.data[date].max_waitingtime_termin %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date].max_waitingtime_termin|default("-") }}</span><br>
+                                        <span class="{% if not exchangeWaiting.data[date].max_waitingtime_termin %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date].average_waitingtime_termin|default("-") }}</span>
                                     </td>
                                 {% endfor %}
                             </tr>
