@@ -292,12 +292,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsdb.git",
-                "reference": "99b960516bd8dc328de47f058c6ce517035bd14e"
+                "reference": "55204a127a28a0b19904efb0443be79d171c0a57"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=99b960516bd8dc328de47f058c6ce517035bd14e",
-                "reference": "99b960516bd8dc328de47f058c6ce517035bd14e",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=55204a127a28a0b19904efb0443be79d171c0a57",
+                "reference": "55204a127a28a0b19904efb0443be79d171c0a57",
                 "shasum": ""
             },
             "require": {
@@ -368,7 +368,7 @@
             "support": {
                 "source": "https://gitlab.com/eappointment/zmsdb/-/tree/muc-main"
             },
-            "time": "2023-09-14T09:30:27+00:00"
+            "time": "2023-09-18T10:24:05+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
@@ -442,12 +442,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "36dfc55cc203cd5385769a0d5a6d8f6567a562d3"
+                "reference": "b91519331cb3680b8811b6af5247f20728ed3f68"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=36dfc55cc203cd5385769a0d5a6d8f6567a562d3",
-                "reference": "36dfc55cc203cd5385769a0d5a6d8f6567a562d3",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=b91519331cb3680b8811b6af5247f20728ed3f68",
+                "reference": "b91519331cb3680b8811b6af5247f20728ed3f68",
                 "shasum": ""
             },
             "require": {
@@ -498,7 +498,7 @@
             "support": {
                 "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-main"
             },
-            "time": "2023-06-21T11:10:48+02:00"
+            "time": "2023-09-18T10:20:31+00:00"
         },
         {
             "name": "eappointment/zmsslim",
