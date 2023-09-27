@@ -144,6 +144,10 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         \DateTimeInterface $now,
         bool $isWithAppointment = false
     ) {
+        if ($now > (new DateTime())) {
+            return $this;
+        }
+
         $queueList = (new Scope())->readQueueListWithWaitingTime($scope, $now);
         
         $existingEntry = $this->readByDateTime($scope, $now, $isWithAppointment);
@@ -187,6 +191,10 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now
     ) {
+        if ($now > (new DateTime())) {
+            return $this;
+        }
+
         $waitingTime = $process->getWaitedMinutes($now);
         $existingEntry = $this->readByDateTime(
             $process->scope,
