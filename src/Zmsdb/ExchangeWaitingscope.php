@@ -144,7 +144,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         \DateTimeInterface $now,
         bool $isWithAppointment = false
     ) {
-        if ($now > (new DateTime())) {
+        if ($now > (new \DateTime())) {
             return $this;
         }
 
@@ -191,7 +191,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now
     ) {
-        if ($now > (new DateTime())) {
+        if ($now > (new \DateTime())) {
             return $this;
         }
 
