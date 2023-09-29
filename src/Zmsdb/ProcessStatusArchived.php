@@ -90,12 +90,13 @@ class ProcessStatusArchived extends Process
 
     public function writeEntityFinished(
         \BO\Zmsentities\Process $process,
-        \DateTimeInterface $now
+        \DateTimeInterface $now,
+        bool $calculateStatistic = false
     ) {
         $process = $this->updateEntity($process, $now, 1);
         $archived = null;
         if ($this->writeBlockedEntity($process)) {
-            $archived = $this->writeNewArchivedProcess($process, $now);
+            $archived = $this->writeNewArchivedProcess($process, $now, 0, $calculateStatistic);
         }
         // update xRequest entry and update process id as well as archived id
         if ($archived) {
@@ -142,21 +143,25 @@ class ProcessStatusArchived extends Process
     public function writeNewArchivedProcess(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now,
-        $resolveReferences = 0
+        $resolveReferences = 0,
+        bool $calculateStatistic = false
     ) {
         $query = new Query\ProcessStatusArchived(Query\Base::INSERT);
         $query->addValuesNewArchive($process, $now);
         $this->writeItem($query);
         $archiveId = $this->getWriter()->lastInsertId();
         Log::writeLogEntry("ARCHIVE (Archive::writeNewArchivedProcess) $archiveId -> $process ", $process->id);
-        (new ExchangeWaitingscope())->writeWaitingTime($process, $now);
 
-        if ($process->isWithAppointment()) {
-            (new ExchangeWaitingscope())->writeWaitingTimeCalculated(
-                $process->scope,
-                $now,
-                true
-            );
+        if ($calculateStatistic) {
+            (new ExchangeWaitingscope())->writeWaitingTime($process, $now);
+
+            if ($process->isWithAppointment()) {
+                (new ExchangeWaitingscope())->writeWaitingTimeCalculated(
+                    $process->scope,
+                    $now,
+                    true
+                );
+            }
         }
         
         return $this->readArchivedEntity($archiveId, $resolveReferences);
