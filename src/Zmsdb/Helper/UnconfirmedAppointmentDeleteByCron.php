@@ -67,8 +67,8 @@ class UnconfirmedAppointmentDeleteByCron
 
                 if ($this->verbose) {
                     $this->log(
-                        "INFO: Deleting appointments older than " 
-                        . $deleteFromTime->format('c') . 'limit: ' . $limit 
+                        "INFO: Deleting appointments older than "
+                        . $deleteFromTime->format('c') . 'limit: ' . $limit
                         . ' offset: ' . $offset
                     );
                 }
