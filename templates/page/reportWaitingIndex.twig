@@ -196,13 +196,11 @@
                                 <tr>
                                     <th>
                                         {% trans %}Maxima{% endtrans %} {{ hour }} - {{ hour + 1 }} {% trans %}Uhr{% endtrans %} <br>
-                                        {% trans %}berechnete Zeit{% endtrans %}<br>
                                         {% trans %}Wartende{% endtrans %}<br>
                                         {% trans %}gemessene Zeit{% endtrans %}
                                     </th>
                                     <td class="statistik report-board--summary{% if not exchangeWaiting.data.max.max %} ausgegraut{% endif %}">
                                         <br />
-                                        <span class="{% if not exchangeWaiting.data.max[hour].waitingcalculated_termin %}ausgegraut{% endif %}">{{ exchangeWaiting.data.max[hour].waitingcalculated_termin|default("-") }}</span><br>
                                         <span class="{% if not exchangeWaiting.data.max[hour].waitingcount_termin %}ausgegraut{% endif %}">{{ exchangeWaiting.data.max[hour].waitingcount_termin|default("-") }}</span><br>
                                         <span class="{% if not exchangeWaiting.data.max[hour].waitingtime_termin %}ausgegraut{% endif %}">{{ exchangeWaiting.data.max[hour].waitingtime_termin|default("-") }}</span>
                                     </td>
@@ -214,7 +212,6 @@
                                         {% endif %}
                                         <td class="statistik">
                                             <br />
-                                            <span class="{% if not exchangeWaiting.data[date][hour].waitingcalculated_termin %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date][hour].waitingcalculated_termin|default("-") }}</span><br>
                                             <span class="{% if not exchangeWaiting.data[date][hour].waitingcount_termin %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date][hour].waitingcount_termin|default("-") }}</span><br>
                                             <span class="{% if not exchangeWaiting.data[date][hour].waitingtime_termin %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date][hour].waitingtime_termin|default("-") }}</span>
                                         </td>
