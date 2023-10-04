@@ -50,13 +50,6 @@ class IndexTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/config/',
-                    'parameters' => [],
-                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
-                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
@@ -73,13 +66,6 @@ class IndexTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/config/',
-                    'parameters' => [],
-                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
-                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
@@ -103,13 +89,6 @@ class IndexTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
                     'exception' => $exception
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/config/',
-                    'parameters' => [],
-                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
-                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
@@ -133,13 +112,6 @@ class IndexTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
                     'exception' => $exception
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/config/',
-                    'parameters' => [],
-                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
-                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
@@ -165,13 +137,6 @@ class IndexTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
                     'exception' => $exception
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/config/',
-                    'parameters' => [],
-                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
-                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
@@ -206,13 +171,6 @@ class IndexTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
                     'exception' => $exception
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/config/',
-                    'parameters' => [],
-                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
-                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
