@@ -59,7 +59,7 @@ class UseraccountEdit extends BaseController
                 'exception' => (isset($result)) ? $result : null,
                 'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
                 'oidcProviderList' => array_filter($allowedProviderList),
-                'isFromOidc' => in_array($userAccount->getOidcProviderFromName(), $allowedProviderList)
+                'isFromOidc' => in_array($userAccount->getOidcProviderFromName(), $allowedProviderList)                
             ]
         );
     }
