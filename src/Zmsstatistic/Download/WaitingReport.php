@@ -18,7 +18,6 @@ class WaitingReport extends Base
         'waitingcalculated' => 'maximal berechnetet Wartezeit Spontankunde',
         'waitingcount' => 'maximal Wartende Spontankunde',
         'waitingtime' => 'maximal gemessene Wartezeit Spontankunde',
-        'waitingcalculated_termin' => 'maximal berechnetet Wartezeit Terminkunde',
         'waitingcount_termin' => 'maximal Wartende Terminkunde',
         'waitingtime_termin' => 'maximal gemessene Wartezeit Terminkunde'
     ];
