@@ -42,13 +42,6 @@ class UseraccountAddTest extends Base
                     'url' => '/owner/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_ownerlist.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/config/',
-                    'parameters' => [],
-                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
-                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
@@ -112,21 +105,11 @@ class UseraccountAddTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/useraccount/',
                     'exception' => $exception
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/config/',
-                    'parameters' => [],
-                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
-                    'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertStringContainsString(
-            'Das Passwort muss mindestens 6 Zeichen lang sein.',
-            (string)$response->getBody()
-        );
+        $this->assertStringContainsString('Das Passwort muss mindestens 6 Zeichen lang sein.', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
