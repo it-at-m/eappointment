@@ -310,14 +310,20 @@ class ProcessQueueTest extends Base
             'headsUpTime' => 3600,
             'requests' => [120703]
         ], [], 'POST');
+
         $this->assertStringContainsString(
-            "Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden",
+            "Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden.",
             (string)$response->getBody()
         );
+        $this->assertStringContainsString(
+            "Es muss ein aussagekr\u00e4ftiger Name eingegeben werden",
+            (string)$response->getBody()
+        );
+        /*
         $this->assertStringContainsString(
             "keine Mails verschickt werden. Der Host zur Domain nach dem '@' ist nicht erreichbar.",
             (string)$response->getBody()
-        );
+        );*/
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

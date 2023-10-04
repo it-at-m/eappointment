@@ -122,7 +122,7 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {% if item.queue.status != "reserved" and item.queue.status != "preconfirmed" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall )%}
+                                {% if item.queue.status != "reserved" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
                                     <a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">
                                     {{ item.queue.number }}
                                     </a>
@@ -139,7 +139,7 @@
                                     {% if item.queue.callCount > 0 %}
                                         {% set callCount = "<small>(%d)</small>"|format(item.queue.callCount) %}
                                     {% endif %}
-                                    {% if source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and item.queue.status != "preconfirmed" %}
+                                    {% if source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
                                         <a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">{{ familyName }}</a> {{ callCount|raw }}
                                     {% else %}
                                         {{ familyName }} {{ callCount|raw }}
