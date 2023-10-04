@@ -16,9 +16,21 @@ class ProfileTest extends Base
             [
                 [
                     'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
+                    'response' => $this->readFixture("GET_config.json"),
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/useraccount/testadmin/',
+                    'response' => $this->readFixture("GET_useraccount_testadmin.json")
                 ]
             ]
         );
@@ -36,7 +48,6 @@ class ProfileTest extends Base
         );
         $this->assertEquals(200, $response->getStatusCode());
     }
-
     public function testUpdateFailed()
     {
         $exception = new \BO\Zmsclient\Exception();
@@ -49,6 +60,13 @@ class ProfileTest extends Base
             [
                 [
                     'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
+                    'response' => $this->readFixture("GET_config.json"),
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
@@ -57,6 +75,11 @@ class ProfileTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/workstation/password/',
                     'exception' => $exception
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/useraccount/testadmin/',
+                    'response' => $this->readFixture("GET_useraccount_testadmin.json")
                 ]
             ]
         );

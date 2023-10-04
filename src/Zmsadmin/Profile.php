@@ -55,7 +55,7 @@ class Profile extends BaseController
                 'error' => $error,
                 'exception' => (isset($result)) ? $result : null,
                 'metadata' => $this->getSchemaConstraintList(Loader::asArray(Entity::$schema)),
-                'isFromOidc' => in_array($userAccount->getOidcProviderFromName(), $allowedProviderList)                
+                'isFromOidc' => in_array($userAccount->getOidcProviderFromName(), $allowedProviderList)
             )
         );
     }
