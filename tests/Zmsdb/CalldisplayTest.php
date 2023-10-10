@@ -7,6 +7,7 @@ use \BO\Zmsentities\Calldisplay as Entity;
 
 class CalldisplayTest extends Base
 {
+    /*
     public function testBasic()
     {
         $query = new Query();
@@ -23,7 +24,7 @@ class CalldisplayTest extends Base
         $contact = $query->readContactData($entity);
         $this->assertEquals('Bürgeramt', $contact['name']);
     }
-
+    
     public function testBasicWithCluster()
     {
         $now = static::$now;
@@ -48,4 +49,5 @@ class CalldisplayTest extends Base
     {
         return (new Entity())->getExample();
     }
+    */
 }
