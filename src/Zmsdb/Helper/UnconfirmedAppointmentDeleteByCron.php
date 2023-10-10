@@ -63,19 +63,30 @@ class UnconfirmedAppointmentDeleteByCron
                 $query = new \BO\Zmsdb\Process();
                 $activationDuration = $scope->toProperty()->preferences->appointment->activationDuration->get();
                 $time = new \DateTimeImmutable();
-                $deleteFromTime =   $time->setTimestamp($this->now->getTimestamp() - ($activationDuration * 60));
+                $deleteFromTime = $time->setTimestamp(
+                    $this->now->getTimestamp() - ($activationDuration * 60)
+                );
 
                 if ($this->verbose) {
-                    $this->log("INFO: Deleting appointments older than " . $deleteFromTime->format('c') . 'limit: ' . $limit . ' offset: ' . $offset);
+                    $this->log(
+                        "INFO: Deleting appointments older than " 
+                        . $deleteFromTime->format('c') . 'limit: '
+                        . $limit . ' offset: '
+                        . $offset
+                    );
                 }
 
-                $processList = $query->readUnconfirmedProcessList($deleteFromTime, $scope->id, $limit, $offset);
+                $processList = $query->readUnconfirmedProcessList(
+                    $deleteFromTime,
+                    $scope->id,
+                    $limit,
+                    $offset
+                );
                 return $processList;
             });
             $this->count['preconfirmed'] = $count;
         }
     }
-
 
     protected function deleteByCallback($commit, \Closure $callback)
     {
