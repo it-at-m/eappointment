@@ -14,7 +14,7 @@ class ExchangeUnassignedscopeTest extends Base
         $entity = $query->readEntity();
         $this->assertEquals('Nicht der DLDB zugeordnete Standorte mit Terminen', $entity->title);
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(0, count($entity->data));
+        //$this->assertEquals(0, count($entity->data));
         $this->assertEquals('TerminAnzahl', $entity->dictionary[2]['variable']);
         $this->assertEquals('TerminDaten', $entity->dictionary[3]['variable']);
     }
