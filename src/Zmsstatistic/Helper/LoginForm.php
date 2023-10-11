@@ -1,13 +1,13 @@
 <?php
 /**
  *
- * @package zmsstatistic
+ * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
 namespace BO\Zmsstatistic\Helper;
 
-use BO\Mellon\Validator;
+use \BO\Mellon\Validator;
 
 class LoginForm
 {
@@ -21,12 +21,12 @@ class LoginForm
         // loginName
         $collection['loginName'] = Validator::param('loginName')->isString()
             ->isBiggerThan(2, "Es muss ein aussagekräftiger Name eingegeben werden")
-            ->isSmallerThan(250, "Der Name sollte 250 Zeichen nicht überschreiten");
+            ->isSmallerThan(40, "Der Name sollte 40 Zeichen nicht überschreiten");
 
         // password
         $collection['password'] = Validator::param('password')->isString()
             ->isBiggerThan(2, "Es muss ein Passwort eingegeben werden")
-            ->isSmallerThan(250, "Das Passwort sollte 250 Zeichen nicht überschreiten");
+            ->isSmallerThan(20, "Das Passwort sollte 20 Zeichen nicht überschreiten");
 
         // return validated collection
         $collection = Validator::collection($collection);
@@ -39,8 +39,34 @@ class LoginForm
     public static function fromAdditionalParameters()
     {
         $collection = array();
-        $collection['scope'] = Validator::param('scope')
-          ->isNumber('Bitte wählen Sie einen Standort aus');
+
+        // scope
+        if ('cluster' == Validator::param('scope')->isString()->getValue()) {
+            $collection['scope'] = Validator::param('scope')
+                ->isString('Bitte wählen Sie einen Standort aus');
+        } else {
+            $collection['scope'] = Validator::param('scope')
+                ->isNumber('Bitte wählen Sie einen Standort aus');
+        }
+
+        if (! Validator::param('appointmentsOnly')->isDeclared()->hasFailed()) {
+            $collection['appointmentsOnly'] = Validator::param('appointmentsOnly')
+                ->isNumber();
+        }
+
+        // workstation
+        if (! Validator::param('workstation')->isDeclared()->hasFailed()) {
+            $collection['workstation'] = Validator::param('workstation')
+                 ->isString('Bitte wählen Sie einen Arbeitsplatz oder den Tresen aus')
+                 ->isSmallerThan(5, "Die Arbeitsplatz-Bezeichnung sollte 5 Zeichen nicht überschreiten");
+        }
+        // hint
+        if (! Validator::param('hint')->isDeclared()->hasFailed()) {
+            $collection['hint'] = Validator::param('hint')
+                ->isString();
+        }
+
+        // return validated collection
         $collection = Validator::collection($collection);
         return $collection;
     }
@@ -59,7 +85,10 @@ class LoginForm
     {
         if (isset($workstation->useraccount)) {
             $formData = $data->getValues();
+            $workstation->setValidatedName($formData);
+            $workstation->setValidatedHint($formData);
             $workstation->setValidatedScope($formData);
+            $workstation->setValidatedAppointmentsOnly($formData);
             unset($workstation->useraccount['departments']);
             $result = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
         }

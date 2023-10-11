@@ -3,7 +3,6 @@
 [![pipeline status](https://gitlab.com/eappointment/zmsstatistic/badges/main/pipeline.svg)](https://gitlab.com/eappointment/zmsstatistic/-/commits/main)
 [![coverage report](https://gitlab.com/eappointment/zmsstatistic/badges/main/coverage.svg)](https://eappointment.gitlab.io/zmsstatistic/_tests/coverage/index.html)
 
-
 # ZMS Statistic
 
 This application offers an administrative web frontend for statistics.
@@ -74,6 +73,5 @@ To test application run the following command:
 
 
 For a detailed project description, see https://gitlab.com/eappointment/eappointment
-
 
 

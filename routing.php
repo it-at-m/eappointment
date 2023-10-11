@@ -14,15 +14,20 @@ use \Psr\Http\Message\ResponseInterface;
  * Login
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET','POST'], '/', '\BO\Zmsstatistic\Index')
+\App::$slim->map(['GET','POST'], '/', \BO\Zmsstatistic\Index::class)
     ->setName("index");
+
+\App::$slim->get('/workstation/quicklogin/', \BO\Zmsstatistic\QuickLogin::class)
+    ->setName("quickLogin");
+
+\App::$slim->map(['GET','POST'], '/oidc/', \BO\Zmsstatistic\Oidc::class)
+    ->setName("oidc")->add(new \BO\Slim\Middleware\OAuthMiddleware('login'));
 
 \App::$slim->get('/overview/', '\BO\Zmsstatistic\Overview')
     ->setName("Overview");
 
-\App::$slim->get('/workstation/quicklogin/', '\BO\Zmsstatistic\QuickLogin')
-    ->setName("quickLogin");
 
+    
 /*
  * ---------------------------------------------------------------------------
  * Result views

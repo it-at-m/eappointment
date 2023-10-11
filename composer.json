@@ -11,10 +11,32 @@
   "scripts": {
     "command": "bin/configure"
   },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsclient"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsslim"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsentities"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/mellon"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/berlinonline/slim-psr7"
+    }
+  ],
   "config": {
-      "platform": {
-          "php": "7.3"
-      },
+    "platform": {
+        "php": "7.3"
+    },
     "allow-plugins": {
       "php-http/discovery": true
     }
@@ -28,12 +50,16 @@
   },
   "require": {
     "eappointment/mellon": "^2.6.0",
-    "eappointment/zmsentities": "2.26.00",
-    "eappointment/zmsslim": "2.26.00",
-    "eappointment/zmsclient": "2.26.00",
+    "eappointment/zmsentities": "dev-muc-main",
+    "eappointment/zmsslim": "dev-muc-main",
+    "eappointment/zmsclient": "dev-muc-main",
     "monolog/monolog": "1.*",
     "phpoffice/phpspreadsheet": "^1.0",
-    "roave/security-advisories": "dev-master"
+    "roave/security-advisories": "dev-master",
+    "twig/twig": "3.*",
+    "firebase/php-jwt": "v6.4.0",
+    "twig/intl-extra": "^3.4",
+    "ext-intl": "*"
   },
   "bin": [],
   "autoload": {
@@ -41,11 +67,5 @@
       "BO\\Zmsstatistic\\": "src/Zmsstatistic/",
       "BO\\Zmsstatistic\\Tests\\": "tests/Zmsstatistic/"
     }
-  },
-  "repositories": [
-    {
-        "type": "vcs",
-        "url": "https://github.com/berlinonline/slim-psr7"
-    }
-  ]
+  }
 }

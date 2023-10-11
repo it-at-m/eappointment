@@ -1,30 +1,50 @@
 {% extends exception.include ? "exception/bo/include.twig" : exceptionLayout|default("layout/main.twig") %}
 {% from 'element/helper/snippets.twig' import headline1 %}
-{% block headline %}
-    {{ headline1(title) }}
+
+{% block pageheader %}
+    {{ parent() }}
 {% endblock %}
 
+{% block pageheader_middle %}
+    <span class="sitename">Zeitmanagementsystem - Auswahl Standort</span>
+{% endblock %}
+
+{% block pageheader_right %}
+    {{ parent() }}
+{% endblock %}
+
+{% block headline %}
+    {{ headline1('Es ist ein Fehler aufgetreten') }}
+{% endblock %}
 {% block content %}
-    {% set exceptionData = {'exceptionData': ''} %}
-    {% if exceptiondata %}{% set exceptionData = {'exceptionData': exceptiondata} %}{% endif %}
-    {% if data %}{% set exceptionData = data %}{% endif %}
+    {% if pointer %}
+        {% set errorlist = {(pointer): {'messages': [message], 'failed': 1}} %}
+    {% endif %}
 
     {% embed "block/scaffholding/board.twig" with {
         'class': 'exception',
-        'data': exceptionData,
+        'data': errorlist,
         'reload': reload
     } %}
 
-        {% block board_title %}Es ist ein Fehler aufgetreten.{% endblock %}
         {% block board_body %}
+            {% if title %}
+            <h3>
+                {{ title|trans }}
+            </h3>
+            {% endif %}
             <p>
-                {{ message|trans }}
+                <i aria-hidden="true" title="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" class="fas fa-exclamation-circle"></i> {% trans %}Fehler{% endtrans %}: {{ message|trans }}
             </p>
-            {% if showlinks %}
-            <div class="form-actions">
-                {% for link, name in showlinks %}
-                	<a class="btn right" href="{{ urlGet(link) }}">{{ name|trans }}</a>
-                {% endfor %}
+            {% if showlinks or abort %}
+            <div class="form-actions" style="margin-top:0;">
+                {% if abort %}
+                    <a class="btn button-abort" href="#">{% if abort|length > 1 %}{{ abort }}{% else %}Ok{% endif %}</a>
+                {% elseif showlinks %}
+                    {% for link, name in showlinks %}
+                    	<a class="btn" href="{{ urlGet(link) }}">{{ name|trans }}</a>
+                    {% endfor %}
+                {% endif %}
             </div>
             {% endif %}
         {% endblock %}
