@@ -10,6 +10,7 @@ use \BO\Zmsentities\Collection\ScopeList as Collection;
  * @SuppressWarnings(Public)
  * @SuppressWarnings(Coupling)
  * @SuppressWarnings(Complexity)
+ * @SuppressWarnings(TooManyMethods)
  *
  */
 class Scope extends Base
