@@ -77,6 +77,8 @@ class DepartmentTest extends Base
         return new Entity(array(
             'id' => 123,
             'email' => 'service@berlinonline.de',
+            'sendEmailReminderEnabled' => 1,
+            'sendEmailReminderMinutesBefore' => 5,
             'preferences' => [
                 'notifications' => [
                     'enabled' => false,
