@@ -27,7 +27,7 @@ if (class_exists('\App') && isset(\App::$now)) {
     $now = new \DateTimeImmutable('now');
 }
 $job = new \BO\Zmsdb\Helper\UnconfirmedAppointmentDeleteByCron($now, $verbose);
-$job->startProcessing($commit, $pending);
+$job->startProcessing($commit);
 
 
 if (!$commit) {

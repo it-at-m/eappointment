@@ -17,7 +17,7 @@ class Slot extends Base
     /**
      * maximum number of slots per appointment
      */
-    const MAX_SLOTS = 10;
+    const MAX_SLOTS = 25;
 
     /**
      * @return \BO\Zmsentities\Collection\SlotList

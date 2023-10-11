@@ -1,2 +1,4 @@
-INSERT INTO `config` SET `name` = "availability__calculateSlotsOnSave", `value` = "none";
-INSERT INTO `config` SET `name` = "availability__calculateSlotsOnDemand", `value` = "none";
+INSERT INTO `config` (`name`, `value`) VALUES ("availability__calculateSlotsOnSave", "none")
+ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);
+INSERT INTO `config` (`name`, `value`) VALUES ("availability__calculateSlotsOnDemand", "none")
+ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);
