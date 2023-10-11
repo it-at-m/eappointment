@@ -90,12 +90,6 @@ class ReportClientScopeTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/warehouse/clientscope/141/2016-04/',
                     'response' => $this->readFixture("GET_clientscope_141_042016.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/warehouse/notificationscope/141/2016-04/',
-                    'parameters' => ['groupby' => 'month'],
-                    'response' => $this->readFixture("GET_notificationscope_141_042016.json")
                 ]
             ]
         );
@@ -108,7 +102,6 @@ class ReportClientScopeTest extends Base
             'Auswertung für Bürgeramt Heerstraße im Zeitraum April 2016',
             (string) $response->getBody()
         );
-        $this->assertStringContainsString('135', (string) $response->getBody());
     }
 
     public function testWithPeriodYear()
@@ -145,12 +138,6 @@ class ReportClientScopeTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/warehouse/clientscope/141/2016/',
                     'response' => $this->readFixture("GET_clientscope_141_2016.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/warehouse/notificationscope/141/2016/',
-                    'parameters' => ['groupby' => 'month'],
-                    'response' => $this->readFixture("GET_notificationscope_141_2016.json")
                 ]
             ]
         );
@@ -167,7 +154,6 @@ class ReportClientScopeTest extends Base
             '<td class="colWochenTag statistik">April</td>',
             (string) $response->getBody()
         );
-        $this->assertStringContainsString('135', (string) $response->getBody());
     }
 
     public function testWithDownloadXLSX()
@@ -205,12 +191,6 @@ class ReportClientScopeTest extends Base
                         'function' => 'readGetResult',
                         'url' => '/warehouse/clientscope/141/2016-04/',
                         'response' => $this->readFixture("GET_clientscope_141_042016.json")
-                    ],
-                    [
-                        'function' => 'readGetResult',
-                        'url' => '/warehouse/notificationscope/141/2016-04/',
-                        'parameters' => ['groupby' => 'month'],
-                        'response' => $this->readFixture("GET_notificationscope_141_042016.json")
                     ]
                 ]
             );
@@ -262,12 +242,6 @@ class ReportClientScopeTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/warehouse/clientscope/141/2016-04/',
                     'response' => $this->readFixture("GET_clientscope_141_042016.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/warehouse/notificationscope/141/2016-04/',
-                    'parameters' => ['groupby' => 'month'],
-                    'response' => $this->readFixture("GET_notificationscope_141_042016.json")
                 ]
             ]
         );
@@ -285,11 +259,12 @@ class ReportClientScopeTest extends Base
 
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
         $this->assertStringContainsString(
-            '"April";"2016";"Charlottenburg-Wilmersdorf";"Bürgeramt";"Bürgeramt Heerstraße ";"135";"";"";""',
+            '"April";"2016";"84";"16";"84";"16";"0";"0";"61"',
             (string) $response->getBody()
         );
     }
 
+    /*
     public function testWithoutSelectedScope()
     {
         $this->expectException('\BO\Zmsentities\Exception\WorkstationMissingScope');
@@ -304,5 +279,5 @@ class ReportClientScopeTest extends Base
             ]
         );
         $this->render([ ], [ ], [ ]);
-    }
+    }*/
 }

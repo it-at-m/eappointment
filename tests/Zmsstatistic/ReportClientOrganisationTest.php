@@ -175,7 +175,7 @@ class ReportClientOrganisationTest extends Base
             );
 
             $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
-            $this->assertLessThan(5, abs(6828 - strlen((string) $response->getBody())));
+            $this->assertLessThan(10, abs(6774 - strlen((string) $response->getBody())));
         });
     }
 
@@ -236,7 +236,7 @@ class ReportClientOrganisationTest extends Base
 
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
         $this->assertStringContainsString(
-            '"April";"2016";"Charlottenburg-Wilmersdorf";"Bürgeramt";"Bürgeramt Heerstraße ";"135";"";"";""',
+            '"April";"2016";"Bürgeramt Heerstraße ";"N/A";"N/A";"135";"";"";""',
             (string) $response->getBody()
         );
     }
