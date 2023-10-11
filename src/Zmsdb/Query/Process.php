@@ -535,7 +535,7 @@ class Process extends Base implements MappingInterface
             '(abgesagt)'
         ))
             ->where('process.vorlaeufigeBuchung', '=', 1)
-            ->where('process.StandortID', '<>', 1);
+            ->where('process.StandortID', '>', 0);
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) {
             $condition
                 ->andWith('process.istFolgeterminvon', 'IS', null)
