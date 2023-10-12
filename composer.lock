@@ -292,12 +292,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsdb.git",
-                "reference": "d2a0631ffbe8aeb927e2225da2727fff683ee067"
+                "reference": "aa78045d38ab751f0011b9b2bce9a55f59de3f4d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=d2a0631ffbe8aeb927e2225da2727fff683ee067",
-                "reference": "d2a0631ffbe8aeb927e2225da2727fff683ee067",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=aa78045d38ab751f0011b9b2bce9a55f59de3f4d",
+                "reference": "aa78045d38ab751f0011b9b2bce9a55f59de3f4d",
                 "shasum": ""
             },
             "require": {
