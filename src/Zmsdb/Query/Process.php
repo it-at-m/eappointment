@@ -93,13 +93,12 @@ class Process extends Base implements MappingInterface
                 SELECT ps.processID FROM `process_sequence` ps LEFT JOIN `' . self::getTablename() . '` p
                     ON ps.processId = p.BuergerID
                 WHERE p.`BuergerID` IS NULL
-                LIMIT ' . $random . ',1)
-            FOR UPDATE';
+                LIMIT ' . $random . ',1)';
     }
 
     public function getLockProcessId()
     {
-        return 'SELECT p.`BuergerID` FROM `' . self::getTablename() . '` p WHERE p.`BuergerID` = :processId FOR UPDATE';
+        return 'SELECT p.`BuergerID` FROM `' . self::getTablename() . '` p WHERE p.`BuergerID` = :processId';
     }
 
     public function addJoin()
