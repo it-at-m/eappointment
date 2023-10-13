@@ -211,7 +211,7 @@ class Select
             self::$writeConnection->setProfiler(self::$writeProfiler);
             if (self::$useTransaction) {
                 self::$writeConnection->exec('SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED');
-                self::$writeConnection->exec('SET SESSION innodb_lock_wait_timeout=5');
+                self::$writeConnection->exec('SET SESSION innodb_lock_wait_timeout=15');
                 self::$writeConnection->beginTransaction();
             }
             if (!self::$useQueryCache) {
