@@ -200,9 +200,7 @@ class Process extends Base implements MappingInterface
                     `process`.`Telefonnummer`
                 )'
             ),
-
             'customTextfield' => 'process.custom_text_field',
-
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
             'lastChange' => 'process.updateTimestamp',
