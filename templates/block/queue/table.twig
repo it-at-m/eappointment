@@ -81,6 +81,7 @@
                         <th>Mail</th>
                         <th>Dienstleistung</th>
                         <th>Anmerkung</th>
+                        <th>Freitextfeld</th>                        
                         <th>Wartezeit</th>
                         <th></th>
                         <th></th>
@@ -190,6 +191,11 @@
                                 </p>
                             </td>
                             <td>
+                            {{ item.clients }}
+                             {{ item.clients|first.customTextfield }}
+                                {{ item.customTextfield|decodeEntities|raw }}
+                            </td>                            
+                            <td>
                                 {% if item.queue.withAppointment %}
                                     Termin
                                 {% else %}
@@ -231,6 +237,7 @@
                             <th>Telefon</th>
                             <th>Art</th>
                             <th>Anmerkung</th>
+                            <th>Freitextfeld {{scope.preferences.client.customTextfieldLabel}}</th>
                             <th>Aktion</th>
                         </tr>
                     </thead>
