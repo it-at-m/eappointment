@@ -256,6 +256,23 @@
                                 }
                             }]
                         ) }}
+
+                        {{ formgroup(
+                            {
+                                "label": "Freitextfeld: " ~ scope.preferences.client.customTextfieldLabel,
+                                "required": selectedProcess.preferences.client.customTextfieldRequired|default(scope.preferences.client.customTextfieldRequired),
+                                "errors": formData.customTextfield.messages,
+                                "checked": scope.preferences.client.customTextfieldActivated,
+                            },
+                            [{
+                                "type": "input",
+                                "parameter": {
+                                    "name": "customTextfield",
+                                    "value": customTextfield,
+                                    "accesskey":"a"
+                                }
+                            }]
+                        ) }}                       
                     </div>
 
                     <div id="requests_checkboxlist" class="grid__item one-half">
