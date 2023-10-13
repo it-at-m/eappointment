@@ -44,13 +44,7 @@ class Process extends Base implements MappingInterface
                     'Abgesagter Termin gebucht am: ',
                     FROM_UNIXTIME(process.IPTimeStamp,'%d.%m.%Y, %H:%i'),' Uhr | ',
                     IFNULL(process.Anmerkung,'')
-                ),
-                
-                process.custom_text_field = CONCAT(
-                    'Abgesagter Termin gebucht am: ',
-                    FROM_UNIXTIME(process.IPTimeStamp,'%d.%m.%Y, %H:%i'),' Uhr | ',
-                    IFNULL(process.custom_text_field,'')
-                ),                  
+                ),              
                 process.Name = '(abgesagt)',
                 process.IPadresse = '',
                 process.IPTimeStamp = :canceledTimestamp + (IFNULL(s.loeschdauer, 15) * 60),
@@ -207,7 +201,7 @@ class Process extends Base implements MappingInterface
                 )'
             ),
 
-            'clients__0__customTextfield' => 'process.custom_text_field',
+            'customTextfield' => 'process.custom_text_field',
 
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
@@ -600,7 +594,7 @@ class Process extends Base implements MappingInterface
     }
 
 
-    public function addConditionCustomTextField($customText, $exactMatching = false)
+    public function addConditionCustomTextfield($customText, $exactMatching = false)
     {
         if ($exactMatching) {
             $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($customText) {
@@ -612,7 +606,7 @@ class Process extends Base implements MappingInterface
             });
         }
         return $this;
-    }
+    }    
 
     public function addConditionAmendment($amendment)
     {
@@ -786,9 +780,9 @@ class Process extends Base implements MappingInterface
         if ($process->getAmendment()) {
             $data['Anmerkung'] = $process->getAmendment();
         }
-        if ($process->getCustomTextField()) {
-            $data['custom_text_field'] = $process->getCustomTextField();
-        }
+        if ($process->getCustomTextfield()) {
+            $data['custom_text_field'] = $process->getCustomTextfield();
+        }        
         $data['zustimmung_kundenbefragung'] = ($client->surveyAccepted) ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
         $data['AnzahlPersonen'] = $process->getClients()->count();
