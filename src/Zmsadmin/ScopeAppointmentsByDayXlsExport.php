@@ -61,7 +61,8 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
                 $client['telephone'],
                 $client['email'],
                 $queueItem->requests->getCsvForProperty('name'),
-                $queueItem->amendment
+                $queueItem->amendment,
+                $queueItem->customTextfield,                
             ];
         }
         $writer = Writer::createFromString();
