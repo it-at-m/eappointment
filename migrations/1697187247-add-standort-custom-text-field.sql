@@ -1,7 +1,7 @@
-ALTER TABLE buerger
-ADD custom_text_field VARCHAR(255); 
+ALTER TABLE buerger 
+ADD COLUMN `custom_text_field` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL;
 
-ALTER TABLE standort
-ADD custom_text_field_label VARCHAR(255),
-    custom_text_field_active int(5),
-    custom_text_field_required int(5);
+ALTER TABLE standort 
+ADD COLUMN `custom_text_field_label` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+ADD COLUMN `custom_text_field_active` INT(5) DEFAULT NULL,
+ADD COLUMN `custom_text_field_required` INT(5) DEFAULT NULL;
