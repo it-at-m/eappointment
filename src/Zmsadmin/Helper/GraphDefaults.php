@@ -248,6 +248,7 @@ EOS;
         $default =<<< EOS
 {
     amendment
+    customTextfield
     authKey
     id
     status
