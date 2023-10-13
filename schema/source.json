@@ -88,6 +88,12 @@
             "items": {
                 "$ref": "requestrelation.json"
             }
+        },
+        "scopes": {
+            "type": "array",
+            "items": {
+                "$ref": "scope.json"
+            }
         }
     }
 }
