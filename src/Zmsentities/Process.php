@@ -155,7 +155,6 @@ class Process extends Schema\Entity
         $this->addClientFromForm($requestData);
         $this->addReminderTimestamp($requestData, $dateTime);
         $this->addAmendment($requestData, $notice);
-        $this->addCustomTextfield($requestData, $notice);
         return $this;
     }
 
