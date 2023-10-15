@@ -61,6 +61,8 @@
                         "alternateAppointmentUrl": "",
                         "amendmentActivated": "0",
                         "amendmentLabel": "",
+                        "customTextActivated": "0",
+                        "customTextLabel": "",
                         "emailRequired": "1",
                         "telephoneActivated": "1",
                         "telephoneRequired": "1"
