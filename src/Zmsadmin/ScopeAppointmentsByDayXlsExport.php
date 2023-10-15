@@ -45,7 +45,8 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
             'Telefon',
             'Email',
             'Dienstleistung',
-            'Anmerkungen'
+            'Anmerkungen',
+            'Freitextfeld'
         ];
 
         $rows = [];
