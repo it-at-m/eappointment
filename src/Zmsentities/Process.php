@@ -36,6 +36,7 @@ class Process extends Schema\Entity
     {
         return [
             'amendment' => '',
+            'customTextfield' => '',
             'appointments' => new Collection\AppointmentList(),
             'apiclient' => new Apiclient(),
             'authKey' => '',
@@ -154,6 +155,7 @@ class Process extends Schema\Entity
         $this->addClientFromForm($requestData);
         $this->addReminderTimestamp($requestData, $dateTime);
         $this->addAmendment($requestData, $notice);
+        $this->addCustomTextfield($requestData, $notice);
         return $this;
     }
 
@@ -323,6 +325,19 @@ class Process extends Schema\Entity
         trim($this->amendment);
         return $this;
     }
+
+    public function getCustomTextfield()
+    {
+        return $this->toProperty()->customTextfield->get();
+    }
+
+    public function addCustomTextfield($input, $notice = '')
+    {
+        $this->customTextfield = $notice;
+        $this->customTextfield .= (isset($input['customTextfield']) && $input['customTextfield']) ? $input['customTextfield'] : '';
+        trim($this->customTextfield);
+        return $this;
+    }  
 
     public function getAuthKey()
     {
