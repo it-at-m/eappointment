@@ -574,6 +574,21 @@ class Process extends Schema\Entity
         );
     }
 
+    public function toDerefencedCustomTextfield()
+    {
+        $lastChange = (new \DateTimeImmutable)->setTimestamp($this->createTimestamp)->format('c');
+        return var_export(
+            array(
+                'BuergerID' => $this->id,
+                'StandortID' => $this->scope['id'],
+                'CustomTextfield' => $this->customTextfield,
+                'IPTimeStamp' => $this->createTimestamp,
+                'LastChange' => $lastChange,
+            ),
+            1
+        );
+    }
+
     public function __toString()
     {
         $string = "process#";
