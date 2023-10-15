@@ -604,7 +604,7 @@ class Process extends Base implements MappingInterface
             });
         }
         return $this;
-    }    
+    }
 
     public function addConditionAmendment($amendment)
     {
@@ -780,7 +780,7 @@ class Process extends Base implements MappingInterface
         }
         if ($process->getCustomTextfield()) {
             $data['custom_text_field'] = $process->getCustomTextfield();
-        }        
+        }
         $data['zustimmung_kundenbefragung'] = ($client->surveyAccepted) ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
         $data['AnzahlPersonen'] = $process->getClients()->count();
