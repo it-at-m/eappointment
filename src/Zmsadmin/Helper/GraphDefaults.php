@@ -311,6 +311,7 @@ EOS;
         $default =<<< EOS
 {
     amendment
+    customTextfield
     id
     appointments{
         date

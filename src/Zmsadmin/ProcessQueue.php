@@ -51,7 +51,7 @@ class ProcessQueue extends BaseController
         $input = $request->getParams();
         $scope = AppointmentFormHelper::readSelectedScope($request, $workstation);
         $process = $this->getProcess($input, $scope);
-        $validatedForm = static::getValidatedForm($validator, $process);
+        $validatedForm = static::getValidatedForm($validator, $process);      
         if ($validatedForm['failed']) {
             return \BO\Slim\Render::withJson(
                 $response,
@@ -95,11 +95,10 @@ class ProcessQueue extends BaseController
                 $validator->getParameter('amendment'),
                 $delegatedProcess->setter('amendment')
             )
-            /*
             ->validateCustomTextfield(
                 $validator->getParameter('customTextfield'),
                 $delegatedProcess->setter('customTextfield')
-            )*/ 
+            )
             ->validateReminderTimestamp(
                 $validator->getParameter('headsUpTime'),
                 $delegatedProcess->setter('reminderTimestamp'),
