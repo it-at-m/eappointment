@@ -14,7 +14,7 @@
         "ext-mbstring": ">=0",
         "ext-json": ">=1.0",
         "ext-pcre": ">=0",
-        "eappointment/mellon": "^2.0.1|dev-master",
+        "eappointment/mellon": "^2.0.1",
         "twig/twig": "3.*",
         "league/json-guard": "^1.0",
         "league/html-to-markdown": "^5.0",
@@ -26,6 +26,12 @@
     "scripts": {
         "command": "bin/configure"
     },
+    "repositories": [
+        {
+          "type": "vcs",
+          "url": "https://gitlab.com/eappointment/mellon"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "BO\\Zmsentities\\": "src/Zmsentities/",
