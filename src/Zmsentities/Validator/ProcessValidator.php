@@ -166,7 +166,7 @@ class ProcessValidator
         return $this;
     }
 
-    public function validateAmendment(Unvalidated $unvalid, callable $setter): self
+    public function validateText(Unvalidated $unvalid, callable $setter): self
     {
         $valid = $unvalid->isString();
         $length = strlen($valid->getUnvalidated());
@@ -178,20 +178,7 @@ class ProcessValidator
         }
         return $this;
     }
-
-    public function validateCustomTextfield(Unvalidated $unvalid, callable $setter): self
-    {
-        $valid = $unvalid->isString();
-        $length = strlen($valid->getUnvalidated());
-        if ($length) {
-            $valid->isSmallerThan(300, "Der Text sollte 300 Zeichen nicht überschreiten");
-            $this->getCollection()->validatedAction($valid, $setter);
-        } else {
-            $this->getCollection()->addValid($valid);
-        }
-        return $this;
-    }
-
+    
     public function validateReminderTimestamp(Unvalidated $unvalid, callable $setter, callable $conditionCallback): self
     {
         $valid = $unvalid->isNumber();
