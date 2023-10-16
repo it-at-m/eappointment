@@ -1,5 +1,0 @@
-<rule ref="TooManyPublicMethods">
-   <properties>
-      <property name="maxmethods" value="15"/>
-   </properties>
-</rule>
