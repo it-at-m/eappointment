@@ -2,9 +2,7 @@
   "type": "object",
   "description": "A process represents a request from one or more clients, usually including an appointment. Compared to an appointment, the process has additional information about the status of the request from the client.",
   "example": {
-    "amendmentLabel": "Zusatzinformationen zum Anliegen",
-    "customTextfieldLabel": "Zusatzfeld zum Anliegen",
-    "customTextfield": "Beispiel Termin",
+
     "appointments": [
       {
         "date": 1447869171,
