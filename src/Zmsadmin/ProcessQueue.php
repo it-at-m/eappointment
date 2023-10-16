@@ -91,11 +91,11 @@ class ProcessQueue extends BaseController
                 $validator->getParameter('surveyAccepted'),
                 $delegatedProcess->setter('clients', 0, 'surveyAccepted')
             )
-            ->validateAmendment(
+            ->validateText(
                 $validator->getParameter('amendment'),
                 $delegatedProcess->setter('amendment')
             )
-            ->validateCustomTextfield(
+            ->validateText(
                 $validator->getParameter('customTextfield'),
                 $delegatedProcess->setter('customTextfield')
             )
