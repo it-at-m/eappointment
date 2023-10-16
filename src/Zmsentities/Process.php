@@ -333,10 +333,12 @@ class Process extends Schema\Entity
     public function addCustomTextfield($input, $notice = '')
     {
         $this->customTextfield = $notice;
-        $this->customTextfield .= (isset($input['customTextfield']) && $input['customTextfield']) ? $input['customTextfield'] : '';
+        $this->customTextfield .= (
+            isset($input['customTextfield']) && $input['customTextfield']
+        ) ? $input['customTextfield'] : '';
         trim($this->customTextfield);
         return $this;
-    }  
+    }
 
     public function getAuthKey()
     {
