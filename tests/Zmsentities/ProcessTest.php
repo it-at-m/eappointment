@@ -708,7 +708,7 @@ class ProcessTest extends EntityCommonTests
                 $validator->getParameter('surveyAccepted'),
                 $delegatedProcess->setter('clients', 0, 'surveyAccepted')
             )
-            ->validateAmendment(
+            ->validateText(
                 $validator->getParameter('amendment'),
                 $delegatedProcess->setter('amendment')
             )
