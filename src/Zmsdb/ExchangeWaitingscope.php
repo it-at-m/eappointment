@@ -19,9 +19,12 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope', 'scope.id');
         $entity->addDictionaryEntry('date', 'string', 'date of report entry');
         $entity->addDictionaryEntry('hour', 'string', 'hour of report entry');
-        $entity->addDictionaryEntry('waitingcount', 'number', 'amount of waiting clients');
-        $entity->addDictionaryEntry('waitingtime', 'number', 'real waitingtime');
-        $entity->addDictionaryEntry('waitingcalculated', 'number', 'calculated waitingtime');
+        $entity->addDictionaryEntry('waitingcount', 'number', 'amount of waiting spontaneous clients');
+        $entity->addDictionaryEntry('waitingtime', 'number', 'real waitingtime for spontaneous clients');
+        $entity->addDictionaryEntry('waitingcalculated', 'number', 'calculated waitingtime for spontaneous clients');
+        $entity->addDictionaryEntry('waitingcount_termin', 'number', 'amount of waiting clients with termin');
+        $entity->addDictionaryEntry('waitingtime_termin', 'number', 'real waitingtime with termin');
+        $entity->addDictionaryEntry('waitingcalculated_termin', 'number', 'calculated waitingtime with termin');
         $subjectIdList = explode(',', $subjectid);
 
         foreach ($subjectIdList as $subjectid) {
@@ -38,17 +41,17 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
 
             foreach ($raw as $entry) {
                 foreach (range(0, 23) as $hour) {
-                    $waitingcount = $entry[sprintf('wartende_ab_%02s', $hour)];
-                    $waitingtime = $entry[sprintf('echte_zeit_ab_%02s', $hour)];
-                    $waitingcalculated = $entry[sprintf('zeit_ab_%02s', $hour)];
                     $entity->addDataSet([
-                          $subjectid,
-                          $entry['datum'],
-                          $hour,
-                          $waitingcount,
-                          $waitingtime,
-                          $waitingcalculated
-                      ]);
+                        $subjectid,
+                        $entry['datum'],
+                        $hour,
+                        $entry[sprintf('wartende_ab_%02s_spontan', $hour)],
+                        $entry[sprintf('echte_zeit_ab_%02s_spontan', $hour)],
+                        $entry[sprintf('zeit_ab_%02s_spontan', $hour)],
+                        $entry[sprintf('wartende_ab_%02s_termin', $hour)],
+                        $entry[sprintf('echte_zeit_ab_%02s_termin', $hour)],
+                        $entry[sprintf('zeit_ab_%02s_termin', $hour)],
+                    ]);
                 }
             }
         }
@@ -106,9 +109,12 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
      * fetch entry by scope and date or create an entry, if it does not exists
      * the returned entry is save for updating
      */
-    public function readByDateTime(\BO\Zmsentities\Scope $scope, \DateTimeInterface $date)
-    {
-        $sql = Query\ExchangeWaitingscope::getQuerySelectByDateTime($date);
+    public function readByDateTime(
+        \BO\Zmsentities\Scope $scope,
+        \DateTimeInterface $date,
+        bool $isWithAppointment = false
+    ) {
+        $sql = Query\ExchangeWaitingscope::getQuerySelectByDateTime($date, $isWithAppointment);
         $existingEntry = $this->getReader()->fetchOne(
             $sql,
             [
@@ -125,7 +131,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
                     'date' => $date->format('Y-m-d'),
                 ]
             );
-            $existingEntry = $this->readByDateTime($scope, $date);
+            $existingEntry = $this->readByDateTime($scope, $date, $isWithAppointment);
         }
         return $existingEntry;
     }
@@ -133,19 +139,39 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
     /**
      * Write calculated waiting time and count of queued processes into statistic
      */
-    public function writeWaitingTimeCalculated(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now)
-    {
+    public function writeWaitingTimeCalculated(
+        \BO\Zmsentities\Scope $scope,
+        \DateTimeInterface $now,
+        bool $isWithAppointment = false
+    ) {
+        if ($now > (new \DateTime())) {
+            return $this;
+        }
+
         $queueList = (new Scope())->readQueueListWithWaitingTime($scope, $now);
-        $existingEntry = $this->readByDateTime($scope, $now);
+        
+        $existingEntry = $this->readByDateTime($scope, $now, $isWithAppointment);
         $queueEntry = $queueList->getFakeOrLastWaitingnumber();
         $waitingCalculated = $existingEntry['waitingcalculated'] > $queueEntry['waitingTimeEstimate'] ?
             $existingEntry['waitingcalculated']
             : $queueEntry['waitingTimeEstimate'];
-        $waitingCount = $queueList->withOutAppointment()->withoutStatus(['fake'])->count();
+
+        $waitingCount = 0;
+        if (! $isWithAppointment) {
+            $waitingCount = $queueList->withOutAppointment()->withoutStatus(['fake'])->count();
+        } else {
+            $queues = $queueList->withAppointment()->withoutStatus(['fake']);
+            foreach ($queues as $queue) {
+                if ($queue->waitingTime > 0) {
+                    $waitingCount++;
+                }
+            }
+        }
+
         $waitingCount = $existingEntry['waitingcount'] > $waitingCount ?
             $existingEntry['waitingcount'] : $waitingCount;
         $this->perform(
-            Query\ExchangeWaitingscope::getQueryUpdateByDateTime($now),
+            Query\ExchangeWaitingscope::getQueryUpdateByDateTime($now, $isWithAppointment),
             [
                 'waitingcalculated' => $waitingCalculated,
                 'waitingcount' => $waitingCount,
@@ -165,17 +191,31 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now
     ) {
+        if ($now > (new \DateTime())) {
+            return $this;
+        }
+
         $waitingTime = $process->getWaitedMinutes($now);
-        $existingEntry = $this->readByDateTime($process->scope, $process->getArrivalTime($now));
+        $existingEntry = $this->readByDateTime(
+            $process->scope,
+            $process->getArrivalTime($now),
+            $process->isWithAppointment()
+        );
         $waitingTime = $existingEntry['waitingtime'] > $waitingTime ? $existingEntry['waitingtime'] : $waitingTime;
-        $this->perform(Query\ExchangeWaitingscope::getQueryUpdateByDateTime($now), [
-            'waitingcalculated' => $existingEntry['waitingcalculated'],
-            'waitingcount' => $existingEntry['waitingcount'],
-            'waitingtime' => $waitingTime,
-            'scopeid' => $process->scope->id,
-            'date' => $now->format('Y-m-d'),
-            'hour' => $now->format('H')
-        ]);
+        $this->perform(
+            Query\ExchangeWaitingscope::getQueryUpdateByDateTime(
+                $process->getArrivalTime($now),
+                $process->isWithAppointment()
+            ),
+            [
+                'waitingcalculated' => $existingEntry['waitingcalculated'],
+                'waitingcount' => $existingEntry['waitingcount'],
+                'waitingtime' => $waitingTime,
+                'scopeid' => $process->scope->id,
+                'date' => $now->format('Y-m-d'),
+                'hour' => $now->format('H')
+            ]
+        );
         return $this;
     }
 }

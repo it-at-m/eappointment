@@ -10,6 +10,7 @@ use \BO\Zmsentities\Collection\ScopeList as Collection;
  * @SuppressWarnings(Public)
  * @SuppressWarnings(Coupling)
  * @SuppressWarnings(Complexity)
+ * @SuppressWarnings(TooManyMethods)
  *
  */
 class Scope extends Base
@@ -156,6 +157,34 @@ class Scope extends Base
             }
         }
         return $scopeList;
+    }
+    public function readListBySource($source, $resolveReferences = 0)
+    {
+        $this->testSource($source);
+        $query = new Query\Request(Query\Base::SELECT);
+        $query->setResolveLevel($resolveReferences);
+        $query->addConditionRequestSource($source);
+        $query->addEntityMapping();
+        $requestList = $this->readCollection($query);
+        return ($requestList->count()) ? $requestList->sortByCustomKey('id') : $requestList;
+    }
+
+    protected function testSource($source)
+    {
+        if (! (new Source())->readEntity($source)) {
+            throw new Exception\Source\UnknownDataSource();
+        }
+    }
+
+    protected function readCollection($query)
+    {
+        $requestList = new Collection();
+        $statement = $this->fetchStatement($query);
+        while ($requestData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $request = new Entity($query->postProcessJoins($requestData));
+            $requestList->addEntity($request);
+        }
+        return $requestList;
     }
 
     public function readList($resolveReferences = 0)

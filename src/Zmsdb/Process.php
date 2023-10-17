@@ -269,8 +269,9 @@ class Process extends Base implements Interfaces\ResolveReferences
         $checksum = ($userAccount) ? sha1($process->id . '-' . $userAccount->getId()) : '';
         Log::writeLogEntry("CREATE (Process::writeNewProcess) $process $checksum ", $process->id);
         if (!$process->toQueue($dateTime)->withAppointment) {
-            (new ExchangeWaitingscope())->writeWaitingTimeCalculated($process->scope, $dateTime);
+            (new ExchangeWaitingscope())->writeWaitingTimeCalculated($process->scope, $dateTime, false);
         }
+        
         return $process;
     }
 

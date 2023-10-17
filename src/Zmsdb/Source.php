@@ -13,6 +13,11 @@ use \BO\Zmsentities\Collection\RequestList;
 
 use \BO\Zmsentities\Collection\RequestRelationList;
 
+/**
+ *
+ * @SuppressWarnings(Coupling)
+ *
+ */
 class Source extends Base
 {
     /**
