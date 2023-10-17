@@ -202,6 +202,8 @@ class Process extends Base implements MappingInterface
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
             'lastChange' => 'process.updateTimestamp',
+            'showUpTime' => 'process.showUpTime',
+            'finishTime' => 'process.finishTime',
             'status' => $status_expression,
             'queue__status' => $status_expression,
             'queue__arrivalTime' => self::expression(
@@ -652,6 +654,7 @@ class Process extends Base implements MappingInterface
         $this->addValuesStatusData($process, $dateTime);
         if (0 === $parentProcess) {
             $this->addValuesClientData($process);
+            $this->addProcessingTimeData($process, $dateTime);
             $this->addValuesQueueData($process);
             $this->addValuesWaitingTimeData($process);
         }
@@ -766,6 +769,22 @@ class Process extends Base implements MappingInterface
         $data['AnzahlPersonen'] = $process->getClients()->count();
         $this->addValues($data);
     }
+
+    protected function addProcessingTimeData($process, \DateTimeInterface $dateTime)
+    {
+        $data = array();
+
+        if ($process->status == 'processing' && !$process->showUpTime) {
+            $data['showUpTime'] = $dateTime->format('H:i:s');
+        }
+
+        if ($process->status == 'blocked' && !$process->finishTime) {
+            $data['finishTime'] = $dateTime->format('H:i:s');
+        }
+
+        $this->addValues($data);
+    }
+    
 
     protected function addValuesQueueData($process)
     {
