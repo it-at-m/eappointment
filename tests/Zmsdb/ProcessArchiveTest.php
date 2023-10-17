@@ -126,8 +126,8 @@ class ProcessArchiveTest extends Base
         $entity =(new Query)->readEntity(10029, '1c56');
         $entity->appointments = [];
         $entity->queue['withAppointment'] = 0;
-        $updatedEntity = $queryArchived->writeNewArchivedProcess($entity, $now);
-        $archivedProcessWaitingData = (new \BO\Zmsdb\ExchangeWaitingscope)->readByDateTime($updatedEntity->scope, $now);
+        $updatedEntity = $queryArchived->writeNewArchivedProcess($entity, $now, 0, true);
+        $archivedProcessWaitingData = (new \BO\Zmsdb\ExchangeWaitingscope)->readByDateTime($updatedEntity->scope, $entity->getArrivalTime($now));
         $this->assertEquals(85, $archivedProcessWaitingData['waitingtime']);
     }
 }
