@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "395393333e63fde8a8dbfed2ba4208e1",
+    "content-hash": "1fca45d1d43ad1ce1707a4b0a4165658",
     "packages": [
         {
             "name": "aura/sql",
@@ -185,16 +185,16 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-muc-main",
+            "version": "dev-muc-feature-zms-1228-additional-custom-textfield",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "69bd41d306937ef5c6c58badcecbe1dada19b432"
+                "reference": "502e3081fc6d71c9d2d85ba288cc1522cf20bac2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=69bd41d306937ef5c6c58badcecbe1dada19b432",
-                "reference": "69bd41d306937ef5c6c58badcecbe1dada19b432",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=502e3081fc6d71c9d2d85ba288cc1522cf20bac2",
+                "reference": "502e3081fc6d71c9d2d85ba288cc1522cf20bac2",
                 "shasum": ""
             },
             "require": {
@@ -216,7 +216,7 @@
                 "helmich/phpunit-psr7-assert": "^4.3.0",
                 "league/json-reference": "^1.0",
                 "phpmd/phpmd": "@stable",
-                "phpunit/phpunit": "^9.5.4",
+                "phpunit/phpunit": "^9.6",
                 "squizlabs/php_codesniffer": "^3.5.8",
                 "yuloh/json-guard-cli": "^0.3.0"
             },
@@ -243,9 +243,9 @@
             ],
             "description": "Entity definitions for eappoinment",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-main"
+                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-feature-zms-1228-additional-custom-textfield"
             },
-            "time": "2023-10-13T17:41:44+00:00"
+            "time": "2023-10-16T14:42:39+00:00"
         },
         {
             "name": "giggsey/libphonenumber-for-php",
