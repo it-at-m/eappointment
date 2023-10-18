@@ -29,7 +29,8 @@ class ProcessStatusArchived extends Base implements MappingInterface
             clusterid = :clusterId,
             behoerdenid = :departmentId,
             organisationsid = :organisationId,
-            kundenid = :ownerId
+            kundenid = :ownerId,
+            bearbeitungszeit = :processingTime
     ';
 
     public function getEntityMapping()

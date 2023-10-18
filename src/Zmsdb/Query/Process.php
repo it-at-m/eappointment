@@ -202,8 +202,6 @@ class Process extends Base implements MappingInterface
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
             'lastChange' => 'process.updateTimestamp',
-            'showUpTime' => 'process.showUpTime',
-            'finishTime' => 'process.finishTime',
             'status' => $status_expression,
             'queue__status' => $status_expression,
             'queue__arrivalTime' => self::expression(
@@ -774,12 +772,12 @@ class Process extends Base implements MappingInterface
     {
         $data = array();
 
-        if ($process->status == 'processing' && !$process->showUpTime) {
-            $data['showUpTime'] = $dateTime->format('H:i:s');
-        }
-
-        if ($process->status == 'blocked' && !$process->finishTime) {
-            $data['finishTime'] = $dateTime->format('H:i:s');
+        if ($process->status == 'processing') { 
+            $data['showUpTime'] = $dateTime->format('Y-m-d H:i:s'); 
+        } 
+ 
+        if ($process->status == 'finished') { 
+            $data['finishTime'] = $dateTime->format('Y-m-d H:i:s'); 
         }
 
         $this->addValues($data);
