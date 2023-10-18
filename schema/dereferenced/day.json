@@ -286,6 +286,14 @@
                             "source": "dldb"
                         }
                     ],
+                    "showUpTime": {
+                        "type": "number",
+                        "description": "unix timestamp of showing up after call"
+                    },
+                    "finishTime": {
+                        "type": "number",
+                        "description": "unix timestamp og time when process has been finished"
+                    },
                     "scope": {
                         "id": 123,
                         "hint": "Standort aus Beispiel-Termin",
