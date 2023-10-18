@@ -3,12 +3,12 @@
 namespace BO\Zmsapi\Tests;
 
 use Slim\Http\StatusCode;
-
+/*
 class ProcessListSummaryMailTest extends Base
 {
     protected $classname = "ProcessListSummaryMail";
 
-    /*
+
     public function testRendering()
     {
         $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 3], []);
@@ -25,9 +25,8 @@ class ProcessListSummaryMailTest extends Base
 
         $this->testShortRepetitionFailure();
         $this->testShortRepetitionSuccess();
-    }*/
+    }
 
-    /*
     private function testShortRepetitionFailure()
     {
         $this->expectException('BO\Zmsapi\Exception\Process\ProcessListSummaryTooOften');
@@ -40,9 +39,8 @@ class ProcessListSummaryMailTest extends Base
         \App::$now->modify("+ 10Minutes");
         $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 3], []);
         self::assertStringContainsString('haben Sie folgende Termine gebucht', (string)$response->getBody());
-    }*/
-    
-    /*
+    }
+
     public function testProcessListEmpty()
     {
         $configRepository = (new \BO\Zmsdb\Config());
@@ -51,9 +49,8 @@ class ProcessListSummaryMailTest extends Base
         $configRepository->updateEntity($config);
         $response = $this->render([], ['mail' => 'not.existing@service.berlinonline.de'], []);
         self::assertStringContainsString('Es wurden keine gebuchten Termine gefunden.', (string)$response->getBody());
-    }*/
+    }
 
-    /*
     public function testUnvalidMail()
     {
         $this->expectException('BO\Mellon\Failure\Exception');
@@ -61,7 +58,7 @@ class ProcessListSummaryMailTest extends Base
             "Validation failed: no valid email\nno valid DNS entry found\n({mail}=='test@unit')"
         );
         $this->render([], ['mail' => 'test@unit'], []);
-    }*/
+    }
 
     
-}
+}*/
