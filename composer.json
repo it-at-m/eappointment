@@ -33,7 +33,7 @@
         "ext-intl": "*",
         "ext-json": ">=1.0",
         "ext-pcre": ">=0",
-        "eappointment/zmsentities": "dev-muc-feature-zms-1228-additional-custom-textfield",
+        "eappointment/zmsentities": "dev-muc-test",
         "eappointment/zmsdldb": "dev-main || 2.25.*",
         "eappointment/mellon": "^2.6.0",
         "ext-pdo": "*",
