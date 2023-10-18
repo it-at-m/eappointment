@@ -10,9 +10,9 @@
   convertNoticesToExceptions="true" 
   convertWarningsToExceptions="true" 
   forceCoversAnnotation="false" 
-  stopOnFailure="true" 
+  stopOnFailure="false" 
   verbose="false"
-  processIsolation="true"
+  processIsolation="false"
 >
     <testsuites>
         <testsuite name="Zmsdb Test Suite">
