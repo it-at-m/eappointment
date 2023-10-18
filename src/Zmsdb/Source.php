@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb;
 
+use BO\Zmsentities\Collection\ScopeList;
 use \BO\Zmsentities\Source as Entity;
 
 use \BO\Zmsentities\Collection\SourceList as Collection;
@@ -12,6 +13,11 @@ use \BO\Zmsentities\Collection\RequestList;
 
 use \BO\Zmsentities\Collection\RequestRelationList;
 
+/**
+ *
+ * @SuppressWarnings(Coupling)
+ *
+ */
 class Source extends Base
 {
     /**
@@ -73,6 +79,8 @@ class Source extends Base
                 ->addList((new Request())->readListBySource($entity->source, $resolveReferences - 1));
             $entity['requestrelation'] = (new RequestRelationList())
                 ->addList((new RequestRelation())->readListBySource($entity->source));
+            $entity['scopes'] = (new ScopeList())
+                ->addList((new Scope())->readList());
         }
         return $entity;
     }

@@ -23,7 +23,7 @@ class CalldisplayTest extends Base
         $contact = $query->readContactData($entity);
         $this->assertEquals('Bürgeramt', $contact['name']);
     }
-
+    
     public function testBasicWithCluster()
     {
         $now = static::$now;
