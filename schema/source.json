@@ -94,6 +94,6 @@
             "items": {
                 "$ref": "scope.json"
             }
-        }       
+        }
     }
 }

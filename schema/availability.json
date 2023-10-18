@@ -68,7 +68,7 @@
       "description": "format '0:00' or '16:30'"
     },
     "id": {
-      "type": ["number", "string", "null"],
+      "type": ["string", "number", "null"],
       "description": "ID for the availability. A NULL or zero means, that the availability is new."
     },
     "lastChange": {
