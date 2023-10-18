@@ -292,6 +292,14 @@
                     "type": "string",
                     "description": "key for client to delete or change process"
                 },
+                "showUpTime": {
+                    "type": "number",
+                    "description": "unix timestamp of showing up after call"
+                },
+                "finishTime": {
+                    "type": "number",
+                    "description": "unix timestamp og time when process has been finished"
+                },
                 "clients": {
                     "type": "array",
                     "items": {
