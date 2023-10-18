@@ -61,6 +61,8 @@
                         "alternateAppointmentUrl": "",
                         "amendmentActivated": "0",
                         "amendmentLabel": "",
+                        "customTextfieldActivated": "0",
+                        "customTextfieldLabel": "",
                         "emailRequired": "1",
                         "telephoneActivated": "1",
                         "telephoneRequired": "1"
@@ -310,6 +312,7 @@
             "description": "A process represents a request from one or more clients, usually including an appointment. Compared to an appointment, the process has additional information about the status of the request from the client.",
             "example": {
                 "amendment": "Beispiel Termin",
+                "customTextfield": "Beispiel Termin",
                 "appointments": [
                     {
                         "date": 1447869171,
