@@ -189,12 +189,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "52fa9155097bce1d44a47c0b2e64d7ee00d3c3e3"
+                "reference": "61d16de956d96211595517f0cb7ae273a6da27e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=52fa9155097bce1d44a47c0b2e64d7ee00d3c3e3",
-                "reference": "52fa9155097bce1d44a47c0b2e64d7ee00d3c3e3",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=61d16de956d96211595517f0cb7ae273a6da27e5",
+                "reference": "61d16de956d96211595517f0cb7ae273a6da27e5",
                 "shasum": ""
             },
             "require": {
@@ -245,7 +245,7 @@
             "support": {
                 "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-test"
             },
-            "time": "2023-10-18T12:10:57+00:00"
+            "time": "2023-10-18T12:26:16+00:00"
         },
         {
             "name": "giggsey/libphonenumber-for-php",
