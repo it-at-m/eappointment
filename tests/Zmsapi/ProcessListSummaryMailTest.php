@@ -27,6 +27,7 @@ class ProcessListSummaryMailTest extends Base
         $this->testShortRepetitionSuccess();
     }*/
 
+    /*
     private function testShortRepetitionFailure()
     {
         $this->expectException('BO\Zmsapi\Exception\Process\ProcessListSummaryTooOften');
@@ -39,7 +40,7 @@ class ProcessListSummaryMailTest extends Base
         \App::$now->modify("+ 10Minutes");
         $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 3], []);
         self::assertStringContainsString('haben Sie folgende Termine gebucht', (string)$response->getBody());
-    }
+    }*/
     
     /*
     public function testProcessListEmpty()
