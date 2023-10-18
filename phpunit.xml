@@ -10,9 +10,9 @@
   convertNoticesToExceptions="true" 
   convertWarningsToExceptions="true" 
   forceCoversAnnotation="false" 
-  stopOnFailure="true" 
+  stopOnFailure="false" 
   verbose="true"
-  processIsolation="true"
+  processIsolation="false"
 >
   <coverage processUncoveredFiles="true">
     <include>
