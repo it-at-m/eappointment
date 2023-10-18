@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "395393333e63fde8a8dbfed2ba4208e1",
+    "content-hash": "ef17085d398659f986afaf7d0fb53492",
     "packages": [
         {
             "name": "aura/sql",
@@ -185,16 +185,16 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-muc-main",
+            "version": "dev-muc-test",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "36dfc55cc203cd5385769a0d5a6d8f6567a562d3"
+                "reference": "26e69ced34322c805e4cf20c0e6800e758040001"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=36dfc55cc203cd5385769a0d5a6d8f6567a562d3",
-                "reference": "36dfc55cc203cd5385769a0d5a6d8f6567a562d3",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=26e69ced34322c805e4cf20c0e6800e758040001",
+                "reference": "26e69ced34322c805e4cf20c0e6800e758040001",
                 "shasum": ""
             },
             "require": {
@@ -216,7 +216,7 @@
                 "helmich/phpunit-psr7-assert": "^4.3.0",
                 "league/json-reference": "^1.0",
                 "phpmd/phpmd": "@stable",
-                "phpunit/phpunit": "^9.5.4",
+                "phpunit/phpunit": "^9.6",
                 "squizlabs/php_codesniffer": "^3.5.8",
                 "yuloh/json-guard-cli": "^0.3.0"
             },
@@ -243,9 +243,9 @@
             ],
             "description": "Entity definitions for eappoinment",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-main"
+                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-test"
             },
-            "time": "2023-06-21T11:10:48+02:00"
+            "time": "2023-10-18T10:53:54+00:00"
         },
         {
             "name": "giggsey/libphonenumber-for-php",
