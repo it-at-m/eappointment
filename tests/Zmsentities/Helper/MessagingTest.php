@@ -100,9 +100,10 @@ class MessagingTest extends Base
 
     public function testEmptyProcessOverview()
     {
+        self::expectException('BO\Zmsentities\Exception\ProcessListEmpty');
         $config  = Config::getExample();
         $processList = new ProcessList();
-        $mail = (new Mail())->toResolvedEntity($processList, $config, 'overview');
+        $mail = (new Mail())->toResolvedEntity($processList, $config, 'appointment');
         self::assertStringContainsString('Guten Tag,', $mail->getHtmlPart());
         self::assertStringContainsString('Es wurden keine gebuchten Termine gefunden', $mail->getHtmlPart());
     }
