@@ -304,7 +304,7 @@
                                 "checked": scope.preferences.client.telephoneRequired|default(0),
                             }
                         }]
-                    ) }}
+                    ) }}                    
 
                     {{ formgroup(
                         {
@@ -324,7 +324,7 @@
 
                     {{ formgroup(
                         {
-                            "legend": "Freitexteingabe aktivieren:",
+                            "legend": "Anmerkungtexteingabe aktivieren:",
                             "groupTag": "fieldset"
                         },
                         [{
@@ -340,7 +340,7 @@
 
                     {{ formgroup(
                         {
-                            "label": "Freitextlabel:"
+                            "label": "Anmerkungtextlabel:"
                         },
                         [{
                             "type":"input",
@@ -351,6 +351,46 @@
                             }
                         }]
                     ) }}
+
+
+                    {{ formgroup(
+                        {
+                            "legend": "Freitextfeld:",
+                            "groupTag": "fieldset"
+                        },
+                        [{
+                            "type":"checkbox",
+                            "parameter": {
+                                "label": "bei der Internetbuchung",
+                                "name": "preferences[client][customTextfieldActivated]",
+                                "value": 1,
+                                "checked": scope.preferences.client.customTextfieldActivated|default(0),
+                            }
+                        },{
+                            "type":"checkbox",
+                            "parameter": {
+                                "label": "und ist Pflichtfeld",
+                                "name": "preferences[client][customTextfieldRequired]",
+                                "id": "customTextfield",
+                                "value": 1,
+                                "checked": scope.preferences.client.customTextfieldRequired|default(0),
+                            }
+                        }]
+                    ) }}    
+
+                    {{ formgroup(
+                        {
+                            "label": "Freitextfeldlabel:"
+                        },
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "name": "preferences[client][customTextfieldLabel]",
+                                "value": scope.preferences.client.customTextfieldLabel,
+                                "maxlength": 100
+                            }
+                        }]
+                    ) }}                    
 
                     {{ formgroup(
                         {"label": "URL für qualifizierte Terminvereinbarung:", "description": "Diese URL wird für Internetkunden automatisch verwendet.<br> Buchungen per Telefon oder über den Tresen umgehen die hier angegebene qualifizierte Terminvereinbarung."},
