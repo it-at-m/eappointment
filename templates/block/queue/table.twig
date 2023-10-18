@@ -1,9 +1,7 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless queue-table'} %}
 {% use "block/calendar/navigation.twig" %}
 {% use "block/workstation/scopeSwitch.twig" %}
-
         {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield %}
-
         {% block board_title %}
             {% trans %}Warteschlange{% endtrans %}
             {% if clusterEnabled and cluster.scopes|length <= 1 %}
@@ -12,12 +10,10 @@
                 {{ workstation.scope.contact.name }} {{ workstation.scope.shortName }}
             {% endif %}
         {% endblock %}
-
         {% block board_title_aside %}
             <strong class="date">{{ selectedDate|format_date(pattern="EE dd. MMMM y")}}</strong>
             {{ block('calender_navigation_day') }}
         {% endblock %}
-
         {% block board_header_right %}
             {% if cluster.scopes|length > 1 %}
                 {{ block('scope_switch') }}
@@ -45,7 +41,6 @@
                 {#{ inputfield({ "name":"selectedDate", "type":"hidden", "value":selectedDate }) }#}
                 {{ inputfield({ "name":"scope", "type":"hidden", "value":workstationScope }) }}
             </form>
-
             <a href="#" title="Liste neu laden" class="button button--diamond reload"><i class="fas fa-sync" aria-hidden="true"></i> <span class="aural">Liste neu laden</span></a>
             <a
                 href="{{urlGet('scopeAppointmentsByDay', {id: workstation.scope.id, date: selectedDate})}}?print=1"
@@ -60,7 +55,6 @@
                 class="button button--diamond download"
             ><i class="fas fa-download" aria-hidden="true"></i> <span class="aural">Download</span></a>
         {% endblock %}
-        
         {% block board_body %}
             {% set lfdnr = 0 %}
             <div class="table-responsive-wrapper">
@@ -81,6 +75,7 @@
                         <th>Mail</th>
                         <th>Dienstleistung</th>
                         <th>Anmerkung</th>
+                        <th>Freitextfeld: {{workstation.scope.preferences.client.customTextfieldLabel}}</th>                        
                         <th>Wartezeit</th>
                         <th></th>
                         <th></th>
@@ -96,7 +91,6 @@
                             {% set tense = "future" %}
                             {% set statusTitle = "Dieser Termin ist aktiv und liegt in der Zukunt" %}
                         {% endif %}
-
                         {% set hideWithOutAppointment = false %}
                         {% if 0 == workstation.queue.appointmentsOnly and not item.queue.withAppointment %}
                             {% set hideWithOutAppointment = true %}
@@ -190,6 +184,9 @@
                                 </p>
                             </td>
                             <td>
+                                {{ item.customTextfield|decodeEntities|raw }}
+                            </td>                            
+                            <td>
                                 {% if item.queue.withAppointment %}
                                     Termin
                                 {% else %}
@@ -210,14 +207,10 @@
                             {% endif %}
                         </tr>
                     {% endif %}
-
                     {% endfor %}
                 </tbody>
             </table>
             </div>
-            
-
-           
             <h2>Verpasste Termine</h2>
             {% if processListMissed|length %}
                 <div class="table-responsive-wrapper"> 
@@ -231,10 +224,10 @@
                             <th>Telefon</th>
                             <th>Art</th>
                             <th>Anmerkung</th>
+                            <th>Freitextfeld: {{workstation.scope.preferences.client.customTextfieldLabel}}</th>
                             <th>Aktion</th>
                         </tr>
                     </thead>
-
                     {% set lfdnr = 0 %}
                     {% for item in processListMissed %}
                         {% set lfdnr = lfdnr + 1 %}
@@ -273,15 +266,9 @@
                     {% endfor %}
                 </table>
                 </div>
-
             {% else %}
-
                 Keine Einträge gefunden.
-
             {% endif %}
-
-            
-            
             <div class="form-actions">
                 <div class="right">
                     <button title="{% trans %}Warteschlange neu laden{% endtrans %}" class="button button-reload reload"><i class="fas fa-sync"></i> Warteschlange aktualisieren</button>
@@ -293,9 +280,5 @@
                 </div>
             {% endif %}
         {% endblock %}
-
-
         {% block board_footer %}{% endblock %}
-
-
 {% endembed %}
