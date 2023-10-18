@@ -10,7 +10,7 @@ class ProcessListSummaryMailTest extends Base
 
     public function testRendering()
     {
-        $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 3], []);
+        $response = $this->render([], ['mail' => 'zms@service.berlinonline.de'], []);
         self::assertStringContainsString('Sie haben folgende Termine gebucht', (string)$response->getBody());
         self::assertStringContainsString('10118', (string)$response->getBody());
         self::assertStringContainsString('10114', (string)$response->getBody());
@@ -29,14 +29,14 @@ class ProcessListSummaryMailTest extends Base
     private function testShortRepetitionFailure()
     {
         $this->expectException('BO\Zmsapi\Exception\Process\ProcessListSummaryTooOften');
-        $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 3], []);
+        $response = $this->render([], ['mail' => 'zms@service.berlinonline.de'], []);
         self::assertSame(StatusCode::HTTP_TOO_MANY_REQUESTS, $response->getStatusCode());
     }
 
     private function testShortRepetitionSuccess()
     {
         \App::$now->modify("+ 10Minutes");
-        $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 3], []);
+        $response = $this->render([], ['mail' => 'zms@service.berlinonline.de'], []);
         self::assertStringContainsString('haben Sie folgende Termine gebucht', (string)$response->getBody());
     }
     
