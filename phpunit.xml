@@ -12,7 +12,7 @@
   forceCoversAnnotation="false" 
   stopOnFailure="false" 
   verbose="false"
-  processIsolation="true"
+  processIsolation="false"
 >
     <testsuites>
         <testsuite name="Zmsdb Test Suite">

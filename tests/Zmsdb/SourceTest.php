@@ -22,7 +22,7 @@ class SourceTest extends Base
 
     public function testResolveReferences2()
     {
-        $entity = (new Query())->readEntity('unittest', 2);
+        $entity = (new Query())->readEntity('dldb', 2);
         $this->assertArrayHasKey('data', $entity->getProviderList()->getFirst());
     }
 

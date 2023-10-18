@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "395393333e63fde8a8dbfed2ba4208e1",
+    "content-hash": "ef17085d398659f986afaf7d0fb53492",
     "packages": [
         {
             "name": "aura/sql",
@@ -185,16 +185,25 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-muc-main",
+            "version": "dev-muc-test",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
+<<<<<<< HEAD
                 "reference": "dcab5e077979d91d801cb5e7b668574907c8e45f"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=dcab5e077979d91d801cb5e7b668574907c8e45f",
                 "reference": "dcab5e077979d91d801cb5e7b668574907c8e45f",
+=======
+                "reference": "26e69ced34322c805e4cf20c0e6800e758040001"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=26e69ced34322c805e4cf20c0e6800e758040001",
+                "reference": "26e69ced34322c805e4cf20c0e6800e758040001",
+>>>>>>> 4ca42acc4ff9137b15e7b6e40c39b0b9ce9a94b9
                 "shasum": ""
             },
             "require": {
@@ -243,9 +252,13 @@
             ],
             "description": "Entity definitions for eappoinment",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-main"
+                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-test"
             },
+<<<<<<< HEAD
             "time": "2023-10-18T12:42:19+00:00"
+=======
+            "time": "2023-10-18T10:53:54+00:00"
+>>>>>>> 4ca42acc4ff9137b15e7b6e40c39b0b9ce9a94b9
         },
         {
             "name": "giggsey/libphonenumber-for-php",
