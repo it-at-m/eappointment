@@ -158,6 +158,9 @@ class Scope extends Base implements MappingInterface
             'preferences__client__emailRequired' => 'scope.emailPflichtfeld',
             'preferences__client__telephoneActivated' => 'scope.telefonaktiviert',
             'preferences__client__telephoneRequired' => 'scope.telefonPflichtfeld',
+            'preferences__client__customTextfieldActivated' => 'scope.custom_text_field_active',
+            'preferences__client__customTextfieldRequired' => 'scope.custom_text_field_required',
+            'preferences__client__customTextfieldLabel' => 'scope.custom_text_field_label',
             'preferences__notifications__confirmationContent' => 'scope.smsbestaetigungstext',
             'preferences__notifications__headsUpContent' => 'scope.smsbenachrichtigungstext',
             'preferences__notifications__headsUpTime' => 'scope.smsbenachrichtigungsfrist',
@@ -289,6 +292,9 @@ class Scope extends Base implements MappingInterface
         $data['emailPflichtfeld'] = $entity->getPreference('client', 'emailRequired', true);
         $data['telefonaktiviert'] = $entity->getPreference('client', 'telephoneActivated', true);
         $data['telefonPflichtfeld'] = $entity->getPreference('client', 'telephoneRequired', true);
+        $data['custom_text_field_active'] = $entity->getPreference('client', 'customTextfieldActivated', true);
+        $data['custom_text_field_required'] = $entity->getPreference('client', 'customTextfieldRequired', true);
+        $data['custom_text_field_label'] = $entity->getPreference('client', 'customTextfieldLabel');
         $data['smsbestaetigungstext'] = $entity->getPreference('notifications', 'confirmationContent');
         $data['smsbenachrichtigungstext'] = $entity->getPreference('notifications', 'headsUpContent');
         $data['smsbenachrichtigungsfrist'] = $entity->getPreference('notifications', 'headsUpTime');
@@ -355,6 +361,9 @@ class Scope extends Base implements MappingInterface
         }
         if (!$data[$this->getPrefixed('preferences__client__telephoneActivated')]) {
             $data[$this->getPrefixed("preferences__client__telephoneRequired")] = 0;
+        }
+        if (!$data[$this->getPrefixed('preferences__client__customTextfieldActivated')]) {
+            $data[$this->getPrefixed("preferences__client__customTextfieldRequired")] = 0;
         }
         return $data;
     }

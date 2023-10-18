@@ -19,6 +19,7 @@ class Process extends Base implements MappingInterface
     const QUERY_DEREFERENCED = "UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
         SET
             process.Anmerkung = ?,
+            process.custom_text_field = ?,
             process.StandortID = 0,
             process.AbholortID = 0,
             process.Abholer = 0,
@@ -43,7 +44,7 @@ class Process extends Base implements MappingInterface
                     'Abgesagter Termin gebucht am: ',
                     FROM_UNIXTIME(process.IPTimeStamp,'%d.%m.%Y, %H:%i'),' Uhr | ',
                     IFNULL(process.Anmerkung,'')
-                ),
+                ),              
                 process.Name = '(abgesagt)',
                 process.IPadresse = '',
                 process.IPTimeStamp = :canceledTimestamp + (IFNULL(s.loeschdauer, 15) * 60),
@@ -199,6 +200,7 @@ class Process extends Base implements MappingInterface
                     `process`.`Telefonnummer`
                 )'
             ),
+            'customTextfield' => 'process.custom_text_field',
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
             'lastChange' => 'process.updateTimestamp',
@@ -589,6 +591,21 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+
+    public function addConditionCustomTextfield($customText, $exactMatching = false)
+    {
+        if ($exactMatching) {
+            $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($customText) {
+                $query->andWith('process.custom_text_field', '=', $customText);
+            });
+        } else {
+            $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($customText) {
+                $query->andWith('process.custom_text_field', 'LIKE', "%$customText%");
+            });
+        }
+        return $this;
+    }
+
     public function addConditionAmendment($amendment)
     {
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($amendment) {
@@ -760,6 +777,9 @@ class Process extends Base implements MappingInterface
         }
         if ($process->getAmendment()) {
             $data['Anmerkung'] = $process->getAmendment();
+        }
+        if ($process->getCustomTextfield()) {
+            $data['custom_text_field'] = $process->getCustomTextfield();
         }
         $data['zustimmung_kundenbefragung'] = ($client->surveyAccepted) ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
