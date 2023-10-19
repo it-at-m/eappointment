@@ -117,8 +117,7 @@ class ProcessStatusArchived extends Process
         $departmentId,
         $organisationId,
         $ownerId,
-        $dateTime,
-        $processingTime
+        $dateTime
     ) {
         return $this->perform(
             Query\ProcessStatusArchived::QUERY_INSERT_IN_STATISTIC,
@@ -133,7 +132,7 @@ class ProcessStatusArchived extends Process
                 'date' => $process->getFirstAppointment()->toDateTime()->format('Y-m-d'),
                 'withAppointment' => ($process->toQueue($dateTime)->withAppointment) ? 1 : 0,
                 'requestId' => $requestId,
-                'processingTime' => $processingTime
+                'processingTime' => $process->bearbeitungszeit
             ]
         );
     }

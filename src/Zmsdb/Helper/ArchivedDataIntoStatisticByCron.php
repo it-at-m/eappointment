@@ -89,8 +89,6 @@ class ArchivedDataIntoStatisticByCron
     ) {
         $requestList = (new \BO\Zmsdb\Request())->readRequestByArchiveId($process->archiveId);
         $requestList = ($requestList->count()) ? $requestList : [new \BO\Zmsentities\Request(['id' => '-1'])];
-        
-        $processingTime = $requestList->count() === 1 ? $process->showUpTime - $process->finishTime : null;
 
         foreach ($requestList as $request) {
             $archived = true; // for verbose
@@ -103,8 +101,7 @@ class ArchivedDataIntoStatisticByCron
                     $department->getId(),
                     $organisation->getId(),
                     $owner->getId(),
-                    $dateTime,
-                    $processingTime
+                    $dateTime
                 );
             }
             if ($archived) {
