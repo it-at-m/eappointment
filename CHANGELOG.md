@@ -1,6 +1,3 @@
-## 2.26.00
-* #58442 - The totals line in the service statistics has been removed
-
 ## 2.25.01
 * #56991 - The curl option for setting up an API proxy server has been added to the configuration
 

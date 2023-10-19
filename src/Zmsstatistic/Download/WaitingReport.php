@@ -15,13 +15,10 @@ use Psr\Http\Message\ResponseInterface;
 class WaitingReport extends Base
 {
     protected $reportParts = [
-        'waitingcalculated' => 'maximal berechnetet Wartezeit Spontankunde',
-        'waitingcount' => 'maximal Wartende Spontankunde',
-        'waitingtime' => 'maximal gemessene Wartezeit Spontankunde',
-        'waitingcount_termin' => 'maximal Wartende Terminkunde',
-        'waitingtime_termin' => 'maximal gemessene Wartezeit Terminkunde'
+        'waitingcalculated' => 'maximal berechnetet Wartezeit',
+        'waitingcount' => 'maximal Wartende',
+        'waitingtime' => 'maximal gemessene Wartezeit'
     ];
-    
     /**
      * @SuppressWarnings(Param)
      * @return ResponseInterface
@@ -81,25 +78,15 @@ class WaitingReport extends Base
     {
         $entity = clone $report;
         $totals = array_pop($entity->data);
-        $reportTotal['max'][] = 'Tagesmaximum Spontantkunde';
-        $reportTotal['average'][] = 'Tagesdurchschnitt Spontantkunde';
-        $reportTotal['max'][] = $totals['max_waitingtime'];
-        $reportTotal['average'][] = $totals['average_waitingtime'];
+        $reportTotal['max'][] = 'Tagesmaximum';
+        $reportTotal['average'][] = 'Tagesdurchschnitt';
+        $reportTotal['max'][] = $totals['max'];
+        $reportTotal['average'][] = $totals['average'];
         foreach ($entity->data as $entry) {
-            $reportTotal['max'][] = $entry['max_waitingtime'];
-            $reportTotal['average'][] = $entry['average_waitingtime'];
+            $reportTotal['max'][] = $entry['max'];
+            $reportTotal['average'][] = $entry['average'];
         }
         $sheet->fromArray($reportTotal, null, 'A'. ($sheet->getHighestRow() + 1));
-
-        $reportTotal2['max'][] = 'Tagesmaximum Terminkunde';
-        $reportTotal2['average'][] = 'Tagesdurchschnitt Terminkunde';
-        $reportTotal2['max'][] = $totals['max_waitingtime_termin'];
-        $reportTotal2['average'][] = $totals['average_waitingtime_termin'];
-        foreach ($entity->data as $entry) {
-            $reportTotal2['max'][] = $entry['max_waitingtime_termin'];
-            $reportTotal2['average'][] = $entry['average_waitingtime_termin'];
-        }
-        $sheet->fromArray($reportTotal2, null, 'A'. ($sheet->getHighestRow() + 1));
     }
 
     public function writeReportPart(ReportEntity $report, $sheet, $rangeName, $headline)

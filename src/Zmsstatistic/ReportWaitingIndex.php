@@ -15,9 +15,7 @@ class ReportWaitingIndex extends BaseController
     protected $hashset = [
         'waitingcount',
         'waitingtime',
-        'waitingcalculated',
-        'waitingcount_termin',
-        'waitingtime_termin'
+        'waitingcalculated'
     ];
 
     protected $groupfields = [
@@ -44,10 +42,8 @@ class ReportWaitingIndex extends BaseController
             ->readGetResult('/warehouse/waitingscope/' . $this->workstation->scope['id'] . '/'. $args['period']. '/')
             ->getEntity()
             ->toGrouped($this->groupfields, $this->hashset)
-            ->withMaxByHour($this->hashset);
-
-            $exchangeWaiting = $this->withMaxAndAverageFromWaitingTime($exchangeWaiting, 'waitingtime');
-            $exchangeWaiting = $this->withMaxAndAverageFromWaitingTime($exchangeWaiting, 'waitingtime_termin');
+            ->withMaxByHour($this->hashset)
+            ->withMaxAndAverageFromWaitingTime();
         }
 
         $type = $validator->getParameter('type')->isString()->getValue();
@@ -77,26 +73,5 @@ class ReportWaitingIndex extends BaseController
               'workstation' => $this->workstation->getArrayCopy()
             )
         );
-    }
-
-    public function withMaxAndAverageFromWaitingTime($entity, $targetKey)
-    {
-        foreach ($entity->data as $date => $dateItems) {
-            $maxima = 0;
-            $total = 0;
-            $count = 0;
-            foreach ($dateItems as $hourItems) {
-                foreach ($hourItems as $key => $value) {
-                    if (is_numeric($value) && $targetKey == $key && 0 < $value) {
-                        $total += $value;
-                        $count += 1;
-                        $maxima = ($maxima > $value) ? $maxima : $value;
-                    }
-                }
-            }
-            $entity->data[$date]['max_' . $targetKey] = $maxima;
-            $entity->data[$date]['average_' . $targetKey] = (! $total || ! $count) ? 0 : floor($total / $count);
-        }
-        return $entity;
     }
 }
