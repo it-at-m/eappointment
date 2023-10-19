@@ -316,6 +316,16 @@ class Process extends Schema\Entity
         return $this->toProperty()->amendment->get();
     }
 
+    public function getShowUpTime()
+    {
+        return $this->toProperty()->showUpTime->get();
+    }
+
+    public function getFinishTime()
+    {
+        return $this->toProperty()->finishTime->get();
+    }
+
     public function addAmendment($input, $notice = '')
     {
         $this->amendment = $notice;
