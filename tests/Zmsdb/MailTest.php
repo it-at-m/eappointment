@@ -177,8 +177,6 @@ class MailTest extends Base
                             "alternateAppointmentUrl" => "",
                             "amendmentActivated" => "0",
                             "amendmentLabel" => "",
-                            "customTextfieldActivated" => "0",
-                            "customTextfieldLabel" => "",
                             "emailRequired" => "1",
                             "telephoneActivated" => "1",
                             "telephoneRequired" => "1"
