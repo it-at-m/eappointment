@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ef17085d398659f986afaf7d0fb53492",
+    "content-hash": "395393333e63fde8a8dbfed2ba4208e1",
     "packages": [
         {
             "name": "aura/sql",
@@ -185,16 +185,16 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-muc-test",
+            "version": "dev-muc-main",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "26e69ced34322c805e4cf20c0e6800e758040001"
+                "reference": "85b7c46c0fe03b933c1f2931a975187c3723f52e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=26e69ced34322c805e4cf20c0e6800e758040001",
-                "reference": "26e69ced34322c805e4cf20c0e6800e758040001",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=85b7c46c0fe03b933c1f2931a975187c3723f52e",
+                "reference": "85b7c46c0fe03b933c1f2931a975187c3723f52e",
                 "shasum": ""
             },
             "require": {
@@ -243,9 +243,9 @@
             ],
             "description": "Entity definitions for eappoinment",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-test"
+                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-main"
             },
-            "time": "2023-10-18T10:53:54+00:00"
+            "time": "2023-10-20T11:41:23+00:00"
         },
         {
             "name": "giggsey/libphonenumber-for-php",
