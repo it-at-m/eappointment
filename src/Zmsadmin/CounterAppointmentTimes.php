@@ -22,13 +22,17 @@ class CounterAppointmentTimes extends BaseController
         $dateTime = new \BO\Zmsentities\Helper\DateTime($selectedDate);
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
         
-        $availabilityList = \App::$http
+        try {
+            $availabilityList = \App::$http
             ->readGetResult('/scope/'. $workstation->scope['id'] . '/availability/', [
                 'startDate' => $selectedDate,
                 'endDate' => $selectedDate
             ], \App::CONFIG_SECURE_TOKEN)
             ->getCollection()
             ->withDateTime($dateTime);
+        } catch (\Exception $e) {
+            $availabilityList = [];
+        }
 
         return \BO\Slim\Render::withHtml(
             $response,
