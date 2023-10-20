@@ -675,6 +675,8 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function writeBlockedEntity(\BO\Zmsentities\Process $process)
     {
         $amendment = $process->toDerefencedAmendment();
+        $customTextfield = $process->toDerefencedcustomTextfield();
+
         if (!isset($process->queue['status'])) {
             $process->queue['status'] = $process->status;
         }
@@ -682,6 +684,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $query = Query\Process::QUERY_DEREFERENCED;
         $status = $this->perform($query, array(
             $amendment,
+            $customTextfield,
             $process->id,
             $process->authKey,
             $process->id
