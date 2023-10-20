@@ -248,7 +248,6 @@ EOS;
         $default =<<< EOS
 {
     amendment
-    customTextfield
     authKey
     id
     status
@@ -311,7 +310,6 @@ EOS;
         $default =<<< EOS
 {
     amendment
-    customTextfield
     id
     appointments{
         date
