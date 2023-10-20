@@ -101,13 +101,9 @@ class ProcessChange extends BaseController
                 $validator->getParameter('surveyAccepted'),
                 $delegatedProcess->setter('clients', 0, 'surveyAccepted')
             )
-            ->validateText(
+            ->validateAmendment(
                 $validator->getParameter('amendment'),
                 $delegatedProcess->setter('amendment')
-            )
-            ->validateText(
-                $validator->getParameter('customTextfield'),
-                $delegatedProcess->setter('customTextfield')
             )
             ->validateReminderTimestamp(
                 $validator->getParameter('headsUpTime'),

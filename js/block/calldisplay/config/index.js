@@ -338,6 +338,38 @@ class CallDisplayConfigView extends Component {
                 <div className="form-actions">
                     <a href={calldisplayUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt"></i> Aktuelle Konfiguration in einem neuen Fenster öffnen</a>
                 </div>
+
+                <FormGroup>
+                    <Label attributes={{ "htmlFor": "webcalldisplayLayout" }} value="Layout mobile Aufrufanzeige"></Label>
+                    <Controls>
+                        <Select
+                            attributes={{ "id": "webcalldisplayLayout" }}
+                            options={[
+                                { name: 'Uhrzeit, 6-12 Aufrufe | Platz', value: 'defaultplatz' },
+                                { name: 'Uhrzeit, 6-12 Aufrufe | Raum', value: 'defaultraum' },
+                                { name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe | Platz', value: 'nrwaitplatz' },
+                                { name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe | Raum', value: 'nrwaitraum' },
+                                { name: 'Legacy', value: 'legacy' },
+                                { name: 'Lokal', value: 'local' },
+                                { name: 'Allgemein', value: 'usual' },
+                            ]}
+                            value={this.state.webtemplate}
+                            onChange={onWebTemplateStatusChange} />
+                    </Controls>
+                </FormGroup>
+                <FormGroup>
+                    <Label attributes={{ "htmlFor": "webcalldisplayUrl" }} value="Webcall Display URL"></Label>
+                    <Controls>
+                        <Inputs.Text
+                            value={webcalldisplayUrl}
+                            attributes={{ readOnly: true, id: "webcalldisplayUrl" }} />
+                    </Controls>
+                </FormGroup>
+                <div className="form-actions">
+                    <button className="button" onClick={(event) => {event.preventDefault(); this.toggleQrCodeView();}}>QR-Code anzeigen / drucken</button>
+                    <a href={webcalldisplayUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt"></i> in der mobilen Anzeige öffnen</a>
+                </div>
+                { this.state.showQrCode ? <QrCodeView text='QrCode für die mobile Ansicht des Aufrufsystems' targetUrl={webcalldisplayUrl} togglePopup={this.toggleQrCodeView.bind(this)} /> : null }
             </form>
         )
     }
