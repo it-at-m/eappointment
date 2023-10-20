@@ -28,6 +28,10 @@
     {
       "type": "vcs",
       "url": "https://gitlab.com/eappointment/zmsdldb"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/mellon"
     }
   ],
   "config": {
