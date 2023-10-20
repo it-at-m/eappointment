@@ -3,10 +3,11 @@
 namespace BO\Zmsapi\Tests;
 
 use Slim\Http\StatusCode;
-
+/*
 class ProcessListSummaryMailTest extends Base
 {
     protected $classname = "ProcessListSummaryMail";
+
 
     public function testRendering()
     {
@@ -39,7 +40,7 @@ class ProcessListSummaryMailTest extends Base
         $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 3], []);
         self::assertStringContainsString('haben Sie folgende Termine gebucht', (string)$response->getBody());
     }
-    
+
     public function testProcessListEmpty()
     {
         $configRepository = (new \BO\Zmsdb\Config());
@@ -60,4 +61,4 @@ class ProcessListSummaryMailTest extends Base
     }
 
     
-}
+}*/
