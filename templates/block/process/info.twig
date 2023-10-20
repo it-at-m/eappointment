@@ -43,6 +43,14 @@
                     {{ workstation.process.clients|first.email }}
                 </dd>
                 {% endif %}
+                {% if workstation.process.customTextfield %}
+                <dt>
+                    Freitextfeld: {{workstation.scope.preferences.client.customTextfieldLabel}}
+                </dt>
+                <dd>
+                    {{ workstation.process.customTextfield }}
+                </dd>
+                {% endif %}    
                 <dt>
                     Wartezeit
                 </dt>
