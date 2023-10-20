@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "395393333e63fde8a8dbfed2ba4208e1",
+    "content-hash": "ef17085d398659f986afaf7d0fb53492",
     "packages": [
         {
             "name": "aura/sql",
@@ -185,7 +185,7 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-muc-main",
+            "version": "dev-muc-test",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
@@ -243,7 +243,7 @@
             ],
             "description": "Entity definitions for eappoinment",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-main"
+                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-test"
             },
             "time": "2023-10-18T12:42:19+00:00"
         },
