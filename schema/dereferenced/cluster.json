@@ -67,6 +67,7 @@
                         "client": {
                             "alternateAppointmentUrl": "https:\/\/service.berlin.de",
                             "amendmentLabel": "Zusatzinformationen zum Anliegen",
+                            "customTextfieldLabel": "Zusatzfeld zum Anliegen",
                             "emailRequired": false,
                             "telephoneActivated": true,
                             "telephoneRequired": false
@@ -249,6 +250,19 @@
                                             "number"
                                         ],
                                         "description": "true if an amendment is activated",
+                                        "default": false
+                                    },
+                                    "customTextfieldLabel": {
+                                        "type": "string",
+                                        "description": "label for the form field to enter additional informations to a process",
+                                        "default": ""
+                                    },
+                                    "customTextfieldActivated": {
+                                        "type": [
+                                            "boolean",
+                                            "number"
+                                        ],
+                                        "description": "true if an custom textfield is activated",
                                         "default": false
                                     },
                                     "emailFrom": {

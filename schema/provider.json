@@ -40,7 +40,10 @@
             "description": "URI with detailed information for the provider"
         },
         "data": {
-            "type": ["object","array"],
+            "type": [
+                "object",
+                "array"
+              ],
             "description": "source dependant additional properties",
             "additionalProperties": true
         },
