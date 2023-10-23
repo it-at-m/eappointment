@@ -13,7 +13,7 @@
                 "date": "1456310041",
                 "familyName": "Max Mustermann",
                 "clientEmail": "max@zms-bo.de",
-                "clientTelehone": "03023232323",
+                "clientTelephone": "03023232323",
                 "clientAmendment": "Notiz zum Termin",
                 "authKey": "1234",
                 "notificationConfirmation": false
@@ -103,10 +103,13 @@
                         "clientEmail": {
                             "type": "string"
                         },
-                        "clientTelehone": {
+                        "clientTelephone": {
                             "type": "number"
                         },
                         "clientAmendment": {
+                            "type": "string"
+                        },
+                        "clientCustomTextfield": {
                             "type": "string"
                         },
                         "authKey": {

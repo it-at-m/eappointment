@@ -2,7 +2,7 @@
   "type": "object",
   "description": "A process represents a request from one or more clients, usually including an appointment. Compared to an appointment, the process has additional information about the status of the request from the client.",
   "example": {
-    "amendment": "Beispiel Termin",
+
     "appointments": [
       {
         "date": 1447869171,
@@ -205,6 +205,7 @@
         "client": {
             "alternateAppointmentUrl": "https://service.berlin.de",
             "amendmentLabel": "Zusatzinformationen zum Anliegen",
+            "customTextfieldLabel": "Zusatzfeld zum Anliegen",
             "emailRequired": false,
             "telephoneActivated": true,
             "telephoneRequired": false
@@ -258,6 +259,13 @@
         "string"
       ],
       "description": "additional information for this process from the client",
+      "default": ""
+    },
+    "customTextfield": {
+      "type": [
+        "string"
+      ],
+      "description": "additional textfield for this process from the client",
       "default": ""
     },
     "apiclient": {

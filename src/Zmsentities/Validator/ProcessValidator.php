@@ -166,7 +166,7 @@ class ProcessValidator
         return $this;
     }
 
-    public function validateAmendment(Unvalidated $unvalid, callable $setter): self
+    public function validateText(Unvalidated $unvalid, callable $setter): self
     {
         $valid = $unvalid->isString();
         $length = strlen($valid->getUnvalidated());
@@ -178,7 +178,7 @@ class ProcessValidator
         }
         return $this;
     }
-
+    
     public function validateReminderTimestamp(Unvalidated $unvalid, callable $setter, callable $conditionCallback): self
     {
         $valid = $unvalid->isNumber();
