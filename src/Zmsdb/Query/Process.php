@@ -202,6 +202,8 @@ class Process extends Base implements MappingInterface
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
             'lastChange' => 'process.updateTimestamp',
+            'showUpTime' => 'process.showUpTime',
+            'finishTime' => 'process.finishTime',
             'status' => $status_expression,
             'queue__status' => $status_expression,
             'queue__arrivalTime' => self::expression(
