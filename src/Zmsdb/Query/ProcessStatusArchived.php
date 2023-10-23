@@ -44,6 +44,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
             'scope__id' => 'process.StandortID',
             '__clientsCount' => 'process.AnzahlPersonen',
             'waitingTime' => 'process.wartezeit',
+            'bearbeitungszeit' => 'process.bearbeitungszeit',
             'queue__arrivalTime' => self::expression(
                 'CONCAT(`process`.`Datum`, " 00:00:00")'
             ),
