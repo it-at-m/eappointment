@@ -122,10 +122,12 @@ class ProcessStatusArchived extends Base implements MappingInterface
             'nicht_erschienen' => ('missed' == $process->queue['status']) ? 1 : 0,
             'Timestamp' => $now->format('H:i:s'),
             'wartezeit' => ($process->getWaitedSeconds() > 0) ? $process->getWaitedMinutes() : 0,
-            'bearbeitungszeit' => ($process->finishTime) ? 
-                floor(
-                    ((new \DateTime($process->finishTime))->getTimestamp()
-                    - (new \DateTime($prcess->showUpTime))->getTimestamp()) / 60)
+            'bearbeitungszeit' => $process->finishTime
+                ? floor(
+                    (
+                        (new \DateTime($process->finishTime))->getTimestamp()
+                        - (new \DateTime($process->showUpTime))->getTimestamp()
+                    ) / 60)
                 : null,
             'AnzahlPersonen' => $process->getClients()->count()
         ]);
