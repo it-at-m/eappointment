@@ -287,11 +287,11 @@
                         }
                     ],
                     "showUpTime": {
-                        "type": "number",
+                        "type": "timestamp",
                         "description": "unix timestamp of showing up after call"
                     },
                     "finishTime": {
-                        "type": "number",
+                        "type": "timestamp",
                         "description": "unix timestamp og time when process has been finished"
                     },
                     "scope": {
