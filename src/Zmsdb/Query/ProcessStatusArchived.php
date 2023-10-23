@@ -123,8 +123,9 @@ class ProcessStatusArchived extends Base implements MappingInterface
             'Timestamp' => $now->format('H:i:s'),
             'wartezeit' => ($process->getWaitedSeconds() > 0) ? $process->getWaitedMinutes() : 0,
             'bearbeitungszeit' => ($process->getFinishTime()) ? 
-                floor((new \DateTime($process->getFinishTime())->getTimestamp() 
-                    - new \DateTime($prcess->getShowUpTime())) / 60)
+                floor(
+                    ((new \DateTime($process->getFinishTime()))->getTimestamp()
+                    - (new \DateTime($prcess->getShowUpTime()))->getTimestamp()) / 60)
                 : null,
             'AnzahlPersonen' => $process->getClients()->count()
         ]);
