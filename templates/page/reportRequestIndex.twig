@@ -67,7 +67,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for name, entry in exchangeRequest.data|filter(name => name != "sum") %}
+                    {% for name, entry in exchangeRequest.data %}
+                    {% if name != "sum" %}
                     <tr>
                         <th class="report-board--long-text">{{ name|trans }}</th>
                         <td class="report-board--summary">
@@ -84,6 +85,7 @@
                             </td>
                         {% endfor %}
                     </tr>
+                    {% endif %}
                     {% endfor %}
                 </tbody>
             </table>
