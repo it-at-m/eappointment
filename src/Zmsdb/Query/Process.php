@@ -874,21 +874,12 @@ class Process extends Base implements MappingInterface
             '=',
             'processuser.NutzerID'
         );
-        
+
         $this->leftJoin(
             new Alias(Scope::TABLE, 'processscope'),
             'process.StandortID',
             '=',
             'processscope.StandortID'
-        );
-
-        $this->leftJoin(
-            new Alias(ProcessArchive::TABLE, ProcessArchive::ALIAS),
-            self::expression(
-                self::ALIAS . '.processArchiveId = ' . ProcessArchive::ALIAS .'.id AND '.
-                ProcessArchive::ALIAS .'.id != 0
-            '
-            )
         );
     }
 }
