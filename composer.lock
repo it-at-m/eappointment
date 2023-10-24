@@ -302,12 +302,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsdb.git",
-                "reference": "b1c91fb99012218d16dbdd0c6c477f16d6de3187"
+                "reference": "afe6a66e0262c2bb2743c22990ae6e703d4f5264"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=b1c91fb99012218d16dbdd0c6c477f16d6de3187",
-                "reference": "b1c91fb99012218d16dbdd0c6c477f16d6de3187",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=afe6a66e0262c2bb2743c22990ae6e703d4f5264",
+                "reference": "afe6a66e0262c2bb2743c22990ae6e703d4f5264",
                 "shasum": ""
             },
             "require": {
@@ -378,7 +378,7 @@
             "support": {
                 "source": "https://gitlab.com/eappointment/zmsdb/-/tree/muc-main"
             },
-            "time": "2023-10-20T12:19:05+00:00"
+            "time": "2023-10-24T08:18:00+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
