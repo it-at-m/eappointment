@@ -619,6 +619,7 @@ class Process extends Base implements Interfaces\ResolveReferences
                     $entityId
                 ));
                 if ($status) {
+                    $this->writeProcessArchiveEntry($entity, Entity::STATUS_DELETED);
                     $this->deleteRequestsForProcessId($entityId);
                     (new Slot())->deleteSlotProcessMappingFor($entityId);
                     Log::writeLogEntry("DELETE (Process::writeDeletedEntity) $entityId ", $processId);
@@ -672,7 +673,7 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Resource Status
      */
-    public function writeBlockedEntity(\BO\Zmsentities\Process $process)
+    public function writeBlockedEntity(\BO\Zmsentities\Process $process, bool $releaseSlots = false)
     {
         $amendment = $process->toDerefencedAmendment();
         $customTextfield = $process->toDerefencedcustomTextfield();
@@ -694,7 +695,9 @@ class Process extends Base implements Interfaces\ResolveReferences
             if ($processEntityList->count()) {
                 foreach ($processEntityList as $entity) {
                     $entityId = $entity->getId();
-                    (new Slot())->deleteSlotProcessMappingFor($entityId);
+                    if ($releaseSlots) {
+                        (new Slot())->deleteSlotProcessMappingFor($entityId);
+                    }
                     Log::writeLogEntry("DELETE (Process::writeBlockedEntity) $entityId ", $process->id);
                 }
             }

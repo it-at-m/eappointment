@@ -104,11 +104,15 @@ class AppointmentDeallocateByCron
         return 0;
     }
 
+    /**
+     * It is important to know that the slots in writeBlockedEntity are unblocked again,
+     * but the ID remains blocked until the next day
+     */
     protected function writeDeallocatedProcess(\BO\Zmsentities\Process $process)
     {
         $verbose = $this->verbose;
         $query = new \BO\Zmsdb\Process();
-        if ($query->writeBlockedEntity($process)) {
+        if ($query->writeBlockedEntity($process, true)) {
             if ($verbose) {
                 $this->log("INFO: Process $process->id successfully deallocated");
             }
