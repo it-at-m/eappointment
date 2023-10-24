@@ -873,4 +873,31 @@ class Process extends Base implements Interfaces\ResolveReferences
         $statement = $this->fetchStatement($selectQuery);
         return $this->readList($statement, $resolveReferences);
     }
+
+    /**
+     * @param Entity            $process
+     * @param DateTimeInterface $now
+     *
+     * @return void
+     * @throws DeadLockFound
+     * @throws LockTimeout
+     * @throws PDOFailed
+     * @throws ProcessArchiveUpdateFailed
+     */
+    protected function writeProcessArchiveEntry(Entity $entity, string $status): void
+    {
+        $process = clone $entity;
+        $process->status = $status;
+        if ($process->processArchiveId) {
+            (new ProcessArchive())->updateEntityStatus($process->processArchiveId, $process->status);
+        } else {
+            $process->processArchiveId = ProcessArchiveEntity::getUuid();
+            $query = new Query\Process(Query\Base::UPDATE);
+            $query->addConditionProcessId($process->getId());
+            $query->addConditionAuthKey($process->authKey);
+            $query->addValues(['processArchiveId' => $process->processArchiveId]);
+            $this->writeItem($query);
+            (new ProcessArchive())->writeNewEntityByProcess($process);
+        }
+    }
 }
