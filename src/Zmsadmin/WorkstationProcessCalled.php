@@ -52,6 +52,7 @@ class WorkstationProcessCalled extends BaseController
                 'title' => 'Sachbearbeiter',
                 'workstation' => $workstation,
                 'menuActive' => 'workstation',
+                'process' => $process,
                 'exclude' => join(',', $exclude),
                 'error' => $error
             )
