@@ -45,6 +45,9 @@ class WorkstationProcessCalled extends BaseController
             return \BO\Slim\Render::redirect('workstationProcessProcessing', [], ['error' => $error]);
         }
 
+        // Check if $process is set or assign a default value (like null)
+        $process = isset($process) ? $process : null;
+
         return \BO\Slim\Render::withHtml(
             $response,
             'block/process/called.twig',
