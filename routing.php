@@ -19,8 +19,8 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->post('/queue/', '\BO\Zmscalldisplay\Queue')
     ->setName("queue");
 
-\App::$slim->post('/info/', '\BO\Zmscalldisplay\Info')
-->setName("info");
+\App::$slim->post('/waitinginfo/', '\BO\Zmscalldisplay\Info')
+    ->setName("info");
 
 /*
  * ---------------------------------------------------------------------------
@@ -37,17 +37,3 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get('/healthcheck/', '\BO\Zmscalldisplay\Healthcheck')
     ->setName("healthcheck");
-
-\App::$slim->getContainer()->offsetSet('notFoundHandler', function ($container) {
-    return function (RequestInterface $request, ResponseInterface $response) {
-        return \BO\Slim\Render::withHtml($response, '404.twig');
-    };
-});
-
-\App::$slim->getContainer()->offsetSet('errorHandler', function ($container) {
-    return new \BO\Slim\TwigExceptionHandler($container);
-});
-\App::$slim->getContainer()->offsetSet('phpErrorHandler', function ($container) {
-    return new \BO\Slim\TwigExceptionHandler($container);
-});
-

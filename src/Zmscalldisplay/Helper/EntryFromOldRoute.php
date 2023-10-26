@@ -9,6 +9,8 @@
 namespace BO\Zmscalldisplay\Helper;
 
 use BO\Mellon\Validator;
+use BO\Slim\Request;
+use Psr\Http\Message\RequestInterface;
 
 class EntryFromOldRoute
 {
@@ -16,6 +18,9 @@ class EntryFromOldRoute
         'nurabholer' => 'pending'
     );
 
+    /**
+     * @param Request $request
+     */
     protected static function getScopes($request)
     {
         $scopes = [ ];
@@ -34,6 +39,10 @@ class EntryFromOldRoute
         return (0 < count($scopes)) ? implode(',', $scopes) : null;
     }
 
+    /**
+     * @param Request $request
+     * @return string|null
+     */
     protected static function getClusters($request)
     {
         $clusters = [ ];
@@ -52,6 +61,10 @@ class EntryFromOldRoute
         return (0 < count($clusters)) ? implode(',', $clusters) : null;
     }
 
+    /**
+     * @param Request $request
+     * @return string|null
+     */
     protected static function getStatus($request)
     {
         $validator = $request->getAttribute('validator');
@@ -61,6 +74,10 @@ class EntryFromOldRoute
         return ($status) ? self::$allowedStatus['nurabholer'] : null;
     }
 
+    /**
+     * @param Request|RequestInterface $request
+     * @return array
+     */
     public static function getFromOldRoute($request)
     {
         $collections['collections']['scopelist'] = self::getScopes($request);

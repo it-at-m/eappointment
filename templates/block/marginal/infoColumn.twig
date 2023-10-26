@@ -2,8 +2,9 @@
 <!--Logo und Text-->
 <div align="center">
 	{% if showQrCode and webcalldisplay is defined %}
+		<div class="qrCode--Headline">{{ ("Mobile Aufrufanzeige")|trans }}</div>
 		<div class="qrContainer">
-			<canvas id="webcallUrlCode" class="qrCode" width="200" height="200"
+			<canvas id="webcallUrlCode" class="qrCode" width="240" height="240"
 				data-text="{{ webcalldisplay|raw }}">
 			</canvas>
 		</div>

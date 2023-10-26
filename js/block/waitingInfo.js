@@ -1,5 +1,6 @@
 import BaseView from '../lib/baseview';
 import $ from "jquery";
+import AnalogClock from "./analogClock";
 
 class View extends BaseView {
 
@@ -16,11 +17,12 @@ class View extends BaseView {
     }
 
     load() {
+        new AnalogClock();
         const ajaxopt = {
             type: "POST",
-            url: this.getUrl('/info/'),
+            url: this.getUrl('/waitinginfo/'),
             data: window.bo.zmscalldisplay,
-            timeout: ((window.bo.zmscalldisplay.queue.timeUntilOld * 1000) - 100)
+            timeout: ((window.bo.zmscalldisplay.queue.timeWaitingInfo * 1000) - 100)
         };
         $.ajax(ajaxopt)
             .done(data => {
@@ -35,7 +37,7 @@ class View extends BaseView {
     }
 
     setInterval() {
-        var reloadTime = window.bo.zmscalldisplay.queue.timeUntilOld;
+        var reloadTime = window.bo.zmscalldisplay.queue.timeWaitingInfo;
         setTimeout(this.load, reloadTime * 1000);
     }
 
@@ -46,7 +48,7 @@ class View extends BaseView {
 
     setWaitingClients(data) {
         var waitingClients = $(data).filter("div#waitingClients").text();
-        if (0 < waitingClients) {
+        if (0 <= waitingClients) {
             $("#wartende").html(waitingClients);
         }
     }
