@@ -18,7 +18,7 @@ class QueueTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/calldisplay/queue/',
                     'parameters' => [
-                        'statusList' => ['called', 'pickup', 'processing']
+                        'statusList' => ['called', 'pickup']
                     ],
                     'response' => $this->readFixture("GET_queue.json")
                 ],
@@ -44,7 +44,7 @@ class QueueTest extends Base
                 ]
             ]
         ], [ ]);
-        $this->assertStringContainsString('Terminkunde', (string) $response->getBody());
+        $this->assertStringContainsString('Ausgabe', (string) $response->getBody());
         $this->assertStringContainsString('31316', (string) $response->getBody());
     }
 }

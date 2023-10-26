@@ -1,28 +1,37 @@
-import BaseView from '../lib/baseview';
-import CoolClock from '../lib/coolclock';
 
-class View extends BaseView {
-    constructor (element) {
-        super(element);
-        this.bindPublicMethods('initClock');
-        console.log("Found analog clock");
-        this.$.ready(this.initClock);
+class View {
+    constructor () {
+        setInterval(this.setClock, 1000);
+        this.setDate();
+
     }
 
-    initClock () {
-         CoolClock.config.skins = {
-            themed: {
-                outerBorder: { lineWidth: 1, radius:95, color: "black", alpha: 0 },
-                smallIndicator: { lineWidth: 1, startAt: 89, endAt: 93, color: "#4C4C4C", alpha: 1 },
-                largeIndicator: { lineWidth: 5, startAt: 85, endAt: 93, color: "#4C4C4C", alpha: 1 },
-                hourHand: { lineWidth: 7, startAt: -10, endAt: 50, color: "#4C4C4C", alpha: 1 },
-                minuteHand: { lineWidth: 5, startAt: -10, endAt: 75, color: "#4C4C4C", alpha: 1 },
-                secondHand: { lineWidth: 1, startAt: -10, endAt: 85, color: "#4C4C4C", alpha: 1 },
-                secondDecoration: { lineWidth: 1, startAt: 70, radius: 4, fillColor: "red", color: "red", alpha: 0 }
-            }
-        };
-        CoolClock.findAndCreateClocks();
+    setClock() {
+        const now = new Date();
+
+        const secondHand = document.querySelector('.second-hand');
+        const minsHand = document.querySelector('.min-hand');
+        const hourHand = document.querySelector('.hour-hand');
+
+        const seconds = now.getSeconds();
+        const secondsDegrees = ((seconds / 60) * 360) + 90;
+        secondHand.style.transform = `rotate(${secondsDegrees}deg)`;
+      
+        const mins = now.getMinutes();
+        const minsDegrees = ((mins / 60) * 360) + ((seconds/60)*6) + 90;
+        minsHand.style.transform = `rotate(${minsDegrees}deg)`;
+      
+        const hour = now.getHours();
+        const hourDegrees = ((hour / 12) * 360) + ((mins/60)*30) + 90;
+        hourHand.style.transform = `rotate(${hourDegrees}deg)`; 
     }
+
+    setDate() {
+        const dateString = document.querySelector('#aufrufanzeige_Datum');
+        const now = new Date();
+        let options = { weekday: 'long', year: 'numeric', month: '2-digit', day: '2-digit' }
+        dateString.innerHTML = new Intl.DateTimeFormat('de-DE', options).format(now)
+    }    
 }
 
 export default View;

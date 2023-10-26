@@ -8,6 +8,9 @@
  */
 namespace BO\Zmscalldisplay\Helper;
 
+use BO\Zmscalldisplay\Exception\TemplateNotFound;
+use BO\Zmsentities\Schema\Entity as BaseEntity;
+
 class TemplateFinder
 {
     protected $defaultTemplate;
@@ -22,7 +25,7 @@ class TemplateFinder
         if ($this->isTemplateReadable($this->template)) {
             $this->defaultTemplate = $defaultTemplate;
         } else {
-            throw new \BO\Zmscalldisplay\Exception\TemplateNotFound("Could not find template $this->template");
+            throw new TemplateNotFound("Could not find template $this->template");
         }
     }
 
@@ -35,6 +38,7 @@ class TemplateFinder
      * get a customized Template if it exists, otherwise return default
      * department preferred before cluster
      *
+     * @param \BO\Zmsentities\Calldisplay $calldisplay
      **/
     public function setCustomizedTemplate($calldisplay)
     {
@@ -46,6 +50,10 @@ class TemplateFinder
         return $this;
     }
 
+    /**
+     * @param \BO\Zmsentities\Calldisplay $calldisplay
+     * @return string|null
+     */
     protected function getTemplateBySettings($calldisplay)
     {
         $template = null;
@@ -70,18 +78,28 @@ class TemplateFinder
                 break;
             }
         }
+
         return $template;
     }
 
-    protected function getExistingTemplate(\BO\Zmsentities\Schema\Entity $entity)
+    /**
+     * @param BaseEntity $entity
+     * @return string|null
+     */
+    protected function getExistingTemplate(BaseEntity $entity)
     {
-        $path = $this->subPath .'/calldisplay_'. $entity->getEntityName() .'_'. $entity->id .'.twig';
+        $path = $this->subPath .'/calldisplay_'. $entity->getEntityName() .'_'. $entity->getId() .'.twig';
         if ($entity->hasId() && $this->isTemplateReadable($path)) {
             return $path;
         }
+
         return null;
     }
 
+    /**
+     * @param string $path
+     * @return bool
+     */
     protected function isTemplateReadable($path)
     {
         return is_readable($this->getTemplatePath() . $path);

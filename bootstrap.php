@@ -1,12 +1,9 @@
 <?php
-// @codingStandardsIgnoreFile
-
-// ini_set('xdebug.auto_trace', true);
-// ini_set('xdebug.trace_output_dir', './');
-ini_set('session.serialize_handler', 'php_serialize');
-
+// phpcs:disable PSR1.Files.SideEffects
 // define the application path as single global constant
 define("APP_PATH", realpath(__DIR__));
+
+chdir(__DIR__);
 
 // use autoloading offered by composer, see composer.json for path settings
 if (file_exists(APP_PATH . '/vendor/autoload.php')) {
@@ -21,22 +18,19 @@ require(APP_PATH . '/config.php');
 
 // Set option for environment, routing, logging and templating
 \BO\Slim\Bootstrap::init();
-\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\TextExtension());
-\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\I18nExtension());
-\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extensions\IntlExtension());
-
-umask(0002); // Allow group to delete twig cache files
-
-// Http API Logging
-\BO\Slim\Bootstrap::addTwigExtension(new \BO\Zmsclient\TwigExtension(\App::$slim->getContainer()));
-\BO\Zmsclient\Http::$logEnabled = \App::DEBUG;
-\BO\Zmsclient\Http::$jsonCompressLevel = \App::JSON_COMPRESS_LEVEL;
+\BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extra\Intl\IntlExtension());
 
 \App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL);
 \BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
 
-// load middleware
-\App::$slim->add(new \BO\Slim\Middleware\TrailingSlash());
+// Http Logging
+\BO\Slim\Bootstrap::addTwigExtension(new \BO\Zmsclient\TwigExtension(\App::$slim->getContainer()));
+\BO\Zmsclient\Http::$logEnabled = \App::DEBUG;
+\BO\Zmsclient\Http::$jsonCompressLevel = \App::JSON_COMPRESS_LEVEL;
+
+// add slim error middleware
+$errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
+$errorMiddleware->setDefaultErrorHandler(new \BO\Zmscalldisplay\Helper\TwigExceptionHandler());
 
 // load routing
 \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');

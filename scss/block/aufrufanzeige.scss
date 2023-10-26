@@ -1,3 +1,23 @@
+/* ----------------------------------------------
+    qr code
+---------------------------------------------- */
+.qrCode--Headline {
+    text-align: center;
+    background: #fff;
+    font-family: Arial,sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 45px;
+    margin-bottom: 3px;
+    margin-top: 0px;
+}
+.qrContainer {
+    background: #fff;
+}
+
+/* ----------------------------------------------
+    aufrufanzeige
+---------------------------------------------- */
 .aufrufanzeige
 {
     background:transparent;
@@ -36,8 +56,8 @@
 
 .waitingColumn {
     position: absolute;
-    left: 40px; 
-    top: 420px; 
+    left: 50px; 
+    top: 450px; 
 }
 .aufrufanzeige .wartende_aktuell
 {
@@ -88,14 +108,11 @@
 .aufrufanzeige .uhr
 {
     position: absolute;
-    left:60px;
-    top:114px;
+    left:55px;
+    top:105px;
     width:275px;
+    height:275px;
   }
-.aufrufanzeige .uhr #clock_medium,
-.aufrufanzeige .uhr #clock_big {
-    display:none;
-}
 
 .aufrufanzeige .aufrufanzeige_Datum
 {
@@ -105,8 +122,8 @@
     position:absolute;
     text-align:center;
     font-size:24px;
-    left:40px;
-    top:370px;
+    left:50px;
+    top:390px;
     width:275px;
 }
 
@@ -125,7 +142,7 @@
     text-align:center;
     left: 1087px;
     top:89px;
-    width: 234px;
+    width: 265px;
 }
 
 .aufrufanzeige_text .qrContainer

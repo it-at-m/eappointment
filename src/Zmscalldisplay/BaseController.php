@@ -25,46 +25,54 @@ abstract class BaseController extends \BO\Slim\Controller
         return $this->readResponse($request, $noCacheResponse, $args);
     }
 
-    public function buildQuery(RequestInterface $request)
+    protected function buildQuery(string $target, RequestInterface $request)
     {
-        $firstKey = array_key_first(static::$hashParameter);
-        $queryArr = [];
-        foreach (array_values(static::$hashParameter[$firstKey]) as $parameter) {
-            if ($request->getQueryParam($parameter)) {
-                $queryArr[$parameter] = $request->getQueryParam($parameter);
+        $queryArr  = [];
+        $allParams = array_merge(static::$hashParameter[$target], ['template']);
+        $currentQP = $request->getQueryParams();
+        foreach ($allParams as $parameter) {
+            if (isset($currentQP[$parameter]) && $currentQP[$parameter]) {
+                $queryArr[$parameter] = $currentQP[$parameter];
             }
         }
-        if ($request->getQueryParam('template')) {
-            $queryArr['template'] = $request->getQueryParam('template');
-        }
-        $queryArr['hmac'] = $this->buildHashFromParameterList($request);
+
+        $queryArr['hmac'] = $this->buildHashFromParameterList($target, $request);
+
         return http_build_query($queryArr);
     }
 
-    public function buildHashFromParameterList(RequestInterface $request)
+    protected function buildHashFromParameterList(string $target, RequestInterface $request)
     {
-        $firstKey = array_key_first(static::$hashParameter);
         $paramsToHash = [];
-        foreach (array_values(static::$hashParameter[$firstKey]) as $parameter) {
-            if ($request->getQueryParam($parameter)) {
-                $paramsToHash[$parameter] = $request->getQueryParam($parameter);
+        $currentQP = $request->getQueryParams();
+        foreach (static::$hashParameter[$target] as $parameter) {
+            if (isset($currentQP[$parameter]) && $currentQP[$parameter]) {
+                $paramsToHash[$parameter] = $currentQP[$parameter];
             }
         }
-        $hash = SlimHelper::hashQueryParameters(
-            $firstKey,
+
+        return SlimHelper::hashQueryParameters(
+            $target,
             $paramsToHash,
-            static::$hashParameter[$firstKey]
+            static::$hashParameter[$target]
         );
-        return $hash;
     }
 
-    protected function getHashedUrl(RequestInterface $request, array $parameters)
+    /**
+     * @SuppressWarnings(UnusedFormalParameter)
+     *
+     * @param RequestInterface $request
+     * @param array $parameters
+     * @return string
+     */
+    protected function getWebcallDisplayUrl(RequestInterface $request, array $parameters)
     {
-        $urlParamName = array_key_first(static::$hashParameter);
+        $target = 'webcalldisplay';
         $config = \App::$http->readGetResult('/config/')->getEntity();
-        $parameters[$urlParamName] = '';
-        $parameters[$urlParamName] .= $config->toProperty()->webcalldisplay->baseUrl->get();
-        $parameters[$urlParamName] .= '?'. $this->buildQuery($request);
-        return $parameters;
+
+        $url = '' . $config->toProperty()->webcalldisplay->baseUrl->get();
+        $url .= '?' . $this->buildQuery($target, $request);
+
+        return $url;
     }
 }
