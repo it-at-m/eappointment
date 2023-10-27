@@ -142,6 +142,29 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
+    public function withAverage($keyToCalculate)
+    {
+        $entity = clone $this;
+        $average = [];
+        foreach ($entity->data as $name => $entry) {
+            $average[$name . '_sum'] = 0;
+            $average[$name . '_count'] = 0;
+            foreach ($entry as $dateItem) {
+                foreach ($dateItem as $key => $value) {
+                    if (is_numeric($value) && $key === $keyToCalculate) {
+                        $average[$name . '_sum'] += $value;
+                        $average[$name . '_count']++;
+                    }
+                }
+            }
+            $average[$name] = $average[$name . '_count'] > 0 
+                ? round($average[$name . '_sum'] / $average[$name . '_count'], 2) 
+                : null;
+        }
+        $entity->data['average_' . $keyToCalculate] = $average;
+        return $entity;
+    }
+
     public function withMaxAndAverageFromWaitingTime()
     {
         $entity = clone $this;
