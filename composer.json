@@ -50,9 +50,9 @@
   },
   "require": {
     "eappointment/mellon": "^2.6.0",
-    "eappointment/zmsentities": "dev-muc-main",
+    "eappointment/zmsentities": "dev-muc-feat-474-calculate-processing-time",
     "eappointment/zmsslim": "dev-muc-main",
-    "eappointment/zmsclient": "dev-muc-main",
+    "eappointment/zmsclient": "dev-muc-feat-474-calculate-processing-time",
     "monolog/monolog": "1.*",
     "phpoffice/phpspreadsheet": "^1.0",
     "roave/security-advisories": "dev-master",
