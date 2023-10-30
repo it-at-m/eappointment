@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "32076e288a9faba2c63dfeb9e01ad0e3",
+    "content-hash": "0255f2cc665f3dfa917b3c4c4733ef1f",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -233,22 +233,22 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-muc-main",
+            "version": "dev-muc-feat-474-calculate-processing-time",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsclient.git",
-                "reference": "d3ea39de013b834819dba94f42ec520f2abbd0c9"
+                "reference": "5147884e6cc78878b2d8813fedba7a85d9be1db9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=d3ea39de013b834819dba94f42ec520f2abbd0c9",
-                "reference": "d3ea39de013b834819dba94f42ec520f2abbd0c9",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=5147884e6cc78878b2d8813fedba7a85d9be1db9",
+                "reference": "5147884e6cc78878b2d8813fedba7a85d9be1db9",
                 "shasum": ""
             },
             "require": {
                 "aronduby/dump": "^0.9",
                 "eappointment/mellon": "^2.0.1",
-                "eappointment/zmsentities": "dev-muc-main",
+                "eappointment/zmsentities": "dev-muc-feat-474-calculate-processing-time",
                 "eappointment/zmsslim": "dev-muc-main",
                 "ext-curl": ">=0",
                 "ext-json": ">=1.0",
@@ -292,29 +292,29 @@
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsclient/-/tree/muc-main"
+                "source": "https://gitlab.com/eappointment/zmsclient/-/tree/muc-feat-474-calculate-processing-time"
             },
-            "time": "2023-07-26T07:47:19+00:00"
+            "time": "2023-10-17T15:50:02+00:00"
         },
         {
             "name": "eappointment/zmsdb",
-            "version": "dev-muc-main",
+            "version": "dev-muc-feat-474-calulate-processing-time",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsdb.git",
-                "reference": "987e3de0ba1122f07e310d9368f836dbfb59dc40"
+                "reference": "3f5e2271dbc9d3e2736fac48b0ad93e42c8557f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=987e3de0ba1122f07e310d9368f836dbfb59dc40",
-                "reference": "987e3de0ba1122f07e310d9368f836dbfb59dc40",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=3f5e2271dbc9d3e2736fac48b0ad93e42c8557f5",
+                "reference": "3f5e2271dbc9d3e2736fac48b0ad93e42c8557f5",
                 "shasum": ""
             },
             "require": {
                 "aura/sql": "^4",
                 "eappointment/mellon": "^2.6.0",
                 "eappointment/zmsdldb": "dev-main || 2.25.*",
-                "eappointment/zmsentities": "dev-muc-main",
+                "eappointment/zmsentities": "dev-muc-feat-474-calculate-processing-time",
                 "ext-intl": "*",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -376,9 +376,9 @@
             ],
             "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsdb/-/tree/muc-main"
+                "source": "https://gitlab.com/eappointment/zmsdb/-/tree/muc-feat-474-calulate-processing-time"
             },
-            "time": "2023-10-24T10:32:40+00:00"
+            "time": "2023-10-27T09:48:55+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
@@ -448,16 +448,16 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-muc-main",
+            "version": "dev-muc-feat-474-calculate-processing-time",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "85b7c46c0fe03b933c1f2931a975187c3723f52e"
+                "reference": "8d0bd06cd3a5a90d38af2f2964c4295b885d6cd7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=85b7c46c0fe03b933c1f2931a975187c3723f52e",
-                "reference": "85b7c46c0fe03b933c1f2931a975187c3723f52e",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=8d0bd06cd3a5a90d38af2f2964c4295b885d6cd7",
+                "reference": "8d0bd06cd3a5a90d38af2f2964c4295b885d6cd7",
                 "shasum": ""
             },
             "require": {
@@ -479,7 +479,7 @@
                 "helmich/phpunit-psr7-assert": "^4.3.0",
                 "league/json-reference": "^1.0",
                 "phpmd/phpmd": "@stable",
-                "phpunit/phpunit": "^9.6",
+                "phpunit/phpunit": "^9.5.4",
                 "squizlabs/php_codesniffer": "^3.5.8",
                 "yuloh/json-guard-cli": "^0.3.0"
             },
@@ -506,9 +506,9 @@
             ],
             "description": "Entity definitions for eappoinment",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-main"
+                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-feat-474-calculate-processing-time"
             },
-            "time": "2023-10-20T11:41:23+00:00"
+            "time": "2023-10-27T10:27:39+00:00"
         },
         {
             "name": "eappointment/zmsslim",

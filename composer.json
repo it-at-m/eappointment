@@ -52,10 +52,10 @@
   },
   "require": {
     "eappointment/zmsslim": "dev-muc-main",
-    "eappointment/zmsclient": "dev-muc-main",
+    "eappointment/zmsclient": "dev-muc-feat-474-calculate-processing-time",
     "eappointment/zmsdldb": "dev-main || 2.25.*",
-    "eappointment/zmsdb": "dev-muc-main",
-    "eappointment/zmsentities": "dev-muc-main",
+    "eappointment/zmsdb": "dev-muc-feat-474-calulate-processing-time",
+    "eappointment/zmsentities": "dev-muc-feat-474-calculate-processing-time",
     "monolog/monolog": "1.*",
     "ulrichsg/getopt-php": "^2.3",
     "league/climate": "^3.2"
