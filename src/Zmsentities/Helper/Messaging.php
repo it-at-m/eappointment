@@ -125,14 +125,16 @@ class Messaging
         }
 
         $requestGroups = [];
-        foreach ($mainProcess->requests as $request) {
-            if (! isset($requestGroups[$request->id])) {
-                $requestGroups[$request->id] = [
-                    'request' => $request,
-                    'count' => 0
-                ];
+        if ($mainProcess) {
+            foreach ($mainProcess->requests as $request) {
+                if (! isset($requestGroups[$request->id])) {
+                    $requestGroups[$request->id] = [
+                        'request' => $request,
+                        'count' => 0
+                    ];
+                }
+                $requestGroups[$request->id]['count']++;
             }
-            $requestGroups[$request->id]['count']++;
         }
 
         $parameters = [
@@ -144,8 +146,8 @@ class Messaging
             'config' => $config,
             'initiator' => $initiator,
             'appointmentLink' => base64_encode(json_encode([
-                'id' => $mainProcess->id,
-                'authKey' => $mainProcess->authKey
+                'id' => $mainProcess ? $mainProcess->id : '',
+                'authKey' => $mainProcess ? $mainProcess->authKey : ''
             ]))
         ];
 

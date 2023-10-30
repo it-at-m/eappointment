@@ -30,6 +30,7 @@
             "client": {
                 "alternateAppointmentUrl": "https://service.berlin.de",
                 "amendmentLabel": "Zusatzinformationen zum Anliegen",
+                "customTextfieldLabel": "Zusatzfeld zum Anliegen",
                 "emailRequired": false,
                 "telephoneActivated": true,
                 "telephoneRequired": false
@@ -176,7 +177,7 @@
                             "default": false
                         },
                         "reservationDuration": {
-                            "type": "number",
+                            "type": "number",   
                             "description": "minutes an appointment can have the status reserved",
                             "default": 30
                         },
@@ -220,6 +221,27 @@
                             "description": "true if an amendment is activated",
                             "default": false
                         },
+                        "customTextfieldLabel": {
+                            "type": "string",
+                            "description": "label for the form field to enter additional informations to a process",
+                            "default": ""
+                        },
+                        "customTextfieldActivated": {
+                            "type": [
+                                "boolean",
+                                "number"
+                            ],
+                            "description": "true if an  custom text field is activated",
+                            "default": false
+                        },
+                        "customTextfieldRequired": {
+                            "type": [
+                                "boolean",
+                                "number"
+                            ],
+                            "description": "true if client is required to enter a custom text field address",
+                            "default": false
+                        },                      
                         "emailFrom": {
                             "type": "string",
                             "description": "Mail address for sending mails to clients",
