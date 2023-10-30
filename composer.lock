@@ -452,12 +452,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "bcc15663e57385befbc42f4a2a06d26b6ac3076b"
+                "reference": "63560800c8762aba9abead848ec3b59b43a83b4c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=bcc15663e57385befbc42f4a2a06d26b6ac3076b",
-                "reference": "bcc15663e57385befbc42f4a2a06d26b6ac3076b",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=63560800c8762aba9abead848ec3b59b43a83b4c",
+                "reference": "63560800c8762aba9abead848ec3b59b43a83b4c",
                 "shasum": ""
             },
             "require": {
@@ -479,7 +479,7 @@
                 "helmich/phpunit-psr7-assert": "^4.3.0",
                 "league/json-reference": "^1.0",
                 "phpmd/phpmd": "@stable",
-                "phpunit/phpunit": "^9.5.4",
+                "phpunit/phpunit": "^9.6",
                 "squizlabs/php_codesniffer": "^3.5.8",
                 "yuloh/json-guard-cli": "^0.3.0"
             },
@@ -508,7 +508,7 @@
             "support": {
                 "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-feat-474-calculate-processing-time"
             },
-            "time": "2023-10-30T13:27:55+00:00"
+            "time": "2023-10-30T13:51:27+00:00"
         },
         {
             "name": "eappointment/zmsslim",
