@@ -102,6 +102,9 @@ apidoc:
 
 pages:
     stage: deploy
+    needs:
+        - job: apidoc
+          artifacts: true
     script:
         - echo "/zmsapi/_tests/coverage/ /zmsapi/_tests/coverage/index.html 302" >> public/_redirects
         - echo "/zmsapi/doc/ /zmsapi/public/doc/index.html 302" >> public/_redirects
