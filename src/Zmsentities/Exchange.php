@@ -157,8 +157,8 @@ class Exchange extends Schema\Entity
                     }
                 }
             }
-            $average[$name] = $average[$name . '_count'] > 0 
-                ? round($average[$name . '_sum'] / $average[$name . '_count'], 2) 
+            $average[$name] = $average[$name . '_count'] > 0
+                ? round($average[$name . '_sum'] / $average[$name . '_count'], 2)
                 : null;
         }
         $entity->data['average_' . $keyToCalculate] = $average;
