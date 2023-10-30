@@ -3,6 +3,7 @@
     "description": "A process represents a request from one or more clients, usually including an appointment. Compared to an appointment, the process has additional information about the status of the request from the client.",
     "example": {
         "amendment": "Beispiel Termin",
+        "customTextfield": "Beispiel Termin",
         "appointments": [
             {
                 "date": 1447869171,
@@ -64,6 +65,13 @@
     "additionalProperties": false,
     "properties": {
         "amendment": {
+            "type": [
+                "string"
+            ],
+            "description": "additional information for this process from the client",
+            "default": ""
+        },
+        "customTextfield": {
             "type": [
                 "string"
             ],
@@ -525,6 +533,7 @@
                     "client": {
                         "alternateAppointmentUrl": "https:\/\/service.berlin.de",
                         "amendmentLabel": "Zusatzinformationen zum Anliegen",
+                        "customTextfieldLabel": "Zusatzfeld zum Anliegen",
                         "emailRequired": false,
                         "telephoneActivated": true,
                         "telephoneRequired": false
@@ -707,6 +716,19 @@
                                         "number"
                                     ],
                                     "description": "true if an amendment is activated",
+                                    "default": false
+                                },
+                                "customTextfieldLabel": {
+                                    "type": "string",
+                                    "description": "label for the form field to enter additional informations to a process",
+                                    "default": ""
+                                },
+                                "customTextfieldActivated": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if an custom textfield is activated",
                                     "default": false
                                 },
                                 "emailFrom": {

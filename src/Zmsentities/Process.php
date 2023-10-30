@@ -36,6 +36,7 @@ class Process extends Schema\Entity
     {
         return [
             'amendment' => '',
+            'customTextfield' => '',
             'appointments' => new Collection\AppointmentList(),
             'apiclient' => new Apiclient(),
             'authKey' => '',
@@ -334,6 +335,21 @@ class Process extends Schema\Entity
         return $this;
     }
 
+    public function getCustomTextfield()
+    {
+        return $this->toProperty()->customTextfield->get();
+    }
+
+    public function addCustomTextfield($input, $notice = '')
+    {
+        $this->customTextfield = $notice;
+        $this->customTextfield .= (
+            isset($input['customTextfield']) && $input['customTextfield']
+        ) ? $input['customTextfield'] : '';
+        trim($this->customTextfield);
+        return $this;
+    }
+
     public function getAuthKey()
     {
         return $this->toProperty()->authKey->get();
@@ -562,6 +578,21 @@ class Process extends Schema\Entity
                 'BuergerID' => $this->id,
                 'StandortID' => $this->scope['id'],
                 'Anmerkung' => $this->amendment,
+                'IPTimeStamp' => $this->createTimestamp,
+                'LastChange' => $lastChange,
+            ),
+            1
+        );
+    }
+
+    public function toDerefencedCustomTextfield()
+    {
+        $lastChange = (new \DateTimeImmutable)->setTimestamp($this->createTimestamp)->format('c');
+        return var_export(
+            array(
+                'BuergerID' => $this->id,
+                'StandortID' => $this->scope['id'],
+                'CustomTextfield' => $this->customTextfield,
                 'IPTimeStamp' => $this->createTimestamp,
                 'LastChange' => $lastChange,
             ),
