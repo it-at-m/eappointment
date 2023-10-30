@@ -452,12 +452,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "8d0bd06cd3a5a90d38af2f2964c4295b885d6cd7"
+                "reference": "bcc15663e57385befbc42f4a2a06d26b6ac3076b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=8d0bd06cd3a5a90d38af2f2964c4295b885d6cd7",
-                "reference": "8d0bd06cd3a5a90d38af2f2964c4295b885d6cd7",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=bcc15663e57385befbc42f4a2a06d26b6ac3076b",
+                "reference": "bcc15663e57385befbc42f4a2a06d26b6ac3076b",
                 "shasum": ""
             },
             "require": {
@@ -508,7 +508,7 @@
             "support": {
                 "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-feat-474-calculate-processing-time"
             },
-            "time": "2023-10-27T10:27:39+00:00"
+            "time": "2023-10-30T13:27:55+00:00"
         },
         {
             "name": "eappointment/zmsslim",
