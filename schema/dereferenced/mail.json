@@ -398,11 +398,11 @@
                     "description": "key for client to delete or change process"
                 },
                 "showUpTime": {
-                    "type": "object",
+                    "type": "string",
                     "description": "unix timestamp of showing up after call"
                 },
                 "finishTime": {
-                    "type": "object",
+                    "type": "string",
                     "description": "unix timestamp og time when process has been finished"
                 },
                 "clients": {

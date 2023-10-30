@@ -309,11 +309,11 @@
       "description": "unix timestamp of the last change on this process"
     },
     "showUpTime": {
-      "type": "object",
+      "type": "string",
       "description": "unix timestamp of showing up after call"
     },
     "finishTime": {
-        "type": "object",
+        "type": "string",
         "description": "unix timestamp og time when process has been finished"
     },
     "queue": {
