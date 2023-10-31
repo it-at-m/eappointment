@@ -68,7 +68,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for name, entry in exchangeRequest.data|filter(name => name != "sum" && name != "average_processingtime") %}
+                    {% for name, entry in exchangeRequest.data|filter(name => name != "sum" and name != "average_processingtime") %}
                     <tr>
                         <th class="report-board--long-text">{{ name|trans }}</th>
                         {% if exchangeRequest.period == "day" %}
