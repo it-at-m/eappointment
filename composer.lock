@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "89abd52aeb3cfa7303c14a208d9073a3",
+    "content-hash": "32076e288a9faba2c63dfeb9e01ad0e3",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -233,22 +233,22 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-muc-test",
+            "version": "dev-muc-main",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsclient.git",
-                "reference": "19598206fb1a46f18386f705c5c8869fa45caf22"
+                "reference": "d3ea39de013b834819dba94f42ec520f2abbd0c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=19598206fb1a46f18386f705c5c8869fa45caf22",
-                "reference": "19598206fb1a46f18386f705c5c8869fa45caf22",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=d3ea39de013b834819dba94f42ec520f2abbd0c9",
+                "reference": "d3ea39de013b834819dba94f42ec520f2abbd0c9",
                 "shasum": ""
             },
             "require": {
                 "aronduby/dump": "^0.9",
                 "eappointment/mellon": "^2.0.1",
-                "eappointment/zmsentities": "dev-muc-test",
+                "eappointment/zmsentities": "dev-muc-main",
                 "eappointment/zmsslim": "dev-muc-main",
                 "ext-curl": ">=0",
                 "ext-json": ">=1.0",
@@ -292,29 +292,29 @@
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsclient/-/tree/muc-test"
+                "source": "https://gitlab.com/eappointment/zmsclient/-/tree/muc-main"
             },
-            "time": "2023-11-02T09:25:18+00:00"
+            "time": "2023-07-26T07:47:19+00:00"
         },
         {
             "name": "eappointment/zmsdb",
-            "version": "dev-muc-test",
+            "version": "dev-muc-main",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsdb.git",
-                "reference": "bc3d420da6c061c297b230c42636ca5bcbcb2d6e"
+                "reference": "1596cfa843e59b143ef276188954243a6d92aebe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=bc3d420da6c061c297b230c42636ca5bcbcb2d6e",
-                "reference": "bc3d420da6c061c297b230c42636ca5bcbcb2d6e",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=1596cfa843e59b143ef276188954243a6d92aebe",
+                "reference": "1596cfa843e59b143ef276188954243a6d92aebe",
                 "shasum": ""
             },
             "require": {
                 "aura/sql": "^4",
                 "eappointment/mellon": "^2.6.0",
                 "eappointment/zmsdldb": "dev-main || 2.25.*",
-                "eappointment/zmsentities": "dev-muc-test",
+                "eappointment/zmsentities": "dev-muc-main",
                 "ext-intl": "*",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -376,9 +376,9 @@
             ],
             "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsdb/-/tree/muc-test"
+                "source": "https://gitlab.com/eappointment/zmsdb/-/tree/muc-main"
             },
-            "time": "2023-11-02T09:26:22+00:00"
+            "time": "2023-10-27T12:49:43+00:00"
         },
         {
             "name": "eappointment/zmsdldb",
@@ -448,16 +448,16 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-muc-test",
+            "version": "dev-muc-main",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "7e579d09f19e84dc3c279b84c215fb5e57663694"
+                "reference": "3170593809b83502e17593ffc1de7b7609e85dc2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=7e579d09f19e84dc3c279b84c215fb5e57663694",
-                "reference": "7e579d09f19e84dc3c279b84c215fb5e57663694",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=3170593809b83502e17593ffc1de7b7609e85dc2",
+                "reference": "3170593809b83502e17593ffc1de7b7609e85dc2",
                 "shasum": ""
             },
             "require": {
@@ -506,9 +506,9 @@
             ],
             "description": "Entity definitions for eappoinment",
             "support": {
-                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-test"
+                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-main"
             },
-            "time": "2023-11-02T09:13:23+00:00"
+            "time": "2023-11-03T11:30:10+00:00"
         },
         {
             "name": "eappointment/zmsslim",

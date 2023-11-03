@@ -52,10 +52,10 @@
   },
   "require": {
     "eappointment/zmsslim": "dev-muc-main",
-    "eappointment/zmsclient": "dev-muc-test",
+    "eappointment/zmsclient": "dev-muc-main",
     "eappointment/zmsdldb": "dev-main || 2.25.*",
-    "eappointment/zmsdb": "dev-muc-test",
-    "eappointment/zmsentities": "dev-muc-test",
+    "eappointment/zmsdb": "dev-muc-main",
+    "eappointment/zmsentities": "dev-muc-main",
     "monolog/monolog": "1.*",
     "ulrichsg/getopt-php": "^2.3",
     "league/climate": "^3.2"
