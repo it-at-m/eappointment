@@ -40,7 +40,8 @@ class ReportRequestIndex extends BaseController
             ->readGetResult('/warehouse/requestscope/' . $this->workstation->scope['id'] . '/'. $args['period']. '/')
             ->getEntity()
             ->toGrouped($this->groupfields, $this->hashset)
-            ->withRequestsSum();
+            ->withRequestsSum()
+            ->withAverage('processingtime');
         }
 
         $type = $validator->getParameter('type')->isString()->getValue();

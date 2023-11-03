@@ -244,12 +244,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "36dfc55cc203cd5385769a0d5a6d8f6567a562d3"
+                "reference": "3170593809b83502e17593ffc1de7b7609e85dc2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=36dfc55cc203cd5385769a0d5a6d8f6567a562d3",
-                "reference": "36dfc55cc203cd5385769a0d5a6d8f6567a562d3",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=3170593809b83502e17593ffc1de7b7609e85dc2",
+                "reference": "3170593809b83502e17593ffc1de7b7609e85dc2",
                 "shasum": ""
             },
             "require": {
@@ -271,7 +271,7 @@
                 "helmich/phpunit-psr7-assert": "^4.3.0",
                 "league/json-reference": "^1.0",
                 "phpmd/phpmd": "@stable",
-                "phpunit/phpunit": "^9.5.4",
+                "phpunit/phpunit": "^9.6",
                 "squizlabs/php_codesniffer": "^3.5.8",
                 "yuloh/json-guard-cli": "^0.3.0"
             },
@@ -300,7 +300,7 @@
             "support": {
                 "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-main"
             },
-            "time": "2023-06-21T11:10:48+02:00"
+            "time": "2023-11-03T11:30:10+00:00"
         },
         {
             "name": "eappointment/zmsslim",

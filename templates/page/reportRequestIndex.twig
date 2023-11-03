@@ -53,6 +53,7 @@
                             </span>
                         </th>
                     {% if exchangeRequest.period == "day" %}
+                        <th class="statistik">Ø Bearbeitungsdauer</th>
                         <th class="statistik">{{ startDate|format_date(pattern="LLL") }}</th>
                     {% elseif exchangeRequest.period == "month" %}
                         <th class="statistik">{{ startDate|date('Y') }}</th>
@@ -67,10 +68,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for name, entry in exchangeRequest.data %}
-                    {% if name != "sum" %}
+                    {% for name, entry in exchangeRequest.data|filter(name => name != "sum") %}
+                    {% if name != "average_processingtime" %}
                     <tr>
                         <th class="report-board--long-text">{{ name|trans }}</th>
+                        {% if exchangeRequest.period == "day" %}
+                            <td class="report-board--summary">
+                                {{ exchangeRequest.data.average_processingtime[name] }}
+                            </td>
+                        {% endif %}
                         <td class="report-board--summary">
                             {{ exchangeRequest.data.sum[name] }}
                         </td>
