@@ -452,12 +452,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "85b7c46c0fe03b933c1f2931a975187c3723f52e"
+                "reference": "3170593809b83502e17593ffc1de7b7609e85dc2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=85b7c46c0fe03b933c1f2931a975187c3723f52e",
-                "reference": "85b7c46c0fe03b933c1f2931a975187c3723f52e",
+                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=3170593809b83502e17593ffc1de7b7609e85dc2",
+                "reference": "3170593809b83502e17593ffc1de7b7609e85dc2",
                 "shasum": ""
             },
             "require": {
@@ -508,7 +508,7 @@
             "support": {
                 "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-main"
             },
-            "time": "2023-10-20T11:41:23+00:00"
+            "time": "2023-11-03T11:30:10+00:00"
         },
         {
             "name": "eappointment/zmsslim",
