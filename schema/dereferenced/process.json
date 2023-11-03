@@ -225,6 +225,14 @@
             "type": "number",
             "description": "unix timestamp of the last change on this process"
         },
+        "showUpTime": {
+            "type": "string",
+            "description": "unix timestamp of showing up after call"
+        },
+        "finishTime": {
+            "type": "string",
+            "description": "unix timestamp og time when process has been finished"
+        },
         "queue": {
             "type": "object",
             "description": "A queue represents a waiting queue for processes\/clients.",
