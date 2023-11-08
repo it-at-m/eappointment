@@ -1,0 +1,58 @@
+RewriteEngine On
+
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
+# webroot
+RewriteCond %{QUERY_STRING} ^$
+RewriteRule ^$ /terminvereinbarung/admin? [R=302,L]
+
+
+# zmsapi
+SetEnvIf Request_URI ^/zmsapi ZMS_MODULE_BASEPATH=/terminvereinbarung/api/2
+RewriteCond %{REQUEST_URI} !^/terminvereinbarung/api/2/+(_|doc)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^terminvereinbarung/api/2(.*) /var/www/html/zmsapi/public/index.php?$1 [QSA]
+RewriteRule ^terminvereinbarung/api/2/+(doc|_)(.*) /var/www/html/zmsapi/public/$1$2 [QSA]
+
+
+# zmsadmin
+SetEnvIf Request_URI ^/zmsadmin ZMS_MODULE_BASEPATH=/terminvereinbarung/admin
+RewriteCond %{REQUEST_URI} !^/terminvereinbarung/[^/]+/+_
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^terminvereinbarung/admin(.*) /var/www/html/zmsadmin/public/index.php?$1 [QSA]
+RewriteRule ^terminvereinbarung/admin/+_(.*) /var/www/html/zmsadmin/public/_$1 [QSA]
+
+
+# zmsticketprinter
+SetEnvIf Request_URI ^/zmsticketprinter ZMS_MODULE_BASEPATH=/terminvereinbarung/ticketprinter
+RewriteCond %{REQUEST_URI} !^/terminvereinbarung/[^/]+/+_
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^terminvereinbarung/ticketprinter(.*) /var/www/html/zmsticketprinter/public/index.php?$1 [QSA]
+RewriteRule ^terminvereinbarung/ticketprinter/+_(.*) /var/www/html/zmsticketprinter/public/_$1 [QSA]
+
+
+# zmscalldisplay
+SetEnvIf Request_URI ^/zmscalldisplay ZMS_MODULE_BASEPATH=/terminvereinbarung/calldisplay
+RewriteCond %{REQUEST_URI} !^/terminvereinbarung/[^/]+/+_
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^terminvereinbarung/calldisplay(.*) /var/www/html/zmscalldisplay/public/index.php?$1 [QSA]
+RewriteRule ^terminvereinbarung/calldisplay/+_(.*) /var/www/html/zmscalldisplay/public/_$1 [QSA]
+
+
+# zmsstatistic
+SetEnvIf Request_URI ^/zmsstatistic ZMS_MODULE_BASEPATH=/terminvereinbarung/statistic
+RewriteCond %{REQUEST_URI} !^/terminvereinbarung/[^/]+/+_
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^terminvereinbarung/statistic(.*) /var/www/html/zmsstatistic/public/index.php?$1 [QSA]
+RewriteRule ^terminvereinbarung/statistic/+_(.*) /var/www/html/zmsstatistic/public/_$1 [QSA]
+
+
+<If "osenv('ZMS_ENV') =~ /dev/">
+    Header set X-ZMS-ENV "dev"
+</If>
+<If "osenv('ZMS_ENV') =~ /stage/">
+    Header set X-ZMS-ENV "stage"
+</If>
+<If "osenv('ZMS_ENV') !~ /(stage|dev)/">
+    Header set X-ZMS-ENV "prod"
+</If>
