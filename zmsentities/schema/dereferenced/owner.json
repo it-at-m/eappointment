@@ -1,0 +1,190 @@
+{
+    "type": "object",
+    "description": "An owner is usually a contract partner using the ZMS. The base scopes of the ZMS are organised in an hierarchy, with the Owner on top. The hierarchy looks like this:\n1. owner\n2. organisation (by law or area)\n3. department (by solving different requests)\n4. scope (by building or location)\n5. workstation (by person or room)\n",
+    "example": {
+        "contact": {
+            "city": "Schönefeld",
+            "country": "Germany",
+            "lat": 52.345,
+            "lon": 13.456,
+            "name": "Flughafen Schönefeld, Landebahn",
+            "postalCode": "15831",
+            "region": "Brandenburg",
+            "street": "Zaunstraße",
+            "streetNumber": "1"
+        },
+        "id": 7,
+        "name": "Berlin-Brandenburg",
+        "url": "http:\/\/service.berlin.de",
+        "organisations": [
+            {
+                "id": 456
+            }
+        ]
+    },
+    "additionalProperties": false,
+    "properties": {
+        "contact": {
+            "description": "A contact is a collection of contact informations to find or to contact a natural person or an entity.",
+            "type": "object",
+            "example": {
+                "city": "Schönefeld",
+                "country": "Germany",
+                "lat": 52.345,
+                "lon": 13.456,
+                "name": "Flughafen Schönefeld, Landebahn",
+                "postalCode": "15831",
+                "region": "Brandenburg",
+                "street": "Zaunstraße",
+                "streetNumber": "1"
+            },
+            "additionalProperties": false,
+            "properties": {
+                "city": {
+                    "default": "",
+                    "type": "string"
+                },
+                "country": {
+                    "default": "",
+                    "description": "Name of the country or the ISO 3166-1 country code like 'de'.",
+                    "type": "string"
+                },
+                "lat": {
+                    "default": "",
+                    "description": "Latitute of a geo coordinate as wgs84 or etrs89",
+                    "type": "number"
+                },
+                "lon": {
+                    "default": "",
+                    "description": "Longitude of a geo coordinate as wgs84 or etrs89",
+                    "type": "number"
+                },
+                "name": {
+                    "default": "",
+                    "type": "string"
+                },
+                "postalCode": {
+                    "default": "",
+                    "type": "string"
+                },
+                "region": {
+                    "default": "",
+                    "type": "string"
+                },
+                "street": {
+                    "default": "",
+                    "type": "string"
+                },
+                "streetNumber": {
+                    "default": "",
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string",
+                    "default": "",
+                    "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+                    "x-locale": {
+                        "de_DE": {
+                            "pointer": "Kontakt E-Mail",
+                            "messages": {
+                                "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
+                            }
+                        }
+                    }
+                },
+                "telephone": {
+                    "default": "",
+                    "type": "string"
+                }
+            }
+        },
+        "id": {
+            "type": "number"
+        },
+        "name": {
+            "type": "string"
+        },
+        "url": {
+            "type": "string"
+        },
+        "organisations": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "description": "An organisation is the top unit to group departments with their scopes.",
+                "example": {
+                    "contact": {
+                        "city": "Schönefeld",
+                        "country": "Germany",
+                        "lat": 52.345,
+                        "lon": 13.456,
+                        "name": "Flughafen Schönefeld, Landebahn",
+                        "postalCode": "15831",
+                        "region": "Brandenburg",
+                        "street": "Zaunstraße",
+                        "streetNumber": "1"
+                    },
+                    "departments": [
+                        {
+                            "id": 123
+                        }
+                    ],
+                    "id": 456,
+                    "name": "Flughafen",
+                    "preferences": {
+                        "ticketPrinterProtectionEnabled": false
+                    },
+                    "ticketprinters": [
+                        {
+                            "enabled": true,
+                            "hash": "e744a234c1",
+                            "id": 1234,
+                            "lastUpdate": 1447925326000,
+                            "name": "Eingangsbereich links"
+                        }
+                    ]
+                },
+                "additionalProperties": false,
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "contact": {
+                        "$ref": "contact.json"
+                    },
+                    "departments": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "department.json"
+                        }
+                    },
+                    "id": {
+                        "type": "number"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "preferences": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "ticketPrinterProtectionEnabled": {
+                                "type": [
+                                    "boolean",
+                                    "number"
+                                ],
+                                "description": "true if protection for ticket printer is enabled"
+                            }
+                        }
+                    },
+                    "ticketprinters": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "ticketprinter.json"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

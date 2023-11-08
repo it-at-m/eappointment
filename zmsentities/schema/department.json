@@ -1,0 +1,151 @@
+{
+    "type": "object",
+    "description": "A department is a subunit in an organisation like \"Bürgeramt\", \"Standesamt\", \"Vertrieb\".",
+    "example": {
+        "id": 123,
+        "contact": {
+            "country": "Germany",
+            "name": "Flughafen Schönefeld, Landebahn",
+            "postalCode": "15831",
+            "region": "Brandenburg",
+            "street": "Zaunstraße",
+            "streetNumber": "1"
+        },
+        "dayoff": [
+            {
+                "date": 1447921381000,
+                "name": "Betriebsfeier"
+            },
+            {
+                "date": 1447922381000,
+                "name": "Silvester"
+            }
+        ],
+        "email": "terminvereinbarung@mitte.berlin.de",
+        "links": [
+            {
+                "name": "Zuständigkeitsverzeichnis",
+                "url": "http://www.berlin.de/ba-mitte/zustaendigkeiten/",
+                "target": true
+            }
+        ],
+        "preferences": {
+            "notifications": {
+                "enabled": true,
+                "identification": "terminvereinbarung@mitte.berlin.de",
+                "sendConfirmationEnabled": true,
+                "sendReminderEnabled": true
+            }
+        },
+        "scopes": [
+            {
+                "id": 123
+            }
+        ],
+        "clusters": [
+            {
+                "id": 45
+            }
+        ]
+    },
+    "additionalProperties": false,
+    "properties": {
+        "id": {
+            "type": "number"
+        },
+        "contact": {
+            "$ref": "contact.json"
+        },
+        "clusters": {
+            "type": "array",
+            "items": {
+                "$ref": "cluster.json"
+            }
+        },
+        "dayoff": {
+            "type": "array",
+            "items": {
+                "$ref": "dayoff.json"
+            }
+        },
+        "email": {
+            "type": "string",
+            "description": "sender address for reminder mails to the clients",
+            "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+            "x-locale": {
+                "de_DE": {
+                    "pointer": "E-Mail",
+                    "messages": {
+                        "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
+                    }
+                }
+            }
+        },
+        "sendEmailReminderEnabled": {
+            "type": "boolean",
+            "description": "activation of sending e-mail reminder"
+        },
+        "sendEmailReminderMinutesBefore": {
+            "type": [
+                "number",
+                "null"
+            ],
+            "default": null,
+            "description": "number of minutes before appointment when reminder e-mail is sent"
+        },
+        "links": {
+            "type": "array",
+            "items": {
+                "$ref": "link.json"
+            }
+        },
+        "name": {
+            "type": "string"
+        },
+        "preferences": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "notifications": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "enabled": {
+                            "type": [
+                                "boolean",
+                                "number"
+                            ],
+                            "description": "true if sms are allowed"
+                        },
+                        "identification": {
+                            "type": [
+                                "string"
+                            ],
+                            "description": "usually an email address"
+                        },
+                        "sendConfirmationEnabled": {
+                            "type": [
+                                "boolean",
+                                "number"
+                            ],
+                            "description": "true if confirmation sms are enabled"
+                        },
+                        "sendReminderEnabled": {
+                            "type": [
+                                "boolean",
+                                "number"
+                            ],
+                            "description": "true if reminder sms are enabled"
+                        }
+                    }
+                }
+            }
+        },
+        "scopes": {
+            "type": "array",
+            "items": {
+                "$ref": "scope.json"
+            }
+        }
+    }
+}

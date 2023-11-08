@@ -1,0 +1,25 @@
+{% if service.prerequisites %}
+    <div class="block">
+
+        <{{headerlevel|default('h2')}}>{% trans %}Voraussetzungen{% endtrans %}</{{headerlevel|default('h2')}}>
+
+        {% if service.residence is defined %}
+            {% if service.residence == "1" %}
+                <p>Wohnsitz in Berlin ist erforderlich</p>
+            {% elseif service.residence == "2" %}
+                <p>Haupt- oder Nebenwohnsitz in Berlin erforderlich</p>
+            {% endif %}
+        {% endif %}
+
+        {% include "@zmsentities/lists/item_table.twig" with {"items":service.prerequisites} %}
+
+        {% if service.representation is defined %}
+            {% if service.representation == "1" %}
+                <p>Keine Vertretung durch Dritte möglich. Sie können diese Dienstleistung nur selbst in Ihrem Namen erhalten. Es ist nicht möglich jemanden damit zu beauftragen.</p>
+            {% elseif service.representation == "2" %}
+                <p>Bei Vertretung: Vollmacht. Falls Sie jemanden beauftragen, den diese Dienstleistung in Ihrem Namen zu erhalten, geben Sie diesem bitte eine schriftliche Vollmachts-Erklärung mit.</p>
+            {% endif %}
+        {% endif %}
+
+    </div>
+{% endif %}

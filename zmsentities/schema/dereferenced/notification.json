@@ -1,0 +1,414 @@
+{
+    "type": "object",
+    "description": "A notification is a message to send to a client. Compared to a mail, it is a short text message, usually a SMS.",
+    "example": {
+        "id": 1234,
+        "createIP": "145.15.3.10",
+        "createTimestamp": 1447931596,
+        "department": {
+            "id": 74,
+            "preferences": {
+                "notifications": {
+                    "enabled": true,
+                    "identification": "terminvereinbarung@mitte.berlin.de",
+                    "sendConfirmationEnabled": true,
+                    "sendReminderEnabled": true
+                }
+            },
+            "email": "terminvereinbarung@mitte.berlin.de"
+        },
+        "message": "Denken Sie an ihren Termin mit der Nummer 123456",
+        "process": {
+            "clients": [
+                {
+                    "familyName": "Max Mustermann",
+                    "email": "max@service.berlin.de",
+                    "telephone": "030 115"
+                }
+            ],
+            "id": 123456,
+            "authKey": "abcd",
+            "reminderTimestamp": 1447931730000,
+            "scope": {
+                "id": 123
+            },
+            "status": "confirmed"
+        },
+        "client": [
+            {
+                "familyName": "Max Mustermann",
+                "telephone": "030 115"
+            }
+        ]
+    },
+    "required": [
+        "department",
+        "message",
+        "process",
+        "client"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "id": {
+            "type": "number"
+        },
+        "createIP": {
+            "type": "string",
+            "description": "IP Address of the creator"
+        },
+        "createTimestamp": {
+            "type": "number",
+            "description": "unix timestamp representing creation of the notification"
+        },
+        "department": {
+            "type": "object",
+            "description": "A department is a subunit in an organisation like \"Bürgeramt\", \"Standesamt\", \"Vertrieb\".",
+            "example": {
+                "id": 123,
+                "contact": {
+                    "country": "Germany",
+                    "name": "Flughafen Schönefeld, Landebahn",
+                    "postalCode": "15831",
+                    "region": "Brandenburg",
+                    "street": "Zaunstraße",
+                    "streetNumber": "1"
+                },
+                "dayoff": [
+                    {
+                        "date": 1447921381000,
+                        "name": "Betriebsfeier"
+                    },
+                    {
+                        "date": 1447922381000,
+                        "name": "Silvester"
+                    }
+                ],
+                "email": "terminvereinbarung@mitte.berlin.de",
+                "links": [
+                    {
+                        "name": "Zuständigkeitsverzeichnis",
+                        "url": "http:\/\/www.berlin.de\/ba-mitte\/zustaendigkeiten\/",
+                        "target": true
+                    }
+                ],
+                "preferences": {
+                    "notifications": {
+                        "enabled": true,
+                        "identification": "terminvereinbarung@mitte.berlin.de",
+                        "sendConfirmationEnabled": true,
+                        "sendReminderEnabled": true
+                    }
+                },
+                "scopes": [
+                    {
+                        "id": 123
+                    }
+                ],
+                "clusters": [
+                    {
+                        "id": 45
+                    }
+                ]
+            },
+            "additionalProperties": false,
+            "properties": {
+                "id": {
+                    "type": "number"
+                },
+                "contact": {
+                    "$ref": "contact.json"
+                },
+                "clusters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "cluster.json"
+                    }
+                },
+                "dayoff": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "dayoff.json"
+                    }
+                },
+                "email": {
+                    "type": "string",
+                    "description": "sender address for reminder mails to the clients",
+                    "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+                    "x-locale": {
+                        "de_DE": {
+                            "pointer": "E-Mail",
+                            "messages": {
+                                "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
+                            }
+                        }
+                    }
+                },
+                "links": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "link.json"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "preferences": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "notifications": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "enabled": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if sms are allowed"
+                                },
+                                "identification": {
+                                    "type": [
+                                        "string"
+                                    ],
+                                    "description": "usually an email address"
+                                },
+                                "sendConfirmationEnabled": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if confirmation sms are enabled"
+                                },
+                                "sendReminderEnabled": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if reminder sms are enabled"
+                                }
+                            }
+                        }
+                    }
+                },
+                "scopes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "scope.json"
+                    }
+                }
+            }
+        },
+        "message": {
+            "type": "string",
+            "description": "Short message to send. Beware, on using SMS, long messages might generate multiple SMS messages."
+        },
+        "process": {
+            "type": "object",
+            "description": "A process represents a request from one or more clients, usually including an appointment. Compared to an appointment, the process has additional information about the status of the request from the client.",
+            "example": {
+                "amendment": "Beispiel Termin",
+                "customTextfield": "Beispiel Termin",
+                "appointments": [
+                    {
+                        "date": 1447869171,
+                        "scope": {
+                            "id": 123
+                        },
+                        "slotCount": 2
+                    }
+                ],
+                "authKey": "abcd",
+                "clients": [
+                    {
+                        "familyName": "Max Mustermann",
+                        "email": "max@service.berlin.de",
+                        "telephone": "030 115"
+                    }
+                ],
+                "createIP": "145.15.3.10",
+                "createTimestamp": 1447931596,
+                "lastChange": 1447931596,
+                "id": 123456,
+                "queue": {
+                    "arrivalTime": 1447922893,
+                    "callCount": 1,
+                    "callTime": 1447922938,
+                    "lastCallTime": 1447922938,
+                    "number": "123",
+                    "waitingTime": 2,
+                    "withAppointment": 1,
+                    "status": "queued"
+                },
+                "reminderTimestamp": 1447931730,
+                "requests": [
+                    {
+                        "id": "123456",
+                        "name": "Name der Dienstleistung",
+                        "source": "dldb"
+                    }
+                ],
+                "scope": {
+                    "id": 123,
+                    "hint": "Standort aus Beispiel-Termin",
+                    "provider": {
+                        "name": "Bürgeramt 1",
+                        "contact": {
+                            "name": "Bürgeramt 1",
+                            "street": "Unter den Linden",
+                            "streetNumber": "1",
+                            "postalCode": "12345",
+                            "city": "Berlin"
+                        }
+                    }
+                },
+                "status": "confirmed"
+            },
+            "required": [
+                "id"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "amendment": {
+                    "type": [
+                        "string"
+                    ],
+                    "description": "additional information for this process from the client",
+                    "default": ""
+                },
+                "customTextfield": {
+                    "type": [
+                        "string"
+                    ],
+                    "description": "additional information for this process from the client",
+                    "default": ""
+                },
+                "apiclient": {
+                    "$ref": "apiclient.json"
+                },
+                "appointments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "appointment.json"
+                    }
+                },
+                "archiveId": {
+                    "type": "number",
+                    "description": "Number is used to identify a process in an archive (for statistical purposes)\n"
+                },
+                "authKey": {
+                    "type": "string",
+                    "description": "key for client to delete or change process"
+                },
+                "showUpTime": {
+                    "type": "string",
+                    "description": "unix timestamp of showing up after call"
+                },
+                "finishTime": {
+                    "type": "string",
+                    "description": "unix timestamp og time when process has been finished"
+                },
+                "clients": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "client.json"
+                    }
+                },
+                "createIP": {
+                    "type": "string",
+                    "description": "IP Address of the creator"
+                },
+                "createTimestamp": {
+                    "type": "number",
+                    "description": "unix timestamp representing creation of the process"
+                },
+                "id": {
+                    "type": "number",
+                    "description": "Number is used to identify appointments like on call displays\n",
+                    "minimum": 1000
+                },
+                "lastChange": {
+                    "type": "number",
+                    "description": "unix timestamp of the last change on this process"
+                },
+                "queue": {
+                    "$ref": "queue.json"
+                },
+                "reminderTimestamp": {
+                    "type": "number",
+                    "description": "timestamp of last reminder message"
+                },
+                "requests": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "request.json"
+                    }
+                },
+                "scope": {
+                    "$ref": "scope.json"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "free",
+                        "reserved",
+                        "confirmed",
+                        "queued",
+                        "called",
+                        "processing",
+                        "pending",
+                        "pickup",
+                        "finished",
+                        "missed",
+                        "archived",
+                        "deleted",
+                        "anonymized",
+                        "blocked",
+                        "conflict"
+                    ],
+                    "description": "Status of the process. The following values are possible:\n  * free: open for reservation\n  * reserved: for updating data, no validation yet\n  * confirmed: appointment\n  * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * processing: client appeared and gets service\n  * pending: client has to return to fetch papers\n  * pickup: client is called to fetch papers\n  * finished: successfully processed\n  * missed: no client appeared\n  * archived: only used in statistics\n  * deleted: blocking appointment time\n  * anonymized: for statistically purposes only\n  * blocked: to avoid the reuse of IDs on the same day\n  * conflict: mark process as conflict for check functions\n"
+                }
+            }
+        },
+        "client": {
+            "type": "object",
+            "description": "A client is usually a customer in a scope who intends to get his request solved. Usually the client has an appointment, if not he got a process number from a ticket printer and his familyName is set to 'Spontankunde'.",
+            "example": {
+                "familyName": "Max Mustermann",
+                "email": "max@service.berlin.de",
+                "emailSendCount": 0,
+                "notificationsSendCount": 0,
+                "surveyAccepted": false,
+                "telephone": "030 115"
+            },
+            "additionalProperties": false,
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "description": "mail address"
+                },
+                "emailSendCount": {
+                    "type": "number",
+                    "description": "number of reminder mails send"
+                },
+                "familyName": {
+                    "type": "string",
+                    "default": "Spontankunde",
+                    "description": "name of the client"
+                },
+                "notificationsSendCount": {
+                    "type": "number",
+                    "description": "number of reminder sms send"
+                },
+                "surveyAccepted": {
+                    "type": "boolean",
+                    "description": "true if clients allows survey requests"
+                },
+                "telephone": {
+                    "type": "string",
+                    "description": "telephone number"
+                }
+            }
+        }
+    }
+}

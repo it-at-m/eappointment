@@ -1,0 +1,21 @@
+{
+  "name": "eappointment-zmsentities",
+  "version": "1.0.0",
+  "description": "json schema entities for eappointment",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "make"
+  },
+  "keywords": [],
+  "author": "BerlinOnline GmbH & Co. KG",
+  "license": "MIT",
+  "devDependencies": {
+  },
+  "dependencies": {
+  },
+  "files": [
+    "schema/dereferenced/*.json"
+  ]
+}

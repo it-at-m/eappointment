@@ -1,0 +1,96 @@
+{
+    "type": "object",
+    "description": "main config data",
+    "example": {
+        "appointments": {
+            "urlChange": "https://service.berlin.de/terminvereinbarung/termin/manage/",
+            "urlAppointments": "https://service.berlin.de/terminvereinbarung/"
+        }
+    },
+    "properties": {
+        "appointments" : {
+            "type" : "object",
+            "properties" : {
+                "urlAppointments" : {
+                    "type": "string"
+                },
+                "urlChange" : {
+                    "type": "string"
+                }
+            }
+        },
+        "emergency": {
+            "type": "object",
+            "description": "Depending on scope settings, a workstation might have an emergency-button to call for help",
+            "properties": {
+                "refreshInterval": {
+                    "type": "number",
+                    "description": "default time in seconds for next check if an emergency occurred",
+                    "default": 5
+                }
+            }
+        },
+        "notifications" : {
+            "type" : "object",
+            "properties" : {
+                "absage" : {
+                    "type" : ["boolean","number"],
+                    "description" : ""
+                },
+                "benachrichtigungsfrist" : {
+                    "type" : "number",
+                    "description" : ""
+                },
+                "confirmationContent" : {
+                    "type" : "string",
+                    "description" : "message for confirmation notification"
+                },
+                "costs" : {
+                    "type" : "string",
+                    "description" : "calculated cost of one notification"
+                },
+                "eMailkonfigurierbar" : {
+                    "type" : ["boolean","number"],
+                    "description" : ""
+                },
+                "erinnerungsvorlauf" : {
+                    "type" : "number",
+                    "description" : ""
+                },
+                "gateway" : {
+                    "type" : "string",
+                    "description" : ""
+                },
+                "gatewayUrl" : {
+                    "type" : "string",
+                    "description" : ""
+                },
+                "headsUpContent" : {
+                    "type" : "string",
+                    "description" : "message for heads-up notification"
+                },
+                "kommandoAbfrage" : {
+                    "type" : "string",
+                    "description" : ""
+                },
+                "kommandoAbsage" : {
+                    "type" : "string",
+                    "description" : ""
+                },
+                "number" : {
+                    "type" : "string",
+                    "description" : "default telephone number for notifications"
+                }
+            }
+        },
+        "ticketprinter" : {
+            "type" : "object",
+            "properties": {
+                "baseUrl": {
+                    "type": "string",
+                    "description": "base uri too ticketprinter frontend"
+                }
+            }
+        }
+    }
+}

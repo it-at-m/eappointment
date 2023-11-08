@@ -1,0 +1,10 @@
+{
+    "type": "object",
+    "description": "representation of an ics attachment",
+    "properties": {
+        "content": {
+            "type": "string",
+            "description": "ics item as string"
+        }        
+    }
+}

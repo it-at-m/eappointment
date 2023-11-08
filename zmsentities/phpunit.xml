@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<phpunit 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" 
+  backupGlobals="false" 
+  backupStaticAttributes="false" 
+  bootstrap="tests/bootstrap.php" 
+  colors="true" 
+  convertErrorsToExceptions="true" 
+  convertNoticesToExceptions="true" 
+  convertWarningsToExceptions="true" 
+  forceCoversAnnotation="false" 
+  stopOnFailure="false" 
+  verbose="true"
+  processIsolation="false"
+>
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+  </coverage>
+  <testsuites>
+    <testsuite name="Zmsentities Test Suite">
+      <directory>./tests/Zmsentities/</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

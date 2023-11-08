@@ -1,0 +1,6 @@
+{% if service.requirements %}
+<div class="block">    
+    <{{headerlevel|default('h2')}}>{% trans %}Erforderliche Unterlagen{% endtrans %}</{{headerlevel|default('h2')}}>
+    {% include "@zmsentities/lists/item_table.twig" with {"items":service.requirements} %}
+</div>
+{% endif %}

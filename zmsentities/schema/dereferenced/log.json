@@ -1,0 +1,33 @@
+{
+    "type": "object",
+    "description": "A log entry.",
+    "example": {
+        "type": "buerger",
+        "reference": "12345",
+        "ts": "12345678",
+        "message": "A simple log entry"
+    },
+    "required": [
+        "type",
+        "message"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "type": {
+            "type": "string",
+            "description": "Type of log entry to group different entries. According to the type of the log entry, the field reference might have a different meaning"
+        },
+        "reference": {
+            "type": "string",
+            "description": "Usually an ID according to the type field"
+        },
+        "ts": {
+            "type": "number",
+            "description": "Unix timestamp marking the time the log entry was written into the database"
+        },
+        "message": {
+            "type": "string",
+            "description": "Descriptive log entry"
+        }
+    }
+}

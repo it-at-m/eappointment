@@ -1,0 +1,138 @@
+{
+  "type": "object",
+  "description": "Represents an exchanged set of data usuable for statistics. It can include information how the data is changed.",
+  "example": {
+    "period": "day",
+    "firstDay": {
+      "year": 2015,
+      "month": 11,
+      "day": 12
+    },
+    "lastDay": {
+      "year": 2015,
+      "month": 11,
+      "day": 19
+    },
+    "dictionary": [
+      {
+        "position": 0,
+        "variable": "id",
+        "description": "ID for set",
+        "reference": "process.id"
+      },
+      {
+        "position": 1,
+        "variable": "name"
+      },
+      {
+        "position": 2,
+        "variable": "date"
+      }
+    ],
+    "data": [
+      [
+        "1",
+        "test",
+        "2015-11-19"
+      ],
+      [
+        "2",
+        "test2",
+        "2015-11-18"
+      ]
+    ]
+  },
+  "required": [
+    "dictionary"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "firstDay": {
+      "$ref": "day.json"
+    },
+    "lastDay": {
+      "$ref": "day.json"
+    },
+    "period": {
+      "type": "string",
+      "description": "Type of periodic granularity of data.",
+      "enum": [
+        "minute",
+        "hour",
+        "day",
+        "month",
+        "year"
+      ]
+    },
+    "dictionary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "integer",
+            "description": "Each row of data is a list of values. The position indicated whicht element in the list is refered by this dictionary entry. Counting begins with zero.",
+            "example": 0
+          },
+          "variable": {
+            "type": "string",
+            "description": "Name of the variable for the given position",
+            "example": "var01"
+          },
+          "description": {
+            "type": "string",
+            "description": "A detailed description explaining the variable and contraints on interpreting the variable."
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of values",
+            "enum": [
+              "string",
+              "number",
+              "date"
+            ]
+          },
+          "reference": {
+            "type": "string",
+            "description": "A reference to another entity to obtain more informations."
+          }
+        }
+      }
+    },
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": [
+            "string",
+            "number"
+          ],
+          "description": "For a description on the values, see the 'dictionary'. Non existing "
+        }
+      }
+    },
+    "title": {
+      "type": "string",
+      "description": "Title for the data, might include hints for the data"
+    },
+    "visualization": {
+      "type": "object",
+      "description": "Hints for visualization of the data",
+      "properties": {
+        "xlabel": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ylabel": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,84 @@
+{
+    "type": "object",
+    "description": "Representation of an Apikey. It usually stores temporary api quota data while appointment scheduling in service app",
+    "example": {
+        "key": "wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs",
+        "apiclient": {
+            "accesslevel": "public",
+            "clientKey": "hDUWCqKHuVbV2Yj9Dgc8hYwfAgJs3aTM"
+        },
+        "captcha": {
+            "mime": "image/jpeg;base64",
+            "content": "R0lGODdhEAAQAMwAAPj7+FmhUYjNfGuxYYDJdYTIeanOpT+DOTuANXi/bGOrWj6CONzv2sPjv2CmV1unU4zPgISg6DJnJ3ImTh8Mtbs00aNP1CZSGy0YqLEn47RgXW8amasW7XWsmmvX2iuXiwAAAAAEAAQAAAFVyAgjmRpnihqGCkpDQPbGkNUOFk6DZqgHCNGg2T4QAQBoIiRSAwBE4VA4FACKgkB5NGReASFZEmxsQ0whPDi9BiACYQAInXhwOUtgCUQoORFCGt/g4QAIQA7",
+            "base64": true
+        },
+        "quota": [
+            {
+                "route": "/calendar/",
+                "period": "hour",
+                "requests": 99,
+                "ts": 1459512840
+            }
+        ],
+        "createIP": "127.0.0.1",
+        "ts": 1459512840
+    },
+    "required": [
+        "key"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "key": {
+            "type": "string",
+            "description": "temporary random api key string"
+        },
+        "apiclient": {
+            "$ref": "apiclient.json"
+        },
+        "captcha": {
+            "$ref": "mimepart.json"
+        },
+        "quota": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "route": {
+                        "type": "string",
+                        "description": "path of an URL for which the quota is valid"
+                    },
+                    "period": {
+                        "type": "string",
+                        "description": "Period of time for this quota",
+                        "enum": [
+                            "minute",
+                            "hour",
+                            "day",
+                            "week",
+                            "month"
+                        ]
+                    },
+                    "requests": {
+                        "type": "number",
+                        "description": "Number of requests left",
+                        "example": 99
+                    },
+                    "ts": {
+                        "type": "number",
+                        "description": "unix timestamp representing the creating time of quota",
+                        "example": 1459512840
+                    }
+                }
+            }
+        },
+        "createIP": {
+            "type": "string",
+            "description": "IP Address of the creator"
+        },
+        "ts": {
+            "type": "number",
+            "description": "unix timestamp representing the creating time of quota",
+            "example": 1459512840
+        }
+    }
+}

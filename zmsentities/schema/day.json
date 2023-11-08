@@ -1,0 +1,77 @@
+{
+    "type": "object",
+    "description": "Representation of a day in the calendar. You might find curious values in freeAppointments. While callcenter and public values might be positive, the intern value can be negative. This is due to calculation. The public and callcenter values are calculated per slot whereas the intern value is calculated for the whole day/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
+    "example": {
+        "year": 2015,
+        "month": 11,
+        "day": 19,
+        "freeAppointments": {
+            "callcenter": 0,
+            "intern": 3,
+            "public": 0,
+            "type": "sum"
+        },
+        "allAppointments": {
+            "callcenter": 0,
+            "intern": 3,
+            "public": 3,
+            "type": "sum"
+        },
+        "status": "bookable",
+        "firstAppointmentTimestamp": {
+            "intern": 1447919770000,
+            "type": "timestamp"
+        },
+        "lastAppointmentTimestamp": {
+            "intern": 1447919788000,
+            "type": "timestamp"
+        }
+    },
+    "required": [
+        "year",
+        "month",
+        "day"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "year": {
+            "type": "number"
+        },
+        "month": {
+            "type": "number"
+        },
+        "day": {
+            "type": "number"
+        },
+        "freeAppointments": {
+            "$ref": "slot.json"
+        },
+        "allAppointments": {
+            "$ref": "slot.json"
+        },
+        "firstAppointmentTimestamp": {
+            "$ref": "slot.json"
+        },
+        "lastAppointmentTimestamp": {
+            "$ref": "slot.json"
+        },
+        "processList": {
+            "type": "array",
+            "description": "list of processes, only available if status is detail",
+            "items": {
+                "$ref": "process.json"
+            }
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+                "bookable",
+                "notBookable",
+                "restricted",
+                "full",
+                "detail"
+            ],
+            "description": "Status of day. The following values are possible:\n  * bookable: day has free appointments\n  * notBookable: day is not bookable because of missing availabilities\n  * restricted: not bookable because of dayoff times\n  * full: not bookable because missing free appointments\n  * detail: non calculated status, every process for the day is available unter processList (very expansive in resources, use with caution)\n"
+        }
+    }
+}

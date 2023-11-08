@@ -1,0 +1,49 @@
+{
+    "type": "object",
+    "description": "This entity represents a calculated number for available appointments. Attention: Be aware that the different types of appointments are not exclusive, the total amount of appointments are not equal to the sum of appointments from the different types.",
+    "example": {
+    	"public": 3,
+    	"intern": 10,
+        "callcenter": 8,
+        "type": "sum",
+        "time": "11:50"
+    },
+    "additionalProperties": false,
+    "properties": {
+        "callcenter": {
+            "type": "number",
+            "default": 0,
+            "description": "Appointments of this type are usually only available via human agents, usually by phone"
+        },
+        "intern": {
+            "type": "number",
+            "default": 0,
+            "description": "Appointments of this type are usually only available for authenticated workstations"
+        },
+        "public": {
+            "type": "number",
+            "default": 0,
+            "description": "Appointments of this type are available for everyone"
+        },
+        "slotnumber": {
+            "type": "number",
+            "description": "This field is set, if the slot is part of a incrementing list of slots"
+        },
+        "time": {
+            "type": "string",
+            "description": "Format is 12:34 with HH:mm without seconds. This field is set, if the slot represents a time of a day"
+        },
+        "type": {
+            "type": "string",
+            "default": "free",
+            "enum": [
+                "free",
+                "timeslice",
+                "sum",
+                "reduced",
+                "timestamp"
+            ],
+            "description": "Type of the process. The following values are possible:\n  * free: the values represent possible free appointments without confirmed appointments\n  * timeslice: the values represent free appointments for a given day. Confirmed and reserved appointments on processes are substracted.\n  * sum: like timeslice, but for more than one scope\n  * reduced: like timeslice, but numbers were reduced due to required slots on a given request\n  * timestamp: the values represent a unix timestamp to when there are free processes\n"
+        }
+    }
+}

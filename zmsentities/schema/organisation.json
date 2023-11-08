@@ -1,0 +1,73 @@
+{
+    "type": "object",
+    "description": "An organisation is the top unit to group departments with their scopes.",
+    "example": {
+        "contact": {
+            "city": "Schönefeld",
+            "country": "Germany",
+            "lat": 52.345,
+            "lon": 13.456,
+            "name": "Flughafen Schönefeld, Landebahn",
+            "postalCode": "15831",
+            "region": "Brandenburg",
+            "street": "Zaunstraße",
+            "streetNumber": "1"
+        },
+        "departments": [
+            {
+                "id": 123
+            }
+        ],
+        "id": 456,
+        "name": "Flughafen",
+        "preferences": {
+            "ticketPrinterProtectionEnabled": false
+        },
+        "ticketprinters": [
+            {
+                "enabled": true,
+                "hash": "e744a234c1",
+                "id": 1234,
+                "lastUpdate": 1447925326000,
+                "name": "Eingangsbereich links"
+            }
+        ]
+    },
+    "additionalProperties": false,
+    "required": [
+        "name"
+    ],
+    "properties": {
+        "contact": {
+            "$ref": "contact.json"
+        },
+        "departments": {
+            "type": "array",
+            "items": {
+                "$ref": "department.json"
+            }
+        },
+        "id": {
+            "type": "number"
+        },
+        "name": {
+            "type": "string"
+        },
+        "preferences": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "ticketPrinterProtectionEnabled": {
+                    "type": ["boolean", "number"],
+                    "description": "true if protection for ticket printer is enabled"
+                }
+            }
+        },
+        "ticketprinters": {
+            "type": "array",
+            "items": {
+                "$ref": "ticketprinter.json"
+            }
+        }
+    }
+}

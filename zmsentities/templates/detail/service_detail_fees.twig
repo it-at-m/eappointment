@@ -1,0 +1,8 @@
+{% if service.fees %}
+<div class="block">
+    <{{headerlevel|default('h2')}}>{% trans %}Gebühren{% endtrans %}</{{headerlevel|default('h2')}}>
+    <p>
+        {{ service.fees|raw }}
+    </p>
+</div>
+{% endif %}

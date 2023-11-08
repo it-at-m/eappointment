@@ -1,0 +1,159 @@
+{
+  "type": "object",
+  "description": "A list of status informations for the API and the application.",
+  "example": {
+    "generated": "2015-11-20T18:01:04+01:00",
+    "version": {
+      "major": 2,
+      "minor": 34,
+      "patch": 56
+    },
+    "server": "prod-zmsapi-01"
+  },
+  "properties": {
+    "generated": {
+      "type": "string",
+      "description": "iso8601 date time string of generation on the server",
+      "example": "2015-11-20T18:01:04+01:00"
+    },
+    "server": {
+      "type": "string",
+      "description": "identifier for the responding server"
+    },
+    "processes": {
+      "type": "object",
+      "properties": {
+        "blocked": {
+          "type": "number",
+          "description": "Number of temporary blocked appointment IDs in the database."
+        },
+        "confirmed": {
+          "type": "number",
+          "description": "Number of valid appointments in the database. Every process counts for the clients involved."
+        },
+        "deleted": {
+          "type": "number",
+          "description": "Number of deleted appointments in the database blocking free appointment times."
+        },
+        "lastCalculate": {
+          "type": "string",
+          "description": "Timestamp of last calculation for slots"
+        },
+        "lastInsert": {
+          "type": "number",
+          "description": "Timestamp of last inserted process"
+        },
+        "missed": {
+          "type": "number",
+          "description": "Number of missed appointments in the database. Zeroed on daily basis in the night."
+        },
+        "outdated": {
+          "type": "number",
+          "description": "Number of slots, which might change on recalculation due to changed availabilities"
+        },
+        "outdatedOldest": {
+          "type": "string",
+          "description": "Timestamp of oldest slot for recalculation."
+        },
+        "reserved": {
+          "type": "number",
+          "description": "Number of reserved appointments in the database."
+        }
+      }
+    },
+    "sources": {
+      "type": "object",
+      "properties": {
+        "dldb": {
+          "type": "object",
+          "properties": {
+            "last": {
+              "type": "string",
+              "description": "Last date(c) of dldb import in database."
+            }
+          }
+        }
+      }
+    },
+    "mail": {
+      "type": "object",
+      "properties": {
+        "queueCount": {
+          "type": "number",
+          "description": "Number of unsend items in the queue"
+        },
+        "oldestSeconds": {
+          "type": "number",
+          "description": "Unix timestamp of oldest unsend item in queue"
+        },
+        "newestSeconds": {
+          "type": "number",
+          "description": "Unix timestamp of newest unsend item in queue"
+        }
+      }
+    },
+    "notification": {
+      "type": "object",
+      "properties": {
+        "queueCount": {
+          "type": "number",
+          "description": "Number of unsend items in the queue"
+        },
+        "oldestSeconds": {
+          "type": "number",
+          "description": "Unix timestamp of oldest unsend item in queue"
+        },
+        "newestSeconds": {
+          "type": "number",
+          "description": "Unix timestamp of newest unsend item in queue"
+        }
+      }
+    },
+    "database": {
+      "type": "object",
+      "properties": {
+        "clusterStatus": {
+          "type": "string",
+          "description": "Status of database cluster health"
+        },
+        "locks": {
+          "type": "number",
+          "description": "Number of locks for transactions on requested node."
+        },
+        "logbin": {
+          "type": "string",
+          "description": "Status of database replication"
+        },
+        "nodeConnections": {
+          "type": "number",
+          "description": "Percentage of used connections on requested node."
+        },
+        "problems": {
+          "type": "string",
+          "description": "List of configuration problems on requested node.."
+        },
+        "threads": {
+          "type": "number",
+          "description": "Number of connected threads on requested node."
+        }
+      }
+    },
+    "version": {
+      "type": "object",
+      "properties": {
+        "major": {
+          "type": "number",
+          "description": "major version, this value increments on breaking changes"
+        },
+        "minor": {
+          "type": "number",
+          "description": "minor version, this value increments on adding features"
+        },
+        "patch": {
+          "type": "number",
+          "description": "patch level, this value increments with bugfixes"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+    "type": "object",
+    "description": "information of a request relation to a provider",
+    "example": {
+        "provider": {
+            "id": 21334,
+            "name": "Bürgeramt Mitte",
+            "source": "dldb"
+        },
+        "request": {
+            "id": "120335",
+            "link": "http://service.berlin.de/dienstleistung/120335/",
+            "name": "Abmeldung einer Wohnung",
+            "source": "dldb",
+            "group": "Meldewesen und Ordnung"
+        },
+        "slots": 2,
+        "source": "dldb"
+    },
+    "additionalProperties": false,
+    "properties": {
+        "request": {
+            "$ref": "request.json"
+        },
+        "provider": {
+            "$ref": "provider.json"
+        },
+        "slots": {
+            "type": "number",
+            "description": "Number of slots required to fullfill request on provider",
+            "default": 1
+        },
+        "source": {
+            "type": "string",
+            "description": "source of the requestrelation",
+            "default": ""
+        }
+    }
+}

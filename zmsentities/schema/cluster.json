@@ -1,0 +1,48 @@
+{
+    "type": "object",
+    "description": "A cluster is a way to group different scopes.",
+    "example": {
+        "callDisplayText": "Herzlich Willkommen,\nDie aufgerufenen Plätze finden Sie den im Gang rechts.",
+        "hint": "Warteraum in der 3. Etage",
+        "id": 123,
+        "name": "Bürger- und Standesamt",
+        "scopes": [
+            {
+                "id": 1234
+            },
+            {
+                "id": 5678
+            }
+        ],
+        "shortNameEnabled": true
+    },
+    "additionalProperties": false,
+    "properties": {
+        "callDisplayText": {
+            "type": "string",
+            "description": "text for the call display if only the cluster is selected"
+        },
+        "hint": {
+            "type": "string",
+            "description": "information for the client like the address to a cluster location"
+        },
+        "id": {
+            "type": "number",
+            "description": "auto increment"
+        },
+        "name": {
+            "type": "string",
+            "description": "name for internal usage"
+        },
+        "scopes": {
+            "type": "array",
+            "items": {
+                "$ref": "scope.json"
+            }
+        },
+        "shortNameEnabled": {
+            "type": ["number", "boolean"],
+            "description": "true if the scope short name should be display next to the workstation name"
+        }
+    }
+}
