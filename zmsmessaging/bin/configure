@@ -1,0 +1,16 @@
+#!/bin/bash
+
+REALPATH=$(which realpath || which readlink)
+REALPATH=$([[ "$REALPATH" =~ 'readlink' ]] && echo "$REALPATH -e" || echo "$REALPATH")
+DIR=$(dirname $($REALPATH ${BASH_SOURCE[0]}))
+ROOT=$($REALPATH $DIR/..)
+
+echo "Configuring application"
+echo $ROOT
+mkdir -p $ROOT/.git/hooks
+ln -sf $ROOT/bin/test $ROOT/.git/hooks/pre-commit
+
+if [ ! -e $ROOT/config.php ]
+then
+    cp $ROOT/config.example.php $ROOT/config.php
+fi

@@ -1,0 +1,12 @@
+{
+    "$schema": "http://localhost/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-09-25T16:22:38+02:00",
+        "server": "Zmsapi-ENV (v2.12.00)"
+    },
+    "data": {
+        "queryString": "INSERT INTO `log` SET `message`=:message, `reference_id`=:referenceId, `type`=:type"
+    }
+}

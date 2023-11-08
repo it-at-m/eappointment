@@ -1,0 +1,68 @@
+include:
+    remote: https://gitlab.com/eappointment/php-base/-/raw/main/template-php-ci.yml
+
+test-php-80:
+    extends: .test-php
+    allow_failure: false
+    variables:
+      PHP_VERSION: "8.0"
+    only:
+        changes:
+            - .gitlab-ci.yml
+            - composer.lock
+            - composer.json
+            - templates/**/*
+            - src/**/*
+            - tests/**/*.{json,php}
+
+#test-php-81:
+#    extends: .test-php
+#    allow_failure: true
+#    variables:
+#      PHP_VERSION: "8.1"
+#    only:
+#        changes:
+#            - .gitlab-ci.yml
+#            - composer.lock
+#            - composer.json
+#            - schema/**/*
+#            - templates/**/*
+#            - src/**/*
+#            - tests/**/*.{json,php}
+
+outdated:
+    extends: .test-phpoutdated
+
+pages:
+    stage: deploy
+    script:
+        - echo "/zmsmessaging/ /zmsmessaging/_tests/coverage/index.html 302" >> public/_redirects
+        - find public/
+    artifacts:
+        paths:
+            - public
+    only:
+        refs:
+            - main
+        changes:
+            - src/**/*
+            - tests/**/*.{json,php}
+    environment:
+        name: analytics
+        url: https://eappointment.gitlab.io/zmsmessaging
+
+build-docker:
+    extends: .build-docker
+    variables:
+        PHP_VERSION: "8.0"
+    only:
+        - tags
+        - main
+        - /^[a-z]+[\/-]bug[\/-][a-zA-Z0-9_-]+$/
+        - /^[a-z]+[\/-]feature[\/-][a-zA-Z0-9_-]+$/
+        - /^[a-z]+[\/-]hotfix[\/-][a-zA-Z0-9_-]+$/
+        - /^[a-z]+[\/-]dev(-[a-zA-Z0-9_-]+)?$/
+        - /^[a-z]+[\/-]test(-[a-zA-Z0-9_-]+)?$/
+        - /^[a-z]+[\/-]release[\/-][a-zA-Z0-9_-]+$/
+        - /^[a-z]+[\/-]prod$/
+        - /^[a-z]+[\/-]main$/

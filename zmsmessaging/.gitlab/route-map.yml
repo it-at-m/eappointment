@@ -1,0 +1,3 @@
+# Coverage
+- source: /src/Zmsmessaging/(.+?\.php).*/
+  public: '\1.html'

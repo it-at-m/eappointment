@@ -1,0 +1,36 @@
+#!/bin/bash
+
+REALPATH=$(which realpath || which readlink)
+REALPATH=$([[ "$REALPATH" =~ 'readlink' ]] && echo "$REALPATH -e" || echo "$REALPATH")
+DIR=$(dirname $($REALPATH ${BASH_SOURCE[0]}))
+ROOT=$($REALPATH $DIR/..)
+BASE=$($REALPATH $DIR/../../../..)
+EHIGH="\033[49;1;32m"
+EERROR="\033[49;1;31m"
+EEND="\033[00m"
+
+if [ ! -d "$BASE/vendor" ]; then
+  BASE=$ROOT
+fi
+
+echo "Testing application"
+cd $ROOT
+
+GITFILES=$(git diff --cached --name-only --diff-filter=AM|xargs)
+PHPFILES=$(git diff --cached --name-only --diff-filter=AM|grep "\.php"|xargs)
+if [[ ! $GITFILES =~ "composer.lock" ]]
+then
+  echo -e "Do not forget to$EERROR update composer.lock$EEND"
+fi
+
+if [ -n "$PHPFILES" ]
+then
+    echo "Checking only: $PHPFILES"
+    php -l $PHPFILES || exit 1
+else
+    PHPFILES="src/"
+    echo "Checking $PHPFILES"
+fi
+$BASE/vendor/bin/phpcs --standard=psr2 $PHPFILES || exit 1
+$BASE/vendor/bin/phpmd $ROOT/src text phpmd.rules.xml || exit 1
+$BASE/vendor/bin/phpunit || exit 1

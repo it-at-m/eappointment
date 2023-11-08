@@ -1,0 +1,121 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2016-12-27T09:57:33+01:00",
+    "server": "Zmsapi-ENV"
+  },
+  "data": {
+    "0": {
+      "$schema": "https://schema.berlin.de/queuemanagement/mail.json",
+      "id": 1234,
+      "createIP": "145.15.3.10",
+      "createTimestamp": 1459500600,
+      "department": {
+        "id": 123,
+        "preferences": {
+          "notifications": {
+            "enabled": true,
+            "identification": "max@example.com",
+            "sendConfirmationEnabled": true,
+            "sendReminderEnabled": true
+          }
+        },
+        "email": "",
+        "name": "Bürgeramt"
+      },
+      "multipart": [
+        {
+          "queueId": "1234",
+          "mime": "text/html",
+          "content": "<h1>Title</h1><p>Message</p>",
+          "base64": false
+        },
+        {
+          "queueId": "1234",
+          "mime": "text/plain",
+          "content": "Title\nMessage",
+          "base64": false
+        },
+        {
+          "queueId": "1234",
+          "mime": "text/calendar",
+          "content": "QkVHSU46VkNBTEVOREFSDQpYLUxPVFVTLUNIQVJTRVQ6VVRGLTgNClZFUlNJT046Mi4wDQpQUk9ESUQ6Wk1TLUJlcmxpbg0KQkVHSU46VlRJTUVaT05FDQpUWklEOkV1cm9wZS9CZXJsaW4NClgtTElDLUxPQ0FUSU9OOkV1cm9wZS9CZXJsaW4NCkJFR0lOOkRBWUxJR0hUDQpUWk9GRlNFVEZST006KzAxMDANClRaT0ZGU0VUVE86KzAyMDANClRaTkFNRTpDRVNUDQpEVFNUQVJUOjE5NzAwMzI5VDAyMDAwMA0KUlJVTEU6RlJFUT1ZRUFSTFk7SU5URVJWQUw9MTtCWURBWT0tMVNVO0JZTU9OVEg9Mw0KRU5EOkRBWUxJR0hUDQpCRUdJTjpTVEFOREFSRA0KVFpPRkZTRVRGUk9NOiswMjAwDQpUWk9GRlNFVFRPOiswMTAwDQpUWk5BTUU6Q0VUDQpEVFNUQVJUOjE5NzAxMDI1VDAzMDAwMA0KUlJVTEU6RlJFUT1ZRUFSTFk7SU5URVJWQUw9MTtCWURBWT0tMVNVO0JZTU9OVEg9MTANCkVORDpTVEFOREFSRA0KRU5EOlZUSU1FWk9ORQ0KTUVUSE9EOlBVQkxJU0gNCkJFR0lOOlZFVkVOVA0KVUlEOjIwMTYwNDA4LTE2OTUzMA0KRFRTVEFSVDtUWklEPUV1cm9wZS9CZXJsaW46MjAxNjA0MDhUMDkxMDAwDQpEVEVORDtUWklEPUV1cm9wZS9CZXJsaW46MjAxNjA0MDhUMDkyMDAwDQpEVFNUQU1QOjIwMTYwNTEyVDE2MDgwOVoNCkxPQ0FUSU9OOkLDvHJnZXJhbXQgUmF0aGF1cyBUaWVyZ2FydGVuIE1hdGhpbGRlLUphY29iLVBsYXR6LCAxMDU1MSBCZXJsaW4NClNVTU1BUlk6QmVybGluLVRlcm1pbjogMTY5NTMwDQpERVNDUklQVElPTjogU2VociBnZWVocnRlL3IgRnJhdSBvZGVyIEhlcnIgWjY1NjM1IFxuXG4gaGllcm1pdCBiZXN0w6R0aWdlbiB3aXIgSWhuZW4gSWhyZW4gZ2VidWNodGVuIFRlcm1pbiBhbSBGci4gMDguIEFwcmlsIDIwMTYgdW0gMDk6MTAgVWhyXG5cbiBPcnQ6IELDvHJnZXJhbXQgUmF0aGF1cyBUaWVyZ2FydGVuIE1hdGhpbGRlLUphY29iLVBsYXR6LCAxMDU1MSBCZXJsaW5cbiBcblxuIElocmUgVm9yZ2FuZ3NudW1tZXIgaXN0IGRpZSAiMTY5NTMwIlxuIElociBDb2RlIHp1ciBUZXJtaW5hYnNhZ2Ugb2RlciAtw6RuZGVydW5nIGxhdXRldCAiYjNiMCJcblxuIFphaGx1bmdzaGlud2VpczogQW0gU3RhbmRvcnQga2FubiBudXIgbWl0IGdpcm9jYXJkIChtaXQgUElOKSBiZXphaGx0IHdlcmRlbi5cblxuIFNpZSBoYWJlbiBmb2xnZW5kZSBEaWVuc3RsZWlzdHVuZyBhdXNnZXfDpGhsdDogXG4gXG5Bbm1lbGR1bmcgZWluZXIgV29obnVuZ1xuICBcblZvcmF1c3NldHp1bmdlblxuICBcbi0gIHBlcnPDtm5saWNoZSBWb3JzcHJhY2hlIG9kZXIgVmVydHJldHVuZyBkdXJjaCBlaW5lIGFuZGVyZSBQZXJzb24gICBJaHJlIHBlcnPDtm5saWNoZSBWb3JzcHJhY2hlIGlzdCBlcmZvcmRlcmxpY2ggb2RlciBzaWUgd2VyZGVuIGR1cmNoIGVpbmUgYW5kZXJlIFBlcnNvbiB2ZXJ0cmV0ZW4uXG4gQmVpIGRlciBBYmdhYmUgZGVzIEFubWVsZGVmb3JtdWxhcnMgdW5kIGRlciDDvGJyaWdlbiBlcmZvcmRlcmxpY2hlbiBVbnRlcmxhZ2VuIGvDtm5uZW4gU2llIHNpY2ggZHVyY2ggZWluZSBnZWVpZ25ldGUgUGVyc29uIHZlcnRyZXRlbiBsYXNzZW4uIERpZSB2b24gSWhuZW4gYmVhdWZ0cmFndGUgUGVyc29uIG11c3MgaW4gZGVyIExhZ2Ugc2VpbiwgZGllIHp1ciBvcmRudW5nc2dlbcOkw59lbiBGw7xocnVuZyBkZXMgTWVsZGVyZWdpc3RlcnMgZXJmb3JkZXJsaWNoZW4gQXVza8O8bmZ0ZSB6dSBlcnRlaWxlbi4gRGFzIEFubWVsZGVmb3JtdWxhciBtw7xzc2VuIFNpZSBlaWdlbmjDpG5kaWcgdW50ZXJzY2hyZWliZW4uICAgICAgXG5FcmZvcmRlcmxpY2hlIFVudGVybGFnZW5cbiAgXG4tICBJZGVudGl0w6R0c25hY2h3ZWlzICAgUGVyc29uYWxhdXN3ZWlzLCBSZWlzZXBhc3MsIEtpbmRlcnJlaXNlcGFzcyBmw7xyIGRldXRzY2hlIFN0YWF0c2FuZ2Vow7ZyaWdlIG9kZXIgTmF0aW9uYWxwYXNzIG9kZXIgUGFzc2Vyc2F0enBhcGllcmUgZsO8ciBhdXNsw6RuZGlzY2hlIFN0YWF0c2FuZ2Vow7ZyaWdlLlxuIEJpdHRlIGJyaW5nZW4gU2llIGFsbGUgZ2VuYW5udGVuIHVuZCBJaG5lbiB2b3JsaWVnZW5kZW4gRG9rdW1lbnRlIGbDvHIgYWxsZSB1bXppZWhlbmRlbiBQZXJzb25lbiBtaXQuICAgXG4tICBCZWlibGF0dCB6dXIgQW5tZWxkdW5nIChiZWkgbWVocmVyZW4gV29obnVuZ2VuKSAgIE51ciB3ZW5uIFNpZSBJaHJlIGJpc2hlcmlnZSBXb2hudW5nIGluIERldXRzY2hsYW5kIG5pY2h0IGF1ZmdlYmVuIHVuZCBkaWUgbmV1ZSBXb2hudW5nIHp1c8OkdHpsaWNoIGFubWVsZGVuIHdvbGxlbiwgbXVzcyBmw7xyIFNpZSB1bmQgSWhyZSBnZ2YuIG1pdHppZWhlbmRlbiBGYW1pbGllbm1pdGdsaWVkZXIgZWluZSBXb2hudW5nIGFscyBIYXVwdHdvaG51bmcgYmVzdGltbXQgd2VyZGVuLiBCaXR0ZSBsZXNlbiBTaWUgc2ljaCBpbiBkaWVzZW0gRmFsbGUgZGllIEhpbndlaXNlIGF1ZiBkZW0gRm9ybXVsYXIgZHVyY2guICAgXG4tICBBbm1lbGRlZm9ybXVsYXIgICBQZXJzb25lbiBlaW5lciBGYW1pbGllLCBkaWUgYXVzIGRlciBiaXNoZXJpZ2VuIFdvaG51bmcgenVzYW1tZW4gaW4gZGllIG5ldWUgV29obnVuZyB6aWVoZW4sIGvDtm5uZW4gZ2VtZWluc2FtIGVpbiBBbm1lbGRlZm9ybXVsYXIgYmVudXR6ZW4uXG4gQmVpIG1laHIgYWxzIDIgYW56dW1lbGRlbmRlbiBQZXJzb25lbiBiaXR0ZSB3ZWl0ZXJlbiBNZWxkZXNjaGVpbiBiZW51dHplbi5cbiBCaXR0ZSBiZWFjaHRlbiBTaWUgaW0gQmVyZWljaCAiV2VpdGVyZsO8aHJlbmRlIEluZm9ybWF0aW9uZW4iIGRpZSAiV2VpdGVyZsO8aHJlbmRlbiBIaW53ZWlzZSB6dSBBbm1lbGR1bmdlbiIgLiAgIFxuLSAgUGVyc29uZW5zdGFuZHN1cmt1bmRlICAgTnVyIGbDvHIgSWhyZSBlcnN0ZSBBbm1lbGR1bmcgaW4gQmVybGluIGlzdCBlcyB6d2Vja2RpZW5saWNoLCB3ZW5uIFNpZSBlaW5lIFBlcnNvbmVuc3RhbmRzdXJrdW5kZSB6dXIgQW5tZWxkdW5nIG1pdGJyaW5nZW4gdW5kIHZvcmxlZ2VuICh6LkIuIEhlaXJhdHN1cmt1bmRlLCBHZWJ1cnRzdXJrdW5kZSkuICAgXG4tICBFaW56dWdzYmVzdMOkdGlndW5nIGRlcyBXb2hudW5nc2dlYmVycyAoVmVybWlldGVyKSAgIFNlaXQgZGVtIDEuIE5vdmVtYmVyIDIwMTUgaXN0IGRlciBXb2hudW5nc2dlYmVyIHZlcnBmbGljaHRldCwgZGVtIE1lbGRlcGZsaWNodGlnZW4gZGVuIEVpbnp1ZyBpbm5lcmhhbGIgdm9uIHp3ZWkgV29jaGVuIG5hY2ggZGVtIEVpbnp1ZyBzY2hyaWZ0bGljaCBtaXQgVW50ZXJzY2hyaWZ0IHp1IGJlc3TDpHRpZ2VuLiBEaWUgQmVzdMOkdGlndW5nIG11c3MgZm9sZ2VuZGUgRGF0ZW4gZW50aGFsdGVuOiBOYW1lIHVuZCBBbnNjaHJpZnQgZGVzIFdvaG51bmdzZ2ViZXJzLCBFaW56dWdzZGF0dW0sIEFuc2NocmlmdCBkZXIgV29obnVuZyB1bmQgTmFtZW4gZGVyIG1lbGRlcGZsaWNodGlnZW4gUGVyc29uZW4uIERpZSBWb3JsYWdlIGVpbmVzIE1pZXR2ZXJ0cmFnZXMgZXJzZXR6dCBuaWNodCBkaWUgRWluenVnc2Jlc3TDpHRpZ3VuZy5cbiBFaW4gTXVzdGVyIGbDvHIgZGllIEVpbnp1Z3NiZXN0w6R0aWd1bmcgZGVzIFdvaG51bmdzZ2ViZXJzIHN0ZWh0IElobmVuIHVudGVyICJGb3JtdWxhcmUiIHp1ciBWZXJmw7xndW5nLiAgICAgIFxuR2Viw7xocmVuXG4gZ2Viw7xocmVuZnJlaTsgZGFzIGdpbHQgYXVjaCBmw7xyIGRpZSBNZWxkZWJlc3TDpHRpZ3VuZy4gXG4gU29sbHRlbiBTaWUgZGVuIFRlcm1pbiBuaWNodCB3YWhybmVobWVuIGvDtm5uZW4sIHNhZ2VuIFNpZSBpaG4gYml0dGUgYWIuIFxuXG4gRGllcyBrw7ZubmVuIFNpZSDDvGJlciB1bnNlcmUgSW50ZXJuZXRidWNodW5nc3NlaXRlIGh0dHBzOi8vc2VydmljZS1iZXJsaW4vdGVybWludmVyZWluYmFydW5nL3Rlcm1pbi9tYW5hZ2UvMTY5NTMwLyB1bnRlciBBbmdhYmUgSWhyZXIgVm9yZ2FuZ3NudW1tZXIgIjE2OTUzMCIgdW5kIElocmVzIHBlcnPDtm5saWNoZW4gQWJzYWdlLUNvZGVzICJiM2IwIiBlcmxlZGlnZW4uXG5cbiBcbiBNaXQgZnJldW5kbGljaGVtIEdydcOfXG4gSWhyZSBUZXJtaW52ZXJ3YWx0dW5nIGRlcyBMYW5kZXMgQmVybGluIFxuXG4gaHR0cHM6Ly9zZXJ2aWNlLWJlcmxpbi90ZXJtaW52ZXJlaW5iYXJ1bmcvIA0KQkVHSU46VkFMQVJNDQpBQ1RJT046RElTUExBWQ0KVFJJR0dFUjotUDFEDQpERVNDUklQVElPTjpFcmlubmVydW5nDQpFTkQ6VkFMQVJNDQpFTkQ6VkVWRU5UDQpFTkQ6VkNBTEVOREFS",
+          "base64": true
+        }
+      ],
+      "process": {
+        "clients": [
+          {
+            "familyName": "Max Mustermann",
+            "email": "max@example.com",
+            "telephone": "030 115"
+          }
+        ],
+        "id": 123456,
+        "authKey": "1234",
+        "reminderTimestamp": 1447931730000,
+        "scope": {
+          "id": 151,
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "5",
+              "endInDaysDefault": "60",
+              "multipleSlotsEnabled": "1",
+              "reservationDuration": "5",
+              "startInDaysDefault": "0"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "0",
+              "amendmentLabel": "",
+              "emailRequired": "1",
+              "telephoneActivated": "1",
+              "telephoneRequired": "1"
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "enabled": "1",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "Ausgabe",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
+              "firstNumber": "1000",
+              "lastNumber": "1999",
+              "processingTimeAverage": "00:15:00",
+              "publishWaitingTimeEnabled": "1",
+              "statisticsEnabled": "1"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "confirmationEnabled": "0",
+              "deactivatedText": "",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "0"
+            }
+          }
+        },
+        "status": "confirmed"
+      },
+      "subject": "Example Mail",
+      "client": {
+        "familyName": "Max Mustermann",
+        "email": "max@example.com"
+      }
+    }
+  }
+}

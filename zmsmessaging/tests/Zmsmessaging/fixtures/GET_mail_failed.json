@@ -1,0 +1,482 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": true,
+    "exception": "BO\\Zmsapi\\Exception\\Mail\\MailNotFound",
+    "generated": "2016-12-27T12:55:01+01:00",
+    "server": "Zmsapi-ENV",
+    "message": "Mail does not exists",
+    "trace": [
+      {
+        "function": "render",
+        "class": "BO\\Zmsapi\\MailDelete",
+        "type": "::",
+        "args": [
+          "123"
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/slimproject/src/Slim/Controller.php",
+        "line": 52,
+        "function": "call_user_func_array",
+        "args": [
+          [
+            "BO\\Zmsapi\\MailDelete",
+            "render"
+          ],
+          {
+            "id": "123"
+          }
+        ]
+      },
+      {
+        "function": "__invoke",
+        "class": "BO\\Slim\\Controller",
+        "type": "->",
+        "args": [
+          {},
+          {},
+          {
+            "id": "123"
+          }
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/Handlers/Strategies/RequestResponse.php",
+        "line": 41,
+        "function": "call_user_func",
+        "args": [
+          {},
+          {},
+          {},
+          {
+            "id": "123"
+          }
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/Route.php",
+        "line": 344,
+        "function": "__invoke",
+        "class": "Slim\\Handlers\\Strategies\\RequestResponse",
+        "type": "->",
+        "args": [
+          {},
+          {},
+          {},
+          {
+            "id": "123"
+          }
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/MiddlewareAwareTrait.php",
+        "line": 116,
+        "function": "__invoke",
+        "class": "Slim\\Route",
+        "type": "->",
+        "args": [
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/Route.php",
+        "line": 316,
+        "function": "callMiddlewareStack",
+        "class": "Slim\\Route",
+        "type": "->",
+        "args": [
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/App.php",
+        "line": 438,
+        "function": "run",
+        "class": "Slim\\Route",
+        "type": "->",
+        "args": [
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/http-cache/src/Cache.php",
+        "line": 57,
+        "function": "__invoke",
+        "class": "Slim\\App",
+        "type": "->",
+        "args": [
+          {},
+          {}
+        ]
+      },
+      {
+        "function": "__invoke",
+        "class": "Slim\\HttpCache\\Cache",
+        "type": "->",
+        "args": [
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/DeferredCallable.php",
+        "line": 43,
+        "function": "call_user_func_array",
+        "args": [
+          {},
+          [
+            {},
+            {},
+            {}
+          ]
+        ]
+      },
+      {
+        "function": "__invoke",
+        "class": "Slim\\DeferredCallable",
+        "type": "->",
+        "args": [
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/MiddlewareAwareTrait.php",
+        "line": 67,
+        "function": "call_user_func",
+        "args": [
+          {},
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/akrabat/rka-ip-address-middleware/src/IpAddress.php",
+        "line": 92,
+        "function": "Slim\\{closure}",
+        "class": "Slim\\App",
+        "type": "->",
+        "args": [
+          {},
+          {}
+        ]
+      },
+      {
+        "function": "__invoke",
+        "class": "RKA\\Middleware\\IpAddress",
+        "type": "->",
+        "args": [
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/DeferredCallable.php",
+        "line": 43,
+        "function": "call_user_func_array",
+        "args": [
+          {},
+          [
+            {},
+            {},
+            {}
+          ]
+        ]
+      },
+      {
+        "function": "__invoke",
+        "class": "Slim\\DeferredCallable",
+        "type": "->",
+        "args": [
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/MiddlewareAwareTrait.php",
+        "line": 67,
+        "function": "call_user_func",
+        "args": [
+          {},
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/slimproject/src/Slim/Middleware/Validator.php",
+        "line": 19,
+        "function": "Slim\\{closure}",
+        "class": "Slim\\App",
+        "type": "->",
+        "args": [
+          {},
+          {}
+        ]
+      },
+      {
+        "function": "__invoke",
+        "class": "BO\\Slim\\Middleware\\Validator",
+        "type": "->",
+        "args": [
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/DeferredCallable.php",
+        "line": 43,
+        "function": "call_user_func_array",
+        "args": [
+          {},
+          [
+            {},
+            {},
+            {}
+          ]
+        ]
+      },
+      {
+        "function": "__invoke",
+        "class": "Slim\\DeferredCallable",
+        "type": "->",
+        "args": [
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/MiddlewareAwareTrait.php",
+        "line": 67,
+        "function": "call_user_func",
+        "args": [
+          {},
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/slimproject/src/Slim/Middleware/Route.php",
+        "line": 26,
+        "function": "Slim\\{closure}",
+        "class": "Slim\\App",
+        "type": "->",
+        "args": [
+          {},
+          {}
+        ]
+      },
+      {
+        "function": "getInfo",
+        "class": "BO\\Slim\\Middleware\\Route",
+        "type": "->",
+        "args": [
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/DeferredCallable.php",
+        "line": 43,
+        "function": "call_user_func_array",
+        "args": [
+          [
+            {},
+            "getInfo"
+          ],
+          [
+            {},
+            {},
+            {}
+          ]
+        ]
+      },
+      {
+        "function": "__invoke",
+        "class": "Slim\\DeferredCallable",
+        "type": "->",
+        "args": [
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/MiddlewareAwareTrait.php",
+        "line": 67,
+        "function": "call_user_func",
+        "args": [
+          {},
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/src/Zmsapi/Helper/TransactionMiddleware.php",
+        "line": 21,
+        "function": "Slim\\{closure}",
+        "class": "Slim\\App",
+        "type": "->",
+        "args": [
+          {},
+          {}
+        ]
+      },
+      {
+        "function": "__invoke",
+        "class": "BO\\Zmsapi\\Helper\\TransactionMiddleware",
+        "type": "->",
+        "args": [
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/DeferredCallable.php",
+        "line": 43,
+        "function": "call_user_func_array",
+        "args": [
+          {},
+          [
+            {},
+            {},
+            {}
+          ]
+        ]
+      },
+      {
+        "function": "__invoke",
+        "class": "Slim\\DeferredCallable",
+        "type": "->",
+        "args": [
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/MiddlewareAwareTrait.php",
+        "line": 67,
+        "function": "call_user_func",
+        "args": [
+          {},
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/src/Zmsapi/Helper/LogOperatorMiddleware.php",
+        "line": 21,
+        "function": "Slim\\{closure}",
+        "class": "Slim\\App",
+        "type": "->",
+        "args": [
+          {},
+          {}
+        ]
+      },
+      {
+        "function": "__invoke",
+        "class": "BO\\Zmsapi\\Helper\\LogOperatorMiddleware",
+        "type": "->",
+        "args": [
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/DeferredCallable.php",
+        "line": 43,
+        "function": "call_user_func_array",
+        "args": [
+          {},
+          [
+            {},
+            {},
+            {}
+          ]
+        ]
+      },
+      {
+        "function": "__invoke",
+        "class": "Slim\\DeferredCallable",
+        "type": "->",
+        "args": [
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/MiddlewareAwareTrait.php",
+        "line": 67,
+        "function": "call_user_func",
+        "args": [
+          {},
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/MiddlewareAwareTrait.php",
+        "line": 116,
+        "function": "Slim\\{closure}",
+        "class": "Slim\\App",
+        "type": "->",
+        "args": [
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/App.php",
+        "line": 332,
+        "function": "callMiddlewareStack",
+        "class": "Slim\\App",
+        "type": "->",
+        "args": [
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/vendor/slim/slim/Slim/App.php",
+        "line": 293,
+        "function": "process",
+        "class": "Slim\\App",
+        "type": "->",
+        "args": [
+          {},
+          {}
+        ]
+      },
+      {
+        "file": "/Volumes/HDD/htdocs/zmsneo/zmsapi/public/index.php",
+        "line": 4,
+        "function": "run",
+        "class": "Slim\\App",
+        "type": "->"
+      }
+    ]
+  },
+  "data": null
+}
