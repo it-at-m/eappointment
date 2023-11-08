@@ -1,0 +1,135 @@
+include:
+    remote: https://gitlab.com/eappointment/php-base/-/raw/main/template-php-ci.yml
+
+.test-php-custom:
+    stage: test
+    variables:
+      PHP_VERSION: 7.3
+    image: registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-dev
+    cache:
+        key: "zmsbase"
+        paths:
+            - cache
+    script:
+        - $CLI_COMPOSER
+        - $CLI_PHPCS
+        - $CLI_PHPMD
+        - docker-php-ext-enable xdebug
+        - $CLI_PHPUNIT $CLI_PHPUNIT_PARAM
+    coverage: '/^\s*Lines:\s*\d+.\d+\%/'
+    artifacts:
+        paths:
+            - public/_tests
+        expire_in: 7d
+        reports:
+            junit: public/_tests/junit.xml
+
+
+test-php-73:
+    extends: .test-php-custom
+    allow_failure: true
+    services:
+        - name: mariadb:10.1
+          alias: mysql
+          command: ["mysqld", "--general-log=1", "--general-log-file=/var/log/mysql/general.log"]
+    before_script:
+        - $CLI_COMPOSER
+        - rm -rf data
+        - ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
+        - vendor/bin/importTestData --commit
+    variables:
+      PHP_VERSION: "7.3"
+      MYSQL_PORT: "tcp://mysql:3306"
+      MYSQL_DATABASE: zmsbo
+      MYSQL_ROOT_PASSWORD: zmsapi
+    only:
+        changes:
+            - .gitlab-ci.yml
+            - composer.lock
+            - composer.json
+            - schema/**/*
+            - templates/**/*
+            - src/**/*
+            - tests/**/*.{json,php}
+
+#test-php-81:
+#    extends: .test-php
+#    allow_failure: true
+#    variables:
+#      PHP_VERSION: "8.1"
+#    only:
+#        changes:
+#            - .gitlab-ci.yml
+#            - composer.lock
+#            - composer.json
+#            - schema/**/*
+#            - templates/**/*
+#            - src/**/*
+#            - tests/**/*.{json,php}
+
+outdated:
+    extends: .test-phpoutdated
+
+apidoc:
+    stage: .pre
+    variables:
+        PHP_VERSION: "7.3"
+    image: registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-dev
+    before_script:
+        - $CLI_COMPOSER --no-scripts
+        - bin/configure
+        - npm install
+    artifacts:
+        paths:
+            - public
+    script:
+        - npm run build
+        - swagger-cli validate ./public/doc/swagger.yaml
+        - swagger-cli bundle -r -o ./public/doc/swagger.json ./public/doc/swagger.yaml
+        - wget -P ./public/doc/assets/ "https://rebilly.github.io/ReDoc/releases/v1.22.3/redoc.min.js"
+        - wget -P ./public/_test/assets/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-bundle.js"
+        - wget -P ./public/_test/assets/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui.css"
+        - wget -P ./public/_test/assets/ "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.6.0/swagger-ui-standalone-preset.js"
+        - find public/
+    only:
+        changes:
+            - .gitlab-ci.yml
+            - composer.lock
+            - composer.json
+            - src/**/*
+            - tests/**/*.{json,php}
+            - routing.php
+
+pages:
+    stage: deploy
+    needs:
+        - job: apidoc
+          artifacts: true
+    script:
+        - echo "/zmsapi/_tests/coverage/ /zmsapi/_tests/coverage/index.html 302" >> public/_redirects
+        - echo "/zmsapi/doc/ /zmsapi/public/doc/index.html 302" >> public/_redirects
+        - find public/
+    artifacts:
+        paths:
+            - public
+    only:
+        refs:
+            - main
+        changes:
+            - src/**/*
+            - tests/**/*.{json,php}
+            - routing.php
+            - .gitlab-ci.yml
+    environment:
+        name: analytics
+        url: https://eappointment.gitlab.io/zmsapi
+
+build-docker:
+    extends: .build-docker
+    variables:
+        PHP_VERSION: "8.0"
+    only:
+        - tags
+        - main
+        - branches        
+        

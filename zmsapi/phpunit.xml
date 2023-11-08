@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" 
+  backupGlobals="false" 
+  backupStaticAttributes="false" 
+  bootstrap="tests/Zmsapi/bootstrap.php" 
+  colors="true" 
+  convertErrorsToExceptions="true" 
+  convertNoticesToExceptions="true" 
+  convertWarningsToExceptions="true" 
+  forceCoversAnnotation="false" 
+  stopOnFailure="true" 
+  verbose="true"
+  processIsolation="false"
+>
+    <testsuites>
+        <testsuite name="Zmsapi Test Suite">
+            <directory>./tests/Zmsapi/</directory>
+        </testsuite>
+    </testsuites>
+    <coverage processUncoveredFiles="true">
+        <include>
+        <directory suffix=".php">./src</directory>
+        </include>
+    </coverage>
+</phpunit>

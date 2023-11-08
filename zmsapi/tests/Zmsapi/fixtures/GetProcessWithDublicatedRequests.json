@@ -1,0 +1,103 @@
+{
+    "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+    "amendment": "",
+    "appointments": [
+        {
+            "scope": {
+                "id": "112"
+            },
+            "availability": {
+                "id": "98153",
+                "weekday": {
+                    "monday": "0",
+                    "tuesday": "0",
+                    "wednesday": "0",
+                    "thursday": "0",
+                    "friday": "16",
+                    "saturday": "0",
+                    "sunday": "0"
+                },
+                "repeat": {
+                    "afterWeeks": "1",
+                    "weekOfMonth": "0"
+                },
+                "bookable": {
+                    "startInDays": "0",
+                    "endInDays": "60"
+                },
+                "workstationCount": {
+                    "public": "1",
+                    "callcenter": "2",
+                    "intern": "2"
+                },
+                "multipleSlotsAllowed": "1",
+                "slotTimeInMinutes": "6",
+                "startDate": "1458255600",
+                "endDate": "1467237600",
+                "startTime": "10:00:00",
+                "endTime": "12:36:00",
+                "type": "appointment"
+            },
+            "slotCount": 0,
+            "date": "1464250320"
+        }
+    ],
+    "authKey": "",
+    "createIP": "",
+    "createTimestamp": "",
+    "id": 0,
+    "reminderTimestamp": 0,
+    "requests": [
+        {
+            "id": "120335",
+            "link": "https://service.berlin.de/dienstleistung/120335/",
+            "name": "Abmeldung einer Wohnung",
+            "source": "dldb"
+        },
+        {
+            "id": "120335",
+            "link": "https://service.berlin.de/dienstleistung/120335/",
+            "name": "Abmeldung einer Wohnung",
+            "source": "dldb"
+        },
+        {
+            "id": "120335",
+            "link": "https://service.berlin.de/dienstleistung/120335/",
+            "name": "Abmeldung einer Wohnung",
+            "source": "dldb"
+        },
+        {
+            "id": "120335",
+            "link": "https://service.berlin.de/dienstleistung/120335/",
+            "name": "Abmeldung einer Wohnung",
+            "source": "dldb"
+        }
+    ],
+    "scope": {
+        "hint": "NUR EIN KUNDE PRO TERMIN",
+        "id": "112",
+        "contact": {
+            "name": "Bürgeramt Biesdorf - Center",
+            "street": "Elsterwerdaer Platz 3, 12683 Berlin",
+            "email": "",
+            "country": "Germany"
+        },
+        "shortName": "Bürgeramt",
+        "provider": {
+            "source": "dldb",
+            "id": "122271",
+            "link": "https://service.berlin.de/standort/122271/",
+            "name": "Bürgeramt Biesdorf - Center",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Biesdorf - Center",
+                "postalCode": "12683",
+                "region": "Berlin",
+                "street": "Elsterwerdaer Platz",
+                "streetNumber": "3"
+            }
+        }
+    },
+    "status": ""
+}

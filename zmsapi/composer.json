@@ -1,0 +1,88 @@
+{
+  "name": "eappointment/zmsapi",
+  "description": "This application offers a REST-like interface for ZMS functions and database access.",
+  "license": "EUPL-1.2",
+  "authors": [
+    {
+      "name": "Mathias Fischer",
+      "email": "mathias.fischer@berlinonline.de"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsclient"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsslim"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsdb"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsentities"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsdldb"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/mellon"
+    }
+  ],
+  "config": {
+    "platform": {
+        "php": "7.3"
+    },
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
+  },
+  "require-dev": {
+    "aronduby/dump": "*",
+    "phpmd/phpmd": "@stable",
+    "squizlabs/php_codesniffer": "*",
+    "mockery/mockery": "^0.9.4",
+    "phpunit/phpunit": "^9.5.4",
+    "helmich/phpunit-psr7-assert": "^4.3.0"
+  },
+  "require": {
+    "eappointment/zmsslim": "dev-muc-main",
+    "eappointment/zmsclient": "dev-muc-main",
+    "eappointment/zmsdldb": "dev-main || 2.25.*",
+    "eappointment/zmsdb": "dev-muc-main",
+    "eappointment/zmsentities": "dev-muc-main",
+    "monolog/monolog": "1.*",
+    "ulrichsg/getopt-php": "^2.3",
+    "league/climate": "^3.2"
+  },
+  "scripts": {
+    "clean": "rm -f public/doc/assets/*.* && rm -f public/_test/assets/*.*",
+    "command": "bin/configure",
+    "wget-files": [
+      "wget https://eappointment.gitlab.io/zmsapi/doc/swagger.json -O public/doc/swagger.json",
+      "wget https://eappointment.gitlab.io/zmsapi/doc/assets/redoc.min.js -O public/doc/assets/redoc.min.js",
+      "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui-bundle.js -O public/_test/assets/swagger-ui-bundle.js",
+      "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui.css -O public/_test/assets/swagger-ui.css",
+      "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui-standalone-preset.js -O public/_test/assets/swagger-ui-standalone-preset.js",
+      "sha256sum --status -c checksums.txt"
+    ],
+    "post-install-cmd": [
+      "@wget-files"
+    ],
+    "post-update-cmd": [
+      "@wget-files"
+    ]
+  },
+  "bin": [],
+  "autoload": {
+    "psr-4": {
+      "BO\\Zmsapi\\": "src/Zmsapi/",
+      "BO\\Zmsapi\\Tests\\": "tests/Zmsapi/"
+    }
+  }
+}

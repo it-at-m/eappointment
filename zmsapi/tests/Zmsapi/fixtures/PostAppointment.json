@@ -1,0 +1,41 @@
+{
+    "$schema": "https:\/\/schema.berlin.de\/queuemanagement\/appointment.json",
+    "date": "1464588000",
+    "scope": {
+        "id": "141"
+    },
+    "availability": {
+        "id": 0,
+        "weekday": {
+            "sunday": 0,
+            "monday": 0,
+            "tuesday": 0,
+            "wednesday": 0,
+            "thursday": 0,
+            "friday": 0,
+            "saturday": 0
+        },
+        "repeat": {
+            "afterWeeks": 1,
+            "weekOfMonth": 0
+        },
+        "bookable": {
+            "startInDays": 1,
+            "endInDays": 60
+        },
+        "workstationCount": {
+            "public": 0,
+            "callcenter": 0,
+            "intern": 0
+        },
+        "lastChange": 0,
+        "multipleSlotsAllowed": true,
+        "slotTimeInMinutes": 10,
+        "startDate": 0,
+        "endDate": 0,
+        "startTime": "0:00",
+        "endTime": "23:59",
+        "type": "appointment"
+    },
+    "slotCount": "1"
+}

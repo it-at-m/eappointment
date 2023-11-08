@@ -1,0 +1,36 @@
+{
+    "$schema": "https://schema.berlin.de/queuemanagement/organisation.json",
+    "name": "Pankow",
+    "id": "54",
+    "contact": {
+        "city": "",
+        "street": "",
+        "country": "Germany",
+        "name": "Pankow"
+    },
+    "preferences": {
+        "ticketPrinterProtectionEnabled": "0"
+    },
+    "departments": [
+        {
+            "email": "test@example.com",
+            "id": "55",
+            "name": "Bürgeramt",
+            "contact": {
+                "city": "",
+                "street": "",
+                "country": "Germany",
+                "name": ""
+            }
+        }
+    ],
+    "ticketprinters": [
+        {
+            "enabled": "1",
+            "hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
+            "id": "1",
+            "lastUpdate": "1477661416",
+            "name": "Test Ticketprinter"
+        }
+    ]
+}
