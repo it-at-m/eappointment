@@ -1,0 +1,51 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+$usage = <<<EOS
+Usage: {$argv[0]} [requestJsonFile] [providerJsonFile]
+        ATTENTION! Delete services from provider json that does not exists in request json file. USE WITH CAUTION!
+        requestJsonFile        absolute path to json file with dldb exported services
+        providerJsonFile       absolute path to json file with dldb exported providers
+
+        !!!!!!!!!!!!!!!!!!!!!!!
+        !! DATA LOSS WARNING !!
+        !!!!!!!!!!!!!!!!!!!!!!!
+EOS;
+
+if (! $argv[1] || ! $argv[2]) {
+    echo $usage;
+    exit;
+}
+
+$requestJson = json_decode(file_get_contents($argv[1]), true);
+$providerJson = json_decode(file_get_contents($argv[2]), true);
+
+$requestIdList = array();
+foreach ($requestJson['data'] as $key => $item) {
+    if (! in_array($item['id'], $requestIdList)) {
+        $requestIdList[] = $item['id'];
+    }
+}
+
+$exists = false;
+$all = 0;
+foreach ($providerJson['data'] as $providerKey => $providerItem) {
+    $counter = 0;
+    $deletedIds = [];
+    foreach ($providerItem['services'] as $serviceKey => $providerRequestItem) {
+        if (! in_array($providerRequestItem['service'], $requestIdList)) {
+            $counter++;
+            $deletedIds[] = $providerRequestItem['service'];
+            unset($providerJson['data'][$providerKey]['services'][$serviceKey]);
+        }
+    }
+    $providerJson['data'][$providerKey]['services'] = array_values($providerJson['data'][$providerKey]['services']);
+    if ($counter) {
+        error_log('deleted '. $counter . ' ('. join(',', $deletedIds) .') services for provider '. $providerItem['name']);
+        $all += $counter;
+    }
+}
+error_log('deleted '. $all . ' services at all');
+
+file_put_contents($argv[2], json_encode($providerJson, JSON_PRETTY_PRINT));

@@ -1,0 +1,31 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+setlocale (LC_ALL, "de_DE.UTF-8");
+$usage = <<<EOS
+
+Usage: {$argv[0]} hours [--verbose] --commit
+        ATTENTION! Sends email reminder based on process reminder timestamp. USE WITH CAUTION!
+        minutes         minutes before appointment to send email reminder
+        --commit        no dry run, delete processes
+        --verbose       only shows what would be deleted
+
+EOS;
+
+$defaultTimeInterval = preg_grep('#^\d+$#', $argv);
+$verbose = preg_grep('#^--?v(erbose)?$#', $argv);
+$commit = preg_grep('#^--commit$#', $argv);
+
+$now = new \DateTimeImmutable();
+if (class_exists('\App') && isset(\App::$now)) {
+    $now = \App::$now;
+}
+if ($defaultTimeInterval) {
+    $job = new \BO\Zmsdb\Helper\SendMailReminder($now, array_shift($defaultTimeInterval), $verbose);
+    $job->startProcessing($commit);
+} else {
+    error_log("Missing default time interval argument!$usage");
+}
+if (! $commit) {
+    error_log("Use with --commit to send emails.");
+}

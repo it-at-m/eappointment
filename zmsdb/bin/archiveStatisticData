@@ -1,0 +1,35 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+$usage = <<<EOS
+
+Usage: {$argv[0]} limit [--verbose] --commit
+        ATTENTION! Write archived process data into statistic table. USE WITH CAUTION!
+        --commit        no dry run
+        --verbose       only shows what would be archived
+
+        !!!!!!!!!!!!!!!!!!!!!!!
+        !! DATA LOSS WARNING !!
+        !!!!!!!!!!!!!!!!!!!!!!!
+EOS;
+
+$limit = preg_grep('#^\d+$#', $argv);
+$limit = array_shift($limit);
+$verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
+$commit = preg_grep('#^--commit$#', $argv);
+
+if ($commit || $verbose) {
+    if (class_exists('\App') && isset(\App::$now)) {
+        $now = \App::$now;
+    } else {
+        $now = new \DateTimeImmutable();
+    }
+    $job = new \BO\Zmsdb\Helper\ArchivedDataIntoStatisticByCron($limit, $verbose);
+    $job->startProcessing($now, $commit);
+    if (!$commit) {
+        error_log("Use with --commit to insert all entries into statistic table.");
+    }
+} else {
+    echo $usage;
+}

@@ -1,0 +1,12 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+if (preg_grep('#^--commit$#', $argv)) {
+    \BO\Zmsdb\Helper\LogoutWorkstations::init(preg_grep('#^--?v(erbose)?$#', $argv));
+} else {
+    echo "Usage: {$argv[0]} --commit\n\tATTENTION! Log out all workstations and resets calls. USE WITH CAUTION!\n\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n"
+        . "\t!! DATA LOSS WARNING !!\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n\n";
+}

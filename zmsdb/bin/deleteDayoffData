@@ -1,0 +1,12 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+if (isset($argv[2]) && $argv[2] == '--commit') {
+    \BO\Zmsdb\Helper\DayoffDeleteByCron::init($argv[1]);
+} else {
+    echo "Usage: {$argv[0]} timeInterval --commit\n\tATTENTION! Delete Dayoff Data based on time ('in months (6 i.e.)') interval. USE WITH CAUTION!\n\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n"
+        . "\t!! DATA LOSS WARNING !!\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n\n";
+}

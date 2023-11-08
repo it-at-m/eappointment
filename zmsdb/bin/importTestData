@@ -1,0 +1,39 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+ini_set('memory_limit', '1024M');
+
+if (preg_grep('/--commit/', $argv)) {
+    $fixtures = realpath(__DIR__ . '/../tests/Zmsdb/fixtures/');
+    $migrations = realpath(__DIR__ . '/../migrations/');
+    \BO\Zmsdb\Cli\Db::startTestDataImport($fixtures);
+    \BO\Zmsdb\Cli\Db::startMigrations($migrations);
+    \BO\Zmsdb\Cli\Db::startConfigDataImport();
+    $importer = new \BO\Zmsdb\Source\Dldb();
+    $importer->startImport(true);
+    \BO\Zmsdb\Cli\Db::startExecuteSqlFile($fixtures . '/mysql_mandantory_unittests_data.sql.gz');
+    if (! preg_grep('#^--withoutcalculation$#', $argv)) {
+        $calculator = new \BO\Zmsdb\Helper\CalculateSlots(true);
+        $calculator->writeCalculations(new \DateTimeImmutable("2016-04-01"), 3600);
+    }
+} else {
+    $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
+    $username = \BO\Zmsdb\Connection\Select::$username;
+    echo "Usage: {$argv[0]} --commit [--dump]\n"
+        . "\tATTENTION! Drops Database $dbname as $username and writes Testdata. USE WITH CAUTION!\n\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n"
+        . "\t!! DATA LOSS WARNING !!\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n\n";
+}
+if (preg_grep('/--dump/', $argv)) {
+    echo "\nCreating dump file\n";
+    $dsn = \BO\Zmsdb\Connection\Select::$writeSourceName;
+    $dsn_data = [];
+    preg_match('/mysql:(dbname=(?P<dbname>[^;]+);?|host=(?P<host>[^;]+);?)*/', $dsn, $dsn_data);
+    $username = \BO\Zmsdb\Connection\Select::$username;
+    $password = \BO\Zmsdb\Connection\Select::$password;
+    $host = $dsn_data['host'];
+    $dbname = $dsn_data['dbname'];
+    system("mysqldump -u$username -p$password -h $host $dbname |gzip | cat > testdataset.sql.gz");
+}

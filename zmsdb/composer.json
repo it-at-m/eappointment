@@ -1,0 +1,82 @@
+{
+    "name": "eappointment/zmsdb",
+    "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
+    "license": "EUPL-1.2",
+    "authors": [
+        {
+            "name": "mfischer",
+            "email": "mathias.fischer@berlinonline.de"
+        }
+    ],
+    "repositories": [
+        {
+          "type": "vcs",
+          "url": "https://gitlab.com/eappointment/zmsentities"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/eappointment/zmsdldb"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/eappointment/mellon"
+        }
+      ],
+    "config": {
+        "platform": {
+            "php": "7.3"
+        }
+    },
+    "require": {
+        "php": ">=7.3.0",
+        "ext-mbstring": ">=0",
+        "ext-intl": "*",
+        "ext-json": ">=1.0",
+        "ext-pcre": ">=0",
+        "eappointment/zmsentities": "dev-muc-main",
+        "eappointment/zmsdldb": "dev-main || 2.25.*",
+        "eappointment/mellon": "^2.6.0",
+        "ext-pdo": "*",
+        "aura/sql": "^4",
+        "solution10/sql": "^1.3"
+    },
+    "bin": [
+        "bin/archiveStatisticData",
+        "bin/calculateSlots",
+        "bin/calculateDayOffList",
+        "bin/deallocateAppointmentData",
+        "bin/deleteUnconfirmedAppointmentData",
+        "bin/deleteAppointmentData",
+        "bin/deleteBlacklistedMail",
+        "bin/deleteDayoffData",
+        "bin/deleteOldAvailabilityData",
+        "bin/deleteOldEventLogEntries",
+        "bin/deleteReservedData",
+        "bin/deleteSessionData",
+        "bin/deleteTicketprinterData",
+        "bin/importTestData",
+        "bin/migrate",
+        "bin/resetApiQuota",
+        "bin/resetGhostWorkstationCount",
+        "bin/resetWorkstations",
+        "bin/sendMailReminder",
+        "bin/sendNotificationReminder",
+        "bin/sendProcessListToScopeAdmin",
+        "bin/updateDldbData"
+    ],
+    "scripts": {
+        "command": "bin/configure"
+    },
+    "autoload": {
+        "psr-4": {
+            "BO\\Zmsdb\\": "src/Zmsdb/",
+            "BO\\Zmsdb\\Tests\\": "tests/Zmsdb/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5.4",
+        "phpmd/phpmd": "^2.3",
+        "squizlabs/php_codesniffer": "^2.4",
+        "mockery/mockery": "^0.9.4"
+    }
+}

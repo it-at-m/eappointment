@@ -1,0 +1,12 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+if (isset($argv[3]) && $argv[3] == '--commit') {
+    \BO\Zmsdb\Helper\SessionDeleteByCron::init($argv[1], $argv[2]);
+} else {
+    echo "Usage: {$argv[0]} sessionName timeInterval --commit\n\tATTENTION! Delete SessionData based on session name (string) and time (in minutes') interval. USE WITH CAUTION!\n\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n"
+        . "\t!! DATA LOSS WARNING !!\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n\n";
+}

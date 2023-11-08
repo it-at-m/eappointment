@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+if (!\BO\Zmsdb\Source\Dldb::$importPath) {
+    echo "MISSING dldb data directory. Does a config.php exists?\n";
+    exit(1);
+}
+if (isset($argv[1]) && $argv[1] == '--commit') {
+    $importer = new \BO\Zmsdb\Source\Dldb();
+    $importer->startImport(preg_grep('#--?v(erbose)?#', $argv));
+} else {
+    $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
+    echo "Usage: {$argv[0]} --commit [--verbose]\n"
+        . "\tATTENTION! Replaces dldb source data in $dbname. USE WITH CAUTION!\n\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n"
+        . "\t!! DATA LOSS WARNING !!\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n\n";
+}
