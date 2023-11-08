@@ -16,6 +16,8 @@ nodejs_version: "18"
 hooks:
   pre-start:
     - exec-host: "bash -c 'if [ ! -f .ddev/.env ]; then cp .ddev/.env.template .ddev/.env; fi'"
+  post-start:
+    - exec: "sed -i 's/^pm\\.max_children.*/pm.max_children = 30/' /etc/php/*/fpm/pool.d/www.conf && supervisorctl restart php-fpm"
 
 timezone: Europe/Berlin
 
