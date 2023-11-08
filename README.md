@@ -1,6 +1,8 @@
 Mellon PHP Validator
 ====================
 
+Link to main repository: https://gitlab.com/eappointment/mellon/
+
 Mellon is a validator library using the filter-functions offered by PHP. It is written for PHP micro frameworks which do not have a validation library by themself.
 
       'Speak, friend, and enter'
