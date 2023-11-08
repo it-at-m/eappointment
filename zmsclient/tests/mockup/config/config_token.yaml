@@ -1,0 +1,17 @@
+
+request:
+  method: GET
+  path: "/config/"
+response:
+  statusCode: 200
+  headers:
+    Content-Type: 
+    - "application/json"
+  body: > 
+   {"$schema":"https://mockup:8083/terminvereinbarung/api/2/","meta":{"$schema":"https://schema.berlin.de/queuemanagement/metaresult.json","error":false,"generated":"2022-04-07T16:47:53+02:00","server":"Zmsapi-ENV (2.24.05-20-g3df8532)"},"data":{"$schema":"https://schema.berlin.de/queuemanagement/config.json","appointments":{"urlChange":"https://service.berlin.de/terminvereinbarung/termin/manage/","urlAppointments":"https://service.berlin.de/terminvereinbarung/"},"notifications":{"kommandoAbsage":"Storno","kommandoAbfrage":"Berlin","number":"0174-8882288","absage":"0","gateway":"mail","gatewayUrl":"","eMailkonfigurierbar":"0","benachrichtigungsfrist":"10","headsUpContent":"Sie sind in K\u00fcrze an der Reihe. Bitte kommen Sie zum Schalter. Ihre Vorgangsnr. ist","confirmationContent":"Ihre Telefonnummer wurde erfolgreich registriert. Ihre Wartenr. lautet:","costs":"0.15","erinnerungsvorlauf":"180","blacklistedAddressList":"zms-admin@itdz-berlin.de,test@berlinonline.de","noAttachmentDomains":"outlook.,live.,hotmail."},"ticketprinter":{"baseUrl":"/terminvereinbarung/ticketprinter/"},"calldisplay":{"baseUrl":"/terminvereinbarung/calldisplay/"},"emergency":{"refreshInterval":"5"},"support":{"eMail":"hotline@itdz-berlin.de","telephone":"(030) 9222-2000"},"sources_dldb_last":"2022-04-07T16:02:08+02:00","cron":{"archiveStatisticData":"stage,dev","calculateDayOffList":"prod,stage,dev","calculateSlots":"www,prod,stage,dev","deallocateAppointmentData":"stage,dev","deleteAppointmentData":"stage,dev","deleteBlacklistedMail":"www,prod,stage,dev","deleteDayoffData":"stage,dev","deleteOldAvailabilityData":"prod,stage,dev","deleteReservedData":"stage,dev","deleteSessionData":"www,prod,stage,dev","migrate":"stage,dev","resetApiQuota":"www,prod,stage,dev","resetGhostWorkstationCount":"www,prod,stage,dev","resetWorkstations":"www,prod,stage,dev","sendMailReminder":"none","sendNotificationReminder":"none","sendProcessListToScopeAdmin":"none","updateDldbData":"www,prod,stage,dev"},"setting":{"wsrepsync":"7"},"status":{"calculateSlotsForceVerbose":"0","calculateSlotsLastRun":"2022-04-07 16:45:03","calculateSlotsLastStart":"2022-04-07 16:45:03","calculateSlotsMaintenanceSQL":""}}}
+control:
+  scenario:
+    name: token
+    requiredState:
+    - not_started
+    newState: configtoken

@@ -1,0 +1,33 @@
+
+request:
+  method: GET
+  path: "/scope/141/department/"
+  headers:
+    User-Agent:
+    - ClientZMS
+response:
+  statusCode: 200
+  headers:
+    Content-Type: 
+    - "application/json"
+  body: > 
+   {
+      "$schema": "https://mockup:8083/terminvereinbarung/api/2/",
+      "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2022-04-08T13:24:34+02:00",
+        "server": "Zmsapi-ENV (2.24.05-20-g3df8532)",
+        "reducedData": true
+      },
+      "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/department.json",
+        "id": "74",
+        "name": "Bürgeramt",
+        "preferences": {
+          "notifications": {
+            "enabled": "1"
+          }
+        }
+      }
+    }

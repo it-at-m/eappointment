@@ -1,0 +1,49 @@
+
+request:
+  method: DELETE
+  path: "/workstation/login/_system_soap/"
+  headers:
+    User-Agent:
+    - ClientZMS
+response:
+  statusCode: 200
+  headers:
+    Content-Type: 
+      - "application/json"
+  body: > 
+    {
+      "meta": {
+        "error": false,
+        "generated": "2015-11-20T18:01:04+01:00",
+        "length": 1,
+        "server": "prod-zmsapi-01"
+      },
+      "data": {
+        "hint": "Ausgabeschalter 3",
+        "id": 123,
+        "name": "3",
+        "process": {
+          "id": false
+        },
+        "queue": {
+          "appointmentsOnly": false,
+          "clusterEnabled": false
+        },
+        "scope": {
+          "id": 141
+        },
+        "useraccount": {
+          "lastLogin": 1447926465,
+          "id": "johndoe",
+          "rights": {
+            "scope": true,
+            "ticketprinter": true
+          },
+          "departments": [
+            {
+              "id": 123
+            }
+          ]
+        }
+      }
+    }

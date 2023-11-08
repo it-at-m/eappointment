@@ -1,0 +1,31 @@
+version: '3.3'
+
+services:
+  mockup:
+    image: jordimartin/mmock
+    ports:
+      - 8082:8082
+      - 8083:8083
+    volumes:
+      - type: bind
+        source: "./tests/mockup/config"
+        target: "/config"
+        consistency: cached
+  test:
+    depends_on:
+      - mockup
+    image: registry.gitlab.com/eappointment/php-base:7.3-base
+    volumes:
+      - type: bind
+        source: "."
+        target: "/app"
+        consistency: cached
+#      - type: bind
+#        source: "../zmsslim"
+#        target: "/zmsslim"
+#      - type: bind
+#        source: "../zmsentities"
+#        target: "/zmsentities"
+    environment:
+      ZMS_API_URL: http://mockup:8083
+    working_dir: /app

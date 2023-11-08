@@ -1,0 +1,41 @@
+#!/bin/bash
+
+REALPATH=$(which realpath || which readlink)
+REALPATH=$([[ "$REALPATH" =~ 'readlink' ]] && echo "$REALPATH -e" || echo "$REALPATH")
+DIR=$(dirname $($REALPATH ${BASH_SOURCE[0]}))
+ROOT=$($REALPATH $DIR/..)
+EHIGH="\033[49;1;32m"
+EERROR="\033[49;1;31m"
+EEND="\033[00m"
+
+echo "Testing application"
+cd $ROOT
+
+GITFILES=$(git diff --cached --name-only --diff-filter=AM|xargs)
+PHPFILES=$(git diff --cached --name-only --diff-filter=AM|grep "\.php"|xargs)
+if [[ ! $GITFILES =~ "composer.lock" ]]
+then
+	echo -e "Do not forget to$EERROR update composer.lock$EEND"
+fi
+
+if [ -n "$PHPFILES" ]
+then 
+    echo "Checking only: $PHPFILES"
+    php -l $PHPFILES || exit 1
+else
+    PHPFILES="src/"
+    echo "Checking $PHPFILES"
+fi
+
+docker-compose up -d
+
+docker exec zmsclient_test_1 vendor/bin/phpcs --standard=psr2 $PHPFILES
+if [ $? -eq 0 ]; then
+  echo $PHPFILES;
+    docker exec zmsclient_test_1 vendor/bin/phpmd src/ text phpmd.rules.xml
+fi
+if [ $? -eq 0 ]; then
+    docker exec zmsclient_test_1 vendor/bin/phpunit -v
+fi
+
+docker-compose down

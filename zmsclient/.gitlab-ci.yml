@@ -1,0 +1,69 @@
+include:
+    remote: https://gitlab.com/eappointment/php-base/-/raw/main/template-php-ci.yml
+
+variables:
+  MOCKUP_IMAGE: $CI_REGISTRY_IMAGE:mockup-$CI_COMMIT_REF_SLUG
+
+build-mockup:
+  stage: build
+  image: docker:stable
+  services:
+    - docker:dind
+  variables:
+    IMAGE: "$CI_REGISTRY_IMAGE"
+  script:
+    - docker login -u $CI_REGISTRY_USER  -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build --pull -t "${MOCKUP_IMAGE}" tests/mockup/
+    - docker push "${MOCKUP_IMAGE}"
+
+test-php-73:
+    extends: .test-php
+    allow_failure: false
+    variables:
+        PHP_VERSION: "7.3"
+        ZMS_API_URL: http://mockupserver:8083
+    services:
+        - name: $MOCKUP_IMAGE
+          alias: mockupserver
+    before_script:
+        - sleep 10 #wait for mockup server to be ready
+
+    only:
+      changes:
+        - composer.lock
+        - composer.json
+        - src/**/*
+        - tests/**/*.{json,php}
+
+#test-php-81:
+#    extends: .test-php
+#    allow_failure: true
+#    variables:
+#      PHP_VERSION: "8.1"
+#    only:
+#        changes:
+#            - composer.lock
+#            - composer.json
+#            - src/**/*
+#            - tests/**/*.{json,php}
+
+outdated:
+    extends: .test-phpoutdated
+
+pages:
+    stage: deploy
+    script:
+        - echo "/zmsclient/ /zmsclient/_tests/coverage/index.html 302" >> public/_redirects
+        - find public/
+    artifacts:
+        paths:
+            - public
+    only:
+        refs:
+            - main
+        changes:
+            - src/**/*
+            - tests/**/*.{json,php}
+    environment:
+        name: analytics
+        url: https://eappointment.gitlab.io/zmsclient

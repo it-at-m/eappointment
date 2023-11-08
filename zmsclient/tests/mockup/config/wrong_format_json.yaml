@@ -1,0 +1,15 @@
+
+request:
+  method: GET
+  path: "/doc/swagger.json"
+  headers:
+    User-Agent:
+    - ClientZMS
+response:
+  statusCode: 400
+  headers:
+    Content-Type: 
+      - "application/json"
+  body: > 
+    {}
+
