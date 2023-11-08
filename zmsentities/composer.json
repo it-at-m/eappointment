@@ -14,7 +14,7 @@
         "ext-mbstring": ">=0",
         "ext-json": ">=1.0",
         "ext-pcre": ">=0",
-        "eappointment/mellon": "^2.0.1",
+        "eappointment/mellon": "@dev",
         "twig/twig": "3.*",
         "league/json-guard": "^1.0",
         "league/html-to-markdown": "^5.0",
@@ -28,8 +28,11 @@
     },
     "repositories": [
         {
-          "type": "vcs",
-          "url": "https://gitlab.com/eappointment/mellon"
+            "type": "path",
+            "url": "../*",
+            "options": {
+                "symlink": true
+            }
         }
     ],
     "autoload": {

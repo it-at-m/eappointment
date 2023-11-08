@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "32076e288a9faba2c63dfeb9e01ad0e3",
+    "content-hash": "72753e8dbe6a9efd6f3cab828aeef901",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -233,23 +233,17 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-muc-main",
-            "source": {
-                "type": "git",
-                "url": "https://gitlab.com/eappointment/zmsclient.git",
-                "reference": "d3ea39de013b834819dba94f42ec520f2abbd0c9"
-            },
+            "version": "dev-main",
             "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsclient/repository/archive.zip?sha=d3ea39de013b834819dba94f42ec520f2abbd0c9",
-                "reference": "d3ea39de013b834819dba94f42ec520f2abbd0c9",
-                "shasum": ""
+                "type": "path",
+                "url": "../zmsclient",
+                "reference": "a3041b800445f8aca076b2a79397eeca5fe7af85"
             },
             "require": {
                 "aronduby/dump": "^0.9",
-                "eappointment/mellon": "^2.0.1",
-                "eappointment/zmsentities": "dev-muc-main",
-                "eappointment/zmsslim": "dev-muc-main",
+                "eappointment/mellon": "@dev",
+                "eappointment/zmsentities": "@dev",
+                "eappointment/zmsslim": "@dev",
                 "ext-curl": ">=0",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -291,30 +285,24 @@
                 }
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
-            "support": {
-                "source": "https://gitlab.com/eappointment/zmsclient/-/tree/muc-main"
-            },
-            "time": "2023-07-26T07:47:19+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "eappointment/zmsdb",
-            "version": "dev-muc-main",
-            "source": {
-                "type": "git",
-                "url": "https://gitlab.com/eappointment/zmsdb.git",
-                "reference": "7ae6feaddb63b9359cc4fd7f28878348a0ce2cae"
-            },
+            "version": "dev-main",
             "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdb/repository/archive.zip?sha=7ae6feaddb63b9359cc4fd7f28878348a0ce2cae",
-                "reference": "7ae6feaddb63b9359cc4fd7f28878348a0ce2cae",
-                "shasum": ""
+                "type": "path",
+                "url": "../zmsdb",
+                "reference": "a7146d28bd5acb738a103c3d7a6d20aef5bddd6b"
             },
             "require": {
                 "aura/sql": "^4",
-                "eappointment/mellon": "^2.6.0",
-                "eappointment/zmsdldb": "dev-main || 2.25.*",
-                "eappointment/zmsentities": "dev-muc-main",
+                "eappointment/mellon": "@dev",
+                "eappointment/zmsdldb": "@dev",
+                "eappointment/zmsentities": "@dev",
                 "ext-intl": "*",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -375,24 +363,18 @@
                 }
             ],
             "description": " This repository offers functions to access the ZMS database structure and converts the data to the defined ZMS entities.",
-            "support": {
-                "source": "https://gitlab.com/eappointment/zmsdb/-/tree/muc-main"
-            },
-            "time": "2023-11-03T11:56:39+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "2.25.05",
-            "source": {
-                "type": "git",
-                "url": "https://gitlab.com/eappointment/zmsdldb.git",
-                "reference": "226c65dd6c6bc06a8c9ca4e100ffa2fbdfaf4306"
-            },
+            "version": "dev-main",
             "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdldb/repository/archive.zip?sha=226c65dd6c6bc06a8c9ca4e100ffa2fbdfaf4306",
-                "reference": "226c65dd6c6bc06a8c9ca4e100ffa2fbdfaf4306",
-                "shasum": ""
+                "type": "path",
+                "url": "../zmsdldb",
+                "reference": "a7f14f51716ae770aa43e93e4ef65fe83a13faa5"
             },
             "require": {
                 "ext-curl": ">=0",
@@ -441,27 +423,21 @@
                 }
             ],
             "description": "Client for DLDB",
-            "support": {
-                "source": "https://gitlab.com/eappointment/zmsdldb/-/tree/2.25.05"
-            },
-            "time": "2023-08-28T10:33:03+02:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-muc-main",
-            "source": {
-                "type": "git",
-                "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "3170593809b83502e17593ffc1de7b7609e85dc2"
-            },
+            "version": "dev-main",
             "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=3170593809b83502e17593ffc1de7b7609e85dc2",
-                "reference": "3170593809b83502e17593ffc1de7b7609e85dc2",
-                "shasum": ""
+                "type": "path",
+                "url": "../zmsentities",
+                "reference": "6d50c616376c01caa495318e4a4c3825703dd24b"
             },
             "require": {
-                "eappointment/mellon": "^2.0.1",
+                "eappointment/mellon": "@dev",
                 "ext-curl": ">=0",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -505,27 +481,21 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "support": {
-                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-main"
-            },
-            "time": "2023-11-03T11:30:10+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-muc-main",
-            "source": {
-                "type": "git",
-                "url": "https://gitlab.com/eappointment/zmsslim.git",
-                "reference": "87e1a0d1b1863ee659dd4eaf06a7adf99c802af5"
-            },
+            "version": "dev-main",
             "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsslim/repository/archive.zip?sha=87e1a0d1b1863ee659dd4eaf06a7adf99c802af5",
-                "reference": "87e1a0d1b1863ee659dd4eaf06a7adf99c802af5",
-                "shasum": ""
+                "type": "path",
+                "url": "../zmsslim",
+                "reference": "dbbbdf39b2231536c550f7b58dd40dc6f873c977"
             },
             "require": {
-                "eappointment/mellon": "^2.6.0",
+                "eappointment/mellon": "@dev",
                 "ext-json": "*",
                 "ext-posix": "*",
                 "monolog/monolog": "1.*",
@@ -571,10 +541,10 @@
                 }
             ],
             "description": "Basic configuration for a slim framework",
-            "support": {
-                "source": "https://gitlab.com/eappointment/zmsslim/-/tree/muc-main"
-            },
-            "time": "2023-09-04T13:00:43+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "fig/http-message-util",
@@ -7025,5 +6995,5 @@
     "platform-overrides": {
         "php": "7.3"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }

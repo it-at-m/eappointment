@@ -29,7 +29,9 @@
         "nategood/httpful": "0.*",
         "twig/twig": "3.*"
     },
-    "bin": ["bin/dldbget"],
+    "bin": [
+        "bin/dldbget"
+    ],
     "autoload": {
         "psr-4": {
             "BO\\Dldb\\": "src/Dldb/",
@@ -40,5 +42,14 @@
         "command": "bin/configure",
         "tests": "FASTTEST=1 NO_COMPARE=1 vendor/bin/phpcs && vendor/bin/phpmd src text phpmd.rules.xml && vendor/bin/phpunit",
         "codecoverage": "php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html coverage/"
-    }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
 }

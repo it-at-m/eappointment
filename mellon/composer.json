@@ -26,5 +26,14 @@
         "psr-4": {
             "BO\\Mellon\\": "src/Mellon/"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
 }

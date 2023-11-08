@@ -10,18 +10,13 @@
     ],
     "repositories": [
         {
-          "type": "vcs",
-          "url": "https://gitlab.com/eappointment/zmsentities"
-        },
-        {
-            "type": "vcs",
-            "url": "https://gitlab.com/eappointment/zmsslim"
-        },
-        {
-            "type": "vcs",
-            "url": "https://gitlab.com/eappointment/mellon"
+            "type": "path",
+            "url": "../*",
+            "options": {
+                "symlink": true
+            }
         }
-      ],
+    ],
     "config": {
         "platform": {
             "php": "7.3"
@@ -36,9 +31,9 @@
         "ext-mbstring": ">=0",
         "ext-json": ">=1.0",
         "ext-pcre": ">=0",
-        "eappointment/zmsentities": "dev-muc-main",
-        "eappointment/zmsslim": "dev-muc-main",
-        "eappointment/mellon": "^2.0.1",
+        "eappointment/zmsentities": "@dev",
+        "eappointment/zmsslim": "@dev",
+        "eappointment/mellon": "@dev",
         "psr/http-message": "^1.0",
         "aronduby/dump": "^0.9",
         "juliangut/spiral": "0.4",
