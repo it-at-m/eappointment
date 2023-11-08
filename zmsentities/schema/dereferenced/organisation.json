@@ -1,0 +1,375 @@
+{
+    "type": "object",
+    "description": "An organisation is the top unit to group departments with their scopes.",
+    "example": {
+        "contact": {
+            "city": "Schönefeld",
+            "country": "Germany",
+            "lat": 52.345,
+            "lon": 13.456,
+            "name": "Flughafen Schönefeld, Landebahn",
+            "postalCode": "15831",
+            "region": "Brandenburg",
+            "street": "Zaunstraße",
+            "streetNumber": "1"
+        },
+        "departments": [
+            {
+                "id": 123
+            }
+        ],
+        "id": 456,
+        "name": "Flughafen",
+        "preferences": {
+            "ticketPrinterProtectionEnabled": false
+        },
+        "ticketprinters": [
+            {
+                "enabled": true,
+                "hash": "e744a234c1",
+                "id": 1234,
+                "lastUpdate": 1447925326000,
+                "name": "Eingangsbereich links"
+            }
+        ]
+    },
+    "additionalProperties": false,
+    "required": [
+        "name"
+    ],
+    "properties": {
+        "contact": {
+            "description": "A contact is a collection of contact informations to find or to contact a natural person or an entity.",
+            "type": "object",
+            "example": {
+                "city": "Schönefeld",
+                "country": "Germany",
+                "lat": 52.345,
+                "lon": 13.456,
+                "name": "Flughafen Schönefeld, Landebahn",
+                "postalCode": "15831",
+                "region": "Brandenburg",
+                "street": "Zaunstraße",
+                "streetNumber": "1"
+            },
+            "additionalProperties": false,
+            "properties": {
+                "city": {
+                    "default": "",
+                    "type": "string"
+                },
+                "country": {
+                    "default": "",
+                    "description": "Name of the country or the ISO 3166-1 country code like 'de'.",
+                    "type": "string"
+                },
+                "lat": {
+                    "default": "",
+                    "description": "Latitute of a geo coordinate as wgs84 or etrs89",
+                    "type": "number"
+                },
+                "lon": {
+                    "default": "",
+                    "description": "Longitude of a geo coordinate as wgs84 or etrs89",
+                    "type": "number"
+                },
+                "name": {
+                    "default": "",
+                    "type": "string"
+                },
+                "postalCode": {
+                    "default": "",
+                    "type": "string"
+                },
+                "region": {
+                    "default": "",
+                    "type": "string"
+                },
+                "street": {
+                    "default": "",
+                    "type": "string"
+                },
+                "streetNumber": {
+                    "default": "",
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string",
+                    "default": "",
+                    "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+                    "x-locale": {
+                        "de_DE": {
+                            "pointer": "Kontakt E-Mail",
+                            "messages": {
+                                "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
+                            }
+                        }
+                    }
+                },
+                "telephone": {
+                    "default": "",
+                    "type": "string"
+                }
+            }
+        },
+        "departments": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "description": "A department is a subunit in an organisation like \"Bürgeramt\", \"Standesamt\", \"Vertrieb\".",
+                "example": {
+                    "id": 123,
+                    "contact": {
+                        "country": "Germany",
+                        "name": "Flughafen Schönefeld, Landebahn",
+                        "postalCode": "15831",
+                        "region": "Brandenburg",
+                        "street": "Zaunstraße",
+                        "streetNumber": "1"
+                    },
+                    "dayoff": [
+                        {
+                            "date": 1447921381000,
+                            "name": "Betriebsfeier"
+                        },
+                        {
+                            "date": 1447922381000,
+                            "name": "Silvester"
+                        }
+                    ],
+                    "email": "terminvereinbarung@mitte.berlin.de",
+                    "links": [
+                        {
+                            "name": "Zuständigkeitsverzeichnis",
+                            "url": "http:\/\/www.berlin.de\/ba-mitte\/zustaendigkeiten\/",
+                            "target": true
+                        }
+                    ],
+                    "preferences": {
+                        "notifications": {
+                            "enabled": true,
+                            "identification": "terminvereinbarung@mitte.berlin.de",
+                            "sendConfirmationEnabled": true,
+                            "sendReminderEnabled": true
+                        }
+                    },
+                    "scopes": [
+                        {
+                            "id": 123
+                        }
+                    ],
+                    "clusters": [
+                        {
+                            "id": 45
+                        }
+                    ]
+                },
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "type": "number"
+                    },
+                    "contact": {
+                        "$ref": "contact.json"
+                    },
+                    "clusters": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "cluster.json"
+                        }
+                    },
+                    "dayoff": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "dayoff.json"
+                        }
+                    },
+                    "email": {
+                        "type": "string",
+                        "description": "sender address for reminder mails to the clients",
+                        "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+                        "x-locale": {
+                            "de_DE": {
+                                "pointer": "E-Mail",
+                                "messages": {
+                                    "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
+                                }
+                            }
+                        }
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "link.json"
+                        }
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "preferences": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "notifications": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "enabled": {
+                                        "type": [
+                                            "boolean",
+                                            "number"
+                                        ],
+                                        "description": "true if sms are allowed"
+                                    },
+                                    "identification": {
+                                        "type": [
+                                            "string"
+                                        ],
+                                        "description": "usually an email address"
+                                    },
+                                    "sendConfirmationEnabled": {
+                                        "type": [
+                                            "boolean",
+                                            "number"
+                                        ],
+                                        "description": "true if confirmation sms are enabled"
+                                    },
+                                    "sendReminderEnabled": {
+                                        "type": [
+                                            "boolean",
+                                            "number"
+                                        ],
+                                        "description": "true if reminder sms are enabled"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "scopes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "scope.json"
+                        }
+                    }
+                }
+            }
+        },
+        "id": {
+            "type": "number"
+        },
+        "name": {
+            "type": "string"
+        },
+        "preferences": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "ticketPrinterProtectionEnabled": {
+                    "type": [
+                        "boolean",
+                        "number"
+                    ],
+                    "description": "true if protection for ticket printer is enabled"
+                }
+            }
+        },
+        "ticketprinters": {
+            "type": "array",
+            "items": {
+                "description": "A ticketprinter is a system to print waiting numbers for clients. Usually it has a touch screen and a printing device.",
+                "type": "object",
+                "example": {
+                    "buttonlist": "s123,l[http:\/\/www.berlin.de\/|Portal+Berlin.de]",
+                    "enabled": true,
+                    "hash": "e744a234c1",
+                    "id": 1234,
+                    "lastUpdate": 1447925326000,
+                    "name": "Eingangsbereich links",
+                    "reload": 30,
+                    "contact": {
+                        "name": "Bürgeramt"
+                    }
+                },
+                "required": [
+                    "hash"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                    "buttons": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "Name of the Button, shown value"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "cluster",
+                                        "link",
+                                        "scope"
+                                    ],
+                                    "description": "Type of the button, for complement links"
+                                },
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "To enable or disable button usage"
+                                },
+                                "url": {
+                                    "type": "string",
+                                    "description": "url to scope, cluster or external target"
+                                },
+                                "scope": {
+                                    "$ref": "scope.json"
+                                },
+                                "cluster": {
+                                    "$ref": "cluster.json"
+                                }
+                            }
+                        },
+                        "description": "List of buttons"
+                    },
+                    "buttonlist": {
+                        "type": "string",
+                        "description": "comma separated list of scope, cluster, links (s = scope, c = cluster, l = link), max of 6 buttons"
+                    },
+                    "enabled": {
+                        "type": [
+                            "boolean",
+                            "number"
+                        ],
+                        "description": "true if browser is allowed to hand out waiting numbers to the client"
+                    },
+                    "hash": {
+                        "type": "string",
+                        "description": "identifier for a browser (usually cookie content)"
+                    },
+                    "id": {
+                        "type": "number"
+                    },
+                    "lastUpdate": {
+                        "type": "number",
+                        "description": "unix timestamp of last status change"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "only for internal identification"
+                    },
+                    "home": {
+                        "type": "string",
+                        "description": "url for homepage redirecting"
+                    },
+                    "reload": {
+                        "type": "number",
+                        "description": "time to redirect to homepage in seconds"
+                    },
+                    "contact": {
+                        "$ref": "contact.json"
+                    }
+                }
+            }
+        }
+    }
+}

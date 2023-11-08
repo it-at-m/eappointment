@@ -1,0 +1,266 @@
+{
+    "type": "object",
+    "description": "information of a request relation to a provider",
+    "example": {
+        "provider": {
+            "id": 21334,
+            "name": "Bürgeramt Mitte",
+            "source": "dldb"
+        },
+        "request": {
+            "id": "120335",
+            "link": "http:\/\/service.berlin.de\/dienstleistung\/120335\/",
+            "name": "Abmeldung einer Wohnung",
+            "source": "dldb",
+            "group": "Meldewesen und Ordnung"
+        },
+        "slots": 2,
+        "source": "dldb"
+    },
+    "additionalProperties": false,
+    "properties": {
+        "request": {
+            "type": "object",
+            "description": "A request is usually a representation of a service offered by a provider.",
+            "example": {
+                "id": "120335",
+                "link": "http:\/\/service.berlin.de\/dienstleistung\/120335\/",
+                "name": "Abmeldung einer Wohnung",
+                "source": "dldb",
+                "group": "Meldewesen und Ordnung",
+                "data": {
+                    "authorities": [
+                        {
+                            "id": "12676",
+                            "name": "Bezirksamt Steglitz-Zehlendorf",
+                            "webinfo": "http:\/\/www.berlin.de\/ba-steglitz-zehlendorf\/"
+                        },
+                        {
+                            "id": "12677",
+                            "name": "Bezirksamt Tempelhof-Schöneberg",
+                            "webinfo": "http:\/\/www.berlin.de\/ba-tempelhof-schoeneberg\/"
+                        },
+                        {
+                            "id": "12678",
+                            "name": "Bezirksamt Treptow-Köpenick",
+                            "webinfo": "http:\/\/www.berlin.de\/ba-treptow-koepenick\/"
+                        }
+                    ],
+                    "locations": [
+                        {
+                            "location": "325341",
+                            "appointment": {
+                                "link": "https:\/\/service.berlin.de\/terminvereinbarung\/termin\/tag.php?termin=1&dienstleister=325341&anliegen[]=120335",
+                                "slots": "0",
+                                "external": false,
+                                "multiple": "0",
+                                "allowed": true
+                            },
+                            "hint": ""
+                        },
+                        {
+                            "location": "324434",
+                            "appointment": {
+                                "link": "https:\/\/service.berlin.de\/terminvereinbarung\/termin\/tag.php?termin=1&dienstleister=324434&anliegen[]=120335",
+                                "slots": "0",
+                                "external": false,
+                                "multiple": "0",
+                                "allowed": true
+                            },
+                            "hint": ""
+                        },
+                        {
+                            "location": "325657",
+                            "appointment": {
+                                "link": "",
+                                "slots": "0",
+                                "external": false,
+                                "multiple": "0",
+                                "allowed": false
+                            },
+                            "hint": ""
+                        }
+                    ],
+                    "meta": {
+                        "lastupdate": "2016-02-04T09:45:44+01:00",
+                        "locale": "de",
+                        "keywords": "Abmeldung, Wohnungsabmeldung, Wegzug, abmelden, Wohnsitz, Wohnung abmelden, Wohnungswechsel, Umzug, Adressänderung, ummelden"
+                    },
+                    "process_time": "Bei persönlicher Vorsprache in einem Bürgeramt wird die Abmeldung abschließend bearbeitet.",
+                    "requirements": [
+                        {
+                            "description": "Die Abmeldung kann auch auf dem Postweg erfolgen.<br \/>\nBitte benutzen Sie dazu aber das angebotene Formular.<br \/>\nBei mehr als 3 abzumeldenden Personen benutzen Sie bitte weitere Meldescheine.",
+                            "name": "Abmeldung bei der Meldebehörde",
+                            "link": ""
+                        },
+                        {
+                            "description": "Seit dem 1. November 2015 ist der Wohnungsgeber verpflichtet, dem Meldepflichtigen den Auszug bis zu 7 Tage vor oder nach dem Auszug schriftlich mit Unterschrift zu bestätigen. Die Bestätigung muss folgende Daten enthalten: Name und Anschrift des Wohnungsgebers, Auszugsdatum, Anschrift der Wohnung und Namen der meldepflichtigen Personen.<br \/>\nEin Muster für die Auszugsbestätigung des Wohnungsgebers steht Ihnen unter &quot;Formulare&quot; zur Verfügung.",
+                            "name": "Auszugsbestätigung des Wohnungsgebers (Vermieter)",
+                            "link": ""
+                        }
+                    ],
+                    "responsibility": "Diese Dienstleistung erhalten Sie in allen Berliner Bürgerämtern.",
+                    "forms": [
+                        {
+                            "description": false,
+                            "name": "Abmeldung bei der Meldebehörde",
+                            "link": "http:\/\/www.berlin.de\/formularserver\/formular.php?402609"
+                        },
+                        {
+                            "description": false,
+                            "name": "Muster: Auszugsbestätigung des Wohnungsgebers (Vermieter)",
+                            "link": "http:\/\/www.berlin.de\/formularserver\/formular.php?402544"
+                        }
+                    ],
+                    "fees": "gebührenfrei; dies gilt auch für die Abmeldebestätigung.",
+                    "prerequisites": [
+                        {
+                            "description": false,
+                            "name": "keine",
+                            "link": ""
+                        }
+                    ],
+                    "id": "120335",
+                    "description": "<ul class=\"list\"><li>Sie geben eine Berliner Wohnung auf, weil Sie in das Ausland verziehen<\/li><br \/>\n<\/ul><strong>oder<\/strong><br \/>\n<ul class=\"list\"><li>Sie geben eine von mehreren Wohnungen in Deutschland auf, für die Sie angemeldet sind <strong>und<\/strong> die Berliner Wohnung bleibt bestehen<\/li><\/ul><strong>oder<\/strong><br \/>\n<ul class=\"list\"><li>Sie geben eine von mehreren Berliner Wohnungen auf, für die Sie angemeldet sind<\/li><br \/>\n<\/ul>Sie müssen sich bei der Meldebehörde in Berlin nur bei einem Wegzug ins Ausland abmelden oder bei der Aufgabe einer Haupt- oder Nebenwohnung, ohne dass Sie in eine andere Wohnung im Inland einziehen.<br \/>\nBeim Wegzug in das Ausland gilt, dass Sie aus dieser Wohnung ausziehen und dort zukünftig nicht wieder wohnen werden - befristete Auslandsaufenthalte, z.B. zu Studienzwecken bedingen keine Abmeldung.<br \/>\n<br \/>\n<br \/>\nDie Abmeldung kann im Zeitraum von 7 Tagen vor, muss aber bis 14 Tage nach dem Auszug vorgenommen werden.<br \/>\nSie erhalten eine Abmeldebestätigung.<br \/>\n<br \/>\nHinweis:<br \/>\nWenn Sie jedoch innerhalb Deutschlands nur umziehen wollen, brauchen Sie sich lediglich bei der Meldebehörde Ihrer neuen Wohnung anmelden.",
+                    "leika": "99115005070000",
+                    "links": [
+                        {
+                            "description": false,
+                            "name": "Informationen zum Bundesmeldegesetz",
+                            "link": "http:\/\/www.bmi.bund.de\/DE\/Themen\/Moderne-Verwaltung\/Verwaltungsrecht\/Meldewesen\/Bundesmeldegesetz\/bundesmeldegesetz_node.html"
+                        }
+                    ],
+                    "responsibility_all": true,
+                    "name": "Abmeldung einer Wohnung",
+                    "onlineprocessing": {
+                        "description": false,
+                        "link": ""
+                    },
+                    "legal": [
+                        {
+                            "description": false,
+                            "name": "Ab dem 1. November 2015: Bundesmeldegesetz",
+                            "link": "http:\/\/www.gesetze-im-internet.de\/bmg\/"
+                        }
+                    ],
+                    "relation": {
+                        "root_topic": "324835"
+                    },
+                    "appointment": {
+                        "link": "https:\/\/service.berlin.de\/terminvereinbarung\/termin\/tag.php?termin=1&anliegen[]=120335&dienstleisterlist=327316,327312,327314,327346,122238,327348,122252,327338,122260,327340,122262,122254,327278,327274,327276,327294,327290,327292,122291,327270,122285,327266,122286,327264,122296,327268,150230,327282,327286,327284,122312,122314,122304,327330,122311,327334,122309,327332,317869,324433,325341,324434,327352,122283,327354,122276,327324,122274,327326,122267,327328,327318,327320,327322,122208,327298,122226,327300&herkunft="
+                    }
+                }
+            },
+            "required": [
+                "id",
+                "name",
+                "source"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "reference to a service",
+                    "default": ""
+                },
+                "link": {
+                    "type": "string",
+                    "description": "URI with detailed information for the request",
+                    "default": ""
+                },
+                "data": {
+                    "type": "object",
+                    "description": "source dependant additional properties",
+                    "additionalProperties": true
+                },
+                "group": {
+                    "type": "string",
+                    "description": "name of a group for grouping requests",
+                    "default": ""
+                },
+                "name": {
+                    "type": "string",
+                    "description": "name of the referenced service (explicit redundant)",
+                    "default": ""
+                },
+                "source": {
+                    "type": "string",
+                    "description": "source of the service to resolve reference id",
+                    "default": ""
+                },
+                "timeSlotCount": {
+                    "type": "number",
+                    "description": "number of time slots assumend for the request",
+                    "default": 1
+                }
+            }
+        },
+        "provider": {
+            "type": "object",
+            "description": "A provider usually represents an organisational entity offering services to clients. In most cases, it is a building or a special location hosting an organisation which provides the services. A service is represented by a request in the ZMS.",
+            "example": {
+                "contact": {
+                    "city": "Schönefeld",
+                    "country": "Germany",
+                    "lat": 52.345,
+                    "lon": 13.456,
+                    "name": "Flughafen Schönefeld, Landebahn",
+                    "postalCode": "15831",
+                    "region": "Brandenburg",
+                    "street": "Zaunstraße",
+                    "streetNumber": "1"
+                },
+                "id": 21334,
+                "name": "Bürgeramt Mitte",
+                "source": "dldb",
+                "link": "https:\/\/service.berlin.de\/standort\/122280\/"
+            },
+            "required": [
+                "id",
+                "source",
+                "name"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "contact": {
+                    "$ref": "contact.json"
+                },
+                "id": {
+                    "default": "",
+                    "type": "number",
+                    "description": "reference to an id"
+                },
+                "link": {
+                    "default": "",
+                    "type": "string",
+                    "description": "URI with detailed information for the provider"
+                },
+                "data": {
+                    "type": "object",
+                    "description": "source dependant additional properties",
+                    "additionalProperties": true
+                },
+                "name": {
+                    "default": "",
+                    "type": "string",
+                    "description": "name of the referenced service (explicit redundant)"
+                },
+                "source": {
+                    "default": "",
+                    "type": "string",
+                    "description": "source of provider to resolve reference id"
+                }
+            }
+        },
+        "slots": {
+            "type": "number",
+            "description": "Number of slots required to fullfill request on provider",
+            "default": 1
+        },
+        "source": {
+            "type": "string",
+            "description": "source of the requestrelation",
+            "default": ""
+        }
+    }
+}

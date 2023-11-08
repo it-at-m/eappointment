@@ -1,0 +1,1079 @@
+{
+    "type": "object",
+    "description": "A process represents a request from one or more clients, usually including an appointment. Compared to an appointment, the process has additional information about the status of the request from the client.",
+    "example": {
+        "amendment": "Beispiel Termin",
+        "customTextfield": "Beispiel Termin",
+        "appointments": [
+            {
+                "date": 1447869171,
+                "scope": {
+                    "id": 123
+                },
+                "slotCount": 2
+            }
+        ],
+        "authKey": "abcd",
+        "clients": [
+            {
+                "familyName": "Max Mustermann",
+                "email": "max@service.berlin.de",
+                "telephone": "030 115"
+            }
+        ],
+        "createIP": "145.15.3.10",
+        "createTimestamp": 1447931596,
+        "lastChange": 1447931596,
+        "id": 123456,
+        "queue": {
+            "arrivalTime": 1447922893,
+            "callCount": 1,
+            "callTime": 1447922938,
+            "lastCallTime": 1447922938,
+            "number": "123",
+            "waitingTime": 2,
+            "withAppointment": 1,
+            "status": "queued"
+        },
+        "reminderTimestamp": 1447931730,
+        "requests": [
+            {
+                "id": "123456",
+                "name": "Name der Dienstleistung",
+                "source": "dldb"
+            }
+        ],
+        "scope": {
+            "id": 123,
+            "hint": "Standort aus Beispiel-Termin",
+            "provider": {
+                "name": "Bürgeramt 1",
+                "contact": {
+                    "name": "Bürgeramt 1",
+                    "street": "Unter den Linden",
+                    "streetNumber": "1",
+                    "postalCode": "12345",
+                    "city": "Berlin"
+                }
+            }
+        },
+        "status": "confirmed"
+    },
+    "required": [
+        "id"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "amendment": {
+            "type": [
+                "string"
+            ],
+            "description": "additional information for this process from the client",
+            "default": ""
+        },
+        "customTextfield": {
+            "type": [
+                "string"
+            ],
+            "description": "additional information for this process from the client",
+            "default": ""
+        },
+        "apiclient": {
+            "type": "object",
+            "description": "An apiclient is required on requesting an apikey.",
+            "example": {
+                "clientKey": "wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs",
+                "shortname": "example",
+                "accesslevel": "public",
+                "lastChange": 1459512840
+            },
+            "required": [
+                "clientKey"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "apiClientID": {
+                    "type": "number",
+                    "description": "internal ID for the API client"
+                },
+                "clientKey": {
+                    "type": "string",
+                    "description": "temporary random api key string"
+                },
+                "shortname": {
+                    "type": "string",
+                    "description": "a string describing the client"
+                },
+                "accesslevel": {
+                    "type": "string",
+                    "description": "access level of the api key",
+                    "enum": [
+                        "public",
+                        "callcenter",
+                        "intern",
+                        "blocked"
+                    ]
+                },
+                "lastChange": {
+                    "type": "number",
+                    "description": "unix timestamp representing the creating time of quota",
+                    "example": 1459512840
+                }
+            }
+        },
+        "appointments": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "description": "An appointment represents a given time on a scope for defining appointments in a calendar.",
+                "example": {
+                    "date": 1447869172,
+                    "scope": {
+                        "id": 123
+                    },
+                    "slotCount": 2
+                },
+                "required": [
+                    "date",
+                    "slotCount",
+                    "scope"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                    "availability": {
+                        "$ref": "availability.json"
+                    },
+                    "date": {
+                        "type": "number",
+                        "description": "unix timestamp representing the date and time of the appointment"
+                    },
+                    "scope": {
+                        "$ref": "scope.json"
+                    },
+                    "slotCount": {
+                        "type": "number",
+                        "description": "number of time slots used"
+                    }
+                }
+            }
+        },
+        "archiveId": {
+            "type": "number",
+            "description": "Number is used to identify a process in an archive (for statistical purposes)\n"
+        },
+        "authKey": {
+            "type": "string",
+            "description": "key for client to delete or change process"
+        },
+        "clients": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "description": "A client is usually a customer in a scope who intends to get his request solved. Usually the client has an appointment, if not he got a process number from a ticket printer and his familyName is set to 'Spontankunde'.",
+                "example": {
+                    "familyName": "Max Mustermann",
+                    "email": "max@service.berlin.de",
+                    "emailSendCount": 0,
+                    "notificationsSendCount": 0,
+                    "surveyAccepted": false,
+                    "telephone": "030 115"
+                },
+                "additionalProperties": false,
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "description": "mail address"
+                    },
+                    "emailSendCount": {
+                        "type": "number",
+                        "description": "number of reminder mails send"
+                    },
+                    "familyName": {
+                        "type": "string",
+                        "default": "Spontankunde",
+                        "description": "name of the client"
+                    },
+                    "notificationsSendCount": {
+                        "type": "number",
+                        "description": "number of reminder sms send"
+                    },
+                    "surveyAccepted": {
+                        "type": "boolean",
+                        "description": "true if clients allows survey requests"
+                    },
+                    "telephone": {
+                        "type": "string",
+                        "description": "telephone number"
+                    }
+                }
+            }
+        },
+        "createIP": {
+            "type": "string",
+            "description": "IP Address of the creator"
+        },
+        "createTimestamp": {
+            "type": "number",
+            "description": "unix timestamp representing creation of the process"
+        },
+        "id": {
+            "type": "number",
+            "description": "Number is used to identify appointments like on call displays\n",
+            "minimum": 1000
+        },
+        "lastChange": {
+            "type": "number",
+            "description": "unix timestamp of the last change on this process"
+        },
+        "showUpTime": {
+            "type": "string",
+            "description": "unix timestamp of showing up after call"
+        },
+        "finishTime": {
+            "type": "string",
+            "description": "unix timestamp og time when process has been finished"
+        },
+        "queue": {
+            "type": "object",
+            "description": "A queue represents a waiting queue for processes\/clients.",
+            "example": {
+                "arrivalTime": 1447922893,
+                "callCount": 1,
+                "callTime": 1447922938,
+                "lastCallTime": 0,
+                "number": "123",
+                "waitingTime": 2,
+                "withAppointment": false,
+                "status": "confirmed"
+            },
+            "required": [
+                "arrivalTime",
+                "number"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "arrivalTime": {
+                    "type": "number",
+                    "description": "unix timestamp when client was added to the queue or appointment time"
+                },
+                "callCount": {
+                    "type": "number",
+                    "description": "number of calls for the client to appear at the workstation"
+                },
+                "callTime": {
+                    "type": "number",
+                    "description": "unix timestamp of last call"
+                },
+                "destination": {
+                    "type": "string",
+                    "description": "Text to display on calling the queued item, usually a room number."
+                },
+                "destinationHint": {
+                    "type": "string",
+                    "description": "Small hint to display on calling the queued item."
+                },
+                "lastCallTime": {
+                    "type": "number",
+                    "description": "unix timestamp of last call while client not appeared and process was not stopped"
+                },
+                "number": {
+                    "type": [
+                        "string",
+                        "number"
+                    ],
+                    "description": "number to display on a call display"
+                },
+                "waitingTime": {
+                    "type": "number",
+                    "description": "minutes since arrival of client"
+                },
+                "waitingTimeEstimate": {
+                    "type": "number",
+                    "description": "estimated time in minutes to wait for a call"
+                },
+                "waitingTimeOptimistic": {
+                    "type": "number",
+                    "description": "estimated time in minutes to wait for a call (optimistic value for views with timespan)"
+                },
+                "withAppointment": {
+                    "type": "boolean",
+                    "description": "true if corresponding process has an appointment",
+                    "default": false
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "confirmed",
+                        "preconfirmed",
+                        "queued",
+                        "called",
+                        "deleted",
+                        "processing",
+                        "pending",
+                        "pickup",
+                        "finished",
+                        "fake",
+                        "missed"
+                    ],
+                    "description": "Status of the process. The following values are possible:\n  * confirmed: confirmed appointment but not in queue\n * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * deleted: client is deleted\n  * processing: client appeared and gets service\n  * pending: client has to return for getting papers\n  * pickup: show pending on call display\n  * reserved: appointment is reserved\n  * finished: successfully processed\n  * fake: dummy entry for getting infos about queue\n  * missed: no client appeared\n"
+                }
+            }
+        },
+        "reminderTimestamp": {
+            "type": "number",
+            "description": "timestamp of last reminder message"
+        },
+        "requests": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "description": "A request is usually a representation of a service offered by a provider.",
+                "example": {
+                    "id": "120335",
+                    "link": "http:\/\/service.berlin.de\/dienstleistung\/120335\/",
+                    "name": "Abmeldung einer Wohnung",
+                    "source": "dldb",
+                    "group": "Meldewesen und Ordnung",
+                    "data": {
+                        "authorities": [
+                            {
+                                "id": "12676",
+                                "name": "Bezirksamt Steglitz-Zehlendorf",
+                                "webinfo": "http:\/\/www.berlin.de\/ba-steglitz-zehlendorf\/"
+                            },
+                            {
+                                "id": "12677",
+                                "name": "Bezirksamt Tempelhof-Schöneberg",
+                                "webinfo": "http:\/\/www.berlin.de\/ba-tempelhof-schoeneberg\/"
+                            },
+                            {
+                                "id": "12678",
+                                "name": "Bezirksamt Treptow-Köpenick",
+                                "webinfo": "http:\/\/www.berlin.de\/ba-treptow-koepenick\/"
+                            }
+                        ],
+                        "locations": [
+                            {
+                                "location": "325341",
+                                "appointment": {
+                                    "link": "https:\/\/service.berlin.de\/terminvereinbarung\/termin\/tag.php?termin=1&dienstleister=325341&anliegen[]=120335",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "324434",
+                                "appointment": {
+                                    "link": "https:\/\/service.berlin.de\/terminvereinbarung\/termin\/tag.php?termin=1&dienstleister=324434&anliegen[]=120335",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "325657",
+                                "appointment": {
+                                    "link": "",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": false
+                                },
+                                "hint": ""
+                            }
+                        ],
+                        "meta": {
+                            "lastupdate": "2016-02-04T09:45:44+01:00",
+                            "locale": "de",
+                            "keywords": "Abmeldung, Wohnungsabmeldung, Wegzug, abmelden, Wohnsitz, Wohnung abmelden, Wohnungswechsel, Umzug, Adressänderung, ummelden"
+                        },
+                        "process_time": "Bei persönlicher Vorsprache in einem Bürgeramt wird die Abmeldung abschließend bearbeitet.",
+                        "requirements": [
+                            {
+                                "description": "Die Abmeldung kann auch auf dem Postweg erfolgen.<br \/>\nBitte benutzen Sie dazu aber das angebotene Formular.<br \/>\nBei mehr als 3 abzumeldenden Personen benutzen Sie bitte weitere Meldescheine.",
+                                "name": "Abmeldung bei der Meldebehörde",
+                                "link": ""
+                            },
+                            {
+                                "description": "Seit dem 1. November 2015 ist der Wohnungsgeber verpflichtet, dem Meldepflichtigen den Auszug bis zu 7 Tage vor oder nach dem Auszug schriftlich mit Unterschrift zu bestätigen. Die Bestätigung muss folgende Daten enthalten: Name und Anschrift des Wohnungsgebers, Auszugsdatum, Anschrift der Wohnung und Namen der meldepflichtigen Personen.<br \/>\nEin Muster für die Auszugsbestätigung des Wohnungsgebers steht Ihnen unter &quot;Formulare&quot; zur Verfügung.",
+                                "name": "Auszugsbestätigung des Wohnungsgebers (Vermieter)",
+                                "link": ""
+                            }
+                        ],
+                        "responsibility": "Diese Dienstleistung erhalten Sie in allen Berliner Bürgerämtern.",
+                        "forms": [
+                            {
+                                "description": false,
+                                "name": "Abmeldung bei der Meldebehörde",
+                                "link": "http:\/\/www.berlin.de\/formularserver\/formular.php?402609"
+                            },
+                            {
+                                "description": false,
+                                "name": "Muster: Auszugsbestätigung des Wohnungsgebers (Vermieter)",
+                                "link": "http:\/\/www.berlin.de\/formularserver\/formular.php?402544"
+                            }
+                        ],
+                        "fees": "gebührenfrei; dies gilt auch für die Abmeldebestätigung.",
+                        "prerequisites": [
+                            {
+                                "description": false,
+                                "name": "keine",
+                                "link": ""
+                            }
+                        ],
+                        "id": "120335",
+                        "description": "<ul class=\"list\"><li>Sie geben eine Berliner Wohnung auf, weil Sie in das Ausland verziehen<\/li><br \/>\n<\/ul><strong>oder<\/strong><br \/>\n<ul class=\"list\"><li>Sie geben eine von mehreren Wohnungen in Deutschland auf, für die Sie angemeldet sind <strong>und<\/strong> die Berliner Wohnung bleibt bestehen<\/li><\/ul><strong>oder<\/strong><br \/>\n<ul class=\"list\"><li>Sie geben eine von mehreren Berliner Wohnungen auf, für die Sie angemeldet sind<\/li><br \/>\n<\/ul>Sie müssen sich bei der Meldebehörde in Berlin nur bei einem Wegzug ins Ausland abmelden oder bei der Aufgabe einer Haupt- oder Nebenwohnung, ohne dass Sie in eine andere Wohnung im Inland einziehen.<br \/>\nBeim Wegzug in das Ausland gilt, dass Sie aus dieser Wohnung ausziehen und dort zukünftig nicht wieder wohnen werden - befristete Auslandsaufenthalte, z.B. zu Studienzwecken bedingen keine Abmeldung.<br \/>\n<br \/>\n<br \/>\nDie Abmeldung kann im Zeitraum von 7 Tagen vor, muss aber bis 14 Tage nach dem Auszug vorgenommen werden.<br \/>\nSie erhalten eine Abmeldebestätigung.<br \/>\n<br \/>\nHinweis:<br \/>\nWenn Sie jedoch innerhalb Deutschlands nur umziehen wollen, brauchen Sie sich lediglich bei der Meldebehörde Ihrer neuen Wohnung anmelden.",
+                        "leika": "99115005070000",
+                        "links": [
+                            {
+                                "description": false,
+                                "name": "Informationen zum Bundesmeldegesetz",
+                                "link": "http:\/\/www.bmi.bund.de\/DE\/Themen\/Moderne-Verwaltung\/Verwaltungsrecht\/Meldewesen\/Bundesmeldegesetz\/bundesmeldegesetz_node.html"
+                            }
+                        ],
+                        "responsibility_all": true,
+                        "name": "Abmeldung einer Wohnung",
+                        "onlineprocessing": {
+                            "description": false,
+                            "link": ""
+                        },
+                        "legal": [
+                            {
+                                "description": false,
+                                "name": "Ab dem 1. November 2015: Bundesmeldegesetz",
+                                "link": "http:\/\/www.gesetze-im-internet.de\/bmg\/"
+                            }
+                        ],
+                        "relation": {
+                            "root_topic": "324835"
+                        },
+                        "appointment": {
+                            "link": "https:\/\/service.berlin.de\/terminvereinbarung\/termin\/tag.php?termin=1&anliegen[]=120335&dienstleisterlist=327316,327312,327314,327346,122238,327348,122252,327338,122260,327340,122262,122254,327278,327274,327276,327294,327290,327292,122291,327270,122285,327266,122286,327264,122296,327268,150230,327282,327286,327284,122312,122314,122304,327330,122311,327334,122309,327332,317869,324433,325341,324434,327352,122283,327354,122276,327324,122274,327326,122267,327328,327318,327320,327322,122208,327298,122226,327300&herkunft="
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "source"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "reference to a service",
+                        "default": ""
+                    },
+                    "link": {
+                        "type": "string",
+                        "description": "URI with detailed information for the request",
+                        "default": ""
+                    },
+                    "data": {
+                        "type": "object",
+                        "description": "source dependant additional properties",
+                        "additionalProperties": true
+                    },
+                    "group": {
+                        "type": "string",
+                        "description": "name of a group for grouping requests",
+                        "default": ""
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "name of the referenced service (explicit redundant)",
+                        "default": ""
+                    },
+                    "source": {
+                        "type": "string",
+                        "description": "source of the service to resolve reference id",
+                        "default": ""
+                    },
+                    "timeSlotCount": {
+                        "type": "number",
+                        "description": "number of time slots assumend for the request",
+                        "default": 1
+                    }
+                }
+            }
+        },
+        "scope": {
+            "type": "object",
+            "description": "A scope is the central unit for processing requests for clients. It is usally a building or a special location offering workstations to serve the clients. According to the availabilities a scope has, appointments are possible. With a calldisplay and a ticketprinter it can serve clients without an appointment.",
+            "example": {
+                "contact": {
+                    "city": "Schönefeld",
+                    "country": "Germany",
+                    "lat": 52.345,
+                    "lon": 13.456,
+                    "name": "Flughafen Schönefeld, Landebahn",
+                    "postalCode": "15831",
+                    "region": "Brandenburg",
+                    "street": "Zaunstraße",
+                    "streetNumber": "1"
+                },
+                "hint": "dritte Tür rechts",
+                "id": 123,
+                "source": "dldb",
+                "preferences": {
+                    "appointment": {
+                        "deallocationDuration": 10,
+                        "endInDaysDefault": 60,
+                        "multipleSlotsEnabled": true,
+                        "notificationConfirmationEnabled": true,
+                        "notificationHeadsUpEnabled": true,
+                        "reservationDuration": 5,
+                        "startInDaysDefault": 2
+                    },
+                    "client": {
+                        "alternateAppointmentUrl": "https:\/\/service.berlin.de",
+                        "amendmentLabel": "Zusatzinformationen zum Anliegen",
+                        "customTextfieldLabel": "Zusatzfeld zum Anliegen",
+                        "emailRequired": false,
+                        "telephoneActivated": true,
+                        "telephoneRequired": false
+                    },
+                    "notifications": {
+                        "confirmationContent": "Ihr Termin wurde erfolgreich gebucht mit der Nummer: ",
+                        "headsUpTime": 15,
+                        "headsUpContent": "Ihr Termin wird bald aufgerufen, begeben Sie sich zum Warteraum."
+                    },
+                    "pickup": {
+                        "alternateName": "Ausgabe von Dokumenten",
+                        "isDefault": false
+                    },
+                    "queue": {
+                        "callCountMax": 3,
+                        "callDisplayText": "Herzlich Willkommen,\nHaben Sie bitte ein wenig Geduld, bis ihre Wartenummer aufgerufen wird.",
+                        "firstNumber": 300,
+                        "lastNumber": 500,
+                        "publishWaitingTimeEnabled": true,
+                        "processingTimeAverage": 12,
+                        "statisticsEnabled": true
+                    },
+                    "survey": {
+                        "emailContent": "Sehr geehrte\/r Herr\/Frau ###CLIENTNAME###. Wir würden uns sehr freuen, wenn Sie an der Umfrage teilnehmen würden: <a href=\"http:\/\/in.berlin.de\/umfrage\/?token=###TOKEN###\">Zur Umfrage<\/a>. Standort ###PROVIDERNAME### (###SCOPE###\/###PROVIDERID###), Termin ###DATE### ###TIME### gebucht ###RESERVETIME### mit Dienstleistungen ###REQUESTCSV###.",
+                        "enabled": true,
+                        "label": "Teilnahme an der Kundenzufriedensheits-Umfrage"
+                    },
+                    "ticketprinter": {
+                        "buttonName": "Bürgeramt",
+                        "confirmationEnabled": true,
+                        "deactivatedText": "Dies Ausgabe von Wartenummern wurde bereits vorzeitig geschlossen, wir bitten um ihr Verständnis.",
+                        "notificationsAmendmentEnabled": true,
+                        "notificationsEnabled": true,
+                        "notificationsDelay": 30
+                    },
+                    "workstation": {
+                        "emergencyEnabled": false,
+                        "emergencyRefreshInterval": 10
+                    }
+                },
+                "provider": {
+                    "contact": {
+                        "city": "Schönefeld",
+                        "country": "Germany",
+                        "lat": 52.345,
+                        "lon": 13.456,
+                        "name": "Flughafen Schönefeld, Landebahn",
+                        "postalCode": "15831",
+                        "region": "Brandenburg",
+                        "street": "Zaunstraße",
+                        "streetNumber": "1"
+                    },
+                    "id": 123456,
+                    "name": "Flughafen Schönefeld, Aufsicht",
+                    "source": "dldb"
+                },
+                "shortName": "Zentrale",
+                "status": {
+                    "emergency": {
+                        "activated": false
+                    },
+                    "queue": {
+                        "givenNumberCount": 23,
+                        "ghostWorkstationCount": "-1",
+                        "workstationCount": 1,
+                        "lastGivenNumber": 322,
+                        "lastGivenNumberTimestamp": 1447925159
+                    },
+                    "ticketprinter": {
+                        "deactivated": false
+                    },
+                    "availability": {
+                        "isOpened": false
+                    }
+                }
+            },
+            "required": [
+                "provider",
+                "shortName"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "contact": {
+                    "$ref": "contact.json"
+                },
+                "dayoff": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "dayoff.json"
+                    }
+                },
+                "hint": {
+                    "type": "string",
+                    "description": "hint for the client like a description where to find the scope",
+                    "default": ""
+                },
+                "id": {
+                    "type": "number",
+                    "description": "auto increment"
+                },
+                "source": {
+                    "type": "string",
+                    "description": "source of provider to resolve reference id"
+                },
+                "lastChange": {
+                    "type": "number",
+                    "description": "unix timestamp of the last change on this scope"
+                },
+                "preferences": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "appointment": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "deallocationDuration": {
+                                    "type": "number",
+                                    "description": "minutes before an deleted appointment is free for booking again to prevent appointment trading",
+                                    "default": 30
+                                },
+                                "multipleSlotsEnabled": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if more than one timeslot per appointment is allowed",
+                                    "default": true
+                                },
+                                "notificationConfirmationEnabled": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if client should get a notification to confirm that notifications are enabled for him\/her (Convienient preferences, see department for origin)",
+                                    "default": false
+                                },
+                                "notificationHeadsUpEnabled": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if client should get a notification as reminder (Convienient preferences, see department for origin)",
+                                    "default": false
+                                },
+                                "reservationDuration": {
+                                    "type": "number",
+                                    "description": "minutes an appointment can have the status reserved",
+                                    "default": 30
+                                },
+                                "startInDaysDefault": {
+                                    "type": "number",
+                                    "description": "number of days relative to today to start offering appointments",
+                                    "default": 1
+                                },
+                                "endInDaysDefault": {
+                                    "type": "number",
+                                    "description": "maximum number of days in the future to offer appointments",
+                                    "default": 60
+                                }
+                            }
+                        },
+                        "client": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "alternateAppointmentUrl": {
+                                    "type": "string",
+                                    "description": "redirect url if client should book appointments over a specialised application",
+                                    "default": ""
+                                },
+                                "amendmentLabel": {
+                                    "type": "string",
+                                    "description": "label for the form field to enter additional informations to a process",
+                                    "default": ""
+                                },
+                                "amendmentActivated": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if an amendment is activated",
+                                    "default": false
+                                },
+                                "customTextfieldLabel": {
+                                    "type": "string",
+                                    "description": "label for the form field to enter additional informations to a process",
+                                    "default": ""
+                                },
+                                "customTextfieldActivated": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if an custom textfield is activated",
+                                    "default": false
+                                },
+                                "emailFrom": {
+                                    "type": "string",
+                                    "description": "Mail address for sending mails to clients",
+                                    "default": "",
+                                    "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+                                    "x-locale": {
+                                        "de_DE": {
+                                            "pointer": "Absender E-Mail",
+                                            "messages": {
+                                                "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
+                                            }
+                                        }
+                                    }
+                                },
+                                "emailRequired": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if client is required to enter an email address",
+                                    "default": false
+                                },
+                                "telephoneActivated": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if client is allowed to enter a telephone number",
+                                    "default": false
+                                },
+                                "telephoneRequired": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if client is required to enter a telephone number",
+                                    "default": false
+                                }
+                            }
+                        },
+                        "notifications": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "confirmationContent": {
+                                    "type": "string",
+                                    "description": "text to send to client to confirm the appointment",
+                                    "default": ""
+                                },
+                                "headsUpTime": {
+                                    "type": "number",
+                                    "description": "minutes before call to send a sms to the client",
+                                    "default": 15
+                                },
+                                "headsUpContent": {
+                                    "type": "string",
+                                    "description": "text to send a short time before a call",
+                                    "default": ""
+                                }
+                            }
+                        },
+                        "pickup": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "alternateName": {
+                                    "type": "string",
+                                    "description": "alternate text to display on call display if pickup of documents is required",
+                                    "default": ""
+                                },
+                                "isDefault": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "a pickup of documents is default, this scope is preselected for pickup",
+                                    "default": false
+                                }
+                            }
+                        },
+                        "queue": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "callCountMax": {
+                                    "type": "number",
+                                    "description": "number of calls before a process is removed from the queue",
+                                    "default": 3
+                                },
+                                "callDisplayText": {
+                                    "type": "string",
+                                    "description": "text displayed at the right side on the call display",
+                                    "default": ""
+                                },
+                                "firstNumber": {
+                                    "type": "number",
+                                    "description": "fist possible waiting number for ticket printer",
+                                    "default": 1
+                                },
+                                "lastNumber": {
+                                    "type": "number",
+                                    "description": "last possible waiting number for ticket printer",
+                                    "default": 999
+                                },
+                                "maxNumberContingent": {
+                                    "type": "number",
+                                    "description": "contingent of given waiting numbers for ticket printer per day",
+                                    "maximum": 999,
+                                    "default": 999
+                                },
+                                "publishWaitingTimeEnabled": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if waiting times are allowed to be published for public use",
+                                    "default": true
+                                },
+                                "processingTimeAverage": {
+                                    "type": "number",
+                                    "description": "minutes average for completing a process, used to estimate waiting time",
+                                    "default": 15
+                                },
+                                "statisticsEnabled": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if statistics are enabled",
+                                    "default": true
+                                }
+                            }
+                        },
+                        "survey": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "emailContent": {
+                                    "type": "string",
+                                    "description": "content of an email to send to a client if he accepted to participate in a survey",
+                                    "default": ""
+                                },
+                                "enabled": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if clients should be asked to participate in a survey",
+                                    "default": false
+                                },
+                                "label": {
+                                    "type": "string",
+                                    "description": "text to display next to the checkbox asking the client to participate in the survey",
+                                    "default": ""
+                                }
+                            }
+                        },
+                        "ticketprinter": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "buttonName": {
+                                    "type": "string",
+                                    "description": "name\/value of button in ticketprinter",
+                                    "default": ""
+                                },
+                                "confirmationEnabled": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if client should get a notification to confirm that notifications are enabled for him\/her",
+                                    "default": false
+                                },
+                                "deactivatedText": {
+                                    "type": "string",
+                                    "description": "text to display on the ticket printer, if all ticket printers are disabled",
+                                    "default": ""
+                                },
+                                "notificationsAmendmentEnabled": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if a client is allowed to enter a notfication address after getting his waiting number",
+                                    "default": false
+                                },
+                                "notificationsEnabled": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if notifications for calling up clients are enabled. A client is allowed to enter a telephone number if waitingtime is greater than notificationDelay.",
+                                    "default": false
+                                },
+                                "notificationsDelay": {
+                                    "type": "number",
+                                    "description": "minutes of calculated waiting time before a client is able to enter a notification address",
+                                    "default": 20
+                                }
+                            }
+                        },
+                        "workstation": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "emergencyEnabled": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if an emergency button should be displayed on workstation screens",
+                                    "default": false
+                                },
+                                "emergencyRefreshInterval": {
+                                    "type": "number",
+                                    "description": "number of seconds until next emergency testing",
+                                    "default": 5
+                                }
+                            }
+                        }
+                    }
+                },
+                "provider": {
+                    "$ref": "provider.json"
+                },
+                "shortName": {
+                    "type": "string",
+                    "description": "short identifier to differentiate between nearly identical scopes",
+                    "default": ""
+                },
+                "status": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "emergency": {
+                            "type": "object",
+                            "description": "If activated, a workstation has an emergency-button to call for help",
+                            "properties": {
+                                "acceptedByWorkstation": {
+                                    "type": [
+                                        "string"
+                                    ],
+                                    "description": "name of workstation which accepted the emergency call",
+                                    "default": ""
+                                },
+                                "activated": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true in case of emergency",
+                                    "default": false
+                                },
+                                "calledByWorkstation": {
+                                    "type": [
+                                        "string"
+                                    ],
+                                    "description": "name of workstation where the emergency occured",
+                                    "default": ""
+                                }
+                            }
+                        },
+                        "queue": {
+                            "type": "object",
+                            "properties": {
+                                "givenNumberCount": {
+                                    "type": "number",
+                                    "description": "counter for given waiting numbers for the current day",
+                                    "default": 0
+                                },
+                                "ghostWorkstationCount": {
+                                    "type": "number",
+                                    "description": "a fictive number of workstations",
+                                    "default": 0
+                                },
+                                "workstationCount": {
+                                    "type": "number",
+                                    "description": "a calculated number of workstations to calculate waiting times, if ghostWorkstationCount < 1, real logged in workstations are used",
+                                    "default": 0
+                                },
+                                "lastGivenNumber": {
+                                    "type": "number",
+                                    "description": "last given waiting number",
+                                    "default": 0
+                                },
+                                "lastGivenNumberTimestamp": {
+                                    "type": "number",
+                                    "description": "unix timestamp of the last given waiting number",
+                                    "default": 0
+                                }
+                            }
+                        },
+                        "ticketprinter": {
+                            "type": "object",
+                            "properties": {
+                                "deactivated": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if all ticket printers are disabled",
+                                    "default": false
+                                }
+                            }
+                        },
+                        "availability": {
+                            "type": "object",
+                            "properties": {
+                                "isOpened": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if scope is opened",
+                                    "default": false
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+                "free",
+                "reserved",
+                "confirmed",
+                "queued",
+                "called",
+                "processing",
+                "pending",
+                "pickup",
+                "finished",
+                "missed",
+                "archived",
+                "deleted",
+                "anonymized",
+                "blocked",
+                "conflict"
+            ],
+            "description": "Status of the process. The following values are possible:\n  * free: open for reservation\n  * reserved: for updating data, no validation yet\n  * confirmed: appointment\n  * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * processing: client appeared and gets service\n  * pending: client has to return to fetch papers\n  * pickup: client is called to fetch papers\n  * finished: successfully processed\n  * missed: no client appeared\n  * archived: only used in statistics\n  * deleted: blocking appointment time\n  * anonymized: for statistically purposes only\n  * blocked: to avoid the reuse of IDs on the same day\n  * conflict: mark process as conflict for check functions\n"
+        }
+    }
+}

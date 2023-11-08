@@ -1,0 +1,66 @@
+{
+    "type": "object",
+    "description": "A provider usually represents an organisational entity offering services to clients. In most cases, it is a building or a special location hosting an organisation which provides the services. A service is represented by a request in the ZMS.",
+    "example": {
+        "contact": {
+            "city": "Schönefeld",
+            "country": "Germany",
+            "lat": 52.345,
+            "lon": 13.456,
+            "name": "Flughafen Schönefeld, Landebahn",
+            "postalCode": "15831",
+            "region": "Brandenburg",
+            "street": "Zaunstraße",
+            "streetNumber": "1"
+        },
+        "id": 21334,
+        "name": "Bürgeramt Mitte",
+        "source": "dldb",
+        "link": "https://service.berlin.de/standort/122280/",
+        "displayName": "001"
+    },
+    "required": [
+        "id",
+        "source",
+        "name"
+    ],
+    "additionalProperties": true,
+    "properties": {
+        "contact": {
+            "$ref": "contact.json"
+        },
+        "id": {
+            "default": "",
+            "type": "number",
+            "description": "reference to an id"
+        },
+        "link": {
+            "default": "",
+            "type": "string",
+            "description": "URI with detailed information for the provider"
+        },
+        "data": {
+            "type": [
+                "object",
+                "array"
+              ],
+            "description": "source dependant additional properties",
+            "additionalProperties": true
+        },
+        "name": {
+            "default": "",
+            "type": "string",
+            "description": "name of the referenced service (explicit redundant)"
+        },
+        "source": {
+            "default": "",
+            "type": "string",
+            "description": "source of provider to resolve reference id"
+        },
+        "displayName": {
+            "default": "",
+            "type": "string",
+            "description": "provider display name"
+        }
+    }
+}

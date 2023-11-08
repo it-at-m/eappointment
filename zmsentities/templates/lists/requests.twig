@@ -1,0 +1,26 @@
+{%  block requestlist %}
+{% if process.requests|length > 1 %}
+{% set requestalias = "Dienstleistungen" %}
+{% else %}
+{% set requestalias = "Dienstleistung" %}
+{% endif %}
+{% if process.requests|length == 0 %}
+Sie haben keine Dienstleistungen ausgewählt!
+{% else %}
+<h4>Sie haben folgende {{ requestalias }} ausgewählt:</h4>
+    {% for request in process.requests %}
+    <div style="background: #ffffff; border:1px solid #dddddd; margin-bottom:1em;">
+      <div class="block" style="background: #efefef; padding:1em; margin:0em">
+        <strong>{{ loop.index }}) <a href="https://service.berlin.de/dienstleistung/{{ request.id }}/standort/{{ process.scope.provider.id }}/">{{ request.name }} am Standort {{ process.scope.provider.name }}</a></strong>
+      </div>
+      {% if request.source == "dldb" and request.data %}
+      <div class="block" style="background: #ffffff; padding:0em 1em; margin:1em 0 0 0;">
+        {% include "@zmsentities/detail/service_detail_prerequisites.twig" with {"service":request.data, "headerlevel":"h4"} %}
+        {% include "@zmsentities/detail/service_detail_requirements.twig" with {"service":request.data, "headerlevel":"h4"} %}
+        {% include "@zmsentities/detail/service_detail_fees.twig" with {"service":request.data, "headerlevel":"h4"} %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+{% endif %}
+{% endblock %}

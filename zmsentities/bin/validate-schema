@@ -1,0 +1,40 @@
+#!/usr/bin/php
+<?php
+
+use \BO\Zmsentities\Schema\Loader;
+use \BO\Zmsentities\Schema\Schema;
+use \BO\Zmsentities\Schema\Validator;
+
+$dir = realpath(__DIR__);
+$root = "$dir/../";
+do {
+    $dir = dirname($dir);
+    if (file_exists("$dir/vendor/autoload.php")) {
+        require_once("$dir/vendor/autoload.php");
+    }
+} while ($dir != '/' && !file_exists("$dir/config.php"));
+$usage = <<<EOS
+
+Usage: {$argv[0]} schema.json
+        Tests, if a schema is valid
+
+EOS;
+$args = array_slice($argv, 1);
+$schemaFiles = preg_grep('#^[^\-]#', $args);
+
+if (count($schemaFiles) < 1) {
+    echo $usage;
+}
+$dereferencer  = \League\JsonReference\Dereferencer::draft4();
+$schema        = $dereferencer->dereference('http://json-schema.org/draft-04/schema#');
+$jsonSchema = new Schema($schema);
+foreach ($schemaFiles as $file) {
+    if (!is_readable($file)) {
+        throw new \Exception("Could not read $file");
+    }
+    $data = new Schema(Loader::asArray(realpath($file)));
+    $validator = new Validator($data->toJsonObject(), $jsonSchema, 'de_DE');
+    if (!$validator->isValid()) {
+        var_export($validator->getErrors());
+    }
+}

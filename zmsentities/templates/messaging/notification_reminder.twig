@@ -1,0 +1,3 @@
+{% block german %}
+Hiermit erinnern wir Sie an Ihren Termin ({{ process.id }}) am {{ (date|default(getNow))|format_datetime("short","none","EEEE, dd. MMMM y") }} {% trans %}um{% endtrans %} {{ (date|default(getNow))|date("H:i") }} {% trans %}Uhr{% endtrans %}.
+{% endblock %}

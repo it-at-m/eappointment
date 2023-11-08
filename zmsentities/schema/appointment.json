@@ -1,0 +1,33 @@
+{
+    "type": "object",
+    "description": "An appointment represents a given time on a scope for defining appointments in a calendar.",
+    "example": {
+        "date": 1447869172,
+        "scope": {
+            "id": 123
+        },
+        "slotCount": 2
+    },
+    "required": [
+        "date",
+        "slotCount",
+        "scope"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "availability": {
+            "$ref": "availability.json"
+        },
+        "date": {
+            "type": "number",
+            "description": "unix timestamp representing the date and time of the appointment"
+        },
+        "scope": {
+            "$ref": "scope.json"
+        },
+        "slotCount": {
+            "type": "number",
+            "description": "number of time slots used"
+        }
+    }
+}

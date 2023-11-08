@@ -1,0 +1,425 @@
+{
+    "type": "object",
+    "description": "Representation of a day in the calendar. You might find curious values in freeAppointments. While callcenter and public values might be positive, the intern value can be negative. This is due to calculation. The public and callcenter values are calculated per slot whereas the intern value is calculated for the whole day\/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
+    "example": {
+        "year": 2015,
+        "month": 11,
+        "day": 19,
+        "freeAppointments": {
+            "callcenter": 0,
+            "intern": 3,
+            "public": 0,
+            "type": "sum"
+        },
+        "allAppointments": {
+            "callcenter": 0,
+            "intern": 3,
+            "public": 3,
+            "type": "sum"
+        },
+        "status": "bookable",
+        "firstAppointmentTimestamp": {
+            "intern": 1447919770000,
+            "type": "timestamp"
+        },
+        "lastAppointmentTimestamp": {
+            "intern": 1447919788000,
+            "type": "timestamp"
+        }
+    },
+    "required": [
+        "year",
+        "month",
+        "day"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "year": {
+            "type": "number"
+        },
+        "month": {
+            "type": "number"
+        },
+        "day": {
+            "type": "number"
+        },
+        "freeAppointments": {
+            "type": "object",
+            "description": "This entity represents a calculated number for available appointments. Attention: Be aware that the different types of appointments are not exclusive, the total amount of appointments are not equal to the sum of appointments from the different types.",
+            "example": {
+                "public": 3,
+                "intern": 10,
+                "callcenter": 8,
+                "type": "sum",
+                "time": "11:50"
+            },
+            "additionalProperties": false,
+            "properties": {
+                "callcenter": {
+                    "type": "number",
+                    "default": 0,
+                    "description": "Appointments of this type are usually only available via human agents, usually by phone"
+                },
+                "intern": {
+                    "type": "number",
+                    "default": 0,
+                    "description": "Appointments of this type are usually only available for authenticated workstations"
+                },
+                "public": {
+                    "type": "number",
+                    "default": 0,
+                    "description": "Appointments of this type are available for everyone"
+                },
+                "slotnumber": {
+                    "type": "number",
+                    "description": "This field is set, if the slot is part of a incrementing list of slots"
+                },
+                "time": {
+                    "type": "string",
+                    "description": "Format is 12:34 with HH:mm without seconds. This field is set, if the slot represents a time of a day"
+                },
+                "type": {
+                    "type": "string",
+                    "default": "free",
+                    "enum": [
+                        "free",
+                        "timeslice",
+                        "sum",
+                        "reduced",
+                        "timestamp"
+                    ],
+                    "description": "Type of the process. The following values are possible:\n  * free: the values represent possible free appointments without confirmed appointments\n  * timeslice: the values represent free appointments for a given day. Confirmed and reserved appointments on processes are substracted.\n  * sum: like timeslice, but for more than one scope\n  * reduced: like timeslice, but numbers were reduced due to required slots on a given request\n  * timestamp: the values represent a unix timestamp to when there are free processes\n"
+                }
+            }
+        },
+        "allAppointments": {
+            "type": "object",
+            "description": "This entity represents a calculated number for available appointments. Attention: Be aware that the different types of appointments are not exclusive, the total amount of appointments are not equal to the sum of appointments from the different types.",
+            "example": {
+                "public": 3,
+                "intern": 10,
+                "callcenter": 8,
+                "type": "sum",
+                "time": "11:50"
+            },
+            "additionalProperties": false,
+            "properties": {
+                "callcenter": {
+                    "type": "number",
+                    "default": 0,
+                    "description": "Appointments of this type are usually only available via human agents, usually by phone"
+                },
+                "intern": {
+                    "type": "number",
+                    "default": 0,
+                    "description": "Appointments of this type are usually only available for authenticated workstations"
+                },
+                "public": {
+                    "type": "number",
+                    "default": 0,
+                    "description": "Appointments of this type are available for everyone"
+                },
+                "slotnumber": {
+                    "type": "number",
+                    "description": "This field is set, if the slot is part of a incrementing list of slots"
+                },
+                "time": {
+                    "type": "string",
+                    "description": "Format is 12:34 with HH:mm without seconds. This field is set, if the slot represents a time of a day"
+                },
+                "type": {
+                    "type": "string",
+                    "default": "free",
+                    "enum": [
+                        "free",
+                        "timeslice",
+                        "sum",
+                        "reduced",
+                        "timestamp"
+                    ],
+                    "description": "Type of the process. The following values are possible:\n  * free: the values represent possible free appointments without confirmed appointments\n  * timeslice: the values represent free appointments for a given day. Confirmed and reserved appointments on processes are substracted.\n  * sum: like timeslice, but for more than one scope\n  * reduced: like timeslice, but numbers were reduced due to required slots on a given request\n  * timestamp: the values represent a unix timestamp to when there are free processes\n"
+                }
+            }
+        },
+        "firstAppointmentTimestamp": {
+            "type": "object",
+            "description": "This entity represents a calculated number for available appointments. Attention: Be aware that the different types of appointments are not exclusive, the total amount of appointments are not equal to the sum of appointments from the different types.",
+            "example": {
+                "public": 3,
+                "intern": 10,
+                "callcenter": 8,
+                "type": "sum",
+                "time": "11:50"
+            },
+            "additionalProperties": false,
+            "properties": {
+                "callcenter": {
+                    "type": "number",
+                    "default": 0,
+                    "description": "Appointments of this type are usually only available via human agents, usually by phone"
+                },
+                "intern": {
+                    "type": "number",
+                    "default": 0,
+                    "description": "Appointments of this type are usually only available for authenticated workstations"
+                },
+                "public": {
+                    "type": "number",
+                    "default": 0,
+                    "description": "Appointments of this type are available for everyone"
+                },
+                "slotnumber": {
+                    "type": "number",
+                    "description": "This field is set, if the slot is part of a incrementing list of slots"
+                },
+                "time": {
+                    "type": "string",
+                    "description": "Format is 12:34 with HH:mm without seconds. This field is set, if the slot represents a time of a day"
+                },
+                "type": {
+                    "type": "string",
+                    "default": "free",
+                    "enum": [
+                        "free",
+                        "timeslice",
+                        "sum",
+                        "reduced",
+                        "timestamp"
+                    ],
+                    "description": "Type of the process. The following values are possible:\n  * free: the values represent possible free appointments without confirmed appointments\n  * timeslice: the values represent free appointments for a given day. Confirmed and reserved appointments on processes are substracted.\n  * sum: like timeslice, but for more than one scope\n  * reduced: like timeslice, but numbers were reduced due to required slots on a given request\n  * timestamp: the values represent a unix timestamp to when there are free processes\n"
+                }
+            }
+        },
+        "lastAppointmentTimestamp": {
+            "type": "object",
+            "description": "This entity represents a calculated number for available appointments. Attention: Be aware that the different types of appointments are not exclusive, the total amount of appointments are not equal to the sum of appointments from the different types.",
+            "example": {
+                "public": 3,
+                "intern": 10,
+                "callcenter": 8,
+                "type": "sum",
+                "time": "11:50"
+            },
+            "additionalProperties": false,
+            "properties": {
+                "callcenter": {
+                    "type": "number",
+                    "default": 0,
+                    "description": "Appointments of this type are usually only available via human agents, usually by phone"
+                },
+                "intern": {
+                    "type": "number",
+                    "default": 0,
+                    "description": "Appointments of this type are usually only available for authenticated workstations"
+                },
+                "public": {
+                    "type": "number",
+                    "default": 0,
+                    "description": "Appointments of this type are available for everyone"
+                },
+                "slotnumber": {
+                    "type": "number",
+                    "description": "This field is set, if the slot is part of a incrementing list of slots"
+                },
+                "time": {
+                    "type": "string",
+                    "description": "Format is 12:34 with HH:mm without seconds. This field is set, if the slot represents a time of a day"
+                },
+                "type": {
+                    "type": "string",
+                    "default": "free",
+                    "enum": [
+                        "free",
+                        "timeslice",
+                        "sum",
+                        "reduced",
+                        "timestamp"
+                    ],
+                    "description": "Type of the process. The following values are possible:\n  * free: the values represent possible free appointments without confirmed appointments\n  * timeslice: the values represent free appointments for a given day. Confirmed and reserved appointments on processes are substracted.\n  * sum: like timeslice, but for more than one scope\n  * reduced: like timeslice, but numbers were reduced due to required slots on a given request\n  * timestamp: the values represent a unix timestamp to when there are free processes\n"
+                }
+            }
+        },
+        "processList": {
+            "type": "array",
+            "description": "list of processes, only available if status is detail",
+            "items": {
+                "type": "object",
+                "description": "A process represents a request from one or more clients, usually including an appointment. Compared to an appointment, the process has additional information about the status of the request from the client.",
+                "example": {
+                    "amendment": "Beispiel Termin",
+                    "customTextfield": "Beispiel Termin",
+                    "appointments": [
+                        {
+                            "date": 1447869171,
+                            "scope": {
+                                "id": 123
+                            },
+                            "slotCount": 2
+                        }
+                    ],
+                    "authKey": "abcd",
+                    "clients": [
+                        {
+                            "familyName": "Max Mustermann",
+                            "email": "max@service.berlin.de",
+                            "telephone": "030 115"
+                        }
+                    ],
+                    "createIP": "145.15.3.10",
+                    "createTimestamp": 1447931596,
+                    "lastChange": 1447931596,
+                    "id": 123456,
+                    "queue": {
+                        "arrivalTime": 1447922893,
+                        "callCount": 1,
+                        "callTime": 1447922938,
+                        "lastCallTime": 1447922938,
+                        "number": "123",
+                        "waitingTime": 2,
+                        "withAppointment": 1,
+                        "status": "queued"
+                    },
+                    "reminderTimestamp": 1447931730,
+                    "requests": [
+                        {
+                            "id": "123456",
+                            "name": "Name der Dienstleistung",
+                            "source": "dldb"
+                        }
+                    ],
+                    "showUpTime": {
+                        "type": "string",
+                        "description": "unix timestamp of showing up after call"
+                    },
+                    "finishTime": {
+                        "type": "string",
+                        "description": "unix timestamp og time when process has been finished"
+                    },
+                    "scope": {
+                        "id": 123,
+                        "hint": "Standort aus Beispiel-Termin",
+                        "provider": {
+                            "name": "Bürgeramt 1",
+                            "contact": {
+                                "name": "Bürgeramt 1",
+                                "street": "Unter den Linden",
+                                "streetNumber": "1",
+                                "postalCode": "12345",
+                                "city": "Berlin"
+                            }
+                        }
+                    },
+                    "status": "confirmed"
+                },
+                "required": [
+                    "id"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                    "amendment": {
+                        "type": [
+                            "string"
+                        ],
+                        "description": "additional information for this process from the client",
+                        "default": ""
+                    },
+                    "customTextfield": {
+                        "type": [
+                            "string"
+                        ],
+                        "description": "additional information for this process from the client",
+                        "default": ""
+                    },
+                    "apiclient": {
+                        "$ref": "apiclient.json"
+                    },
+                    "appointments": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "appointment.json"
+                        }
+                    },
+                    "archiveId": {
+                        "type": "number",
+                        "description": "Number is used to identify a process in an archive (for statistical purposes)\n"
+                    },
+                    "authKey": {
+                        "type": "string",
+                        "description": "key for client to delete or change process"
+                    },
+                    "clients": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "client.json"
+                        }
+                    },
+                    "createIP": {
+                        "type": "string",
+                        "description": "IP Address of the creator"
+                    },
+                    "createTimestamp": {
+                        "type": "number",
+                        "description": "unix timestamp representing creation of the process"
+                    },
+                    "id": {
+                        "type": "number",
+                        "description": "Number is used to identify appointments like on call displays\n",
+                        "minimum": 1000
+                    },
+                    "lastChange": {
+                        "type": "number",
+                        "description": "unix timestamp of the last change on this process"
+                    },
+                    "queue": {
+                        "$ref": "queue.json"
+                    },
+                    "reminderTimestamp": {
+                        "type": "number",
+                        "description": "timestamp of last reminder message"
+                    },
+                    "requests": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "request.json"
+                        }
+                    },
+                    "scope": {
+                        "$ref": "scope.json"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "free",
+                            "reserved",
+                            "confirmed",
+                            "queued",
+                            "called",
+                            "processing",
+                            "pending",
+                            "pickup",
+                            "finished",
+                            "missed",
+                            "archived",
+                            "deleted",
+                            "anonymized",
+                            "blocked",
+                            "conflict"
+                        ],
+                        "description": "Status of the process. The following values are possible:\n  * free: open for reservation\n  * reserved: for updating data, no validation yet\n  * confirmed: appointment\n  * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * processing: client appeared and gets service\n  * pending: client has to return to fetch papers\n  * pickup: client is called to fetch papers\n  * finished: successfully processed\n  * missed: no client appeared\n  * archived: only used in statistics\n  * deleted: blocking appointment time\n  * anonymized: for statistically purposes only\n  * blocked: to avoid the reuse of IDs on the same day\n  * conflict: mark process as conflict for check functions\n"
+                    }
+                }
+            }
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+                "bookable",
+                "notBookable",
+                "restricted",
+                "full",
+                "detail"
+            ],
+            "description": "Status of day. The following values are possible:\n  * bookable: day has free appointments\n  * notBookable: day is not bookable because of missing availabilities\n  * restricted: not bookable because of dayoff times\n  * full: not bookable because missing free appointments\n  * detail: non calculated status, every process for the day is available unter processList (very expansive in resources, use with caution)\n"
+        }
+    }
+}

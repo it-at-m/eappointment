@@ -1,0 +1,49 @@
+{
+    "type": "object",
+    "description": "Representation of a month in the calendar. You might find curious values in freeAppointments. While callcenter and public values might be positive, the intern value can be negative. This is due to calculation. The public and callcenter values are calculated per slot whereas the intern value is calculated for the whole day/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
+    "example": {
+        "year": 2015,
+        "month": 11,        
+        "appointmentExists": true,
+        "calHeadline": "November 2015",
+        "startDow": 1,
+        "days": [
+            {
+                "year": 2015,
+                "month": 11,
+                "day": 19
+            }
+        ]
+    },
+    "required": [
+        "year",
+        "month",
+        "calHeadline",
+        "days"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "year": {
+            "type": "number"
+        },
+        "month": {
+            "type": "number"
+        },
+        "appointmentExists": {
+            "description": "true if a bookable or full day is present. This is false, if no potential bookable day is available in this month.",
+            "type": "boolean"
+        },
+        "calHeadline": {
+        	"type": "string"
+        },
+        "startDow": {
+        	"type": "number"
+        },
+        "days": {
+            "type": "array",
+            "items": {
+                "$ref": "day.json"
+            }
+        }
+       }
+}

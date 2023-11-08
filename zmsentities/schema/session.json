@@ -1,0 +1,217 @@
+{
+    "type": "object",
+    "description": "Representation of a session. It usually stores temporary appointment data before a free appointment is found.",
+    "example": {
+        "name": "Zmsappointment",
+        "id": "7b89b1c1fd6c7a52fa748ff663babd0c",
+        "content": {
+            "basket": {
+                "requests": "120703",
+                "providers": "122217",
+                "scope": "123",
+                "process": "1234567",
+                "date": "1456310041",
+                "familyName": "Max Mustermann",
+                "clientEmail": "max@zms-bo.de",
+                "clientTelephone": "03023232323",
+                "clientAmendment": "Notiz zum Termin",
+                "authKey": "1234",
+                "notificationConfirmation": false
+            },
+            "human": {
+                "captcha_text": "kck6Qz",
+                "client": 0,
+                "ts": 0,
+                "origin": "captcha",
+                "remoteAddress": "127.0.0.1",
+                "referer": "dayselect",
+                "step": {
+                    "dayselect": 1
+                }
+            },
+            "entry": {
+                "source": "specific",
+                "providers": "122217",
+                "requests": "120703",
+                "scope": 123
+            },
+            "source": "dldb",
+            "status": "start",
+            "X-Authkey": "abc12345678def",
+            "error": ""
+        }
+    },
+    "required": [
+        "id",
+        "name"
+    ],
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "name of session"
+        },
+        "id": {
+            "type": "string",
+            "description": "id of session"
+        },
+        "content": {
+            "type": "object",
+            "properties": {
+                "basket": {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": [
+                                "number",
+                                "string"
+                            ]
+                        },
+                        "providers": {
+                            "type": [
+                                "number",
+                                "string"
+                            ]
+                        },
+                        "scope": {
+                            "type": [
+                                "number"
+                            ]
+                        },
+                        "process": {
+                            "type": [
+                                "number"
+                            ]
+                        },
+                        "date": {
+                            "type": [
+                                "number"
+                            ]
+                        },
+                        "firstDay": {
+                            "type": [
+                                "string"
+                            ]
+                        },
+                        "lastDay": {
+                            "type": [
+                                "string"
+                            ]
+                        },
+                        "familyName": {
+                            "type": "string"
+                        },
+                        "clientEmail": {
+                            "type": "string"
+                        },
+                        "clientTelephone": {
+                            "type": "number"
+                        },
+                        "clientAmendment": {
+                            "type": "string"
+                        },
+                        "clientCustomTextfield": {
+                            "type": "string"
+                        },
+                        "authKey": {
+                            "type": "string"
+                        },
+                        "notificationConfirmation": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "human": {
+                    "type": "object",
+                    "properties": {
+                        "captcha_text": {
+                            "type": "string"
+                        },
+                        "client": {
+                            "type": "number"
+                        },
+                        "ts": {
+                            "type": "number"
+                        },
+                        "origin": {
+                            "type": "string"
+                        },
+                        "remoteAddress": {
+                            "type": "string"
+                        },
+                        "referrer": {
+                            "type": "string"
+                        },
+                        "step": {
+                            "type": "object",
+                            "properties": {
+                                "dayselect": {
+                                    "type": "number"
+                                },
+                                "timeselect": {
+                                    "type": "number"
+                                },
+                                "register": {
+                                    "type": "number"
+                                },
+                                "summary": {
+                                    "type": "number"
+                                }
+                            }
+                        }
+                    }
+                },
+                "source": {
+                    "type": "string",
+                    "description": "source for multi-client capability"
+                },
+                "entry": {
+                    "type": "object",
+                    "description": "Save request IDs and provider IDs from entry query",
+                    "properties": {
+                        "source": {
+                            "type": "string"
+                        },
+                        "providers": {
+                            "type": [
+                                "number",
+                                "string"
+                            ]
+                        },
+                        "requests": {
+                            "type": [
+                                "number",
+                                "string"
+                            ]
+                        },
+                        "scope": {
+                            "type": [
+                                "number"
+                            ]
+                        }
+                    }
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "start",
+                        "reserved",
+                        "confirmed",
+                        "finished",
+                        "inChange",
+                        "changedProcess",
+                        "stalled",
+                        "inProgress"
+                    ],
+                    "description": "Status of the session. The following values are possible:\n* start: new session started\n* reserved: set if a process has been reserved\n* confirmed: set if a process has been confirmed\n* finished: set if a process has been finished\n* inChange: current process is in change mode\n* changedProcess: current process has been changed\n* stalled: set if session has a problem, fore example if second tab is in use \n* inProgress: if session not stalled anymore\n"
+                },
+                "X-Authkey": {
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string",
+                    "description": "error or notice from errorhandler to show specific template message block"
+                }
+            }
+        }
+    }
+}

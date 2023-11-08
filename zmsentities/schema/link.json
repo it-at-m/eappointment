@@ -1,0 +1,52 @@
+{
+    "type": "object",
+    "description": "Representation of a link.",
+    "example": {
+        "id": 1234,
+        "name": "Zuständigkeitsverzeichnis",
+        "url": "http://www.berlin.de/ba-mitte/zustaendigkeiten/",
+        "target": true,
+        "public": false,
+        "organisation": 0
+    },
+    "required": [
+        "url",
+        "name"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "id": {
+            "type": "number",
+            "default": 0
+        },
+        "name": {
+            "type": "string",
+            "default": ""
+        },
+        "url": {
+            "type": "string",
+            "default": ""
+        },
+        "target": {
+            "type": [
+                "number",
+                "boolean"
+            ],
+            "description": "true if url should open in a new window",
+            "default": 0
+        },
+        "public": {
+            "type": [
+                "number",
+                "boolean"
+            ],
+            "description": "true if url should displayed as public link",
+            "default": 0
+        },
+        "organisation": {
+            "type": "number",
+            "default": 0,
+            "description": "greater than 0 if link is available for given organisation"
+        }
+    }
+}

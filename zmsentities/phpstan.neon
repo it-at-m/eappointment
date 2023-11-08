@@ -1,0 +1,5 @@
+
+parameters:
+    ignoreErrors:
+        - '#Access to an undefined property BO\\Zmsentities\\#'
+        - '#Call to an undefined method DateTimeInterface::modify()#'

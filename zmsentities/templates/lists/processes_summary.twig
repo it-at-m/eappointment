@@ -1,0 +1,44 @@
+{%  block processes_summary_german %}
+{% if not isMainProcess %}
+    {% if isSummary %}
+    <h4>Sie haben folgende Termine gebucht:</h4>
+    {% else %}
+    <h4>Zusätzlich haben Sie folgende Termine gebucht:</h4>
+    {% endif %}
+Sollten Sie einen dieser Termine nicht mehr wahrnehmen können, möchten wir Sie bitten,<br />
+diesen <strong>unbedingt</strong> über den Änderungs/Absage-Link abzusagen, damit wir den Termin neu vergeben können.<br /><br />
+{% endif %}
+{% for plannedProcess in processList %}
+{% set changeLink  = config.appointments.urlChange ~ '?process=' ~ plannedProcess.id ~ '&authKey=' ~ plannedProcess.authKey %}
+<div style="background: #efefef; border: 1px solid #dddddd; padding:10px;">
+<strong>Zeit:</strong> am {{ plannedProcess.getFirstAppointment.date|format_datetime("short","none","EEEE, dd. MMMM y") }}{% if not isQueued %} um {{ plannedProcess.getFirstAppointment.date|date("H:i") }} Uhr{% endif %}<br />
+<strong>Ort:</strong> {{ plannedProcess.scope.provider.name ~ ", " ~ plannedProcess.scope.provider.contact.street ~ " "  ~ plannedProcess.scope.provider.contact.streetNumber ~", " ~ plannedProcess.scope.provider.contact.postalCode ~ " " ~ plannedProcess.scope.provider.contact.city }}<br />
+{% if plannedProcess.requests|length > 1 %}
+{% set requestalias = "Dienstleistungen" %}
+{% else %}
+{% set requestalias = "Dienstleistung" %}
+{% endif %}
+{% if plannedProcess.requests|length == 0 %}
+Sie haben keine Dienstleistungen ausgewählt.
+{% else %}
+<strong>{{ requestalias }}:</strong>
+<br/>
+{% for request in plannedProcess.requests %}
+- {{ request.name }}<br />
+{% endfor %}
+{% endif %}
+{#<strong>Teilnehmer:</strong> {{ plannedProcess.clients|length}}<br />#}
+{% if plannedProcess.scope.hint %}
+<strong>Hinweis: </strong>({{ process.scope.hint }})<br />
+{% endif %}
+{% if isQueued %}
+<strong>Wartenummer:</strong> {{ plannedProcess.queue.number }}
+{% else %}
+<strong>Vorgangsnummer:</strong> {{ plannedProcess.id }}<br />
+<strong>Absage-Code:</strong> {{ plannedProcess.authKey }}<br />
+<strong>Änderungs/Absage-Link:</strong> <a href="{{ changeLink }}" target="_blank">{{ changeLink }}</a>
+{% endif %}
+</div>
+<br />
+{% endfor %}
+{% endblock %}

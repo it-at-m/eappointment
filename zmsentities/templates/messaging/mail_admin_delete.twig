@@ -1,0 +1,14 @@
+{% block german %}
+{% if process.queue.withAppointment %}
+Abgesagt wurde der Termin von {{ process.clients|first.familyName }}
+am {{ process.appointments|first.date|format_datetime("short","none","EEEE, dd. MMMM y") }} um {{ process.appointments|first.date|date("H:i") }} Uhr
+{% else %}
+Einem Spontankunden mit der Wartenummer {{ process.queue.number }} wurde am {{ now|format_datetime(pattern="EEEE, dd. MMMM y") }} abgesagt
+{% endif %} für den Standort {{ process.scope.provider.name ~ ", " ~ process.scope.provider.contact.street ~ " "  ~ process.scope.provider.contact.streetNumber ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}. {% if process.scope.shortName %} ({{ process.scope.shortName }}){% endif %}
+<br /><br />
+Die Vorgangsnummer {{ process.id }} ist nun wieder freigegeben.
+<br />
+Die Terminabsage wurde initiiert via "{{ initiator }}".
+<br /><br />
+Dies ist ein Service Ihres ZMS.
+{% endblock %}

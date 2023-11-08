@@ -1,0 +1,116 @@
+{
+  "type": "object",
+  "description": "A workstation is an input device in a room or place to process requests for the clients. A workstation calls clients and changes the status of a process.",
+  "example": {
+    "hint": "Ausgabeschalter 3",
+    "id": 123,
+    "name": "3",
+    "process": {
+      "id": false
+    },
+    "queue": {
+      "appointmentsOnly": false,
+      "clusterEnabled": false
+    },
+    "scope": {
+      "id": 141
+    },
+    "useraccount": {
+      "lastLogin": 1447926465,
+      "id": "johndoe",
+      "rights": {
+        "scope": true,
+        "ticketprinter": true
+      },
+      "departments": [
+        {
+          "id": 123
+        }
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "useraccount"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "authkey": {
+      "type": "string",
+      "description": "authentication key, usually only in a login response once"
+    },
+    "hint": {
+      "type": "string",
+      "description": "used for displaying in the calldisplay"
+    },
+    "id": {
+      "type": "number",
+      "description": "id of the workstation"
+    },
+    "emergency": {
+      "type": "object",
+      "description": "Depending on scope settings, a workstation might have an emergency-button to call for help",
+      "properties": {
+        "refreshInterval": {
+          "type": "number",
+          "description": "time in seconds for next check if an emergency occurred",
+          "default": 5
+        }
+      }
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 5,
+      "description": "usually number of place or room where the workstation is located"
+    },
+    "process": {
+      "$ref": "process.json"
+    },
+    "queue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "appointmentsOnly": {
+          "type": [
+            "boolean",
+            "number"
+          ],
+          "description": "true if only appointments should be shown in queue"
+        },
+        "clusterEnabled": {
+          "type": [
+            "boolean",
+            "number"
+          ],
+          "description": "true if the complete cluster should be shown in queue"
+        }
+      }
+    },
+    "scope": {
+      "$ref": "scope.json"
+    },
+    "useraccount": {
+      "$ref": "useraccount.json"
+    },
+    "linkList": {
+      "type": "array",
+      "items": {
+        "$ref": "link.json"
+      }
+    },
+    "support": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "telephone": {
+          "type": "string",
+          "description": "telephone number of support"
+        },
+        "eMail": {
+          "type": "string",
+          "description": "email of support"
+        }
+      }
+    }
+  }
+}

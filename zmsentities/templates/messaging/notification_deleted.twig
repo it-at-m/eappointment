@@ -1,0 +1,7 @@
+{% block german %}
+{% if process.queue.withAppointment %}
+Ihr Termin: Vorgangsnr. {{ process.id }} am {{ process.appointments|first.date|format_datetime("short","none","dd. MMMM y") }} um {{ process.appointments|first.date|date("H:i") }} Uhr wurde abgesagt.
+{% else %}
+Der Spontankunden-Vorgang mit der Wartenummer {{ process.queue.number }} am {{ process.appointments|first.date|format_datetime("short","none","dd. MMMM y") }} wurde abgesagt.
+{% endif %}
+{% endblock %}

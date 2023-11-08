@@ -1,0 +1,95 @@
+{
+  "description": "A ticketprinter is a system to print waiting numbers for clients. Usually it has a touch screen and a printing device.",
+  "type": "object",
+  "example": {
+    "buttonlist": "s123,l[http://www.berlin.de/|Portal+Berlin.de]",
+    "enabled": true,
+    "hash": "e744a234c1",
+    "id": 1234,
+    "lastUpdate": 1447925326000,
+    "name": "Eingangsbereich links",
+    "reload": 30,
+    "contact": {
+      "name": "Bürgeramt"
+    }
+  },
+  "required": [
+    "hash"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "buttons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the Button, shown value"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "cluster",
+              "link",
+              "scope"
+            ],
+            "description": "Type of the button, for complement links"
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "To enable or disable button usage"
+          },
+          "url": {
+            "type": "string",
+            "description": "url to scope, cluster or external target"
+          },
+          "scope": {
+            "$ref": "scope.json"
+          },
+          "cluster": {
+            "$ref": "cluster.json"
+          }
+        }
+      },
+      "description": "List of buttons"
+    },
+    "buttonlist": {
+      "type": "string",
+      "description": "comma separated list of scope, cluster, links (s = scope, c = cluster, l = link), max of 6 buttons"
+    },
+    "enabled": {
+      "type": [
+        "boolean",
+        "number"
+      ],
+      "description": "true if browser is allowed to hand out waiting numbers to the client"
+    },
+    "hash": {
+      "type": "string",
+      "description": "identifier for a browser (usually cookie content)"
+    },
+    "id": {
+      "type": "number"
+    },
+    "lastUpdate": {
+      "type": "number",
+      "description": "unix timestamp of last status change"
+    },
+    "name": {
+      "type": "string",
+      "description": "only for internal identification"
+    },
+    "home": {
+      "type": "string",
+      "description": "url for homepage redirecting"
+    },
+    "reload": {
+      "type": "number",
+      "description": "time to redirect to homepage in seconds"
+    },
+    "contact": {
+      "$ref": "contact.json"
+    }
+  }
+}

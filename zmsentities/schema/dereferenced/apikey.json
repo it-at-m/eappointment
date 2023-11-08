@@ -1,0 +1,155 @@
+{
+    "type": "object",
+    "description": "Representation of an Apikey. It usually stores temporary api quota data while appointment scheduling in service app",
+    "example": {
+        "key": "wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs",
+        "apiclient": {
+            "accesslevel": "public",
+            "clientKey": "hDUWCqKHuVbV2Yj9Dgc8hYwfAgJs3aTM"
+        },
+        "captcha": {
+            "mime": "image\/jpeg;base64",
+            "content": "R0lGODdhEAAQAMwAAPj7+FmhUYjNfGuxYYDJdYTIeanOpT+DOTuANXi\/bGOrWj6CONzv2sPjv2CmV1unU4zPgISg6DJnJ3ImTh8Mtbs00aNP1CZSGy0YqLEn47RgXW8amasW7XWsmmvX2iuXiwAAAAAEAAQAAAFVyAgjmRpnihqGCkpDQPbGkNUOFk6DZqgHCNGg2T4QAQBoIiRSAwBE4VA4FACKgkB5NGReASFZEmxsQ0whPDi9BiACYQAInXhwOUtgCUQoORFCGt\/g4QAIQA7",
+            "base64": true
+        },
+        "quota": [
+            {
+                "route": "\/calendar\/",
+                "period": "hour",
+                "requests": 99,
+                "ts": 1459512840
+            }
+        ],
+        "createIP": "127.0.0.1",
+        "ts": 1459512840
+    },
+    "required": [
+        "key"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "key": {
+            "type": "string",
+            "description": "temporary random api key string"
+        },
+        "apiclient": {
+            "type": "object",
+            "description": "An apiclient is required on requesting an apikey.",
+            "example": {
+                "clientKey": "wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs",
+                "shortname": "example",
+                "accesslevel": "public",
+                "lastChange": 1459512840
+            },
+            "required": [
+                "clientKey"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "apiClientID": {
+                    "type": "number",
+                    "description": "internal ID for the API client"
+                },
+                "clientKey": {
+                    "type": "string",
+                    "description": "temporary random api key string"
+                },
+                "shortname": {
+                    "type": "string",
+                    "description": "a string describing the client"
+                },
+                "accesslevel": {
+                    "type": "string",
+                    "description": "access level of the api key",
+                    "enum": [
+                        "public",
+                        "callcenter",
+                        "intern",
+                        "blocked"
+                    ]
+                },
+                "lastChange": {
+                    "type": "number",
+                    "description": "unix timestamp representing the creating time of quota",
+                    "example": 1459512840
+                }
+            }
+        },
+        "captcha": {
+            "type": "object",
+            "description": "A message part to send. For images an other binary files, the content can be encoded as base64.",
+            "example": {
+                "queueId": 1234,
+                "mime": "text\/html",
+                "content": "<h1>Title<\/h1><p>Message<\/p>",
+                "base64": false
+            },
+            "required": [
+                "mime",
+                "content"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "queueId": {
+                    "type": "number",
+                    "description": "optional ID of queued message item, this part belongs to"
+                },
+                "mime": {
+                    "type": "string",
+                    "description": "The mime type used in 'Content-Type', should include charset if necessary. If no charset is given, utf-8 is expected."
+                },
+                "content": {
+                    "type": "string",
+                    "description": "content to transfer"
+                },
+                "base64": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "True if the content is encoded as base64."
+                }
+            }
+        },
+        "quota": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "route": {
+                        "type": "string",
+                        "description": "path of an URL for which the quota is valid"
+                    },
+                    "period": {
+                        "type": "string",
+                        "description": "Period of time for this quota",
+                        "enum": [
+                            "minute",
+                            "hour",
+                            "day",
+                            "week",
+                            "month"
+                        ]
+                    },
+                    "requests": {
+                        "type": "number",
+                        "description": "Number of requests left",
+                        "example": 99
+                    },
+                    "ts": {
+                        "type": "number",
+                        "description": "unix timestamp representing the creating time of quota",
+                        "example": 1459512840
+                    }
+                }
+            }
+        },
+        "createIP": {
+            "type": "string",
+            "description": "IP Address of the creator"
+        },
+        "ts": {
+            "type": "number",
+            "description": "unix timestamp representing the creating time of quota",
+            "example": 1459512840
+        }
+    }
+}

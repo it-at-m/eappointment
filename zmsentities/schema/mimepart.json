@@ -1,0 +1,34 @@
+{
+    "type": "object",
+    "description": "A message part to send. For images an other binary files, the content can be encoded as base64.",
+    "example": {
+    	"queueId": 1234,
+        "mime": "text/html",
+        "content": "<h1>Title</h1><p>Message</p>",
+        "base64": false
+    },
+    "required": [
+        "mime",
+        "content"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "queueId": {
+        	"type": "number",
+            "description": "optional ID of queued message item, this part belongs to"
+        },
+        "mime": {
+            "type": "string",
+            "description": "The mime type used in 'Content-Type', should include charset if necessary. If no charset is given, utf-8 is expected."
+        },
+        "content": {
+            "type": "string",
+            "description": "content to transfer"
+        },
+        "base64" : {
+        	"type": "boolean",
+            "default": false,
+        	"description": "True if the content is encoded as base64."
+        }
+    }
+}

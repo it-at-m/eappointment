@@ -1,0 +1,30 @@
+#!/bin/bash
+
+REALPATH=$(which realpath || which readlink)
+REALPATH=$([[ "$REALPATH" =~ 'readlink' ]] && echo "$REALPATH -e" || echo "$REALPATH")
+DIR=$(dirname $($REALPATH ${BASH_SOURCE[0]}))
+ROOT=$($REALPATH $DIR/..)
+BASE=$($REALPATH $DIR/../../../..)
+
+if [ ! -d "$BASE/vendor" ]; then
+  BASE=$ROOT
+fi
+
+LOG=$ROOT/schemavalidation.log
+
+echo "Testing json schemas"
+touch $LOG
+for filename in $ROOT/schema/*.json
+do
+    echo "Testing $filename" >> $LOG
+    ($ROOT/vendor/bin/json-guard check -q $filename >> $LOG)|| (cat $LOG && echo "Validating $filename failed" && exit 1)
+done;
+rm $LOG
+cd $ROOT
+
+echo "Testing coding standards"
+$BASE/vendor/bin/phpcs --standard=psr2 src/ || exit 1
+echo "Testing code quality"
+$BASE/vendor/bin/phpmd src/ text phpmd.rules.xml || exit 1
+echo "Testing units"
+$BASE/vendor/bin/phpunit || exit 1

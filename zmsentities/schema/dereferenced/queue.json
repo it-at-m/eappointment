@@ -1,0 +1,86 @@
+{
+    "type": "object",
+    "description": "A queue represents a waiting queue for processes\/clients.",
+    "example": {
+        "arrivalTime": 1447922893,
+        "callCount": 1,
+        "callTime": 1447922938,
+        "lastCallTime": 0,
+        "number": "123",
+        "waitingTime": 2,
+        "withAppointment": false,
+        "status": "confirmed"
+    },
+    "required": [
+        "arrivalTime",
+        "number"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "arrivalTime": {
+            "type": "number",
+            "description": "unix timestamp when client was added to the queue or appointment time"
+        },
+        "callCount": {
+            "type": "number",
+            "description": "number of calls for the client to appear at the workstation"
+        },
+        "callTime": {
+            "type": "number",
+            "description": "unix timestamp of last call"
+        },
+        "destination": {
+            "type": "string",
+            "description": "Text to display on calling the queued item, usually a room number."
+        },
+        "destinationHint": {
+            "type": "string",
+            "description": "Small hint to display on calling the queued item."
+        },
+        "lastCallTime": {
+            "type": "number",
+            "description": "unix timestamp of last call while client not appeared and process was not stopped"
+        },
+        "number": {
+            "type": [
+                "string",
+                "number"
+            ],
+            "description": "number to display on a call display"
+        },
+        "waitingTime": {
+            "type": "number",
+            "description": "minutes since arrival of client"
+        },
+        "waitingTimeEstimate": {
+            "type": "number",
+            "description": "estimated time in minutes to wait for a call"
+        },
+        "waitingTimeOptimistic": {
+            "type": "number",
+            "description": "estimated time in minutes to wait for a call (optimistic value for views with timespan)"
+        },
+        "withAppointment": {
+            "type": "boolean",
+            "description": "true if corresponding process has an appointment",
+            "default": false
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+                "confirmed",
+                "preconfirmed",
+                "queued",
+                "called",
+                "deleted",
+                "processing",
+                "pending",
+                "pickup",
+                "finished",
+                "fake",
+                "missed"
+            ],
+            "description": "Status of the process. The following values are possible:\n  * confirmed: confirmed appointment but not in queue\n * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * deleted: client is deleted\n  * processing: client appeared and gets service\n  * pending: client has to return for getting papers\n  * pickup: show pending on call display\n  * reserved: appointment is reserved\n  * finished: successfully processed\n  * fake: dummy entry for getting infos about queue\n  * missed: no client appeared\n"
+        }
+    }
+}

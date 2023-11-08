@@ -1,0 +1,206 @@
+{
+  "type": "object",
+  "description": "An Availability is a representation of opening hours for a scope. It defines the time a scope offers appointments and a ticket printer is able to serve process numbers.",
+  "example": {
+    "bookable": {
+      "startInDays": 2,
+      "endInDays": 60
+    },
+    "description": "Sonderöffnungszeit",
+    "endDate": 1447919116,
+    "endTime": "15:30",
+    "id": 1234,
+    "multipleSlotsAllowed": true,
+    "type": "appointment",
+    "repeat": {
+      "afterWeeks": 0
+    },
+    "scope": {
+      "id": 141
+    },
+    "slotTimeInMinutes": 12,
+    "startDate": 1447919543,
+    "startTime": "10:00",
+    "weekday": {
+      "thursday": true
+    },
+    "workstationCount": {
+      "callcenter": 8,
+      "intern": 10,
+      "public": 3
+    }
+  },
+  "required": [
+    "startDate",
+    "endDate",
+    "scope",
+    "type",
+    "weekday"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "bookable": {
+      "type": "object",
+      "properties": {
+        "startInDays": {
+          "type": "number",
+          "default": 1,
+          "description": "number of days relative to today to start offering appointments"
+        },
+        "endInDays": {
+          "type": "number",
+          "default": 60,
+          "description": "maximum number of days in the future to offer appointments"
+        }
+      }
+    },
+    "description": {
+      "type": "string",
+      "description": "short note for internal usage"
+    },
+    "endDate": {
+      "type": "number",
+      "description": "unix timestamp of a day until this availability is valid"
+    },
+    "endTime": {
+      "type": "string",
+      "default": "23:59",
+      "description": "format '0:00' or '16:30'"
+    },
+    "id": {
+      "type": ["string", "number", "null"],
+      "description": "ID for the availability. A NULL or zero means, that the availability is new."
+    },
+    "lastChange": {
+      "type": "number",
+      "description": "unix timestamp of the last change on this availability"
+    },
+    "multipleSlotsAllowed": {
+      "type": [
+        "boolean",
+        "number"
+      ],
+      "default": true,
+      "description": "an appointment is allowed to take more than one time slot"
+    },
+    "processingNote": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Non persistent note usable for processing or logging calculation results, usually used for debugging"
+      }
+    },
+    "repeat": {
+      "type": "object",
+      "properties": {
+        "afterWeeks": {
+          "type": "number",
+          "description": "number of weeks for repeating the times, usually 1, 2 or 3"
+        },
+        "weekOfMonth": {
+          "type": "number",
+          "description": "number of week in month, on a value of 5 the last week of the month, even it is the 4th"
+        }
+      }
+    },
+    "scope": {
+      "$ref": "scope.json"
+    },
+    "slotTimeInMinutes": {
+      "type": "number",
+      "default": 10,
+      "description": "Multiplicated with a slotCount from an appointment this gives the duration in minutes for a appointment/process."
+    },
+    "startDate": {
+      "type": "number",
+      "description": "unix timestamp of a day to start offering appointments"
+    },
+    "startTime": {
+      "type": "string",
+      "description": "format '0:00' or '17:30'"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "appointment",
+        "openinghours",
+        "break"
+      ],
+      "description": "The following type are available\n* appointment - defines times for appointments\n* openinghours - defines times where a scope is opened\n* break - defines times for a break (not implemented yet)\n"
+    },
+    "weekday": {
+      "type": "object",
+      "properties": {
+        "monday": {
+          "default": false,
+          "type": [
+            "boolean",
+            "number"
+          ]
+        },
+        "tuesday": {
+          "default": false,
+          "type": [
+            "boolean",
+            "number"
+          ]
+        },
+        "wednesday": {
+          "default": false,
+          "type": [
+            "boolean",
+            "number"
+          ]
+        },
+        "thursday": {
+          "default": false,
+          "type": [
+            "boolean",
+            "number"
+          ]
+        },
+        "friday": {
+          "default": false,
+          "type": [
+            "boolean",
+            "number"
+          ]
+        },
+        "saturday": {
+          "default": false,
+          "type": [
+            "boolean",
+            "number"
+          ]
+        },
+        "sunday": {
+          "default": false,
+          "type": [
+            "boolean",
+            "number"
+          ]
+        }
+      }
+    },
+    "workstationCount": {
+      "type": "object",
+      "properties": {
+        "callcenter": {
+          "type": "number",
+          "default": 0,
+          "description": "number of workstations to handle appointments if handed out to the client by a callcenter"
+        },
+        "intern": {
+          "type": "number",
+          "default": 0,
+          "description": "maximum of workstations expected to handle appointments"
+        },
+        "public": {
+          "type": "number",
+          "default": 0,
+          "description": "number of workstations to offer appointments for booking using a public website"
+        }
+      }
+    }
+  }
+}

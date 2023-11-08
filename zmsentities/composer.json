@@ -1,0 +1,49 @@
+{
+    "name": "eappointment/zmsentities",
+    "description": "Entity definitions for eappoinment",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mathias Fischer",
+            "email": "mathias.fischer@berlinonline.de"
+        }
+    ],
+    "require": {
+        "php": ">=7.3.0",
+        "ext-curl": ">=0",
+        "ext-mbstring": ">=0",
+        "ext-json": ">=1.0",
+        "ext-pcre": ">=0",
+        "eappointment/mellon": "^2.0.1",
+        "twig/twig": "3.*",
+        "league/json-guard": "^1.0",
+        "league/html-to-markdown": "^5.0",
+        "giggsey/libphonenumber-for-php": "^8.8.4",
+        "twig/intl-extra": "^3.4",
+        "symfony/translation": "^5.4",
+        "symfony/twig-bridge": "^5.4"
+    },
+    "scripts": {
+        "command": "bin/configure"
+    },
+    "repositories": [
+        {
+          "type": "vcs",
+          "url": "https://gitlab.com/eappointment/mellon"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "BO\\Zmsentities\\": "src/Zmsentities/",
+            "BO\\Zmsentities\\Tests\\": "tests/Zmsentities/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6",
+        "helmich/phpunit-psr7-assert": "^4.3.0",
+        "phpmd/phpmd": "@stable",
+        "squizlabs/php_codesniffer": "^3.5.8",
+        "league/json-reference": "^1.0",
+        "yuloh/json-guard-cli": "^0.3.0"
+    }
+}

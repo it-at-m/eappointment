@@ -1,0 +1,77 @@
+{
+    "type": "object",
+    "description": "A notification is a message to send to a client. Compared to a mail, it is a short text message, usually a SMS.",
+    "example": {
+        "id": 1234,
+        "createIP": "145.15.3.10",
+        "createTimestamp": 1447931596,
+        "department": {
+            "id": 74,
+            "preferences": {
+                "notifications": {
+                    "enabled": true,
+                    "identification": "terminvereinbarung@mitte.berlin.de",
+                    "sendConfirmationEnabled": true,
+                    "sendReminderEnabled": true
+                }
+            },
+            "email": "terminvereinbarung@mitte.berlin.de"
+        },
+        "message": "Denken Sie an ihren Termin mit der Nummer 123456",
+        "process": {
+            "clients": [
+                {
+                    "familyName": "Max Mustermann",
+                    "email": "max@service.berlin.de",
+                    "telephone": "030 115"
+                }
+            ],
+            "id": 123456,
+            "authKey": "abcd",
+            "reminderTimestamp": 1447931730000,
+            "scope": {
+                "id": 123
+            },
+            "status": "confirmed"
+        },
+        "client": [
+            {
+                "familyName": "Max Mustermann",
+                "telephone": "030 115"
+            }
+        ]
+    },
+    "required": [
+        "department",
+        "message",
+        "process",
+        "client"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "id": {
+            "type": "number"
+        },
+        "createIP": {
+            "type": "string",
+            "description": "IP Address of the creator"
+        },
+        "createTimestamp": {
+            "type": "number",
+            "description": "unix timestamp representing creation of the notification"
+        },
+        "department": {
+            "$ref": "department.json"
+        },
+        "message": {
+            "type": "string",
+            "description": "Short message to send. Beware, on using SMS, long messages might generate multiple SMS messages."
+        },
+        "process": {
+            "$ref": "process.json"
+        },
+        "client": {
+        	"$ref": "client.json"
+        }
+    }
+}
