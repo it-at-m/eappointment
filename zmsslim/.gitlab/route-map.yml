@@ -1,0 +1,3 @@
+# Coverage
+- source: /src/Slim/(.+?\.php).*/
+  public: '_tests/coverage/\1.html'

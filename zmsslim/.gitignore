@@ -1,0 +1,9 @@
+vendor
+tags
+#composer.*.lock
+.DS_Store
+.*
+tests/cache/*
+!tests/cache/.gitkeep 
+#composer.lock
+public

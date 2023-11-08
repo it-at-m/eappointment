@@ -1,0 +1,2 @@
+msgid "unittest"
+msgstr "this is a pofile test"
