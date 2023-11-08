@@ -1,0 +1,44 @@
+{
+    "name": "eappointment/zmsdldb",
+    "description": "Client for DLDB",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mathias Fischer",
+            "email": "mathias.fischer@berlinonline.de"
+        }
+    ],
+    "config": {
+        "platform": {
+            "php": "7.3"
+        }
+    },
+    "require-dev": {
+        "phpmd/phpmd": "@stable",
+        "squizlabs/php_codesniffer": "*",
+        "phpunit/phpunit": "^9.5.4",
+        "seld/jsonlint": "*"
+    },
+    "require": {
+        "php": ">=7.3.0",
+        "ext-curl": ">=0",
+        "ext-mbstring": ">=0",
+        "ext-json": ">=1.0",
+        "ext-pcre": ">=0",
+        "vanilla/garden-cli": "1.*",
+        "nategood/httpful": "0.*",
+        "twig/twig": "3.*"
+    },
+    "bin": ["bin/dldbget"],
+    "autoload": {
+        "psr-4": {
+            "BO\\Dldb\\": "src/Dldb/",
+            "BO\\Dldb\\Tests\\": "tests/Dldb/"
+        }
+    },
+    "scripts": {
+        "command": "bin/configure",
+        "tests": "FASTTEST=1 NO_COMPARE=1 vendor/bin/phpcs && vendor/bin/phpmd src text phpmd.rules.xml && vendor/bin/phpunit",
+        "codecoverage": "php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html coverage/"
+    }
+}

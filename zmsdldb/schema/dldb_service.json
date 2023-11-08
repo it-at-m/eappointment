@@ -1,0 +1,445 @@
+{
+    "type": "object",
+    "description": "Repräsentiert eine Leistung mit Beschreibungen, benötigten Dokumente, Voraussetzungen und weiteren Informationen wie auch Behörden und/oder Standorten, an denen die Leistung wahrgenommen werden kann.",
+    "example": {
+        "id": "326069",
+        "prerequisites": [
+            {
+                "link": "",
+                "name": "Kind hat das zwölfte Lebensjahr noch nicht vollendet. Der Leistungszeitraum von 72 Monaten ist noch nicht ausgeschöpft.",
+                "description": ""
+            },
+            {
+                "name": "Kind lebt bei einem Elternteil, der ledig, verwitwet, oder geschieden ist oder von seinem/ihrem Ehegatten oder Lebenspartner/in dauernd getrennt lebt.",
+                "link": "",
+                "description": "Der Anspruch ist ausgeschlossen, wenn das Kind wechselseitig von beiden Elternteilen betreut wird. Der Anspruch ist gleichermaßen ausgeschlossen im Falle einer Eheschließung, wenn der Ehegatte nicht der andere Elternteil ist. \r\nEin dauerndes Getrenntleben liegt auch dann vor, wenn ein Elternteil für die Dauer von mindestens sechs Monaten in einer Anstalt untergebracht ist.\r\n"
+            },
+            {
+                "description": "",
+                "name": "Kind erhält nicht oder nicht regelmäßig Unterhalt vom anderen Elternteil.",
+                "link": ""
+            }
+        ],
+        "process_time": "",
+        "forms": [
+            {
+                "link": "http://www.berlin.de/imperia/md/content/sen-familie/finanzielle_hilfen/unterhaltsvorschuss/antrag_uvg.pdf",
+                "name": "Antrag auf Leistungen nach dem Unterhaltsvorschussgesetz",
+                "description": ""
+            }
+        ],
+        "responsibility": "Örtlich zuständig ist das Jugendamt des Bezirks, in welchem das Kind seinen Wohnsitz hat. \r\nDie Antragsbearbeitung  erfolgt in der Unterhaltsvorschussstelle des Jugendamtes.\r\n",
+        "responsibility_all": true,
+        "leika": "99107021000000",
+        "links": [
+            {
+                "description": "",
+                "name": "Dummy",
+                "link": "http://dummy.de/"
+            },
+        ],
+        "requirements": [
+            {
+                "description": "",
+                "name": "schriftlicher Antrag",
+                "link": ""
+            },
+            {
+                "name": "gültiger Personalausweis/Pass",
+                "link": "",
+                "description": "Geht die aktuelle Meldeanschrift nicht aus dem Personaldokument hervor, so ist zusätzlich die Meldebestätigung vorzulegen."
+            },
+            {
+                "description": "entfällt bei Vorlage des Personalausweises",
+                "name": "Meldebestätigung/Melderegisterauskunft",
+                "link": ""
+            },
+            {
+                "description": "",
+                "link": "",
+                "name": "gültiger Aufenthaltstitel für nicht freizügigkeitsberechtigte Ausländer"
+            },
+            {
+                "name": "Geburtsurkunde des Kindes",
+                "link": "",
+                "description": ""
+            },
+            {
+                "description": "entfällt bei ehelich geborenen Kindern",
+                "name": "Vaterschaftsanerkenntnis oder –feststellung",
+                "link": ""
+            },
+            {
+                "name": "Nachweis über das Getrenntleben",
+                "link": "",
+                "description": "Sofern Sie noch nicht geschieden sind, und/oder die Scheidung noch nicht bei Gericht beantragt wurde, muss die Trennungsabsicht entweder durch ein entsprechendes Schreiben des beauftragten Anwalts/der beauftragten Anwältin oder durch die nachweisliche Änderung Ihrer Steuerklasse (alleinerziehend) bei Ihrem Finanzamt belegt werden."
+            },
+            {
+                "description": "",
+                "name": "Scheidungsurteil/Scheidungsbeschluss",
+                "link": ""
+            },
+            {
+                "name": "Unterhaltstitel",
+                "link": "",
+                "description": "Bitte legen Sie jegliche schriftliche Vereinbarung über/Festsetzung von Kindesunterhalt vor. Dazu gehören Urkunden des Jugendamtes, notarielle Urkunden und Vereinbarungen, Gerichtsbeschlüsse und –urteile, aber auch formlose private Niederschriften."
+            },
+            {
+                "link": "",
+                "name": "Nachweise über Unterhaltszahlungen oder Halbwaisenrente",
+                "description": "Geeignete Nachweise sind Kontoauszüge, Quittungen, Rentenbescheide, Rentenanpassungsmitteilungen."
+            }
+        ],
+        "legal": [
+            {
+                "description": "",
+                "name": "Gesetz zur Sicherung des Unterhalts von Kindern alleinstehender Mütter und Väter durch Unterhaltsvorschüsse oder –ausfallleistungen (Unterhaltsvorschussgesetz)",
+                "link": "http://www.gesetze-im-internet.de/uhvorschg/"
+            }
+        ],
+        "publications": [
+            {
+                "description": false,
+                "name": "Was ist, wenn...? 22 Fragen zum Thema Häusliche Pflege",
+                "link": "http://www.berlin.de/imperia/md/content/sen-soziales/downloads/20110504_wasistwenn.pdf"
+            }
+        ],
+        "name": "Unterhaltsvorschuss",
+        "locations": [
+            {
+                "location": "326065",
+                "url": "https://service.berlin.de/dienstleistung/326423/standort/121649/",
+                "appointment": {
+                    "link": "/terminvereinbarung/termin/tag.php?termin=1&amp;dienstleister=121649&amp;anliegen[]=326423",
+                    "allowed": true,
+                    "slots": "0",
+                    "external": false,
+                    "multiple": "0"
+                },
+                "hint": ""
+            }
+        ],
+        "authorities": [
+            {
+                "id": "12760",
+                "name": "Landesamt für Bürger- und Ordnungsangelegenheiten",
+                "webinfo": "http://www.berlin.de/labo/",
+                "appointment_link": ""
+            }
+        ],
+        "appointment": {
+            "link": "http://service.berlin.de/dienstleistung/12345/terminall/"
+        },
+        "fees": "gebührenfrei",
+        "onlineprocessing": {
+            "description": "",
+            "link": ""
+        },
+        "meta": {
+            "url": "https://service.berlin.de/dienstleistung/326069/",
+            "locale": "de",
+            "lastupdate": "2013-11-25T11:12:04+02:00",
+            "keywords": "Unterhaltsvorschuss, Kind, alleinerziehend, Sozialleistung"
+        },
+        "relation": {
+            "root_topic": "12345"
+        },
+        "description": "Der Unterhaltsvorschuss soll übergangsweise eine besondere Hilfe für alleinerziehende Eltern sein. Der ausfallende Unterhalt soll zumindest zum Teil ausgeglichen werden, ohne den unterhaltspflichtigen Elternteil aus der Verantwortung zu entlassen.\r\nSie können Unterhaltsvorschussleistungen beantragen, wenn Sie alleinerziehend sind und für Ihr noch nicht zwölf Jahre altes Kind keinen Unterhalt vom anderen Elternteil und keine Waisenbezüge mindestens in Höhe der Unterhaltsvorschussleistungen erhalten.\r\nUnterhaltsvorschussleistungen werden für längstens 72 Monate erbracht. Die Vorschussleistung ist grundsätzlich vom anderen Elternteil zu erstatten.\r\n"
+    },
+    "required": [
+        "id"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "id": {
+            "type": "integer",
+            "example": "326069",
+            "description": "ID der Dienstleistung intern"
+        },
+        "leika": {
+            "type": "string",
+            "example": "99107021000000",
+            "description": "14 stellige ID nach dem bundesweiten Leistungskatalog, die ersten beiden Ziffern stehen für das Bundeslannd, 99 für den Bund, die jeweils nächsten drei Ziffern stehen als Reihe für Gruppierung, Leistungsobjekt, Verrichtung und Verrichtungsdetail. Zahlen über 900 in dieser Reihe sind jeweils nur für das jeweilige Bundesland gültig und nicht vergleichbar. Ist in der Reihe eine 000 gilt die Leistung für alle Einträge in der Hierarchie darunter."
+        },
+        "name": {
+            "type": "string",
+            "example": "Unterhaltsvorschuss",
+            "description": "Name der Dienstleistung"
+        },
+        "description": {
+            "description": "Beschreibung der Dienstleistung",
+            "example": "Der Unterhaltsvorschuss soll übergangsweise eine besondere Hilfe für alleinerziehende Eltern sein. Der ausfallende Unterhalt soll zumindest zum Teil ausgeglichen werden, ohne den unterhaltspflichtigen Elternteil aus der Verantwortung zu entlassen.\r\nSie können Unterhaltsvorschussleistungen beantragen, wenn Sie alleinerziehend sind und für Ihr noch nicht zwölf Jahre altes Kind keinen Unterhalt vom anderen Elternteil und keine Waisenbezüge mindestens in Höhe der Unterhaltsvorschussleistungen erhalten.\r\nUnterhaltsvorschussleistungen werden für längstens 72 Monate erbracht. Die Vorschussleistung ist grundsätzlich vom anderen Elternteil zu erstatten.\r\n",
+            "type": "string"
+        },
+        "meta": {
+            "type": "object",
+            "description": "Meta-Informationen zur Leistung",
+            "properties": {
+                "url": {
+                    "description": "Detail URL zur Anzeige dieser Daten als HTML",
+                    "example": "https://service.berlin.de/dienstleistung/326069/",
+                    "type": "string"
+                },
+                "locale": {
+                    "description": "Verwendete Sprache in den Feldern als Kürzel",
+                    "example": "de",
+                    "type": "string"
+                },
+                "lastupdate": {
+                    "description": "letzte Aktualisierung der Dienstleistung als ISO-8601",
+                    "example": "2013-11-25T11:12:04+02:00",
+                    "type": "string"
+                }, // 
+                "keywords": {
+                    "description": "Schlüsselwörter für eine Suche-Anwendung",
+                    "example": "Unterhaltsvorschuss, Kind, alleinerziehend, Sozialleistung",
+                    "type": "string"
+                }
+            }
+        },
+        "process_time": {
+            "type": "string",
+            "description": "Bearbeitungszeit der Dienstleistung"
+        },
+        "fees": {
+            "example": "gebührenfrei",
+            "description": "Gebühren zur Erbringung der Dienstleistung",
+            "type": "string"
+        },
+        "prerequisites": {
+            "type": "array",
+            "description": "Voraussetzungen",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "link": {
+                        "example": "http://dummy.de/",
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    }
+                }
+            },
+        },
+        "forms": {
+            "type": "array",
+            "description": "Verlinkte Formulare",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "link": {
+                        "example": "http://dummy.de/",
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    }
+                }
+            },
+        },
+        "links": {
+            "type": "array",
+            "description": "Liste weiterführender Links",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "link": {
+                        "example": "http://dummy.de/",
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    }
+                }
+            },
+        },
+        "requirements": {
+            "type": "array",
+            "description": "Benötigte Dokumente",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "link": {
+                        "example": "http://dummy.de/",
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    }
+                }
+            },
+        },
+        "legal": {
+            "type": "array",
+            "description": "rechtliche Grundlagen",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "link": {
+                        "example": "http://dummy.de/",
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    }
+                }
+            },
+        },
+        "publications": {
+            "type": "array",
+            "description": "Publikationen zur Leistung",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "link": {
+                        "example": "http://dummy.de/",
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    }
+                }
+            },
+        },
+        "responsibility": {
+            "type": "string",
+            "example": "Örtlich zuständig ist das Jugendamt des Bezirks, in welchem das Kind seinen Wohnsitz hat. \r\nDie Antragsbearbeitung  erfolgt in der Unterhaltsvorschussstelle des Jugendamtes.\r\n",
+            "description": "Hinweis zur Zuständigkeit"
+        },
+        "responsibility_all": {
+            "type": "boolean",
+            "example": 1,
+            "description": "true, wenn an allen Standorten ohne Einschränkung die Dienstleistung wahrgenommen werden kann"
+        },
+        "authorities": {
+            "type": "array",
+            "description": "Behörden, die diese Dienstleistung anbieten",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "appointment_link": {
+                        "example": "http://dummy.de/",
+                        "description": "Link zum Buchen eines Termins in der Behörde, leer falls nicht möglich",
+                        "type": "string"
+                    },
+                    "webinfo": {
+                        "example": "http://dummy.de/",
+                        "description": "Url zur Behördenseite",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "Url zur Behördenseite",
+                        "type": "string"
+                    },
+                    "id": {
+                        "description": "ID der Behörde",
+                        "type": "string"
+                    }
+                }
+            },
+        },
+        "locations": {
+            "type": "array",
+            "description": "Standorte, an denen die Dienstleistung angeboten wird",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "example": "326065",
+                        "description": "ID des Standortes",
+                        "type": "integer"
+                    },
+                    "url": {
+                        "example": "https://service.berlin.de/dienstleistung/326423/standort/121649/",
+                        "description": "Url zu einer Seite, die den Standort zusammen mit der Leistung anzeigt",
+                        "type": "string"
+                    },
+                    "hint": {
+                        "description": "Hinweis zur Zuständigkeit des Standortes",
+                        "type": "string"
+                    },
+                    "appointment": {
+                        "type": "object",
+                        "properties": {
+                            "link": {
+                                "example": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&amp;dienstleister=121649&amp;anliegen[]=326423",
+                                "description": "Link zur Terminvereinbarung",
+                                "type": "string"
+                            },
+                            "allowed": {
+                                "type": "boolean",
+                                "description": "TRUE wenn eine Terminbuchung erlaubt ist"
+                            },
+                            "slots": {
+                                "type": "integer",
+                                "description": "Anzahl der Slots"
+                            },
+                            "external": {
+                                "type": "boolean",
+                                "description": "TRUE wenn die Terminbuchung nicht über den Default-Weg geht"
+                            },
+                            "multiple": {
+                                "type": "boolean",
+                                "description": "TRUE wenn mehrere Dienstleistungen für einen Termin erlaubt sind"
+                            }
+                        }
+                    }
+                }
+            },
+        },
+        "appointment": {
+            "type": "object",
+            "properties": {
+                "link": {
+                    "example": "http://service.berlin.de/dienstleistung/12345/terminall/",
+                    "description": "Link für berlinweites Termin-Buchen, leer falls nicht möglich",
+                    "type": "string"
+                }
+            }
+        },
+        "onlineprocessing": {
+            "type": "object",
+            "description": "Falls ein Onlineverfahren für die Dienstleistung existiert",
+            "properties": {
+                "description": {
+                    "description": "Beschreibung des Online-Verfahrens",
+                    "type": "string"
+                },
+                "link": {
+                    "description": "Link zum Online-Verfahren",
+                    "type": "string"
+                }
+            }
+        },
+        "relation": {
+            "type": "object",
+            "description": "Beziehungen zu anderen Objekten",
+            "properties": {
+                "root_topic": {
+                    "description": "ID oder Einordnung im Sinne eines Themas, z.B. für Highlighting in der Navigation oder einen Breadcrumb",
+                    "example": "12345",
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

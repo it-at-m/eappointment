@@ -1,0 +1,53 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Download and validate json files
+ */
+$localInclude = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .  'vendor';
+$modulInclude = __DIR__ . str_repeat(DIRECTORY_SEPARATOR . '..', 3);
+set_include_path(get_include_path() . PATH_SEPARATOR . $localInclude . PATH_SEPARATOR . $modulInclude);
+require('autoload.php');
+
+use Garden\Cli\Cli;
+
+$cli = new Cli();
+
+$cli->description("Load DLDB exports into ElasticSearch")
+    ->opt('exports:e', 'path to json files with data', true)
+    ->opt('port:p', 'port to connect to ES, default to 9200', false)
+    ->opt('host:h', 'host to connect to ES, default to localhost', false)
+    ->opt('transport:t', 'transport to connect to ES, default to http', false)
+    ->opt('alias:a', 'use the following alias after successful indexing', false)
+    ->opt('drop:d', 'drop old indice, only in combination with alias', false)
+    ;
+$args = $cli->parse($argv, true);
+
+try {
+    $indexer = new \BO\Dldb\Indexer\ElasticSearch($args->getOpt('exports'));
+    if ($args->getOpt('host')) {
+        $indexer->setHost($args->getOpt('host'));
+    }
+    if ($args->getOpt('port')) {
+        $indexer->setPort($args->getOpt('port'));
+    }
+    if ($args->getOpt('transport')) {
+        $indexer->setTransport($args->getOpt('transport'));
+    }
+    $indexer->run();
+    if ($args->getOpt('alias')) {
+        $indexer->setAlias($args->getOpt('alias'));
+        if (null !== $args->getOpt('drop')) {
+            $indexer->dropOldIndex();
+        }
+    } elseif (null !== $args->getOpt('drop')) {
+        echo $cli->red("dropping old indice is only supported with alias setting");
+        exit(1);
+    }
+
+} catch (Exception $e) {
+    $message = 'Exception: ' . $e->getMessage();
+    $message .= " (" . $e->getFile() . ' +' . $e->getLine() . ')';
+    $message .= "\n";
+    echo $cli->red($message);
+    exit(1);
+}
