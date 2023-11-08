@@ -1,0 +1,25 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block pageheader %}
+    {{ parent() }}
+{% endblock %}
+
+{% block pageheader_middle %}
+    <span class="sitename">Statistik - Auswahl Standort und Arbeitsplatz</span>
+{% endblock %}
+
+{% block pageheader_right %}
+    {{ parent() }}
+{% endblock %}
+
+{% block headline %}
+    {{ headline1("Standort auswählen") }}
+{% endblock %}
+
+{% block content %}
+	{{ parent() }}
+    <!-- page workstationSelect -->
+    {% include "block/workstation/selectform.twig" %}
+    <!-- /page workstationSelect -->
+{% endblock %}

@@ -1,0 +1,21 @@
+.dialog {
+    @extend
+        .board_body--maxHeight,
+        .board;
+    .header {
+    }
+    .body {
+    }
+    .button {
+        @extend
+            .btn,
+            .btn--alert,
+            .btn--shadow;
+    }
+    .button-cancel {
+        @extend
+            .btn,
+            .btn--alert,
+            .btn--shadow;
+    }
+}

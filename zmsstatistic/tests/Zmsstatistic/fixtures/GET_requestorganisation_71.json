@@ -1,0 +1,54 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2018-03-13T11:03:12+01:00",
+    "server": "Zmsapi-ENV (v2.15.03)"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/exchange.json",
+    "firstDay": {
+      "year": "2018",
+      "month": "03",
+      "day": "13",
+      "status": "notBookable",
+      "freeAppointments": {
+        "public": 0,
+        "intern": 0,
+        "callcenter": 0,
+        "type": "free"
+      }
+    },
+    "lastDay": {
+      "year": "2018",
+      "month": "03",
+      "day": "13",
+      "status": "notBookable",
+      "freeAppointments": {
+        "public": 0,
+        "intern": 0,
+        "callcenter": 0,
+        "type": "free"
+      }
+    },
+    "period": "month",
+    "dictionary": [
+      {
+        "position": 0,
+        "variable": "period",
+        "type": "string",
+        "description": "",
+        "reference": ""
+      }
+    ],
+    "data": [
+      [
+        2016
+      ],
+      [
+        "2016-04"
+      ]
+    ]
+  }
+}

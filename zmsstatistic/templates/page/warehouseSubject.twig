@@ -1,0 +1,47 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% use "block/report/advancedInfo.twig" %}
+
+{% block headline %}
+    {{ headline1("Übersicht verfügbarer IDs") }}
+{% endblock %}
+{% block content %}
+<div class="counter-view" data-includeurl="{{ includeUrl() }}">
+        <div class="report-index">
+            <nav class="breadcrumb">
+                <ol>
+                    <li><a href="{{ urlGet("WarehouseIndex") }}">{{ title|trans }}</a></li>
+                    <li>{{ categoryName }}</li>
+                </ol>
+            </nav>
+            {% embed "block/report/board.twig" with {'class': 'board--spaceless', 'download':'raw'} %}
+            {% block board_title %}
+                {{ categoryName|trans }}
+            {% endblock %}
+            {% block board_body %}
+                <table class="table--base">
+                    <thead>
+                        {% for entry in dictionary %}
+                            <th>{{ entry.description }}</th>
+                        {% endfor %}
+                    </thead>
+                    <tbody>
+                    {% for entry in subjectList.data %}
+                        <tr>
+                            <td><a href="{{ urlGet('WarehousePeriod', {'subject': category, 'subjectid': entry.subject }, {}) }}">{{ entry.subject }}</a></td>
+                            <td>{{ entry.periodstart|date("d.m.Y") }}</td>
+                            <td>{{ entry.periodend|date("d.m.Y") }}</td>
+                            {% if entry.organisationname is defined %}
+                            <td>{{ entry.organisationname }}</td>
+                            {% endif %}
+                            <td>{{ entry.description }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endblock %}
+
+            {% endembed %}
+        </div>
+    </div>
+{% endblock %}

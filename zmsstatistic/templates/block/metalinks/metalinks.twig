@@ -1,0 +1,19 @@
+<h2 class="aural">Weiterführende Links</h2>
+<ul class="footer-servicelinks">
+    <li>
+        <h3>Support</h3>
+        {% set email = workstation.support.eMail|default(config.support.eMail) %}
+        <a href="mailto::{{ email }}">{{ email }}</a>
+        <span>{{ workstation.support.telephone|default(config.support.telephone) }}</span>
+    </li>
+    <li>
+        <h3>Benutzerhandbuch</h3>
+        <a href="/terminvereinbarung/handbuch/" target="_blank">Web-Seite</a><br/>
+        <a href="/terminvereinbarung/handbuch/ZMS-Handbuch.pdf" target="_blank">PDF-Download</a>
+    </li>
+    <li>
+        <h3>bereitgestellt von</h3>
+        <a href="https://www.berlinonline.net/" target="_blank" title="Dieser Link führt zur Webseite von BerlinOnline"><img class="logo" alt="BerlinOnline" src="{{ includeUrl() }}/_css/images/bo_logo.svg"></a>
+        <a href="http://www.itdz-berlin.de/" target="_blank" title="Dieser Link führt zur Webseite des ITDZ Berlin"><img class="logo" alt="ITDZ-Berlin" src="{{ includeUrl() }}/_css/images/itdz_berlin.svg"></a>
+    </li>
+</ul>

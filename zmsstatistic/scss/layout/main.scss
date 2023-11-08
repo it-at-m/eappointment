@@ -1,0 +1,20 @@
+// Base site layout and grid
+
+#main {
+    margin:             0 auto $gridGutter auto;
+    max-width:          $pageMaxWidth;
+    padding:            0;
+    background-color:   $white;
+}
+
+html {
+    font-family:        $base-font-family;
+    line-height:        $inuit-base-line-height;
+}
+
+// We extend wizardrys inline-block bug fix, otherwise it does not work
+@if $use-markup-fix != true {
+    .grid__item {
+        margin-right:   -0.1em;
+    }
+}

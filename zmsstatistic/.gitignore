@@ -1,0 +1,17 @@
+vendor
+vendor.zmsbase
+node_modules
+config.php
+**.swp
+.sass-cache
+.DS_Store
+package-lock.json
+cache/
+vendor.old
+vendor.update
+VERSION
+public/_tests
+composer.*.lock
+.cache
+.phpunit.result.cache
+.idea

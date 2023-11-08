@@ -1,0 +1,18 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'welcome'} %}
+    
+        
+        {% block board_title %}
+            Herzlich willkommen
+        {% endblock %} 
+        
+        
+        {% block board_body %}
+            {% set email = workstation.support.eMail|default(config.support.eMail) %}
+            <p>Um alle Funktionen des Systems nutzen zu können, identifizieren Sie sich bitte mit ihrem <strong>Nutzername</strong> und ihrem <strong>Passwort</strong> und wählen Sie im folgenden Schritt einen <strong>Standort</strong>. Zur Nutzung der Statistik benötigen Sie Rechte zur Einsicht der Statistiken ihres Standortes.</p>
+            <p>Für Anwendungsfragen wenden Sie sich bitte an den links unter der Navigation angegebenen Support-Kontakt. Für Rückfragen zu Änderungen am System können Anwendungsystembetreuern sich auch an die folgende E-Mail-Adresse wenden: <a href="mailto:{{ email }}">{{ email }}</a></p>
+        {% endblock %} 
+
+        {% block board_footer %}
+            <span>Version {{ currentVersion() }}</span>
+        {% endblock %} 
+{% endembed %}

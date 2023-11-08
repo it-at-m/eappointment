@@ -1,0 +1,5 @@
+*.php diff=php
+tests export-ignore
+composer.lock binary merge=ours
+public/_js/ binary merge=ours
+public/_css/ binary merge=ours

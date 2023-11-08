@@ -1,0 +1,60 @@
+table {
+    @extend
+        .table;
+    background-color:       $white;
+    .center {
+        text-align:         center;
+    }
+    .spacer {
+        width:              100%;
+    }
+    td {
+        vertical-align:     top;
+        padding:            0.5em;
+    }
+    thead {
+        background-color:   $tableHeadBackground;
+        th {
+            font-size:      $fontSizeLabels;
+            font-weight:    bold;
+            border:         0 none;
+            padding:        0.4em 0.5em;
+        }
+    }
+    form {
+        margin:             0;
+    }
+}
+
+.table--oddeven {
+    tr {
+        &:nth-child(2n+1) {
+            background-color:       $zebraWhite;
+            margin-bottom:          0;
+        }
+        &:nth-child(2n) {
+            margin-bottom:          0;
+            background-color:       $zebraGray;
+        }
+        &.odd {
+             background-color:      $zebraWhite;
+        }
+        &.even {
+            background-color:       $zebraGray;
+        }
+    }
+}
+
+table.clean {
+    background-color:               transparent;
+    border-collapse:                collapse;
+    thead {
+        background-color:           transparent;
+    }
+    td {
+        border-top:                 1px solid $greyBorder;
+    }
+    td, th {
+        padding:                    0.75em;
+    }
+}

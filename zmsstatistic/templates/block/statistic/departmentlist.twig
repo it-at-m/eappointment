@@ -1,0 +1,39 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'board useraccount-departmentlist'} %}
+
+
+        {% block board_title %}
+            Behörde wählen
+        {% endblock %}
+
+
+        {% block board_body %}
+
+
+            <h3>Berlin</h3>
+            <ul>
+                {% if workstation.useraccount.rights.superuser %}
+                <li>
+                    <h4>Behördenunabhängig</h4>
+                    <ul>
+                        <li>Systemweite Nutzer</li>
+                    </ul>
+                </li>
+                {% endif %}
+                {% for organisation in organisationList %}
+                <li>
+                    <h4>{{ organisation.name }}</h4>
+                    <ul>
+                        {% for department in organisation.departments %}
+                        <li>
+                            {{ department.name }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+            </ul>
+
+        {% endblock %}
+
+
+{% endembed %}

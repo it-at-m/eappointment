@@ -1,0 +1,48 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'loginform'} %}
+        {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield, providername %}
+
+        {% block board_title %}
+            {{ title }}
+        {% endblock %}
+
+
+        {% block board_body %}
+            <div data-scope-select-form data-includeurl="{{includeUrl()}}" data-today="{{today}}">
+                <form action="./" method="POST">
+                    <p>Um alle Funktionen des Systems nutzen zu können, müssen Sie noch folgende Angaben machen:<br></p>
+                    <fieldset>
+                    {% set scopeOptionsGroup = [{ 'value' : '', 'name' : '-- bitte auswählen --'}] %}
+                    {% for department in workstation.useraccount.departments %}
+                    	{% set scopeOptionsGroupOptions = [] %}
+                    	{% for scope in department.scopes %}
+                            {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope) }]) %}
+                        {% endfor %}
+                        {% for cluster in department.clusters %}
+                            {% for scope in cluster.scopes %}
+                                {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope) }]) %}
+                            {% endfor %}
+                        {% endfor %}
+                        {% set scopeOptionsGroup = scopeOptionsGroup|merge([{ 'name' : department.name, 'options' : scopeOptionsGroupOptions|msort('name') }]) %}
+                    {% endfor %}
+                    {{ formgroup(
+                        {"label": "Standort:", "errors": advancedData.scope.messages},
+                        [{
+                            "type":"select",
+                            "parameter": {
+                                "name": "scope",
+                                "value": workstation.scope.id,
+                                "accesskey": "s",
+                                "options": scopeOptionsGroup
+                            }
+                        }]
+                    ) }}
+                    </fieldset>
+                    {{ inputfield({ "name":"workstation_select_form_validate", "type":"hidden", "value":"1" }) }}
+                    {{ inputfield({ "name":"appointmentsOnly", "type":"hidden", "value":workstation.queue.appointmentsOnly }) }}
+                    <div class="form-actions right">
+                        {{ formbutton({ "type":"login", "label":"Auswahl bestätigen", "value": "weiter", "accesskey":"a" }) }}
+                    </div>
+                </form>
+            </div>
+        {% endblock %}
+{% endembed %}

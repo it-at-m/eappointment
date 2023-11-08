@@ -1,0 +1,60 @@
+/**
+ * We use CSSWIZARDRY-GRIDS
+ * A "lineup" is a set of "actors" (like twitter bootstraps "row" is a set of "span"s)
+ * where the linup is the grid-row and the actors are one or more grid-items
+ */
+
+.lineup {
+    @extend
+        .grid;
+    .lineup_actor {
+        @extend
+            .grid__item;
+    }
+    &--statistic {
+        @extend
+            .grid;
+        .lineup_actor {
+            &--left {
+                @extend
+                    .grid__item,
+                    .eight-twelfths,
+                    .lap--one-whole,
+                    .palm--one-whole;
+            }
+            &--right {
+                @extend
+                    .grid__item,
+                    .four-twelfths,
+                    .lap--one-third,
+                    .palm--one-whole;
+            }
+        }
+    }
+    &--login {
+        @extend
+            .grid;
+        .lineup_actor {
+            &--left {
+                @extend
+                    .grid__item,
+                    .six-twelfths,
+                    .lap--one-whole,
+                    .palm--one-whole;
+            }
+            &--right {
+                @extend
+                    .grid__item,
+                    .six-twelfths,
+                    .lap--one-whole,
+                    .palm--one-whole;
+            }
+            &--full {
+                @extend
+                    .grid__item,
+                    .lap--one-whole,
+                    .palm--one-whole;
+            }
+        }
+    }
+}

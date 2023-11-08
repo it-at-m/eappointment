@@ -1,0 +1,51 @@
+{% use "block/header/pageheader.twig" %}
+{% use "block/breadcrumb/breadcrumb.twig" %}
+{% use "block/navigation/navigation.twig" %}
+{% import "element/helper/snippets.twig" as snippets %}
+<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{{ title }} - Zeitmanagementsystem</title>
+    <link rel="stylesheet" type="text/css" href="{{ includeUrl() }}/_css/admin.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+</head>
+<body>
+    <span id="js-is_palm"></span>
+    <div id="page-wrapper" class="handheld">
+        <header id="page-header">
+            {% block pageheader -%}
+                {{ parent() }}
+            {%- endblock %}
+        </header>
+        
+        <div id="content-wrapper">
+            {% block breadcrumb -%}
+                {{ parent() }}
+            {%- endblock %}
+            <div class="grid">
+                <div class="grid__item"><!-- fullwidth, no sidebar -->
+                    <section role="main" id="main-content">
+                    {% block headline %}
+                        {{ snippets.headline1("untitled") }}
+                    {% endblock %}
+                    {% block content -%}
+                        {# pages placed here #}
+                    {%- endblock %}
+                    </section>
+                </div>
+            </div>
+        </div>
+        
+        <footer id="page-footer">
+            <span class="page-version">
+                Version: {{ currentVersion() }}
+            </span>
+        </footer>
+        
+    </div>
+    <script type="text/javascript" src="{{ includeUrl() }}/_js/index.js"></script>
+</body>
+</html>

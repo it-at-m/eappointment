@@ -1,0 +1,11 @@
+.breadcrumb {
+    @extend 
+        .list-inline, 
+        .list-inline--delimited;
+        > li + li {
+            &:before {
+                content: " › ";
+            }
+        }
+    margin-bottom:      1em;
+}

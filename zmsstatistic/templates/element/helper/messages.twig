@@ -1,0 +1,66 @@
+{% block errors %}
+	{% if args.error or error %}
+        {% block login_failed %}
+        	{{ block('error_start') }}
+        	Die Anmeldung ist leider fehlgeschlagen. Versuchen Sie es bitte erneut.
+        	{{ block('error_end') }}
+        {% endblock %}
+		{% block unknown_error %}
+        	{{ block('error_start') }}
+        	Es ist ein unbekannter Fehler aufgetreten.
+        	{{ block('error_end') }}
+        {% endblock %}
+    {% endif %}
+{% endblock %}
+
+{% block notices %}
+	{% if args.notice or notice %}
+    	{% block test_notice %}
+    	{{ block('notice_start') }}
+		Test Notice
+        {{ block('notice_end') }}
+    	{% endblock %}
+    {% endif %}
+{% endblock %}
+
+{% block successes %}
+	{% if args.success or success %}
+		{% block test_success %}
+    	{{ block('success_start') }}
+		Test Notice
+        {{ block('success_end') }}
+    	{% endblock %}
+    {% endif %}
+{% endblock %}
+
+
+
+
+{% block error_start %}
+	<section class="dialog message message--error" role="alert">
+		<h2 class="message__heading">Es ist ein Fehler aufgetreten</h2>
+		<div class="message__body">
+{% endblock %}
+{% block error_end %}</div></section>{% endblock %}
+
+{% block success_start %}
+	<section class="dialog message message--success" role="alert">
+		<h2 class="message__heading title">{{ successTitle|default("Erfolgreiche Anfrage")|trans }}</h2>
+		<div class="message__body">
+{% endblock %}
+{% block success_start_keep %}
+	<section class="dialog message message--success message-keep" role="alert">
+		<h2 class="message__heading title">{{ successTitle|default("Erfolgreiche Anfrage")|trans }}</h2>
+		<div class="message__body">
+{% endblock %}
+{% block success_end %}</div></section>{% endblock %}
+
+
+{% block notice_start %}
+	<div class="dialog message message--info" role="alert">
+		<div class="message__body">
+{% endblock %}
+
+{% block notice_end %}
+		</div>
+{% endblock %}

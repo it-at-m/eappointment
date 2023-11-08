@@ -1,0 +1,35 @@
+.metalinks {
+    ul {
+        @extend 
+            .list-bare;
+        li {
+            padding-left:       1.5em;
+            margin-bottom:      $gridGutter;
+            .title {
+                margin:         0;
+                font-weight:    normal;
+            }
+            &::before {
+                margin-left:    -1.3em;
+                float:          left;
+            }
+            &.support:before {
+                content:        "⍰";
+            }
+            &.manual:before {
+                content:        "📖";
+            }
+            &.version:before {
+                content:        "ℹ";
+            }
+            &.logo {
+                padding-left:   $gridGutter;
+                font-size: 80%;
+
+                img.logo {
+                    max-width: 100%;
+                }
+            }
+        }
+    }
+}

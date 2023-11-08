@@ -1,0 +1,97 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2018-03-13T15:03:31+01:00",
+    "server": "Zmsapi-ENV (v2.15.03)"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/exchange.json",
+    "dictionary": [
+      {
+        "position": 0,
+        "variable": "subject",
+        "type": "string",
+        "description": "subject name",
+        "reference": ""
+      },
+      {
+        "position": 1,
+        "variable": "description",
+        "type": "string",
+        "description": "subject description",
+        "reference": ""
+      },
+      {
+        "position": 2,
+        "variable": "right",
+        "type": "string",
+        "description": "useraccount right for this subject",
+        "reference": "useraccount.rights"
+      }
+    ],
+    "data": [
+      [
+        "waitingscope",
+        "Wartestatistik Standort",
+        "scope"
+      ],
+      [
+        "waitingdepartment",
+        "Wartestatistik Behörde",
+        "department"
+      ],
+      [
+        "waitingorganisation",
+        "Wartestatistik Organisation",
+        "organisation"
+      ],
+      [
+        "clientscope",
+        "Kundenstatistik Standort",
+        "scope"
+      ],
+      [
+        "clientdepartment",
+        "Kundenstatistik Behörde",
+        "department"
+      ],
+      [
+        "clientorganisation",
+        "Kundenstatistik Organisation",
+        "organisation"
+      ],
+      [
+        "notificationscope",
+        "SMS-Statistik Standort",
+        "scope"
+      ],
+      [
+        "notificationdepartment",
+        "SMS-Statistik Behörde",
+        "department"
+      ],
+      [
+        "notificationorganisation",
+        "SMS-Statistik Organisation",
+        "organisation"
+      ],
+      [
+        "requestscope",
+        "Dienstleistungsstatistik Standort",
+        "useraccount.rights.scope"
+      ],
+      [
+        "requestdepartment",
+        "Dienstleistungsstatistik Behörde",
+        "useraccount.rights.department"
+      ],
+      [
+        "requestorganisation",
+        "Dienstleistungsstatistik Organisation",
+        "useraccount.rights.organisation"
+      ]
+    ]
+  }
+}

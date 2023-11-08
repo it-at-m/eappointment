@@ -1,0 +1,118 @@
+/**
+ * OUR SETTINGS
+ */
+
+// Colors
+$white:                         #FFFFFF;
+$black:                         #000000;
+$grey:                          #F0F0F0;
+$greyBlack:                     #444444;
+$greyDark:                      #D2D2D2;
+$greyLight:                     #E2E2E2;
+$greyMiddle:                    #909090;
+$greyWhite:                     #F4F4F4;
+$greyBorder:                    #D2D2D2;
+$blue:                          #008CCA;
+$blueDark:                      #33445E;
+$blueLight:                     #ECF9FF;
+$red:                           #E75656;
+$green:                         #009e00;
+$calendarRed:                   #FFAAA9;
+$calendarGreen:                 #CFE9C9;
+
+$zebraGray:         #f8f8f8;
+$zebraWhite:        #ffffff;
+
+$baseTextColor:                 #000000;
+$fontInactiveColor:             #999999;
+$pageheaderBackgroundColor:     $blueDark;
+$linkColor:                     #0074A5;
+$btn-background:                $white;
+$btn-font-color:                $baseTextColor;
+$btn-border-color:              $greyBorder;
+$tableHeadBackground:           $blueLight;
+$disabledColorBackground:       #EEEEEE;
+
+// Dates
+$backgroundColorDateFree:       $green !default;
+$backgroundColorDateBusy:       $calendarRed !default;
+$backgroundColorDateHoliday:    $fontInactiveColor;
+$backgroundColorDateDisabled:   $fontInactiveColor;
+$textColorDateLocked:           #CCCCCC;
+$textColorDateSunday:           $red !important;
+$textColorDateSelected:         $blueDark !important;
+$clientNextIconColor:           #33445E;
+
+// Magic animations
+
+$magicAnimationTimeDefault:     0.5s;
+
+// Dimensions
+//$pageMaxWidth:                96.923em; // 1260px bei 13px font size;
+$pageMaxWidth:                  90em; // 1260px bei 14px font size;
+//$gridGutter:                  1.538em; // 20px; bei 13px font size;
+$gridGutter:                    1.429em; // 20px; bei 14px font size;
+$baseBoxElementPadding:         ($gridGutter / 3) ($gridGutter / 2); // board_body inner elements;
+$base-font-family:              Neo, Roboto, Arial, sans-serif;
+
+$fontSizeLabels:                0.95em; // form labels, dl dt, table th
+
+/**
+ * CSSWIZARDRY GRID SETTING
+ */
+
+$use-markup-fix:                false;
+$push:                          true;
+$gutter:                        $gridGutter;
+$breakpoints: (
+    "palm"          "(max-width: 44.9375em)",
+    "lap"           "(min-width: 45em) and (max-width: 63.9375em)",
+    "lap-and-up"    "(min-width: 45em)",
+    "portable"      "(max-width: 63.9375em)",
+    "desk"          "(min-width: 64em)",
+    "retina"        "(-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi), (min-resolution: 2dppx)"
+);
+
+/**
+ * INUIT SETTINGS
+ */
+
+// iniut Base Settings
+$inuit-base-font-size:          14px;
+$inuit-base-line-height:        20px;
+$inuit-base-text-color:         $baseTextColor;
+$inuit-base-background-color:   $white;
+$inuit-responsive-settings:     true;
+
+// iniut Headline Settings
+$inuit-heading-size-1:          20px;
+$inuit-heading-size-2:          18px;
+$inuit-heading-size-3:          16px;
+$inuit-heading-size-4:          $inuit-base-font-size;
+$inuit-heading-size-5:          $inuit-base-font-size;
+$inuit-heading-size-6:          $inuit-base-font-size;
+
+// iniut Dimensions
+$inuit-base-spacing-unit:       20px; // we need pixel here. em does not get through the sass/inuit compiler
+
+// iniut Buttons
+$inuit-btn-background:          $btn-background;
+$inuit-btn-color:               $btn-font-color;
+$inuit-btn-border-color:        $btn-border-color;
+$inuit-enable-btn--full:        true;
+$inuit-enable-btn--small:       true;
+$inuit-enable-btn--large:       true;
+$inuit-btn-padding:             5px; // cant use em here so we overwrite it our button class
+$inuit-btn-padding--small:      2px; // cant use em here so we overwrite it our button class
+$inuit-btn-radius:              0px;
+
+// inuit Tables
+$inuit-table-border-color:      $greyBorder;
+$inuit-enable-table--cells:     true;
+$inuit-enable-table--rows:      true;
+$inuit-enable-table--columns:   true;
+$inuit-enable-table--compact:   true;
+$inuit-table-padding--compact:  0.0em;
+
+// inuit Lists
+$inuit-enable-list-inline--delimited: true;

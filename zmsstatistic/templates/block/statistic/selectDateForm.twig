@@ -1,0 +1,30 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'selectdate-form'} %}
+    {% from 'element/helper/form.twig' import formgroup, formbutton, selectfield %}
+
+    {% block board_title %}
+        Zeitraum auswählen
+    {% endblock %}
+
+    {% block board_body %}
+        <form>
+            <div class="split">
+                <div class="split_right">
+                {% set selectedDate = selectedProcess.appointments|first.date %}
+                {{ formgroup(
+                    {"label": "Datum"},
+                    [{
+                        "type": "datepicker",
+                        "parameter": {
+                            "id":"process_date",
+                            "value": selectedDate|date('d.m.Y'),
+                            "readonly": 1,
+                            "tabindex": 10
+                        }
+                    }]
+                ) }}
+                </div>
+            </div>
+        </form>
+    {% endblock %}
+
+{% endembed %}

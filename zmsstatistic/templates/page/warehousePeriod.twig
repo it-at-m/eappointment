@@ -1,0 +1,59 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block headline %}
+    {{ headline1("Übersicht verfügbarer Zeit-Perioden") }}
+{% endblock %}
+
+{% block content %}
+    <div class="counter-view" data-includeurl="{{ includeUrl() }}">
+        <div class="report-index">
+            <nav class="breadcrumb">
+                <ol>
+                    <li><a href="{{ urlGet("WarehouseIndex") }}">{{ title|trans }}</a></li>
+                    <li>{{ periodList.title }}</li>
+                </ol>
+            </nav>
+            {% embed "block/report/board.twig" with {'class': 'board--spaceless'} %}
+            {% block board_title %}
+                {{ periodList.title }}
+            {% endblock %}
+            {% block board_header_right %}
+            {% endblock %}
+            {% block board_body %}
+                <table class="table--base">
+                    <thead>
+                        <tr>
+                            <th>{% trans %}Zeitraum{% endtrans %}</th>
+                            <th>{% trans %}XLSX-Download{% endtrans %}</th>
+                            <th>{% trans %}CSV-Download{% endtrans %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for period in periodList.data %}
+                        <tr>
+                            <td>
+                                <a href="{{ urlGet('WarehouseReport', {'subject': category, 'subjectid': subjectId, 'period': period|first}, {}) }}">
+                                    {% if period|first|length > 4 %}
+                                    {{ period|first }}
+                                    {% else %}
+                                    {{ period|first }}
+                                    {% endif %}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ urlGet('WarehouseReport', {'subject': category, 'subjectid': subjectId, 'period': period|first}, {'type':'xlsx'}) }}" target="_blank" title="Download">Download XLSX</a>
+                            </td>
+                            <td>
+                                <a href="{{ urlGet('WarehouseReport', {'subject': category, 'subjectid': subjectId, 'period': period|first}, {'type':'csv'}) }}" target="_blank" title="Download">Download CSV</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endblock %}
+
+            {% endembed %}
+        </div>
+    </div>
+{% endblock %}

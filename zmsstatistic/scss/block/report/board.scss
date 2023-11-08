@@ -1,0 +1,104 @@
+.report-board {
+    @extend
+        .board,
+        .board--minHeight !optional;
+
+    > .body {
+      padding:        1px;
+    }
+
+
+    .report-board--table {
+        @extend
+        .table,
+        .table--cells;
+        margin-bottom:          $gridGutter;
+
+        border-collapse: collapse;
+
+        &.report-board--narrow {
+            tbody td, thead th {
+                padding-left: 2px;
+                padding-right: 3px;
+                border-left: 0 none;
+                border-top: 0 none;
+            }
+        }
+
+        &.report-board--text {
+            tbody td {
+                text-align: left;
+            }
+        }
+
+        thead {
+            th {
+                    border-left: 0 none;
+                    border-top: 0 none;
+                    white-space: nowrap;
+                    &:last-child() {
+                        border-right: 0 none;
+                    }
+            }
+        }
+        tbody {
+
+            tr {
+
+                th {
+                    width: 15%;
+                    color: $greyBlack;
+                    font-size: 0.8em;
+                    border-left: 0 none;
+                    border-top: 0 none;
+                    white-space: nowrap;
+                    &.report-board--long-text {
+                        width:25%;
+                        white-space:normal;
+                        line-height:1.4em;
+                    }
+                }
+
+                td {
+                    text-align: left;
+                    border-left: 0 none;
+                    border-top: 0 none;
+                    &.report-board--summary {
+                        background: $greyDark;
+                    }
+                    &[data-value="0"], .ausgegraut {
+                        color: $greyMiddle;
+                    }
+                    &:last-child() {
+                        border-right: 0 none;
+                    }
+                }
+
+                &:nth-child(odd) {
+                    td, th {
+                        background: $grey;
+                        &.report-board--summary {
+                            background: $greyDark;
+                        }
+                    }
+                }
+                &:nth-child(even) {
+                    td, th {
+
+                    }
+                }
+
+                &:last-child() {
+                  td, th {
+                      border-bottom: 0 none;
+                  }
+                }
+
+                &.report-board--empty td {
+                    background: $white;
+                    border: 0 none;
+                }
+            }
+        }
+    }
+}

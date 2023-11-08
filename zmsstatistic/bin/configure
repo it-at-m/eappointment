@@ -1,0 +1,23 @@
+#!/bin/bash
+
+REALPATH=$(which realpath || which readlink)
+REALPATH=$([[ "$REALPATH" =~ 'readlink' ]] && echo "$REALPATH -e" || echo "$REALPATH")
+DIR=$(dirname $($REALPATH ${BASH_SOURCE[0]}))
+ROOT=$($REALPATH $DIR/..)
+
+echo -n "Configuring application"
+mkdir -p $ROOT/.git/hooks
+ln -sf $ROOT/bin/test $ROOT/.git/hooks/pre-commit
+ln -sf $ROOT/bin/configure $ROOT/.git/hooks/post-checkout
+ln -sf $ROOT/bin/configure $ROOT/.git/hooks/post-commit
+ln -sf $ROOT/bin/configure $ROOT/.git/hooks/post-merge
+
+if [ ! -e $ROOT/config.php ]
+then
+    cp $ROOT/config.example.php $ROOT/config.php
+fi
+test -d $ROOT/cache && chmod -fR a+rwX $ROOT/cache || echo "Could not chmod cache files"
+
+VERSION=`git describe --tags --always`
+echo $VERSION > $ROOT/VERSION
+echo " $VERSION"

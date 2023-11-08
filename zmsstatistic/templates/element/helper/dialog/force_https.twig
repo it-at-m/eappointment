@@ -1,0 +1,13 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'dialog'} %}
+    {% block board_title %}Unsicheres Protokoll verwendet{% endblock %}
+    {% block board_body %}
+        {% set message = "Die Nutzung dieser Seiten ist ausschließlich mit dem sicheren HTTPS-Protokoll gestattet. Sie werden automatisch umgeleitet." %}
+        <p>
+            {{ message|trans }}
+        </p>
+        <div class="form-actions">
+            <a data-action-ok class="button-ok btn right" href="#">OK</a>
+        </div>
+    {% endblock %}
+
+{% endembed %}
