@@ -1,0 +1,39 @@
+{% extends "layout/main.twig" %}
+
+{% use "block/marginal/clock.twig" %}
+{% use "block/queue/estimatedWaitingClients.twig" %}
+{% use "block/queue/estimatedWaitingTime.twig" %}
+
+{% block title %}{% trans %}calldisplay{% endtrans %}{% endblock %}
+{% block pageid %}customized{% endblock %}
+
+{% block content %}
+    {% if not skipAll %}
+        <div class="aufrufanzeige_leftcol">
+            {% if not skipClock %}
+                {{ block("clock") }}
+            {% endif %}
+            <div class="waitingColumn">
+            {% if not skipClients %}
+                {{ block("estimatedWaitingClients") }}
+            {% endif %}
+            {% if not skipTime %}
+                {{ block("estimatedWaitingTime") }}
+            {% endif %}
+            </div>
+        </div>
+    {% endif %}
+<div class="aufrufanzeige_main{% if skipAll %} aufrufanzeige_full{% endif %}">
+    {% block messages %}
+        {% include "block/messages/messages.twig" %}
+    {% endblock %}
+	{% include "block/default/importContainer.twig" with {"tableLayout": tableLayout} %}
+</div>
+
+<div class="aufrufanzeige_text">
+	{% include "block/marginal/infoColumn.twig" %}
+</div>
+{% endblock %}
+
+{% block tableLayoutSettings %}
+{% endblock %}

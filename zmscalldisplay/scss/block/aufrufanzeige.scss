@@ -1,0 +1,152 @@
+/* ----------------------------------------------
+    qr code
+---------------------------------------------- */
+.qrCode--Headline {
+    text-align: center;
+    background: #fff;
+    font-family: Arial,sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 45px;
+    margin-bottom: 3px;
+    margin-top: 0px;
+}
+.qrContainer {
+    background: #fff;
+}
+
+/* ----------------------------------------------
+    aufrufanzeige
+---------------------------------------------- */
+.aufrufanzeige
+{
+    background:transparent;
+    height:758px;
+    left:0;
+    position:absolute;
+    top:0;
+    width:100%;
+}
+
+.hiddencursor, button, input, select {
+    cursor: url(img/invisible_Mauszeiger.cur),crosshair !important;
+}
+
+/* ----------------------------------------------
+    Adresse
+---------------------------------------------- */
+#main-header .adressangabe
+{
+    color: $white;
+    font-size:2.2em;
+    font-family: $base-font-family;
+    font-weight:bold;
+    left:38px;
+    position: absolute;
+    top:14px;
+}
+#main-header .adressangabe .adressangabe_adresse
+{
+    display:none;
+}
+
+/* ----------------------------------------------
+    Wartende & Wartezeit
+---------------------------------------------- */
+
+.waitingColumn {
+    position: absolute;
+    left: 50px; 
+    top: 450px; 
+}
+.aufrufanzeige .wartende_aktuell
+{
+    font-size:2.4em;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    text-align:center;
+    width:275px;
+}
+.aufrufanzeige .wartende_text {
+	background:$white;
+	padding:5px 0px;
+}
+.aufrufanzeige .wartende_aktuell #wartende
+{
+    font-size:52px;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    margin-top:3px;
+    background:$white;
+}
+
+.aufrufanzeige .wartezeit_aktuell
+{
+    font-size:2.4em;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    text-align:center;
+    width:275px;
+}
+.aufrufanzeige .wartezeit_text {
+    margin-top:3px;
+	background:$backgroundLight;
+	padding:5px 0px;
+}
+.aufrufanzeige .wartezeit_aktuell #wartezeit
+{
+    font-size:35px;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    margin-top:3px;
+    background:$backgroundLight;
+}
+
+/* ----------------------------------------------
+    Uhr und Datum
+---------------------------------------------- */
+.aufrufanzeige .uhr
+{
+    position: absolute;
+    left:55px;
+    top:105px;
+    width:275px;
+    height:275px;
+  }
+
+.aufrufanzeige .aufrufanzeige_Datum
+{
+    font-size:24px;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    position:absolute;
+    text-align:center;
+    font-size:24px;
+    left:50px;
+    top:390px;
+    width:275px;
+}
+
+
+/* ----------------------------------------------
+    Text & Logo|QrCode
+---------------------------------------------- */
+.aufrufanzeige .aufrufanzeige_text
+{
+    font-size:2em;
+    font-family: Arial, sans-serif;
+    font-weight:normal;
+    line-height:26px;
+    padding: 18px 0 0 6px;
+    position: absolute;
+    text-align:center;
+    left: 1087px;
+    top:89px;
+    width: 265px;
+}
+
+.aufrufanzeige_text .qrContainer
+{
+    width: 100%;
+    text-align: center;
+}
