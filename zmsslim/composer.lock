@@ -4,21 +4,15 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "69c8f190fbbf1fb80a3dc08e82c08169",
+    "content-hash": "bbe88584b3dacb339a5a18cd7868ee9c",
     "packages": [
         {
             "name": "eappointment/mellon",
-            "version": "v2.06.01",
-            "source": {
-                "type": "git",
-                "url": "git@gitlab.com:eappointment/mellon.git",
-                "reference": "e53bac1fcc45f1a86db2c24b5352a2a3aa74d2f8"
-            },
+            "version": "dev-main",
             "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fmellon/repository/archive.zip?sha=e53bac1fcc45f1a86db2c24b5352a2a3aa74d2f8",
-                "reference": "e53bac1fcc45f1a86db2c24b5352a2a3aa74d2f8",
-                "shasum": ""
+                "type": "path",
+                "url": "../mellon",
+                "reference": "51a4c08085945f4488ea92f925a2996a25173df3"
             },
             "require": {
                 "ext-json": ">=0",
@@ -36,7 +30,14 @@
                     "BO\\Mellon\\": "src/Mellon/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "test": [
+                    "php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html coverage/"
+                ],
+                "command": [
+                    "bin/configure"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -47,7 +48,10 @@
                 }
             ],
             "description": "Validator for parameters and validation helper",
-            "time": "2023-03-15T10:32:54+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "fig/http-message-util",
@@ -5022,6 +5026,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "eappointment/mellon": 20,
         "phpmd/phpmd": 0
     },
     "prefer-stable": false,
@@ -5035,5 +5040,5 @@
     "platform-overrides": {
         "php": "7.3"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }

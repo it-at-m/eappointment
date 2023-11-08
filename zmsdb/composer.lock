@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "395393333e63fde8a8dbfed2ba4208e1",
+    "content-hash": "00b422fb160c3c95b41784ac2333b479",
     "packages": [
         {
             "name": "aura/sql",
@@ -66,17 +66,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "v2.06.01",
-            "source": {
-                "type": "git",
-                "url": "https://gitlab.com/eappointment/mellon.git",
-                "reference": "e53bac1fcc45f1a86db2c24b5352a2a3aa74d2f8"
-            },
+            "version": "dev-main",
             "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fmellon/repository/archive.zip?sha=e53bac1fcc45f1a86db2c24b5352a2a3aa74d2f8",
-                "reference": "e53bac1fcc45f1a86db2c24b5352a2a3aa74d2f8",
-                "shasum": ""
+                "type": "path",
+                "url": "../mellon",
+                "reference": "51a4c08085945f4488ea92f925a2996a25173df3"
             },
             "require": {
                 "ext-json": ">=0",
@@ -112,24 +106,18 @@
                 }
             ],
             "description": "Validator for parameters and validation helper",
-            "support": {
-                "source": "https://gitlab.com/eappointment/mellon/-/tree/v2.06.01"
-            },
-            "time": "2023-03-15T10:32:54+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "2.25.05",
-            "source": {
-                "type": "git",
-                "url": "https://gitlab.com/eappointment/zmsdldb.git",
-                "reference": "226c65dd6c6bc06a8c9ca4e100ffa2fbdfaf4306"
-            },
+            "version": "dev-main",
             "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsdldb/repository/archive.zip?sha=226c65dd6c6bc06a8c9ca4e100ffa2fbdfaf4306",
-                "reference": "226c65dd6c6bc06a8c9ca4e100ffa2fbdfaf4306",
-                "shasum": ""
+                "type": "path",
+                "url": "../zmsdldb",
+                "reference": "a7f14f51716ae770aa43e93e4ef65fe83a13faa5"
             },
             "require": {
                 "ext-curl": ">=0",
@@ -178,27 +166,21 @@
                 }
             ],
             "description": "Client for DLDB",
-            "support": {
-                "source": "https://gitlab.com/eappointment/zmsdldb/-/tree/2.25.05"
-            },
-            "time": "2023-08-28T10:33:03+02:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-muc-main",
-            "source": {
-                "type": "git",
-                "url": "https://gitlab.com/eappointment/zmsentities.git",
-                "reference": "85b7c46c0fe03b933c1f2931a975187c3723f52e"
-            },
+            "version": "dev-main",
             "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/eappointment%2Fzmsentities/repository/archive.zip?sha=85b7c46c0fe03b933c1f2931a975187c3723f52e",
-                "reference": "85b7c46c0fe03b933c1f2931a975187c3723f52e",
-                "shasum": ""
+                "type": "path",
+                "url": "../zmsentities",
+                "reference": "6d50c616376c01caa495318e4a4c3825703dd24b"
             },
             "require": {
-                "eappointment/mellon": "^2.0.1",
+                "eappointment/mellon": "@dev",
                 "ext-curl": ">=0",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -242,10 +224,10 @@
                 }
             ],
             "description": "Entity definitions for eappoinment",
-            "support": {
-                "source": "https://gitlab.com/eappointment/zmsentities/-/tree/muc-main"
-            },
-            "time": "2023-10-20T11:41:23+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "giggsey/libphonenumber-for-php",
@@ -4220,7 +4202,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "eappointment/zmsentities": 20,
-        "eappointment/zmsdldb": 20
+        "eappointment/zmsdldb": 20,
+        "eappointment/mellon": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
@@ -4236,5 +4219,5 @@
     "platform-overrides": {
         "php": "7.3"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
