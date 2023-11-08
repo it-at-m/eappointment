@@ -1,0 +1,107 @@
+#!/usr/bin/env python3
+
+import datetime
+import tempfile
+import os
+import subprocess
+import sys
+import getpass
+import base64
+import json
+import re
+from colorama import init as colorama_init, Fore, Back, Style
+import git
+import click
+
+def print_info(string):
+  print(Back.RED + "zmslocaldev" + Style.RESET_ALL + " " + Fore.YELLOW + string + Style.RESET_ALL)
+
+repo_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+modules = [
+  "mellon",
+  "zmsadmin",
+  "zmsapi",
+  "zmscalldisplay",
+  "zmsclient",
+  "zmsdb",
+  "zmsdldb",
+  "zmsentities",
+  "zmsmessaging",
+  "zmsslim",
+  "zmsstatistic",
+]
+
+
+# cli
+
+
+@click.group()
+def cli():
+  pass
+
+
+@cli.group("modules")
+def cli_modules():
+  pass
+
+
+@cli_modules.command("reference-libraries")
+@click.option("--no-symlink", is_flag=True, show_default=True, default=False)
+def cli_modules_reference_libraries(no_symlink: bool):
+  module_dependencies = {}
+  for module in modules:
+    composer_file_path = os.path.join(repo_dir, module, "composer.json")
+    with open(composer_file_path, "r") as f:
+      composer_content = json.load(f)
+
+    composer_content["repositories"] = [
+      {
+        "type": "path",
+        "url": "../*",
+        "options": {
+          "symlink": not no_symlink
+        }
+      }
+    ]
+
+    require = composer_content.get("require", [])
+    for dependency_key in require:
+      if dependency_key.startswith("eappointment/"):
+        if module not in module_dependencies:
+          module_dependencies[module] = []
+        module_dependencies[module].append(dependency_key)
+        require[dependency_key] = "@dev"
+    composer_content["require"] = require
+
+    with open(composer_file_path, "w") as f:
+      json.dump(composer_content, f, indent=4)
+
+  for module in module_dependencies:
+    module_dir = os.path.join(repo_dir, module)
+    os.system(f"cd {module_dir} && composer update {' '.join(module_dependencies[module])} --no-scripts --no-plugins 1>/dev/null")
+
+
+@cli_modules.command("loop")
+@click.argument("commands", required=True, nargs=-1)
+def cli_modules_loop(commands):
+  """loops though all repositories and executes a given command"""
+  for module_dir in module_dirs:
+    print_info(f"Repository: {module_dir}")
+    os.chdir(module_dir)
+    os.system(" ".join(commands))
+
+
+@cli.group("clean")
+def cli_clean():
+  pass
+
+
+@cli_clean.command("cache")
+def cli_clean_cache():
+  for module_dir in module_dirs:
+    os.system(f"rm -rf {module_dir}/cache/*")
+  print_info("Cache cleaned")
+
+
+if __name__ == "__main__":
+  cli()
