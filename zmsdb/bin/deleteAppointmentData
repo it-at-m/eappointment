@@ -1,0 +1,39 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+$usage = <<<EOS
+
+Usage: {$argv[0]} days [--verbose] [--pending] --commit
+        ATTENTION! Delete Appointment Data based on time in days interval. USE WITH CAUTION!
+        --commit        no dry run, delete processes
+        --verbose       only shows what would be deleted
+        --pending       include pending processes (Abholer)
+
+        !!!!!!!!!!!!!!!!!!!!!!!
+        !! DATA LOSS WARNING !!
+        !!!!!!!!!!!!!!!!!!!!!!!
+EOS;
+
+$timeIntervalList = preg_grep('#^\d+$#', $argv);
+$timeInterval = array_shift($timeIntervalList);
+$verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
+$commit = preg_grep('#^--commit$#', $argv);
+$pending = preg_grep('#^--pending$#', $argv);
+if ($verbose) {
+    error_log("Using Path $dir");
+}
+if ($timeInterval !== null) {
+    if (class_exists('\App') && isset(\App::$now)) {
+        $now = \App::$now;
+    } else {
+        $now = new \DateTimeImmutable('now');
+    }
+    $job = new \BO\Zmsdb\Helper\AppointmentDeleteByCron($timeInterval, $now, $verbose);
+    $job->startProcessing($commit, $pending);
+} else {
+    error_log("Missing time interval argument!$usage");
+}
+if (!$commit) {
+    error_log("Use with --commit to delete entries.");
+}

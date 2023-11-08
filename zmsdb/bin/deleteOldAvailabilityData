@@ -1,0 +1,46 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+$usage = <<<EOS
+
+Usage: {$argv[0]} [days|date] [--verbose] --commit
+        ATTENTION! Delete Availability Data older than 4 weeks (by default). USE WITH CAUTION!
+        days            number of days in the past to keep availability data
+        date            delete all availabilities before and including this date
+        --commit        no dry run, delete processes
+        --verbose       only shows what would be deleted
+
+        !!!!!!!!!!!!!!!!!!!!!!!
+        !! DATA LOSS WARNING !!
+        !!!!!!!!!!!!!!!!!!!!!!!
+EOS;
+
+$verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
+$commit = preg_grep('#^--commit$#', $argv);
+$dayCount = preg_grep('#^\d+$#', $argv);
+$dayCount = array_shift($dayCount);
+$dates = preg_grep('#^\d\d\d\d-\d\d?-\d\d?#', $argv);
+if (!$dayCount) {
+    $dayCount = 28;
+}
+
+if ($commit || $verbose) {
+    if (class_exists('\App') && isset(\App::$now)) {
+        $now = \App::$now;
+    } else {
+        $now = new \DateTimeImmutable('now');
+    }
+    if ($dates) {
+        $datetime = new \DateTimeImmutable(array_shift($dates));
+    } else {
+        $datetime = $now->modify('- '.$dayCount.' days');
+    }
+    $job = new \BO\Zmsdb\Helper\AvailabilityDeleteByCron($verbose);
+    $job->startProcessing($datetime, $commit);
+    if (!$commit) {
+        error_log("INFO: Use --commit to delete availabilities");
+    }
+} else {
+    echo $usage;
+}

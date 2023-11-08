@@ -1,0 +1,14 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+$now = new \DateTimeImmutable();
+if (preg_grep('#^--commit$#', $argv)) {
+    $expiredQuota = new \BO\Zmsdb\Helper\ApiQuotaDeleteByCron($now, preg_grep('#^--?v(erbose)?$#', $argv));
+    $expiredQuota->startProcessing(preg_grep('#^--commit$#', $argv));
+} else {
+    echo "Usage: {$argv[0]} --commit\n\tATTENTION! Delete api quota data based on quota period. USE WITH CAUTION!\n\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n"
+        . "\t!! DATA LOSS WARNING !!\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n\n";
+}

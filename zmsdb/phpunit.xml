@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" 
+  backupGlobals="false" 
+  backupStaticAttributes="false" 
+  bootstrap="tests/Zmsdb/bootstrap.php" 
+  colors="true" 
+  convertErrorsToExceptions="true" 
+  convertNoticesToExceptions="true" 
+  convertWarningsToExceptions="true" 
+  forceCoversAnnotation="false" 
+  stopOnFailure="false" 
+  verbose="false"
+  processIsolation="false"
+>
+    <testsuites>
+        <testsuite name="Zmsdb Test Suite">
+            <directory>./tests/Zmsdb/</directory>
+        </testsuite>
+    </testsuites>
+
+    <coverage processUncoveredFiles="true">
+        <include>
+        <directory suffix=".php">./src</directory>
+        </include>
+        <exclude>
+            <directory>../vendor</directory>
+            <directory>../docker</directory>
+            <directory>../tests</directory>
+            <directory>../migrations</directory>
+            <directory>../public</directory>
+            <directory>../bin</directory>
+        </exclude>
+    </coverage>
+</phpunit>

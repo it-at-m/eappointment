@@ -1,0 +1,40 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+$commit = preg_grep('#^--commit$#', $argv);
+$verbose = preg_grep('#^--verbose$#', $argv);
+
+
+$query = new \BO\Zmsdb\Process();
+$mailAddressList = explode(',', (new \BO\Zmsdb\Config)->readProperty('notifications__blacklistedAddressList'));
+
+foreach ($mailAddressList as $mailAddress) {
+    $mailAddressList = trim($mailAddress);
+    if ($mailAddress) {
+        if ($verbose) {
+            echo "### DELETE mail address $mailAddress ###\n";
+        }
+        $results = [];
+        $maxRuns = $verbose ? 1 : 20;
+        do {
+            foreach ($results as $process) {
+                if ($verbose) {
+                    echo "  CHANGE $process\n";
+                }
+                if ($commit) {
+                    $process->getFirstClient()->email = '';
+                    $query->updateEntity($process, new \DateTimeImmutable());
+                }
+            }
+            $results = $query->readProcessListByMailAddress($mailAddress, 0, 500);
+        } while ($results->count() && $maxRuns--);
+    }
+}
+
+if (!$commit) {
+    echo "Usage: {$argv[0]} --verbose --commit\n\tATTENTION! Delete mail contact from existing process according to a black list. USE WITH CAUTION!\n\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n"
+        . "\t!! DATA LOSS WARNING !!\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n\n";
+}

@@ -1,0 +1,12 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+if (isset($argv[1]) && $argv[1] == '--commit') {
+    \BO\Zmsdb\Helper\ResetGhostWorkstationCountByCron::init();
+} else {
+    echo "Usage: {$argv[0]} resetGhostWorkstationCount --commit\n\tATTENTION! Reset all ghostworkstationCount to -1. USE WITH CAUTION!\n\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n"
+        . "\t!! DATA LOSS WARNING !!\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n\n";
+}

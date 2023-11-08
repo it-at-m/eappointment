@@ -1,0 +1,28 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+setlocale (LC_ALL, "de_DE.UTF-8");
+
+$usage = <<<EOS
+
+Usage: {$argv[0]} [--verbose] --commit
+        ATTENTION! Sends notification reminder based on process reminder timestamp. USE WITH CAUTION!
+        --commit        no dry run, delete processes
+        --verbose       only shows what would be deleted
+
+EOS;
+
+$verbose = preg_grep('#^--?v(erbose)?$#', $argv);
+$commit = preg_grep('#^--commit$#', $argv);
+
+$now = new \DateTimeImmutable();
+if (class_exists('\App') && isset(\App::$now)) {
+    $now = \App::$now;
+}
+
+$job = new \BO\Zmsdb\Helper\SendNotificationReminder($now, $verbose);
+$job->startProcessing($commit);
+
+if (!$commit) {
+    error_log("Use with --commit to send notifications.");
+}
