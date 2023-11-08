@@ -85,9 +85,9 @@ def cli_modules_reference_libraries(no_symlink: bool):
 @click.argument("commands", required=True, nargs=-1)
 def cli_modules_loop(commands):
   """loops though all repositories and executes a given command"""
-  for module_dir in module_dirs:
-    print_info(f"Repository: {module_dir}")
-    os.chdir(module_dir)
+  for module in modules:
+    print_info(f"Repository: {module}")
+    os.chdir(os.path.join(repo_dir, module))
     os.system(" ".join(commands))
 
 
@@ -98,8 +98,8 @@ def cli_clean():
 
 @cli_clean.command("cache")
 def cli_clean_cache():
-  for module_dir in module_dirs:
-    os.system(f"rm -rf {module_dir}/cache/*")
+  for module in modules:
+    os.system(f"rm -rf {module}/cache/*")
   print_info("Cache cleaned")
 
 
