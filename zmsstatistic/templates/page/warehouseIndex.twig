@@ -1,0 +1,21 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% block headline %}
+    {{ headline1(title) }}
+{% endblock %}
+
+{% block content %}
+<div class="counter-view" data-includeurl="{{ includeUrl() }}" data-selected-date="{{ selectedDate }}" data-selected-process="{{ waitingnumber }}" data-selected-time="{{ selectedTime }}">
+        <div class="report-index">
+            <p>{% trans %}Die Rohdaten sind in Kategorien aufgeteilt. Zu jeder Kategorie finden sich IDs wie zum Beispiel Standort-Namen. Darunter befinden sich unterschiedliche Zeitabschnitte. Die verfügbaren Auswertungen bedienen sich gleichfalls dieser Rohdaten. Aber nicht zu allen Rohdaten existieren Auswertungen.{% endtrans %}
+            </p>
+
+            <h2>{% trans %}Kategorien{% endtrans %}</h2>
+            <ul class="list--arrowlist">
+                {% for entry in warehouse.data %}
+                    <li><a href="{{ urlGet('WarehouseSubject', {'subject': entry.subject}, {}) }}">{{ entry.description|trans }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

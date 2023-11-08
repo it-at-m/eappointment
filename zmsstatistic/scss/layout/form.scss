@@ -1,0 +1,415 @@
+// Build global form CSS. (Based on Bootrstaps sass forms)
+
+$formItemBasePadding:   ($gridGutter / 7) ($gridGutter / 3) !default;
+$formErrorColor:        #a94442 !default;
+$legendBackgroundColor: #666666 !default;
+$formBorderColor:       $greyBorder !default;
+$elementMaxWidth:       40em !default;
+$multipleSelectHeight:  20em !default;
+
+form {
+    margin-bottom:      $gridGutter;
+}
+
+fieldset{
+    padding:        0;//$gridGutter;
+    border:         0 none;
+    margin:         0;
+    legend {
+        background-color:   $legendBackgroundColor;
+        border:             0 none;
+        box-sizing:         content-box;
+        color:              $white;
+        margin:             $gridGutter (-$gridGutter / 2) $gridGutter (-$gridGutter / 2);
+        padding:            ($gridGutter / 2) ($gridGutter / 2);
+        display:            block;
+        width:              100%;
+        font-weight:        bold;
+        font-size:          1em;
+    }
+}
+
+label,
+.label {
+    color:              #333333;
+    font-size:          $fontSizeLabels;
+    display:            block;
+    font-weight:        bold;
+    margin-bottom:      0.1em;
+    margin-left:        2px;
+    max-width:          100%;
+    vertical-align:     top;
+    min-height:         1.4em; // for empty label placeholders
+}
+
+// Common form input
+//
+// Shared size and type resets for form inputs. Apply `.form-input` to any
+// of the following form controls:
+//
+/*
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"],
+*/
+textarea,
+select,
+.form-input {
+    @extend
+        .form-input--default;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    margin:                 0px 0.3em 0;
+    margin-top:             1px \9; // IE8-9
+    line-height:            normal;
+    &:focus {
+        outline:            thin dotted;
+        outline-offset:     -2px;
+    }
+}
+
+
+.checkbox label,
+.checkbox-label,
+.radio label,
+.radio-label {
+    cursor: pointer;
+    font-weight: normal;
+    margin-bottom: 0;
+    min-height: 20px;
+}
+
+button[disabled],
+input[disabled],
+select[disabled],
+input[readonly],
+input[disabled="disabled"],
+input[readonly="readonly"],
+.form-control[disabled],
+.form-control[readonly],
+fieldset[disabled] .form-control {
+    cursor:                 not-allowed;
+    background-color:       #f8f8f8 !important;
+    opacity:                1;
+    color:                  #999 !important;
+    border:                 none !important;
+}
+
+select > option {
+    padding:                0.05em 0;
+}
+
+/**
+ * Our form classes
+ */
+
+// A form-group is a label and a group-control with input and description
+.form-group {
+    margin-bottom:          $gridGutter;
+    max-width:              $elementMaxWidth;
+    > .controls {
+        label,
+        .label {
+            font-weight:    normal;
+            display:        table;
+            > input {
+                margin-left:    0;
+            }
+        }
+        .append,
+        .prepend {
+            line-height:    1.8em;
+        }
+        .append + .prepend {
+            margin-left:    1em;
+        }
+    }
+    .group_control {
+    }
+}
+
+.add-date-picker {
+    position:               relative;
+    display:                inline-block;
+    &:before {
+        display:            inline;
+        left:               0.5em;
+        position:           absolute;
+        top:                0.2em;
+        width:              0;
+        content:            "\1f4c5";
+    }
+    input,
+    input[type="text"],
+    input[type="date"],
+    .form-input {
+        padding-left:       2em;
+        width:              10em;
+    }
+}
+
+// Align the buttons at the end of a form to the right side
+.form-actions {
+    @extend
+        .clearfix;
+    margin:                 $gridGutter 0;
+    max-width:              100%;
+    .right {
+        float:              right;
+    }
+    .left {
+        float:              left;
+    }
+    .center {
+        text-align:         center;
+    }
+}
+
+// Make the form description smaller
+.form-input-description {
+    font-size:              0.8em;
+}
+
+// Form elements with an error have a red border
+.has-error {
+    label,
+    .label {
+        color:              $formErrorColor;
+    }
+    div.inner,
+    .form-input,
+    textarea,
+    select {
+        border-color:       $formErrorColor;
+        &:focus {
+            border-color:   $formErrorColor;
+            box-shadow:     0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px $formErrorColor;
+            outline:        0 none;
+        }
+    },
+    ul li {
+    	color:              $formErrorColor;
+    }
+}
+
+.checkbox-inline,
+.radio-inline {
+    display:                    inline-block !important;
+    margin-bottom:              0;
+    position:                   relative;
+    vertical-align:             middle;
+    cursor:                     pointer;
+}
+
+.counter-inline {
+    display:                    inline-block;
+    float:                      left;
+}
+
+.form-input-description {
+    margin:             0;
+}
+
+
+.maxcharsleft {
+    width:                      100%;
+    text-align:                 right;
+    font-size:                  0.85em;
+}
+
+
+
+
+/*
+ * Modifications
+ */
+
+// The default input field layout
+.form-input--default {
+    @extend .input--size-12;
+    background-color:       #fff;
+    background-image:       none;
+    border:                 1px solid $formBorderColor;
+    border-radius:          4px;
+    box-shadow:             none;
+    box-sizing:             border-box;
+    color:                  $baseTextColor;
+    //width:                  100%;
+    font-size:              $inuit-base-font-size;
+    line-height:            $inuit-base-line-height;
+    padding:                $formItemBasePadding;
+    transition:             border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+    max-width:              100%;
+    //min-height:             34px;
+    &:focus {
+        border-color:       #66afe9;
+        box-shadow:         0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6);
+        outline:            0 none;
+    }
+}
+
+
+
+// Horizontal form with the label left aside the input (default form layout)
+@mixin form--horizontal($labelGrid: one-sixth, $controlGrid: five-sixths) {
+    .form-group {
+        @extend .grid;
+        margin-bottom:          $gridGutter;
+        max-width:              none;
+        > label,
+        > .label {
+            @extend
+                    .grid__item,
+                    .#{$labelGrid},
+                    .portable--one-whole;
+            display:            inline-block;
+            margin-left:        0px;
+        }
+        > .controls {
+            @extend
+                .grid__item,
+                .#{$controlGrid},
+                .portable--one-whole;
+            max-width:          $elementMaxWidth;
+            > * {
+                vertical-align: middle;
+            }
+            label,
+            .label {
+                @extend
+                    .palm--one-whole;
+                /*display: inline-block;*/
+                font-weight:    normal;
+                font-size:      1em;
+                margin-top:     0;
+            }
+            p {
+                margin-bottom:  0;
+            }
+        }
+        span, p {
+            letter-spacing:     normal;
+        }
+        // sometimes we want a block label inside an horizontal form
+        &.block {
+            label,
+            .label {
+                display:        block;
+                margin-left:    2px;
+                margin-top:     0px;
+            }
+            .controls {
+                margin-top:     0px;
+                width:          auto;
+            }
+        }
+    }
+    label,
+    .label {
+        min-height:         0;
+        /*margin-top:         0.3em;*/
+    }
+    .form-actions {
+        position:   relative;
+        @extend
+            .#{$controlGrid},
+            .push--desk--#{$labelGrid};
+    }
+}
+.form--horizontal {
+    @include form--horizontal();
+}
+
+.form-group--nomaxwidth .controls{
+    @extend .form-group;
+    max-width:  100%  !important;
+}
+
+// Input sizes, 12er grid base
+
+.input--size-12,
+.input--size-11,
+.input--size-10,
+.input--size-9,
+.input--size-8,
+.input--size-7,
+.input--size-6,
+.input--size-5,
+.input--size-4,
+.input--size-3,
+.input--size-2,
+.input--size-1 {
+    @extend .grid__item;
+    min-width: 4em;
+    padding:  $formItemBasePadding;
+}
+
+.input--size-12,
+.input--size-11,
+.input--size-10,
+.input--size-9,
+.input--size-8,
+.input--size-7,
+.input--size-6,
+.input--size-5 {
+    @extend .palm--one-whole;
+}
+
+.input--size-12 {
+    @extend .one-whole;
+}
+
+.input--size-11 {
+    @extend .eleven-twelfths;
+}
+.input--size-10 {
+    @extend .ten-twelfths;
+}
+.input--size-9 {
+    @extend .eight-twelfths;
+}
+.input--size-8 {
+    @extend .eight-twelfths;
+}
+.input--size-7 {
+    @extend .seven-twelfths;
+}
+.input--size-6 {
+    @extend .six-twelfths;
+}
+.input--size-5 {
+    @extend  .five-twelfths;
+}
+.input--size-4 {
+    @extend
+        .four-twelfths,
+        .palm--six-twelfths;
+}
+.input--size-3 {
+    @extend
+        .three-twelfths,
+        .palm--five-twelfths;
+}
+.input--size-2 {
+    @extend
+        .two-twelfths,
+        .palm--four-twelfths;
+}
+.input--size-1 {
+    @extend
+        .one-twelfth,
+        .palm--two-twelfths;
+}

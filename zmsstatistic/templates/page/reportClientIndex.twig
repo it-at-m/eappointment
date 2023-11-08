@@ -1,0 +1,128 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% use "block/report/advancedInfo.twig" %}
+
+{% block headline %}
+    {{ headline1("Kundenstatistik") }}
+{% endblock %}
+
+{% block content %}
+    <div class="counter-view" data-includeurl="{{ includeUrl() }}">
+        <div class="report-index">
+            {% embed "block/report/period.twig" with {"source":source, "items": clientperiod, "selected": period} %}
+            {% block breadcrumb %}
+            <nav class="breadcrumb">
+                <ol>
+                    {% set arguments = {} %}
+                    {% if period %}
+                        {% set arguments = {"period": period} %}
+                    {% endif %}
+                    <li>{{ title|trans }}</li>
+                    {% if organisation %}
+                        <li><a class="{{ activeOrganisation }}" href="{{ urlGet("ReportClientOrganisation", arguments, {}) }}">{{ organisation.name }}</a></li>
+                    {% endif %}
+                    {% if department %}
+                        <li><a class="{{ activeDepartment }}" href="{{ urlGet("ReportClientDepartment", arguments, {}) }}">{{ department.name }}</a></li>
+                    {% endif %}
+                    <li><a class="{{ activeScope }}" href="{{ urlGet("ReportClientIndex", arguments, {}) }}">{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</a></li>
+                </ol>
+            </nav>
+            {% endblock %}
+            {% endembed %}
+
+            {% embed "block/report/board.twig" with {'class': 'board--spaceless', 'source':source, "selected": period} %}
+                {% block board_body %}
+                {% if selected %}
+                    <table class="table--base">
+                        <thead>
+                            <tr>
+                                <th colspan="2">{% trans %}Organisation{% endtrans %}</th>
+                                <th colspan="2">{% trans %}Behörde{% endtrans %}</th>
+                                <th colspan="2">{% trans %}Standort{% endtrans %}</th>
+                                <th>{% trans %}SMS{% endtrans %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if exchangeNotification.data %}
+                                {% for item in exchangeNotification.data %}
+                                    <tr>
+                                        <td colspan="2">{{ item.organisationname }}</td>
+                                        <td colspan="2">{{ item.departmentname }}</td>
+                                        {% if source.entity == "ClientOrganisation" %}
+                                            <td colspan="2">Alle</td>
+                                        {% else %}
+                                            <td colspan="2">{{ item.scopename }}</td>
+                                        {% endif %}
+                                        <td>{{ item.notificationscount }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr>
+                            <!--td colspan="6">{#% trans %}Es wurden keine Daten gefunden{% endtrans %#}</td -->
+                                <td colspan="2">{{ organisation.name }}</td>
+                                <td colspan="2">{{ department.name }}</td>
+                                <td colspan="2">{{ workstation.scope.contact.name }}</td>
+                                <td colspan="2">0</td>
+                            </tr>
+                            {% endif %}
+                            <tr class="report-board--empty"><td colspan="7"></td></tr>
+                        </tbody>
+                        <thead>
+                            <th colspan="2">{% trans %}Datum{% endtrans %}</th>
+                            <th>{% trans %}SMS{% endtrans %}</th>
+                            <th>{% trans %}SMS-Kosten{% endtrans %} *</th>
+                            <th>{% trans %}Kunden{% endtrans %} **</th>
+                            <th>{% trans %}davon mit Termin{% endtrans %} **</th>
+                            <th>{% trans %}Dienstleistungen{% endtrans %}</th>
+                        </thead>
+                        <tbody>
+                            {% if exchangeClient.data %}
+                                <tr>
+                                    {% set totaldate = period|format_date(pattern="MMMM y") %}
+                                    {% if exchangeClient.period == "month" %}
+                                    {% set totaldate = "Kalenderjahr " ~ period %}
+                                    {% endif %}
+                                    <td class="report-board--summary" colspan="2">{{ totaldate }}</td>
+                                    <td class="report-board--summary">{{ exchangeClient.data|last.notificationscount }}</td>
+                                    <td class="report-board--summary">{{ exchangeClient.data|last.notificationscost|number_format(2, ',', '.') }} EUR</td>
+                                    <td class="colKunden report-board--summary">{{ exchangeClient.data|last.clientscount }} ({{ exchangeClient.data|last.missed }})</td>
+                                    <td class="colMitTermin report-board--summary">{{ exchangeClient.data|last.withappointment }} ({{ exchangeClient.data|last.missedwithappointment }})</td>
+                                    <td class="colDienstleistungen report-board--summary">{{ exchangeClient.data|last.requestscount }}</td>
+                                </tr>
+                                {% for item in exchangeClient.data  %}
+                                    {% if not loop.last %}
+                                        {% set dateCol1 = item.date|format_date(pattern="ccc") %}
+                                        {% set dateCol2 = item.date|date("d.m.Y") %}
+                                        {% if exchangeClient.period == "month" %}
+                                            {% set dateCol1 = item.date|format_date(pattern="MMMM") %}
+                                            {% set dateCol2 = item.date|date("Y") %}
+                                        {% endif %}
+                                        <tr>
+                                            <td class="colWochenTag statistik">{{ dateCol1 }}</td>
+                                            <td class="colDatumTag statistik">{{ dateCol2 }}</td>
+                                            <td class="statistik">{{ item.notificationscount|default(0) }}</td>
+                                            <td class="statistik">{{ item.notificationscost|number_format(2, ',', '.') }} EUR</td>
+                                            <td class="colKunden statistik">{{ item.clientscount }} ({{ item.missed }})</td>
+                                            <td class="colMitTermin statistik">{{ item.withappointment }} ({{ item.missedwithappointment }})</td>
+                                            <td class="colDienstleistungen statistik">{{ item.requestscount }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="7">{% trans %}Es wurden keine Daten gefunden{% endtrans %}</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    {{ block("board_body_noperiod") }}
+                {% endif %}
+                {% endblock %}
+            {% endembed %}
+            {% if period %}
+            {{ block('advanceInfoClient') }}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

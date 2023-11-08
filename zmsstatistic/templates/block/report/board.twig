@@ -1,0 +1,34 @@
+{% extends "block/scaffholding/board.twig" %}
+
+{% block board_title %}
+    {% set tableName = workstation.scope.contact.name %}
+    {% set tablePeriod = period|format_date(pattern="MMMM y") %}
+    {% if 4 == period|length %}
+        {% set periodName = "Kalenderjahr " %}
+        {% set tablePeriod = periodName|trans ~ period %}
+    {% endif %}
+
+    {% if activeDepartment %}
+        {% set tableName = department.name %}
+    {% elseif activeOrganisation %}
+        {% set tableName = organisation.name %}
+    {% endif %}
+
+    {% if selected %}
+        {% trans %}Auswertung für{% endtrans %} {{ tableName }} {% trans %}im Zeitraum{% endtrans %} {{ tablePeriod }}
+    {% endif %}
+{% endblock %}
+
+{% block board_header_right %}
+    {% if selected or download %}
+        <a href="{{ urlGet(currentRoute().name, currentRoute().params, {'type':'xlsx'}) }}" target="_blank" title="Download" class="button button--diamond"><i class="fas fa-download" aria-hidden="true"></i></a>
+    {% endif %}
+{% endblock %}
+
+{% block board_body_noperiod %}
+    <table class="report-board--table report-board--text">
+        <tbody>
+            <tr><td>{% trans %}Bitte wählen Sie einen Zeitraum aus.{% endtrans %}</td></tr>
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,42 @@
+{
+  "name": "zmsstatistic",
+  "version": "1.0.0",
+  "description": "zms statistic frontend ",
+  "main": "index.js",
+  "private": true,
+  "author": "BerlinOnline GmbH & Co. KG",
+  "license": "SEE LICENSE IN LICENSE",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint js/",
+    "fix": "eslint --fix js/",
+    "css": "parcel build scss/statistic.scss --log-level verbose --detailed-report --target css",
+    "js": "parcel build js/index.js --log-level verbose --detailed-report --target js",
+    "csswatch": "parcel watch scss/statistic.scss --log-level verbose  --target css",
+    "jswatch": "parcel watch js/index.js --log-level verbose --no-hmr --target js",
+    "watch": "npm run jswatch & npm run csswatch &"
+  },
+  "targets": {
+    "js": {
+      "publicUrl": "./",
+      "distDir": "public/_js/"
+    },
+    "css": {
+      "publicUrl": "./",
+      "distDir": "public/_css/"
+    }
+  },
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.7.0",
+    "chart.js": "^2.7.2",
+    "eslint": "^6.8.0",
+    "eslint-plugin-import": "^2.20.1",
+    "jquery": "^3.4.1",
+    "parcel": "^2.7.0"
+  },
+  "dependencies": {
+    "bo-layout-admin-scss": "https://gitlab.com/eappointment/includes/layout-admin-scss.git#2.24.14",
+    "bo-layout-admin-js": "https://gitlab.com/eappointment/includes/layout-admin-js.git#2.24.14",
+    "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities.git#2.24.14"
+  }
+}

@@ -1,0 +1,62 @@
+
+{% block breadcrumb %}
+<nav class="breadcrumb">
+    <ol>
+        <li>Auswertung</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% set years = [getNow()|date('Y')] %}
+{% for key, entry in items.data %}
+    {% if entry|first|length == 4 and entry|first not in years %}
+        {% set years = years|merge([entry|first]) %}
+    {% endif %}
+{% endfor %}
+{% set last3Year = years|slice(0,3) %}
+<table class="table--base">
+    <tbody>
+    {% for year in years %}
+        {% set display = 'hide' %}
+        {% if year in last3Year %}{% set display = 'show' %}{% endif %}
+        <tr class="{{ display }}">
+            <td>
+                {% set yearExists = 0 %}
+                {% for entry in items.data|filter(entry => yearExists == 0) %}
+                    {% if entry|first|length > 4 and entry|first|date('Y') == year %}
+                        {% set yearExists = 1 %}
+                    {% endif %}
+                {% endfor %}
+                <strong>
+                {% if yearExists %}
+                    <a href="{{ urlGet("Report%s"|format(source.entity), {'period': year}, {}) }}">{{ year }}</a>
+                {% else %}
+                    {{ year }}
+                {% endif %}
+                </strong>
+            </td>
+            {% for month in 1..12 %}
+                {% set monthExists = 0 %}
+                {% set tmpmonth = year ~"-"~ "%02d"|format(month) %}
+                {% for entry in items.data|filter(entry => monthExists == 0) %}
+                    {% if entry|first|length > 4 and entry|first|date('Y-m') == tmpmonth %}
+                        {% set monthExists = 1 %}
+                    {% endif %}
+                {% endfor %}
+                <td>
+                    {% if monthExists %}
+                        <a href="{{ urlGet("Report%s"|format(source.entity), {'period': tmpmonth}, {}) }}">{{ tmpmonth|format_date(pattern="MMMM") }}</a>
+                    {% else %}
+                        {{ tmpmonth|format_date(pattern="MMMM") }}
+                    {% endif %}
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% if showAll and years|length > 3 %}
+<div class="table-actions report-period--show-all" id="report-period--show-all">
+    <a href="#">Alle Jahre anzeigen</a>
+</div>
+{% endif %}

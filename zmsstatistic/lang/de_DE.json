@@ -1,0 +1,14 @@
+{
+  "header": {
+    "scope": "Standort",
+    "logout": "Abmelden"
+  },
+  "languageswitch": {
+    "title": "Sprache",
+    "choose": "Sprache wählen",
+    "languages": {
+      "de": "Deutsch",
+      "en": "English"
+    }
+  }
+}

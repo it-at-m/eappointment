@@ -1,0 +1,83 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block headline %}
+    {{ headline1("Übersicht verfügbarer Statistiken") }}
+{% endblock %}
+
+{% block content %}
+<div class="counter-view" data-includeurl="{{ includeUrl() }}">
+        <div class="table-responsive-wrapper report-index">
+           
+            <p>{% trans %}Im folgenden werden Links zu den Auswertungen zusammengefasst{% endtrans %}:</p>
+            <h2>{% trans %}Auswertungen{% endtrans %}</h2>
+
+            <h3>{% trans %}Kundenstatistik{% endtrans %}</h3>
+            {% embed "block/report/period.twig" with {"source":{"entity":"ClientIndex"}, "items": clientperiod} %}
+                {% block breadcrumb %}
+                <nav class="breadcrumb">
+                    <ol>
+                    {% if organisation %}
+                        <li><a href="{{ urlGet("ReportClientOrganisation", {}, {}) }}">{{organisation.name}}</a></li>
+                    {% endif %}
+                    {% if department %}
+                        <li><a href="{{ urlGet("ReportClientDepartment", {}, {}) }}">{{department.name}}</a></li>
+                    {% endif %}
+                        <li>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</li>
+                    </ol>
+                </nav>
+                {% endblock %}
+            {% endembed %}
+            <div class="table-actions">
+                <a href="{{ urlGet('ReportClientIndex', {}, {}) }}">Übersicht Kundenstatistik</a>
+            </div>
+
+            <h3>{% trans %}Dienstleistungsstatistik{% endtrans %}</h3>
+            {% embed "block/report/period.twig" with {"source":{"entity":"RequestIndex"}, "items": requestperiod} %}
+                {% block breadcrumb %}
+                <nav class="breadcrumb">
+                    <ol>
+                    {% if organisation %}
+                        <li><a href="{{ urlGet("ReportRequestOrganisation", {}, {}) }}">{{organisation.name}}</a></li>
+                    {% endif %}
+                    {% if department %}
+                        <li><a href="{{ urlGet("ReportRequestDepartment", {}, {}) }}">{{department.name}}</a></li>
+                    {% endif %}
+                        <li>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</li>
+                    </ol>
+                </nav>
+                {% endblock %}
+            {% endembed %}
+            <div class="table-actions">
+                <a href="{{ urlGet('ReportRequestIndex', {}, {}) }}">Übersicht Dienstleistungsstatistik</a>
+            </div>
+
+            <h3>{% trans %}Wartestatistik{% endtrans %}</h3>
+            {% embed "block/report/period.twig" with {"source":{"entity":"WaitingIndex"}, "items": waitingperiod} %}
+                {% block breadcrumb %}
+                <nav class="breadcrumb">
+                    <ol>
+                    {% if organisation %}
+                        <li><a href="{{ urlGet("ReportWaitingOrganisation", {}, {}) }}">{{organisation.name}}</a></li>
+                    {% endif %}
+                    {% if department %}
+                        <li><a href="{{ urlGet("ReportWaitingDepartment", {}, {}) }}">{{department.name}}</a></li>
+                    {% endif %}
+                        <li>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</li>
+                    </ol>
+                </nav>
+                {% endblock %}
+            {% endembed %}
+            <div class="table-actions">
+                <a href="{{ urlGet('ReportWaitingIndex', {}, {}) }}">Übersicht Wartestatistik</a>
+            </div>
+
+            <h2>Rohdaten</h2>
+            <p>Hier sind weitere Daten als Download verfügbar. Diese Daten müssen selbst aufbereitet werden, möchte man diese auswerten.</p>
+            <div class="table-actions">
+                <a href="{{ urlGet('WarehouseIndex', {}, {}) }}">Übersicht Kategorien</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

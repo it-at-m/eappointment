@@ -1,0 +1,65 @@
+@import "settings";
+@import "layout/font";
+
+html {
+  font-family: $base-font-family;
+}
+
+
+#main-header,
+#main-footer,
+#main-body #sidebar,
+#main ~ * {
+  display: none;
+}
+
+@page {
+  margin: 2cm;
+}
+
+#main-body {
+  color: #000;
+  text-align: center;
+
+  * {
+    background-color: transparent;
+    border: none;
+    color: inherit;
+  }
+
+  .header {
+    text-align: center;
+  }
+
+  table {
+    border-collapse: collapse;
+    page-break-inside:auto;
+
+    thead {
+      th {
+        padding: 0.5em;
+        padding-bottom: 1em;
+        text-align: left;
+      }
+    }
+
+    td {
+      padding: 0.5em;
+      border: 1px solid #000;
+    }
+
+    tr {
+      page-break-inside:avoid;
+      page-break-after:auto;
+    }
+  }
+
+  .msg_ihre_nummernanzeige{
+      font-size: 38pt !important;
+      font-weight: bold;
+      color:#993300;
+      text-align: center;
+      margin:10px;
+  }
+
+}

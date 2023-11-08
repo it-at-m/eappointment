@@ -1,0 +1,74 @@
+#main-header {
+    @extend 
+        .grid--full,
+        .grid;
+    color:                  $white;
+    a {
+        color:              $white;
+    }
+    background-color:       $pageheaderBackgroundColor;
+    padding:                0.75em 1em;
+    margin:                 0 0 $gridGutter 0;
+    .left {
+        @extend 
+            .grid__item, 
+            .two-twelfths, 
+            .palm--one-whole;
+        vertical-align:     middle;
+        img {
+            display:        block;
+            max-width:      10em;
+        }
+    }
+    .middle {
+        @extend 
+            .grid__item, 
+            .six-twelfths, 
+            .palm--one-whole;
+        font-size:          1.3em;
+        font-weight:        normal;
+        line-height:        1.2em;
+        vertical-align:     middle;
+        margin-left:		-1em;
+        
+        .header-scope {
+        	div {
+        		float:left;
+        		margin-right:20px;
+        		white-space:nowrap;
+        		vertical-align:middle;
+        	};
+        	.icon {
+        		font-size:1em;
+        		margin-left:20px;
+        	}
+        }
+    }
+    .right {
+        @extend 
+            .grid__item, 
+            .four-twelfths, 
+            .align-right,
+            .palm--one-whole;
+        vertical-align:     middle;
+    }
+    form {
+        @extend 
+            .form--horizontal;
+        margin:                     0;
+        .form-group {
+            margin:                 0;
+            &.switchcluster {
+                max-width:          20em;
+                margin:             0;
+                label {
+                    color:          $white;
+                    padding:        0;
+                }
+            }
+        }
+    }     
+}
+
+
+

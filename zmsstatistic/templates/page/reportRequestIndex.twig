@@ -1,0 +1,105 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% use "block/report/advancedInfo.twig" %}
+
+{% block headline %}
+    {{ headline1("Dienstleistungsstatistik") }}
+{% endblock %}
+
+{% block content %}
+<div class="counter-view" data-includeurl="{{ includeUrl() }}">
+    <div class="report-index">
+        {% embed "block/report/period.twig" with {"source":source, "items": requestPeriod, "selected": period} %}
+            {% block breadcrumb %}
+            <nav class="breadcrumb">
+                <ol>
+                {% set arguments = {} %}
+                {% if period %}
+                    {% set arguments = {"period": period} %}
+                {% endif %}
+                <li class="report-period--subject">{{ title|trans }}</li>
+                {% if organisation %}
+                    <li><a class="{{ activeOrganisation }}" href="{{ urlGet("ReportRequestOrganisation", arguments, {}) }}">{{ organisation.name }}</a></li>
+                {% endif %}
+                {% if department %}
+                    <li><a class="{{ activeDepartment }}" href="{{ urlGet("ReportRequestDepartment", arguments, {}) }}">{{ department.name }}</a></li>
+                {% endif %}
+                <li><a class="{{ activeScope }}" href="{{ urlGet("ReportRequestIndex", arguments, {}) }}">{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</a></li>
+                </ol>
+            </nav>
+            {% endblock %}
+        {% endembed %}
+
+        {% embed "block/report/board.twig" with {'source':source, 'class': 'board--spaceless', "selected": period} %}
+        {% block board_body %}
+        {% if selected %}
+            {% if exchangeRequest.period == "day" %}
+                {% set startDate = "%s-%s-%s"|format(exchangeRequest.firstDay.year, exchangeRequest.firstDay.month, exchangeRequest.firstDay.day) %}
+                {% set endDate = "%s-%s-%s"|format(exchangeRequest.lastDay.year, exchangeRequest.lastDay.month, exchangeRequest.lastDay.day) %}
+                {% set month = exchangeRequest.firstDay.month %} 
+                {% set year = exchangeRequest.firstDay.year %}
+                {% set dateRange = range(startDate|date('j'), endDate|date('j'), 1 ) %}
+            {% elseif exchangeRequest.period == "month" %}
+                {% set startDate = "%s-%s"|format(exchangeRequest.firstDay.year, exchangeRequest.firstDay.month) %}
+                {% set endDate = "%s-%s"|format(exchangeRequest.lastDay.year, exchangeRequest.lastDay.month) %}
+                {% set dateRange = range(startDate|date('n'), endDate|date('n'), 1 ) %}
+            {% endif %}
+            <table class="table--base">
+                <thead>
+                    <tr>
+                        <th class="statistik">
+                            <span class="keinumbruch">
+                                {% trans %}Dienstleistung{% endtrans %}
+                            </span>
+                        </th>
+                    {% if exchangeRequest.period == "day" %}
+                        <th class="statistik">Ø Bearbeitungsdauer</th>
+                        <th class="statistik">{{ startDate|format_date(pattern="LLL") }}</th>
+                    {% elseif exchangeRequest.period == "month" %}
+                        <th class="statistik">{{ startDate|date('Y') }}</th>
+                    {% endif %}
+                    {% for date in dateRange %}
+                        {% if exchangeRequest.period == "day" %}
+                            <th class="statistik">&nbsp;{{ "%'02s"|format(date) }}</th>
+                        {% elseif exchangeRequest.period == "month" %}
+                            <th class="statistik">&nbsp;{{ (startDate|date('Y') ~"-"~ "%02d"|format(date))|format_date(pattern="LLL") }}</th>
+                        {% endif %}
+                    {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for name, entry in exchangeRequest.data|filter(name => name != "sum") %}
+                    {% if name != "average_processingtime" %}
+                    <tr>
+                        <th class="report-board--long-text">{{ name|trans }}</th>
+                        {% if exchangeRequest.period == "day" %}
+                            <td class="report-board--summary">
+                                {{ exchangeRequest.data.average_processingtime[name] }}
+                            </td>
+                        {% endif %}
+                        <td class="report-board--summary">
+                            {{ exchangeRequest.data.sum[name] }}
+                        </td>
+                        {% for date in dateRange %}
+                            {% if exchangeRequest.period == "day" %}
+                                {% set date = "#{year}-#{month}-#{date}"|date("Y-m-d") %}
+                            {% elseif exchangeRequest.period == "month" %}
+                                {% set date = startDate|date('Y') ~"-"~ "%02d"|format(date) %}
+                            {% endif %}
+                            <td>
+                                <span class="{% if not entry[date].requestscount %}ausgegraut{% endif %}">{{ entry[date].requestscount|default("-") }}</span><br>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            {{ block("board_body_noperiod") }}
+        {% endif %}
+        {% endblock %}
+        {% endembed %}
+        </div>
+    </div>
+{% endblock %}

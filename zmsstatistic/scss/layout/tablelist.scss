@@ -1,0 +1,93 @@
+/**
+ * Zweispaltiges Layout (Tabellenliste) ... to be @extend´ed! :)
+ */
+
+
+$tableHeadBgColor:  #cccccc;
+$borderColor:       $inuit-table-border-color;
+
+.list-tablelist {
+    margin-bottom:                  1em;
+    margin-left:                    0;
+    padding:                        0;
+}
+
+.list-tablelist_row {
+    @extend 
+        .grid--full,
+        .grid;  
+    display:                    block;
+    border-bottom:              1px solid $borderColor;
+    margin:                     0;
+    &:first-child {
+        padding-top:            0;
+        margin-top:             0;
+        border-top:             0 none;
+        
+    }
+    &:last-child {
+        margin-bottom:          0;
+        padding-bottom:         0;
+        border-bottom:          0 none;
+    }
+}
+
+.list-tablelist_cell {
+    @extend 
+        .grid__item, 
+        .one-half, 
+        .palm--one-whole;
+    padding:                0.5em 1em;
+}
+
+.list-tablelist_head {
+    font-weight:            bold;
+}
+
+
+
+/* variations */
+
+.list-tablelist--oddeven {
+    > li {
+        border:                     0 none;
+        > * {
+            padding:                0.5em 1em !important;
+        }
+        &:nth-child(2n+1) {
+            background-color:       $zebraWhite;
+            margin-bottom:          0;
+        }
+        &:nth-child(2n) {
+            margin-bottom:          0;
+            background-color:       $zebraGray;
+        }
+        &.odd {
+             background-color:      $zebraWhite;
+        }
+        &.even {
+            background-color:       $zebraGray;
+        }
+    }
+}
+
+.list-tablelist--bordered {
+    border:                     1px solid $borderColor;
+    > li {
+        border-bottom:              1px solid $borderColor;
+        &:nth-child(2n+1) {
+            margin-bottom:      0;
+        }
+        &:nth-child(2n) {
+            margin-bottom:      0;
+        }
+        > * {
+            border-right:       1px solid $borderColor;
+            padding:            0.5em 1em !important;
+            &:last-child {
+                border-left:    1px solid $borderColor;
+                border-right:   0 none;
+            }
+        }
+    }
+}

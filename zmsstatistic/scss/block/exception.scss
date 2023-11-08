@@ -1,0 +1,21 @@
+.exception {
+    @extend
+        .board_body--maxHeight,
+        .board;
+    .header {
+        background-color: $red;
+    }
+    .body {
+
+    }
+    .button-cancel {
+        @extend
+            .btn,
+            .btn--alert,
+            .btn--shadow;
+    }
+
+    h2.exception-headline {
+        margin-top:10px !important;
+    }
+}

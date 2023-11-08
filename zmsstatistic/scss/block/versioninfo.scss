@@ -1,0 +1,16 @@
+.versioninfo {
+    @extend 
+        .board;
+}
+
+.versioninfo div.short-list div.changelog-item {
+	display:none;
+}
+
+.versioninfo div.short-list .last-changelog-items div.changelog-item {
+	display:block;
+}
+
+.versioninfo div.changelog-item {
+	margin:0px 0px 10px;
+}

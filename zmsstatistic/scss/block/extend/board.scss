@@ -1,0 +1,187 @@
+/**
+ * The basic board layout has a blue header and a grey body
+ * This is a superglobal class and its used by nearly all block(board) elements.
+ * Be careful when edit!
+ */
+
+$boardElementPadding:                   $baseBoxElementPadding !default;
+$boardFooterBackground:                 #F8F8F8 !default;
+$contentTopLineupBoardBodyMinHeight:    33.7em; // (calendar,appointment,clientinfo,queueinfo,...)
+$contentTopLineupBoardBodyMaxHeight:    33.7em; // (calendar,appointment,clientinfo,queueinfo,...)
+$boardHeaderBlue:                       $blue;
+
+/* ... to be @extend´ed! use the board css to extend the layout of the blocks */
+.board {
+    margin:                     0 0 $gridGutter 0;
+    padding:                    0;
+    > .header {
+        @extend
+            .board_header;
+        .aside {
+            display:            inline-block;
+        }
+    }
+    > .body {
+        @extend
+            .board_body,
+            .board_body--addPadding !optional;
+        &.no-padding {
+            @extend
+                .board_body--noPadding;
+        }
+    }
+    > .footer {
+        @extend .board_footer;
+        span {
+            white-space:    nowrap;
+        }
+    }
+}
+
+
+
+/* set the board layout */
+
+.board_header {
+    @extend
+        .clearfix;
+    padding:                $boardElementPadding;
+    background-color:       $boardHeaderBlue;
+    position:               relative;
+    color:                  $white;
+    margin-bottom:         0;
+    > * {
+        vertical-align:     middle;
+    }
+    a,
+    label {
+        color:              $white;
+    }
+    a,
+    button {
+        margin-top:         0;
+        margin-bottom:      0;
+    }
+    .form-group {
+        margin:             0 2em;
+    }
+    .btn {
+        color:              $baseTextColor;
+        line-height:        1em;
+        padding:            0.45em;
+    }
+    .title {
+        @extend
+            .board_header__title;
+        display:            inline-block;
+    }
+    .header_right {
+        float:              right;
+        > *,
+        form > * {
+            display:        inline-block;
+            margin-bottom:  0;
+            vertical-align: middle;
+        }
+        .btn {
+            margin-right:   0;
+            margin-left:    0.5em;
+        }
+    }
+}
+
+.board_body {
+    background-color:       $grey;
+    border:                 1px solid $greyBorder;
+    border-width:           0 1px 1px 1px;
+    position:               relative;
+    padding:                $boardElementPadding;
+    > *:last-child {
+        margin-bottom:      0;
+    }
+    > *:first-child {
+        margin-top:         0;
+        > *:first-child {
+            margin-top:     0;
+        }
+    }
+}
+
+.board_footer {
+    font-size:              0.9em;
+    border:                 1px solid $greyDark;
+    border-width:           0px 1px 1px 1px;
+    padding:                $boardElementPadding;
+    background-color:       $grey;
+    position:               relative;
+    background-color:       $boardFooterBackground;
+    text-align:             center;
+    > *:last-child {
+        margin-bottom:      0;
+    }
+    > *:first-child {
+        margin-top:         0;
+    }
+}
+.board_header__title {
+    font-size:              1em;
+    line-height:            1.25em;
+    margin:                 0;
+    padding:                0;
+    display:                inline-block;
+    margin-right:           0.5em;
+}
+
+
+
+/* variations */
+
+.board--noBodyPadding {
+    > .body {
+        padding:            0;
+    }
+}
+
+.board_body--noPadding {
+    padding:                0;
+}
+
+.board_body--noBorder {
+    border:                 0 none;
+}
+
+.board_body--white {
+    background-color:       $white;
+}
+
+.board_body--minHeight {
+    > .body {
+        min-height:         $contentTopLineupBoardBodyMinHeight;
+    }
+}
+
+.board_body--maxHeight {
+    > .body {
+        max-height:         $contentTopLineupBoardBodyMaxHeight;
+        overflow:           auto;
+    }
+}
+
+.board--red {
+    > .header {
+        @extend .board_header--red;
+    }
+    > .body {
+        @extend .board_body--red;
+    }
+}
+
+.board_header--red {
+    background-color:       $red;
+}
+
+.board_body--red {
+    background-color:       lighten($red,30%);
+    border-color:           lighten($red,20%);
+    border-width:           0 0 1px 0;
+}

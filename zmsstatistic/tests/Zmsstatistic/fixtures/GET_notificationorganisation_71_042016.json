@@ -1,0 +1,91 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2018-03-12T15:58:27+01:00",
+    "server": "Zmsapi-ENV (v2.15.03)"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/exchange.json",
+    "firstDay": {
+      "year": "2016",
+      "month": "04",
+      "day": "01",
+      "status": "notBookable",
+      "freeAppointments": {
+        "public": 0,
+        "intern": 0,
+        "callcenter": 0,
+        "type": "free"
+      }
+    },
+    "lastDay": {
+      "year": "2016",
+      "month": "04",
+      "day": "30",
+      "status": "notBookable",
+      "freeAppointments": {
+        "public": 0,
+        "intern": 0,
+        "callcenter": 0,
+        "type": "free"
+      }
+    },
+    "period": "month",
+    "dictionary": [
+      {
+        "position": 0,
+        "variable": "subjectid",
+        "type": "string",
+        "description": "ID of a organisation",
+        "reference": "organisation.id"
+      },
+      {
+        "position": 1,
+        "variable": "date",
+        "type": "string",
+        "description": "Date of entry",
+        "reference": ""
+      },
+      {
+        "position": 2,
+        "variable": "organisationname",
+        "type": "string",
+        "description": "name of the organisation",
+        "reference": ""
+      },
+      {
+        "position": 3,
+        "variable": "departmentname",
+        "type": "string",
+        "description": "name of the department",
+        "reference": ""
+      },
+      {
+        "position": 4,
+        "variable": "scopename",
+        "type": "string",
+        "description": "name of the scope",
+        "reference": ""
+      },
+      {
+        "position": 5,
+        "variable": "notificationscount",
+        "type": "number",
+        "description": "Amount of notifications ",
+        "reference": ""
+      }
+    ],
+    "data": [
+      [
+        "71",
+        "2016-04",
+        "Charlottenburg-Wilmersdorf",
+        "Bürgeramt",
+        "Bürgeramt Heerstraße ",
+        "135"
+      ]
+    ]
+  }
+}

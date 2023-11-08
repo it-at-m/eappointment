@@ -1,0 +1,13 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% block title %}404{% endblock %}
+
+{% block headline %}
+    {{ headline1("404") }}
+{% endblock %}
+
+{% block content %}
+<p>
+Die von Ihnen aufgerufene Seite wurde nicht gefunden
+</p>
+{% endblock %}

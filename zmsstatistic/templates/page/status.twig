@@ -1,0 +1,47 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block headline %}
+    {{ headline1(title) }}
+{% endblock %}
+
+{% block content %}
+    <p>
+        Im folgenden findet sich ein Status der Terminvereinbarung, dem Sie entnehmen können, ob die Anwendung einwandfrei funktioniert.
+    </p>
+    <table class="table--base">
+        <tr class="status-process-confirmed">
+            <th>Anzahl der gebuchten Termine</th>
+            <td>{{ status.processes.confirmed }}</td>
+        </tr>
+        <tr class="status-process-reserved">
+            <th>Anzahl der reservierten Termine</th>
+            <td>{{ status.processes.reserved }}</td>
+        </tr>
+        <tr class="status-process-deleted">
+            <th>Anzahl der abgesagten Termine<br/><small>(Werden in wenigen Minuten freigegeben)</small></th>
+            <td>{{ status.processes.deleted }}</td>
+        </tr>
+        <tr class="status-process-missed">
+            <th>Anzahl der nicht wahrgenommenen Termine heute</th>
+            <td>{{ status.processes.missed }}</td>
+        </tr>
+        <tr class="status-database-nodeconnections">
+            <th>Auslastung der Datenbankverbindungen</th>
+            <td class="alert alert-{% if status.database.nodeConnections < 51 %}success{% else %}error{% endif %}">{{ status.database.nodeConnections }}%</td>
+        </tr>
+        <tr class="status-database-clusterstatus">
+            <th>Status des Datenbank-Clusters</th>
+            <td class="alert alert-{% if status.database.clusterStatus != 'OFF' %}success{% else %}error{% endif %}">{{ status.database.clusterStatus }}</td>
+        </tr>
+        <tr class="status-database-clusterstatus">
+            <th>Sekundengenaues Backup</th>
+            <td class="alert alert-{% if status.database.logbin == 'ON' %}success{% else %}error{% endif %}">{{ status.database.logbin }}</td>
+        </tr>
+        <tr class="status-api-version">
+            <th>API Version</th>
+            <td>{{ status.version.major }}.{{ status.version.minor }}.{{ status.version.patch }}</td>
+        </tr>
+    </table>
+{% endblock %}

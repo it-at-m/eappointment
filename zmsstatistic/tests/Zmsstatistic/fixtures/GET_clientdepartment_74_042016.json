@@ -1,0 +1,115 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2018-03-12T09:03:42+01:00",
+    "server": "Zmsapi-ENV (v2.15.03)"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/exchange.json",
+    "firstDay": {
+      "year": "2016",
+      "month": "04",
+      "day": "01",
+      "status": "notBookable",
+      "freeAppointments": {
+        "public": 0,
+        "intern": 0,
+        "callcenter": 0,
+        "type": "free"
+      }
+    },
+    "lastDay": {
+      "year": "2016",
+      "month": "04",
+      "day": "30",
+      "status": "notBookable",
+      "freeAppointments": {
+        "public": 0,
+        "intern": 0,
+        "callcenter": 0,
+        "type": "free"
+      }
+    },
+    "period": "day",
+    "dictionary": [
+      {
+        "position": 0,
+        "variable": "subjectid",
+        "type": "string",
+        "description": "ID of a department",
+        "reference": "department.id"
+      },
+      {
+        "position": 1,
+        "variable": "date",
+        "type": "string",
+        "description": "",
+        "reference": ""
+      },
+      {
+        "position": 2,
+        "variable": "clientscount",
+        "type": "string",
+        "description": "",
+        "reference": ""
+      },
+      {
+        "position": 3,
+        "variable": "missed",
+        "type": "string",
+        "description": "",
+        "reference": ""
+      },
+      {
+        "position": 4,
+        "variable": "withappointment",
+        "type": "string",
+        "description": "",
+        "reference": ""
+      },
+      {
+        "position": 5,
+        "variable": "missedwithappointment",
+        "type": "string",
+        "description": "",
+        "reference": ""
+      },
+      {
+        "position": 6,
+        "variable": "noappointment",
+        "type": "string",
+        "description": "",
+        "reference": ""
+      },
+      {
+        "position": 7,
+        "variable": "missednoappointment",
+        "type": "string",
+        "description": "",
+        "reference": ""
+      },
+      {
+        "position": 8,
+        "variable": "requestscount",
+        "type": "string",
+        "description": "",
+        "reference": ""
+      }
+    ],
+    "data": [
+      [
+        "74",
+        "2016-04-01",
+        "84",
+        "16",
+        "84",
+        "16",
+        "84",
+        "16",
+        "61"
+      ]
+    ]
+  }
+}

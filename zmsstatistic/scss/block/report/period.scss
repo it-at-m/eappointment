@@ -1,0 +1,147 @@
+
+
+.report-index .report-period {
+
+    // @todo smaller on overview page
+    .report-period--breadcrumb li {
+        font-size: 1em;
+        font-weight: normal;
+    }
+}
+
+.report-period {
+    .report-period--breadcrumb {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 1em;
+
+        li {
+            display: inline;
+            @include inuit-font-size(16px);
+            font-weight: bold;
+
+            &:after {
+                content: " › ";
+            }
+
+            &:last-child:after {
+                content: "";
+            }
+        }
+
+        li.report-period--subject {
+           font-weight: normal;
+        }
+    }
+
+    .report-period--table {
+        background-color:           $white;
+        border-width:               0;
+        margin:                     0;
+        margin-bottom: 1em;
+        padding: $baseBoxElementPadding;
+        width: auto;
+        border-spacing: 4px;
+        border-collapse: seperate;
+        tr {
+            &.hide {
+                display:        none;
+            }
+        }
+        td {
+            border-width: 0 0 0 0.3em;
+            border-color: $grey;
+            border-style: solid;
+            padding: 0 0.3em;
+            color: $greyDark;
+
+            &.report-period--year-active {
+                font-weight: bold;
+                border-left-color: $blue;
+            }
+            &.report-period--month-active {
+                font-weight: bold;
+                border-left-color: $blue;
+            }
+        }
+    }
+
+    .report-period--list {
+        list-style: none;
+        margin-bottom: 2em;
+    }
+
+    .report-period--year {
+        background-color:           $white;
+        border-width:               0;
+        padding:                    0;
+        margin:                     0;
+
+        h4 {
+            display: inline;
+            a {
+                border-width: 0 0 0 0.3em;
+                border-color: $grey;
+                border-style: solid;
+                padding: 0.1em 0.3em;
+
+                &.report-period--year-active {
+                    font-weight: bold;
+                    border-color: $blue;
+                }
+            }
+        }
+    }
+
+    .report-period--month-list {
+        list-style: none;
+        display: inline;
+
+        li {
+            display: inline;
+
+            &:after {
+                content: "";
+            }
+
+            &:last-child:after {
+                content: "";
+            }
+
+            a {
+                border-width: 0 0 0 0.3em;
+                border-color: $grey;
+                border-style: solid;
+                padding: 0.1em 0.3em;
+
+                &.report-period--month-current {
+                }
+
+                &.report-period--month-active {
+                    font-weight: bold;
+                    border-color: $blue;
+                }
+            }
+        }
+
+    }
+
+    .report-period--show-all{
+        text-align: right;
+        padding-right: 1em;
+
+        &:before {
+            content: "» ";
+        }
+    }
+
+    .report-period--link-more {
+        text-align: left;
+        padding-left: 1em;
+        padding-bottom: 0.6em;
+
+        &:before {
+            content: "» ";
+        }
+    }
+}

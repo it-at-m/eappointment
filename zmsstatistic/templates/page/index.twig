@@ -1,0 +1,42 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% block title %}Anmeldung{% endblock %}
+
+{% block headline %}
+    {{ headline1("Anmeldung") }}
+{% endblock %}
+
+{% block pageheader_middle %}
+    {% if workstation %}
+        {{ parent() }}
+    {% else %}
+        <span class="sitename">Statistik - Anmeldung für Behördenmitarbeiter</span>
+    {% endif %}
+{% endblock %}
+
+{% block pageheader_right %}
+    {% if workstation %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+	{{ parent() }}
+    <div class="grid grid--stretch">
+         {% if workstation %}
+        <div class="grid__item one-half">
+            {% include "block/index/welcome.twig" %}
+        </div>
+        <div class="grid__item one-half">
+            {% include "block/index/logout.twig" %}
+        </div>
+        {% else %}
+        <div class="grid__item one-half">
+            {% include "block/index/welcome.twig" %}
+        </div>
+        <div class="grid__item one-half">
+            {% include "block/index/loginform.twig" %}
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}

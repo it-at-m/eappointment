@@ -1,0 +1,67 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block headline %}
+    {{ headline1("Report Rohdaten") }}
+{% endblock %}
+
+{% block content %}
+    <div class="counter-view" data-includeurl="{{ includeUrl() }}">
+        <div class="report-index warehouse-report">
+            <nav class="breadcrumb">
+                <ol>
+                    <li><a href="{{ urlGet("WarehouseIndex") }}">{{ title|trans }}</a></li>
+                    <li><a href="{{ urlGet("WarehousePeriod", {"subject": category, "subjectid": subjectid}, {}) }}">{{ report.title }}</a></li>
+                    <li>{{ (period == "_") ? "Übersicht"|trans : period }}</li>
+                </ol>
+            </nav>
+            {% embed "block/report/board.twig" with {'class': 'board--spaceless', 'download': 'raw'} %}
+            {% block board_title %}
+                {{ report.title }}
+            {% endblock %}
+            {% block board_body %}
+                {% if report.visualization %}
+                    <div class="chartist table--base" data-chartist="{{ report|json_encode }}">(loading chart...)</div>
+                {% endif %}
+                <table class="table--base">
+                    <thead>
+                        {% for key, entry in report.dictionary|first|keys|filter(key => key < 4) %}
+                            {% if entry == "position" %}
+                            <th>#</th>
+                            {% else %}
+                            <th>{{ entry|capitalize }}</th>
+                            {% endif %}
+                        {% endfor %}
+                    </thead>
+                    <tbody>
+                        {% for entry in report.dictionary %}
+                        <tr>
+                            <td>{{ entry.position + 1 }}</td>
+                            <td>{{ entry.variable }}</td>
+                            <td>{{ entry.type }}</td>
+                            <td>{{ entry.description }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <table class="table--base">
+                    <thead>
+                        {% for entry in report.dictionary %}
+                            <th>{{ entry.variable }}</th>
+                        {% endfor %}
+                    </thead>
+                    <tbody>
+                    {% for row in report.data %}
+                        <tr>
+                            {% for entry in row %}
+                            <td>{{ entry }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endblock %}
+            {% endembed %}
+        </div>
+    </div>
+{% endblock %}

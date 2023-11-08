@@ -1,0 +1,115 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2018-03-13T16:02:07+01:00",
+    "server": "Zmsapi-ENV (v2.15.03)"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/exchange.json",
+    "firstDay": {
+      "year": "2016",
+      "month": "01",
+      "day": "01",
+      "status": "notBookable",
+      "freeAppointments": {
+        "public": 0,
+        "intern": 0,
+        "callcenter": 0,
+        "type": "free"
+      }
+    },
+    "lastDay": {
+      "year": "2016",
+      "month": "12",
+      "day": "31",
+      "status": "notBookable",
+      "freeAppointments": {
+        "public": 0,
+        "intern": 0,
+        "callcenter": 0,
+        "type": "free"
+      }
+    },
+    "period": "month",
+    "dictionary": [
+      {
+        "position": 0,
+        "variable": "subjectid",
+        "type": "string",
+        "description": "ID of a scope",
+        "reference": "scope.id"
+      },
+      {
+        "position": 1,
+        "variable": "date",
+        "type": "string",
+        "description": "Date of entry",
+        "reference": ""
+      },
+      {
+        "position": 2,
+        "variable": "clientscount",
+        "type": "number",
+        "description": "Amount of clients",
+        "reference": ""
+      },
+      {
+        "position": 3,
+        "variable": "missed",
+        "type": "number",
+        "description": "Amount of missed clients",
+        "reference": ""
+      },
+      {
+        "position": 4,
+        "variable": "withappointment",
+        "type": "number",
+        "description": "Amount of clients with an appointment",
+        "reference": ""
+      },
+      {
+        "position": 5,
+        "variable": "missedwithappointment",
+        "type": "number",
+        "description": "Amount of missed clients with an appointment",
+        "reference": ""
+      },
+      {
+        "position": 6,
+        "variable": "noappointment",
+        "type": "string",
+        "description": "",
+        "reference": ""
+      },
+      {
+        "position": 7,
+        "variable": "missednoappointment",
+        "type": "string",
+        "description": "",
+        "reference": ""
+      },
+      {
+        "position": 8,
+        "variable": "requestscount",
+        "type": "number",
+        "description": "Amount of requests",
+        "reference": ""
+      }
+    ],
+    "data": [
+      [
+        "141",
+        "2016-04",
+        "84",
+        "16",
+        "84",
+        "16",
+        "84",
+        "16",
+        "61"
+      ]
+    ]
+  }
+}
