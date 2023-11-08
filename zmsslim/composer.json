@@ -1,0 +1,50 @@
+{
+    "name": "eappointment/zmsslim",
+    "description": "Basic configuration for a slim framework",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mathias Fischer",
+            "email": "mathias.fischer@berlinonline.de"
+        }
+    ],
+    "config": {
+        "platform": {
+            "php": "7.3"
+        }
+    },
+    "require": {
+        "php": ">=7.3.0",
+        "ext-json": "*",
+        "ext-posix": "*",
+        "slim/slim": "4.*",
+        "twig/twig": "3.*",
+        "monolog/monolog": "1.*",
+        "slim/twig-view": "3.*",
+        "slim/http-cache": "1.*",
+        "eappointment/mellon": "^2.6.0",
+        "symfony/translation": "^5.2",
+        "symfony/twig-bridge": "^5.2",
+        "stevenmaguire/oauth2-keycloak": "^4.0",
+        "slim/psr7": "^1.5",
+        "tracy/tracy": "^2.9"
+    },
+    "require-dev": {
+        "phpmd/phpmd": "@stable",
+        "squizlabs/php_codesniffer": "*",
+        "phpunit/phpunit": "^9.5.4",
+        "helmich/phpunit-psr7-assert": "^4.3.0"
+    },
+    "scripts": {
+        "command": "bin/configure"
+    },
+    "autoload": {
+        "psr-4": {
+            "BO\\Slim\\": "src/Slim/",
+            "BO\\Slim\\Tests\\": "tests/Slim/"
+        }
+    },
+    "provide": {
+        "psr/container-implementation": "2.0"
+    }
+}
