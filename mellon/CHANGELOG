@@ -1,0 +1,10 @@
+Mellon Changelog
+================
+
+v1.0.1
+
+* Bugfix: changed full_special_chars filter to special_chars to avoid html-entities. Intended sanitizing should have been equal to htmlspecialchars()
+
+v1.0.0
+
+(First productive version.)

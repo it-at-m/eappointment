@@ -1,0 +1,18 @@
+image: composer:2
+
+# Select what we should cache
+cache:
+    key: "mellon-$CI_BUILD_REF_NAME"
+    paths:
+        - /root/.composer
+        - /root/.npm
+
+test:
+    tags:
+        - docker
+    script:
+        - composer update --no-progress
+        - vendor/bin/phpcs --standard=psr2 src/
+        - vendor/bin/phpmd src/ text phpmd.rules.xml
+        - vendor/bin/phpunit -v --colors=never --coverage-text
+        #- php -dzend_extension=xdebug.so vendor/bin/phpunit -v --colors=never --coverage-text --coverage-html public/_tests/coverage/
