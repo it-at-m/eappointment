@@ -1,0 +1,29 @@
+{% block multiColumn %}
+    {% set neededColumns = (queueList.count() /  tableSettings.maxResults)|round(0, 'ceil') %}
+    {% set tableColumns = (neededColumns > tableSettings.multiColumns) ? tableSettings.multiColumns : neededColumns %}
+    <div class="aufrufanzeige_anzeigebereich_einzeilig aber_zweispaltig columns-{{ tableColumns }}">
+        <table>
+            <tbody>
+                <tr>
+                    {% for batchQueue in queueList|batch(tableSettings.maxResults) %}
+                        {% if loop.index <= tableColumns %}
+                            <td style="vertical-align:top;" class="{% if not loop.first %}puffer{% endif %}">
+                                <table class="aufrufanzeige_aufruf zweispaltig" >
+                                    {% include "element/queueTable/head.twig" with {"leftHead": tableSettings.head.left, "rightHead": tableSettings.head.right} %}
+                                    <tbody>
+                                        {% for queue in batchQueue %}
+                                            <tr>
+                                                {% include "element/queueTable/leftCol.twig" %}
+                                                {% include "element/queueTable/rightCol.twig" %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
