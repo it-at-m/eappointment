@@ -1,0 +1,24 @@
+tags:
+  - name: apikey
+    description: |
+      Über einen "apikey" erhält man Zugriff zu der Terminbuchung. Die Eigenschaft "key" wird für die meisten HTTP-Requests als Header `X-Auth-Key` benötigt.
+
+      Eine Verifikation für einen apikey ist notwendig. Dies erfolgt in der Regel über ein Captcha. Über ein "clientkey" kann man aber auch erweiterte Berechtigungen erhalten, wie zum Beispiel Zugriff auf begrenzte Terminkontingente oder einen Verzicht auf das Captcha. Der "clientkey" wird vom Betreiber des Systems mitgeteilt. Ohne einen solchen "clientkey" werden Standard-Einstellungen verwendet.
+      
+      Weiterhin gehört zu einem apikey ein Quota für unterschiedliche Requests. Um Missbrauch der Schnittstelle zu vermeiden werden in unterschiedlichen Zeiteinheiten nur eine begrenzte Zahl von Requests zugelassen. Eine Information wieviele Requests noch frei sind, erhält man über den apikey.
+  - name: calendar
+    description: |
+      Ein "calendar" repräsentiert eine Kalender-Ansicht. Diese beinhaltet zum einen die Details der Abfrage, wie für welchen Zeitraum der Kalender gilt und welche Leistungen and welchen Standorten buchbar sind. Als Antwort auf eine Anfrage enthält der Kalender Einträge zu Tagen, an denen Termine buchbar sind.
+
+      Wichtig: Der "calendar" repräsentiert keinen Kalender eines Standortes oder ähnliches. Es handelt sich um ein temporäres Suchobjekt mit Suchergebnissen.
+  - name: process
+    description: |
+      Unter "process" wird ein Vorgang im System verstanden. Ein solcher Vorgang enthält in der Regel einen Termin sowie Kontaktdaten zum Kunden und Details zum Standort des Termins.
+
+      Ein "process" kann auch einen freien Termin repräsentieren. Dies lässt sich über die Eigenschaft `status` erkennen. Ein Status "free" bedeutet, dass es sich um einen freien Termin handelt, ein "reserved" kennzeichnet eine flüchtige Reservierung und ein Vorgang im Status "confirmed" entspricht einem gültigen Termin.
+  - name: provider
+    description: |
+      Ein "provider" entspricht einem physischen Standort mit Ortsdaten wie Straße und Hausnummer und häufig Angaben, wo im entsprechenden Gebäude dieser Dienstleister zu finden ist. Der "provider" legt fest, welche Leistungen ("request") an einem "scope" verfügbar sind. Ein "provider" kann mehrere zugehörige "scope"-Objekte haben.
+  - name: scope
+    description: |
+      Neben dem "provider" gibt es einen "scope". Dieser "scope" umfasst vor allem einem Terminkalender und daneben einen Warteraum (oder auch Aufrufanlage, "calldisplay") und Arbeitsplätze ("workstation"). Wenn mehrere "scope"-Objekte sich einen Warteraum ("calldisplay") und Arbeitsplätze ("workstation") teilen, können diese von einem "cluster" zusammengefasst werden. Dabei müssen die "scope" im Falle eines "cluster" nicht zum selben "provider" gehören.

@@ -1,0 +1,9 @@
+/vendor
+/node_modules
+/build
+/_bo/helm
+/.cache
+.phpunit.result.cache
+.idea
+.swp
+tags

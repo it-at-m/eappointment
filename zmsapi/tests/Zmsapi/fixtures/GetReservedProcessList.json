@@ -1,0 +1,506 @@
+{
+    "0": {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "",
+        "appointments": [
+            {
+                "date": 1464334200,
+                "scope": {
+                    "id": "380"
+                },
+                "availability": {
+                    "weekday": {
+                        "sunday": 0,
+                        "monday": 0,
+                        "tuesday": 0,
+                        "wednesday": 0,
+                        "thursday": 0,
+                        "friday": 0,
+                        "saturday": 0
+                    },
+                    "repeat": {
+                        "afterWeeks": 1,
+                        "weekOfMonth": 0
+                    },
+                    "bookable": {
+                        "startInDays": 1,
+                        "endInDays": 60
+                    },
+                    "workstationCount": {
+                        "public": 0,
+                        "callcenter": 0,
+                        "intern": 0
+                    },
+                    "multipleSlotsAllowed": true,
+                    "slotTimeInMinutes": 10,
+                    "startDate": 0,
+                    "endDate": 0,
+                    "startTime": "0:00",
+                    "endTime": "23:59",
+                    "type": "appointment"
+                },
+                "slotCount": "1"
+            }
+        ],
+        "authKey": "dd51",
+        "clients": [
+            {
+                "familyName": "webreservierung",
+                "email": "test@example.com",
+                "emailSendCount": "0",
+                "notificationsSendCount": "0",
+                "surveyAccepted": "0",
+                "telephone": ""
+            }
+        ],
+        "createIP": "2003",
+        "createTimestamp": "1459199478",
+        "id": "137232",
+        "queue": {
+            "arrivalTime": 1464334200,
+            "callCount": "0",
+            "callTime": 0,
+            "number": "137232",
+            "status": "reserved",
+            "lastCallTime": 0,
+            "withAppointment": "1"
+        },
+        "reminderTimestamp": "0",
+        "scope": {
+            "id": "380"
+        },
+        "status": "reserved"
+    },
+    "1": {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "",
+        "appointments": [
+            {
+                "date": 1464335100,
+                "scope": {
+                    "id": "380"
+                },
+                "availability": {
+                    "weekday": {
+                        "sunday": 0,
+                        "monday": 0,
+                        "tuesday": 0,
+                        "wednesday": 0,
+                        "thursday": 0,
+                        "friday": 0,
+                        "saturday": 0
+                    },
+                    "repeat": {
+                        "afterWeeks": 1,
+                        "weekOfMonth": 0
+                    },
+                    "bookable": {
+                        "startInDays": 1,
+                        "endInDays": 60
+                    },
+                    "workstationCount": {
+                        "public": 0,
+                        "callcenter": 0,
+                        "intern": 0
+                    },
+                    "multipleSlotsAllowed": true,
+                    "slotTimeInMinutes": 10,
+                    "startDate": 0,
+                    "endDate": 0,
+                    "startTime": "0:00",
+                    "endTime": "23:59",
+                    "type": "appointment"
+                },
+                "slotCount": "1"
+            }
+        ],
+        "authKey": "dd51",
+        "clients": [
+            {
+                "familyName": "webreservierung",
+                "email": "test@example.com",
+                "emailSendCount": "0",
+                "notificationsSendCount": "0",
+                "surveyAccepted": "0",
+                "telephone": ""
+            }
+        ],
+        "createIP": "2003",
+        "createTimestamp": "1459200792",
+        "id": "138090",
+        "queue": {
+            "arrivalTime": 1464335100,
+            "callCount": "0",
+            "callTime": 0,
+            "number": "138090",
+            "status": "reserved",
+            "lastCallTime": 0,
+            "withAppointment": "1"
+        },
+        "reminderTimestamp": "0",
+        "scope": {
+            "id": "380"
+        },
+        "status": "reserved"
+    },
+    "2": {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "",
+        "appointments": [
+            {
+                "date": 1464334200,
+                "scope": {
+                    "id": "380"
+                },
+                "availability": {
+                    "weekday": {
+                        "sunday": 0,
+                        "monday": 0,
+                        "tuesday": 0,
+                        "wednesday": 0,
+                        "thursday": 0,
+                        "friday": 0,
+                        "saturday": 0
+                    },
+                    "repeat": {
+                        "afterWeeks": 1,
+                        "weekOfMonth": 0
+                    },
+                    "bookable": {
+                        "startInDays": 1,
+                        "endInDays": 60
+                    },
+                    "workstationCount": {
+                        "public": 0,
+                        "callcenter": 0,
+                        "intern": 0
+                    },
+                    "multipleSlotsAllowed": true,
+                    "slotTimeInMinutes": 10,
+                    "startDate": 0,
+                    "endDate": 0,
+                    "startTime": "0:00",
+                    "endTime": "23:59",
+                    "type": "appointment"
+                },
+                "slotCount": "1"
+            }
+        ],
+        "authKey": "dd51",
+        "clients": [
+            {
+                "familyName": "webreservierung",
+                "email": "test@example.com",
+                "emailSendCount": "0",
+                "notificationsSendCount": "0",
+                "surveyAccepted": "0",
+                "telephone": ""
+            }
+        ],
+        "createIP": "85.178.65.144",
+        "createTimestamp": "1459200805",
+        "id": "138096",
+        "queue": {
+            "arrivalTime": 1464334200,
+            "callCount": "0",
+            "callTime": 0,
+            "number": "138096",
+            "status": "reserved",
+            "lastCallTime": 0,
+            "withAppointment": "1"
+        },
+        "reminderTimestamp": "0",
+        "scope": {
+            "id": "380"
+        },
+        "status": "reserved"
+    },
+    "3": {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "",
+        "appointments": [
+            {
+                "date": 1464341400,
+                "scope": {
+                    "id": "142"
+                },
+                "availability": {
+                    "weekday": {
+                        "sunday": 0,
+                        "monday": 0,
+                        "tuesday": 0,
+                        "wednesday": 0,
+                        "thursday": 0,
+                        "friday": 0,
+                        "saturday": 0
+                    },
+                    "repeat": {
+                        "afterWeeks": 1,
+                        "weekOfMonth": 0
+                    },
+                    "bookable": {
+                        "startInDays": 1,
+                        "endInDays": 60
+                    },
+                    "workstationCount": {
+                        "public": 0,
+                        "callcenter": 0,
+                        "intern": 0
+                    },
+                    "multipleSlotsAllowed": true,
+                    "slotTimeInMinutes": 10,
+                    "startDate": 0,
+                    "endDate": 0,
+                    "startTime": "0:00",
+                    "endTime": "23:59",
+                    "type": "appointment"
+                },
+                "slotCount": "1"
+            }
+        ],
+        "authKey": "dd51",
+        "clients": [
+            {
+                "familyName": "webreservierung",
+                "email": "test@example.com",
+                "emailSendCount": "0",
+                "notificationsSendCount": "0",
+                "surveyAccepted": "0",
+                "telephone": ""
+            }
+        ],
+        "createIP": "2a02",
+        "createTimestamp": "1459201881",
+        "id": "138423",
+        "queue": {
+            "arrivalTime": 1464341400,
+            "callCount": "0",
+            "callTime": 0,
+            "number": "138423",
+            "status": "reserved",
+            "lastCallTime": 0,
+            "withAppointment": "1"
+        },
+        "reminderTimestamp": "0",
+        "scope": {
+            "id": "142"
+        },
+        "status": "reserved"
+    },
+    "4": {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "",
+        "appointments": [
+            {
+                "date": 1464339000,
+                "scope": {
+                    "id": "140"
+                },
+                "availability": {
+                    "weekday": {
+                        "sunday": 0,
+                        "monday": 0,
+                        "tuesday": 0,
+                        "wednesday": 0,
+                        "thursday": 0,
+                        "friday": 0,
+                        "saturday": 0
+                    },
+                    "repeat": {
+                        "afterWeeks": 1,
+                        "weekOfMonth": 0
+                    },
+                    "bookable": {
+                        "startInDays": 1,
+                        "endInDays": 60
+                    },
+                    "workstationCount": {
+                        "public": 0,
+                        "callcenter": 0,
+                        "intern": 0
+                    },
+                    "multipleSlotsAllowed": true,
+                    "slotTimeInMinutes": 10,
+                    "startDate": 0,
+                    "endDate": 0,
+                    "startTime": "0:00",
+                    "endTime": "23:59",
+                    "type": "appointment"
+                },
+                "slotCount": "1"
+            }
+        ],
+        "authKey": "0a02",
+        "clients": [
+            {
+                "familyName": "Jeremy Sullivan",
+                "email": "test@example.com",
+                "emailSendCount": "0",
+                "notificationsSendCount": "0",
+                "surveyAccepted": "0",
+                "telephone": ""
+            }
+        ],
+        "createIP": "77.179.139.220",
+        "createTimestamp": "1459202804",
+        "id": "138677",
+        "queue": {
+            "arrivalTime": 1464339000,
+            "callCount": "0",
+            "callTime": 0,
+            "number": "138677",
+            "status": "reserved",
+            "lastCallTime": 0,
+            "withAppointment": "1"
+        },
+        "reminderTimestamp": "0",
+        "scope": {
+            "id": "140"
+        },
+        "status": "reserved"
+    },
+    "5": {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "",
+        "appointments": [
+            {
+                "date": 1464332700,
+                "scope": {
+                    "id": "147"
+                },
+                "availability": {
+                    "weekday": {
+                        "sunday": 0,
+                        "monday": 0,
+                        "tuesday": 0,
+                        "wednesday": 0,
+                        "thursday": 0,
+                        "friday": 0,
+                        "saturday": 0
+                    },
+                    "repeat": {
+                        "afterWeeks": 1,
+                        "weekOfMonth": 0
+                    },
+                    "bookable": {
+                        "startInDays": 1,
+                        "endInDays": 60
+                    },
+                    "workstationCount": {
+                        "public": 0,
+                        "callcenter": 0,
+                        "intern": 0
+                    },
+                    "multipleSlotsAllowed": true,
+                    "slotTimeInMinutes": 10,
+                    "startDate": 0,
+                    "endDate": 0,
+                    "startTime": "0:00",
+                    "endTime": "23:59",
+                    "type": "appointment"
+                },
+                "slotCount": "2"
+            }
+        ],
+        "authKey": "dd51",
+        "clients": [
+            {
+                "familyName": "webreservierung",
+                "email": "test@example.com",
+                "emailSendCount": "0",
+                "notificationsSendCount": "0",
+                "surveyAccepted": "0",
+                "telephone": ""
+            }
+        ],
+        "createIP": "95.90.238.240",
+        "createTimestamp": "1459202914",
+        "id": "138690",
+        "queue": {
+            "arrivalTime": 1464332700,
+            "callCount": "0",
+            "callTime": 0,
+            "number": "138690",
+            "status": "reserved",
+            "lastCallTime": 0,
+            "withAppointment": "1"
+        },
+        "reminderTimestamp": "0",
+        "scope": {
+            "id": "147"
+        },
+        "status": "reserved"
+    },
+    "6": {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "",
+        "appointments": [
+            {
+                "date": 1464341400,
+                "scope": {
+                    "id": "142"
+                },
+                "availability": {
+                    "weekday": {
+                        "sunday": 0,
+                        "monday": 0,
+                        "tuesday": 0,
+                        "wednesday": 0,
+                        "thursday": 0,
+                        "friday": 0,
+                        "saturday": 0
+                    },
+                    "repeat": {
+                        "afterWeeks": 1,
+                        "weekOfMonth": 0
+                    },
+                    "bookable": {
+                        "startInDays": 1,
+                        "endInDays": 60
+                    },
+                    "workstationCount": {
+                        "public": 0,
+                        "callcenter": 0,
+                        "intern": 0
+                    },
+                    "multipleSlotsAllowed": true,
+                    "slotTimeInMinutes": 10,
+                    "startDate": 0,
+                    "endDate": 0,
+                    "startTime": "0:00",
+                    "endTime": "23:59",
+                    "type": "appointment"
+                },
+                "slotCount": "1"
+            }
+        ],
+        "authKey": "dd51",
+        "clients": [
+            {
+                "familyName": "webreservierung",
+                "email": "test@example.com",
+                "emailSendCount": "0",
+                "notificationsSendCount": "0",
+                "surveyAccepted": "0",
+                "telephone": ""
+            }
+        ],
+        "createIP": "91.66.67.192",
+        "createTimestamp": "1459203125",
+        "id": "138771",
+        "queue": {
+            "arrivalTime": 1464341400,
+            "callCount": "0",
+            "callTime": 0,
+            "number": "138771",
+            "status": "reserved",
+            "lastCallTime": 0,
+            "withAppointment": "1"
+        },
+        "reminderTimestamp": "0",
+        "scope": {
+            "id": "142"
+        },
+        "status": "reserved"
+    }
+}

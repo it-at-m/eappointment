@@ -1,0 +1,9 @@
+#!/bin/bash
+REALPATH=$(which realpath || which readlink)
+REALPATH=$([[ "$REALPATH" =~ 'readlink' ]] && echo "$REALPATH -e" || echo "$REALPATH")
+DIR=$(dirname $($REALPATH ${BASH_SOURCE[0]}))
+ROOT=$($REALPATH $DIR/..)
+
+EXPORT=$ROOT/data/
+
+$ROOT/vendor/bo/clientdldb/bin/dldbget -o $EXPORT

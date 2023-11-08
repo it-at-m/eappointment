@@ -1,0 +1,22 @@
+{
+  "rights": {
+    "availability": "0",
+    "basic": "0",
+    "cluster": "0",
+    "department": "0",
+    "organisation": "0",
+    "scope": "0",
+    "sms": "0",
+    "superuser": "0",
+    "ticketprinter": "0",
+    "useraccount": "1"
+  },
+  "id": "testadmin",
+  "password": "c66aa72c84901eacb78fb9ef19bdb7bf",
+  "lastLogin": 1447926465,
+  "departments": [
+    {
+      "id": 1
+    }
+  ]
+}

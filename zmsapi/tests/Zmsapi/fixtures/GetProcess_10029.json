@@ -1,0 +1,95 @@
+{
+    "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+    "amendment": "",
+    "appointments": [
+        {
+            "date": 1460971800,
+            "scope": {
+                "id": "167"
+            },
+            "availability": {
+                "weekday": {
+                    "sunday": 0,
+                    "monday": 0,
+                    "tuesday": 0,
+                    "wednesday": 0,
+                    "thursday": 0,
+                    "friday": 0,
+                    "saturday": 0
+                },
+                "repeat": {
+                    "afterWeeks": 1,
+                    "weekOfMonth": 0
+                },
+                "bookable": {
+                    "startInDays": 1,
+                    "endInDays": 60
+                },
+                "workstationCount": {
+                    "public": 0,
+                    "callcenter": 0,
+                    "intern": 0
+                },
+                "multipleSlotsAllowed": true,
+                "slotTimeInMinutes": 10,
+                "startDate": 0,
+                "endDate": 0,
+                "startTime": "0:00",
+                "endTime": "23:59",
+                "type": "appointment"
+            },
+            "slotCount": "1"
+        }
+    ],
+    "authKey": "1c56",
+    "clients": [
+        {
+            "familyName": "J525",
+            "email": "test@example.com",
+            "emailSendCount": "0",
+            "notificationsSendCount": "0",
+            "surveyAccepted": "0",
+            "telephone": "1234567890"
+        }
+    ],
+    "createIP": "127.0.0.1",
+    "createTimestamp": "1456312139",
+    "id": "10029",
+    "requests": [
+        {
+          "id": "120703",
+          "link": "https://service.berlin.de/dienstleistung/120703/",
+          "name": "Personalausweis beantragen",
+          "source": "dldb"
+        }
+      ],
+    "queue": {
+        "arrivalTime": 1460971800,
+        "callCount": "0",
+        "callTime": 0,
+        "number": "10029",
+        "status": "confirmed",
+        "lastCallTime": 0,
+        "withAppointment": "1"
+    },
+    "reminderTimestamp": "0",
+    "scope": {
+        "id": "167",
+        "provider": {
+            "id": "122217",
+            "source": "dldb",
+            "contact": {
+              "city": "Berlin",
+              "country": "Germany",
+              "name": "Bürgeramt Heerstraße",
+              "postalCode": "14052",
+              "region": "Berlin",
+              "street": "Heerstr.",
+              "streetNumber": "12"
+            },
+            "link": "https://service.berlin.de/standort/122217/",
+            "name": "Bürgeramt Heerstraße"
+          }
+    },
+    "status": "confirmed"
+}

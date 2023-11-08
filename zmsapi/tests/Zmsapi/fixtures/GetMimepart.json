@@ -1,0 +1,5 @@
+{
+    "$schema": "https://schema.berlin.de/queuemanagement/mimepart.json",
+    "mime": "text/plain",
+    "content": "Das ist eine Testnachricht"
+}

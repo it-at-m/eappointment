@@ -1,0 +1,194 @@
+{
+    "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+    "amendment": "",
+    "appointments": [
+    {
+        "date": 1461740400,
+        "scope": {
+        "id": "425",
+        "source": "dldb"
+        },
+        "availability": {
+        "id": "75010",
+        "weekday": {
+            "sunday": "0",
+            "monday": "0",
+            "tuesday": "0",
+            "wednesday": "8",
+            "thursday": "0",
+            "friday": "0",
+            "saturday": "0"
+        },
+        "repeat": {
+            "afterWeeks": "0",
+            "weekOfMonth": "4"
+        },
+        "bookable": {
+            "startInDays": "2",
+            "endInDays": "60"
+        },
+        "workstationCount": {
+            "public": "2",
+            "callcenter": "2",
+            "intern": "2"
+        },
+        "lastChange": 1566566532,
+        "multipleSlotsAllowed": "1",
+        "slotTimeInMinutes": "10",
+        "startDate": 1450911600,
+        "endDate": 1609369200,
+        "startTime": "09:00:00",
+        "endTime": "12:00:00",
+        "type": "appointment",
+        "scope": {
+            "id": "425"
+        },
+        "description": ""
+        },
+        "slotCount": "1"
+    }
+    ],
+    "apiclient": {
+    "shortname": "default"
+    },
+    "authKey": "f3e9",
+    "clients": [
+    {
+        "familyName": "W45265",
+        "email": "test@example.com",
+        "emailSendCount": "0",
+        "notificationsSendCount": "0",
+        "surveyAccepted": "0",
+        "telephone": ""
+    }
+    ],
+    "createIP": "127.0.0.1",
+    "createTimestamp": "1456569819",
+    "id": "27758",
+    "archiveId": 0,
+    "queue": {
+    "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+    "arrivalTime": 1461740400,
+    "callCount": "0",
+    "callTime": 0,
+    "number": "27758",
+    "waitingTimeEstimate": 0,
+    "waitingTimeOptimistic": 0,
+    "waitingTime": null,
+    "status": "confirmed",
+    "lastCallTime": 0,
+    "destination": null,
+    "destinationHint": null,
+    "withAppointment": "1"
+    },
+    "reminderTimestamp": "0",
+    "requests": [
+    {
+        "id": "120686",
+        "link": "https://service.berlin.de/dienstleistung/120686/",
+        "name": "Anmeldung einer Wohnung",
+        "group": "Meldewesen und Ordnung",
+        "source": "dldb"
+    }
+    ],
+    "scope": {
+    "id": "425",
+    "source": "dldb",
+    "contact": {
+        "name": "Mobiles Bürgeramt MV",
+        "street": "Senftenberger Ring 51, 13435 Berlin",
+        "email": "test@example.com",
+        "country": "Germany"
+    },
+    "provider": {
+        "contact": {
+        "city": "Berlin",
+        "country": "Germany",
+        "name": "Mobiles Bürgeramt MV",
+        "postalCode": "13435",
+        "region": "Berlin",
+        "street": "Senftenberger Ring",
+        "streetNumber": "51"
+        },
+        "id": "324433",
+        "link": "https://service.berlin.de/standort/324433/",
+        "name": "Mobiles Bürgeramt MV",
+        "source": "dldb"
+    },
+    "hint": "",
+    "lastChange": 1566566542,
+    "preferences": {
+        "appointment": {
+        "deallocationDuration": "30",
+        "endInDaysDefault": "60",
+        "multipleSlotsEnabled": "0",
+        "reservationDuration": "30",
+        "startInDaysDefault": "2"
+        },
+        "client": {
+        "alternateAppointmentUrl": "",
+        "amendmentActivated": "0",
+        "amendmentLabel": "Anmerkung",
+        "emailFrom": "test@example.com",
+        "emailRequired": "0",
+        "telephoneActivated": "0",
+        "telephoneRequired": 0
+        },
+        "notifications": {
+        "confirmationContent": "",
+        "headsUpContent": "",
+        "headsUpTime": "0"
+        },
+        "pickup": {
+        "alternateName": "",
+        "isDefault": "0"
+        },
+        "queue": {
+        "callCountMax": "3",
+        "callDisplayText": "",
+        "firstNumber": "1",
+        "lastNumber": "999",
+        "maxNumberContingent": "0",
+        "processingTimeAverage": "15",
+        "publishWaitingTimeEnabled": "0",
+        "statisticsEnabled": "1"
+        },
+        "survey": {
+        "emailContent": "",
+        "enabled": "0",
+        "label": ""
+        },
+        "ticketprinter": {
+        "buttonName": "Mobiles Bürgeramt MV",
+        "confirmationEnabled": "0",
+        "deactivatedText": "",
+        "notificationsAmendmentEnabled": "0",
+        "notificationsEnabled": "0",
+        "notificationsDelay": "0"
+        },
+        "workstation": {
+        "emergencyEnabled": "0",
+        "emergencyRefreshInterval": "5"
+        }
+    },
+    "shortName": "",
+    "status": {
+        "emergency": {
+        "acceptedByWorkstation": "-1",
+        "activated": "0",
+        "calledByWorkstation": "-1"
+        },
+        "queue": {
+        "ghostWorkstationCount": "-1",
+        "givenNumberCount": "3",
+        "lastGivenNumber": "4",
+        "lastGivenNumberTimestamp": 1440540000
+        },
+        "ticketprinter": {
+        "deactivated": "1"
+        }
+    }
+    },
+    "status": "confirmed",
+    "lastChange": 1566566536
+}
