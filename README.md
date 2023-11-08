@@ -1,9 +1,8 @@
 # E-Appointment
 
 ## Getting Started
-- `git submodule update --init`
 - `ddev start`
-- `ddev exec ./cli repos reference-libraries`
+- `ddev exec ./cli modules loop composer install`
 
 ## Import Database
 - `ddev import-db --file=.resources/zms.sql`
