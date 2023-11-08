@@ -1,0 +1,124 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Download and validate json files
+ */
+$localInclude = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .  'vendor';
+$modulInclude = __DIR__ . str_repeat(DIRECTORY_SEPARATOR . '..', 3);
+set_include_path(get_include_path() . PATH_SEPARATOR . $localInclude . PATH_SEPARATOR . $modulInclude);
+require('autoload.php');
+
+use Garden\Cli\Cli;
+use \Httpful\Request;
+
+$cli = new Cli();
+
+$cli->description("Downloads json files from the official site and validates them and replaces the old files.")
+    ->opt('output:o', 'Path to save files', true)
+    ->opt('proxy:p', 'Proxy server like "proxy:3128"', false)
+    ->opt('base:b', 'Base download url', false)
+    ;
+$args = $cli->parse($argv, true);
+
+$destinationPath = realpath($args->getOpt('output'));
+
+if (!is_writeable($destinationPath) || !is_dir($destinationPath)) {
+    echo $cli->red("$destinationPath should be a writeable directory\n");
+    exit(1);
+}
+
+$baseDomain = $args->getOpt("base");
+$client = Request::init()
+    ->withoutAutoParsing()
+    ->followRedirects()
+    ->timeout(30);
+$proxy = $args->getOpt('proxy') ? $args->getOpt('proxy') : getenv('HTTP_PROXY');
+if ($proxy) {
+    $proxyconf = array();
+    preg_match('#^(?:(?P<user>[^:]+):(?P<pass>[^@]+)@)?(?P<host>[^:]+):?(?P<port>\d+)?$#', $proxy, $proxyconf);
+    $proxyconf = array_merge(array('host' => '','port' => '80','user' => false,'pass' => false), $proxyconf);
+    if ($proxyconf['user']) {
+        $client->useProxy(
+            $proxyconf['host'],
+            $proxyconf['port'],
+            CURLAUTH_BASIC,
+            $proxyconf['user'],
+            $proxyconf['pass']
+        );
+    } else {
+        $client->useProxy($proxyconf['host'], $proxyconf['port']);
+    }
+}
+Request::ini($client);
+
+$downloads = array(
+    array(
+        'url' => '/export/standorte/json/',
+        'file' => 'locations_de.json',
+    ),
+    array(
+        'url' => '/export/standorte/json/en/',
+        'file' => 'locations_en.json',
+    ),
+    array(
+        'url' => '/export/dienstleistungen/json/',
+        'file' => 'services_de.json',
+    ),
+    array(
+        'url' => '/export/dienstleistungen/json/en/',
+        'file' => 'services_en.json',
+    ),
+    array(
+        'url' => '/export/themen/json/',
+        'file' => 'topic_de.json',
+    ),
+    array(
+        'url' => '/export/behoerden/json/',
+        'file' => 'authority_de.json',
+    ),
+    array(
+        'url' => '/export/settings/json/',
+        'file' => 'settings.json',
+    ),
+);
+foreach ($downloads as $download) {
+    $dest = $destinationPath . DIRECTORY_SEPARATOR . $download['file'];
+    
+    if (file_exists($dest)) {
+        $oldContentJson = file_get_contents($dest);
+    } else {
+        $oldContentJson = '{}';
+    }
+    $oldContent = json_decode($oldContentJson, true);
+    $oldContentJson = null;
+
+    $request = Request::get($baseDomain . $download['url']);
+
+    if (isset($oldContent['hash']) && !empty($oldContent['hash'])) {
+        $request->addHeader('If-None-Match', $oldContent['hash']);
+    }
+    $oldContent = null;
+
+    $response = $request
+        //->followRedirects()
+        ->send()
+    ;
+
+    if (304 == $response->code) {
+        continue;
+    }
+
+    $json = $response->body;
+    $tmp = $destinationPath . DIRECTORY_SEPARATOR . 'tmp.' . $download['file'];
+    file_put_contents($tmp, $json);
+    $data = json_decode($json, true);
+    $json = null;
+    $response = null;
+    if (array_key_exists('error', $data) && $data['error'] === false) {
+        rename($tmp, $dest);
+    } else {
+        echo $cli->red($baseDomain . $download['url'] . " did not validate, see temp file $tmp \n");
+        exit(1);
+    }
+    $data = null;
+}

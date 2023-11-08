@@ -1,0 +1,177 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Download and validate json files
+ */
+$localInclude = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .  'vendor';
+$modulInclude = __DIR__ . str_repeat(DIRECTORY_SEPARATOR . '..', 3);
+set_include_path(get_include_path() . PATH_SEPARATOR . $localInclude . PATH_SEPARATOR . $modulInclude);
+require('autoload.php');
+
+use Garden\Cli\Cli;
+use \Httpful\Request;
+
+try {
+
+    $cli = new Cli();
+
+    $cli->description("Downloads json files from the official site and validates them and replaces the old files.")
+        ->opt('output:o', 'Path to save files', true)
+        ->opt('proxy:p', 'Proxy server like "proxy:3128"', false)
+        ->opt('base:b', 'Base download url', true)
+        ->opt('auth:a', 'http auth example:example', false)
+        ->opt('onlineservices:s', 'download onlineservices to', false)
+    ;
+    $args = $cli->parse($argv, true);
+
+    $destinationPath = realpath($args->getOpt('output'));
+
+    if (!is_writeable($destinationPath) || !is_dir($destinationPath)) {
+        echo $cli->red("$destinationPath should be a writeable directory\n");
+        exit(1);
+    }
+
+    $downloadOnlineservices = (bool)$args->getOpt("onlineservices", 0);
+
+
+
+    $baseDomain = $args->getOpt("base");
+    $auth = $args->getOpt("auth", "");
+    $client = Request::init()
+        ->withoutAutoParsing()
+        ->followRedirects()
+        ->timeout(30);
+ 
+    $proxy = $args->getOpt('proxy') ? $args->getOpt('proxy') : getenv('HTTP_PROXY');
+    if ($proxy) {
+        $proxyconf = array();
+        preg_match('#^(?:(?P<user>[^:]+):(?P<pass>[^@]+)@)?(?P<host>[^:]+):?(?P<port>\d+)?$#', $proxy, $proxyconf);
+        $proxyconf = array_merge(array('host' => '','port' => '80','user' => false,'pass' => false), $proxyconf);
+        if ($proxyconf['user']) {
+            $client->useProxy(
+                $proxyconf['host'],
+                $proxyconf['port'],
+                CURLAUTH_BASIC,
+                $proxyconf['user'],
+                $proxyconf['pass']
+            );
+        } else {
+            $client->useProxy($proxyconf['host'], $proxyconf['port']);
+        }
+    }
+    Request::ini($client);
+
+    $request = Request::get($baseDomain . '/export/json/availablelanguages/');
+
+    $hasAuth = false;
+    if (!empty($auth)) {
+        $hasAuth = true;
+        $auth = explode(':', $auth, 2);
+        $request->authenticateWith($auth[0], $auth[1]);
+    }
+
+    $respronse = $request->send();
+
+    $json = $respronse->body;
+
+    $availablelanguages = json_decode($json, true);
+    if (!array_key_exists('data', $availablelanguages) || 0 == count($availablelanguages['data'])) {
+        echo $cli->red($baseDomain . "/export/json/availablelanguages/ did not validate\n");
+        $availablelanguages = [
+            'data' => [
+                'de' => [
+                    "long_code" => "de_DE",
+                    "short_code" => "de",
+                    "descriptor" => "Deutsch"
+                ],
+                'en' => [
+                    "long_code" => "en_GB",
+                    "short_code" => "en",
+                    "descriptor" => "English"
+                ]
+            ]
+        ];
+    }
+    else {
+        file_put_contents($destinationPath . DIRECTORY_SEPARATOR . '/availablelanguages.json', $json);
+    }
+
+    $downloads = [];
+
+    foreach ($availablelanguages['data'] as $shortCode => $laguageInfo) {
+        $urlPostfix = ('de' == $shortCode ? '' : '/' . $shortCode) . '/';
+        $urlLocations = '/export/standorte/json' . $urlPostfix;
+        $urlServices = '/export/dienstleistungen/json' . $urlPostfix;
+        $urlOnlineServices = '/export/onlinedienste/json' . $urlPostfix;
+
+        $downloads[] = [
+            'url' => $urlLocations,
+            'file' => 'locations_' . $shortCode . '.json'
+        ];
+        $downloads[] = [
+            'url' => $urlServices,
+            'file' => 'services_' . $shortCode . '.json'
+        ];
+        if (false !== $downloadOnlineservices) {
+            $downloads[] = [
+                'url' => $urlOnlineServices,
+                'file' => 'onlineservices_' . $shortCode . '.json'
+            ];
+        }
+    }
+    $downloads[] = [
+        'url' => '/export/themen/json/',
+        'file' => 'topic_de.json'
+    ];
+    $downloads[] = [
+        'url' => '/export/behoerden/json/',
+        'file' => 'authority_de.json',
+    ];
+    $downloads[] = [
+        'url' => '/export/settings/json/',
+        'file' => 'settings.json',
+    ];
+
+    foreach ($downloads as $download) {
+        $dest = $destinationPath . DIRECTORY_SEPARATOR . $download['file'];
+
+        if (file_exists($dest)) {
+            $oldContentJson = file_get_contents($dest);
+        } else {
+            $oldContentJson = '{}';
+        }
+        $oldContent = json_decode($oldContentJson, true);
+
+        $request = Request::get($baseDomain . $download['url']);
+
+        if (isset($oldContent['hash']) && !empty($oldContent['hash'])) {
+            $request->addHeader('If-None-Match', $oldContent['hash']);
+        }
+        if (true === $hasAuth) {
+            $request->authenticateWith($auth[0], $auth[1]);
+        }
+
+        $respronse = $request
+            //->followRedirects()
+            ->send()
+        ;
+
+        if (304 == $respronse->code) {
+            continue;
+        }
+
+        $json = $respronse->body;
+        $tmp = $destinationPath . DIRECTORY_SEPARATOR . 'tmp.' . $download['file'];
+        file_put_contents($tmp, $json);
+        $data = json_decode($json, true);
+        if (array_key_exists('error', $data) && $data['error'] === false) {
+            rename($tmp, $dest);
+        } else {
+            echo $cli->red($baseDomain . $download['url'] . " did not validate, see temp file $tmp \n");
+            exit(1);
+        }
+    }
+}
+catch (\Exception $e) {
+    error_log('dldbget-v2 faild - ' . $e->getMessage());
+}

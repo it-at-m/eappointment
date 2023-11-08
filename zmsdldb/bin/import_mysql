@@ -1,0 +1,196 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Download and validate json files
+ */
+$localInclude = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .  'vendor';
+$modulInclude = __DIR__ . str_repeat(DIRECTORY_SEPARATOR . '..', 3);
+set_include_path(get_include_path() . PATH_SEPARATOR . $localInclude . PATH_SEPARATOR . $modulInclude);
+require('autoload.php');
+
+use BO\Dldb\FileAccess,
+    \BO\Dldb\MySQLAccess,
+    \BO\Dldb\Importer\MySQL AS MySQLImporter
+; 
+use Garden\Cli\Cli;
+use \Httpful\Request;
+
+define('DEBUG', true);
+
+$cli = new Cli();
+
+$cli->description("Mysql Import.")
+    ->opt('host:h', 'Mysql host', true)
+    ->opt('user:u', 'Mysql user', true)
+    ->opt('password:p', 'Mysql password', true)
+    ->opt('database:d', 'Mysql database', true)
+    ->opt('port:o', 'Mysql port', true)
+    ->opt('jsonpath:j', 'Json datapath', false)
+    ->opt('base:b', 'Base download url', true)
+    ->opt('auth:a', 'http auth example:example', false)
+    
+    ;
+$args = $cli->parse($argv, true);
+
+class Timer
+{
+    protected $_start, $_pause, $_stop, $_elapsed;# = 0;
+    
+    public function __construct() {
+        $this->start();
+        if (true === DEBUG) {
+            echo 'Working - please wait...' . PHP_EOL;
+        }
+    }
+
+    public function start() {
+        $this->_start = Timer::getMicroTime();
+    }
+
+    public function stop() {
+        $this->_stop = Timer::getMicroTime();
+    }
+
+    public function pause() {
+        $this->_pause = Timer::getMicroTime();
+        $this->_elapsed += ($this->_pause - $this->_start);
+    }
+
+    public function resume() {
+        $this->_start = Timer::getMicroTime();
+    }
+
+    public function getTime() {
+        if (!isset($this->_stop)) {
+            $this->_stop = Timer::getMicroTime();
+        }
+        return $this->timeToString();
+    }
+
+    protected function getLapTime() {
+        return $this->timeToString();
+    }
+
+    protected static function getMicroTime( ) {
+        list($usec, $sec) = explode(' ', microtime());
+        return ((float) $usec + (float) $sec);
+    }
+
+    protected function timeToString() {
+        $seconds = ($this->_stop - $this->_start) + $this->_elapsed;
+        $seconds = Timer::roundMicroTime($seconds);
+        $hours = floor($seconds / (60 * 60));
+        $divisor_for_minutes = $seconds % (60 * 60);
+        $minutes = floor($divisor_for_minutes / 60);
+        return $hours . "h:" . $minutes . "m:" . $seconds . "s";
+    }
+
+    protected static function roundMicroTime($microTime) {
+        return round($microTime, 4, PHP_ROUND_HALF_UP);
+    }
+
+    public function __destruct() {
+        if (true === DEBUG) {
+            echo 'Job finished in ' . $this->getTime() . PHP_EOL;
+        }
+    }
+}
+$timer = new Timer();
+
+
+$baseDomain = $args->getOpt("base");
+$auth = $args->getOpt("auth", "");
+$client = Request::init()
+    ->withoutAutoParsing()
+    ->followRedirects()
+    ->timeout(30);
+
+    
+$proxy = $args->getOpt('proxy') ? $args->getOpt('proxy') : getenv('HTTP_PROXY');
+if ($proxy) {
+    $proxyconf = array();
+    preg_match('#^(?:(?P<user>[^:]+):(?P<pass>[^@]+)@)?(?P<host>[^:]+):?(?P<port>\d+)?$#', $proxy, $proxyconf);
+    $proxyconf = array_merge(array('host' => '','port' => '80','user' => false,'pass' => false), $proxyconf);
+    if ($proxyconf['user']) {
+        $client->useProxy(
+            $proxyconf['host'],
+            $proxyconf['port'],
+            CURLAUTH_BASIC,
+            $proxyconf['user'],
+            $proxyconf['pass']
+        );
+    } else {
+        $client->useProxy($proxyconf['host'], $proxyconf['port']);
+    }
+}
+Request::ini($client);
+
+$request = Request::get($baseDomain . '/export/json/availablelanguages/');
+
+$hasAuth = false;
+if (!empty($auth)) {
+    $hasAuth = true;
+    $auth = explode(':', $auth, 2);
+    $request->authenticateWith($auth[0], $auth[1]);
+}
+
+$respronse = $request->send();
+
+$json = $respronse->body;
+
+$availablelanguages = json_decode($json, true);
+if (!array_key_exists('data', $availablelanguages) || 0 == count($availablelanguages['data'])) {
+    echo $cli->red($baseDomain . "/export/json/availablelanguages/ did not validate\n");
+    $availablelanguages = [
+        'data' => [
+            'de' => [
+                "long_code" => "de_DE",
+                "short_code" => "de",
+                "descriptor" => "Deutsch"
+            ],
+            'en' => [
+                "long_code" => "en_GB",
+                "short_code" => "en",
+                "descriptor" => "English"
+            ]
+        ]
+    ];
+}
+else {
+    file_put_contents($destinationPath . DIRECTORY_SEPARATOR . '/availablelanguages.json', $json);
+}
+
+
+
+
+$fileAccess = new FileAccess();
+
+$fileAccess->loadFromPath($args->getOpt('jsonpath'));
+
+$mysqlIporter = new MySQLImporter(
+    new MySQLAccess([
+        'host' => $args->getOpt('host'), 
+        'user' => $args->getOpt('user'), 
+        'password' => $args->getOpt('password'),
+        'port' => $args->getOpt('port'),
+        'database' => $args->getOpt('database')
+    ]), 
+    $fileAccess
+    ,MySQLImporter::OPTION_CLEAR_ENTITIY_REFERENCES_TABLES|MySQLImporter::OPTION_CLEAR_ENTITIY_TABLE
+);
+
+try {
+    $mysqlIporter->beginTransaction();
+    $mysqlIporter->clearDatabase();
+    $mysqlIporter->runImport();
+    $mysqlIporter->commit();
+}
+catch (\Exception $e) {
+    $mysqlIporter->rollBack();
+    error_log('Import faild - ' . $e->getMessage());
+}
+
+unset($timer);
+echo "Memory usage: " . number_format( (memory_get_usage() / (1024 * 1024)), 2) . ' mb' . PHP_EOL;
+

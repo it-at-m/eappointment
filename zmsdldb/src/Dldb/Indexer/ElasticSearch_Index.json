@@ -1,0 +1,707 @@
+{
+    "mappings": {
+        "location": {
+            "properties": {
+                "opening_times": {
+                    "properties": {
+                        "friday": {
+                            "type": "string"
+                        },
+                        "monday": {
+                            "type": "string"
+                        },
+                        "tuesday": {
+                            "type": "string"
+                        },
+                        "sunday": {
+                            "type": "boolean"
+                        },
+                        "wednesday": {
+                            "type": "string"
+                        },
+                        "special": {
+                            "type": "boolean"
+                        },
+                        "saturday": {
+                            "type": "boolean"
+                        },
+                        "thursday": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "transit": {
+                    "properties": {
+                        "sbahn": {
+                            "type": "string"
+                        },
+                        "tram": {
+                            "type": "string"
+                        },
+                        "ubahn": {
+                            "type": "string"
+                        },
+                        "bus": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "services": {
+                    "include_in_all": false,
+                    "properties": {
+                        "contact": {
+                            "properties": {
+                                "email": {
+                                    "type": "string"
+                                },
+                                "phone": {
+                                    "type": "string"
+                                },
+                                "fax": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "service": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "appointment": {
+                            "properties": {
+                                "link": {
+                                    "type": "string"
+                                },
+                                "external": {
+                                    "type": "boolean"
+                                },
+                                "allowed": {
+                                    "type": "boolean"
+                                },
+                                "slots": {
+                                    "type": "string",
+                                    "index": "not_analyzed"
+                                }
+                            }
+                        },
+                        "hint": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "meta": {
+                    "properties": {
+                        "lastupdate": {
+                            "type": "date",
+                            "format": "dateOptionalTime"
+                        },
+                        "locale": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "keywords": {
+                            "type": "string"
+                        },
+                        "url": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "address": {
+                    "properties": {
+                        "city": {
+                            "type": "string"
+                        },
+                        "postal_code": {
+                            "type": "string"
+                        },
+                        "house_number": {
+                            "type": "string"
+                        },
+                        "street": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "payment": {
+                    "type": "string"
+                },
+                "paymentcode": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "geo": {
+                    "type": "geo_point"
+                },
+                "accessibility": {
+                    "properties": {
+                        "parking": {
+                            "type": "string"
+                        },
+                        "note": {
+                            "type": "boolean"
+                        },
+                        "elevator": {
+                            "type": "string"
+                        },
+                        "access": {
+                            "type": "string"
+                        },
+                        "wc": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "appointment": {
+                    "properties": {
+                        "note": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "office": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "category": {
+                    "properties": {
+                        "identifier": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "name": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        }
+                    }
+                },
+                "id": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "authority": {
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "name": {
+                            "type": "string",
+                            "fields": {
+                                "authority.sort": {
+                                    "type": "string",
+                                    "analyzer": "german_phonebook"
+                                }
+                            }
+                        }
+                    }
+                },
+                "note": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "multi_field",
+                    "fields": {
+                        "az": {
+                            "analyzer": "az",
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "sort": {
+                            "type": "string",
+                            "analyzer": "german_phonebook"
+                        }
+                    }
+                },
+                "contact": {
+                    "properties": {
+                        "phone": {
+                            "type": "string"
+                        },
+                        "email": {
+                            "type": "string"
+                        },
+                        "webinfo": {
+                            "type": "string"
+                        },
+                        "fax": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "authority": {
+            "properties": {
+                "meta": {
+                    "properties": {
+                        "lastupdate": {
+                            "format": "dateOptionalTime",
+                            "type": "date"
+                        },
+                        "locale": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "url": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "contact": {
+                    "properties": {
+                        "webinfo": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "name": {
+                    "type": "multi_field",
+                    "fields": {
+                        "az": {
+                            "analyzer": "az",
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "sort": {
+                            "type": "string",
+                            "analyzer": "german_phonebook"
+                        }
+                    }
+                },
+                "locations": {
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "fields": {
+                                "locations.sort": {
+                                    "type": "string",
+                                    "analyzer": "german_phonebook"
+                                }
+                            }
+                        },
+                        "id": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "office": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        }
+                    }
+                },
+                "id": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "relation": {
+                    "properties": {
+                        "navi": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "service": {
+            "properties": {
+                "requirements": {
+                    "properties": {
+                        "link": {
+                            "type": "string"
+                        },
+                        "description": {
+                            "type": "boolean"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "forms": {
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "description": {
+                            "type": "boolean"
+                        },
+                        "link": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "prerequisites": {
+                    "properties": {
+                        "link": {
+                            "type": "string"
+                        },
+                        "description": {
+                            "type": "boolean"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "leika": {
+                    "type": "string"
+                },
+                "fees": {
+                    "type": "string"
+                },
+                "links": {
+                    "properties": {
+                        "link": {
+                            "type": "string"
+                        },
+                        "description": {
+                            "type": "boolean"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "responsibility_all": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "locations": {
+                    "properties": {
+                        "hint": {
+                            "type": "string"
+                        },
+                        "location": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "id": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "process_time": {
+                    "type": "string"
+                },
+                "legal": {
+                    "properties": {
+                        "link": {
+                            "type": "string"
+                        },
+                        "description": {
+                            "type": "boolean"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "publications": {
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "link": {
+                            "type": "string"
+                        },
+                        "description": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "name": {
+                    "type": "multi_field",
+                    "fields": {
+                        "az": {
+                            "analyzer": "az",
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "sort": {
+                            "type": "string",
+                            "analyzer": "german_phonebook"
+                        }
+                    }
+                },
+                "meta": {
+                    "properties": {
+                        "lastupdate": {
+                            "format": "dateOptionalTime",
+                            "type": "date"
+                        },
+                        "locale": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "keywords": {
+                            "type": "string"
+                        },
+                        "url": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "onlineprocessing": {
+                    "properties": {
+                        "link": {
+                            "type": "string"
+                        },
+                        "description": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "responsibility": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "topic": {
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "meta": {
+                    "properties": {
+                        "keywords": {
+                            "type": "string"
+                        },
+                        "titles": {
+                            "type": "string"
+                        },
+                        "locale": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        }
+                    }
+                },
+                "name": {
+                    "type": "multi_field",
+                    "fields": {
+                        "az": {
+                            "analyzer": "az",
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "sort": {
+                            "type": "string",
+                            "analyzer": "german_phonebook"
+                        }
+                    }
+                },
+                "links": {
+                    "properties": {
+                        "highlight": {
+                            "type": "string"
+                        },
+                        "meta": {
+                            "properties": {
+                                "keywords": {
+                                    "type": "string"
+                                },
+                                "titles": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "link": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "rank": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "id": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "relation": {
+                    "properties": {
+                        "navi": {
+                            "type": "string"
+                        },
+                        "root": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "rank": {
+                            "type": "string"
+                        },
+                        "services": {
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "index": "not_analyzed"
+                                }
+                            }
+                        },
+                        "childs": {
+                            "properties": {
+                                "path": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "rank": {
+                                    "type": "string"
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "index": "not_analyzed"
+                                }
+                            }
+                        },
+                        "parents": {
+                            "properties": {
+                                "path": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "rank": {
+                                    "type": "string"
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "index": "not_analyzed"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "links": {
+            "properties": {
+                "highlight": {
+                    "type": "string"
+                },
+                "meta": {
+                    "properties": {
+                        "keywords": {
+                            "type": "string"
+                        },
+                        "titles": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "link": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "hightlight": {
+                    "type": "integer"
+                },
+                "rank": {
+                    "type": "integer"
+                }
+            }
+        }
+    },
+    "settings": {
+        "analysis": {
+            "analyzer": {
+                "az": {
+                    "tokenizer": "keyword",
+                    "type": "custom",
+                    "filter": [
+                        "lowercase",
+                        "azfilter",
+                        "de_DE",
+                        "snowball_german2"
+                    ]
+                },
+                "default_index": {
+                    "tokenizer": "standard",
+                    "type": "custom",
+                    "filter": [
+                        "icu_normalizer",
+                        "icu_folding",
+                        "lowercase",
+                        "de_DE",
+                        "snowball_german2",
+                        "prefix"
+                    ]
+                },
+                "german_phonebook": {
+                    "tokenizer": "keyword",
+                    "type": "custom",
+                    "filter": [
+                        "icu_normalizer",
+                        "icu_folding",
+                        "lowercase",
+                        "de_DE",
+                        "snowball_german2"
+                    ]
+                },
+                "default_search": {
+                    "tokenizer": "standard",
+                    "type": "custom",
+                    "filter": [
+                        "icu_normalizer",
+                        "icu_folding",
+                        "lowercase",
+                        "de_DE",
+                        "snowball_german2"
+                    ]
+                }
+            },
+            "filter": {
+                "snowball_german2": {
+                    "language": "German2",
+                    "type": "snowball"
+                },
+                "german_phonebook": {
+                    "type": "icu_collation",
+                    "language": "de",
+                    "country": "DE",
+                    "variant": "@collation=phonebook"
+                },
+                "de_DE": {
+                    "type": "hunspell",
+                    "locale": "de_DE"
+                },
+                "prefix": {
+                    "type": "edgeNGram",
+                    "min_gram": 3,
+                    "max_gram": 100,
+                    "side": "front"
+                },
+                "azfilter": {
+                    "type": "edgeNGram",
+                    "min_gram": 1,
+                    "max_gram": 1,
+                    "side": "front"
+                }
+            }
+        },
+        "number_of_shards": "1",
+        "number_of_replicas": "1"
+    }
+}
