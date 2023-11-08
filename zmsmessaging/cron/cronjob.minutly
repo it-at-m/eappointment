@@ -1,0 +1,11 @@
+#!/bin/bash
+DIR=$(dirname ${BASH_SOURCE[0]})
+BIN=$DIR/../bin
+set -a
+[ -z "$ZMS_ENV" ] && [ -e /etc/sysconfig/zms ] && source /etc/sysconfig/zms
+set +a
+
+if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
+    php -d mail.add_x_header=0 $BIN/mail_queue.php --send "$@"
+    php -d mail.add_x_header=0 $BIN/notification_queue.php --send "$@"
+fi

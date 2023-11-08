@@ -1,0 +1,119 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2016-12-27T09:57:33+01:00",
+    "server": "Zmsapi-ENV"
+  },
+  "data": {
+      "$schema": "https:\/\/schema.berlin.de\/queuemanagement\/mail.json",
+      "id": 1234,
+      "createIP": "145.15.3.10",
+      "createTimestamp": 1447931596000,
+      "department": {
+        "id": 123,
+        "preferences": {
+          "notifications": {
+            "enabled": true,
+            "identification": "max@example.com",
+            "sendConfirmationEnabled": true,
+            "sendReminderEnabled": true
+          }
+        },
+        "email": "max@example.com",
+        "name": "Bürgeramt"
+      },
+      "multipart": [
+        {
+            "queueId": "1234",
+            "mime": "text/html",
+            "content": "",
+            "base64": false
+        },
+        {
+            "queueId": "1234",
+            "mime": "text/plain",
+            "content": "",
+            "base64": false
+        },
+        {
+            "queueId": "1234",
+            "mime": "text/calendar",
+            "content": "",
+            "base64": true
+        }
+      ],
+      "process": {
+        "clients": [
+          {
+            "familyName": "Max Mustermann",
+            "email": "max@example.com",
+            "telephone": "030 115"
+          }
+        ],
+        "id": 123456,
+        "authKey": "1234",
+        "reminderTimestamp": 1447931730000,
+        "scope": {
+          "id": 151,
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "5",
+              "endInDaysDefault": "60",
+              "multipleSlotsEnabled": "1",
+              "reservationDuration": "5",
+              "startInDaysDefault": "0"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "0",
+              "amendmentLabel": "",
+              "emailRequired": "1",
+              "telephoneActivated": "1",
+              "telephoneRequired": "1"
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "enabled": "1",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "Ausgabe",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
+              "firstNumber": "1000",
+              "lastNumber": "1999",
+              "processingTimeAverage": "00:15:00",
+              "publishWaitingTimeEnabled": "1",
+              "statisticsEnabled": "1"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "confirmationEnabled": "0",
+              "deactivatedText": "",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "0"
+            }
+          }
+        },
+        "status": "confirmed"
+      },
+      "subject": "Example Mail",
+      "client": {
+         "familyName": "Max Mustermann",
+         "email": "max@example.com"
+       }
+    }
+}
