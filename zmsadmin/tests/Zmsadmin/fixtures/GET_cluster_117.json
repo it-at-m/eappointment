@@ -1,0 +1,193 @@
+{
+    "$schema": "https://minikube/api/2/",
+    "meta": {
+      "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+      "error": false,
+      "generated": "2020-03-20T12:18:50+01:00",
+      "server": "Zmsapi-ENV (version.unknown)"
+    },
+    "data": {
+      "$schema": "https://schema.berlin.de/queuemanagement/cluster.json",
+      "scopes": [
+        {
+          "id": "169",
+          "source": "dldb",
+          "contact": {
+            "name": "Bürgeramt Blaschkoallee, Neukölln",
+            "street": "Blaschkoallee 32, 12359 Berlin",
+            "email": "",
+            "country": "Germany"
+          },
+          "provider": {
+            "id": "122291",
+            "source": "dldb"
+          },
+          "hint": "Aufruf im Warteraum/Zimmer 231",
+          "lastChange": 1566566542,
+          "shortName": "",
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "10",
+              "endInDaysDefault": "60",
+              "multipleSlotsEnabled": "1",
+              "reservationDuration": "30",
+              "startInDaysDefault": "0"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "0",
+              "amendmentLabel": "Anmerkung",
+              "emailFrom": "test@example.com",
+              "emailRequired": "0",
+              "telephoneActivated": "0",
+              "telephoneRequired": 0
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "Ausgabe",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
+              "firstNumber": "1",
+              "lastNumber": "399",
+              "maxNumberContingent": "0",
+              "processingTimeAverage": "10",
+              "publishWaitingTimeEnabled": "0",
+              "statisticsEnabled": "1"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "buttonName": "Bürgeramt",
+              "confirmationEnabled": "0",
+              "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "1",
+              "emergencyRefreshInterval": "5"
+            }
+          },
+          "status": {
+            "emergency": {
+              "acceptedByWorkstation": "-1",
+              "activated": "0",
+              "calledByWorkstation": "-1"
+            },
+            "queue": {
+              "ghostWorkstationCount": "-1",
+              "givenNumberCount": "19",
+              "lastGivenNumber": "20",
+              "lastGivenNumberTimestamp": 1458774000
+            },
+            "ticketprinter": {
+              "deactivated": "1"
+            }
+          }
+        },
+        {
+          "id": "441",
+          "source": "dldb",
+          "contact": {
+            "name": "Bürgeramt Blaschkoallee, Neukölln",
+            "street": "Blaschkoallee 32, 12359 Berlin",
+            "email": "",
+            "country": "Germany"
+          },
+          "provider": {
+            "id": "122291",
+            "source": "dldb"
+          },
+          "hint": "",
+          "lastChange": 1566566542,
+          "shortName": "Raum",
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "30",
+              "endInDaysDefault": "60",
+              "multipleSlotsEnabled": "0",
+              "reservationDuration": "30",
+              "startInDaysDefault": "0"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "0",
+              "amendmentLabel": "Anmerkung",
+              "emailFrom": "test@example.com",
+              "emailRequired": "0",
+              "telephoneActivated": "0",
+              "telephoneRequired": 0
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "",
+              "firstNumber": "850",
+              "lastNumber": "899",
+              "maxNumberContingent": "0",
+              "processingTimeAverage": "10",
+              "publishWaitingTimeEnabled": "0",
+              "statisticsEnabled": "1"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "buttonName": "Wohnungsamt",
+              "confirmationEnabled": "0",
+              "deactivatedText": "",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "0",
+              "emergencyRefreshInterval": "5"
+            }
+          },
+          "status": {
+            "emergency": {
+              "acceptedByWorkstation": "-1",
+              "activated": "0",
+              "calledByWorkstation": "-1"
+            },
+            "queue": {
+              "ghostWorkstationCount": "-1",
+              "givenNumberCount": "53",
+              "lastGivenNumber": "853",
+              "lastGivenNumberTimestamp": 1458687600
+            },
+            "ticketprinter": {
+              "deactivated": "1"
+            }
+          }
+        }
+      ],
+      "id": "117",
+      "name": "Bürgeramt Blaschkoallee",
+      "hint": "",
+      "shortNameEnabled": "0",
+      "callDisplayText": ""
+    }
+  }

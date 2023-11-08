@@ -1,0 +1,41 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% set links = {
+    previousDay: urlGet('scopeAvailabilityDay', {'id': scope.id, 'date': (timestamp - 86400)|date('Y-m-d')}, {}),
+    sameDay: urlGet('scopeAvailabilityDay', {'id': scope.id, 'date': getNow()|date('Y-m-d')}, {}),
+    nextDay: urlGet('scopeAvailabilityDay', {'id': scope.id, 'date': (timestamp + 86400)|date('Y-m-d')}, {}),
+    monthView: urlGet('scopeAvailabilityMonth', {'id': scope.id}, {}),
+    includeurl: includeUrl(),
+} %}
+
+{% set tabs = [
+    {name: "%s"|format("Graph-Ansicht")|trans, component: "graph"},
+    {name: "%s"|format("Tabellen-Ansicht")|trans, component: "table"}
+ ] %}
+
+{% block headline %}
+    {{ headline1('Öffnungszeiten für den Standort ' ~ scope.name ~ ' ' ~ scope.shortName ) }}
+{% endblock %}
+
+{% block content %}
+    <div class="availabilityDayRoot"
+        data-today="{{ today }}"
+        data-availabilityList="{{availabilityList | json_encode}}"
+        data-availabilityListSlices="{{availabilityListSlices | json_encode}}"
+        data-conflicts="{{conflicts | json_encode}}"
+        data-scope="{{scope | json_encode}}"
+        data-processList="{{processList | json_encode}}"
+        data-dateString="{{dateString}}"
+        data-timestamp="{{timestamp}}"
+        data-menuActive="owner"
+        data-maxWorkstationCount="{{maxWorkstationCount}}"
+        data-links="{{ links | json_encode }}"
+        data-tabs="{{ tabs | json_encode }}"
+        data-maxslots="{{ maxSlotsForAvailabilities|json_encode }}"
+        data-busyslots="{{ busySlotsForAvailabilities|json_encode }}" ></div>
+{% endblock %}
+
+{% block javascript %}
+        <script type="text/javascript" src="{{ includeUrl() }}/_js/reactcomponents.js?version={{ currentVersion() }}&ts={{ getNow()|date("U") }}"></script>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% import _self as self %}
+{% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless calendar calendar-weektable'} %}
+{% use "block/calendar/navigation.twig" %}
+{% from 'element/helper/form.twig' import formgroup, inputfield %}
+
+    {% block board_title %}
+        {% if workstation.queue.clusterEnabled %}
+            {% trans %}Cluster{% endtrans %}: {{ cluster.name }}, {{ selectedWeek }}. {% trans %}Kalenderwoche{% endtrans %}
+        {% else %}
+            {% trans %}Standort{% endtrans %}: {{ workstation.scope.provider.contact.name }}, {{ selectedWeek }}. {% trans %}Kalenderwoche{% endtrans %}
+        {% endif %}
+    {% endblock %}
+
+    {% block board_title_aside %}
+        {{ block("calender_navigation_week") }}
+    {% endblock %}
+
+    {% block board_header_right %}
+        {{ formgroup(
+            {"label": "", "description": "", "class":"showClientNames"},
+            [{
+                "type":"checkbox",
+                "parameter": {
+                    "name": "showClientNames",
+                    "label": "Namen einblenden",
+                    "value": "1",
+                    "checked": 1
+                }
+            }]
+        ) }}
+        {{ inputfield({ "name":"selectedDate", "type":"hidden", "value":selectedDate }) }}
+        {{ inputfield({ "name":"scope", "type":"hidden", "value":workstation.scope.id }) }}
+    {% endblock %}
+
+    {% block board_body %}
+        <table class="calendar calendar-weektable_calendar" >
+            <thead>
+                <tr>
+                    {#<th class="legend-hour" scope="col">{% trans %}Zeit{% endtrans %}</th>#}
+                    <td style="width:auto;"></td>
+                    {% for day in dayList.days %}
+                        {% set weekday = day.year ~"-"~ day.month ~"-"~ day.day %}
+                        <th>
+                            <a href="#" data-weekday="{{ weekday }}">{{ weekday|format_date(pattern="EE dd. MMMM y")}}</a>
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for hour, processListByDay in dayList.hours %}
+                <tr>
+                    <th class="legend-hour" scope="row">
+                        <div class="timeslot">
+                            <strong class="timeslot__time">{% if hour < 10 %}0{% endif %}{{ hour }}:00</strong>
+                        </div>
+                    </th>
+                    {% for day, processListByTime in processListByDay %}
+                    <td>
+                        {% for slotTime, processList in processListByTime %}
+                            {% set highlight = "busy" %}
+                            {% for process in processList %}
+                                {% if process.status == "free" %}{% set highlight = "free" %}{% endif %}
+                            {% endfor %}
+                            {% set tileTitle = (highlight == "free")? ('Freie Termine um ' ~ slotTime|date("H:i") ~ ' vorhanden') : ('Keine freie Termine um ' ~ slotTime|date("H:i")) %}
+                            <div class="calendar__tile timeslot mark mark--{{ highlight == "free"? 'positive' : 'destructive' }} timeslot--{{ highlight }}" title="{{ tileTitle }}">
+                                <span class="timeslot__time">
+                                    {% if highlight == "free" %}
+                                    <a class="item" href="{{ urlGet(source, {}, {'date': slotTime|date("Y-m-d"), 'time': slotTime|date("H-i") }) }}" title="Jetzt einen Termin um {{slotTime|date("H:i")}} buchen">
+                                        {{ slotTime|date("H:i") }}
+                                    </a>
+                                    {% else %}
+                                        {{ slotTime|date("H:i") }}
+                                    {% endif %}
+                                </span>
+                                <div class="timeslot__items">
+                                    {% for process in processList %}
+                                        {% if process.id %}
+                                            {% set client = process.clients|first %}
+                                            <a class="item" href="{{ urlGet(source, {}, {'date': slotTime|date("Y-m-d"), 'selectedprocess': process.id}) }}" {% if client.familyName %}title="Kunde bearbeiten"{% endif %}>
+                                                <span class="familyName" title="{{ ('Familienname')|trans }}">{{ client.familyName|default("") }}{% if client.familyName %},{% endif %}</span>
+                                                <span class="pid" title="{{ ('Vorgangsnummer')|trans }}">{{ process.id }}</span>
+                                            </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endblock %}
+
+{% endembed %}

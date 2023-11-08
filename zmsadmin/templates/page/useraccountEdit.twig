@@ -1,0 +1,19 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block headline %}
+    {% if userAccount.id %}
+         {{ headline1("Nutzer bearbeiten: " ~ userAccount.id) }}
+    {% else %}
+         {{ headline1("Nutzer hinzufügen") }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {{ parent() }}
+    <!-- page useraccountEdit -->
+    <div class="useraccount-edit-view" data-includeurl="{{ includeUrl() }}" data-selecteduserid="{{ userAccount.id }}">
+        {% include "block/useraccount/edit.twig" %}
+    </div>
+    <!-- /page useraccountEdit -->
+{% endblock %}

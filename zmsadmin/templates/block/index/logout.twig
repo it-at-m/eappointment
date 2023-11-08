@@ -1,0 +1,21 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'loginform'} %}
+        {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield %}
+
+        {% block board_title %}
+            Willkommen zurück
+        {% endblock %}
+
+
+        {% block board_body %}
+            <p>
+                Sie sind bereits angemeldet. Sie können über die Navigation in die gewünschten Seitenbereiche einsteigen.
+            </p>
+            <p>
+            Möchten Sie sich als jemand anderes anmelden, <a href="{{ urlGet('logout', {'loginName' : workstation.loginName}, {}) }}">melden Sie sich zunächst über diesen Link ab</a>.
+            </p>
+        {% endblock %}
+
+
+        {% block board_footer %}{% endblock %}
+
+{% endembed %}

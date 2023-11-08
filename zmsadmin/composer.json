@@ -1,0 +1,66 @@
+{
+  "name": "eappointment/zmsadmin",
+  "description": "Manage eappointments using zmsapi",
+  "license": "EUPL-1.2",
+  "authors": [
+    {
+      "name": "Mathias Fischer",
+      "email": "mathias.fischer@berlinonline.de"
+    }
+  ],
+  "scripts": {
+    "command": "bin/configure"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsclient"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsslim"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/zmsentities"
+    },
+    {
+      "type": "vcs",
+      "url": "https://gitlab.com/eappointment/mellon"
+    }
+  ],
+  "config": {
+    "platform": {
+        "php": "7.3"
+    },
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
+  },
+  "require-dev": {
+    "phpmd/phpmd": "@stable",
+    "squizlabs/php_codesniffer": "*",
+    "phpunit/phpunit": "^9.5.4",
+    "helmich/phpunit-psr7-assert": "^4.3.0",
+    "phpspec/prophecy-phpunit": "^2.0.0"
+  },
+  "require": {
+    "eappointment/mellon": "^2.6.0",
+    "eappointment/zmsclient": "dev-muc-main",
+    "eappointment/zmsslim": "dev-muc-main",
+    "eappointment/zmsentities": "dev-muc-main",
+    "monolog/monolog": "1.*",
+    "league/csv": "^9.0",
+    "psr/http-message": "^1.0",
+    "container-interop/container-interop": "^1.2",
+    "twig/intl-extra": "^3.4",
+    "twig/twig": "3.*"
+  },
+  "bin": [],
+  "autoload": {
+    "psr-4": {
+      "BO\\Zmsadmin\\": "src/Zmsadmin/",
+      "BO\\Zmsadmin\\Tests\\": "tests/Zmsadmin/"
+    }
+  }
+}

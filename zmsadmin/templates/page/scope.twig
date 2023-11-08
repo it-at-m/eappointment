@@ -1,0 +1,24 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% use "block/breadcrumb/breadcrumb.twig" %}
+
+{% block breadcrumb_items %}
+    {{ parent() }}
+    <li><a href="{{ urlGet('owner_overview', {}, {}) }}">Behörden und Standorte</a></li>
+    <li><a href="{{ urlGet('organisation', {'id': organisation.id}, {}) }}">{{ organisation.name }}</a></li>
+    <li><a href="{{ urlGet('department', {'id': department.id}, {}) }}">{{ department.name }}</a></li>
+    <li>Standort: Einrichtung und Administration</li>
+{% endblock %}
+
+{% block headline %}
+    {{ headline1("Standort") }}
+{% endblock %}
+
+{% block content %}
+    {{ parent() }}
+	{% include "block/scope/form.twig" %}
+{% endblock %}
+
+{% block javascript %}
+        <script type="text/javascript" src="{{ includeUrl() }}/_js/reactcomponents.js?version={{ currentVersion() }}"></script>
+{% endblock %}

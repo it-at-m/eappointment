@@ -1,0 +1,250 @@
+
+{% from 'element/helper/form.twig' import formgroup, formbutton, custombutton, inputfield %}
+    
+{% set readonly = 1 %}
+{% if action == "add" %}
+{% set readonly = 0 %}
+{% endif %}
+
+{% if isFromOidc %}
+<div class="message message--info">
+    {{ ("Dieser Nutzer wurde über einen OpenID Connect Anbieter angelegt. Nutzername, E-Mail und Passwörter sind hier nicht änderbar.")|trans }}
+</div>
+{% endif %}
+
+{% set providerOptions = [{"name": "Nein, lokale Anmeldung bevorzugen", "value": ""}] %}
+{% for oidcProvider in oidcProviderList %}
+    {% set providerOptions = providerOptions|merge([{ "value": oidcProvider, "name": "Ja, " ~ oidcProvider ~ " als Provider nutzen"}]) %}
+{% endfor %}
+<form action="./" method="post" class="form--base">
+    <div class="fieldset">
+        <div class="panel--heavy">
+        {% set passwordRequired = false %}
+        {% if action == "add" %}
+            {% set passwordRequired = true %}
+        {% endif %}
+
+        {% if action == "add" and 0 < oidcProviderList|length %}
+        <div class="fieldset">
+            <div class="panel--light">
+                {{ formgroup(
+                    {
+                        "label": "Login nur über OIDC",
+                        "description": "Alle wesentlichen Zugangsdaten werden ausschließlich beim OIDC Provider verwaltet",
+                    },
+                    [{
+                        "type":"select",
+                        "parameter": {
+                            "label": "",
+                            "accesskey":"o",
+                            "name": "oidcProvider",
+                            "id": "useOidcProvider",
+                            "options": providerOptions,
+                            "value": providerOptions[1].value
+                        }
+                    }]
+                ) }}
+            </div>
+        </div>
+        {% endif %}
+
+        {{ formgroup(
+            {
+                "label": "Nutzername:",
+                "description": metadata.id.description,
+                "required": true,
+                "errors": exception.data.id.messages
+            },
+            [{
+                "type":"input",
+                "parameter": {
+                    "name": "id",
+                    "value": userAccount.id,
+                    "maxlength": 40,
+                    "readonly": (readonly and isFromOidc)
+                }
+            }]
+        ) }}
+        {{ formgroup(
+            {
+                "label": "E-Mail:",
+                "description": metadata.email.description|filter((v, k) => k != 'pattern'),
+                "required": true,
+                "errors": exception.data.email.messages
+            },
+            [{
+                "type":"input",
+                "parameter": {
+                    "name": "email",
+                    "value": userAccount.email,
+                    "maxlength": 100,
+                    "readonly": isFromOidc ? 1 : 0
+                }
+            }]
+        ) }}
+
+        {% if not isFromOidc %}
+        {% set passwordDescription = metadata.password.description + metadata.changePassword.description %}
+        {{ formgroup(
+            {
+                "label": "Passwort:",
+                "description": passwordDescription|filter((v, k) => (k == 'minLength')),
+                "required": passwordRequired,
+                "errors": exception.data.changePassword.messages
+            },
+            [{
+                "type":"input",
+                "parameter": {
+                    "type": "password",
+                    "name": "changePassword[]",
+                    "maxlength": 40
+                }
+            }]
+        ) }}
+
+        {{ formgroup(
+            {
+                "label": "Passwortwiederholung:",
+                "description": passwordDescription|filter((v, k) => k != 'maxLength'),
+                "required": passwordRequired,
+                "errors":exception.data.changePassword.messages
+            },
+            [{
+                "type":"input",
+                "parameter": {
+                    "type": "password",
+                    "name": "changePassword[]",
+                    "maxlength": 40
+                }
+            }]
+        ) }}
+        {% endif %}
+
+        {% if not selectedDepartment %}
+            {% set departmentOptionsGroup = [] %}
+            {% set departmentOneSelected = 0 %}
+
+            {% if workstation.useraccount.rights.superuser %}
+                {% if userAccount.rights.superuser %}
+                    {% set allOverSelected = 1 %}
+                {% endif %}
+                {% set departmentOptionsGroup = departmentOptionsGroup|merge([
+                    { "value": "0", "name": "systemübergreifend", "selected": allOverSelected},
+                ]) %}
+            {% endif %}
+
+            {% for ownerName, organisationList in ownerList %}
+                {% for organisationName, departmentList in organisationList %}
+                    {% set departmentOptions = [] %}
+                    {% for department in departmentList %}
+                        {% set selected = 0 %}
+                        {% for selectedDepartment in userAccount.departments %}
+                            {% if department.id == selectedDepartment.id %}
+                                {% if not allOverSelected %}
+                                    {% set selected = 1 %}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                            {% set departmentOptions = departmentOptions|merge([
+                                { "value": department.id, "name": department.name, "selected": selected }
+                            ]) %}
+                    {% endfor %}
+                    {% set departmentOptionsGroup = departmentOptionsGroup|merge([{ 'name' : organisationName , 'options' : departmentOptions }]) %}
+                {% endfor %}
+            {% endfor %}
+            {{ formgroup(
+                {
+                    "label": "Behörde:",
+                    "description": metadata.departments.description,
+                    "errors": exception.data.departments.messages
+                },
+                [{
+                    "type":"select",
+                    "parameter": {
+                        "name": "departments[][id]",
+                        "multiple": 1,
+                        "options": departmentOptionsGroup
+                    }
+                }]
+            ) }}
+        {% else %}
+            {{ inputfield({ "name":"departments[][id]", "type":"hidden", "value":selectedDepartment }) }}
+        {% endif %}
+
+        {% set rightsCheckboxes = [
+            {
+                "type":"checkbox",
+                "parameter": {
+                    "label": "Sachbearbeitung",
+                    "name": "rights[basic]",
+                    "value": 1,
+                    "checked" : 1,
+                    "disabled" : 1,
+                    "id": "check_rights_1"
+                }
+            }
+        ] %}
+
+        {% if workstation.useraccount.rights.scope %}
+            {% set rightsCheckboxes = rightsCheckboxes|merge([
+                {
+                    "type":"checkbox",
+                    "parameter": {
+                        "label": "Terminadministration",
+                        "name": "rights[scope]",
+                        "value": 1,
+                            "checked" : userAccount.rights.scope,
+                        "id": "check_rights_5"
+                    }
+                }
+            ]) %}
+        {% endif %}
+
+        {% if workstation.useraccount.rights.cluster %}
+            {% set rightsCheckboxes = rightsCheckboxes|merge([
+                {
+                    "type":"checkbox",
+                    "parameter": {
+                        "label": "Fachliche Administration",
+                        "name": "rights[cluster]",
+                        "value": 1,
+                            "checked" : userAccount.rights.cluster,
+                        "id": "check_rights_7"
+                    }
+                }
+            ]) %}
+        {% endif %}
+
+        {% if workstation.useraccount.rights.superuser %}
+            {% set rightsCheckboxes = rightsCheckboxes|merge([
+                {
+                    "type":"checkbox",
+                    "parameter": {
+                        "label": "Technische Administration",
+                        "name": "rights[superuser]",
+                        "value": 1,
+                            "checked" : userAccount.rights.superuser,
+                    "id": "check_rights_10"
+                    }
+                }
+            ]) %}
+        {% endif %}
+
+            <small>*) Felder mit einem Stern müssen ausgefüllt werden.</small>
+        </div>
+    </div>
+    
+    {{ formgroup(
+        {"groupTag": "fieldset", "legend": "Berechtigungen", "controlgroupclass": "panel--heavy"},
+        rightsCheckboxes
+    ) }}
+
+    <div class="form-actions">
+    {% set label = "Nutzer anlegen" %}
+    {% if action != "add" %}
+        {% set label = "Nutzerdaten ändern" %}
+        {{ custombutton({ "class": "button button--destructive button-delete", "type":"delete", "target": urlGet("useraccountDelete", {"loginname": userAccount.id}, {}), "label":"Löschen", "data": {"name": userAccount.id} }) }}
+    {% endif %}
+    {{ formbutton({ "type":"save", "class": "button button--positive", "name": "save", "label":label, "value": "save" }) }}
+    </div>
+</form>

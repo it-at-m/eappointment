@@ -1,0 +1,22 @@
+{% if process.queue.withAppointment %}
+	<span>Ihre Vorgangsnummer lautet: </span>
+	<div class="print-number">{{ process.id }}</div>
+	<span>
+		<span>
+			{{ "Ihr Termin ist am %s um %s Uhr."|trans|format(process.queue.arrivalTime|format_date(pattern="EE dd.MM.y"), process.queue.arrivalTime|format_datetime(pattern="HH:mm") )}}
+		</span>
+		<br /><br />
+		{% trans %}Standort{% endtrans %}: <strong>{{ process.scope.contact.name }} {{ process.scope.shortName }}</strong><br>
+		{% if process.scope.hint %}Info: <strong>{{ process.scope.hint }}</strong><br>{% endif %}
+	</span>
+{% else %}
+	<span>Ihre Wartenummer lautet:</span>
+	<div class="print-number">{{ process.queue.number }}</div>
+	<span>
+		<span>
+			{% trans %}Standort{% endtrans %}: <strong>{{ process.scope.contact.name }} {{ process.scope.shortName }}</strong><br>
+			{% if process.scope.hint %}{% trans %}Info{% endtrans %}: <strong>{{ process.scope.hint }}</strong><br>{% endif %}
+			{{ process.queue.arrivalTime|format_date(pattern="EE dd.MM.y") }}, {{ process.queue.arrivalTime|format_datetime(pattern="HH:mm") }} {% trans %}Uhr{% endtrans %}<br>
+		</span>
+	</span>
+{% endif %}

@@ -1,0 +1,12 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'client-next'} %}
+    {% block board_title %}Kundeninformationen{% endblock %}
+
+    {% block board_body %}
+        <div class="loader"></div>
+    {% endblock %}
+
+    {% block board_footer %}
+    {% include "block/process/footer.twig" %}
+    {% endblock %}
+
+{% endembed %}

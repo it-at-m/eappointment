@@ -1,0 +1,21 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block headline %}
+    {{ headline1("Mandanten") }}
+{% endblock %}
+
+{% block content %}
+    {{ parent() }}
+    
+    {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless source-list'} %}
+        {% block board_title %}
+           {% trans %}Liste der verfügbaren Mandanten{% endtrans %}
+        {% endblock %}
+
+        {% block board_body %}
+            {{ include("block/source/table.twig") }}
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

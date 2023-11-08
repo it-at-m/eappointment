@@ -1,0 +1,97 @@
+{% if success or error %}
+    {% include "element/helper/messageHandler.twig" %}
+{% else %}
+    {% if dialog %}
+    <div class="dialog">
+    {% endif %}
+    {% embed "block/scaffholding/board.twig" with {'class': 'notification-form'} %}
+        {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield %}
+
+        {% set rights = workstation.useraccount.rights %}
+
+        {% block board_title %}
+            SMS-Versand
+        {% endblock %}
+
+        {% block board_body %}
+            <form action="{{ urlGet('notification') }}" method="post" name="sms">
+                {% if not department.preferences.notifications.enabled or not rights.sms  %}
+                <div class="message-error">
+                    Der SMS-Versand ist nicht freigegeben. Bitte wenden Sie sich an Ihren Administrator.
+                </div>
+                {% elseif not process.clients|first.telephone %}
+                    <div class="message-error">
+                        Für einen SMS Versand muss eine gültige Telefonnummer eingetragen sein. <br />
+                        Es steht entweder keine Telefonnummer zur Verfügung oder die Vorgangsnummer ist nicht korrekt angegeben!
+                    </div>
+                {% else %}
+                    {{ formgroup(
+                        {"label": "Text der SMS (160 Zeichen):", "errors": form.message.messages},
+                        [{
+                            "type":"textarea",
+                            "parameter": {
+                                "name": "message",
+                                "required": true,
+                                "rows": "6",
+                                "maxlength": 160,
+                            }
+                        }]
+                    ) }}
+
+                    {{ formgroup(
+                        {"label": "Handynr. des Empfängers:"},
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "maxlength": "20",
+                                "readonly": 1,
+                                "value": process.clients|first.telephone
+                            }
+                        }]
+                    ) }}
+
+                    {{ formgroup(
+                        {"label": "Name des Empfängers:"},
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "maxlength": "20",
+                                "readonly": 1,
+                                "value": process.clients|first.familyName
+                            }
+                        }]
+                    ) }}
+
+                    {% if time == "00:00" %}
+                        {% set appointmentTime = "spontan" %}
+                    {% else %}
+                        {% set appointmentTime = process.appointments|first.date|date('H:i') %}
+                    {% endif %}
+                    {{ formgroup(
+                        {"label": "Terminzeit:"},
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "maxlength": "20",
+                                "readonly": 1,
+                                "value": appointmentTime
+                            }
+                        }]
+                    ) }}
+
+                    {{ inputfield({ "name": "selectedprocess", "type":"hidden", "value":process.id }) }}
+
+                    <div class="form-actions">
+                        <div class="right">
+                            <button type="button" class="button button--diamond button-abort">schließen</button>
+                            <button type="button" class="button button--default button-ok button-submit">abschicken</button>
+                        </div>
+                    </div>
+                {% endif %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+    {% if dialog %}
+    </div>
+    {% endif %}
+{% endif %}

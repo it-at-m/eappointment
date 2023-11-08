@@ -1,0 +1,49 @@
+{% from 'element/helper/form.twig' import custombutton %}
+
+<!-- source table -->
+
+<p>
+{% trans %}
+    Im Folgenden werden alle verfügbaren Mandanten aufgelistet. Beachten Sie bitte, dass einige Mandanten
+    automatisch synchronisiert werden. Diese können Sie nicht bearbeiten.
+{% endtrans %}
+</p>
+
+
+<div class="table-responsive-wrapper"> 
+    <table class="table--base">
+        <thead>
+            <th>{% trans %}Name{% endtrans %}</th>
+            <th>{% trans %}Kürzel{% endtrans %}</th>
+            {#        <th>{% trans %}Anzahl Dienstleistungen{% endtrans %}</th>
+            <th>{% trans %}Anzahl Standorte{% endtrans %}</th>#}
+            <th>{% trans %}Letzte Änderung{% endtrans %}</th>
+            <th>{% trans %}Bearbeitbar{% endtrans %}?</th>
+        </thead>
+        <tbody>
+            {% for source in sourceList %}
+            <tr>
+                <td class="source--label">{{ source.label }}</td>
+                <td class="source--source">{{ source.source }}</td>
+                {#<td>{{ source.requests|length }}</td>
+                <td>{{ source.providers|length }}</td>#}
+                <td class="source--lastChange">{{ source.lastChange|format_date(pattern="EE dd. MMMM y | HH:mm") }} {% trans %}Uhr{% endtrans %}</td>
+                <td class="source--editable">
+                    {% if source.editable %}
+                        <a href="{{ urlGet('sourceEdit', {'name': source.source }, {}) }}"><i class="fas fa-edit" aria-hidden="true"></i> {% trans %}Bearbeiten{% endtrans %}</a>
+                    {% else %}
+                        Automatisch
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="table-actions">
+    {{ custombutton({ "type":"new", "target": urlGet("sourceEdit", {'name': 'add'}, {}), "label":'<i class="fa fa-plus-square color-positive" aria-hidden="true"></i> Mandant hinzufügen' }) }}
+    </div>
+</div>
+
+
+
+<!-- /source table -->

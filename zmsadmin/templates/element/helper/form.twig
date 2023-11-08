@@ -1,0 +1,508 @@
+{#
+############## FORM GROUP MACRO (FORMELEMENT WRAPPER) ##############
+#}
+
+
+{%- macro formgroup(groupargs, elements) %}
+  {% import _self as self %}
+
+    {#  
+        Accessability: we need a unique "id" and "for" to link the input with its label.
+        So if there is no id, we build a random id.
+    #}
+    {% if elements[0].parameter.id %}
+        {% set fieldId = elements[0].parameter.id %}
+    {% elseif groupargs.id %}
+        {% set fieldId = groupargs.id %}
+    {% elseif ( elements[0].type != 'checkboxSelect' and elements[0].type != 'checkboxDeselect')%}
+        {% set fieldId = 'randomid'~random(100000) %}
+    {% else %}
+        {% set fieldId = null %}
+    {% endif %}
+    <{{ groupargs.groupTag|default('div') }} class="form-group{% if groupargs.errors %} has-error is-invalid {% endif %}{% if groupargs.class %} {{groupargs.class}} {% endif %}">
+        {% if groupargs.label -%}
+            <label{{ fieldId?(' for="' ~ fieldId ~ '"')|raw }}{{ groupargs.labelClass?(' class="' ~ groupargs.labelClass ~ '"')|raw }}>{{ groupargs.label }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}
+            </label>
+        {% elseif groupargs.divlabel -%}
+            <div class="label">{{ groupargs.divlabel }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}
+            </div>
+        {% elseif groupargs.legend -%}
+            <legend class="label">{{ groupargs.legend }}
+                {% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}
+            </legend>   
+        {% endif -%}
+        
+        <div class="controls {{ groupargs.controlgroupclass }}">
+            <div class="formelements">
+                {{  self.formelements(elements, fieldId, groupargs) -}}
+            </div>
+            {% if groupargs.errors -%}
+                {{  self.errormessage(groupargs.errors, fieldId,) -}}
+            {% endif %}
+        </div>
+    </{{ groupargs.groupTag|default('div') }}>
+{% endmacro -%}
+
+
+
+{#
+############## FORM ELEMENT MACROS ##############
+#}
+
+{% macro formelements(elements, fieldId, groupargs) %}
+    {% import _self as self %}
+    {% for element in elements -%}
+        {% if 1 < elements|length %}
+        {% set fieldId = fieldId ~ loop.index %}
+        {% endif %}
+        {%- if element.type == "select" -%}
+            {{- self.selectfield(element.parameter, fieldId, groupargs) -}}
+        {% endif -%}
+
+        {%- if element.type == "checkboxSelect" -%}
+            {{- self.checkboxselectfield(element.parameter, fieldId, groupargs) -}}
+        {% endif -%}
+
+        {%- if element.type == "checkboxDeselect" -%}
+            {{- self.checkboxdeselectfield(element.parameter, fieldId, groupargs) -}}
+        {% endif -%}
+
+        {%- if element.parameter.prepend %}
+            <span class="prepend">
+            {{ element.parameter.prepend }}
+            </span>
+        {% endif -%}
+
+        {%- if element.type == "input" -%}
+            {{ self.inputfield(element.parameter, fieldId, groupargs) -}}
+        {% endif -%}
+
+        {%- if element.type == "checkbox" -%}
+            {{- self.checkboxfield(element.parameter, fieldId, groupargs) -}}
+        {% endif -%}
+
+        {%- if element.type == "radio" -%}
+            {{ self.radiobuttonfield(element.parameter, fieldId, groupargs) -}}
+        {% endif -%}
+
+        {%- if element.type == "textarea" -%}
+            {{ self.textareafield(element.parameter, fieldId, groupargs) -}}
+        {% endif -%}
+
+        {%- if element.type == "datepicker" -%}
+            {{ self.datepickerfield(element.parameter, fieldId, groupargs) -}}
+        {% endif -%}
+
+        {%- if element.type == "file" -%}
+            {{ self.filefield(element.parameter, fieldId, groupargs) -}}
+        {% endif -%}
+
+        {%- if element.type == "prepend" -%}
+            {{ self.prepend(element.parameter) -}}
+        {% endif -%}
+
+        {%- if element.type == "append" -%}
+            {{ self.append(element.parameter) -}}
+        {% endif -%}
+
+        {%- if element.type == "counter" -%}
+            {{ self.counterfield(element.parameter, fieldId) -}}
+        {% endif -%}
+
+        {%-  if element.type == "custom" -%}
+            {{ element.parameter }}
+        {% endif -%}
+
+        {%- if element.parameter.append %}
+            <small class="formgroup__help">{{ element.parameter.append }}</small>
+        {% endif -%}
+
+        {% if groupargs.description %}
+            {{ self.groupdescription(groupargs.description, groupargs.descriptionId ? groupargs.descriptionId : fieldId) -}}
+        {% endif -%}
+    {% endfor -%}
+{% endmacro %}
+
+
+{% macro inputfield(args, fieldId, groupargs) %}
+    {% import _self as self %}
+    <input
+        type="{{ args.type|default('text') }}" 
+        title="{{ args.title|default('') }}"
+        {% if args.autofocus %}autofocus{% endif %}
+        tabindex="{{ args.tabindex|default(0)}}"
+        name="{{ args.name }}"
+        value="{{ args.value|e }}"
+        {% if args.size %} size="{{ args.size }}"{% endif %}
+        {% if args.readonly %}readonly="readonly"{% endif %}
+        {% if args.maxlength %}maxlength="{{ args.maxlength }}"{% endif %}
+        {% if args.placeholder %}placeholder="{{ args.placeholder }}"{% endif %}
+        class="form-control {% if args.class %}{{ args.class }} {% endif %}form-input{% if args.width %} input--size-{{ args.width }}{% endif %}"
+        {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
+        {% if groupargs.required or args.required %} aria-required="true"{% endif %}
+        {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
+        {{ self.eventHandler(args, fieldId, groupargs) }}
+    >
+{% endmacro %}
+
+
+{% macro filefield(args, fieldId, groupargs) %}
+    {% import _self as self %}
+    {% if args.file.type == 'image' and args.file.data %}
+        <img alt="{{ args.file.alt }}" width="60" src="data:image/{{ args.file.data.mime }};base64,{{ args.file.data.content }}" class="thumbnail" />
+    {% endif %}
+    <input
+        type="file"
+        {% if args.autofocus %}autofocus{% endif %}
+        tabindex="{{ args.tabindex|default(0)}}"
+        name="{{ args.name }}" {% if args.size %}
+        size="{{ args.size }}"{% endif %}{% if args.readonly %}
+        readonly="readonly"{% endif %}{% if args.maxlength %}
+        maxlength="{{ args.maxlength }}"{% endif %}{% if args.placeholder %}
+        placeholder="{{ args.placeholder }}"{% endif %}
+        class="form-control {% if args.class %}{{ args.class }} {% endif %}button-file{% if args.width %} input--size-{{ args.width }}{% endif %}"
+        {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
+        {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
+        {{ self.eventHandler(args, fieldId, groupargs) }}
+    >
+{% endmacro %}
+
+
+{% macro inputsubmit(args) %}
+    <input
+        type="submit"
+        tabindex="{{ args.tabindex|default(0)}}"
+        name="{{ args.name }}"
+        value="{{ args.value|e }}"
+        class="button type-{{ args.type|default('submit') }}"
+        {% if args.id %} id="{{ args.id }}"{% endif %}
+    >
+{% endmacro %}
+
+{% macro datepickerfield(args, fieldId, groupargs) %}
+    {% import _self as self %}
+    <div class="add-date-picker">
+        <input
+            type="text"
+            tabindex="{{ args.tabindex|default(0)}}"
+            name="{{ args.name }}"
+            value="{{ args.value }}"{% if args.placeholder %}
+            placeholder="{{ args.placeholder }}"{% endif %}
+            aria-label="Zur Datumsauswahl Eingabetaste drücken"
+            class="form-control {% if args.class %}{{ args.class }} {% endif %}form-input{% if args.width %} input--size-{{ args.width }}{% endif %}"
+            {% if args.readonly %} readonly="readonly"{% endif %}
+            {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
+            {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
+            {{ self.eventHandler(args, fieldId, groupargs) }}
+        >
+    </div>
+{% endmacro %}
+
+
+{% macro selectfield(args, fieldId, groupargs) %}
+    {% import _self as self %}
+	<select
+        name="{{ args.name }}"
+        {% if args.ariaLive %} aria-live="{{ args.ariaLive }}"{% endif %}
+        tabindex="{{ args.tabindex|default(0)}}"
+        {% if args.multiple %} multiple="multiple"{% endif %}
+        {% if args.size %} size="{{ args.size }}"{% endif %}
+        class="form-control {% if args.class %}{{ args.class }} {% endif %}{{ args.width? ' input--size-'~args.width }}"
+        {% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}
+        {% if args.disabled %} disabled="disabled"{% endif %}
+        {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
+        {{ self.eventHandler(args, fieldId, groupargs) }}
+    >
+    {% for item in args.options %}
+        {% if item.options is iterable %}
+        <optgroup label="{{ item.name }}">
+            {% for option in item.options %}
+            <option title="{{ option.name }}" {% if option.selected or (args.value and args.value == option.value) %}selected="selected"{% endif %}
+            {% if option.data %}
+                {{ self.getDataAttributes(option.data) }}
+            {% endif %}
+            value="{{ option.value }}">{{ option.name }}</option>
+            {% endfor %}
+        </optgroup>
+		{% else %}
+        <option title="{{ item.name }}" {% if item.selected or (args.value and args.value == item.value) %}selected="selected" {% endif %}
+        {% if item.data %}
+            {{ self.getDataAttributes(item.data) }}
+        {% endif %}
+        value="{{ item.value }}">{{ item.name }}</option>
+	    {% endif %}
+    {% endfor %}
+    </select>
+{% endmacro %}
+
+{% macro getDataAttributes(data) %}
+    {% if data|length > 1 %}{% set delimiter = " " %}{% else %}{% set delimiter = "" %}{% endif %}
+    {% for dataKey, dataValue in data %}
+        data-{{ dataKey }} = "{{ dataValue}}"{{ delimiter }}
+    {% endfor %}
+{% endmacro %}
+
+{% macro checkboxselectfield(args, fieldId, groupargs) %}
+    {% import _self as self %}
+        <div{% if args.ariaLive %} aria-live="{{ args.ariaLive }}"{% endif %} class="checkboxselect" {% if fieldId %} id="{{ fieldId }}" {% endif %}>
+            {{- self._checkboxselectinner(args) -}}
+        </div>
+{% endmacro %}
+
+{% macro checkboxdeselectfield(args, fieldId, groupargs) %}
+    {% import _self as self %}
+        <div{% if args.ariaLive %} aria-live="{{ args.ariaLive }}"{% endif %} class="checkboxdeselect" {% if fieldId %} id="{{ fieldId }}" {% endif %}>
+            {{- self._checkboxselectinner(args) -}}
+        </div>
+{% endmacro %}
+
+{% macro _checkboxselectinner(args) %}
+    {% import _self as self %}
+    <ul aria-label="{{ args.ariaLabel|default('Liste') }}" class="checkbox-list inner"{% if args.height %} style="height:{{args.height}}; overflow: auto; margin: 0px"{% endif %}>             
+    {% for item in args.options %}
+        {% if item.options is iterable %}
+        <ul class="form-check group checkbox-list" aria-label="{{ args.ariaLabel|default('Liste') }}">
+            <h4>{{ item.name }}</h4>
+            {% for option in item.options %}
+            <li>
+                <div class="form-check">
+                    <label {% if item.class %}class="form-check-label {{ item.class }}"{% endif %} >
+                        <input
+                            {% if option.selected %}checked="checked"{% endif %}
+                            class="form-check-input"
+                            type="checkbox"
+                            name="{{ args.name }}"
+                            value="{{ option.value }}"
+                            id="service-box"
+                            {% if item.data %}{ self.getDataAttributes(item.data) }}{% endif %}
+                        >
+                        <span>{{ option.name }}</span>
+                    </label>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <li>
+            <div class="form-check">
+                <label {% if item.class %}class="form-check-label {{ item.class }}"{% endif %}>
+                    <input
+                        {% if item.selected %}checked="checked"{% endif %}
+                        class="form-check-input"
+                        type="checkbox"
+                        tabindex="{{ args.tabindex|default(0) }}"
+                        name="{{ args.name }}"
+                        value="{{ item.value }}"
+                        {% if item.data %}{{ self.getDataAttributes(item.data) }}{% endif %}
+                    >
+                    <span>{{ item.name }}</span>
+                </label>
+            </div>
+        </li>
+        {% endif %}
+    {% endfor %}
+    </ul>
+{% endmacro %}
+
+{% macro textareafield(args, fieldId, groupargs) %}
+    {% import _self as self %}
+    <textarea
+        tabindex="{{ args.tabindex|default(0)}}"
+        class="form-control {% if args.class %}{{ args.class }} {% endif %} maxchars"
+        name="{{ args.name }}"
+        rows="{{ args.rows|default(3) }}"
+        {% if args.maxlength %} maxlength="{{ args.maxlength }}"{% endif %}
+        {% if args.accesskey %} accesskey="{{ args.accesskey }}" {% endif %}
+        {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
+        {{ self.eventHandler(args, fieldId, groupargs) }}
+    >{{ args.value|raw }}</textarea>
+
+    <div class="formgroup__help maxcharsleft">
+        <span>0</span>
+        {% if args.maxlength %}
+        /{{ args.maxlength }}
+        {% endif %}
+        {% trans %}Zeichen{% endtrans %}
+    </div>
+{% endmacro %}
+
+{% macro ariaDescribedBy(args, fieldId, groupargs) %}
+    {% set describeId = args.id %}
+    {% if fieldId %} 
+        {% set describeId = fieldId %}        
+    {% endif %}
+
+    {% if args.id or fieldId %}
+    id="{{ describeId }}"
+    {% endif %}
+
+    {% if groupargs.errors or groupargs.description %}
+aria-describedby="{%
+    if groupargs.errors %}error_{{ describeId }} {% endif
+    %}{% if groupargs.description
+        %}{% if groupargs.description is iterable
+            %}{% for key, entry in groupargs.description %}help_{{ describeId ~ '_' ~ key }} {% endfor
+        %}{% else %}help_{{ describeId }} {% endif
+    %}{% endif %}"
+{% endif %}
+{% endmacro %}
+
+{% macro eventHandler(args, fieldId, groupargs) %}
+    {% set domEvents = ['blur', 'change', 'click', 'dblclick', 'focus', 'input', 'keydown', 'keypress', 'keyup',
+        'mousedown', 'mousemove', 'mouseout', 'mouseover', 'mouseup', 'wheel',
+        'drag', 'dragend', 'dragenter', 'dragleave', 'dragover', 'dragstart', 'drop',
+        'copy', 'cut', 'paste', 'scroll','select']
+    %}
+    {% for key, handler in args %}
+        {% if key in domEvents or (key[:2] == 'on' and key[2:] in domEvents) %}
+            {% if key[:2] != 'on' %}
+                {% set key = 'on' ~ key %}
+            {% endif %}
+                {{ key }}="{{ handler }}"
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+{% macro checkboxfield(args, fieldId, groupargs) %}
+    {% if args.inline %}
+    {% else %}
+    {% endif %}
+    <div class="form-check">
+        {% if args.title and not args.label %}
+        <label title="{{ args.title|trans }}" class="form-check-label" for="{{ fieldId }}">
+        {% endif %}
+            <input 
+                type="hidden" 
+                name="{{ args.name }}" 
+                value="{% if args.value == 0 %}1{% else %}0{% endif %}" 
+            >
+            <input
+                class="form-check-input{% if args.class %} {{ args.class }}{% endif %}"
+                type="checkbox"
+                name="{{ args.name }}"
+                {% if args.checked %}checked="checked"{% endif %}
+                value="{{ args.value|default(0) }}"
+                id="{{ fieldId }}"
+                {% if args.disabled %} disabled="disabled"{% endif %}
+                {% if args.accesskey %} accesskey="{{ args.accesskey }}" {% endif %}
+            >
+            {% if args.label %}
+                <label title="{{ args.label|trans }}" class="form-check-label" for="{{ fieldId }}">{{ args.label|trans }}</label>
+            {% else %}
+                <span class="aural">Checkbox</span>
+            {% endif %}
+
+            {% if args.required -%}
+                <span class="required-symbol">*</span>
+            {%- endif %}
+        {% if args.title and not args.label %}
+        </label>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro radiobuttonfield(args, fieldId, groupargs) %}
+    <div class="form-check form-check-inline">
+        <label class="form-check-label radio-label{% if args.inline %} radio-inline{% endif %}">
+            <input
+                className="form-check-input"
+                type="radio"
+                tabindex="{{ args.tabindex|default(0)}}"
+                name="{{ args.name }}"
+                {% if args.checked %}checked="checked"{% endif %}
+                {% if args.describedby %}aria-describedby="{{args.describedby}}"{% endif %}
+                value="{{ args.value|default(0) }}"
+                id="{{ fieldId }}"
+                {% if args.disabled %} disabled="disabled"{% endif %}
+            >
+            {{ args.label|raw }}
+            {% if args.required %}<span class="required-symbol">*</span>{% endif %}
+        </label>
+    </div>
+{% endmacro %}
+
+{% macro counterfield(args, fieldId) %}
+        <div class="form-input-counter">
+            <label for="counter_{{ fieldId }}">{{ args.label -}}</label>
+            <div class="input-counter">
+                <button type="button" tabindex="-1" class="button decrement"{{ (args.value|default(0) == 0)? " disabled"}} >−</button>
+                <input
+                    type="number"
+                    tabindex="{{ args.tabindex|default(0)}}"
+                    {% if args.name %}name="{{ args.name }}"{% endif %}
+                    value="{{ args.value|default(0) }}"{% if args.size %}
+                    size="{{args.size}}"{% endif %}
+                    class="form-control {% if args.class %}{{ args.class }} {% endif %} form-input{% if args.width %} input--size-{{ args.width }}{% endif %}"
+                    id="counter_{{ fieldId }}"
+                    role="spinbutton"
+                    aria-valuemin="0"
+                    min="0"
+                    title="Menge"
+                />
+                <button type="button" tabindex="-1" class="button increment">+</button>
+            </div>
+        </div>
+{% endmacro %}
+
+
+{% macro formbutton(args) %}
+    <button
+        type="submit"
+        tabindex="{{ args.tabindex|default(0)}}"
+        class="{{ args.class|default('button') }} type-{{ args.type|default('submit') }}"
+        {% if args.name %}name="{{ args.name }}"{% endif %}
+        value="{{ args.value }}"
+        {% if args.id %} id="{{ args.id }}"{% endif %}
+        {% if args.disabled %} disabled="disabled"{% endif %}
+        {% if args.accesskey %} accesskey="{{ args.accesskey }}" {% endif %}
+    >{{ args.label}}</button>
+{% endmacro %}
+
+{% macro custombutton(args) %}
+    {% import _self as self %}
+    <a
+        {% if args.data %}
+            {{ self.getDataAttributes(args.data) }}
+        {% endif %}
+        tabindex="{{ args.tabindex|default(0)}}"
+        href="{{ args.target }}"
+        title="{{ args.title }}"
+        class="{{ args.class }} type-{{ args.type|default('submit') }}"
+        target="_self"
+        {% if args.disabled %} disabled="disabled"{% endif %}
+    >{{ args.label|raw }}</a>
+{% endmacro %}
+
+{% macro errormessage(messages, fieldId) %}
+    <div id="error_{{ fieldId }}" class="message message--error" role="alert">
+    <ul class="list--clean">
+        {% for message in messages %}
+            <li><i aria-hidden="true" title="{% trans %}Fehler{% endtrans %}: {{ message|trans }}" class="fas fa-exclamation-circle"
+                ></i> {% trans %}Fehler{% endtrans %}: {{ message|trans }}</li>
+        {% endfor %}
+    </ul>
+    </div>
+{% endmacro %}
+
+
+{% macro groupdescription(description, fieldId) %}
+    {% if description is iterable %}
+        {% for key, entry in description %}
+            <p class="formgroup__help" {{ fieldId ? ('id="help_' ~ fieldId ~ '_' ~ key ~ '"')|raw }}>
+                {{ entry | raw }}
+            </p>
+        {% endfor %}
+    {% else %}
+        <p class="formgroup__help" {{ fieldId ? ('id="help_' ~ fieldId ~ '"')|raw }}>
+            {{ description | raw }}
+        </p>
+    {% endif %}
+{% endmacro %}
+
+{% macro providername(scope) %}
+    {% if scope.contact.name %}
+        {{ "%s %s"|format(scope.contact.name, scope.shortName) }}
+    {% else %}
+        ({{ "%s %s-%d"|format("Standort gelöscht, ehemals:", scope.provider.source, scope.provider.id)|trans }})
+    {% endif %}
+{% endmacro %}

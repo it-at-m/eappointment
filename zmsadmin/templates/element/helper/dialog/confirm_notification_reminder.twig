@@ -1,0 +1,14 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'dialog'} %}
+    {% block board_title %}<i aria-hidden="true" title="{{ ("SMS Erinnerung")|trans }}" class="fas fa-info-circle"></i> {{ ("SMS Erinnerung")|trans }}{% endblock %}
+    {% block board_body %}
+        {% set message = "Möchten Sie dem Kunden per SMS mitteilen, dass er/sie bald an der Reihe ist, dann klicken Sie auf OK." %}
+        <p>
+            {{ message|trans }}
+        </p>
+        <div class="form-actions">
+            <a data-action-abort class="button button--diamond button-abort" href="#">Abbruch</a>
+            <a data-action-sendNotificationReminder data-id="{{ id }}" class="button button--default button-ok" href="#">OK</a>
+        </div>
+    {% endblock %}
+
+{% endembed %}

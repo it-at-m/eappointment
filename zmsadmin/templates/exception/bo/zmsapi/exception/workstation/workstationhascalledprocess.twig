@@ -1,0 +1,10 @@
+{%
+    include "exception/bo/layout.twig" with {
+		"message":"Bitte beenden Sie erst den Aufruf, bevor Sie sich ausloggen.",
+		"title":"Sie haben noch einen Kunden aufgerufen.",
+        "exceptionData":"workstation-called-process",
+    	"showlinks":{
+			'workstation':'Aufruf bearbeiten',
+        }
+    }
+%}

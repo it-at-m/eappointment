@@ -1,0 +1,18 @@
+<div class="dialog message message--success">
+    <div class="header">
+        <h2 class="message__heading title"
+            ><i title="{{ successTitle|default("Erfolgreiche Anfrage")|trans }}" aria-hidden="true" class="fas fa-check-circle"></i
+            ><span class="sr-only">{{ successTitle|default("Erfolgreiche Anfrage")|trans }}</span> {{ successTitle|default("Abholer archiviert")|trans }}
+        </h2>
+    </div>
+    <div class="message__body body">
+        {% if deleteList %}
+            <p>Alle Termine wurden erfolgreich aus der Liste entfernt.</p>
+        {% else %}
+            <p>Der Abholer mit der Wartenummer {{ process.queue.number }} wurde erfolgreich aus der Liste entfernt.</p>
+        {% endif %}
+        <div class="form-actions">
+            <a data-action-abort class="button-ok btn right" href="#">OK</a>
+        </div>
+    </div>
+</div>

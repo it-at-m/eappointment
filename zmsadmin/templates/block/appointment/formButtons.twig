@@ -1,0 +1,40 @@
+{% set abortButtonText = "Abbrechen" %}
+{% if workstation.queue.clusterEnabled == 1 %}
+    {% set abortButtonText = "Standort ändern / Abbrechen" %}
+{% endif %}
+
+<script>
+    document.head.appendChild(
+        document.createElement('style').appendChild(document.createTextNode('.button { margin-bottom:5px !important;}'))
+    );
+</script>
+
+<div class="form-actions">
+    <div class="right">
+        {% if selectedProcess and not isNewAppointment %}
+            <button class="button button-submit process-abort">{{ "%s"|format(abortButtonText)|trans }}</button>
+            <button data-id="{{ selectedProcess.id }}" class="button button--destructive button-submit process-delete" data-name="{{ selectedProcess.queue.withAppointment ? selectedProcess.clients|first.familyName|raw : ('Wartenummer ' ~ selectedProcess.queue.number) }}">Löschen</button>
+            <button data-id="{{ selectedProcess.id }}" class="button button-submit process-print" autofocus>{{ "%s"|format("Wartenr. drucken")|trans }}</button>
+            <button data-id="{{ selectedProcess.id }}" class="button button-submit process-copy">{{ "%s"|format("Als neu hinzufügen")|trans }}</button>
+            <button data-id="{{ selectedProcess.id }}" class="button button--positive button-submit process-save">{{ "%s"|format("Speichern")|trans }}</button>
+        {% else %}
+            {% if selectedProcess %}
+                <button class="button button-submit process-abort">{{ "%s"|format(abortButtonText)|trans }}</button>
+            {% endif %}
+            {% if selectedDate == getNow()|date('Y-m-d') and "00-00" == selectedTime %}
+                {% set queuedLabel = "Spontankunden hinzufügen" %}
+                {% if selectedProcess %}
+                    {% set queuedLabel = "zum Spontankunden ändern" %}
+                {% endif %}
+                <button class="button button-submit process-queue" accesskey="h">{{ "%s"|format(queuedLabel)|trans }}</button>
+            {% endif %}
+            {% if selectedTime and "00-00" != selectedTime and isNewAppointment %}
+                <button data-id="{{ selectedProcess.id }}" class="button button-submit process-copy">{{ "%s"|format("Als neu hinzufügen")|trans }}</button>
+                <button class="button button--positive button-submit process-change" accesskey="h">{{ "%s"|format("Termin ändern")|trans }}</button>
+            {% endif %}
+            {% if selectedTime and "00-00" != selectedTime and not isNewAppointment  %}
+                <button class="button button--positive button-submit process-reserve" accesskey="h">{{ "%s"|format("Termin buchen")|trans }}</button>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>

@@ -1,0 +1,23 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block headline %}
+    {{ headline1("Freie Tage") }}
+{% endblock %}
+
+{% block content %}
+    <!-- page dayoffByYear -->
+    <div class="grid">
+        <div class="grid__item four-sixths">
+            {% include "block/dayoff/byyear.twig" %}
+        </div>
+        <div class="grid__item two-sixths">
+            {% include "block/dayoff/list.twig" %}
+        </div>
+    </div>
+    <!-- /page dayoffByYear -->
+{% endblock %}
+
+{% block javascript %}
+        <script type="text/javascript" src="{{ includeUrl() }}/_js/reactcomponents.js?version={{ currentVersion() }}"></script>
+{% endblock %}

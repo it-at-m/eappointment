@@ -1,0 +1,77 @@
+{% from 'element/helper/form.twig' import formgroup, inputfield %}
+{% set disabled = "" %}
+{% if source == "appointmentForm" %}
+    {% set scopeOptions = [{ "value": 0, "name": "%s"|format("Standort auswählen")|trans, "selected": selected }] %}
+    {% set scopeAccessKey = "s" %}
+    {% if cluster %}
+        {% set scopeOptions = [] %}
+        {% set scopeDefault = [{ "value": 0, "name": "%s"|format("Standort auswählen")|trans, "selected": selected }] %}
+        {% for clusterscope in cluster.scopes %}
+            {% if scope.id == clusterscope.id %}
+                {% set selected = 'selected' %}
+                {% set scopeDefault = [{ "value": 0, "name": "%s"|format("Standort auswählen")|trans, "selected": '' }] %}
+            {% else %}
+                {% set selected = '' %}
+            {% endif %}
+            {% set scopeOptions = scopeOptions|merge([{ "value": clusterscope.id, "name": "%s %s"|format(clusterscope.contact.name, clusterscope.shortName), "selected": selected }]) %}
+        {% endfor %}
+        {% set scopeOptions = scopeDefault|merge(scopeOptions) %}
+    {% else %}
+        {% set scopeOptions = [{ "value": scope.id, "name": "%s %s"|format(scope.contact.name, scope.shortName), "selected": "selected" }] %}
+    {% endif %}
+    {#% if workstation.useraccount.rights.superuser == "1" and selectedProcess %}
+         {% set scopeOptions = [{ "value": selectedProcess.scope.id, "name": "%s %s"|format(selectedProcess.scope.contact.name, selectedProcess.scope.shortName), "selected": "selected" }] %}
+    {% endif %#}
+
+{% else %}
+    {% set scopeOptions = [] %}
+    {% set scopeDefault = [] %}
+    {% set scopeAccessKey = null %}
+    {% if workstation.queue.clusterEnabled == 1 %}
+        {% set selected = 'selected' %}
+    {% endif %}
+    {% if cluster %}
+        {% if workstation.useraccount.rights.cluster == 1 and cluster.scopes|length > 1 %}
+            {% set scopeDefault = [{ "value": "cluster", "name": "Alle Clusterstandorte anzeigen", "selected": selected }] %}
+        {% endif %}
+        {% for scope in cluster.scopes %}
+            {% if workstation.scope.id == scope.id and workstation.queue.clusterEnabled != 1 %}
+                {% set selected = 'selected' %}
+                {% if workstation.useraccount.rights.cluster == 1 and cluster.scopes|length > 1 %}
+                    {% set scopeDefault = [{ "value": "cluster", "name": "Alle Clusterstandorte anzeigen", "selected": '' }] %}
+                {% endif %}
+            {% else %}
+                {% set selected = '' %}
+            {% endif %}
+            {% set scopeOptions = scopeOptions|merge([{ "value": scope.id, "name": scope.contact.name ~ " " ~ scope.shortName, "selected": selected }]) %}
+        {% endfor %}
+        {% set scopeOptions = scopeDefault|merge(scopeOptions) %}
+    {% else %}
+        {% set scopeOptions = [{ "value": scope.id, "name": "%s %s"|format(scope.contact.name, scope.shortName), "selected": "selected" }] %}
+    {% endif %}
+{% endif %}
+{% if (scope or selectedProcess) and workstation.queue.clusterEnabled != 1 %}
+    {% set disabled = "disabled" %}
+    {{ inputfield({
+        "type":"hidden",
+        "name":"scope",
+        "value":scope.id,
+    }) }}
+{% endif %}
+
+{% if cluster.scopes|length <= 1 %}
+    {% set disabled = "disabled" %}
+{% endif %}
+
+{{ formgroup(
+    {"label": "", "description": "","class":"switchcluster"},
+    [{
+        "type":"select",
+        "parameter": {
+            "accesskey": scopeAccessKey,
+            "disabled": disabled,
+            "name": "scope",
+            "options": scopeOptions,
+        }
+    }]
+) }}

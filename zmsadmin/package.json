@@ -1,0 +1,66 @@
+{
+  "name": "zmsadmin",
+  "version": "1.0.0",
+  "description": "zms admin frontend ",
+  "main": "index.js",
+  "private": true,
+  "author": "BerlinOnline GmbH & Co. KG",
+  "license": "SEE LICENSE IN LICENSE",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint js/",
+    "fix": "eslint --fix js/",
+    "css": "parcel build scss/admin.scss --log-level verbose --detailed-report --target css",
+    "js": "parcel build js/index.js --log-level verbose --detailed-report --target js",
+    "reactjs": "parcel build js/reactcomponents.js --log-level verbose --detailed-report --target js",
+    "csswatch": "parcel watch scss/admin.scss --log-level verbose  --target css",
+    "jswatch": "parcel watch js/index.js --log-level verbose --no-hmr --target js",
+    "reactwatch": "parcel watch js/reactcomponents.js --log-level verbose --no-hmr --target js",
+    "watch": "npm run jswatch & npm run csswatch &"
+  },
+  "targets": {
+    "js": {
+      "publicUrl": "./",
+      "distDir": "public/_js/"
+    },
+    "css": {
+      "publicUrl": "./",
+      "distDir": "public/_css/"
+    }
+  },
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.7.0",
+    "buffer": "^6.0.3",
+    "eslint": "^7.32.0",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-react": "^7.31.8",
+    "events": "^3.3.0",
+    "focus-trap-react": "10.0.0",
+    "https-browserify": "^1.0.0",
+    "jquery": "^3.6.1",
+    "js-cookie": "^2.2.1",
+    "json-schema-defaults": "^0.4.0",
+    "json-schema-ref-parser": "^9.0.9",
+    "moment": "^2.29.1",
+    "parcel": "^2.7.0",
+    "process": "^0.11.10",
+    "prop-types": "15.7.2",
+    "punycode": "^1.4.1",
+    "qrcode-generator": "^1.4.4",
+    "querystring-es3": "^0.2.1",
+    "react": "^18.0.2",
+    "react-datepicker": "^4.2.1",
+    "react-dom": "^18.0.2",
+    "react-icons": "^4.6.0",
+    "react-to-print": "^2.14.10",
+    "redux-json-schema": "^1.0.0",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.0",
+    "util": "^0.12.5"
+  },
+  "dependencies": {
+    "bo-layout-admin-scss": "https://gitlab.com/eappointment/includes/layout-admin-scss.git#muc-main",
+    "bo-layout-admin-js": "https://gitlab.com/eappointment/includes/layout-admin-js.git#2.24.14",
+    "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities.git#2.24.14"
+  }
+}

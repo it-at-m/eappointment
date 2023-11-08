@@ -1,0 +1,30 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% block title %}Anmeldung{% endblock %}
+
+{% block headline %}
+    {{ headline1("Erfolgreich abgemeldet") }}
+{% endblock %}
+
+{% block pageheader_middle %}
+    {% if workstation %}
+        {{ parent() }}
+    {% else %}
+    <span class="sitename">Zeitmanagementsystem - Anmeldung für Behördenmitarbeiter</span>
+    {% endif %}
+{% endblock %}
+
+{% block pageheader_right %}
+    {% if workstation %}
+        {{ parent() }}
+    {% else %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+	{{ parent() }}
+    <p>
+        {% trans %}Sie haben sich erfolgreich vom System abgemeldet. Nutzen Sie folgenden Link, um sich erneut anzumelden.{% endtrans %}
+    </p>
+    <a class="button" href="{{ urlGet('index', {}, {}) }}">Zum Login</a>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "layout/main.twig" %}
+{% use "block/breadcrumb/breadcrumb.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block pageheader_middle %}
+    {% if workstation %}
+        {{ parent() }}
+    {% else %}
+    <span class="sitename">Zeitmanagementsystem - Anmeldung für Behördenmitarbeiter</span>
+    {% endif %}
+{% endblock %}
+
+{% block pageheader_right %}
+    {% if workstation %}
+        {{ parent() }}
+    {% else %}
+    {% endif %}
+{% endblock %}
+
+{% block headline %}
+    {{ headline1(title) }}
+{% endblock %}
+
+{% block content %}
+
+    {% include "block/changelog/changelogitem.twig" %}
+
+{% endblock %}
+

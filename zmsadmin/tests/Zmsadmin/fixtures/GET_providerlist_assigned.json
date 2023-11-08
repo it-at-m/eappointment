@@ -1,0 +1,763 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-06-26T13:57:38+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "0": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122058",
+            "link": "https://service.berlin.de/standort/122058/",
+            "name": "Ordnungsamt Charlottenburg-Wilmersdorf (Zentrale Anlauf- und Beratungsstelle)",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Ordnungsamt Charlottenburg-Wilmersdorf (Zentrale Anlauf- und Beratungsstelle)",
+                "postalCode": "10713",
+                "region": "Berlin",
+                "street": "Hohenzollerndamm",
+                "streetNumber": "174-177"
+            }
+        },
+        "1": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122207",
+            "link": "https://service.berlin.de/standort/122207/",
+            "name": "Ordnungsamt Lichtenberg",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Ordnungsamt Lichtenberg",
+                "postalCode": "13055",
+                "region": "Berlin",
+                "street": "Große-Leege-Str.",
+                "streetNumber": "103"
+            }
+        },
+        "2": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122208",
+            "link": "https://service.berlin.de/standort/122208/",
+            "name": "Bürgeramt I in Köpenick",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt I in Köpenick",
+                "postalCode": "12555",
+                "region": "Berlin",
+                "street": "Alt-Köpenick",
+                "streetNumber": "21"
+            }
+        },
+        "3": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122210",
+            "link": "https://service.berlin.de/standort/122210/",
+            "name": "Bürgeramt Halemweg (Außenstelle)",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Halemweg (Außenstelle)",
+                "postalCode": "13627",
+                "region": "Berlin",
+                "street": "Halemweg",
+                "streetNumber": "18"
+            }
+        },
+        "4": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122217",
+            "link": "https://service.berlin.de/standort/122217/",
+            "name": "Bürgeramt Heerstraße",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Heerstraße",
+                "postalCode": "14052",
+                "region": "Berlin",
+                "street": "Heerstr.",
+                "streetNumber": "12"
+            }
+        },
+        "5": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122217",
+            "link": "https://service.berlin.de/standort/122217/",
+            "name": "Bürgeramt Heerstraße",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Heerstraße",
+                "postalCode": "14052",
+                "region": "Berlin",
+                "street": "Heerstr.",
+                "streetNumber": "12"
+            }
+        },
+        "6": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122219",
+            "link": "https://service.berlin.de/standort/122219/",
+            "name": "Bürgeramt Hohenzollerndamm",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Hohenzollerndamm",
+                "postalCode": "10713",
+                "region": "Berlin",
+                "street": "Hohenzollerndamm",
+                "streetNumber": "177"
+            }
+        },
+        "7": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122226",
+            "link": "https://service.berlin.de/standort/122226/",
+            "name": "Bürgeramt II in Schöneweide",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt II in Schöneweide",
+                "postalCode": "12439",
+                "region": "Berlin",
+                "street": "Michael-Brückner-Str.",
+                "streetNumber": "1"
+            }
+        },
+        "8": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122227",
+            "link": "https://service.berlin.de/standort/122227/",
+            "name": "Bürgeramt Wilmersdorfer Straße",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Wilmersdorfer Straße",
+                "postalCode": "10627",
+                "region": "Berlin",
+                "street": "Wilmersdorfer Straße",
+                "streetNumber": "46"
+            }
+        },
+        "9": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122231",
+            "link": "https://service.berlin.de/standort/122231/",
+            "name": "Bürgeramt 1 (Kreuzberg), Yorckstr. ",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt 1 (Kreuzberg), Yorckstr. ",
+                "postalCode": "10965",
+                "region": "Berlin",
+                "street": "Yorckstraße ",
+                "streetNumber": "4-11"
+            }
+        },
+        "10": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122243",
+            "link": "https://service.berlin.de/standort/122243/",
+            "name": "Bürgeramt 3 (Friedrichshain), Frankfurter Allee",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt 3 (Friedrichshain), Frankfurter Allee",
+                "postalCode": "10247",
+                "region": "Berlin",
+                "street": "Frankfurter Allee",
+                "streetNumber": "35/37"
+            }
+        },
+        "11": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122246",
+            "link": "https://service.berlin.de/standort/122246/",
+            "name": "Bürgeramt Lichtenrade",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Lichtenrade",
+                "postalCode": "12307",
+                "region": "Berlin",
+                "street": "Briesingstrasse",
+                "streetNumber": "6"
+            }
+        },
+        "12": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122251",
+            "link": "https://service.berlin.de/standort/122251/",
+            "name": "Bürgeramt Schöneberg",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Schöneberg",
+                "postalCode": "10825",
+                "region": "Berlin",
+                "street": "John-F.-Kennedy-Platz",
+                "streetNumber": "-"
+            }
+        },
+        "13": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122251",
+            "link": "https://service.berlin.de/standort/122251/",
+            "name": "Bürgeramt Schöneberg",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Schöneberg",
+                "postalCode": "10825",
+                "region": "Berlin",
+                "street": "John-F.-Kennedy-Platz",
+                "streetNumber": "-"
+            }
+        },
+        "14": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122252",
+            "link": "https://service.berlin.de/standort/122252/",
+            "name": "Bürgeramt 1 (Neu- Hohenschönhausen) Egon-Erwin-Kisch-Straße ",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt 1 (Neu- Hohenschönhausen) Egon-Erwin-Kisch-Straße ",
+                "postalCode": "13059",
+                "region": "Berlin",
+                "street": "Egon-Erwin-Kisch-Straße",
+                "streetNumber": "106"
+            }
+        },
+        "15": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122254",
+            "link": "https://service.berlin.de/standort/122254/",
+            "name": "Bürgeramt 4 (Alt- Hohenschönhausen) Große-Leege-Straße",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt 4 (Alt- Hohenschönhausen) Große-Leege-Straße",
+                "postalCode": "13055",
+                "region": "Berlin",
+                "street": "Große-Leege-Straße",
+                "streetNumber": "103"
+            }
+        },
+        "16": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122257",
+            "link": "https://service.berlin.de/standort/122257/",
+            "name": "Bürgeramt Tempelhof",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Tempelhof",
+                "postalCode": "12099",
+                "region": "Berlin",
+                "street": "Tempelhofer Damm",
+                "streetNumber": "165"
+            }
+        },
+        "17": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122260",
+            "link": "https://service.berlin.de/standort/122260/",
+            "name": "Bürgeramt 2 (Lichtenberg) Normannenstr.",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt 2 (Lichtenberg) Normannenstr.",
+                "postalCode": "10367",
+                "region": "Berlin",
+                "street": "Normannenstr.",
+                "streetNumber": "1 - 2"
+            }
+        },
+        "18": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122262",
+            "link": "https://service.berlin.de/standort/122262/",
+            "name": "Bürgeramt 3 (Friedrichsfelde) Tierparkcenter",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt 3 (Friedrichsfelde) Tierparkcenter",
+                "postalCode": "10319",
+                "region": "Berlin",
+                "street": "Otto-Schmirgal-Straße",
+                "streetNumber": "7"
+            }
+        },
+        "19": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122271",
+            "link": "https://service.berlin.de/standort/122271/",
+            "name": "Bürgeramt Biesdorf - Center",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Biesdorf - Center",
+                "postalCode": "12683",
+                "region": "Berlin",
+                "street": "Elsterwerdaer Platz",
+                "streetNumber": "3"
+            }
+        },
+        "20": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122273",
+            "link": "https://service.berlin.de/standort/122273/",
+            "name": "Bürgeramt Helle Mitte",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Helle Mitte",
+                "postalCode": "12627",
+                "region": "Berlin",
+                "street": "Alice-Salomon-Platz",
+                "streetNumber": "3"
+            }
+        },
+        "21": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122277",
+            "link": "https://service.berlin.de/standort/122277/",
+            "name": "Bürgeramt Marzahner Promenade",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Marzahner Promenade",
+                "postalCode": "12679",
+                "region": "Berlin",
+                "street": "Marzahner Promenade",
+                "streetNumber": "11"
+            }
+        },
+        "22": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122279",
+            "link": "https://service.berlin.de/standort/122279/",
+            "name": "Bürgeramt Spandau - Bürgerbüro Wasserstadt",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Spandau - Bürgerbüro Wasserstadt",
+                "postalCode": "13587",
+                "region": "Berlin",
+                "street": "Hugo-Cassirer-Str.",
+                "streetNumber": "48"
+            }
+        },
+        "23": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122280",
+            "link": "https://service.berlin.de/standort/122280/",
+            "name": "Bürgeramt Rathaus Mitte",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Rathaus Mitte",
+                "postalCode": "10178",
+                "region": "Berlin",
+                "street": "Karl-Marx-Allee",
+                "streetNumber": "31"
+            }
+        },
+        "24": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122281",
+            "link": "https://service.berlin.de/standort/122281/",
+            "name": "Bürgeramt Spandau - Bürgeramt Rathaus Spandau",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Spandau - Bürgeramt Rathaus Spandau",
+                "postalCode": "13597",
+                "region": "Berlin",
+                "street": "Carl-Schurz-Str.",
+                "streetNumber": "2/6"
+            }
+        },
+        "25": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122282",
+            "link": "https://service.berlin.de/standort/122282/",
+            "name": "Bürgeramt Rathaus Tiergarten",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Rathaus Tiergarten",
+                "postalCode": "10551",
+                "region": "Berlin",
+                "street": "Mathilde-Jacob-Platz",
+                "streetNumber": "1"
+            }
+        },
+        "26": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122283",
+            "link": "https://service.berlin.de/standort/122283/",
+            "name": "Bürgeramt Spandau - Bürgerbüro Kladow",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Spandau - Bürgerbüro Kladow",
+                "postalCode": "14089",
+                "region": "Berlin",
+                "street": "Parnemannweg",
+                "streetNumber": "22"
+            }
+        },
+        "27": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122284",
+            "link": "https://service.berlin.de/standort/122284/",
+            "name": "Bürgeramt Wedding ",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Wedding ",
+                "postalCode": "13359",
+                "region": "Berlin",
+                "street": "Osloer Str. ",
+                "streetNumber": "36"
+            }
+        },
+        "28": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122285",
+            "link": "https://service.berlin.de/standort/122285/",
+            "name": "Bürgeramt Rathaus Neukölln",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Rathaus Neukölln",
+                "postalCode": "12043",
+                "region": "Berlin",
+                "street": "Donaustr.",
+                "streetNumber": "29"
+            }
+        },
+        "29": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122286",
+            "link": "https://service.berlin.de/standort/122286/",
+            "name": "Bürgeramt Sonnenallee",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Sonnenallee",
+                "postalCode": "12045",
+                "region": "Berlin",
+                "street": "Sonnenallee",
+                "streetNumber": "107"
+            }
+        },
+        "30": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122291",
+            "link": "https://service.berlin.de/standort/122291/",
+            "name": "Bürgeramt Blaschkoallee",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Blaschkoallee",
+                "postalCode": "12359",
+                "region": "Berlin",
+                "street": "Blaschkoallee",
+                "streetNumber": "32"
+            }
+        },
+        "31": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122291",
+            "link": "https://service.berlin.de/standort/122291/",
+            "name": "Bürgeramt Blaschkoallee",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Blaschkoallee",
+                "postalCode": "12359",
+                "region": "Berlin",
+                "street": "Blaschkoallee",
+                "streetNumber": "32"
+            }
+        },
+        "32": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122294",
+            "link": "https://service.berlin.de/standort/122294/",
+            "name": "Bürgeramt Weißensee",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Weißensee",
+                "postalCode": "13088",
+                "region": "Berlin",
+                "street": "Berliner Allee",
+                "streetNumber": "252 - 260"
+            }
+        },
+        "33": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122296",
+            "link": "https://service.berlin.de/standort/122296/",
+            "name": "Bürgeramt Zwickauer Damm",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Zwickauer Damm",
+                "postalCode": "12353",
+                "region": "Berlin",
+                "street": "Zwickauer Damm",
+                "streetNumber": "52"
+            }
+        },
+        "34": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122297",
+            "link": "https://service.berlin.de/standort/122297/",
+            "name": "Bürgeramt Prenzlauer Berg",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Prenzlauer Berg",
+                "postalCode": "10405",
+                "region": "Berlin",
+                "street": "Fröbelstr.",
+                "streetNumber": "17"
+            }
+        },
+        "35": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122301",
+            "link": "https://service.berlin.de/standort/122301/",
+            "name": "Bürgeramt Pankow",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Pankow",
+                "postalCode": "13187",
+                "region": "Berlin",
+                "street": "Breite Str.",
+                "streetNumber": "24A - 26"
+            }
+        },
+        "36": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122304",
+            "link": "https://service.berlin.de/standort/122304/",
+            "name": "Bürgeramt Rathaus Reinickendorf",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Rathaus Reinickendorf",
+                "postalCode": "13437",
+                "region": "Berlin",
+                "street": "Eichborndamm",
+                "streetNumber": "215-239"
+            }
+        },
+        "37": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122309",
+            "link": "https://service.berlin.de/standort/122309/",
+            "name": "Bürgeramt Tegel",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Tegel",
+                "postalCode": "13507",
+                "region": "Berlin",
+                "street": "Berliner Str.",
+                "streetNumber": "35"
+            }
+        },
+        "38": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122311",
+            "link": "https://service.berlin.de/standort/122311/",
+            "name": "Bürgeramt Reinickendorf-Ost",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Reinickendorf-Ost",
+                "postalCode": "13407",
+                "region": "Berlin",
+                "street": "Teichstr.",
+                "streetNumber": "65"
+            }
+        },
+        "39": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122312",
+            "link": "https://service.berlin.de/standort/122312/",
+            "name": "Bürgeramt Heiligensee",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Heiligensee",
+                "postalCode": "13503",
+                "region": "Berlin",
+                "street": "Ruppiner Chaussee",
+                "streetNumber": "268"
+            }
+        },
+        "40": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "122314",
+            "link": "https://service.berlin.de/standort/122314/",
+            "name": "Bürgeramt Märkisches Viertel",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Märkisches Viertel",
+                "postalCode": "13435",
+                "region": "Berlin",
+                "street": "Wilhelmsruher Damm ",
+                "streetNumber": "142C"
+            }
+        },
+        "41": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "150230",
+            "link": "https://service.berlin.de/standort/150230/",
+            "name": "Bürgeramt Karow / Buch",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Karow / Buch",
+                "postalCode": "13125",
+                "region": "Berlin",
+                "street": "Franz-Schmidt-Str.",
+                "streetNumber": "8 - 10"
+            }
+        },
+        "42": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "317869",
+            "link": "https://service.berlin.de/standort/317869/",
+            "name": "Mobiles Bürgeramt Hermsdorf",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Mobiles Bürgeramt Hermsdorf",
+                "postalCode": "13467",
+                "region": "Berlin",
+                "street": "Kurhausstraße",
+                "streetNumber": "30"
+            }
+        },
+        "43": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "324414",
+            "link": "https://service.berlin.de/standort/324414/",
+            "name": "Bürgeramt Spandau - Bürgerbüro Falkenhagener Feld",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Bürgeramt Spandau - Bürgerbüro Falkenhagener Feld",
+                "postalCode": "13589",
+                "region": "Berlin",
+                "street": "Westerwaldstr.",
+                "streetNumber": "9"
+            }
+        },
+        "44": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "324433",
+            "link": "https://service.berlin.de/standort/324433/",
+            "name": "Mobiles Bürgeramt MV",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Mobiles Bürgeramt MV",
+                "postalCode": "13435",
+                "region": "Berlin",
+                "street": "Senftenberger Ring",
+                "streetNumber": "51"
+            }
+        },
+        "45": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "324434",
+            "link": "https://service.berlin.de/standort/324434/",
+            "name": "Mobiles Bürgeramt Reinickendorf Ost",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Mobiles Bürgeramt Reinickendorf Ost",
+                "postalCode": "13405",
+                "region": "Berlin",
+                "street": "Stargardtstr.",
+                "streetNumber": "12-14"
+            }
+        },
+        "46": {
+            "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+            "source": "dldb",
+            "id": "325341",
+            "link": "https://service.berlin.de/standort/325341/",
+            "name": "Mobiles Bürgeramt Reinickendorf",
+            "contact": {
+                "city": "Berlin",
+                "country": "Germany",
+                "name": "Mobiles Bürgeramt Reinickendorf",
+                "postalCode": "13405",
+                "region": "Berlin",
+                "street": "Auguste-Viktoria-Allee",
+                "streetNumber": "17a"
+            }
+        }
+    }
+}

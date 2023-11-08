@@ -1,0 +1,16 @@
+
+
+{% embed "block/scaffholding/board.twig" with {'class': 'dialog'} %}
+    {% block board_title %}<i aria-hidden="true" title="{{ ("Wechsel auf Cluster / anderen Standort")|trans }}" class="fas fa-info-circle"></i> {% trans %}Wechsel auf Cluster / anderen Standort{% endtrans %}{% endblock %}
+    {% block board_body %}
+        <p>
+            {{"Wenn Sie fortfahren wird das Termineingabeformular zurückgesetzt. 
+            Möchten Sie fortfahren?"|trans|nl2br }}
+        </p>
+        <div class="form-actions">
+            <a data-action-abort class="button button--diamond button-abort" href="#">Abbruch</a>
+            <a data-action-ok class="button button--default button-ok" href="#">Fortfahren</a>
+        </div>
+    {% endblock %}
+
+{% endembed %}

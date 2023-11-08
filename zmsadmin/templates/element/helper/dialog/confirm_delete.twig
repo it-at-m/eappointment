@@ -1,0 +1,37 @@
+
+
+{% embed "block/scaffholding/board.twig" with {'class': 'dialog'} %}
+    {% block board_title %}<i aria-hidden="true" title="{{ ("Eintrag löschen")|trans }}" class="fas fa-info-circle"></i> {% trans %}Eintrag löschen{% endtrans %}{% endblock %}
+    {% block board_body %}
+        <p>
+        {% if settings.isWithAppointment %}
+            {% if settings.hasTelephone and settings.hasMail %}
+                {{ "Wenn Sie den Vorgang mit der Nummer %d (%s) löschen wollen, klicken Sie auf \"Eintrag löschen\".
+                (Der Kunde wird darüber per E-Mail und/oder SMS informiert.)"|trans|format(id, name)|nl2br }}
+            {% elseif not settings.hasTelephone and settings.hasMail %}
+                {{ "Wenn Sie den Vorgang mit der Nummer %d (%s) löschen wollen, klicken Sie auf \"Eintrag löschen\".
+                (Der Kunde wird darüber per E-Mail informiert.)"|trans|format(id, name)|nl2br }}
+            {% elseif not settings.hasMail and settings.hasTelephone %}
+                {{ "Wenn Sie den Vorgang mit der Nummer %d (%s) löschen wollen, klicken Sie auf \"Eintrag löschen\".
+                (Der Kunde wird darüber per SMS informiert.)"|trans|format(id, name)|nl2br }}
+            {% else %}
+                {{ "Wenn Sie den Vorgang mit der Nummer %d (%s) löschen wollen, klicken Sie auf \"Eintrag löschen\".
+                (Beachten Sie, dass der Kunde darüber weder per eMail noch per SMS informiert werden kann.)"|trans|format(id, name)|nl2br }}
+            {% endif %}
+        {% else %}
+            {% if settings.hasTelephone %}
+                {{ "Wenn Sie den Vorgang mit der Nummer %d (%s) löschen wollen, klicken Sie auf \"Eintrag löschen\".
+                (Der Kunde wird darüber per SMS informiert.)"|trans|format(id, name)|nl2br }}
+            {% else %}
+                {{ "Wenn Sie den Vorgang mit der Nummer %d (%s) löschen wollen, klicken Sie auf \"Eintrag löschen\".
+                (Beachten Sie, dass der Kunde darüber nicht per SMS informiert werden kann.)"|trans|format(id, name)|nl2br }}
+            {% endif %}
+        {% endif %}
+        </p>
+        <div class="form-actions">
+            <a data-action-abort class="button button--diamond button-abort" href="#">Abbruch</a>
+            <a data-action-ok data-id="{{ id }}" data-name="{{ name }}" class="button button--destructive button-ok" href="#">Eintrag löschen</a>
+        </div>
+    {% endblock %}
+
+{% endembed %}

@@ -1,0 +1,57 @@
+{% set emergencyHidden = workstation.scope.preferences.workstation.emergencyEnabled ? '' : 'hidden' %}
+{% if workstation.scope.preferences.workstation.emergencyEnabled == "1" %}
+    <section class="emergency" {{emergencyHidden}}
+        data-scope="{{workstation.scope | json_encode}}"
+        data-workstationname="{{workstation.name|default(0)}}"
+        data-includeurl="{{includeUrl()}}"
+        data-state="clear"
+        data-source="">
+        <h2 class="aural">Notruf</h2>
+        <button class="button button--emergency emergency__button-trigger" >
+            <i class="fas fa-bell" aria-hidden="true"></i> NOTRUF
+        </button>
+
+        <div class="emergency__overlay">
+            <div class="block emergency__overlay-layout" role="dialog" aria-labelledby="emergency__overlay_title">
+            {% embed "block/scaffholding/board.twig" with {'class': "emergency__display-box"} %} {# do NOT use class exception here! #}
+                {% block board_title %}{% endblock %}
+
+                {% block board_title_aside%}
+                <h3 class="board__heading" id="emergency__overlay_title">Ein Notruf wurde ausgelöst</h3>
+                {% endblock %}
+
+                {% block board_header_right%}
+                    <span>
+                        <span class="emergency__show">
+                            <button accesskey="+" class="button button--diamond emergency__button-show"><i class="far fa-window-maximize"></i> Einblenden</button>
+                        </span>
+                        <span class="emergency__hide">
+                        <button accesskey="-" class="button button--diamond emergency__button-hide" title="Fenster minimieren"><i class="far fa-window-minimize"></i> <span class="aural">Ausblenden</span></button>
+                    </span>
+                    </span>
+                {% endblock %}
+
+                {% block board_body %}
+                    <p class="emergency__message">
+                        Es wurde ein Notruf vom <span class="emergency__source">??</span> ausgelöst.
+                    </p>
+                    <p class="emergency__message emergency__help-coming">
+                        Hilfe ist unterwegs von: <span class="emergency__help-from">??</span>.
+                    </p>
+                    <div class="form-actions">
+                        <span class="emergency__help">
+                            <button class="button emergency__button-help"><i class="fas fa-running" aria-hidden="true"></i> Ich komme zu Hilfe!</button>
+                        </span>
+                        <span class="emergency__end">
+                            <button class="button button--default emergency__button-end">Notruf beenden</button>
+                        </span>
+                    </div>
+                {% endblock %}
+
+                {% block board_footer %}{% endblock  %}
+                
+            {% endembed %}
+            </div>
+        </div>
+    </section>
+{% endif %}

@@ -1,0 +1,10 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block headline %}
+    {{ headline1("Statistik") }}
+{% endblock %}
+
+{% block content %}
+    {% include "block/process/finished.twig" %}
+{% endblock %}

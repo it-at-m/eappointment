@@ -1,0 +1,16 @@
+
+
+{% embed "block/scaffholding/board.twig" with {'class': 'dialog'} %}
+    {% block board_title %}<i aria-hidden="true" title="{{ ("Eintrag kopieren nicht möglich")|trans }}" class="fas fa-info-circle"></i> {{ ("Eintrag kopieren nicht möglich")|trans }}{% endblock %}
+    {% block board_body %}
+        {% set message = "Dieser Termin kann nicht erneut eingestellt werden, da zu folgender Uhrzeit kein Termin mehr frei ist!" %}
+        <p>
+            {{ message|trans }}<br />
+            {% trans %}Uhrzeit{% endtrans %}: {{ selectedtime|replace({'-': ':'}) }}
+        </p>
+        <div class="form-actions">
+            <a class="button button--default button-ok" href="#">Ok/Abbruch</a>
+        </div>
+    {% endblock %}
+
+{% endembed %}

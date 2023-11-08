@@ -1,0 +1,24 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'calendar board--light'} %}
+{% use "block/calendar/navigation.twig" %}
+    {% block board_title %}Kalender{% endblock %}
+
+    {% block board_header_right %}
+    {{ block("calender_navigation_month") }}
+    {% endblock %}
+    
+    
+    {% block board_body %}
+        <div class="calendarDateData"
+            data-selecteddate="{{ selectedDate }}"
+            data-prev="{{ selectedDate|date_modify("-1 month")|date("Y-m-d") }}"
+            data-next="{{ selectedDate|date_modify("+1 month")|date("Y-m-d") }}"
+        >
+        </div>
+        {% for month in monthList %}
+            {% include "block/calendar/calendar.twig" %}
+        {% endfor %}
+    {% endblock %}
+    {% block board_footer %}
+        <a title="{% trans %}den Wochenkalender (Übersicht) anzeigen{% endtrans %}" href="{{ urlGet('calendar_week', {year:selectedYear, weeknr:selectedWeek|number_format}, {}) }}">Wochenkalender</a>
+    {% endblock %}
+{% endembed %}
