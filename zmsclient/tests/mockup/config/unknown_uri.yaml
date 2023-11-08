@@ -1,0 +1,15 @@
+
+request:
+  method: GET
+  path: "/unknownUri/"
+  headers:
+    User-Agent:
+    - ClientZMS
+response:
+  statusCode: 500
+  headers:
+    Content-Type: 
+      - "application/json"
+  body: > 
+    {"$schema":"https://mockup:8083/api/2/","meta":{"$schema":"https://schema.berlin.de/queuemanagement/metaresult.json","error":true,"generated":"2022-04-08T14:32:29+02:00","server":"Zmsapi-ENV (2.24.05-4-gac99933)","message":"Could not find a resource with the given URL unknownuri/"},"data":null,"profiler":[]}
+

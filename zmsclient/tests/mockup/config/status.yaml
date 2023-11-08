@@ -1,0 +1,14 @@
+
+request:
+  method: GET
+  path: "/status/"
+  headers:
+    User-Agent:
+    - ClientZMS
+response:
+  statusCode: 200
+  headers:
+    Content-Type: 
+      - "application/json"
+  body: > 
+    {"$schema":"https://mockup:8083/terminvereinbarung/api/2/","meta":{"$schema":"https://schema.berlin.de/queuemanagement/metaresult.json","error":false,"generated":"2022-04-06T16:54:20+02:00","server":"Zmsapi-ENV (2.24.05-20-g3df8532)"},"data":{"$schema":"https://schema.berlin.de/queuemanagement/status.json","database":{"nodeConnections":0,"clusterStatus":"ON","logbin":"ON","problems":"tmp_table_size should be at least 32MB; max_heap_table_size should be at least 32MB","locks":"0","threads":"1"},"processes":{"blocked":"2","confirmed":"235913","pending":"37203","missed":"7","sincemidnight":"1","last7days":"28269","lastInsert":"2022-04-06 13:27:12","outdated":"0","freeSlots":"1094231","lastCalculate":"2022-04-06 16:50:03"},"mail":{"queueCount":"0"},"notification":{"queueCount":"0"},"sources":{"dldb":{"last":"2022-04-06T16:02:08+02:00"}},"version":{"major":"2","minor":"24","patch":"05-20-g3df8532"}}}

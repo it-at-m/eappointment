@@ -1,0 +1,3 @@
+# Coverage
+- source: /src/Zmsclient/(.+?\.php).*/
+  public: '_tests/coverage/\1.html'
