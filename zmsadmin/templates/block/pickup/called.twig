@@ -1,0 +1,26 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'client-called dialog'} %}
+
+        {% block board_title %}
+            <i aria-hidden="true" title="{{ ("Information")|trans }}" class="fas fa-info-circle"></i> Aufruf eines Abholers
+        {% endblock %}
+
+        {% block board_body %}
+            <p>
+            {% if workstation.process.clients|first.familyName %}
+                Ist der Abholer<br />
+                <strong>"{{ workstation.process.clients|first.familyName }} (Wartenummer {{ workstation.process.queue.number }})"</strong><br/>
+                gekommen?
+            {% else %}
+                Ist der Abholer mit der Wartenummer <strong>{{ workstation.process.queue.number }}</strong> gekommen?
+            {% endif %}
+            </p>
+            <div class="form-actions left">
+                <a class="button-callback button-submit btn" data-callback="onFinishProcess" data-name="{{ workstation.process.clients|first.familyName }}" data-id="{{ workstation.process.id }}">Ja, bitte aus der Liste entfernen ✓</a>
+                <a class="button-callback btn" data-callback="onCancelProcess" href="#">Nein / Abbruch</a>
+            </div>
+        {% endblock %}
+
+        {% block board_footer %}
+        {% endblock %}
+
+{% endembed %}

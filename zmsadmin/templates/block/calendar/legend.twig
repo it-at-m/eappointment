@@ -1,0 +1,55 @@
+{% from 'element/helper/snippets.twig' import openingCalendarIcon %}
+
+{% set legendtypes = {
+    'square': {
+        'today small': 'Heute',
+        'closed': 'Geschlossen',
+        'selected': 'Ausgewählt',
+    },
+    'rectangle mark': {
+        'mark--free': 'Freie Termine',
+        'mark--destructive': 'Ausgebucht',
+        'mark--dayoff': 'Freier Tag' 
+    }
+} %}
+
+<section aria-hidden="true">
+<h2 class="block__heading">{{ ("Legende")|trans }}</h2>
+    {% if view == "calendar" %}
+    <div class="block calendar-legend panel--light" style="padding: 1em 1em 0.5em;">
+        <div class="grid" style="font-size:0.9em;">
+        {% for key, typeList in legendtypes %}
+            <div class="grid__item one-half">
+                <ul class="list--clean" style="margin:0px;">
+                {% for type, label in typeList %}
+                    <li><span class="day {{ key }} {{ type }}">1</span> {{ label|trans }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+        </div>  
+    </div>
+   
+    {% else %}
+    
+    <div class="block calendar-legend">
+
+    {% for key, typeList in legendtypes %}
+    <ul class="list--clean">
+        {% for type, label in typeList %}
+            <li><span class="day {{ key }} {{ type }}">1</span> {{ label|trans }}</li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+    <ul class="list--clean">
+        <li>{{ openingCalendarIcon('K','red', 1, 'Konflikt') }} Konflikt</li>
+        <li>{{ openingCalendarIcon('S','green', 1, 'Offen für Spontankunden') }} Offen für Spontankunden</li>
+        <li>{{ openingCalendarIcon('T','blue', 1, 'Offen für Terminkunden') }} Offen für Terminkunden</li>
+    </ul>
+    <ul class="list--clean">
+        <li><i class="fas fa-globe"></i> Buchbar per Internet</li>
+        <li><i class="fas fa-phone"></i> Buchbar per Callcenter</li>
+    </ul>
+    </div>
+    {% endif %}
+</section>

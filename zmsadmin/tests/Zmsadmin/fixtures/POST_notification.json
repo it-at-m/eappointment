@@ -1,0 +1,123 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-06-28T11:05:57+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/notification.json",
+        "id": "2",
+        "createIP": "127.0.0.1",
+        "createTimestamp": "1498640757",
+        "message": "This is a test body message",
+        "client": {
+            "telephone": "",
+            "familyName": "S4524"
+        },
+        "process": {
+            "amendment": "D12521625",
+            "appointments": [
+                {
+                    "date": 1459501200,
+                    "scope": {
+                        "id": "141"
+                    },
+                    "availability": {
+                        "weekday": {
+                            "sunday": 0,
+                            "monday": 0,
+                            "tuesday": 0,
+                            "wednesday": 0,
+                            "thursday": 0,
+                            "friday": 0,
+                            "saturday": 0
+                        },
+                        "repeat": {
+                            "afterWeeks": 1,
+                            "weekOfMonth": 0
+                        },
+                        "bookable": {
+                            "startInDays": 1,
+                            "endInDays": 60
+                        },
+                        "workstationCount": {
+                            "public": 0,
+                            "callcenter": 0,
+                            "intern": 0
+                        },
+                        "multipleSlotsAllowed": true,
+                        "slotTimeInMinutes": 10,
+                        "startDate": 0,
+                        "endDate": 0,
+                        "startTime": "0:00",
+                        "endTime": "23:59",
+                        "type": "appointment"
+                    },
+                    "slotCount": "1"
+                }
+            ],
+            "authKey": "2b88",
+            "clients": [
+                {
+                    "familyName": "S4524",
+                    "email": "test@example.com",
+                    "emailSendCount": "0",
+                    "notificationsSendCount": "0",
+                    "surveyAccepted": "0",
+                    "telephone": ""
+                }
+            ],
+            "createIP": "127.0.0.1",
+            "createTimestamp": "1454316708",
+            "id": "194104",
+            "archiveId": 0,
+            "queue": {
+                "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+                "arrivalTime": 1459501200,
+                "callCount": "0",
+                "callTime": 0,
+                "number": "194104",
+                "waitingTime": null,
+                "status": "confirmed",
+                "lastCallTime": 0,
+                "destination": null,
+                "destinationHint": null,
+                "withAppointment": "1"
+            },
+            "reminderTimestamp": "0",
+            "scope": {
+                "id": "141"
+            },
+            "status": "confirmed"
+        },
+        "department": {
+            "id": "74",
+            "links": [
+                {
+                    "name": "Bürgerämter Charlottenburg-Wilmersdorf",
+                    "url": "http://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                    "target": "1",
+                    "id": "72"
+                }
+            ],
+            "email": "test@example.com",
+            "name": "Bürgeramt",
+            "contact": {
+                "city": "Berlin",
+                "street": "Otto-Suhr-Allee 100, 10585 Berlin",
+                "country": "Germany",
+                "name": ""
+            },
+            "preferences": {
+                "notifications": {
+                    "enabled": "1",
+                    "identification": "test@example.com",
+                    "sendConfirmationEnabled": "1",
+                    "sendReminderEnabled": "1"
+                }
+            }
+        }
+    }
+}

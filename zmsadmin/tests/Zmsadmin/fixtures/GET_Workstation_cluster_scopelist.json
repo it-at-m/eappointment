@@ -1,0 +1,1450 @@
+{
+    "$schema": "https://minikube/api/2/",
+    "meta": {
+      "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+      "error": false,
+      "generated": "2020-03-20T12:10:55+01:00",
+      "server": "Zmsapi-ENV (version.unknown)"
+    },
+    "data": {
+      "$schema": "https://schema.berlin.de/queuemanagement/workstation.json",
+      "useraccount": {
+        "rights": {
+          "availability": "1",
+          "basic": "1",
+          "cluster": "1",
+          "department": "1",
+          "organisation": "1",
+          "scope": "1",
+          "sms": "1",
+          "superuser": "1",
+          "ticketprinter": "1",
+          "useraccount": "1"
+        },
+        "departments": [
+          {
+            "id": "9999",
+            "name": " -> Test Department",
+            "contact": {
+              "city": "Musterstadt",
+              "street": "Musterstraße 1, 12345 Musterstadt",
+              "country": "Germany",
+              "name": ""
+            },
+            "clusters": [
+              {
+                "scopes": [
+                  {
+                    "id": "1",
+                    "source": "dldb",
+                    "$ref": "/scope/1/"
+                  }
+                ],
+                "id": "1",
+                "name": "Test Cluster",
+                "hint": "Musterstraße 1",
+                "shortNameEnabled": "0",
+                "callDisplayText": "Herzlich Willkommen in der Testumgebung."
+              }
+            ]
+          },
+          {
+            "id": "74",
+            "scopes": [
+              {
+                "id": "380",
+                "source": "dldb",
+                "contact": {
+                  "name": "Bürgeramt Halemweg (Außenstelle)"
+                },
+                "$ref": "/scope/380/"
+              }
+            ],
+            "links": [
+              {
+                "name": "Bürgerämter Charlottenburg-Wilmersdorf",
+                "url": "http://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                "target": "1",
+                "id": "72"
+              }
+            ],
+            "dayoff": [
+              {
+                "id": "1570",
+                "date": 1478041200,
+                "lastChange": 1566566540,
+                "name": "Personalversammlung"
+              }
+            ],
+            "name": "Charlottenburg-Wilmersdorf -> Bürgeramt",
+            "email": "test@example.com",
+            "contact": {
+              "city": "Berlin",
+              "street": "Otto-Suhr-Allee 100, 10585 Berlin",
+              "country": "Germany",
+              "name": ""
+            },
+            "preferences": {
+              "notifications": {
+                "enabled": "1",
+                "identification": "test@example.com",
+                "sendConfirmationEnabled": "1",
+                "sendReminderEnabled": "1"
+              }
+            },
+            "clusters": [
+              {
+                "scopes": [
+                  {
+                    "id": "141",
+                    "source": "dldb",
+                    "$ref": "/scope/141/"
+                  }
+                ],
+                "id": "109",
+                "name": "Bürgeramt Heerstraße",
+                "hint": "",
+                "shortNameEnabled": "1",
+                "callDisplayText": ""
+              },
+              {
+                "scopes": [
+                  {
+                    "id": "140",
+                    "source": "dldb",
+                    "$ref": "/scope/140/"
+                  }
+                ],
+                "id": "110",
+                "name": "Bürgeramt Hohenzollerndamm",
+                "hint": "",
+                "shortNameEnabled": "1",
+                "callDisplayText": ""
+              },
+              {
+                "scopes": [
+                  {
+                    "id": "142",
+                    "source": "dldb",
+                    "$ref": "/scope/142/"
+                  }
+                ],
+                "id": "192",
+                "name": "Bürgeramt Wilmersdorfer Str.",
+                "hint": "",
+                "shortNameEnabled": "1",
+                "callDisplayText": ""
+              }
+            ]
+          },
+          {
+            "id": "127",
+            "name": "Charlottenburg-Wilmersdorf -> Ordnungsamt",
+            "contact": {
+              "city": "174/177",
+              "street": "Hohenzollerndamm 174/177",
+              "country": "Germany",
+              "name": ""
+            },
+            "clusters": [
+              {
+                "scopes": [
+                  {
+                    "id": "615",
+                    "source": "dldb",
+                    "$ref": "/scope/615/"
+                  }
+                ],
+                "id": "290",
+                "name": "Ordnungsamt -ZAB-",
+                "hint": "",
+                "shortNameEnabled": "1",
+                "callDisplayText": ""
+              }
+            ]
+          },
+          {
+            "id": "57",
+            "links": [
+              {
+                "name": "Termine für andere Bürgerämter",
+                "url": "http://www.berlin.de/verwaltungsfuehrer/elektronische-terminvereinbarung/",
+                "target": "1",
+                "id": "46"
+              },
+              {
+                "name": "Berliner Bürgerämter",
+                "url": "http://www.berlin.de/verwaltungsfuehrer/buergerberatung/",
+                "target": "1",
+                "id": "71"
+              }
+            ],
+            "name": "Friedrichshain-Kreuzberg -> Bürgeramt",
+            "email": "test@example.com",
+            "contact": {
+              "city": "",
+              "street": "",
+              "country": "Germany",
+              "name": ""
+            },
+            "clusters": [
+              {
+                "scopes": [
+                  {
+                    "id": "108",
+                    "source": "dldb",
+                    "$ref": "/scope/108/"
+                  }
+                ],
+                "id": "421",
+                "name": "Bürgeramt 3",
+                "hint": "",
+                "shortNameEnabled": "0",
+                "callDisplayText": "Herzlich Willkommen im Bürgeramt 3 des Bezirks Friedrichshain-Kreuzberg!\r\n\r\n\r\nFür die Bearbeitung Ihrer Anliegen benötigen Sie einen Termin!\r\nBitte buchen Sie diesen im Internet unter\r\nwww.service.berlin.de\r\n\r\n                 Ihr Bürgeramt\r\n\r\n"
+              },
+              {
+                "scopes": [
+                  {
+                    "id": "106",
+                    "source": "dldb",
+                    "$ref": "/scope/106/"
+                  }
+                ],
+                "id": "427",
+                "name": "Bürgeramt 1",
+                "hint": "",
+                "shortNameEnabled": "0",
+                "callDisplayText": "Herzlich Willkommen im Bürgeramt 1 des Bezirks Friedrichshain-Kreuzberg!\r\n\r\n\r\nFür die Bearbeitung Ihrer Anliegen benötigen Sie einen Termin!\r\nBitte buchen Sie diesen im Internet unter\r\nwww.service.berlin.de\r\n\r\n                 Ihr Bürgeramt"
+              }
+            ]
+          },
+          {
+            "id": "72",
+            "links": [
+              {
+                "name": "Startseite Lichtenberger Bürgerämter",
+                "url": "http://www.berlin.de/ba-lichtenberg/verwaltung/behoerdenwegweiser/buergeramt.html",
+                "target": "1",
+                "id": "48"
+              },
+              {
+                "name": "Öffnungszeiten mit Wegweiser im BA Lichtenberg",
+                "url": "http://webbalibg.ba-libg.verwalt-berlin.de/zeiten/oeffnungszeiten.htm",
+                "target": "0",
+                "id": "49"
+              },
+              {
+                "name": "Formulare der Bürgerämter",
+                "url": "http://www.berlin.de/buergeramt/formulare/index.php",
+                "target": "1",
+                "id": "50"
+              },
+              {
+                "name": "Wechseln der Bürgerämter",
+                "url": "http://www.berlin.de/ba-lichtenberg/verwaltung/behoerdenwegweiser/infosystem.php?s&keinedienstleistung",
+                "target": "1",
+                "id": "60"
+              }
+            ],
+            "name": "Lichtenberg -> Bürgeramt",
+            "email": "test@example.com",
+            "contact": {
+              "city": "Egon-Erwin-Kisch-Str.",
+              "street": "Egon-Erwin-Kisch-Str.",
+              "country": "Germany",
+              "name": ""
+            },
+            "preferences": {
+              "notifications": {
+                "enabled": "1",
+                "identification": "test@example.com",
+                "sendConfirmationEnabled": "1",
+                "sendReminderEnabled": "1"
+              }
+            },
+            "clusters": [
+              {
+                "scopes": [
+                  {
+                    "id": "135",
+                    "source": "dldb",
+                    "$ref": "/scope/135/"
+                  }
+                ],
+                "id": "28",
+                "name": "Bürgeramt 2",
+                "hint": "",
+                "shortNameEnabled": "1",
+                "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Berlintelefon:\r\n115"
+              },
+              {
+                "scopes": [
+                  {
+                    "id": "136",
+                    "source": "dldb",
+                    "$ref": "/scope/136/"
+                  }
+                ],
+                "id": "29",
+                "name": "Bürgeramt 3",
+                "hint": "",
+                "shortNameEnabled": "1",
+                "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Bürgertelefons:\r\n115"
+              },
+              {
+                "scopes": [
+                  {
+                    "id": "133",
+                    "source": "dldb",
+                    "$ref": "/scope/133/"
+                  }
+                ],
+                "id": "30",
+                "name": "Bürgeramt 4",
+                "hint": "",
+                "shortNameEnabled": "1",
+                "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Bürgertelefons:\r\n115"
+              },
+              {
+                "scopes": [
+                  {
+                    "id": "134",
+                    "source": "dldb",
+                    "$ref": "/scope/134/"
+                  }
+                ],
+                "id": "60",
+                "name": "Bürgeramt 1",
+                "hint": "Bürgeramt 1",
+                "shortNameEnabled": "1",
+                "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Bürgertelefons:\r\n115"
+              }
+            ]
+          },
+          {
+            "id": "128",
+            "name": "Lichtenberg -> Ordnungsamt",
+            "email": "test@example.com",
+            "contact": {
+              "city": "Berlin",
+              "street": "Große-Leege-Str. 103, 13055 Berlin",
+              "country": "Germany",
+              "name": ""
+            },
+            "clusters": [
+              {
+                "scopes": [
+                  {
+                    "id": "637",
+                    "source": "dldb",
+                    "$ref": "/scope/637/"
+                  }
+                ],
+                "id": "283",
+                "name": "Ordnungsamt Lichtenberg",
+                "hint": "",
+                "shortNameEnabled": "1",
+                "callDisplayText": "Herzlich Willkommen im Ordnungsamt Lichtenberg\r\n\r\nUnsere Sprechzeiten:\r\n\r\nMontag, Dienstag\r\n09:00-13:00 Uhr\r\nDonnerstag\r\n14:00-18:00 Uhr\r\nFreitag\r\n09:00-12:00 Uhr"
+              }
+            ]
+          },
+          {
+            "id": "58",
+            "name": "Marzahn-Hellersdorf -> Bürgeramt",
+            "email": "test@example.com",
+            "contact": {
+              "city": "",
+              "street": "",
+              "country": "Germany",
+              "name": ""
+            },
+            "clusters": [
+              {
+                "scopes": [
+                  {
+                    "id": "109",
+                    "source": "dldb",
+                    "$ref": "/scope/109/"
+                  }
+                ],
+                "id": "16",
+                "name": "Bürgeramt Helle-Mitte",
+                "hint": "",
+                "shortNameEnabled": "1",
+                "callDisplayText": ""
+              },
+              {
+                "scopes": [
+                  {
+                    "id": "112",
+                    "source": "dldb",
+                    "$ref": "/scope/112/"
+                  }
+                ],
+                "id": "24",
+                "name": "Bürgeramt Biesdorf-Center",
+                "hint": "",
+                "shortNameEnabled": "1",
+                "callDisplayText": "Herzlich Willkommen \r\nin Marzahn-Hellersdorf\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nwww.marzahn-hellersdorf.de/buergerdienste\r\n=====================\r\nMöchten Sie Wahlhelfer werden?\r\nNähere Informationen hier im Bürgeramt!"
+              },
+              {
+                "scopes": [
+                  {
+                    "id": "111",
+                    "source": "dldb",
+                    "$ref": "/scope/111/"
+                  }
+                ],
+                "id": "25",
+                "name": "Bürgeramt Marzahner Promenade",
+                "hint": "",
+                "shortNameEnabled": "1",
+                "callDisplayText": "Herzlich Willkommen \r\nin Marzahn-Hellersdorf\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nDAS BÜRGERAMT IST VOM 29.09. BIS ZUM 06.10.2014 GESCHLOSSEN !!!!"
+              }
+            ]
+          },
+          {
+            "id": "75",
+            "scopes": [
+              {
+                "id": "143",
+                "source": "dldb",
+                "contact": {
+                  "name": "Bürgeramt Rathaus Mitte"
+                },
+                "$ref": "/scope/143/"
+              },
+              {
+                "id": "145",
+                "source": "dldb",
+                "contact": {
+                  "name": "Bürgeramt Wedding "
+                },
+                "$ref": "/scope/145/"
+              }
+            ],
+            "name": "Mitte -> Bürgeramt",
+            "email": "test@example.com",
+            "contact": {
+              "city": "Berlin",
+              "street": "Mathilde-Jacob-Platz 1, 10551 Berlin",
+              "country": "Germany",
+              "name": ""
+            },
+            "clusters": [
+              {
+                "scopes": [
+                  {
+                    "id": "144",
+                    "source": "dldb",
+                    "$ref": "/scope/144/"
+                  }
+                ],
+                "id": "171",
+                "name": "Bürgeramt Tiergarten",
+                "hint": "",
+                "shortNameEnabled": "1",
+                "callDisplayText": ""
+              }
+            ]
+          },
+          {
+            "id": "81",
+            "name": "Neukölln -> Bürgeramt",
+            "email": "test@example.com",
+            "contact": {
+              "city": "",
+              "street": "",
+              "country": "Germany",
+              "name": ""
+            },
+            "clusters": [
+              {
+                "scopes": [
+                  {
+                    "id": "170",
+                    "source": "dldb",
+                    "$ref": "/scope/170/"
+                  }
+                ],
+                "id": "114",
+                "name": "Bürgeramt Zwickauer Damm",
+                "hint": "",
+                "shortNameEnabled": "0",
+                "callDisplayText": ""
+              },
+              {
+                "scopes": [
+                  {
+                    "id": "168",
+                    "source": "dldb",
+                    "$ref": "/scope/168/"
+                  }
+                ],
+                "id": "115",
+                "name": "Bürgeramt Sonnenallee",
+                "hint": "",
+                "shortNameEnabled": "0",
+                "callDisplayText": ""
+              },
+              {
+                "scopes": [
+                  {
+                    "id": "169",
+                    "source": "dldb",
+                    "$ref": "/scope/169/"
+                  },
+                  {
+                    "id": "441",
+                    "source": "dldb",
+                    "$ref": "/scope/441/"
+                  }
+                ],
+                "id": "117",
+                "name": "Bürgeramt Blaschkoallee",
+                "hint": "",
+                "shortNameEnabled": "0",
+                "callDisplayText": ""
+              },
+              {
+                "scopes": [
+                  {
+                    "id": "167",
+                    "source": "dldb",
+                    "$ref": "/scope/167/"
+                  }
+                ],
+                "id": "118",
+                "name": "Bürgeramt Rathaus Neukölln",
+                "hint": "",
+                "shortNameEnabled": "0",
+                "callDisplayText": ""
+              }
+            ]
+          },
+          {
+            "id": "55",
+            "scopes": [
+              {
+                "id": "381",
+                "source": "dldb",
+                "contact": {
+                  "name": "Bürgeramt Karow / Buch"
+                },
+                "$ref": "/scope/381/"
+              },
+              {
+                "id": "101",
+                "source": "dldb",
+                "contact": {
+                  "name": "Bürgeramt Pankow"
+                },
+                "$ref": "/scope/101/"
+              }
+            ],
+            "dayoff": [
+              {
+                "id": "1456",
+                "date": 1477000800,
+                "lastChange": 1566566540,
+                "name": "Personalversammlung"
+              },
+              {
+                "id": "1552",
+                "date": 1475186400,
+                "lastChange": 1566566540,
+                "name": "Teamtag"
+              }
+            ],
+            "name": "Pankow -> Bürgeramt",
+            "email": "test@example.com",
+            "contact": {
+              "city": "",
+              "street": "",
+              "country": "Germany",
+              "name": ""
+            },
+            "clusters": [
+              {
+                "scopes": [
+                  {
+                    "id": "102",
+                    "source": "dldb",
+                    "$ref": "/scope/102/"
+                  }
+                ],
+                "id": "130",
+                "name": "BüA Prenzlauer Berg",
+                "hint": "",
+                "shortNameEnabled": "1",
+                "callDisplayText": ""
+              },
+              {
+                "scopes": [
+                  {
+                    "id": "103",
+                    "source": "dldb",
+                    "$ref": "/scope/103/"
+                  }
+                ],
+                "id": "169",
+                "name": "BüA Weißensee",
+                "hint": "",
+                "shortNameEnabled": "1",
+                "callDisplayText": ""
+              }
+            ]
+          },
+          {
+            "id": "77",
+            "scopes": [
+              {
+                "id": "147",
+                "source": "dldb",
+                "contact": {
+                  "name": "Bürgeramt Heiligensee"
+                },
+                "$ref": "/scope/147/"
+              },
+              {
+                "id": "151",
+                "source": "dldb",
+                "contact": {
+                  "name": "Bürgeramt Märkisches Viertel"
+                },
+                "$ref": "/scope/151/"
+              },
+              {
+                "id": "148",
+                "source": "dldb",
+                "contact": {
+                  "name": "Bürgeramt Rathaus Reinickendorf"
+                },
+                "$ref": "/scope/148/"
+              },
+              {
+                "id": "149",
+                "source": "dldb",
+                "contact": {
+                  "name": "Bürgeramt Reinickendorf-Ost"
+                },
+                "$ref": "/scope/149/"
+              },
+              {
+                "id": "150",
+                "source": "dldb",
+                "contact": {
+                  "name": "Bürgeramt Tegel"
+                },
+                "$ref": "/scope/150/"
+              },
+              {
+                "id": "189",
+                "source": "dldb",
+                "contact": {
+                  "name": "Mobiles Bürgeramt Hermsdorf"
+                },
+                "$ref": "/scope/189/"
+              },
+              {
+                "id": "425",
+                "source": "dldb",
+                "contact": {
+                  "name": "Mobiles Bürgeramt MV"
+                },
+                "$ref": "/scope/425/"
+              },
+              {
+                "id": "451",
+                "source": "dldb",
+                "contact": {
+                  "name": "Mobiles Bürgeramt Reinickendorf"
+                },
+                "$ref": "/scope/451/"
+              },
+              {
+                "id": "426",
+                "source": "dldb",
+                "contact": {
+                  "name": "Mobiles Bürgeramt Reinickendorf Ost"
+                },
+                "$ref": "/scope/426/"
+              }
+            ],
+            "dayoff": [
+              {
+                "id": "1471",
+                "date": 1482534000,
+                "lastChange": 1566566540,
+                "name": "Heiligabend"
+              },
+              {
+                "id": "1474",
+                "date": 1483138800,
+                "lastChange": 1566566540,
+                "name": "Silvester"
+              },
+              {
+                "id": "1477",
+                "date": 1479250800,
+                "lastChange": 1566566540,
+                "name": "Personalversammlung"
+              },
+              {
+                "id": "1501",
+                "date": 1462572000,
+                "lastChange": 1566566540,
+                "name": "Feiertag"
+              },
+              {
+                "id": "1504",
+                "date": 1463176800,
+                "lastChange": 1566566540,
+                "name": "Feiertag"
+              }
+            ],
+            "name": "Reinickendorf -> Bürgeramt",
+            "email": "test@example.com",
+            "contact": {
+              "city": "Berlin",
+              "street": "Teichstr. 65 (Haus 1), 13407 Berlin",
+              "country": "Germany",
+              "name": ""
+            }
+          },
+          {
+            "id": "78",
+            "scopes": [
+              {
+                "id": "429",
+                "source": "dldb",
+                "contact": {
+                  "name": "Bürgeramt Spandau - Bürgerbüro Falkenhagener Feld"
+                },
+                "$ref": "/scope/429/"
+              },
+              {
+                "id": "325",
+                "source": "dldb",
+                "contact": {
+                  "name": "Bürgeramt Spandau - Bürgerbüro Kladow"
+                },
+                "$ref": "/scope/325/"
+              }
+            ],
+            "dayoff": [
+              {
+                "id": "1576",
+                "date": 1464127200,
+                "lastChange": 1566566540,
+                "name": "Betriebsausflug?!"
+              }
+            ],
+            "name": "Spandau -> Bürgeramt",
+            "email": "test@example.com",
+            "contact": {
+              "city": "",
+              "street": "",
+              "country": "Germany",
+              "name": ""
+            },
+            "clusters": [
+              {
+                "scopes": [
+                  {
+                    "id": "153",
+                    "source": "dldb",
+                    "$ref": "/scope/153/"
+                  }
+                ],
+                "id": "66",
+                "name": "Bürgeramt Rathaus Spandau",
+                "hint": "",
+                "shortNameEnabled": "0",
+                "callDisplayText": ""
+              },
+              {
+                "scopes": [
+                  {
+                    "id": "154",
+                    "source": "dldb",
+                    "$ref": "/scope/154/"
+                  }
+                ],
+                "id": "418",
+                "name": "Bürgerbüro Wasserstadt",
+                "hint": "Hugo-Cassirer-Str. 48",
+                "shortNameEnabled": "1",
+                "callDisplayText": "Willkommen im Bürgerbüro Wasserstadt"
+              }
+            ]
+          },
+          {
+            "id": "76",
+            "links": [
+              {
+                "name": "ZW-WEB",
+                "url": "http://molto.srz.lit.verwalt-berlin.de/zwweb/",
+                "target": "1",
+                "id": "52"
+              },
+              {
+                "name": "Auswärtiges Amt - Reise- und Sicherheitshinw.",
+                "url": "http://www.auswaertiges-amt.de/sid_D6DA6D4129CEC309EA7534812F04B0EA/DE/Laenderinformationen/Uebersicht_Navi.html",
+                "target": "1",
+                "id": "53"
+              },
+              {
+                "name": "alles von A - Z in Tempelhof-Schönebg.",
+                "url": "http://www.berlin.de/ba-tempelhof-schoeneberg/info/wegweiser/index.html#",
+                "target": "1",
+                "id": "54"
+              },
+              {
+                "name": "Dienstleistungen A-Z",
+                "url": "http://service.berlin.de/dienstleistungen/",
+                "target": "1",
+                "id": "57"
+              },
+              {
+                "name": "Int. Telefonverzeichnis Berliner Behörden",
+                "url": "http://www.verwalt-berlin.de/itvb/suche.php",
+                "target": "1",
+                "id": "58"
+              },
+              {
+                "name": "Rechtsvorschriften Berlin (SenJus)",
+                "url": "http://www.berlin.de/sen/justiz/service/veroeffentlichungen.html",
+                "target": "1",
+                "id": "64"
+              },
+              {
+                "name": "Polizei Berlin (Dir 1-6)",
+                "url": "http://www.berlin.de/polizei/dienststellen/polizei-in-den-bezirken/",
+                "target": "1",
+                "id": "69"
+              },
+              {
+                "name": "Telefonbuch (öffentlich)",
+                "url": "http://www.google.de/search?q=telefonbuch&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:de:official&client=firefox-a",
+                "target": "1",
+                "id": "75"
+              },
+              {
+                "name": "PRADO - Online-Register Identitätsdokumente",
+                "url": "http://prado.consilium.europa.eu/de/searchbyissuingcountry.html",
+                "target": "1",
+                "id": "76"
+              },
+              {
+                "name": "Service-Center-BZR",
+                "url": "https://www.bundesjustizamt.de/DE/Themen/Buergerdienste/BZR/Ausland/Verwendung/FAQ_node.html",
+                "target": "1",
+                "id": "78"
+              },
+              {
+                "name": "amtl. Länderverzeichnis",
+                "url": "http://www.auswaertiges-amt.de/cae/servlet/contentblob/373538/publicationFile/171554/Laenderverzeichnis.pdf",
+                "target": "1",
+                "id": "80"
+              },
+              {
+                "name": "Fotomustertafel BDr",
+                "url": "http://www.personalausweisportal.de/SharedDocs/Downloads/DE/Weitere-Informationen/Fotomustertafel.pdf?__blob=publicationFile",
+                "target": "1",
+                "id": "91"
+              },
+              {
+                "name": "Portal der Berliner Verwaltung",
+                "url": "http://b-intern.de/",
+                "target": "1",
+                "id": "93"
+              },
+              {
+                "name": "Bundesmeldegesetz - Spezial",
+                "url": "http://b-intern.de/wb/labo/aufgabenbereiche/personenstands-und-einwohnerwesen/service-desk/artikel.389754.php",
+                "target": "1",
+                "id": "96"
+              },
+              {
+                "name": "Anlage 11 (zu § 31 FeV)",
+                "url": "http://www.gesetze-im-internet.de/fev_2010/anlage_11.html",
+                "target": "1",
+                "id": "103"
+              },
+              {
+                "name": "VOIS News",
+                "url": "http://www.verwalt-berlin.de/labo/einwohnerwesen/voiseinfuehrung.php",
+                "target": "1",
+                "id": "106"
+              },
+              {
+                "name": "VOIS Hilfe (F1-Taste)",
+                "url": "http://eweb.lea.verwalt-berlin.de/mesodoku/default.htm",
+                "target": "1",
+                "id": "109"
+              }
+            ],
+            "name": "Tempelhof-Schöneberg -> Bürgeramt",
+            "email": "test@example.com",
+            "contact": {
+              "city": "Berlin",
+              "street": "John-F.-Kennedy-Platz, 10825 Berlin",
+              "country": "Germany",
+              "name": ""
+            },
+            "clusters": [
+              {
+                "scopes": [
+                  {
+                    "id": "146",
+                    "source": "dldb",
+                    "$ref": "/scope/146/"
+                  },
+                  {
+                    "id": "456",
+                    "source": "dldb",
+                    "$ref": "/scope/456/"
+                  }
+                ],
+                "id": "4",
+                "name": "Rathaus Schöneberg",
+                "hint": "John-F.-Kennedy-Platz",
+                "shortNameEnabled": "0",
+                "callDisplayText": "Herzlich Willkommen in Tempelhof-Schöneberg.\r\n====================\r\nHinweis: In diesem Bürgeramt erfolgt die Kundenbedienung nur nach vorheriger Termin-vereinbarung. Termine erhalten Sie über das Behördentelefon 115, zur Selbstbuchung über die Online-Terminvereinbarung (www.service.berlin.de) oder hier an der Information."
+              },
+              {
+                "scopes": [
+                  {
+                    "id": "231",
+                    "source": "dldb",
+                    "$ref": "/scope/231/"
+                  }
+                ],
+                "id": "70",
+                "name": "Bürgerzentrum Lichtenrade",
+                "hint": "Briesingstr. 6",
+                "shortNameEnabled": "0",
+                "callDisplayText": "Herzlich Willkommen in Tempelhof-Schöneberg.\r\n====================\r\nHinweis: In diesem Bürgeramt erfolgt die Kundenbedienung nur nach vorheriger Termin-vereinbarung. Termine erhalten Sie über das Behördentelefon 115, zur Selbstbuchung über die Online-Terminvereinbarung (www.service.berlin.de) oder hier an der Information."
+              },
+              {
+                "scopes": [
+                  {
+                    "id": "172",
+                    "source": "dldb",
+                    "$ref": "/scope/172/"
+                  }
+                ],
+                "id": "108",
+                "name": "Rathaus Tempelhof",
+                "hint": "Tempelhofer Damm 165",
+                "shortNameEnabled": "0",
+                "callDisplayText": "Herzlich Willkommen in Tempelhof-Schöneberg.\r\n====================\r\nHinweis: In diesem Bürgeramt erfolgt die Kundenbedienung nur nach vorheriger Termin-vereinbarung. Termine erhalten Sie über das Behördentelefon 115, zur Selbstbuchung über die Online-Terminvereinbarung (www.service.berlin.de) oder hier an der Information."
+              }
+            ]
+          },
+          {
+            "id": "96",
+            "links": [
+              {
+                "name": "Treptow-Köpenick",
+                "url": "http://www.treptow-koepenick.de",
+                "target": "1",
+                "id": "70"
+              },
+              {
+                "name": "Bürgerdienste WIKI",
+                "url": "http://budwiki/doku.php?id=wikist",
+                "target": "1",
+                "id": "73"
+              }
+            ],
+            "dayoff": [
+              {
+                "id": "1302",
+                "date": 1458946800,
+                "lastChange": 1566566540,
+                "name": "Ostern"
+              },
+              {
+                "id": "1305",
+                "date": 1463176800,
+                "lastChange": 1566566540,
+                "name": "Pfingsten"
+              }
+            ],
+            "name": "Treptow-Köpenick -> Bürgeramt",
+            "email": "test@example.com",
+            "contact": {
+              "city": "",
+              "street": "",
+              "country": "Germany",
+              "name": ""
+            },
+            "clusters": [
+              {
+                "scopes": [
+                  {
+                    "id": "313",
+                    "source": "dldb",
+                    "$ref": "/scope/313/"
+                  }
+                ],
+                "id": "76",
+                "name": "Bürgeramt Schöneweide",
+                "hint": "",
+                "shortNameEnabled": "1",
+                "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Schöneweide\r\n=====================\r\n\r\nDokumentenausgabe:\r\nneben der Information\r\nPlatz 1-2 Erdgeschoss\r\n\r\nPlätze 10-16\r\n1. Etage\r\n\r\nPlätze 20-28\r\n2. Etage"
+              },
+              {
+                "scopes": [
+                  {
+                    "id": "312",
+                    "source": "dldb",
+                    "$ref": "/scope/312/"
+                  }
+                ],
+                "id": "78",
+                "name": "Bürgeramt Köpenick",
+                "hint": "Gute Tag",
+                "shortNameEnabled": "1",
+                "callDisplayText": "Herzlich Willkommen im Bürgeramt Köpenick\r\n\r\n"
+              }
+            ]
+          }
+        ],
+        "id": "superuser",
+        "email": "",
+        "lastLogin": 1459461600
+      },
+      "name": "12",
+      "id": "138",
+      "hint": "12",
+      "queue": {
+        "appointmentsOnly": "1",
+        "clusterEnabled": "0"
+      },
+      "scope": {
+        "id": "169",
+        "source": "dldb",
+        "contact": {
+          "name": "Bürgeramt Blaschkoallee, Neukölln",
+          "street": "Blaschkoallee 32, 12359 Berlin",
+          "email": "",
+          "country": "Germany"
+        },
+        "provider": {
+          "contact": {
+            "city": "Berlin",
+            "country": "Germany",
+            "name": "Bürgeramt Blaschkoallee, Neukölln",
+            "postalCode": "12359",
+            "region": "Berlin",
+            "street": "Blaschkoallee",
+            "streetNumber": "32"
+          },
+          "id": "122291",
+          "link": "https://service.berlin.de/standort/122291/",
+          "name": "Bürgeramt Blaschkoallee, Neukölln",
+          "source": "dldb"
+        },
+        "hint": "Aufruf im Warteraum/Zimmer 231",
+        "lastChange": 1566566542,
+        "preferences": {
+          "appointment": {
+            "deallocationDuration": "10",
+            "endInDaysDefault": "60",
+            "multipleSlotsEnabled": "1",
+            "reservationDuration": "30",
+            "startInDaysDefault": "0"
+          },
+          "client": {
+            "alternateAppointmentUrl": "",
+            "amendmentActivated": "0",
+            "amendmentLabel": "Anmerkung",
+            "emailFrom": "test@example.com",
+            "emailRequired": "0",
+            "telephoneActivated": "0",
+            "telephoneRequired": 0
+          },
+          "notifications": {
+            "confirmationContent": "",
+            "headsUpContent": "",
+            "headsUpTime": "0"
+          },
+          "pickup": {
+            "alternateName": "Ausgabe",
+            "isDefault": "0"
+          },
+          "queue": {
+            "callCountMax": "0",
+            "callDisplayText": "Herzlich willkommen \r\nin Berlin Neukölln\r\n=====================\r\nTIPP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die online Terminvergabe unter:\r\nhttp://www.berlin.de/terminvereinbarung",
+            "firstNumber": "1",
+            "lastNumber": "399",
+            "maxNumberContingent": "0",
+            "processingTimeAverage": "10",
+            "publishWaitingTimeEnabled": "0",
+            "statisticsEnabled": "1"
+          },
+          "survey": {
+            "emailContent": "",
+            "enabled": "0",
+            "label": ""
+          },
+          "ticketprinter": {
+            "buttonName": "Bürgeramt",
+            "confirmationEnabled": "0",
+            "deactivatedText": "Die Wartenummernausgabe für das Bürger- und Wohnungsamt erfolgt ausschließlich an der Information - Zimmer 223 -.\r\n ",
+            "notificationsAmendmentEnabled": "0",
+            "notificationsEnabled": "0",
+            "notificationsDelay": "0"
+          },
+          "workstation": {
+            "emergencyEnabled": "1",
+            "emergencyRefreshInterval": "5"
+          }
+        },
+        "shortName": "",
+        "status": {
+          "emergency": {
+            "acceptedByWorkstation": "-1",
+            "activated": "0",
+            "calledByWorkstation": "-1"
+          },
+          "queue": {
+            "ghostWorkstationCount": "-1",
+            "givenNumberCount": "19",
+            "lastGivenNumber": "20",
+            "lastGivenNumberTimestamp": 1458774000
+          },
+          "ticketprinter": {
+            "deactivated": "1"
+          }
+        },
+        "dayoff": [
+          {
+            "id": "302",
+            "date": 1458860400,
+            "lastChange": 1566566540,
+            "name": "Karfreitag"
+          },
+          {
+            "id": "303",
+            "date": 1459116000,
+            "lastChange": 1566566540,
+            "name": "Ostermontag"
+          },
+          {
+            "id": "304",
+            "date": 1462053600,
+            "lastChange": 1566566540,
+            "name": "Maifeiertag"
+          },
+          {
+            "id": "305",
+            "date": 1462399200,
+            "lastChange": 1566566540,
+            "name": "Christi Himmelfahrt"
+          },
+          {
+            "id": "306",
+            "date": 1463349600,
+            "lastChange": 1566566540,
+            "name": "Pfingstmontag"
+          },
+          {
+            "id": "307",
+            "date": 1475445600,
+            "lastChange": 1566566540,
+            "name": "Tag der Deutschen Einheit"
+          },
+          {
+            "id": "308",
+            "date": 1482620400,
+            "lastChange": 1566566540,
+            "name": "1. Weihnachtstag"
+          },
+          {
+            "id": "309",
+            "date": 1482706800,
+            "lastChange": 1566566540,
+            "name": "2. Weihnachtstag"
+          },
+          {
+            "id": "310",
+            "date": 1483225200,
+            "lastChange": 1566566540,
+            "name": "Neujahr"
+          },
+          {
+            "id": "311",
+            "date": 1492120800,
+            "lastChange": 1566566540,
+            "name": "Karfreitag"
+          },
+          {
+            "id": "312",
+            "date": 1492380000,
+            "lastChange": 1566566540,
+            "name": "Ostermontag"
+          },
+          {
+            "id": "313",
+            "date": 1493589600,
+            "lastChange": 1566566540,
+            "name": "Maifeiertag"
+          },
+          {
+            "id": "314",
+            "date": 1495663200,
+            "lastChange": 1566566540,
+            "name": "Christi Himmelfahrt"
+          },
+          {
+            "id": "315",
+            "date": 1496613600,
+            "lastChange": 1566566540,
+            "name": "Pfingstmontag"
+          },
+          {
+            "id": "316",
+            "date": 1506981600,
+            "lastChange": 1566566540,
+            "name": "Tag der Deutschen Einheit"
+          },
+          {
+            "id": "317",
+            "date": 1514156400,
+            "lastChange": 1566566540,
+            "name": "1. Weihnachtstag"
+          },
+          {
+            "id": "318",
+            "date": 1514242800,
+            "lastChange": 1566566540,
+            "name": "2. Weihnachtstag"
+          },
+          {
+            "id": "319",
+            "date": 1514761200,
+            "lastChange": 1566566540,
+            "name": "Neujahr"
+          },
+          {
+            "id": "320",
+            "date": 1522360800,
+            "lastChange": 1566566540,
+            "name": "Karfreitag"
+          },
+          {
+            "id": "321",
+            "date": 1522620000,
+            "lastChange": 1566566540,
+            "name": "Ostermontag"
+          },
+          {
+            "id": "322",
+            "date": 1525125600,
+            "lastChange": 1566566540,
+            "name": "Maifeiertag"
+          },
+          {
+            "id": "323",
+            "date": 1525903200,
+            "lastChange": 1566566540,
+            "name": "Christi Himmelfahrt"
+          },
+          {
+            "id": "324",
+            "date": 1526853600,
+            "lastChange": 1566566540,
+            "name": "Pfingstmontag"
+          },
+          {
+            "id": "325",
+            "date": 1538517600,
+            "lastChange": 1566566540,
+            "name": "Tag der Deutschen Einheit"
+          },
+          {
+            "id": "326",
+            "date": 1545692400,
+            "lastChange": 1566566540,
+            "name": "1. Weihnachtstag"
+          },
+          {
+            "id": "327",
+            "date": 1545778800,
+            "lastChange": 1566566540,
+            "name": "2. Weihnachtstag"
+          },
+          {
+            "id": "328",
+            "date": 1546297200,
+            "lastChange": 1566566540,
+            "name": "Neujahr"
+          },
+          {
+            "id": "329",
+            "date": 1555624800,
+            "lastChange": 1566566540,
+            "name": "Karfreitag"
+          },
+          {
+            "id": "330",
+            "date": 1555884000,
+            "lastChange": 1566566540,
+            "name": "Ostermontag"
+          },
+          {
+            "id": "331",
+            "date": 1556661600,
+            "lastChange": 1566566540,
+            "name": "Maifeiertag"
+          },
+          {
+            "id": "332",
+            "date": 1559167200,
+            "lastChange": 1566566540,
+            "name": "Christi Himmelfahrt"
+          },
+          {
+            "id": "333",
+            "date": 1560117600,
+            "lastChange": 1566566540,
+            "name": "Pfingstmontag"
+          },
+          {
+            "id": "334",
+            "date": 1570053600,
+            "lastChange": 1566566540,
+            "name": "Tag der Deutschen Einheit"
+          },
+          {
+            "id": "335",
+            "date": 1577228400,
+            "lastChange": 1566566540,
+            "name": "1. Weihnachtstag"
+          },
+          {
+            "id": "336",
+            "date": 1577314800,
+            "lastChange": 1566566540,
+            "name": "2. Weihnachtstag"
+          },
+          {
+            "id": "337",
+            "date": 1577833200,
+            "lastChange": 1566566540,
+            "name": "Neujahr"
+          },
+          {
+            "id": "338",
+            "date": 1586469600,
+            "lastChange": 1566566540,
+            "name": "Karfreitag"
+          },
+          {
+            "id": "339",
+            "date": 1586728800,
+            "lastChange": 1566566540,
+            "name": "Ostermontag"
+          },
+          {
+            "id": "340",
+            "date": 1588284000,
+            "lastChange": 1566566540,
+            "name": "Maifeiertag"
+          },
+          {
+            "id": "341",
+            "date": 1590012000,
+            "lastChange": 1566566540,
+            "name": "Christi Himmelfahrt"
+          },
+          {
+            "id": "342",
+            "date": 1590962400,
+            "lastChange": 1566566540,
+            "name": "Pfingstmontag"
+          },
+          {
+            "id": "343",
+            "date": 1601676000,
+            "lastChange": 1566566540,
+            "name": "Tag der Deutschen Einheit"
+          },
+          {
+            "id": "344",
+            "date": 1608850800,
+            "lastChange": 1566566540,
+            "name": "1. Weihnachtstag"
+          },
+          {
+            "id": "345",
+            "date": 1608937200,
+            "lastChange": 1566566540,
+            "name": "2. Weihnachtstag"
+          },
+          {
+            "id": "346",
+            "date": 1609455600,
+            "lastChange": 1566566540,
+            "name": "Neujahr"
+          },
+          {
+            "id": "347",
+            "date": 1617314400,
+            "lastChange": 1566566540,
+            "name": "Karfreitag"
+          },
+          {
+            "id": "348",
+            "date": 1617573600,
+            "lastChange": 1566566540,
+            "name": "Ostermontag"
+          },
+          {
+            "id": "349",
+            "date": 1619820000,
+            "lastChange": 1566566540,
+            "name": "Maifeiertag"
+          },
+          {
+            "id": "350",
+            "date": 1620856800,
+            "lastChange": 1566566540,
+            "name": "Christi Himmelfahrt"
+          },
+          {
+            "id": "351",
+            "date": 1621807200,
+            "lastChange": 1566566540,
+            "name": "Pfingstmontag"
+          },
+          {
+            "id": "352",
+            "date": 1633212000,
+            "lastChange": 1566566540,
+            "name": "Tag der Deutschen Einheit"
+          },
+          {
+            "id": "353",
+            "date": 1640386800,
+            "lastChange": 1566566540,
+            "name": "1. Weihnachtstag"
+          },
+          {
+            "id": "354",
+            "date": 1640473200,
+            "lastChange": 1566566540,
+            "name": "2. Weihnachtstag"
+          }
+        ]
+      },
+      "support": {
+        "eMail": "test@example.com",
+        "telephone": "(030) 115"
+      }
+    }
+  }

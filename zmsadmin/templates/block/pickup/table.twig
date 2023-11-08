@@ -1,0 +1,112 @@
+{% embed "block/scaffholding/board.twig" with {"class": "pickup-table" } %}
+    {% use "block/pickup/scopeSwitch.twig" %}
+    {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield, providername %}
+    {% set matchingWorkstationScope = (workstation.scope.id == scope.id) %}
+
+    {% block board_title %}
+        {% trans %}Abholer{% endtrans %}
+        {% if department %}
+        {{ department.name}}, {{ providername(scope) }}
+        {% else %}
+        {{ providername(scope) }}
+        {% endif %}
+    {% endblock %}
+
+    {% block board_header_right %}
+        {% if pickupList and workstation.useraccount.rights.scope == "1" %}
+        {{ block('scope_switch') }}
+        {% endif %}
+        <a href="#" title="Liste neu laden" class="button button--diamond btn--bigicon queue-reload"><i class="fas fa-sync-alt" aria-hidden="true"></i> <span class="arual">Liste neu laden</span></a>
+        <a href="{{ urlGet('pickup_spreadsheet', {}, {'selectedscope': scope.id}) }}" target="_blank" title="Abholerliste für die weitere Auswertung in Excel" class="button button--diamond btn--bigicon download"><i class="fas fa-download" aria-hidden="true"></i> <span class="arual">Download</span></a>
+    {% endblock %}
+
+    {% block board_body %}
+        {% if processList|length %}
+        <table class="table--base" style="margin-bottom:10px;">
+            <thead>
+                <tr>
+                    <th colspan="2"></th>
+                    {% if matchingWorkstationScope %}<th>Aufruf</th>{% endif %}
+                    <th>Datum</th>
+                    <th>Nr.</th>
+                    <th style="white-space:nowrap">Name <small>(Aufrufe)</small></th>
+                    <th>Tel.</th>
+                    <th>Dienstleistung</th>
+                    <th>Anm.</th>
+                    <th>SMS</th>
+                    <th style="white-space:nowrap">E-Mail</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in processList %}
+                <tr>
+                    <td>{{ offset + loop.index }}</td>
+                    <td class="center">
+                        <a href="#" data-id="{{ item.id }}" data-name="{{ item.clients|first.familyName }}" class="icon process-finish" title="löschen"><i class="far fa-trash-alt" aria-hidden="true"></i></a>
+                    </td>
+                    {% if matchingWorkstationScope %}
+                    <td>
+                        <a href="#" data-id="{{ item.id }}" data-name="{{ item.clients|first.familyName }}" class="button button-submit process-pickup" style="margin:-5px 0px; width:100%;" title="{% if item.queue.withAppointment %}Termin aufrufen (Terminzeit: {{ item.queue.arrivalTime|date("H:i") }}{% else %}Spontankunde aufrufen (Ankunftszeit: {{ item.queue.arrivalTime|date("H:i") }}{% endif %} Uhr)">aufrufen</a>
+                    </td>
+                    {% endif %}
+                    <td>{{ item.appointments|first.date|date("d.m.Y") }}</td>
+                    <td>{% if item.queue.withAppointment %}{{ item.id }}{% else %}{{ item.queue.number }}{% endif %}</td>
+                    <td>
+                        {{ item.clients|first.familyName }}
+                        {% if item.queue.callCount > 0 %}
+                            <small>({{ item.queue.callCount }})</small>
+                        {% endif %}
+                    </td>
+                    <td>{% if item.clients|first.telephone %}{{ item.clients|first.telephone }}{% endif %}</td>
+                    <td>
+                        {% set requestNames = [] %}
+                        {% for request in item.requests %}
+                            {% set requestNames = requestNames|merge([request.name]) %}
+                        {% endfor %}
+                        {{ requestNames|join(", ")}}
+                    </td>
+                    <td>{% if item.amendment %}{{ item.amendment }}{% endif %}</td>
+                    <td class="notificationColumn">
+                        {% if item.clients|first.telephone and department.preferences.notifications.enabled %}
+                            <a href="#" data-process="{{ item.id }}" class="icon process-notification-send" title="vorformulierte Abholbenachrichtigung per SMS verschicken an {{ item.clients|first.telephone }}"><i class="fas fa-mobile-alt" aria-hidden="true"></i></a>
+                            {% if item.clients|first.notificationsSendCount %}<span class="counter">{{ item.clients|first.notificationsSendCount }}</span>{% endif %}
+                            <a href="#" data-process="{{ item.id }}" class="icon process-custom-notification-send" title="SMS frei formulieren und verschicken an {{ item.clients|first.telephone }}"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>
+                        {% endif %}
+                    </td>
+                    <td class="notificationColumn">
+                        {% if item.clients|first.email and scope.preferences.client.emailFrom %}
+                            <a href="#" data-process="{{ item.id }}" class="icon process-mail-send" title="vorformulierte Abholbenachrichtigung per E-Mail verschicken an {{ item.clients|first.email }}"><i class="fas fa-envelope" aria-hidden="true"></i></a>
+                            {% if item.clients|first.emailSendCount %}<span class="anzahlAufrufe">{{ item.clients|first.emailSendCount }}</span>{% endif %}
+                            <a href="#" data-process="{{ item.id }}" class="icon process-custom-mail-send" title="E-Mail frei formulieren und verschicken an {{ item.clients|first.email }}"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>
+            Es ist aktuell kein Abholer vorhanden.
+        </p>
+        {% endif %}
+        <div class="form-actions" style="margin-top:0px;">
+            {% if offset >= limit %}
+             <a class="button button--navigational load-next-queue" data-limit="{{ limit }}" data-offset="0" href="#">Zum Anfang der Liste</a>
+            <a class="button button--navigational load-next-queue" data-limit="{{ limit }}" data-offset="{{ offset - limit }}" href="#">Vorherige {{ limit }} Abholer anzeigen</a>
+            {% endif %}
+            {% if processListNext|length %}
+            <a class="button button--navigational load-next-queue" data-limit="{{ limit }}" data-offset="{{ offset + limit }}" href="#">Nächste {{ processListNext|length }} Abholer anzeigen</a>
+            {% endif %}
+        </div>
+    {% endblock %}
+
+    {% block board_footer %}
+        <div class="form-actions" style="margin-top:0px;">
+            <a class="button button--destructive process-finish-list" href="#">alle Abholer löschen</a>
+            {% if matchingWorkstationScope %}
+            <a class="button button-submit" href="{{ urlGet('pickup_handheld') }}">zur Tablet-Ansicht wechseln</a>
+            {% endif %}
+        </div>
+    {% endblock %}
+
+{% endembed %}

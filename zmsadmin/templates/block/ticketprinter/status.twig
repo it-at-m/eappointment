@@ -1,0 +1,61 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'ticketprinter-status'} %}
+        {% from 'element/helper/form.twig' import formgroup, formbutton %}
+
+        {% block board_title %}
+            Wartenummernausgabe am Kiosk - {{ scope.contact.name }}
+        {% endblock %}
+
+
+        {% block board_body %}
+            <form action="./" method="post" name="kiosk">
+
+                {{ formgroup(
+                    {
+                        "groupTag": "fieldset", 
+                        "legend": "Status", 
+                        "description": "Beachten Sie, dass eine Sperre erst nach Ziehen der nächsten Wartenummer in Kraft tritt.",
+                        "descriptionId": "ticketprinterStatus"
+                    },
+                    [{
+                        "type":"radio",
+                        "parameter": {
+                            "label": "freigeben",
+                            "name": "kioskausgabe",
+                            "value": "0",
+                            "checked": (scope.status.ticketprinter.deactivated == 0)
+                        }
+                    },{
+                        "type":"radio",
+                        "parameter": {
+                            "label": "sperren",
+                            "name": "kioskausgabe",
+                            "id": "kioskausgabesperren",
+                            "describedby": "help_ticketprinterStatus",
+                            "value": "1",
+                            "checked": (scope.status.ticketprinter.deactivated == 1)
+                        }
+                    }]
+                ) }}
+
+                {{ formgroup(
+                    {"label": "Hinweistext für die Kunden:"},
+                    [{
+                        "type":"textarea",
+                        "parameter": {
+                            "rows": 6,
+                            "name": "hinweis",
+                            "value": scope.preferences.ticketprinter.deactivatedText,
+                        }
+                    }]
+                ) }}
+
+                <div class="form-actions">
+                    {#{ formbutton({ "type":"close", "label":"Abbrechen", "value": "close" }) }#}
+                    {{ formbutton({ "type":"submit", "label":"Abschicken", "name": "save", "value": "save" }) }}
+                </div>
+            </form>
+        {% endblock %}
+
+
+
+{% endembed %}

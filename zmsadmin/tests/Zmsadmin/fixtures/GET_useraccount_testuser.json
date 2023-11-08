@@ -1,0 +1,26 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-06-27T15:56:53+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/useraccount.json",
+        "rights": {
+            "availability": "0",
+            "basic": "1",
+            "cluster": "0",
+            "department": "0",
+            "organisation": "0",
+            "scope": "0",
+            "sms": "1",
+            "superuser": "0",
+            "ticketprinter": "0",
+            "useraccount": "0"
+        },
+        "id": "testuser",
+        "lastLogin": 1459461600
+    }
+}

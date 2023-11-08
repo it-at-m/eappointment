@@ -1,0 +1,34 @@
+<time datetime="{{ getNow()|date("c") }}">
+   <abbr class="currentTime" id="currentTime" aria-live="off" role="timer" aria-label="Aktuelle Uhrzeit">{{ getNow()|date("H:i") }} Uhr</abbr>
+</time>
+
+{% if workstationInfo.waitingTimeEstimate %}
+    | Wartezeit:
+    <strong>
+        <span class="color-red">
+        {% if workstationInfo.waitingTimeEstimate < 60 %}
+            00:{{ workstationInfo.waitingTimeEstimate }}
+        {% else %}
+            {% set minutes = (workstationInfo.waitingTimeEstimate % 60) %}
+            {% set hours = (workstationInfo.waitingTimeEstimate / 60)|round(0, 'floor') %}
+            {% if hours < 10 %}0{{ hours }}{% else %}{{ hours }}{% endif %}:{% if minutes < 10 %}0{{ minutes }}{% else %}{{ minutes }}{% endif %}
+        {% endif %}
+        </span> {% trans %}Stunden{% endtrans %}
+    </strong>
+{% endif %}
+
+{% if workstationInfo.workstationList %}
+    {% set toolTip = "" %}
+    {% set linebreak = "\n" %}
+    {% for workstation in workstationInfo.workstationList %}
+        {% if loop.last %}{% set linebreak = "" %}{% endif %}
+        {% set toolTip = toolTip ~ workstation.useraccount.id ~ " an Platz " ~ workstation.name ~ linebreak %}
+    {% endfor %}
+    <span class="tooltip" title="{{ toolTip|e('html') }}">|
+        {% if workstationInfo.workstationList|length > 1 %}
+            {{ workstationInfo.workstationList|length }} Arbeitsplätze
+        {% else %}
+            {{ workstationInfo.workstationList|length }} Arbeitsplatz
+        {% endif %}
+    </span>
+{% endif %}

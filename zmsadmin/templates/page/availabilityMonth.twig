@@ -1,0 +1,12 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block headline %}
+    {{ headline1('Öffnungszeiten für den Standort ' ~ scope.name ~ ' ' ~ scope.shortName) }}
+{% endblock %}
+
+{% block content %} 
+    
+    {% include "block/availability/monthtable.twig" %}
+    
+{% endblock %}

@@ -1,0 +1,80 @@
+{% from 'element/helper/form.twig' import providername %}
+{% set rights = workstation.useraccount.rights %}
+<!-- owner overview -->
+{% for owner in ownerList %}
+<div class="owner-list owner-overview">
+    <h2 class="owner-title">{{ owner.name }}
+        {% if rights.superuser %}
+            <a class="float-right" href="{{ urlGet('owner', {'id':owner.id}, {}) }}" title="Bearbeiten"><i class="fas fa-edit" aria-hidden="true"></i> <span class="aural">Bearbeiten</span></a>
+        {% endif %}
+    </h2>
+    <ul class="list--clean organisation-list owner-overview_organisation-list">
+        {% for organisation in owner.organisations %}
+            <li>
+                <h3 class="organisation-title owner-overview_organisation-list_title">
+                {{ organisation.name }}
+                {% if rights.department or rights.superuser %}
+                    <a class="float-right" href="{{ urlGet('organisation', {'id': organisation.id}, {}) }}" title="Bearbeiten"><i class="fas fa-edit" aria-hidden="true"></i> <span class="aural">Bearbeiten</span></a>
+                {% endif %}
+                </h3>
+                <ul class="list--clean department-list owner-overview_department-list">
+                {% for department in organisation.departments %}
+                    <li>
+                        <h4 class="department-title owner-overview_department-list_title">
+                            {{ department.name }}
+                            {% if rights.department or rights.superuser %}
+                                <a class="float-right" href="{{ urlGet('department', {'id':department.id}, {}) }}" title="Bearbeiten"><i class="fas fa-edit" aria-hidden="true"></i> <span class="aural">Bearbeiten</span></a>
+                            {% endif %}
+                        </h4>
+                        <ul class="list--clean cluster-list owner-overview_cluster-list">
+                        {% for key, cluster in department.clusters %}
+                            <li>
+                                {% set clusterText %}
+                                <strong>Cluster - {{cluster.name}}</strong>
+                                {% endset %}
+                                {% if rights.cluster or rights.superuser %}
+                                    <a  class="cluster-title" href="{{ urlGet('cluster', {'clusterId':cluster.id, 'departmentId': department.id}, {}) }}">{{clusterText}}</a>
+                                {% else %}
+                                    <span class="cluster-title">{{clusterText}}</span>
+                                {% endif %}
+                                <ul class="list--clean scope-list owner-overview_scope-list">
+                                {% for clusterScope in cluster.scopes %}
+                                    <li>
+                                        {% if rights.scope or rights.superuser %}
+                                            <a class="scope-title" href="{{ urlGet('scope', {'id':clusterScope.id}, {}) }}"><i class="fas fa-level-up-alt fa-rotate-90 fa-xs" aria-hidden="true"></i> {{ providername(clusterScope) }}</a>
+                                        {% else %}
+                                            <span class="scope-title">└ {{ providername(clusterScope) }}</span>
+                                        {% endif %}
+                                        {% if rights.availability or rights.superuser %}
+                                            <a  class="float-right button-edit-availabilty" href="{{ urlGet('scopeAvailabilityMonth', {'id':clusterScope.id}, {}) }}" title="Öffnungszeiten">Öffnungszeiten</a>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                                </ul>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                        <ul class="list--clean scope-list owner-overview_scope-list">
+                            {% for scope in department.scopes %}
+                                <li>
+                                    {% if rights.scope or rights.superuser %}
+                                        <a class="scope-title"  href="{{ urlGet('scope', {'id':scope.id}, {}) }}">{{ providername(scope) }}</a>
+                                    {% else %}
+                                        <span class="scope-title"><i class="fas fa-level-up-alt fa-rotate-90 fa-xs" aria-hidden="true"></i> {{ providername(scope) }}</span>
+                                    {% endif %}
+                                    {% if rights.availability or rights.superuser %}
+                                        <a class="float-right button-edit-availabilty" href="{{ urlGet('scopeAvailabilityMonth', {'id':scope.id}, {}) }}" title="Öffnungszeiten">Öffnungszeiten</a>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endfor %}
+<!-- /owner overview -->

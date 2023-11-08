@@ -1,0 +1,201 @@
+{#% embed "block/scaffholding/board.twig" with {'class': 'department-form'} %}
+        {% block board_title %}{% endblock %}
+        {% block board_body %}{% endblock %}
+{% endembed %#}
+
+{% from 'element/helper/form.twig' import formgroup, formbutton, custombutton, inputsubmit, inputfield, checkboxfield %}
+
+<h2 class="form__heading">
+    {% if department %}
+        {{ department.name }} - Behörde: Einrichtung und Administration
+    {% else %}
+        {% trans %}Neue Behörde hinzufügen{% endtrans %}
+    {% endif %}
+</h2>
+
+<form method="post" action="./" class="form--base">
+    
+    <fieldset>
+        <div class="panel--heavy">
+            {{ formgroup(
+                {"label": "Name:"},
+                [{
+                    "type":"input",
+                    "parameter": {
+                        "name": "name",
+                        "required": true,
+                        "value": department.name,
+                    }
+                }]
+            ) }}
+
+            {{ formgroup(
+                {"label": "Anschrift:"},
+                [{
+                    "type":"input",
+                    "parameter": {
+                        "name": "contact[street]",
+                        "value": department.contact.street,
+                    }
+                }]
+            ) }}
+
+            {{ formgroup(
+                {"label": "Ansprechpartner:"},
+                [{
+                    "type":"input",
+                    "parameter": {
+                        "name": "contact[name]",
+                        "value": department.contact.name,
+                    }
+                }]
+            ) }}
+        </div>
+    </fieldset>
+
+
+    <fieldset>
+        <legend>Mail Einstellungen</legend>
+        <div class="panel--heavy">
+            {{ formgroup(
+                {"label": "Absender-Adresse:", "description": "Ohne diese Adresse können keine E-Mails zur Bestätigung oder zur Erinnerung an einen Termin verschickt werden."},
+                [{
+                    "type":"input",
+                    "parameter": {
+                        "name": "email",
+                        "value":  department.email,
+                    }
+                }]
+            ) }}
+
+            {{ formgroup(
+                {"label": null},
+                [{
+                    "type":"checkbox",
+                    "parameter": {
+                        "name": "sendEmailReminderEnabled",
+                        "label": "Terminerinnerung versenden",
+                        "value": 1,
+                        "checked":  department.sendEmailReminderEnabled|default(1),
+                    }
+                }]
+            ) }}
+
+            {{ formgroup(
+                {"label": "Zeit vor Terminbeginn in der eine Terminerinnerung verschickt wird (Minuten):"},
+                [{
+                    "type":"input",
+                    "parameter": {
+                        "name": "sendEmailReminderMinutesBefore",
+                        "value": department.sendEmailReminderMinutesBefore,
+                    }
+                }]
+            ) }}
+        </div>
+    </fieldset>
+    
+
+   
+    <fieldset>
+        <legend>SMS Einstellungen</legend>
+        <div class="panel--heavy">
+            {{ formgroup(
+                {"label": null},
+                [{
+                    "type":"checkbox",
+                    "parameter": {
+                        "name": "preferences[notifications][enabled]",
+                        "label": "SMS aktivieren",
+                        "value": 1,
+                        "checked":  department.preferences.notifications.enabled|default(0),
+                    }
+                }]
+            ) }}
+
+            {{ formgroup(
+                {"label": "SMS-Identifikation:", "description": "Für die Abrechnung von SMS-Kontingenten wird in der Regel eine E-Mail-Adresse zur Identifizierung des Inhabers des SMS-Kontos benötigt."},
+                [{
+                    "type":"input",
+                    "parameter": {
+                        "name": "preferences[notifications][identification]",
+                        "value": department.preferences.notifications.identification,
+                    }
+                }]
+            ) }}
+
+            {{ formgroup(
+                {
+                    "legend": "SMS-Bestätigung:",
+                    "groupTag": "fieldset",
+                    "description": "Der Kunde erhält eine SMS zur Bestätigung, dass sein Termin gebucht wurde. Bei Terminkunden wird der Text automatisch erstellt."
+                },
+                [{
+                    "type":"checkbox",
+                    "parameter": {
+                        "label": "bei der Internetbuchung",
+                        "name": "preferences[notifications][sendConfirmationEnabled]",
+                        "value": 1,
+                        "checked": department.preferences.notifications.sendConfirmationEnabled|default(0),
+                    }
+                }]
+            ) }}
+
+            {{ formgroup(
+                {
+                    "legend": "SMS-Erinnerung:",
+                    "groupTag": "fieldset"
+                },
+                [{
+                    "type":"checkbox",
+                    "parameter": {
+                        "label": "bei der Internetbuchung",
+                        "name": "preferences[notifications][sendReminderEnabled]",
+                        "value": 1,
+                        "checked": department.preferences.notifications.sendReminderEnabled|default(0),
+                    }
+                }]
+            ) }}
+        </div>
+    </fieldset>
+
+    
+    <fieldset class="department-links">
+        <legend>Favoriten</legend>  
+        <div class="links panel--heavy" data-department-links data-organisation="{{organisation.id}}" data-links="{{department.links|default([])|json_encode()}}">
+        </div>
+    </fieldset>
+    
+    <fieldset>        
+        <legend>Freie Tage</legend>  
+        <div class="panel--heavy">
+            <div class="message message--info"><p><i class="fas fa-exclamation-circle" title="Wichtiger Hinweis" aria-hidden="true"></i> <strong>Hinweis</strong>: Beachten Sie, dass Öffnungszeiten für einen einzelnen Tag (z.B. Ausnahmen) die Einstellung von freien Tagen ignorieren.</p></div>
+            <div class="daysoff" data-department-daysoff data-days="{{department.dayoff|default([])|json_encode()}}">
+            </div>
+        </div>
+    </fieldset>
+        
+    <div class="form-actions">
+        <div class="controls">
+            {% if action != "add" %}
+
+                {% set accessDeniedTitle = "" %}
+                {% if hasAccess == false %}
+                    {% set accessDeniedTitle = "Dieser Nutzer ist der Behörde noch nicht zugeordnet" %}
+                {% endif %}
+
+                {{ custombutton({ "type":"delete" ,"class": "button button--destructive", "target": urlGet("departmentDelete", {"id": department.id}, {}), "label":"Löschen" }) }}
+
+                <a class="button button-default" href="{{ urlGet('useraccountByDepartment', {'id':department.id}, {}) }}">Nutzer</a>
+                {#{ inputsubmit({"type": "new", "name": "neuer_nutzer", "value": "Nutzer hinzufügen" }) }#}
+
+                {{ custombutton({ "type":"new", "disabled":(hasAccess == false), "class": "button button-default","target": urlGet('departmentAddCluster', {'departmentId':department.id}, {}), "label":"Cluster hinzufügen", "title":accessDeniedTitle|trans}) }}
+
+                {{ custombutton({ "type":"new", "disabled":(hasAccess == false), "class": "button","target": urlGet("departmentAddScope", {'id': department.id}, {}), "label":"Standort hinzufügen", "title":accessDeniedTitle|trans}) }}
+            {% endif %}
+            {{ formbutton({ "type":"save", "class": "button button--positive", "name": "save", "label":"Speichern", "value": "save" }) }}
+        </div>
+    </div>
+
+    
+
+</form>

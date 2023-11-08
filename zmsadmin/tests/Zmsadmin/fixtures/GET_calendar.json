@@ -1,0 +1,1292 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "exception": null,
+        "generated": "2016-09-08T15:25:50+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/calendar.json",
+        "days": [
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "01",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "02",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "03",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "04",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "05",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "06",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "07",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "08",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": -1,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "09",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "10",
+                "status": "bookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 3,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "11",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": -3,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "12",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": -2,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "13",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "14",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "15",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "16",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "17",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "18",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "19",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "20",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": -1,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "21",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "22",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": -1,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "23",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "24",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "25",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": -1,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "26",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "27",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "28",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "29",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": -1,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "04",
+                "day": "30",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "01",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "02",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "03",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": -1,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "04",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "05",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "06",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": -1,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "07",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "08",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "09",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": -3,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "10",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": -1,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "11",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "12",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "13",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "14",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "15",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "16",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "17",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "18",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "19",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "20",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": -1,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "21",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "22",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "23",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "24",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "25",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "26",
+                "status": "full",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "27",
+                "status": "bookable",
+                "freeAppointments": {
+                    "public": 2,
+                    "intern": 2,
+                    "callcenter": 2,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "28",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "29",
+                "status": "notBookable",
+                "freeAppointments": {
+                    "public": 0,
+                    "intern": 0,
+                    "callcenter": 0,
+                    "type": "free"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "30",
+                "status": "bookable",
+                "freeAppointments": {
+                    "public": 72,
+                    "intern": 72,
+                    "callcenter": 72,
+                    "type": "sum"
+                }
+            },
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+                "year": "2016",
+                "month": "05",
+                "day": "31",
+                "status": "bookable",
+                "freeAppointments": {
+                    "public": 60,
+                    "intern": 60,
+                    "callcenter": 60,
+                    "type": "sum"
+                }
+            }
+        ],
+        "clusters": [],
+        "providers": [
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/provider.json",
+                "contact": {
+                    "email": "test@example.com",
+                    "city": "Berlin",
+                    "country": "Germany",
+                    "name": "Bürgeramt Heerstraße",
+                    "postalCode": "14052",
+                    "region": "Berlin",
+                    "street": "Heerstr.",
+                    "streetNumber": "12"
+                },
+                "source": "dldb",
+                "id": "122217",
+                "link": "https://service.berlin.de/standort/122217/",
+                "name": "Bürgeramt Heerstraße"
+            }
+        ],
+        "scopes": [
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/scope.json",
+                "hint": "Bürgeramt | Nr. wird zum Termin aufgerufen",
+                "id": "141",
+                "contact": {
+                    "name": "Bürgeramt Heerstraße",
+                    "street": "Heerstr. 12, 14052 Berlin",
+                    "email": "",
+                    "country": "Germany"
+                },
+                "preferences": {
+                    "appointment": {
+                        "deallocationDuration": "10",
+                        "endInDaysDefault": "60",
+                        "multipleSlotsEnabled": "0",
+                        "reservationDuration": "20",
+                        "startInDaysDefault": "0"
+                    },
+                    "client": {
+                        "alternateAppointmentUrl": "",
+                        "amendmentActivated": "0",
+                        "amendmentLabel": "",
+                        "emailRequired": "0",
+                        "telephoneActivated": "0",
+                        "telephoneRequired": "0"
+                    },
+                    "notifications": {
+                        "confirmationContent": "",
+                        "enabled": "1",
+                        "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+                        "headsUpTime": "30"
+                    },
+                    "pickup": {
+                        "alternateName": "Ausgabe",
+                        "isDefault": "0"
+                    },
+                    "queue": {
+                        "callCountMax": "0",
+                        "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                        "firstNumber": "1",
+                        "lastNumber": "499",
+                        "processingTimeAverage": "15",
+                        "publishWaitingTimeEnabled": "1",
+                        "statisticsEnabled": "1"
+                    },
+                    "survey": {
+                        "emailContent": "",
+                        "enabled": "0",
+                        "label": ""
+                    },
+                    "ticketprinter": {
+                        "confirmationEnabled": "0",
+                        "deactivatedText": "",
+                        "notificationsAmendmentEnabled": "0",
+                        "notificationsDelay": "0"
+                    },
+                    "workstation": {
+                        "emergencyEnabled": "1"
+                    }
+                },
+                "shortName": "",
+                "status": {
+                    "emergency": {
+                        "acceptedByWorkstation": "-1",
+                        "activated": "0",
+                        "calledByWorkstation": "-1"
+                    },
+                    "queue": {
+                        "ghostWorkstationCount": "-1",
+                        "givenNumberCount": "46",
+                        "lastGivenNumber": "47",
+                        "lastGivenNumberTimestamp": "1447925159"
+                    },
+                    "ticketprinter": {
+                        "deactivated": "0"
+                    }
+                },
+                "provider": {
+                    "id": "122217",
+                    "contact": {
+                        "email": "test@example.com",
+                        "city": "Berlin",
+                        "country": "Germany",
+                        "name": "Bürgeramt Heerstraße",
+                        "postalCode": "14052",
+                        "region": "Berlin",
+                        "street": "Heerstr.",
+                        "streetNumber": "12"
+                    },
+                    "source": "dldb",
+                    "link": "https://service.berlin.de/standort/122217/",
+                    "name": "Bürgeramt Heerstraße"
+                },
+                "department": {
+                    "id": "74",
+                    "contact": {
+                        "city": "Berlin",
+                        "street": "Otto-Suhr-Allee 100, 10585 Berlin",
+                        "country": "Germany",
+                        "name": ""
+                    },
+                    "email": "test@example.com",
+                    "name": "Bürgeramt",
+                    "preferences": {
+                        "notifications": {
+                            "enabled": null,
+                            "identification": null,
+                            "sendConfirmationEnabled": null,
+                            "sendReminderEnabled": null
+                        }
+                    },
+                    "dayoff": [
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1458856800",
+                            "name": "Karfreitag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1459116000",
+                            "name": "Ostermontag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1462053600",
+                            "name": "Maifeiertag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1462399200",
+                            "name": "Christi Himmelfahrt"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1463349600",
+                            "name": "Pfingstmontag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1475445600",
+                            "name": "Tag der Deutschen Einheit"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1482616800",
+                            "name": "1. Weihnachtstag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1482703200",
+                            "name": "2. Weihnachtstag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1483221600",
+                            "name": "Neujahr"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1492120800",
+                            "name": "Karfreitag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1492380000",
+                            "name": "Ostermontag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1493589600",
+                            "name": "Maifeiertag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1495663200",
+                            "name": "Christi Himmelfahrt"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1496613600",
+                            "name": "Pfingstmontag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1506981600",
+                            "name": "Tag der Deutschen Einheit"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1514152800",
+                            "name": "1. Weihnachtstag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1514239200",
+                            "name": "2. Weihnachtstag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1514757600",
+                            "name": "Neujahr"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1522360800",
+                            "name": "Karfreitag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1522620000",
+                            "name": "Ostermontag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1525125600",
+                            "name": "Maifeiertag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1525903200",
+                            "name": "Christi Himmelfahrt"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1526853600",
+                            "name": "Pfingstmontag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1538517600",
+                            "name": "Tag der Deutschen Einheit"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1545688800",
+                            "name": "1. Weihnachtstag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1545775200",
+                            "name": "2. Weihnachtstag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1546293600",
+                            "name": "Neujahr"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1555624800",
+                            "name": "Karfreitag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1555884000",
+                            "name": "Ostermontag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1556661600",
+                            "name": "Maifeiertag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1559167200",
+                            "name": "Christi Himmelfahrt"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1560117600",
+                            "name": "Pfingstmontag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1570053600",
+                            "name": "Tag der Deutschen Einheit"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1577224800",
+                            "name": "1. Weihnachtstag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1577311200",
+                            "name": "2. Weihnachtstag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1577829600",
+                            "name": "Neujahr"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1586469600",
+                            "name": "Karfreitag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1586728800",
+                            "name": "Ostermontag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1588284000",
+                            "name": "Maifeiertag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1590012000",
+                            "name": "Christi Himmelfahrt"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1590962400",
+                            "name": "Pfingstmontag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1601676000",
+                            "name": "Tag der Deutschen Einheit"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1608847200",
+                            "name": "1. Weihnachtstag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1608933600",
+                            "name": "2. Weihnachtstag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1609452000",
+                            "name": "Neujahr"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1617314400",
+                            "name": "Karfreitag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1617573600",
+                            "name": "Ostermontag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1619820000",
+                            "name": "Maifeiertag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1620856800",
+                            "name": "Christi Himmelfahrt"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1621807200",
+                            "name": "Pfingstmontag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1633212000",
+                            "name": "Tag der Deutschen Einheit"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1640383200",
+                            "name": "1. Weihnachtstag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1640469600",
+                            "name": "2. Weihnachtstag"
+                        },
+                        {
+                            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+                            "date": "1478037600",
+                            "name": "Personalversammlung"
+                        }
+                    ]
+                }
+            }
+        ],
+        "requests": [
+            {
+                "$schema": "https://schema.berlin.de/queuemanagement/request.json",
+                "id": "120703",
+                "link": "https://service.berlin.de/dienstleistung/120703/",
+                "name": "Personalausweis beantragen",
+                "source": "dldb"
+            }
+        ],
+        "firstDay": {
+            "year": "2016",
+            "month": "04",
+            "day": "01"
+        },
+        "lastDay": {
+            "year": "2016",
+            "month": "05",
+            "day": "31"
+        },
+        "processing": {
+            "slotinfo": {
+                "122208": 0,
+                "122210": 0,
+                "122217": 0,
+                "122219": 0,
+                "122226": 2,
+                "122227": 0,
+                "122231": 0,
+                "122238": 0,
+                "122243": 0,
+                "122246": 0,
+                "122251": 0,
+                "122252": 0,
+                "122254": 0,
+                "122257": 0,
+                "122260": 0,
+                "122262": 0,
+                "122267": 1,
+                "122271": 2,
+                "122273": 2,
+                "122274": 1,
+                "122276": 1,
+                "122277": 2,
+                "122279": 0,
+                "122280": 2,
+                "122281": 0,
+                "122282": 2,
+                "122283": 0,
+                "122284": 2,
+                "122285": 0,
+                "122286": 0,
+                "122291": 0,
+                "122294": 0,
+                "122296": 0,
+                "122297": 0,
+                "122301": 0,
+                "122304": 2,
+                "122309": 2,
+                "122311": 2,
+                "122312": 2,
+                "122314": 2,
+                "150230": 0,
+                "317869": 0,
+                "324395": 0,
+                "324414": 0,
+                "324433": 0,
+                "324434": 0,
+                "325341": 0,
+                "325657": 0,
+                "326776": 0,
+                "326778": 0,
+                "326780": 0,
+                "326782": 0,
+                "326784": 0
+            }
+        },
+        "freeProcesses": []
+    }
+}

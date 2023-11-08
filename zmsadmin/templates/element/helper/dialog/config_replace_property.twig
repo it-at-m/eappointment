@@ -1,0 +1,41 @@
+
+
+{% embed "block/scaffholding/board.twig" with {'class': 'dialog'} %}
+    {% block board_title %}<i aria-hidden="true" title="{{ ("Config-Einstellung anpassen")|trans }}" class="fas fa-info-circle"></i> {{ ("Config-Einstellung anpassen")|trans }}{% endblock %}
+    {% block board_body %}
+    {% from 'element/helper/form.twig' import formbutton, formgroup, inputfield %}
+
+    <form method="post" action="./" class="form--base">
+        <fieldset>
+            {{ inputfield({
+                "type": "hidden",
+                "name": "property",
+                "value": property
+            }) }}
+            {{ inputfield({
+                "type": "hidden",
+                "name": "key",
+                "value": key
+            }) }}
+            <label class="label">Gruppe: </label>{{ key }}<br />
+            <label class="label">Eigenschaft:</label>{{ property }}<br />
+            {{ formgroup(
+                {"label": "Wert:"},
+                [{
+                    "type":"textarea",
+                    "parameter": {
+                        "name": "value",
+                        "value": value
+                    }
+                }]
+            ) }}
+        </fieldset>
+        <div class="form-actions">
+            <div class="controls">
+                <a data-action-abort class="button button--diamond button-abort" href="#">Abbruch</a>
+                {{ formbutton({ "type":"save", "class": "button button--positive", "name": "save", "label":"Speichern", "value": "save" }) }}
+            </div>
+        </div>
+    </form>
+    {% endblock %}
+{% endembed %}

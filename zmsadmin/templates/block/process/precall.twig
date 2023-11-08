@@ -1,0 +1,29 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'client-precall'} %}
+
+        {% block board_title %}
+            Kundeninformationen
+        {% endblock %}
+
+        {% block board_body %}
+            {% if error != "has_called_pickup" %}
+            <h4>Der nächste Kunde ist:</h4>
+            <p>
+            {% if process.clients|first.familyName %}
+                {{ process.clients|first.familyName }}
+            {% else %}
+                {{ process.toQueue(date()).number }}
+            {% endif %}</p>
+            <h4>Für ihn ist die folgende Notiz hinterlegt:</h4>
+            <p>{{ process.amendment|decodeEntities|raw }}</p>
+            <h4>Möchten Sie den Kunden aufrufen?</h4>
+            <button type="button" class="button button--default button--fullwidth client-precall_button-success" data-processid="{{ process.id }}" data-exclude="{{ exclude }}">Ja, Kunden jetzt aufrufen</button>   
+            <button type="button" class="button button--diamond button--fullwidth client-precall_button-skip right" data-exclude="{{ exclude }}">Nein, nächster Kunde bitte</button> 
+            <button type="button" class="button button--destructive button--fullwidth client-precall_button-abort left">Abbruch</button>     
+            {% endif %}   
+        {% endblock %}
+
+        {% block board_footer %}
+        {% include "block/process/footer.twig" %}
+        {% endblock %}
+
+{% endembed %}

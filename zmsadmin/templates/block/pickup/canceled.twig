@@ -1,0 +1,14 @@
+<div class="dialog message message--success">
+    <div class="header">
+        <h2 class="message__heading title"
+            ><i title="{{ successTitle|default("Erfolgreiche Anfrage")|trans }}" aria-hidden="true" class="fas fa-check-circle"></i
+            ><span class="sr-only">{{ successTitle|default("Erfolgreiche Anfrage")|trans }}</span> Zurück in Abholerwarteschlange
+        </h2>
+    </div>
+    <div class="body">
+        <p>Der Abholer wurde erfolgreich aus der Bearbeitung entfernt und kann erneut aufgerufen werden.</p>
+        <div class="form-actions">
+            <a data-action-abort class="button-ok btn right" href="#">OK</a>
+        </div>
+    </div>
+</div>

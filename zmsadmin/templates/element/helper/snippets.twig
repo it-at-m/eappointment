@@ -1,0 +1,85 @@
+{% macro collapsiblegroup(step, title, value, route, appendend, args) %}
+    {% import _self as self %}
+    <div class="collapsible-group {% if appendend %}toggle{% else %}closed{% endif %}">
+    {{ self.collapsibleheading(step, title, value, route) }}
+    {% if appendend %}
+        {{ self.collapsiblebody(appendend, args) }}
+    {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro collapsiblebody(appendend, args) %}
+<div class="collapsible-body">
+    {% include "block/appendends/" ~ appendend ~ ".twig" %}
+</div>
+{% endmacro %}
+
+{% macro collapsibleheading(step, title, value, route) %}
+<div class="collapsible-heading row-fluid">
+    <div class="collapsible-toggle">
+        <div class="table-cell collapsible-counter span1">{{ step }}</div>
+        <div class="table-cell collapsible-title {% if not value %}span11{% else %}span3{% endif %}">{{ title|trans }}</div>
+        <div class="table-cell collapsible-description span7">
+        	{{ value }}
+        </div>
+        {% if route %}
+        <div class="table-cell collapsible-options span1">
+        	<a href="{{ route }}" class="edit icon-pencil" title="Standort Bearbeiten">{% trans %}Bearbeiten{% endtrans %}</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}
+
+{% macro providerlist(items, single) %}
+    {% import _self as self %}
+	<ul class="list-bullet">
+	{% if single %}
+		<li>{{ self.providercontact(items) }}</li>
+	{% else %}
+        {% for key, item in items %}
+        	<li>{{ self.providercontact(item) }}</li>
+        {% endfor %}
+    {% endif %}
+</ul>
+{% endmacro %}
+
+{% macro providercontact(provider, part) %}
+    {% set address = provider.contact.street ~" "~ provider.contact.streetNumber ~", "~ provider.contact.postalCode ~" "~ provider.contact.city %}
+	{% if part == "address"  %}
+		{{ address }}
+	{% else %}
+        {{ provider.name }} - {{ address }}
+        <br />
+    	<strong>{% trans %}Zahlungshinweis{% endtrans %}:</strong><br />
+    	{{ provider.data.payment }}
+   	{% endif %}
+{% endmacro %}
+
+{% macro namelist(list) %}
+<ul class="list-bullet">
+    {% for item in list %}
+    <li>{{ item.name }}</li>
+    {% endfor %}
+</ul>
+{% endmacro %}
+
+{% macro headline1(title) %}
+
+<h1 class="main-title">{{ title }}</h1>
+
+{% endmacro %}
+
+{% macro headline2(title) %}
+<div class="html5-header header">
+    <h2 class="title">{{ title|trans }}</h2>
+</div>
+{% endmacro %}
+
+{% macro getValue(value) %}
+	{{ value }}
+{% endmacro %}
+
+{% macro openingCalendarIcon(char, color, size, title) %}
+    <span class="icon-char-circle {{ color|default('disabled') }} size-{{ size|default('1') }}" role="img" aria-label="{{ title|raw }}" title="{{ title|raw }}"><strong class="char" aria-hidden="true">{{ char|default('') }}</strong></span>
+{% endmacro %}

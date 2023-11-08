@@ -1,0 +1,22 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'client-called'} %}
+        {% block board_title %}
+            {% trans %}Kundeninformationen{% endtrans %}
+        {% endblock %}
+        {% block board_body %} 
+            {% if error != "has_called_pickup" %}
+            <h4>{% trans %}Zeit seit Kundenaufruf{% endtrans %}:</h4>
+            <span id="clock" role="timer" class="clock" title="verstrichene Zeit seit dem Kundenaufruf" data-callTime={{ workstation.process.queue.callTime }} data-now={{ getNow()|date('U') }}></span>
+            <h4>
+            Ist der Kunde "{% if  workstation.process.clients|first.familyName|length > 0 %}{{ workstation.process.clients|first.familyName }} {% endif %}(Wartenr. {{ workstation.process.queue.number }})" gekommen?
+            </h4>
+            <button type="button" class="button button--default button--fullwidth client-called_button-success" style="margin: 0.5em 0;">Ja, Kunde erschienen</button>
+            <button type="button" class="button button--diamond button--fullwidth client-called_button-skip right" data-exclude="{{ exclude }}" style="margin: 0.5em 0;">Nein, nächster Kunde bitte</button>
+            <button type="button" class="button button--destructive button--fullwidth client-called_button-abort left" style="margin: 0.5em 0;">Abbruch</button>    
+            {% endif %}
+        {% endblock %}
+
+        {% block board_footer %}
+        {% include "block/process/footer.twig" %}
+        {% endblock %}
+
+{% endembed %}

@@ -1,0 +1,51 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-06-26T16:04:21+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "0": {
+            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+            "date": 1458860400,
+            "name": "Karfreitag"
+        },
+        "1": {
+            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+            "date": 1459116000,
+            "name": "Ostermontag"
+        },
+        "2": {
+            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+            "date": 1462053600,
+            "name": "Maifeiertag"
+        },
+        "3": {
+            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+            "date": 1462399200,
+            "name": "Christi Himmelfahrt"
+        },
+        "4": {
+            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+            "date": 1463349600,
+            "name": "Pfingstmontag"
+        },
+        "5": {
+            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+            "date": 1475445600,
+            "name": "Tag der Deutschen Einheit"
+        },
+        "6": {
+            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+            "date": 1482620400,
+            "name": "1. Weihnachtstag"
+        },
+        "7": {
+            "$schema": "https://schema.berlin.de/queuemanagement/dayoff.json",
+            "date": 1482706800,
+            "name": "2. Weihnachtstag"
+        }
+    }
+}

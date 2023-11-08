@@ -1,0 +1,561 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-07-03T09:42:33+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "0": {
+            "$schema": "https://schema.berlin.de/queuemanagement/workstation.json",
+            "useraccount": {
+                "rights": {
+                    "availability": "0",
+                    "basic": "1",
+                    "cluster": "0",
+                    "department": "0",
+                    "organisation": "0",
+                    "scope": "0",
+                    "sms": "1",
+                    "superuser": "0",
+                    "ticketprinter": "0",
+                    "useraccount": "0"
+                },
+                "id": "testuser"
+            },
+            "process": {
+                "amendment": "",
+                "appointments": [
+                    {
+                        "date": 1463379000,
+                        "scope": {
+                            "id": "141"
+                        },
+                        "availability": {
+                            "weekday": {
+                                "sunday": 0,
+                                "monday": 0,
+                                "tuesday": 0,
+                                "wednesday": 0,
+                                "thursday": 0,
+                                "friday": 0,
+                                "saturday": 0
+                            },
+                            "repeat": {
+                                "afterWeeks": 1,
+                                "weekOfMonth": 0
+                            },
+                            "bookable": {
+                                "startInDays": 1,
+                                "endInDays": 60
+                            },
+                            "workstationCount": {
+                                "public": 0,
+                                "callcenter": 0,
+                                "intern": 0
+                            },
+                            "multipleSlotsAllowed": true,
+                            "slotTimeInMinutes": 10,
+                            "startDate": 0,
+                            "endDate": 0,
+                            "startTime": "0:00",
+                            "endTime": "23:59",
+                            "type": "appointment"
+                        },
+                        "slotCount": "1"
+                    }
+                ],
+                "authKey": "1c56",
+                "clients": [
+                    {
+                        "familyName": "Test Process",
+                        "email": "test@example.com",
+                        "emailSendCount": "0",
+                        "notificationsSendCount": "0",
+                        "surveyAccepted": "0",
+                        "telephone": ""
+                    }
+                ],
+                "createIP": "127.0.0.1",
+                "createTimestamp": "1456312139",
+                "id": "9999999",
+                "archiveId": 0,
+                "queue": {
+                    "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+                    "arrivalTime": 1463379000,
+                    "callCount": "1",
+                    "callTime": 1463396400,
+                    "number": "9999999",
+                    "waitingTime": null,
+                    "status": "called",
+                    "lastCallTime": 0,
+                    "destination": "",
+                    "destinationHint": "",
+                    "withAppointment": "1"
+                },
+                "reminderTimestamp": "0",
+                "scope": {
+                    "id": "141"
+                },
+                "status": "called"
+            },
+            "name": "",
+            "id": "137",
+            "hint": "",
+            "scope": {
+                "id": "0",
+                "contact": {
+                    "country": "Germany"
+                },
+                "preferences": {
+                    "workstation": {
+                        "emergencyRefreshInterval": "5"
+                    }
+                },
+                "status": {
+                    "queue": {
+                        "lastGivenNumberTimestamp": false
+                    }
+                }
+            },
+            "queue": {
+                "appointmentsOnly": "0",
+                "clusterEnabled": "0"
+            }
+        },
+        "1": {
+            "$schema": "https://schema.berlin.de/queuemanagement/workstation.json",
+            "useraccount": {
+                "rights": {
+                    "availability": "1",
+                    "basic": "1",
+                    "cluster": "1",
+                    "department": "1",
+                    "organisation": "1",
+                    "scope": "1",
+                    "sms": "1",
+                    "superuser": "0",
+                    "ticketprinter": "1",
+                    "useraccount": "1"
+                },
+                "id": "testadmin"
+            },
+            "name": "",
+            "id": "136",
+            "hint": "",
+            "scope": {
+                "id": "0",
+                "contact": {
+                    "country": "Germany"
+                },
+                "preferences": {
+                    "workstation": {
+                        "emergencyRefreshInterval": "5"
+                    }
+                },
+                "status": {
+                    "queue": {
+                        "lastGivenNumberTimestamp": false
+                    }
+                }
+            },
+            "queue": {
+                "appointmentsOnly": "0",
+                "clusterEnabled": "0"
+            }
+        },
+        "2": {
+            "$schema": "https://schema.berlin.de/queuemanagement/workstation.json",
+            "useraccount": {
+                "rights": {
+                    "availability": "0",
+                    "basic": "1",
+                    "cluster": "0",
+                    "department": "0",
+                    "organisation": "0",
+                    "scope": "0",
+                    "sms": "0",
+                    "superuser": "0",
+                    "ticketprinter": "0",
+                    "useraccount": "0"
+                },
+                "id": "tkunst"
+            },
+            "name": "",
+            "id": "5120",
+            "scope": {
+                "id": "0",
+                "contact": {
+                    "country": "Germany"
+                },
+                "preferences": {
+                    "workstation": {
+                        "emergencyRefreshInterval": "5"
+                    }
+                },
+                "status": {
+                    "queue": {
+                        "lastGivenNumberTimestamp": false
+                    }
+                }
+            },
+            "queue": {
+                "appointmentsOnly": "0",
+                "clusterEnabled": "0"
+            }
+        }
+    },
+    "profiler": [
+        {
+            "duration": 0.001680850982666,
+            "function": "perform",
+            "statement": " SELECT behoerde.`BehoerdenID` AS id, organisation.Organisationsname as organisation__name FROM behoerde LEFT JOIN organisation USING(OrganisationsID) ORDER BY organisation.Organisationsname, behoerde.Name ",
+            "bind_values": []
+        },
+        {
+            "duration": 0.00028705596923828,
+            "function": "perform",
+            "statement": " SELECT StandortID AS id, Bezeichnung AS contact__name FROM `standort` WHERE BehoerdenID = ? ",
+            "bind_values": [
+                "74"
+            ]
+        },
+        {
+            "duration": 0.00019001960754395,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "110"
+            ]
+        },
+        {
+            "duration": 0.00015521049499512,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "109"
+            ]
+        },
+        {
+            "duration": 0.00014495849609375,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "192"
+            ]
+        },
+        {
+            "duration": 0.00016188621520996,
+            "function": "perform",
+            "statement": " SELECT StandortID AS id, Bezeichnung AS contact__name FROM `standort` WHERE BehoerdenID = ? ",
+            "bind_values": [
+                "127"
+            ]
+        },
+        {
+            "duration": 0.00014901161193848,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "290"
+            ]
+        },
+        {
+            "duration": 0.00016593933105469,
+            "function": "perform",
+            "statement": " SELECT StandortID AS id, Bezeichnung AS contact__name FROM `standort` WHERE BehoerdenID = ? ",
+            "bind_values": [
+                "57"
+            ]
+        },
+        {
+            "duration": 0.00014781951904297,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "427"
+            ]
+        },
+        {
+            "duration": 0.00015497207641602,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "421"
+            ]
+        },
+        {
+            "duration": 0.00016188621520996,
+            "function": "perform",
+            "statement": " SELECT StandortID AS id, Bezeichnung AS contact__name FROM `standort` WHERE BehoerdenID = ? ",
+            "bind_values": [
+                "72"
+            ]
+        },
+        {
+            "duration": 0.00014710426330566,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "30"
+            ]
+        },
+        {
+            "duration": 0.00018906593322754,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "60"
+            ]
+        },
+        {
+            "duration": 0.00015711784362793,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "28"
+            ]
+        },
+        {
+            "duration": 0.00014185905456543,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "29"
+            ]
+        },
+        {
+            "duration": 0.00015401840209961,
+            "function": "perform",
+            "statement": " SELECT StandortID AS id, Bezeichnung AS contact__name FROM `standort` WHERE BehoerdenID = ? ",
+            "bind_values": [
+                "128"
+            ]
+        },
+        {
+            "duration": 0.00014400482177734,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "283"
+            ]
+        },
+        {
+            "duration": 0.00014305114746094,
+            "function": "perform",
+            "statement": " SELECT StandortID AS id, Bezeichnung AS contact__name FROM `standort` WHERE BehoerdenID = ? ",
+            "bind_values": [
+                "999"
+            ]
+        },
+        {
+            "duration": 0.00016403198242188,
+            "function": "perform",
+            "statement": " SELECT StandortID AS id, Bezeichnung AS contact__name FROM `standort` WHERE BehoerdenID = ? ",
+            "bind_values": [
+                "58"
+            ]
+        },
+        {
+            "duration": 0.00016498565673828,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "16"
+            ]
+        },
+        {
+            "duration": 0.00014209747314453,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "25"
+            ]
+        },
+        {
+            "duration": 0.00021195411682129,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "24"
+            ]
+        },
+        {
+            "duration": 0.00034904479980469,
+            "function": "perform",
+            "statement": " SELECT StandortID AS id, Bezeichnung AS contact__name FROM `standort` WHERE BehoerdenID = ? ",
+            "bind_values": [
+                "75"
+            ]
+        },
+        {
+            "duration": 0.00032281875610352,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "171"
+            ]
+        },
+        {
+            "duration": 0.00037693977355957,
+            "function": "perform",
+            "statement": " SELECT StandortID AS id, Bezeichnung AS contact__name FROM `standort` WHERE BehoerdenID = ? ",
+            "bind_values": [
+                "81"
+            ]
+        },
+        {
+            "duration": 0.00029897689819336,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "118"
+            ]
+        },
+        {
+            "duration": 0.00029802322387695,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "115"
+            ]
+        },
+        {
+            "duration": 0.0003201961517334,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "117"
+            ]
+        },
+        {
+            "duration": 0.0003199577331543,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "114"
+            ]
+        },
+        {
+            "duration": 0.00032687187194824,
+            "function": "perform",
+            "statement": " SELECT StandortID AS id, Bezeichnung AS contact__name FROM `standort` WHERE BehoerdenID = ? ",
+            "bind_values": [
+                "55"
+            ]
+        },
+        {
+            "duration": 0.00029587745666504,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "130"
+            ]
+        },
+        {
+            "duration": 0.00029301643371582,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "169"
+            ]
+        },
+        {
+            "duration": 0.00033092498779297,
+            "function": "perform",
+            "statement": " SELECT StandortID AS id, Bezeichnung AS contact__name FROM `standort` WHERE BehoerdenID = ? ",
+            "bind_values": [
+                "77"
+            ]
+        },
+        {
+            "duration": 0.00031399726867676,
+            "function": "perform",
+            "statement": " SELECT StandortID AS id, Bezeichnung AS contact__name FROM `standort` WHERE BehoerdenID = ? ",
+            "bind_values": [
+                "78"
+            ]
+        },
+        {
+            "duration": 0.00031113624572754,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "66"
+            ]
+        },
+        {
+            "duration": 0.00030803680419922,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "418"
+            ]
+        },
+        {
+            "duration": 0.00031900405883789,
+            "function": "perform",
+            "statement": " SELECT StandortID AS id, Bezeichnung AS contact__name FROM `standort` WHERE BehoerdenID = ? ",
+            "bind_values": [
+                "76"
+            ]
+        },
+        {
+            "duration": 0.00029897689819336,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "4"
+            ]
+        },
+        {
+            "duration": 0.00029301643371582,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "108"
+            ]
+        },
+        {
+            "duration": 0.00029182434082031,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "70"
+            ]
+        },
+        {
+            "duration": 0.00032305717468262,
+            "function": "perform",
+            "statement": " SELECT StandortID AS id, Bezeichnung AS contact__name FROM `standort` WHERE BehoerdenID = ? ",
+            "bind_values": [
+                "96"
+            ]
+        },
+        {
+            "duration": 0.00030994415283203,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "78"
+            ]
+        },
+        {
+            "duration": 0.0003359317779541,
+            "function": "perform",
+            "statement": " SELECT standortID AS id FROM `clusterzuordnung` WHERE clusterID = ? ",
+            "bind_values": [
+                "76"
+            ]
+        },
+        {
+            "duration": 0.00017404556274414,
+            "function": "perform",
+            "statement": " SELECT StandortID AS id, Bezeichnung AS contact__name FROM `standort` WHERE BehoerdenID = ? ",
+            "bind_values": [
+                "74"
+            ]
+        }
+    ]
+}

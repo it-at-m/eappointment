@@ -1,0 +1,28 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'exception'} %}
+    {% block board_title %}{{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Sie haben bereits einen Vorgang aufgerufen.{% endtrans %}{% endblock %}
+    {% block board_body %}
+        {% if sourceData.process.status == 'called' %}
+        <p>
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Kehren Sie zum Sachbearbeiterplatz zurück um den Vorgang abzuschließen.{% endtrans %}
+        </p>
+        <div class="form-actions left">
+            <a class="button" href="{{ urlGet('workstation', {}, {}) }}">Zum Sachbearbeiterplatz</a>
+        </div>
+        {% elseif sourceData.process.status == 'pickup' %}
+        <p>
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Schließen Sie den vorhanden Vorgang hier ab.{% endtrans %}
+        </p>
+        <div class="form-actions left">
+            <a class="button" href="{{ urlGet('pickup', {}, {'selectedprocess': sourceData.process.id}) }}">Vorgang weiter bearbeiten</a>
+        </div>
+        {% else %}
+        <p>
+            Ist der Kunde{% if workstation.process.clients|first.familyName %} <strong>"{{ workstation.process.clients|first.familyName }}{% endif %} (Wartenr. {{ workstation.process.queue.number }})"</strong> gekommen?
+        </p>
+        <div class="form-actions left">
+            <a class="btn" data-callback="onFinishProcess" data-name="{{ workstation.process.clients|first.familyName }}" data-id="{{ workstation.process.id }}">Ja, bitte aus der Liste entfernen ✓</a>
+            <a class="btn" data-callback="onCancelProcess" href="#">Nein / Abbruch</a>
+        </div>
+        {% endif %}
+    {% endblock %}
+{% endembed %}

@@ -1,0 +1,164 @@
+{% from 'element/helper/form.twig' import formgroup, formbutton, checkboxfield, custombutton %}
+
+{#% embed "block/scaffholding/board.twig" with {'class': 'cluster-form'} %}
+        {% block board_title %}
+        {% endblock %}
+        {% block board_body %}
+        {% endblock %}
+{% endembed %#}
+            <h2 class="form__heading">
+                Cluster: Einrichtung und Administration
+            </h2>
+            <form method="post" action="./" enctype="multipart/form-data" class="form--base">
+                <fieldset>
+                    <div class="panel--heavy">
+                     {{ formgroup(
+                        {"label": "Name:"},
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "name": "name",
+                                "required": true,
+                                "value": cluster.name
+                            }
+                        }]
+                    ) }}
+
+                    {{ formgroup(
+                        {"label": "Kundenhinweis:", "description": "(Vormals \"1. Infozeile\")"},
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "name": "hint",
+                                "maxlength": 40,
+                                "value": cluster.hint,
+                            }
+                        }]
+                    ) }}
+
+                    {{ formgroup(
+                        {"label": "Text für die Aufrufanzeige:", "description": "Dieser Text erscheint rechts in der Aufrufanzeige"},
+                        [{
+                            "type":"textarea",
+                            "parameter": {
+                                "name": "callDisplayText",
+                                "value": cluster.callDisplayText,
+                            }
+                        }]
+                    ) }}
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Bild für Aufrufanlage</legend>
+                    <div class="panel--heavy">
+                    {{ formgroup(
+                        {
+                            "label": null
+                        },
+                        [
+                            {
+                                "type":"checkbox",
+                                "parameter": {
+                                    "name": "removeImage",
+                                    "value": 1,
+                                    "label": "Kein Bild in der Aufrufanzeige anzeigen"
+                                }
+                            }
+                        ]
+                    ) }}
+                    {{ formgroup(
+                        {
+                            "label": "Bild auswählen",
+                            "description": "Zulässig sind nur SVG-, JPG-, PNG oder GIF-Bilder bis 48 KB Größe. Das Bild wird in einer Breite von 200 Pixel erscheinen."
+                        },
+                        [
+                            {
+                                "type":"file",
+                                "parameter": {
+                                    "name": "uploadCallDisplayImage",
+                                    "id": "imageFieldId",
+                                    "file": {
+                                        "type": "image",
+                                        "alt": "Bild der Aufrufanlage",
+                                        "data": callDisplayImage
+                                    }
+                                }
+                            }
+                        ]
+                    ) }}
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Zugehörige Standorte</legend>
+                
+                    <div class="form-group">
+                        <div class="controls">
+                            <table class="table--base clean">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Auswahl
+                                        </th>
+                                        <th>
+                                            Standortname
+                                        </th>
+                                        <th>
+                                            Kundenhinweis
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for scope in scopeList %}
+                                        {% set checked = 0 %}
+                                        {% set disabled = 0 %}
+                                        {% for clusterscope in cluster.scopes %}
+                                            {% if clusterscope.id == scope.id %}
+                                                {% set checked = 1 %}
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {% for otherCluster in department.clusters %}
+                                            {% for scopeInOtherCluster in otherCluster.scopes %}
+                                                {% if otherCluster.id != cluster.id and scopeInOtherCluster.id == scope.id %}
+                                                    {% set disabled = 1 %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endfor %}
+                                        <tr>
+                                            <td>
+                                                {{ checkboxfield(
+                                                    {
+                                                        "name": "scopes[#{loop.index0}][id]",
+                                                        "value": scope.id,
+                                                        "disabled": disabled,
+                                                        "checked": checked
+                                                    }
+                                                ) }}
+                                            </td>
+                                            <td>
+                                                {{ scope.contact.name }}
+                                                {% if scope.shortName %}
+                                                - {{ scope.shortName }}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {{ scope.hint|split('|')|first }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="form-actions">
+                    {% if cluster.id %}
+                        {{ custombutton({ "type":"delete", "class": "button button--destructive" ,"target": urlGet("clusterDelete", {"departmentId": department.id, "clusterId": cluster.id}, {}), "label":"Löschen" }) }}
+                    {% endif %}
+                    {{ formbutton({ "type":"save", "class": "button button--positive", "label":"Speichern", "name": "save", "value": "save" }) }}
+                </div>
+            </form>
+

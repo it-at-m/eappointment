@@ -1,0 +1,13 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless dayoff-list'} %}
+    {% block board_title %}
+        Allgemein gültige Feiertage - Jahresauswahl
+    {% endblock %}
+
+    {% block board_body %}
+    <ul>
+        {% for year in range(getNow()|date("Y"), getNow()|date("Y") + 10) %}
+            <li><a href="{{ urlGet('dayoffByYear', { year: year }, {}) }}">{{year}}</a></li>
+        {% endfor %}
+    </ul>
+    {% endblock %}
+{% endembed %}

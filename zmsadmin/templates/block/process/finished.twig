@@ -1,0 +1,176 @@
+{% from 'element/helper/form.twig' import formgroup, formbutton, inputsubmit, inputfield %}
+
+<div class="client-processed">
+    <form class="form--base" method="post" action="{{ urlGet('workstationProcessFinished') }}">
+        
+        <fieldset>
+            <legend>Kundendaten für Statistik</legend>
+            <div class="block panel--heavy">
+                <div class="grid">
+
+                    <div class="grid__item one-half">
+                    {{ formgroup(
+                        {"label": "Name des Kunden:"},
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "autofocus": 1,
+                                "name": "process[clients][0][familyName]",
+                                "value": workstation.process.clients|first.familyName,
+                                "maxlength": 50,
+                            }
+                        }]
+                    ) }}
+                    </div>
+
+                    <div class="grid__item one-half">
+                    {{ formgroup(
+                        {"label": "Vorgangsnummer:"},
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "name": "process[id]",
+                                "value": workstation.process.id,
+                                "readonly": true,
+                            }
+                        }]
+                    ) }}
+                    </div>
+
+                    <div class="grid__item one-half">
+                        {{ formgroup(
+                        {"label": "E-Mail:"},
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "name": "process[clients][0][email]",
+                                "value":  workstation.process.clients|first.email,
+                                "maxlength": 50,
+                            }
+                        }]
+                    ) }}
+                    </div>
+
+                    <div class="grid__item one-half">
+                    {{ formgroup(
+                        {"label": "Telefonnummer für Rückfragen:"},
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "name": "process[clients][0][telephone]",
+                                "value": workstation.process.clients|first.telephone,
+                                "maxlength": 50,
+                            }
+                        }]
+                    ) }}
+                    </div>
+
+                    <div class="grid__item one-half">
+                    {% set clientCountOptions = [] %}
+                    {% for count in 1..6 %}
+                        {% set append = "Personen" %}
+                        {% if count == 1 %}{% set append = "Person" %}{% endif %}
+                        {% if count == workstation.process.clients|length %}{% set selected = "selected" %}{% else %}{% set selected = "" %}{% endif %}
+                        {% set clientCountOptions = clientCountOptions|merge([{ "value": count, "name": count  ~ " " ~ append, "selected": selected }]) %}
+                    {% endfor %}
+                    {{ formgroup(
+                        {"label": "Anzahl der Kunden:"},
+                        [{
+                            "type":"select",
+                            "parameter": {
+                                "name": "statistic[clientsCount]",
+                                "size":  1,
+                                "options": clientCountOptions
+                            }
+                        }]
+                    ) }}
+                    </div>
+
+                    <div class="grid__item one-half">
+                    {% set pickupOptions = [{ 'value' : '0', 'name' : 'keine Abholung'}] %}
+                    {% for pickup in pickupList %}
+                        {% set selected="" %}
+                        {% if pickup.preferences.pickup.isDefault %}{% set selected="selected" %}{% endif %}
+                        {% set pickupOptions = pickupOptions|merge([{ "value": pickup.id, "name": pickup.contact.name  ~ " " ~ pickup.shortName, "selected": selected }]) %}
+                    {% endfor %}
+                    {{ formgroup(
+                        {"label": "Abholort:"},
+                        [{
+                            "type":"select",
+                            "parameter": {
+                                "name": "pickupScope",
+                                "options": pickupOptions
+                            }
+                        }]
+                    ) }}
+                    </div>
+
+                </div>
+                
+                <div class="form-actions">
+                    <div class="right">
+                    {{ formbutton({ "type":"submit", "label":"Bearbeitung abschließen", "value": "submit", "disabled":1 }) }}
+                    </div>
+                </div>
+
+            </div>
+        </fieldset>
+
+        {% if statisticEnabled %}
+        <fieldset data-statistic-enabled="{{ statisticEnabled }}">
+
+            <legend>Bearbeitete Dienstleistungen des Kunden</legend>
+            <div class="panel--heavy">
+                {{ formgroup(
+                    {"label": ""},
+                    [{
+                        "type":"checkbox",
+                        "parameter": {
+                            "label": "ohne Erfassung",
+                            "name": "ignoreRequests",
+                            "value": "1",
+                            "checked": 0
+                        }
+                    },{
+                        "type":"checkbox",
+                        "parameter": {
+                            "label": "Dienstleistung konnte nicht erbracht werden",
+                            "name": "noRequestsPerformed",
+                            "value": "1",
+                            "checked": 0
+                        }
+                    }]
+                ) }}
+
+                {% for name, group in requestList %}
+                    {% set groupOptions = [] %}
+                    {% for request in group %}
+                        {% set value = 0 %}
+                        {% for processRequest in workstation.process.requests %}
+                            {% if processRequest.id == request.id %}
+                                {% set value = value + 1  %}
+                            {% endif %}
+                        {% endfor %}
+                        {% set groupOptions = groupOptions|merge([{ "type": "counter", "parameter": {"label": request.name, "name": "requestCountList["~ request.id ~"]", "value": value} }]) %}
+                    {% endfor %}
+                    <fieldset>
+                        <legend>{{name}}</legend>
+                        {{ formgroup(
+                            {"label": null, "class": "form-group--nomaxwidth"},
+                            groupOptions
+                        ) }}
+                    </fieldset>
+                {% endfor %}
+            </div>
+        </fieldset>
+
+        <div class="form-actions">
+            <div class="right">
+            {{ formbutton({ "type":"submit", "label":"Bearbeitung abschließen", "value": "submit", "disabled":"1"  }) }}
+            </div>
+        </div>
+        {% else %}
+            {{ inputfield({ "name":"ignoreRequests", "type":"hidden", "value":1 }) }}
+        {% endif %}
+    </form>
+</div>

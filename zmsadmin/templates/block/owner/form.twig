@@ -1,0 +1,66 @@
+{% from 'element/helper/form.twig' import formgroup, formbutton, custombutton, inputsubmit, checkboxfield, inputfield %}
+
+{#% embed "block/scaffholding/board.twig" with {'class': 'owner-edit'} %}
+        {% block board_title %}
+        {% endblock %}
+        {% block board_body %}
+        {% endblock %}
+{% endembed %#}
+
+            <h2 class="form__heading">Kundeneinrichtung und -administration</h2>
+
+            <form method="post" action="./" class="form--base panel--heavy">
+                <fieldset>
+                    {% if owner.id %}
+                    	{% set ownerId =  "(ID=" ~ owner.id ~ ")" %}
+                    {% endif %}
+                    {{ formgroup(
+                        {"label": "Name:", "description": ownerId},
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "name": "name",
+                                "required": true,
+                                "maxlength": 40,
+                                "value": owner.name,
+                            }
+                        }]
+                    ) }}
+
+                    {{ formgroup(
+                        {"label": "Anschrift:"},
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "name": "contact[street]",
+                                "maxlength": 100,
+                                "value": owner.contact.street,
+                            }
+                        }]
+                    ) }}
+
+                    {{ formgroup(
+                        {"label": "Url:"},
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "name": "url",
+                                "maxlength": 100,
+                                "value": owner.url,
+                            }
+                        }]
+                    ) }}
+
+                </fieldset>
+
+                <div class="form-actions">
+                    <div class="controls">
+                        {% if action != "add" %}
+                        {{ custombutton({ "type":"delete","class": "button button--destructive" ,"target": urlGet("ownerDelete", {"id": owner.id}, {}), "label":"Löschen" }) }}
+                        {{ custombutton({ "type":"new","class": "button" ,"target": urlGet("ownerAddOrganisation", {'id': owner.id}, {}), "label":"Bezirk hinzufügen" }) }}
+                        {% endif %}
+                        {{ formbutton({ "type":"save", "class": "button button--positive", "name": "save", "label":"Speichern", "value": "save" }) }}
+
+                    </div>
+                </div>
+            </form>

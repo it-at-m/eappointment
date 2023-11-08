@@ -1,0 +1,16 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'welcome'} %}
+    
+        
+        {% block board_title %}
+            {{ title|trans }}
+        {% endblock %} 
+        
+        {% set class = '' %}
+        {% block board_body %}
+            <p>Um alle Funktionen des Systems nutzen zu können, müssen Ihrem Account noch entsprechende Rollen und Rechte zugeordnet werden. Wenden Sie sich hierfür bitte an Ihren Administrator.</p>
+        {% endblock %} 
+
+        {% block board_footer %}
+            <span>Version {{ currentVersion() }} </span>
+        {% endblock %} 
+{% endembed %}

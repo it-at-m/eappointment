@@ -1,0 +1,284 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless queue-table'} %}
+{% use "block/calendar/navigation.twig" %}
+{% use "block/workstation/scopeSwitch.twig" %}
+        {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield %}
+        {% block board_title %}
+            {% trans %}Warteschlange{% endtrans %}
+            {% if clusterEnabled and cluster.scopes|length <= 1 %}
+                {{ scope.contact.name }} {{ scope.shortName }}
+            {% elseif not clusterEnabled %}
+                {{ workstation.scope.contact.name }} {{ workstation.scope.shortName }}
+            {% endif %}
+        {% endblock %}
+        {% block board_title_aside %}
+            <strong class="date">{{ selectedDate|format_date(pattern="EE dd. MMMM y")}}</strong>
+            {{ block('calender_navigation_day') }}
+        {% endblock %}
+        {% block board_header_right %}
+            {% if cluster.scopes|length > 1 %}
+                {{ block('scope_switch') }}
+            {% endif %}
+            <form action="{{ urlGet('workstationSelect') }}" method="POST">
+                {{ formgroup(
+                    {"label": "", "description": "", "class":"appointmentsOnly"},
+                    [{
+                        "type":"checkbox",
+                        "parameter": {
+                            "title": "Spontankunden einblenden / ausblenden",
+                            "name": "appointmentsOnly",
+                            "label": "Spontankunden einblenden",
+                            "value": "1",
+                            "checked": workstation.queue.appointmentsOnly
+                        }
+                    }]
+                ) }}
+                {% if clusterEnabled %}
+                    {% set workstationScope = 'cluster' %}
+                {% else %}
+                    {% set workstationScope = workstation.scope.id %}
+                {% endif %}
+                {{ inputfield({ "name":"redirect", "type":"hidden", "class": "sourceAppointmentsOnly" }) }}
+                {#{ inputfield({ "name":"selectedDate", "type":"hidden", "value":selectedDate }) }#}
+                {{ inputfield({ "name":"scope", "type":"hidden", "value":workstationScope }) }}
+            </form>
+            <a href="#" title="Liste neu laden" class="button button--diamond reload"><i class="fas fa-sync" aria-hidden="true"></i> <span class="aural">Liste neu laden</span></a>
+            <a
+                href="{{urlGet('scopeAppointmentsByDay', {id: workstation.scope.id, date: selectedDate})}}?print=1"
+                target="_blank"
+                title="Drucken"
+                class="button button--diamond print"
+            ><i class="fas fa-print" aria-hidden="true"></i> <span class="aural">Drucken</span></a>
+            <a
+                href="{{urlGet('scopeAppointmentsByDaySpreadsheet', {id: workstation.scope.id, date: selectedDate})}}"
+                target="_blank"
+                title="Download"
+                class="button button--diamond download"
+            ><i class="fas fa-download" aria-hidden="true"></i> <span class="aural">Download</span></a>
+        {% endblock %}
+        {% block board_body %}
+            {% set lfdnr = 0 %}
+            <div class="table-responsive-wrapper">
+            <table class="table--base compact">
+                <thead>
+                    <tr>
+                        {#<th class="queue-status"></th>#}
+                        {% if clusterEnabled %}
+                            <th title="{% trans %}Standort im Cluster{% endtrans %}">Kürzel</th>
+                        {% else %}
+                            <th title="{% trans %}Reihenfolge der Aufrufe{% endtrans %}">Lfdnr.</th>
+                        {% endif %}
+                        <th>Uhrzeit</th>
+                        <th>Nr.</th>
+                        <th>Name <small>(Aufrufe)</small></th>
+                        <th>Telefon</th>
+                        <th>SMS</th>
+                        <th>Mail</th>
+                        <th>Dienstleistung</th>
+                        <th>Anmerkung</th>
+                        <th>Freitextfeld: {{workstation.scope.preferences.client.customTextfieldLabel}}</th>                        
+                        <th>Wartezeit</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in processList %}
+                        {% set lfdnr = lfdnr + 1 %}
+                        {% set tense = "past" %}
+                        {% set statusTitle = "Dieser Termin ist aktiv, liegt aber in der Vergangenheit" %}
+                        {% set isToday = item.appointments|first.date|date('Y-m-d') == getNow()|date('Y-m-d') %}
+                        {% if item.appointments|first.date >= getNow()|date("U") %}
+                            {% set tense = "future" %}
+                            {% set statusTitle = "Dieser Termin ist aktiv und liegt in der Zukunt" %}
+                        {% endif %}
+                        {% set hideWithOutAppointment = false %}
+                        {% if 0 == workstation.queue.appointmentsOnly and not item.queue.withAppointment %}
+                            {% set hideWithOutAppointment = true %}
+                        {% endif %}
+                        {% if not hideWithOutAppointment %}
+                        <tr class="{{ tense }} {{ item.queue.status }} {{ item.queue.status == 'preconfirmed' ? 'reserved' : '' }} " title="{% if item.queue.status == "reserved" or item.queue.status == "preconfirmed" %}{% trans %}Der Termin ist vorübergehend reserviert und wird ohne Bestätigung in wenigen Minuten gelöscht{% endtrans %}{% endif %}">
+                            {#<td class="queue-status" title="{{ statusTitle }}"></td>#}
+                            <td>
+                                {% if clusterEnabled %}
+                                    {{ item.scope.shortName }}
+                                {% else %}
+                                    {{ lfdnr }}.
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.queue.withAppointment or item.queue.status == "reserved" or item.queue.status == "preconfirmed" %}
+                                    {{ item.appointments|first.date|date("H:i") }}
+                                {% else %}
+                                    {{ item.queue.arrivalTime|date("H:i") }}
+                                {% endif %}
+                                {% if item.queue.waitingTime and isToday %}
+                                    <p class="queue-table-amendment-time">+{{ item.queue.waitingTime}}&nbsp;Min.</p>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.queue.status != "reserved" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
+                                    <a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">
+                                    {{ item.queue.number }}
+                                    </a>
+                                {% else %}
+                                    {{ item.queue.number }}
+                                {% endif %}
+                            </td>
+                            <td class="callnextclient">
+                                {% if item.queue.status == "reserved" %}
+                                    Reservierung
+                                {% else %}
+                                    {% set callCount = "" %}
+                                    {% set familyName = item.clients|first.familyName|decodeEntities|raw %}
+                                    {% if item.queue.callCount > 0 %}
+                                        {% set callCount = "<small>(%d)</small>"|format(item.queue.callCount) %}
+                                    {% endif %}
+                                    {% if source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
+                                        <a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">{{ familyName }}</a> {{ callCount|raw }}
+                                    {% else %}
+                                        {{ familyName }} {{ callCount|raw }}
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.clients|first.telephone and department.preferences.notifications.enabled %}
+                                    <a data-process="{{ item.id }}" class="process-custom-notification-send" href="#">{{ item.clients|first.telephone }}</a>
+                                {% else %}
+                                    {{ item.clients|first.telephone }}
+                                {% endif %}
+                            </td>
+                            <td class="center nowrap">
+                                {# maybe also check for department.preferences.notifications.sendReminderEnabled #}
+                                {% if item.clients|first.telephone and department.preferences.notifications.enabled %}
+                                    <a href="#" data-process="{{ item.id }}" class="icon process-notification-send" title="SMS schicken"><i class="fas fa-mobile-alt" aria-hidden="true"></i> <span class="aural">SMS schicken</span></a>
+                                    {% if item.clients|first.notificationsSendCount %}<span class="counter">{{ item.clients|first.notificationsSendCount }}</span>{% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="center nowrap">
+                                {% if item.clients|first.email and workstation.scope.preferences.client.emailFrom %}
+                                    <a data-process="{{ item.id }}" href="#" class="icon process-custom-mail-send" title="e-Mail versenden"><i class="fas fa-envelope" aria-hidden="true"></i> <span class="aural">Email</span></a>
+                                    {% if item.clients|first.emailSendCount %}<span class="counter">{{ item.clients|first.emailSendCount }}</span>{% endif %}
+                                {% endif %}
+                            </td>
+                            <td title="{% for request in item.requests%}{{request.name}}{% if not loop.last %}; {% endif %}{% endfor %}">
+                                {{ item.requests|first.name }}
+                                {% if item.requests|length > 1 %}
+                                    +{{ (item.requests|length) - 1 }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ item.amendment|decodeEntities|raw }}
+                                <p class="queue-table-amendment-time">
+                                    {% if item.queue.status == "reserved" %}
+                                        {% trans %}reserviert am{% endtrans %}
+                                    {% elseif item.queue.status == "preconfirmed" %}
+                                        {% trans %}Aktivierung ausstehend ab{% endtrans %}
+                                    {% elseif item.queue.status == "deleted" %}
+                                        {% trans %}wird freigegeben ab{% endtrans %}
+                                    {% else %}
+                                        {% trans %}gebucht am{% endtrans %}
+                                    {% endif %}
+                                    {{ item.createTimestamp|date("d.m.Y, H:i") }}&nbsp;Uhr
+                                </p>
+                            </td>
+                            <td>
+                                {{ item.customTextfield|decodeEntities|raw }}
+                            </td>                            
+                            <td>
+                                {% if item.queue.withAppointment %}
+                                    Termin
+                                {% else %}
+                                    Spontankunde
+                                {% endif %}
+                                {% if 1 < item.appointments|first.slotCount %}
+                                    ({{ item.appointments|first.slotCount }})
+                                {% endif %}
+                                {% if (item.queue.waitingTimeEstimate != item.queue.waitingTimeOptimistic) and isToday %}
+                                    <p class="queue-table-amendment-time">+{{ item.queue.waitingTimeOptimistic }}&#8209;{{ item.queue.waitingTimeEstimate }}&nbsp;Min.</p>
+                                {% endif %}
+                            </td>
+                            {% if item.queue.status != "reserved" and item.queue.status != "preconfirmed" %}
+                            <td class="center"><a data-id="{{ item.id }}" data-name="{{ item.queue.withAppointment ? item.clients|first.familyName|raw : ('Wartenummer ' ~ item.queue.number) }}" href="#" class="icon process-delete" title="Löschen"><i class="far fa-trash-alt" aria-hidden="true"></i> <span class="aural">Löschen</span></a></td>
+                            <td class="center"><a data-id="{{ item.id }}" data-scope-id="{{ item.scope.id }}" href="#" class="icon process-edit" title="Bearbeiten"><i class="fas fa-edit" aria-hidden="true"></i> <span class="aural">Bearbeiten</span></a></td>
+                            {% else %}
+                            <td colspan="2"></td>
+                            {% endif %}
+                        </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            <h2>Verpasste Termine</h2>
+            {% if processListMissed|length %}
+                <div class="table-responsive-wrapper"> 
+                <table class="table--base queue-missed">
+                    <thead>
+                        <tr>
+                            <th>Lfdnr.</th>
+                            <th>Uhrzeit</th>
+                            <th>Name (Nummer)</th>
+                            <th>Dienstleistung</th>
+                            <th>Telefon</th>
+                            <th>Art</th>
+                            <th>Anmerkung</th>
+                            <th>Freitextfeld: {{workstation.scope.preferences.client.customTextfieldLabel}}</th>
+                            <th>Aktion</th>
+                        </tr>
+                    </thead>
+                    {% set lfdnr = 0 %}
+                    {% for item in processListMissed %}
+                        {% set lfdnr = lfdnr + 1 %}
+                        <tr class="missed">
+                            <td>
+                                {{ lfdnr }}.
+                            </td>
+                            <td>
+                                {% if item.queue.withAppointment %}
+                                    {{ item.appointments|first.date|date("H:i") }}
+                                {% else %}
+                                    {{ item.queue.arrivalTime|date("H:i") }}
+                                {% endif %}
+                            </td>
+                            <td>{% if item.clients|first.familyName %}{{ item.clients|first.familyName }}{% else %}Wartenummer {{ item.queue.number }} {% endif %} ({{ item.queue.number }}) </td>
+                            <td title="{% for request in item.requests%}{{request.name}}{% if not loop.last %}; {% endif %}{% endfor %}">
+                                {{ item.requests|first.name }}
+                                {% if item.requests|length > 1 %}
+                                    +{{ (item.requests|length) - 1 }}
+                                {% endif %}
+                            </td>{#DL#}
+                            <td>{{ item.clients|first.telephone }}</td>
+                            <td>
+                                {% if item.queue.withAppointment %}
+                                    Termin
+                                    {% if 1 < item.appointments|first.slotCount %}
+                                        ({{ item.appointments|first.slotCount }})
+                                    {% endif %}
+                                {% else %}
+                                    Spontankunde
+                                {% endif %}
+                            </td>
+                            <td>Dieser Kunde ist nicht erschienen</td>
+                            <td><a href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                </div>
+            {% else %}
+                Keine Einträge gefunden.
+            {% endif %}
+            <div class="form-actions">
+                <div class="right">
+                    <button title="{% trans %}Warteschlange neu laden{% endtrans %}" class="button button-reload reload"><i class="fas fa-sync"></i> Warteschlange aktualisieren</button>
+                </div>
+            </div>
+            {% if (debug)  %}
+                <div id="httplog">
+                <!-- httplog --> {{ dumpHttpLog() }}
+                </div>
+            {% endif %}
+        {% endblock %}
+        {% block board_footer %}{% endblock %}
+{% endembed %}

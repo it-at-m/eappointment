@@ -1,0 +1,12 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'exception'} %}
+    {% block board_title %}{{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Termin wurde schon aufgerufen{% endtrans %}{% endblock %}
+    {% block board_body %}
+        <p>
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Der Vorgang wird bereits von einem anderen Sachbearbeiter bearbeitet.{% endtrans %}
+        </p>
+        <div>
+            {#<a class="btn button--fullwidth button-callback" data-source="client-next" data-callback="onCallNextProcess" style="margin: 0.5em 0;">Nächsten Vorgang aufrufen</a>#}
+            <a class="btn button--fullwidth button--destructive button-callback" data-callback="onCancelForm" href="#" style="margin: 0.5em 0;">Abbruch</a>
+        </div>
+    {% endblock %}
+{% endembed %}

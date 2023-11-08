@@ -1,0 +1,96 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'calendar-page board--spaceless', 'headingWeight': 'h3'} %}
+
+    {% block board_title %}
+        {{ month.calHeadline }}
+    {% endblock %}
+    
+    {% block board_body %}
+  
+    <table class="calendar calendar--tiny">
+        <thead>
+            <tr>
+                <th>Mo</th>
+                <th>Di</th>
+                <th>Mi</th>
+                <th>Do</th>
+                <th>Fr</th>
+                <th>Sa</th>
+                <th>So</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% set dow = month.startDow %}
+                {% for item in month.days %}
+                    {% if loop.first and month.startDow != 0 %}
+                        <td colspan="{{ month.startDow }}"></td>
+                    {% endif %}
+                    {% set dayString = item.year ~'-'~ item.month ~'-'~ item.day %}
+                    {% set isToday = (( dayString == getNow()|date("Y-m-d")) ? true : false) %}
+                    
+                    {% if item.freeAppointments.intern == 1 %}
+                        {% set freeAppointmentsTitle = "noch bis zu %d Termin frei"|format(item.freeAppointments.intern) %}
+                    {% else %}
+                        {% set freeAppointmentsTitle = "noch bis zu %d Termine frei"|format(item.freeAppointments.intern) %}
+                    {% endif %}
+
+                    {% set class = "mark" %}
+                    {% set sundayDate = "" %}
+                    {% set setSelectedDate = "" %}
+                    {% set holidayDate = "" %}
+
+                    {% if selectedDate == dayString %}
+                        {% set setSelectedDate = " selected" %}
+                    {% endif %}
+
+                    {% if dayoffList.hasEntityByDate(item.toDateTime()) %}
+                        {% set holidayDate = " mark mark--dayoff" %}
+                    {% endif %}
+
+                    {% if item.status == 'notBookable' %}
+                        {% set class = "closed" %}
+                        {% set freeAppointmentsTitle = "an diesem Tag sind keine Termine möglich" %}
+                    {% elseif item.status == 'full' %}
+                        {% set class = "mark mark--destructive" %}
+                        {% set freeAppointmentsTitle = "an diesem Tag sind keine Termine mehr verfügbar" %}
+                    {% elseif item.status == 'restricted' %}
+                        {% set class = "date-locked disabled" %}
+                        {% set freeAppointmentsTitle = "an diesem Tag ist keine Terminbuchung möglich" %}
+                    {% endif %}
+
+                    {% if dow == 6  %}
+                        {% set sundayDate = " sunday" %}
+                    {% endif %}
+                    
+                    <td>
+                        <div data-date="{{ dayString }}" title="{{ dayString|format_date(pattern="EE dd. MMMM y") }} - {{ freeAppointmentsTitle }}" class="calendar__tile {% if isToday %}today small {% endif %}{{ class }}{{ holidayDate }}{{ setSelectedDate }}{{ sundayDate }}">
+                            
+                            <label class="aural" id="calendar_day-{{ item.day }}-help">{{ dayString|format_date(pattern="EE dd. MMMM y") }} - {{ freeAppointmentsTitle }}</label>
+
+                            {% if ((dow == 6 and item.status != "bookable") or item.status == "restricted" or dayString|date("U") <= getNow()|date("U")) and not isToday %}
+                                <span class="day" aria-describedby="calendar_day-{{ item.day }}-help">{{ item.day }}</span>
+                            {% else %}
+                                <a class="day" href="#" data-date="{{dayString}}" title="{{ dayString|format_date(pattern="EE dd. MMMM y") }} - {{ freeAppointmentsTitle }}" aria-describedby="calendar_day-{{ item.day }}-help">{{ item.day }}</a>
+                            {% endif %}
+                        </div>
+                    </td>
+
+                    {% if loop.last and dow != 6 %}
+                        <td colspan="{{ 6 - dow }}">&nbsp;</td>
+                    {% endif %}
+                    {% if dow == 6 %}
+                        {% set dow = 0 %}
+                    </tr>
+                    <tr>
+                    {% else %}
+                        {% set dow = dow + 1 %}
+                    {% endif %}
+
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+
+    {% endblock %}
+
+{% endembed %}

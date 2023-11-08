@@ -1,0 +1,23 @@
+{% extends "exception/embeddedException.twig" %}
+
+{% block content %}
+{% embed "block/scaffholding/board.twig" with {'class': 'exception', } %}
+    {% from 'element/helper/form.twig' import errormessage %}
+    {% block board_title %}{% trans %}Formulareingabefehler{% endtrans %}{% endblock %}
+    {% block board_body %}
+        <p>
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Bei der Eingabe der Daten scheint Ihnen ein Fehler unterlaufen zu sein. Bitte prüfen Sie die Hinweise an den markierten Formularfeldern.{% endtrans %}
+        </p>
+        <dl>
+        {% for pointer, item in data %}
+            <dt>{{ item.headline }}</dt>
+            {% for message in item.messages %}
+            <dd>{{ message }}</dd>
+            {% endfor %}
+            {#{ errormessage(item.messages) }#}
+        {% endfor %}
+        </dl>
+    {% endblock %}
+
+{% endembed %}
+{% endblock %}

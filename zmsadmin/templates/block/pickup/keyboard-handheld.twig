@@ -1,0 +1,79 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'pickup-keyboard-handheld'} %}
+        {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield %}
+
+        {% block board_title %}
+        {# {{ title|trans }}: #}
+        {{ workstation.scope.provider.contact.name }}
+        {% endblock %}
+
+        {% block board_body %}
+
+        <form method="post" class="" action="{{ urlGet('pickup_handheld', {'id': '1'}, {}) }}">
+            <div class="grid grid--stretch">
+                <div class="grid__item one-half">
+                        <div class="keyboard">
+
+                            <div class="form-group">
+                                <div class="controls">
+                                    <input placeholder="Nummer" type="text" class="form-control form-input number" maxlength="16" size="16" value="" id="Nummer" name="inputNumber" readonly="readonly">
+                                </div>
+                            </div>
+
+                            <!-- der Nummernblock -->
+                            <table>
+                                <tr>
+                                    <td><button class="button button--diamond button-keyboard ziffer" type="button"><span class="number">1</span></button></td>
+                                    <td><button class="button button--diamond button-keyboard ziffer" type="button"><span class="number">2</span></button></td>
+                                    <td><button class="button button--diamond button-keyboard ziffer" type="button"><span class="number">3</span></button></td>
+                                </tr>
+                                <tr>
+                                    <td><button class="button button--diamond button-keyboard ziffer" type="button"><span class="number">4</span></button></td>
+                                    <td><button class="button button--diamond button-keyboard ziffer" type="button"><span class="number">5</span></button></td>
+                                    <td><button class="button button--diamond button-keyboard ziffer" type="button"><span class="number">6</span></button></td>
+                                </tr>
+                                <tr>
+                                    <td><button class="button button--diamond button-keyboard ziffer" type="button"><span class="number">7</span></button></td>
+                                    <td><button class="button button--diamond button-keyboard ziffer" type="button"><span class="number">8</span></button></td>
+                                    <td><button class="button button--diamond button-keyboard ziffer" type="button"><span class="number">9</span></button></td>
+                                </tr>
+                                <tr>
+                                    <td><button class="button button--diamond button-keyboard deleteNumber" title="das letzte Zeichen löschen" type="button"><span class="number"><i class="fas fa-backspace" aria-hidden="true"></i> </span><span class="aural">Rücktaste</span></button></td>
+                                    <td><button class="button button--diamond button-keyboard ziffer" type="button"><span class="number">0</span></button></td>
+                                    <td><button class="button button--diamond button-keyboard clearNumbers" type="button"><span class="number">C</span></button></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                </div>
+
+                <div class="grid__item one-half">
+              
+                    <div class="call-actions">
+                        
+                        <button class="button button--default button-submit process-pickup" value="save" name="submit">aufrufen</button>
+                        {# <input class="btn button-reset" type="reset" value=" abbrechen "> #}
+                    </div>
+                </div>
+
+            </div>
+
+        </form>
+        
+        {% endblock %}
+
+        {% block board_title_aside %}
+            Bitte geben Sie hier die Vorgangs- oder Wartenummer ein
+        {% endblock %}
+
+        {% block board_header_right %}
+            <a class="button button--diamond link-changeview" href="{{ urlGet('pickup_handheld') }}" title="Normalansicht">Zur Auswahlansicht wechseln</a>
+        {% endblock %}
+
+        {% block board_footer %}
+            <p>
+                Hinweis: Mit der Taste "<i class="fas fa-backspace" aria-hidden="true"></i> <span class="aural">Rücktaste</span>" können Sie die letzte Ziffer löschen, mit der "C"-Taste löschen Sie Ihre komplette Eingabe.
+            </p>
+        {% endblock %}
+
+
+{% endembed %}

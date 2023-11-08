@@ -1,0 +1,10 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2018-04-16T11:31:01+02:00",
+    "server": "Zmsapi-ENV (v2.15.03)"
+  },
+  "data": {}
+}

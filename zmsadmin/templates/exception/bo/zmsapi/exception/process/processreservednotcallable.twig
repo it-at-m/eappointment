@@ -1,0 +1,11 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'exception'} %}
+    {% block board_title %}{{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Vorgang ist reserviert{% endtrans %}{% endblock %}
+    {% block board_body %}
+        <p>
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Der Vorgang ist vorübergehend reserviert und kann nicht aufgerufen werden. Dieser Vorgang wird ohne Bestätigung in wenigen Minuten gelöscht.{% endtrans %}
+        </p>
+        <div>
+            <a class="btn button--fullwidth button--destructive button-callback" data-callback="onCancelForm" href="#" style="margin: 0.5em 0;">Abbruch</a>
+        </div>
+    {% endblock %}
+{% endembed %}

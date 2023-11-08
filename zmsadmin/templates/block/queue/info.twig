@@ -1,0 +1,130 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'queue-info'} %}
+
+        {% block board_title %}
+            Informationen
+        {% endblock %}
+
+        {% block board_body %}
+                <ul class="list list--table bordered">
+                    <li>
+                        <div class="cell middle">
+                            {% if workstationInfo.workstationList|length == 1 and workstationInfo.workstationGhostCount == 0 %}
+                                {% set placesName = "Arbeitsplätze" %}  
+                            {% elseif workstationInfo.workstationGhostCount == 1 %}
+                                {% set placesName = "Arbeitsplätze" %}  
+                            {% else %}
+                                {% set placesName = "Arbeitsplätze" %}
+                            {% endif %}
+
+                            {% set toolTip = "" %}
+                            {% set linebreak = "\n" %}
+                            {% for workstation in workstationInfo.workstationList %}
+                                {% if loop.last %}{% set linebreak = "" %}{% endif %}
+                                {% set toolTip = toolTip ~ workstation.useraccount.id ~ " an Platz " ~ workstation.name ~ linebreak %}
+                            {% endfor %}
+                            <h4>
+                            <span class="tooltip" title="{{ toolTip|e('html') }}">
+                                {{ placesName }} besetzt:
+                            </span>
+                            </h4>
+                        </div>
+                        <div class="cell right middle">
+                            {% if workstationInfo.workstationGhostCount > 0 %}
+                                {{ workstationInfo.workstationGhostCount }} ({{ workstationInfo.workstationList|length }})
+                            {% else %}
+                                {{ workstationInfo.workstationList|length }}
+                            {% endif %}
+                        </div>
+                    </li>
+
+                    <li>
+                        <div class="cell middle">
+                            <h4>
+                            {% if workstation.queue.clusterEnabled == 0 %}    
+                                Fiktive Arbeitsplätze:
+                            {% else %}
+                                Fiktive Arbeitsplätze sind in der Clusteransicht nicht möglich
+                            {% endif %}  
+                            </h4>
+                        </div>
+                        <div class="cell right middle">
+                            {% if workstation.queue.clusterEnabled == 0 %}    
+                            <form id="ghostworkstation-select-form">
+                                <label for="workstaionCnt" class="aural">Anzahl fiktiver Arbeitsplätze</label>
+                                <select name="count" class="form-control" id="workstaionCnt" style="min-width: 3.6em;">
+                                    <option value="-1">{% trans %}korrekt{% endtrans %}</option>
+                                    {% for count in 0..31  %}
+                                    <option value="{{ count }}" {% if workstationInfo.workstationGhostCount == count %}selected{% endif %}>
+                                        {{ count }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                            {% endif %} 
+                        </div>
+                    </li>
+                    <li>
+                        <div class="cell middle">
+                        <h4>{% trans %}Anzahl offener Vorgänge{% endtrans %}:</h4>
+                        </div>
+                        <div class="cell right">
+                        {{ workstationInfo.waitingClientsFullList }}
+                        </div>
+                    </li>
+                    {% if selectedDate == getNow()|date('Y-m-d') %}
+                
+                    <li>
+                        <div class="cell middle">
+                        <h4>{% trans %}davon vor nächstem Spontankunden{% endtrans %}:</h4>
+                        </div>
+                        <div class="cell right">
+                        {{ workstationInfo.waitingClientsBeforeNext }}
+                        </div>
+                    </li>
+                
+                
+                    <li>
+                        <div class="cell middle">
+                        <h4>{% trans %}davon mit Wartezeit{% endtrans %}:</h4>
+                        </div>
+                        <div class="cell right">
+                        {{ workstationInfo.waitingClientsEffective }}
+                        </div>
+                    </li>
+                
+                    <li>
+                        <div class="cell middle">
+                        <h4>{% trans %}Wartezeit für neue Spontankunden in Stunden{% endtrans %}:</h4>
+                        </div>
+                        <div class="cell right">
+                            {% if workstationInfo.workstationGhostCount == 0 %}
+                                <span class="color-red">{% trans %}unbekannt{% endtrans %}</span>
+                            {% else %}
+                                <strong>
+                                {#
+                                {% if workstationInfo.waitingTimeEstimate < 60 and workstation.waitingTime > 0 %}
+                                    00:{{ workstationInfo.waitingTimeEstimate }}
+                                {% else %}
+                                    {% set minutes = (workstationInfo.waitingTimeEstimate % 60) %}
+                                    {% set hours = (workstationInfo.waitingTimeEstimate / 60)|round(0, 'floor') %}
+                                    {{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) }}
+                                {% endif %}
+                                #}
+                                {% if workstationInfo.waitingTimeEstimate < 120 %}
+                                    {{ workstationInfo.waitingTimeOptimistic }} - {{ workstationInfo.waitingTimeEstimate }}<br />{{ "%s"|format("Minuten")|trans }}
+                                {% else %}
+                                    {% set minutes = (workstationInfo.waitingTimeEstimate % 60) %}
+                                    {% set hours = (workstationInfo.waitingTimeEstimate / 60)|round(0, 'floor') %}
+                                    {{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) }}
+                                {% endif %}
+                                </strong>
+                            {% endif %}
+                        </div>
+                    </li>
+                
+                {% endif %}
+                
+                </ul>
+
+        {% endblock %}
+{% endembed %}

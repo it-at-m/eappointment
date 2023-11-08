@@ -1,0 +1,81 @@
+include:
+    remote: https://gitlab.com/eappointment/php-base/-/raw/main/template-php-ci.yml
+
+test-php-73:
+    variables:
+      PHP_VERSION: 7.3
+    image: registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-dev
+    script:
+        - $CLI_COMPOSER
+        - $CLI_PHPCS
+        - $CLI_PHPMD
+        - docker-php-ext-enable xdebug
+        - $CLI_PHPUNIT $CLI_PHPUNIT_PARAM
+    coverage: '/^\s*Lines:\s*\d+.\d+\%/'
+
+    allow_failure: true
+    before_script:
+        - $CLI_COMPOSER
+        - npm install --legacy-peer-deps
+        - make css
+    variables:
+        PHP_VERSION: "7.3"
+    only:
+        changes:
+            - .gitlab-ci.yml
+            - composer.lock
+            - composer.json
+            - schema/**/*
+            - templates/**/*
+            - src/**/*
+            - tests/**/*.{json,php}
+
+#test-php-81:
+#    extends: .test-php
+#    allow_failure: true
+#    variables:
+#      PHP_VERSION: "8.1"
+#    only:
+#        changes:
+#            - .gitlab-ci.yml
+#            - composer.lock
+#            - composer.json
+#            - schema/**/*
+#            - templates/**/*
+#            - src/**/*
+#            - tests/**/*.{json,php}
+
+outdated:
+    extends: .test-phpoutdated
+
+pages:
+    stage: deploy
+    script:
+        - echo "/zmsadmin/ /zmsadmin/_tests/coverage/index.html 302" >> public/_redirects
+        - find public/
+    artifacts:
+        paths:
+            - public
+    only:
+        refs:
+            - main
+        changes:
+            - src/**/*
+            - tests/**/*.{json,php}
+            - routing.php
+            - .gitlab-ci.yml
+    environment:
+        name: analytics
+        url: https://eappointment.gitlab.io/zmsadmin
+
+build-docker:
+    extends: .build-docker
+    variables:
+        PHP_VERSION: "8.0"
+    only:
+        - tags
+        - main
+        - branches    
+            
+
+

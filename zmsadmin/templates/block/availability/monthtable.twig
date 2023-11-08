@@ -1,0 +1,177 @@
+{#
+ baseMonth_timestamp  can be any string acceptable by http://www.php.net/strtotime, the
+ template will output that time's month.
+ If you don't want to pass in a date you can set baseMonth_timestamp  like this:
+ {% set baseMonth_timestamp  = "now"|date("U") %}
+ {% set baseMonth_timestamp  = "December 2012"|date("U") %}
+ How ever you want to output items onto the calendar is a different issue,
+ but I'd assume pushing everything into an array numerically indexed by that day:
+ $days = array(1=>array('Something on the first'),31=>array('Halloween'));
+#}
+
+
+
+{% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless availability-monthtable'} %}
+
+        {% from 'element/helper/snippets.twig' import openingCalendarIcon %}
+
+        {% block board_title %}
+            {{ month.calHeadline }}
+        {% endblock %}
+
+
+        {% block board_title_aside %}
+        <div class="calendar-navigation">
+        {% if month.month != getNow()|date("m") %}
+            <a href="{{ urlGet('scopeAvailabilityMonth', {'id': scope.id, 'date': dateTime.modify('-1month').format('Y-m')}, {}) }}" title="Monat zurück" class="icon prev"><i class="fas fa-caret-square-left" aria-hidden="true"></i> <span class="aural">Monat zurück</span></a>
+        {% else %}
+            <span title="Monat zurück nicht möglich" class="icon prev inactive"><i class="fas fa-caret-square-left color-text-disabled" aria-hidden="true"></i></span>
+        {% endif %}
+            <a href="{{ urlGet('scopeAvailabilityMonth', {'id': scope.id}, {}) }}" title="Heute {{ time|date('l, d.m.Y') }}" class="today">Heute</a>
+            <a href="{{ urlGet('scopeAvailabilityMonth', {'id': scope.id, 'date': dateTime.modify('+1month').format('Y-m')}, {}) }}" title="Monat vor" class="icon next"><i class="fas fa-caret-square-right" aria-hidden="true"></i> <span class="aural">Monat vor</span></a>
+        </div>
+        {% endblock %}
+
+        {% block board_body %}
+            <table class="calendar calendar--fullwidth availability-monthtable_calendar" data-availability-count="{{ availabilityList|length }}">
+                <thead>
+                    <tr>
+                        <th><span class="day">Mo</span></th>
+                        <th><span class="day">Di</span></th>
+                        <th><span class="day">Mi</span></th>
+                        <th><span class="day">Do</span></th>
+                        <th><span class="day">Fr</span></th>
+                        <th><span class="day">Sa</span></th>
+                        <th><span class="day">So</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    {% set countDaysInMonth = baseMonth_timestamp|date('t') %}
+                    {% set startRow = baseMonth_timestamp|date('N') - 1 %}
+                    {% set row = startRow %}
+                    {% for day in month.days %}
+                        {% if loop.first and startRow != 0 %}
+                            <td class="out-of-range first" colspan="{{ startRow }}"></td>
+                        {% endif %}
+
+                        {% set dayString = day.year~"-"~day.month~"-"~day.day %}
+                        {% set myDataArray = attribute(data_days, dayString) %}
+                        {% set isToday = (( getNow()|date("Y-m-d") == dayString|date('Y-m-d')) ? true : false) %}
+
+                        {% if day.status == 'notBookable' %}
+                            {% set bookableState="closed" %}
+                        {% elseif day.freeAppointments.intern > 0 or day.freeAppointments.callcenter > 0 or day.freeAppointments.public > 0  %}
+                            {% set bookableState="mark" %}
+                        {% elseif day.freeAppointments.intern <= 0 and day.freeAppointments.callcenter <= 0 and day.freeAppointments.public <= 0 %}
+                            {% set bookableState="mark mark--destructive" %}
+                        {% endif %}
+                        <td>
+                        <div class="calendar__tile {{ bookableState }}{% if dayoffList.hasEntityByDate(day.toDateTime()) %} mark mark--dayoff{% endif %}{% if isToday %} today{% endif %}">
+                            <a class="month-item" href="{{ urlGet('scopeAvailabilityDay', {'id': scope.id, 'date': dayString}, {}) }}" title="{% if myDataArray.holiday %}{{ ('Ein Feiertag')|trans }}{% else %}{{ ('Zur Detailansicht')|trans }}{% endif %}">
+                                <span class="day">
+                                    {{ day.day }}
+                                </span>
+                                <div class="row circles">
+                                    {% set formattedDay = "%04d-%02d-%02d"|format(day.year,day.month,day.day) %}
+                                    {% if conflicts[formattedDay] %}
+                                        {{ openingCalendarIcon('K', 'red daystatus--conflict', 1, 'Konflikt') }}
+                                    {% else %}
+                                        {{ openingCalendarIcon('K', 'disabled', 1, 'Keine Konflikte') }}
+                                    {% endif %}
+                                    {% if availabilityList.isOpenedByDate(day.toDateTime(), 'openinghours') %}
+                                        {{ openingCalendarIcon('S','green daystatus--ticketprinter', 1, 'Offen für Spontankunden') }}
+                                    {% else %}
+                                        {{ openingCalendarIcon('S', 'disabled', 1, 'Geschlossen für Spontankunden') }}
+                                    {% endif %}
+                                    {% if availabilityList.isOpenedByDate(day.toDateTime(), 'appointment') %}
+                                        {{ openingCalendarIcon('T','blue daystatus--appointment', 1, 'Offen für Terminkunden') }}
+                                    {% else %}
+                                        {{ openingCalendarIcon('T', 'disabled', 1, 'Geschlossen für Terminkunden') }}
+                                    {% endif %}
+                                </div>
+                                <div class="row icons palm-hide">
+                                    {% if day.freeAppointments.public > 0 %}<i class="fas fa-globe" role="img"  title="Buchbar per Internet"></i>{% endif %}
+                                    {% if day.freeAppointments.callcenter > 0 %}<i class="fas fa-phone" role="img"  title="Buchbar per Callcenter"></i>{% endif %}
+                                </div>
+                                <div class="row holiday palm-hide">{% if dayoffList.hasEntityByDate(day.toDateTime()) %}
+                                    {{ dayoffList.getByDate(day.toDateTime()).name }}
+                                    {% endif %}
+                                </div>
+                            </a>
+                        </div>
+                        </td>
+                        {% if loop.last and row != 6 %}
+                            <td class="out-of-range last" colspan="{{ 6 - row }}">&nbsp;</td>
+                        {% endif %}
+                        {% if row == 6 %}
+                            {% set row = 0 %}
+                        </tr>
+                        <tr>
+                        {% else %}
+                            {% set row = row + 1 %}
+                        {% endif %}
+                    {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        {% endblock %}
+
+{% endembed %}
+
+    {% include "block/calendar/legend.twig" %}
+
+
+    {% set monthSecondsIntern = 0 %}
+    {% set monthSecondsCallcenter = 0 %}
+    {% set monthSecondsPublic = 0 %}
+    {% for day in month.days %}
+        {% set daySecondsIntern = availabilityList.getAvailableSecondsOnDateTime(day.toDateTime()) %}
+        {% set monthSecondsIntern = monthSecondsIntern + daySecondsIntern %}
+        {% set daySecondsCallcenter = availabilityList.getAvailableSecondsOnDateTime(day.toDateTime(), 'callcenter') %}
+        {% set monthSecondsCallcenter = monthSecondsCallcenter + daySecondsCallcenter %}
+        {% set daySecondsPublic = availabilityList.getAvailableSecondsOnDateTime(day.toDateTime(), 'public') %}
+        {% set monthSecondsPublic = monthSecondsPublic + daySecondsPublic %}
+    {% endfor %}
+
+    <section class="block availability-capacity">
+        <h2 class="block__heading">Terminkapazitäten</h2>
+
+        <ul class="list--table">
+            <li>
+                <div class="cell">Geplante Terminkapazitäten</div>
+                <div class="cell">{{ (monthSecondsIntern/60/60)|round(0,'floor') }} Stunden und {{ ((monthSecondsIntern%3600)/60)|round(0,'floor') }} Minuten</div>
+            </li>
+            <li>
+                <div class="cell">davon für das Callcenter D115 verfügbar</div>
+                <div class="cell">{{ (monthSecondsCallcenter/60/60)|round(0,'floor') }} Stunden und {{ ((monthSecondsCallcenter%3600)/60)|round(0,'floor') }} Minuten</div>
+            </li>
+            <li>
+                <div class="cell">davon öffentlich im Internet verfügbar</div>
+                <div class="cell">{{ (monthSecondsPublic/60/60)|round(0,'floor') }} Stunden und {{ ((monthSecondsPublic%3600)/60)|round(0,'floor') }} Minuten</div>
+            </li>
+        </ul>
+        {#
+        <h4>Öffnungszeiten in diesem Monat</h4>
+        <table>
+            <thead>
+                <th>ID</th>
+                <th>Beschreibung</th>
+                <th>Start</th>
+                <th>Ende</th>
+            </thead>
+            <tbody>
+        {% for availability in availabilityList.sortByCustomKey("startDate") %}
+            {% if availability.getStartDateTime().format("Y-m-d") <= dateTime.format("Y-m-t") and availability.getEndDateTime().format("Y-m-d") >= dateTime.format("Y-m-1") %}
+            <tr>
+                <td>{{availability.id}}</td>
+                <td>{{availability.description}}</td>
+                <td>{{availability.getStartDateTime().format("Y-m-d")}}</td>
+                <td>{{availability.getEndDateTime().format("Y-m-d")}}</td>
+            </tr>
+        {% endif %}
+    {% endfor %}
+            <tbody>
+        </table>
+        #}
+    </section>

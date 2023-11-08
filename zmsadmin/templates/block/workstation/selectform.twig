@@ -1,0 +1,116 @@
+<section class="message message--info" role="alert">
+    <h2 class="message__heading">Hinweis</h2>
+    <p>Um alle Funktionen des Systems nutzen zu können, müssen Sie noch folgende Angaben machen:</p>
+    <ul>
+        <li>Für den <strong>Tresendienst</strong> lassen Sie bitte die Platz-Nr. frei.</li>
+        <li>Wenn Sie sich als Sachbearbeiter anmelden, geben Sie bitte die <strong>Nummer Ihres aktuellen Arbeitsplatzes</strong> an, damit die Kunden richtig aufgerufen werden können.</li>
+    </ul>
+</section>
+
+{% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless workstation-selectform loginform'} %}
+    {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield, providername %}
+
+    {% block board_title %}
+        {{ title }}
+    {% endblock %}
+
+    {% block board_body %}
+
+        <div data-scope-select-form data-includeurl="{{includeUrl()}}" data-today="{{today}}">
+            <form action="./" method="POST" class="form--base panel--heavy">
+
+                {% if workstation.process.id %}
+                    <div class="form-group">
+                        <label>Standort</label>
+                        <div class="controls">
+                            {{ workstation.scope.provider.name }} {{ workstation.scope.shortName }} 
+                            {{ inputfield({ "name":"scope", "type":"hidden", "value":workstation.scope.id}) }}
+                            <small class="formgroup__help">
+                            Zur Zeit ist ein Kunde aufgerufen. Sie können daher den Standort nicht wechseln.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Platz-Nr.</label>
+                        <div class="controls">
+                            {{ workstation.name }}
+                            {{ inputfield({ "name":"workstation", "type":"hidden", "value":workstation.name}) }}
+                            <small class="formgroup__help">
+                            Ein Kunde könnte bereits unterwegs sein. Der Platz sollte jetzt nicht gewechselt werden.
+                            </small>
+                        </div>
+                    </div>
+                {% else %}
+                {% set scopeOptionsGroup = [{ 'value' : '', 'name' : '-- bitte auswählen --'}] %}
+                {% for department in workstation.useraccount.departments %}
+                    {% set scopeOptionsGroupOptions = [] %}
+                    {% for scope in department.scopes %}
+                        {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope) }]) %}
+                    {% endfor %}
+                    {% for cluster in department.clusters %}
+                        {% for scope in cluster.scopes %}
+                            {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope) }]) %}
+                        {% endfor %}
+                    {% endfor %}
+                    {% set scopeOptionsGroup = scopeOptionsGroup|merge([{ 'name' : department.name, 'options' : scopeOptionsGroupOptions|msort('name') }]) %}
+                {% endfor %}
+                {{ formgroup(
+                    {"label": "Standort", "errors": advancedData.scope.messages},
+                    [{
+                        "type":"select",
+                        "parameter": {
+                            "name": "scope",
+                            "value": workstation.scope.id,
+                            "accesskey": "s",
+                            "options": scopeOptionsGroup
+                        }
+                    }]
+                ) }}
+
+
+                {{ formgroup(
+                    {
+                        "label": "Platz-Nr. oder Tresen", "errors": advancedData.workstation.messages,
+                        "description" : "(Ohne Angabe einer Platz-Nr. werden Sie als Tresen/Ausgabe eingeloggt)"
+                    },
+                    [{
+                        "type":"input",
+                        "parameter": {
+                            "name": "workstation",
+                            "value": workstation.name,
+                            "placeholder" : "Tresen",
+                            "maxlength": 5,
+                            "width": 1,
+                            "accesskey":"p"
+                        }
+                    }]
+                ) }}
+                {% endif %}
+
+                {{ formgroup(
+                    {"label": "Aufrufzusatz"},
+                    [{
+                        "type":"input",
+                        "parameter": {
+                            "name": "hint",
+                            "value": (workstation.name and workstation.hint != workstation.name) ? workstation.hint : '',
+                            "placeholder" : "Hinweis für die Kunden",
+                            "maxlength": 200,
+                            "accesskey":"+"
+                        }
+                    }]
+                ) }}
+
+                {{ inputfield({ "name":"workstation_select_form_validate", "type":"hidden", "value":"1" }) }}
+                {{ inputfield({ "name":"appointmentsOnly", "type":"hidden", "value":workstation.queue.appointmentsOnly }) }}
+                <div class="form-actions">
+                    <button type="button" class="button button--diamond" data-button-print accesskey="y"><i class="fas fa-print" aria-hidden="true"></i> Heutige Termine des Standorts drucken</button>
+                    <button type="button" class="button button--diamond" data-button-download accesskey="r"><i class="fas fa-download" aria-hidden="true"></i> Heutige Termine als Tabelle downloaden</button>
+                    {{ formbutton({ "type":"login", "label":"Auswahl bestätigen", "value": "weiter", "accesskey":"a"}) }}
+                </div>
+            </form>
+        </div>
+
+    {% endblock %}
+
+{% endembed %}

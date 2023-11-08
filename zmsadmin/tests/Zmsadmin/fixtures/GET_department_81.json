@@ -1,0 +1,84 @@
+{
+    "$schema": "https://minikube/api/2/",
+    "meta": {
+      "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+      "error": false,
+      "generated": "2020-03-20T12:14:38+01:00",
+      "server": "Zmsapi-ENV (version.unknown)"
+    },
+    "data": {
+      "$schema": "https://schema.berlin.de/queuemanagement/department.json",
+      "id": "81",
+      "name": "Bürgeramt",
+      "email": "test@example.com",
+      "contact": {
+        "city": "",
+        "street": "",
+        "country": "Germany",
+        "name": ""
+      },
+      "clusters": [
+        {
+          "scopes": [
+            {
+              "id": "170",
+              "source": "dldb",
+              "$ref": "/scope/170/"
+            }
+          ],
+          "id": "114",
+          "name": "Bürgeramt Zwickauer Damm",
+          "hint": "",
+          "shortNameEnabled": "0",
+          "callDisplayText": ""
+        },
+        {
+          "scopes": [
+            {
+              "id": "168",
+              "source": "dldb",
+              "$ref": "/scope/168/"
+            }
+          ],
+          "id": "115",
+          "name": "Bürgeramt Sonnenallee",
+          "hint": "",
+          "shortNameEnabled": "0",
+          "callDisplayText": ""
+        },
+        {
+          "scopes": [
+            {
+              "id": "169",
+              "source": "dldb",
+              "$ref": "/scope/169/"
+            },
+            {
+              "id": "441",
+              "source": "dldb",
+              "$ref": "/scope/441/"
+            }
+          ],
+          "id": "117",
+          "name": "Bürgeramt Blaschkoallee",
+          "hint": "",
+          "shortNameEnabled": "0",
+          "callDisplayText": ""
+        },
+        {
+          "scopes": [
+            {
+              "id": "167",
+              "source": "dldb",
+              "$ref": "/scope/167/"
+            }
+          ],
+          "id": "118",
+          "name": "Bürgeramt Rathaus Neukölln",
+          "hint": "",
+          "shortNameEnabled": "0",
+          "callDisplayText": ""
+        }
+      ]
+    }
+  }

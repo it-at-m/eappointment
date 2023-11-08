@@ -1,0 +1,16 @@
+
+
+{% embed "block/scaffholding/board.twig" with {'class': 'dialog'} %}
+    {% block board_title %}<i aria-hidden="true" title="{{ ("Nutzer löschen")|trans }}" class="fas fa-info-circle"></i> {{ ("Nutzer löschen")|trans }}{% endblock %}
+    {% block board_body %}
+        {% set message = "Wenn Sie den Nutzer " ~  name ~" wirklich löschen wollen, klicken Sie auf \"Nutzer löschen\"." %}
+        <p>
+            {{ message|trans }}
+        </p>
+        <div class="form-actions">
+            <a class="button button--diamond button-abort" href="#">Abbruch</a>
+            <a data-action-ok class="button button--destructive button-ok" href="#">Nutzer löschen</a>
+        </div>
+    {% endblock %}
+
+{% endembed %}

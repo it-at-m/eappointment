@@ -1,0 +1,18 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'exception'} %}
+
+    {% block board_title %}Es ist ein Fehler aufgetreten.{% endblock %}
+    {% block board_body %}
+        <h2 class="exceptionData-headline">
+            In diesem Standort existiert die ausgewählte Dienstleistung nicht
+        </h2>
+        <p>
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Bitte wählen sie eine Dienstleistung aus, die dem aktuellen Standort zugeordnet ist.{% endtrans %}
+        </p>
+        <div class="form-actions">
+            <a class="btn button-ok right" href="#">Ok</a>
+        </div>
+    {% endblock %}
+
+{% endembed %}
+
+

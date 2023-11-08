@@ -1,0 +1,37 @@
+{% block calender_navigation_month %}
+    {% set prevMonth = selectedDate|date_modify("-1 month") %}
+    {% set nextMonth = selectedDate|date_modify("+1 month") %}
+
+    <div class="calendar-navigation">
+        {% if selectedDate|date("m") != getNow()|date("m") %} 
+            <a href="#" title="Monat zurück" class="icon prev pagemonthlink" data-date="{{ prevMonth|date("Y-m-d") }}"><i class="fas fa-caret-square-left" aria-hidden="true"></i> <span class="aural">Monat zurück</span></a>
+        {% endif %}
+        <a href="#" data-date={{ getNow()|date("Y-m-d") }} title="Heute {{ getNow()|format_date(pattern="EE dd. MMMM y") }}" class="today">Heute</a>
+        <a href="#" title="Monat vor" class="icon next pagemonthlink" data-date="{{ nextMonth|date("Y-m-d") }}"><i class="fas fa-caret-square-right" aria-hidden="true"></i> <span class="aural">Monat vor</span></a>
+    </div>
+{% endblock %}
+
+{% block calender_navigation_day %}
+<div class="calendar-navigation">
+    {% if selectedDate != getNow()|date("Y-m-d") %}
+    <a href="#" title="Tag zurück" class="icon prev pagedaylink" data-date="{{ selectedDate|date_modify("-1 day")|date("Y-m-d") }}"><i class="fas fa-caret-square-left" aria-hidden="true"></i> <span class="aural">Tag zurück</span></a>
+    {% else %}
+        <span title="zurück nicht möglich" class="icon prev inactive color-disabled"><i class="fas fa-caret-square-left" aria-hidden="true"></i> <span class="aural">zurück</span></span>
+    {% endif %}
+    <a href="#" title="Heute {{ getNow()|format_date(pattern="EE dd. MMMM y") }}" class="today" data-date="{{ getNow()|date("Y-m-d") }}">Heute</a>
+    <a href="#" title="Tag vor" class="icon next pagedaylink" data-date="{{ selectedDate|date_modify("+1 day")|date("Y-m-d") }}"><i class="fas fa-caret-square-right" aria-hidden="true"></i> <span class="aural">Tag vor</span></a>
+</div>
+{% endblock %}
+
+{% block calender_navigation_week %}
+{% set prevDate = selectedDate|date_modify("-1 week") %}
+{% set nextDate = selectedDate|date_modify("+1 week") %}
+
+<div class="calendar-navigation">
+    {% if selectedWeek != getNow()|date("W") %}
+        <a href="{{ urlGet('calendar_week', {'year': prevDate|date('Y'), 'weeknr': prevDate|date('W')|number_format }, {}) }}" title="Woche zurück" class="icon prev pagedaylink"><i class="fas fa-caret-square-left" aria-hidden="true"></i> <span class="aural">Woche zurück</span></a>
+    {% endif %}
+    <a href="{{ urlGet('calendar_week', {'year': getNow()|date('Y'), 'weeknr': getNow()|date('W')|number_format }, {}) }}" title="Heute {{ getNow()|format_date(pattern="EE dd. MMMM y") }}" class="today pagedaylink">Heute</a>
+    <a href="{{ urlGet('calendar_week', {'year': nextDate|date('Y'), 'weeknr': nextDate|date('W')|number_format }, {}) }}" title="Woche vor" class="icon next pagedaylink"><i class="fas fa-caret-square-right" aria-hidden="true"></i> <span class="aural">Woche vor</span></a>  
+</div>
+{% endblock %}

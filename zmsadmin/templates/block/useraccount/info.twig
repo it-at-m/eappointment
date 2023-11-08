@@ -1,0 +1,62 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'useraccount-info', 'messages':'hide'} %}
+    
+        
+        {% block board_title %}
+            Nutzerinformation
+        {% endblock %} 
+        
+        
+        {% block board_body %}
+       
+                <h3>Nutzername</h3>
+                <p>
+                    {{useraccount.id}}
+                </p>
+                <h3>Zugeordnete Einheiten</h3>
+                <ul>
+                    {%- if useraccount.rights.superuser -%}
+                        <li>Alle (Superuser)</li>
+                    {%- else -%}
+                    {% for department in useraccount.departments %}
+                        <li>{{department.name}}</li>
+                    {% endfor %}
+                    {%- endif -%}
+                </ul>
+                <h3>Sie haben die folgenden Berechtigungen</h3>
+                <ul>
+                    {%- if useraccount.rights.superuser -%}
+                        <li>Superuser</li>
+                    {%- endif -%}
+                    {%- if useraccount.rights.organisation -%}
+                        <li>Administration von Bezirken</li>
+                    {%- endif -%}
+                    {%- if useraccount.rights.department -%}
+                        <li>Administration von Behörden</li>
+                    {%- endif -%}
+                    {%- if useraccount.rights.cluster -%}
+                        <li>Administration von Standortclustern</li>
+                    {%- endif -%}
+                    {%- if useraccount.rights.useraccount -%}
+                        <li>Administration von Nutzern</li>
+                    {%- endif -%}
+                    {%- if useraccount.rights.scope -%}
+                        <li>Administration von Standorten</li>
+                    {%- endif -%}
+                    {%- if useraccount.rights.availability -%}
+                        <li>Administration von Öffnungszeiten</li>
+                    {%- endif -%}
+                    {%- if useraccount.rights.ticketprinter -%}
+                        <li>Ein- und Ausschalten des Kiosks</li>
+                    {%- endif -%}
+                    {%- if useraccount.rights.sms -%}
+                        <li>Nutzung des SMS-Versands</li>
+                    {%- endif -%}
+                    {%- if useraccount.rights.basic -%}
+                        <li>Nutzung des Systems</li>
+                    {%- endif -%}
+                </ul>
+            
+        {% endblock %} 
+        
+        
+{% endembed %}

@@ -1,0 +1,614 @@
+{
+	"$schema": "https://localhost/terminvereinbarung/api/2/",
+	"meta": {
+		"$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+		"error": false,
+		"exception": null,
+		"generated": "2016-09-13T13:55:41+02:00",
+		"server": "Zmsapi-ENV"
+	},
+	"data": {
+		"0": {
+			"$schema": "https://schema.berlin.de/queuemanagement/process.json",
+			"amendment": "",
+			"appointments": [{
+				"$schema": "https://schema.berlin.de/queuemanagement/appointment.json",
+				"scope": {
+					"$schema": "https://schema.berlin.de/queuemanagement/scope.json",
+					"hint": "Bürgeramt | Nr. wird zum Termin aufgerufen",
+					"id": "141",
+					"contact": {
+						"name": "Bürgeramt Heerstraße",
+						"street": "Heerstr. 12, 14052 Berlin",
+						"email": "",
+						"country": "Germany"
+					},
+					"preferences": {
+						"appointment": {
+							"deallocationDuration": "10",
+							"endInDaysDefault": "60",
+							"multipleSlotsEnabled": "0",
+							"reservationDuration": "20",
+							"startInDaysDefault": "0"
+						},
+						"client": {
+							"alternateAppointmentUrl": "",
+							"amendmentActivated": "0",
+							"amendmentLabel": "",
+							"emailRequired": "0",
+							"telephoneActivated": "0",
+							"telephoneRequired": "0"
+						},
+						"notifications": {
+							"confirmationContent": "",
+							"enabled": "1",
+							"headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+							"headsUpTime": "30"
+						},
+						"pickup": {
+							"alternateName": "Ausgabe",
+							"isDefault": "0"
+						},
+						"queue": {
+							"callCountMax": "0",
+							"callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+							"firstNumber": "1",
+							"lastNumber": "499",
+							"processingTimeAverage": "15",
+							"publishWaitingTimeEnabled": "1",
+							"statisticsEnabled": "1"
+						},
+						"survey": {
+							"emailContent": "",
+							"enabled": "0",
+							"label": ""
+						},
+						"ticketprinter": {
+							"confirmationEnabled": "0",
+							"deactivatedText": "",
+							"notificationsAmendmentEnabled": "0",
+							"notificationsDelay": "0"
+						},
+						"workstation": {
+							"emergencyEnabled": "1"
+						}
+					},
+					"shortName": "",
+					"status": {
+						"emergency": {
+							"acceptedByWorkstation": "-1",
+							"activated": "0",
+							"calledByWorkstation": "-1"
+						},
+						"queue": {
+							"ghostWorkstationCount": "-1",
+							"givenNumberCount": "46",
+							"lastGivenNumber": "47",
+							"lastGivenNumberTimestamp": "1447925159"
+						},
+						"ticketprinter": {
+							"deactivated": "0"
+						}
+					},
+					"provider": {
+						"id": "122217",
+						"contact": {
+							"email": "test@example.com",
+							"city": "Berlin",
+							"country": "Germany",
+							"name": "Bürgeramt Heerstraße",
+							"postalCode": "14052",
+							"region": "Berlin",
+							"street": "Heerstr.",
+							"streetNumber": "12"
+						},
+						"source": "dldb",
+						"link": "https://service.berlin.de/standort/122217/",
+						"name": "Bürgeramt Heerstraße"
+					},
+					"department": {
+						"id": "74",
+						"contact": {
+							"city": "Berlin",
+							"street": "Otto-Suhr-Allee 100, 10585 Berlin",
+							"country": "Germany",
+							"name": ""
+						},
+						"email": "test@example.com",
+						"name": "Bürgeramt",
+						"preferences": {
+							"notifications": {
+								"enabled": null,
+								"identification": null,
+								"sendConfirmationEnabled": null,
+								"sendReminderEnabled": null
+							}
+						}
+					}
+				},
+				"availability": {
+					"$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+					"id": "94678",
+					"weekday": {
+						"monday": "0",
+						"tuesday": "0",
+						"wednesday": "0",
+						"thursday": "0",
+						"friday": "32",
+						"saturday": "0",
+						"sunday": "0"
+					},
+					"repeat": {
+						"afterWeeks": "1",
+						"weekOfMonth": "0"
+					},
+					"bookable": {
+						"startInDays": "0",
+						"endInDays": "60"
+					},
+					"workstationCount": {
+						"public": "2",
+						"callcenter": "2",
+						"intern": "2"
+					},
+					"multipleSlotsAllowed": "0",
+					"slotTimeInMinutes": "10",
+					"startDate": "1463954400",
+					"endDate": "1609365600",
+					"startTime": "08:00:00",
+					"endTime": "13:50:00",
+					"department": {
+						"id": "74",
+						"contact": {
+							"city": "Berlin",
+							"street": "Otto-Suhr-Allee 100, 10585 Berlin",
+							"country": "Germany",
+							"name": ""
+						},
+						"email": "test@example.com",
+						"name": "Bürgeramt",
+						"preferences": {
+							"notifications": {
+								"enabled": null,
+								"identification": null,
+								"sendConfirmationEnabled": null,
+								"sendReminderEnabled": null
+							}
+						}
+					}	
+				},
+				"slotCount": 1,
+				"date": "1464340800"
+			}],
+			"authKey": "",
+			"clients": [],
+			"createIP": "",
+			"createTimestamp": "",
+			"id": 0,
+			"queue": [],
+			"reminderTimestamp": 0,
+			"requests": [{
+				"$schema": "https://schema.berlin.de/queuemanagement/request.json",
+				"id": "120703",
+				"link": "https://service.berlin.de/dienstleistung/120703/",
+				"name": "Personalausweis beantragen",
+				"source": "dldb"
+			}],
+			"scope": {
+				"$schema": "https://schema.berlin.de/queuemanagement/scope.json",
+				"hint": "Bürgeramt | Nr. wird zum Termin aufgerufen",
+				"id": "141",
+				"contact": {
+					"name": "Bürgeramt Heerstraße",
+					"street": "Heerstr. 12, 14052 Berlin",
+					"email": "",
+					"country": "Germany"
+				},
+				"preferences": {
+					"appointment": {
+						"deallocationDuration": "10",
+						"endInDaysDefault": "60",
+						"multipleSlotsEnabled": "0",
+						"reservationDuration": "20",
+						"startInDaysDefault": "0"
+					},
+					"client": {
+						"alternateAppointmentUrl": "",
+						"amendmentActivated": "0",
+						"amendmentLabel": "",
+						"emailRequired": "0",
+						"telephoneActivated": "0",
+						"telephoneRequired": "0"
+					},
+					"notifications": {
+						"confirmationContent": "",
+						"enabled": "1",
+						"headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+						"headsUpTime": "30"
+					},
+					"pickup": {
+						"alternateName": "Ausgabe",
+						"isDefault": "0"
+					},
+					"queue": {
+						"callCountMax": "0",
+						"callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+						"firstNumber": "1",
+						"lastNumber": "499",
+						"processingTimeAverage": "15",
+						"publishWaitingTimeEnabled": "1",
+						"statisticsEnabled": "1"
+					},
+					"survey": {
+						"emailContent": "",
+						"enabled": "0",
+						"label": ""
+					},
+					"ticketprinter": {
+						"confirmationEnabled": "0",
+						"deactivatedText": "",
+						"notificationsAmendmentEnabled": "0",
+						"notificationsDelay": "0"
+					},
+					"workstation": {
+						"emergencyEnabled": "1"
+					}
+				},
+				"shortName": "",
+				"status": {
+					"emergency": {
+						"acceptedByWorkstation": "-1",
+						"activated": "0",
+						"calledByWorkstation": "-1"
+					},
+					"queue": {
+						"ghostWorkstationCount": "-1",
+						"givenNumberCount": "46",
+						"lastGivenNumber": "47",
+						"lastGivenNumberTimestamp": "1447925159"
+					},
+					"ticketprinter": {
+						"deactivated": "0"
+					}
+				},
+				"provider": {
+					"id": "122217",
+					"contact": {
+						"email": "test@example.com",
+						"city": "Berlin",
+						"country": "Germany",
+						"name": "Bürgeramt Heerstraße",
+						"postalCode": "14052",
+						"region": "Berlin",
+						"street": "Heerstr.",
+						"streetNumber": "12"
+					},
+					"source": "dldb",
+					"link": "https://service.berlin.de/standort/122217/",
+					"name": "Bürgeramt Heerstraße"
+				},
+				"department": {
+					"id": "74",
+					"contact": {
+						"city": "Berlin",
+						"street": "Otto-Suhr-Allee 100, 10585 Berlin",
+						"country": "Germany",
+						"name": ""
+					},
+					"email": "test@example.com",
+					"name": "Bürgeramt",
+					"preferences": {
+						"notifications": {
+							"enabled": null,
+							"identification": null,
+							"sendConfirmationEnabled": null,
+							"sendReminderEnabled": null
+						}
+					}
+				}
+			},
+			"status": ""
+		},
+		"1": {
+			"$schema": "https://schema.berlin.de/queuemanagement/process.json",
+			"amendment": "",
+			"appointments": [{
+				"$schema": "https://schema.berlin.de/queuemanagement/appointment.json",
+				"scope": {
+					"$schema": "https://schema.berlin.de/queuemanagement/scope.json",
+					"hint": "Bürgeramt | Nr. wird zum Termin aufgerufen",
+					"id": "141",
+					"contact": {
+						"name": "Bürgeramt Heerstraße",
+						"street": "Heerstr. 12, 14052 Berlin",
+						"email": "",
+						"country": "Germany"
+					},
+					"preferences": {
+						"appointment": {
+							"deallocationDuration": "10",
+							"endInDaysDefault": "60",
+							"multipleSlotsEnabled": "0",
+							"reservationDuration": "20",
+							"startInDaysDefault": "0"
+						},
+						"client": {
+							"alternateAppointmentUrl": "",
+							"amendmentActivated": "0",
+							"amendmentLabel": "",
+							"emailRequired": "0",
+							"telephoneActivated": "0",
+							"telephoneRequired": "0"
+						},
+						"notifications": {
+							"confirmationContent": "",
+							"enabled": "1",
+							"headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+							"headsUpTime": "30"
+						},
+						"pickup": {
+							"alternateName": "Ausgabe",
+							"isDefault": "0"
+						},
+						"queue": {
+							"callCountMax": "0",
+							"callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+							"firstNumber": "1",
+							"lastNumber": "499",
+							"processingTimeAverage": "15",
+							"publishWaitingTimeEnabled": "1",
+							"statisticsEnabled": "1"
+						},
+						"survey": {
+							"emailContent": "",
+							"enabled": "0",
+							"label": ""
+						},
+						"ticketprinter": {
+							"confirmationEnabled": "0",
+							"deactivatedText": "",
+							"notificationsAmendmentEnabled": "0",
+							"notificationsDelay": "0"
+						},
+						"workstation": {
+							"emergencyEnabled": "1"
+						}
+					},
+					"shortName": "",
+					"status": {
+						"emergency": {
+							"acceptedByWorkstation": "-1",
+							"activated": "0",
+							"calledByWorkstation": "-1"
+						},
+						"queue": {
+							"ghostWorkstationCount": "-1",
+							"givenNumberCount": "46",
+							"lastGivenNumber": "47",
+							"lastGivenNumberTimestamp": "1447925159"
+						},
+						"ticketprinter": {
+							"deactivated": "0"
+						}
+					},
+					"provider": {
+						"id": "122217",
+						"contact": {
+							"email": "test@example.com",
+							"city": "Berlin",
+							"country": "Germany",
+							"name": "Bürgeramt Heerstraße",
+							"postalCode": "14052",
+							"region": "Berlin",
+							"street": "Heerstr.",
+							"streetNumber": "12"
+						},
+						"source": "dldb",
+						"link": "https://service.berlin.de/standort/122217/",
+						"name": "Bürgeramt Heerstraße"
+					},
+					"department": {
+						"id": "74",
+						"contact": {
+							"city": "Berlin",
+							"street": "Otto-Suhr-Allee 100, 10585 Berlin",
+							"country": "Germany",
+							"name": ""
+						},
+						"email": "test@example.com",
+						"name": "Bürgeramt",
+						"preferences": {
+							"notifications": {
+								"enabled": null,
+								"identification": null,
+								"sendConfirmationEnabled": null,
+								"sendReminderEnabled": null
+							}
+						}
+					}
+				},
+				"availability": {
+					"$schema": "https://schema.berlin.de/queuemanagement/availability.json",
+					"id": "94678",
+					"weekday": {
+						"monday": "0",
+						"tuesday": "0",
+						"wednesday": "0",
+						"thursday": "0",
+						"friday": "32",
+						"saturday": "0",
+						"sunday": "0"
+					},
+					"repeat": {
+						"afterWeeks": "1",
+						"weekOfMonth": "0"
+					},
+					"bookable": {
+						"startInDays": "0",
+						"endInDays": "60"
+					},
+					"workstationCount": {
+						"public": "2",
+						"callcenter": "2",
+						"intern": "2"
+					},
+					"multipleSlotsAllowed": "0",
+					"slotTimeInMinutes": "10",
+					"startDate": "1463954400",
+					"endDate": "1609365600",
+					"startTime": "08:00:00",
+					"endTime": "13:50:00",
+					"department": {
+						"id": "74",
+						"contact": {
+							"city": "Berlin",
+							"street": "Otto-Suhr-Allee 100, 10585 Berlin",
+							"country": "Germany",
+							"name": ""
+						},
+						"email": "test@example.com",
+						"name": "Bürgeramt",
+						"preferences": {
+							"notifications": {
+								"enabled": null,
+								"identification": null,
+								"sendConfirmationEnabled": null,
+								"sendReminderEnabled": null
+							}
+						}
+					}
+				},
+				"slotCount": 1,
+				"date": "1464342000"
+			}],
+			"authKey": "",
+			"clients": [],
+			"createIP": "",
+			"createTimestamp": "",
+			"id": 0,
+			"queue": [],
+			"reminderTimestamp": 0,
+			"requests": [{
+				"$schema": "https://schema.berlin.de/queuemanagement/request.json",
+				"id": "120703",
+				"link": "https://service.berlin.de/dienstleistung/120703/",
+				"name": "Personalausweis beantragen",
+				"source": "dldb"
+			}],
+			"scope": {
+				"$schema": "https://schema.berlin.de/queuemanagement/scope.json",
+				"hint": "Bürgeramt | Nr. wird zum Termin aufgerufen",
+				"id": "141",
+				"contact": {
+					"name": "Bürgeramt Heerstraße",
+					"street": "Heerstr. 12, 14052 Berlin",
+					"email": "",
+					"country": "Germany"
+				},
+				"preferences": {
+					"appointment": {
+						"deallocationDuration": "10",
+						"endInDaysDefault": "60",
+						"multipleSlotsEnabled": "0",
+						"reservationDuration": "20",
+						"startInDaysDefault": "0"
+					},
+					"client": {
+						"alternateAppointmentUrl": "",
+						"amendmentActivated": "0",
+						"amendmentLabel": "",
+						"emailRequired": "0",
+						"telephoneActivated": "0",
+						"telephoneRequired": "0"
+					},
+					"notifications": {
+						"confirmationContent": "",
+						"enabled": "1",
+						"headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+						"headsUpTime": "30"
+					},
+					"pickup": {
+						"alternateName": "Ausgabe",
+						"isDefault": "0"
+					},
+					"queue": {
+						"callCountMax": "0",
+						"callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+						"firstNumber": "1",
+						"lastNumber": "499",
+						"processingTimeAverage": "15",
+						"publishWaitingTimeEnabled": "1",
+						"statisticsEnabled": "1"
+					},
+					"survey": {
+						"emailContent": "",
+						"enabled": "0",
+						"label": ""
+					},
+					"ticketprinter": {
+						"confirmationEnabled": "0",
+						"deactivatedText": "",
+						"notificationsAmendmentEnabled": "0",
+						"notificationsDelay": "0"
+					},
+					"workstation": {
+						"emergencyEnabled": "1"
+					}
+				},
+				"shortName": "",
+				"status": {
+					"emergency": {
+						"acceptedByWorkstation": "-1",
+						"activated": "0",
+						"calledByWorkstation": "-1"
+					},
+					"queue": {
+						"ghostWorkstationCount": "-1",
+						"givenNumberCount": "46",
+						"lastGivenNumber": "47",
+						"lastGivenNumberTimestamp": "1447925159"
+					},
+					"ticketprinter": {
+						"deactivated": "0"
+					}
+				},
+				"provider": {
+					"id": "122217",
+					"contact": {
+						"email": "test@example.com",
+						"city": "Berlin",
+						"country": "Germany",
+						"name": "Bürgeramt Heerstraße",
+						"postalCode": "14052",
+						"region": "Berlin",
+						"street": "Heerstr.",
+						"streetNumber": "12"
+					},
+					"source": "dldb",
+					"link": "https://service.berlin.de/standort/122217/",
+					"name": "Bürgeramt Heerstraße"
+				},
+				"department": {
+					"id": "74",
+					"contact": {
+						"city": "Berlin",
+						"street": "Otto-Suhr-Allee 100, 10585 Berlin",
+						"country": "Germany",
+						"name": ""
+					},
+					"email": "test@example.com",
+					"name": "Bürgeramt",
+					"preferences": {
+						"notifications": {
+							"enabled": null,
+							"identification": null,
+							"sendConfirmationEnabled": null,
+							"sendReminderEnabled": null
+						}
+					}
+				}
+			},
+			"status": ""
+		}
+	}
+}

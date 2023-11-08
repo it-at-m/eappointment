@@ -1,0 +1,19 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'calldisplay-config'} %}
+        {% from 'element/helper/form.twig' import formgroup, formbutton %}
+
+        {% block board_title %}  
+            {{ title }} Standortauswahl - Berlin - {{ organisation.name }}
+        {% endblock %}
+
+        {% block board_body %}
+        <div class=""
+            data-includeurl="{{includeUrl()}}"
+            data-calldisplay-config
+            data-organisation="{{organisation|json_encode}}"
+            data-departments="{{departments|json_encode}}"
+            data-config="{{config|json_encode}}">
+        </div>
+        {% endblock %}
+
+{% endembed %}
+

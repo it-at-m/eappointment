@@ -1,0 +1,55 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2018-11-13T16:47:33+01:00",
+    "server": "Zmsapi-ENV (v2.18.02-38-gdb46298)"
+  },
+  "data": {
+    "0": {
+      "$schema": "https://schema.berlin.de/queuemanagement/source.json",
+      "source": "dldb",
+      "contact": {
+        "name": "Landesredaktion",
+        "email": "test@example.com"
+      },
+      "label": "Dienstleistungsdatenbank",
+      "editable": "0",
+      "lastChange": 1541154730
+    },
+    "1": {
+      "$schema": "https://schema.berlin.de/queuemanagement/source.json",
+      "source": "unittest",
+      "contact": {
+        "name": "BerlinOnline Stadtportal GmbH",
+        "email": "test@example.com"
+      },
+      "label": "Unittest Source",
+      "editable": "1",
+      "lastChange": 1541154746
+    },
+    "2": {
+      "$schema": "https://schema.berlin.de/queuemanagement/source.json",
+      "source": "test",
+      "contact": {
+        "name": "",
+        "email": "test@example.com"
+      },
+      "label": "Test",
+      "editable": "1",
+      "lastChange": 1541507455
+    },
+    "3": {
+      "$schema": "https://schema.berlin.de/queuemanagement/source.json",
+      "source": "test02",
+      "contact": {
+        "name": "",
+        "email": ""
+      },
+      "label": "",
+      "editable": "1",
+      "lastChange": 1542031162
+    }
+  }
+}

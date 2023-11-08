@@ -1,0 +1,65 @@
+{#
+ #    This is a superglobal skeleton for scaffholding all kind of blocks called "board".
+ #    Be careful when edit this file
+ #}
+
+{% if class is empty %}{% set class = 'board' %}{% endif %}
+{% block board %}
+
+<!-- start: board {{ class }} -->
+{% set blockTag = (block('board_title') is not empty)? 'section' : 'div' %}
+{% if ("exception" in class) %}
+    <{{ blockTag }} class="board {{ class }}" role="alert" data-exception-errorlist="{{ data|json_encode() }}">
+{% else %}
+    <{{ blockTag }} class="board {{ class }}" data-reload="{% if reload %}{{ reload }}{% endif %}" {% for key, value in data %}data-{{ key }}="{{ value }}"{% endfor %}>
+{% endif %}
+
+    {% if block('board_title') is not empty %}
+    <div class="header board__header">
+        <{{ headingWeight|default('h2') }} class="{{ ("exception" in class)? 'message__heading' : 'board__heading' }}">
+            {% block board_title -%}{%- endblock %}
+        </{{ headingWeight|default('h2') }}>
+    </div>
+    {%- endif %}
+
+    {% if block('board_title_aside') is not empty or block('board_header_right') is not empty%}
+    <div class="board__actions">
+        {% if block('board_title_aside') is not empty %}
+        <div class="left">
+            {% block board_title_aside %}{% endblock %}
+        </div>
+        {%- endif %}
+        {% if block('board_header_right') is not empty %}
+        <div class="right">
+            {% block board_header_right %}{% endblock %}
+        </div>
+        {%- endif %}
+    </div>
+    {%- endif %}
+
+    <div class="{{ ("exception" in class)? 'body message__body message message--error message-keep' : 'body board__body' }} {{ bodyclass }}">
+        {% if messages != "hide" %}
+        {% include "element/helper/messageHandler.twig" %}
+        {%- endif %}
+        
+        {% set errorPrefix = "Fehler" %}
+        {% set exclamationIcon = '<i class="fas fa-exclamation-circle" title="Wichtiger Hinweis" aria-hidden="true"></i><span class="sr-only">Wichtiger Hinweis</span>' %}
+        {% with {'errorPrefix': errorPrefix|trans, 'exclamationIcon': exclamationIcon } %}
+        {% block board_body -%}
+        {%- endblock %}
+        {% endwith %}
+    </div>
+
+    {% if block('board_footer') is not empty %}
+    <div class="board__footer">
+        {% block board_footer -%}
+        {%- endblock %}
+    </div>
+    {%- endif %}
+
+</{{ blockTag }}>
+
+
+<!-- /end: board {{ class }} -->
+
+{% endblock %}
