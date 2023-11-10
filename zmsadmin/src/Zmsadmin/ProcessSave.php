@@ -38,6 +38,7 @@ class ProcessSave extends BaseController
         $dateTime = ($process->isWithAppointment()) ?
             (new \DateTime())->setTimestamp($process->getFirstAppointment()->date) :
             \App::$now;
+        $shouldNotify = $this->shouldSendNotifications($input, $process);
         $process->withUpdatedData($input, $dateTime, $scope);
         
         $validatedForm = ($process->isWithAppointment()) ?
@@ -51,7 +52,12 @@ class ProcessSave extends BaseController
             );
         }
 
-        $process = $this->writeUpdatedProcess($input, $process, $validator);
+        $process = $this->writeUpdatedProcess(
+            $input,
+            $process,
+            $validator,
+            $shouldNotify
+        );
         $appointment = $process->getFirstAppointment();
         $conflictList = ($process->isWithAppointment()) ?
             static::getConflictList($scope->getId(), $appointment) :
@@ -84,7 +90,7 @@ class ProcessSave extends BaseController
         return (isset($conflictList)) ? $conflictList[$appointment->getStartTime()->format('Y-m-d')] : null;
     }
 
-    protected function writeUpdatedProcess($input, Entity $process, $validator)
+    protected function writeUpdatedProcess($input, Entity $process, $validator, $notify = true)
     {
         $initiator = $validator->getParameter('initiator')->isString()->getValue();
         $process = \App::$http->readPostResult(
@@ -96,7 +102,37 @@ class ProcessSave extends BaseController
                 'slotsRequired' => (isset($input['slotCount']) && 1 < $input['slotCount']) ? $input['slotCount'] : 0
             ]
         )->getEntity();
-        AppointmentFormHelper::updateMailAndNotification($input, $process);
+
+        if ($notify) {
+            AppointmentFormHelper::updateMailAndNotification($input, $process);
+        }
+
         return $process;
+    }
+
+    private function shouldSendNotifications($requestData, \BO\Zmsentities\Schema\Entity $process)
+    {
+        $requestIds = $requestData['requests'] ?? [];
+        $currentRequestIds = [];
+        foreach ($process->getRequests() as $request) {
+            $currentRequestIds[] = $request['id'];
+        }
+
+        if (array_diff($requestIds, $currentRequestIds)) {
+            return true;
+        }
+
+        if ($process->getFirstClient()['familyName'] !== $requestData['familyName']) {
+            return true;
+        }
+
+        $newDate = $requestData['selecteddate'] . ' '
+            . str_replace('-', ':', $requestData['selectedtime']);
+
+        if ($process->getFirstAppointment()->toDateTime()->format('Y-m-d H:i') !== $newDate) {
+            return true;
+        }
+
+        return false;
     }
 }
