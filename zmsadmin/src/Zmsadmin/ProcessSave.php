@@ -118,7 +118,7 @@ class ProcessSave extends BaseController
             $currentRequestIds[] = $request['id'];
         }
 
-        if (array_diff($requestIds, $currentRequestIds)) {
+        if (array_merge(array_diff($requestIds, $currentRequestIds), array_diff($currentRequestIds, $requestIds))) {
             return true;
         }
 
