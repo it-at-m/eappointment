@@ -58,6 +58,7 @@ class TwigExceptionHandler implements ErrorHandlerInterface
                 $logInfo = $extendedInfo;
                 unset($logInfo['responsedata']);
                 unset($logInfo['exception']);
+                unset($logInfo['workstation']);
                 //ksort($logInfo);
                 // Some error-reporting is limited to a defined amount of chars
                 // Remove unnecessary chars, for ordering see self::getExtendedExceptionInfo()
