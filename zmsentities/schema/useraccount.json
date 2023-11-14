@@ -50,7 +50,7 @@
         "de_DE": {
           "pointer": "Nutzer E-Mail",
           "messages": {
-            "minLength": "Es muss eine E-Mail-Adresse angegeben werden.",
+            "minLength": "Es kann eine E-Mail-Adresse angegeben werden.",
             "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein."
           }
         }
