@@ -1,7 +1,7 @@
 <?php
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Process as Entity;
+use \BO\Zmsentities\ProcessArchived as Entity;
 use \BO\Zmsentities\Collection\ProcessList as Collection;
 
 /**
@@ -36,6 +36,16 @@ class ProcessStatusArchived extends Process
     {
         $query = new Query\ProcessStatusArchived(Query\Base::SELECT);
         $query->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionTime($dateTime);
+        return $this->readResolvedList($query, $resolveReferences);
+    }
+
+    public function readListByScopeAndDate($scopeId, $dateTime, $resolveReferences = 0)
+    {
+        $query = new Query\ProcessStatusArchived(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addConditionScopeId($scopeId)
             ->addResolvedReferences($resolveReferences)
             ->addConditionTime($dateTime);
         return $this->readResolvedList($query, $resolveReferences);
