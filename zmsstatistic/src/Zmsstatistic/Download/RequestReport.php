@@ -70,6 +70,7 @@ class RequestReport extends Base
     {
         $reportHeader = [];
         $reportHeader[] = 'Dienstleistung';
+        $reportHeader[] = 'Ø Bearbeitungsdauer';
         $reportHeader[] = $this->getFormatedDates($this->firstDayDate, $datePatternCol1);
         $dateTime = clone $this->firstDayDate;
         do {
@@ -86,8 +87,9 @@ class RequestReport extends Base
     {
         $reportData = [];
         foreach ($report->data as $name => $entry) {
-            if ('sum' != $name) {
+            if ('sum' != $name && 'average_processingtime' != $name) {
                 $reportData[$name][] = $name;
+                $reportData[$name][] = $report->data['average_processingtime'][$name];
                 $reportData[$name][] = $report->data['sum'][$name];
                 $dateTime = clone $this->firstDayDate;
                 do {
