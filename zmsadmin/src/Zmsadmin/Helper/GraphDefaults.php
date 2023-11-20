@@ -253,6 +253,7 @@ EOS;
     id
     status
     createTimestamp
+    updateTimestamp
     reminderTimestamp
     appointments{
         date
