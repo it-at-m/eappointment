@@ -203,9 +203,10 @@ class Process extends Base implements MappingInterface
             'customTextfield' => 'process.custom_text_field',
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
+            'updateTimestamp' => 'process.updateTimestamp',
             'lastChange' => 'process.updateTimestamp',
             'showUpTime' => 'process.showUpTime',
-            'finishTime' => 'process.finishTime',
+            'finishTime' => 'process.finishTime',           
             'status' => $status_expression,
             'queue__status' => $status_expression,
             'queue__arrivalTime' => self::expression(
@@ -794,13 +795,15 @@ class Process extends Base implements MappingInterface
     {
         $data = array();
 
+        //print($process->status);
+
         if ($process->status == 'processing') { 
             $data['showUpTime'] = $dateTime->format('Y-m-d H:i:s'); 
         } 
  
         if ($process->status == 'finished') { 
             $data['finishTime'] = $dateTime->format('Y-m-d H:i:s'); 
-        }
+        }    
 
         $this->addValues($data);
     }

@@ -308,6 +308,10 @@
                     "type": "string",
                     "description": "unix timestamp og time when process has been finished"
                 },
+                "updateTimestamp": {
+                    "type": "string",
+                    "description": "unix timestamp og time when process has been missed"
+                },                
                 "clients": {
                     "type": "array",
                     "items": {
