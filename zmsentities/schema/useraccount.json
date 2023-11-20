@@ -45,7 +45,7 @@
       "type": "string",
       "default": "",
       "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
-      "minLength": 1,
+      "minLength": 0,
       "x-locale": {
         "de_DE": {
           "pointer": "Nutzer E-Mail",
