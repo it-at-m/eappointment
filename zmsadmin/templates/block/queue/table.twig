@@ -262,18 +262,24 @@
                             </td>
                             <td>Dieser Kunde ist nicht erschienen</td>
                             <td>{{ item.customTextfield|decodeEntities|raw }}</td>
-                            {% set currentTime = "now"|date('U') %}
-                            {% set updateTimestamp = item.updateTimestamp|date('U') %}
-                            {% set fiveMinutes = 300 %}
+                                {% set currentTime = "now"|date('U') %}
+                                {% set updateTimestamp = item.updateTimestamp|date('U') %}
+                                {% set fiveMinutes = 300 %}
+                                {% set timeDiff = currentTime - updateTimestamp %}
+                                {% set remainingTime = fiveMinutes - timeDiff %}
 
-                            {% if currentTime - updateTimestamp > fiveMinutes %}
-                                <td>
-                                    {{ item.updateTimestamp }}
-                                    <a href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a>
-                                </td>
-                            {% else %}
-                                <td>{{ item.updateTimestamp }}</td>
-                            {% endif %}
+                                {% if timeDiff > fiveMinutes %}
+                                    <td>
+                                        <a href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a>
+                                    </td>
+                                {% else %}
+                                    {% set remainingMinutes = (remainingTime // 60) %}
+                                    {% set remainingSeconds = remainingTime % 60 %}
+                                    {% set formattedTime = '%02d:%02d'|format(remainingMinutes, remainingSeconds) %}
+                                    <td>
+                                        <p>Kann in {{ formattedTime }} Minuten wieder aufgerufen werden. Zuletzt geänderte Zeit: {{ item.updateTimestamp }}</p>
+                                    </td>
+                                {% endif %}
                         </tr>
                     {% endfor %}
                 </table>
