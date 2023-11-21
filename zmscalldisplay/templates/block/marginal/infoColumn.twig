@@ -1,21 +1,7 @@
 {% block infoColumn %}
 <!--Logo und Text-->
 <div align="center">
-	{% if showQrCode and webcalldisplay is defined %}
-		<div class="qrCode--Headline">{{ ("Mobile Aufrufanzeige")|trans }}</div>
-		<div class="qrContainer">
-			<canvas id="webcallUrlCode" class="qrCode" width="240" height="240"
-				data-text="{{ webcalldisplay|raw }}">
-			</canvas>
-		</div>
-	{% else %}
-   		<img src="data:image/{{ calldisplay.image.mime }};base64,{{ calldisplay.image.data }}" width="200" border="0" alt="">
-	{% endif %}
-	<br><br>
-	{% if calldisplay.clusters|length == 1 and calldisplay.clusters|first.callDisplayText %}
-	{{ calldisplay.clusters|first.callDisplayText|raw|nl2br }}
-	{% elseif calldisplay.scopes|length == 1 and calldisplay.scopes|first.preferences.queue.callDisplayText%}
-	{{ calldisplay.scopes|first.preferences.queue.callDisplayText|raw|nl2br }}
-	{% endif %}
+   	<img src="data:image/{{ calldisplay.image.mime }};base64,{{ calldisplay.image.data }}" width="200" border="0" alt="">
+
 </div>
 {% endblock %}

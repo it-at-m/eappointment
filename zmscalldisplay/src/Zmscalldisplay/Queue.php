@@ -8,6 +8,7 @@
 namespace BO\Zmscalldisplay;
 
 use BO\Slim\Render;
+use BO\Zmsentities\Schema\Entity;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 

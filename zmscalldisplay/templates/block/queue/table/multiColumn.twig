@@ -1,6 +1,6 @@
 {% block multiColumn %}
-    {% set neededColumns = (queueList.count() /  tableSettings.maxResults)|round(0, 'ceil') %}
-    {% set tableColumns = (neededColumns > tableSettings.multiColumns) ? tableSettings.multiColumns : neededColumns %}
+    {% set neededColumns = 2 %}
+    {% set tableColumns = 2 %}
     <div class="aufrufanzeige_anzeigebereich_einzeilig aber_zweispaltig columns-{{ tableColumns }}">
         <table>
             <tbody>

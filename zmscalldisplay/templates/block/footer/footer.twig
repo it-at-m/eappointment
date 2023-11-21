@@ -1,0 +1,29 @@
+{% block footer %}
+
+            <div id="footer" class="footer">
+
+			{% set text = '' %}
+			{% if calldisplay.clusters|length == 1 and calldisplay.clusters|first.callDisplayText %}
+				{% set text = calldisplay.clusters|first.callDisplayText|raw|nl2br %}
+			{% elseif calldisplay.scopes|length == 1 and calldisplay.scopes|first.preferences.queue.callDisplayText%}
+				{% set text = calldisplay.scopes|first.preferences.queue.callDisplayText|raw|nl2br %}
+			{% endif %}
+
+				<div id="animate-container" style="animation-duration: {{ text|length / 4 + 100 / text|length }}s">
+					{{ text }}
+				</div>
+            </div>
+
+			<style>
+				@keyframes text-indent-animate {
+					0% {
+						text-indent: -{{ text|length * 2.5 }}%;
+					}
+
+					100% {
+						text-indent: 100%;
+					}
+				}
+
+			</style>
+{% endblock %}            

@@ -44,5 +44,8 @@
     "postcss": "^8.4.16",
     "qrcode-generator": "1.4.4",
     "sass": "^1.54.4"
+  },
+  "directories": {
+    "test": "tests"
   }
 }

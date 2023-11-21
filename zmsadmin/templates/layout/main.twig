@@ -80,7 +80,7 @@
 
     </div>
     {#<script src="{{ includeUrl() }}/_js/vendor.js?version={{ currentVersion() }}"></script>#}
-    <script src="{{ includeUrl() }}/_js/index.js?version={{ currentVersion() }}&ts={{ getNow()|date("U") }}"></script>
+    <script src="_js/index.js?version={{ currentVersion() }}&ts={{ getNow()|date("U") }}"></script>
     {#<script src="{{ includeUrl() }}/_js/index.js?2"></script>#}
     {% block javascript %}
     {%- endblock %}
