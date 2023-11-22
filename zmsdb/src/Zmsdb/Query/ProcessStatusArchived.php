@@ -44,7 +44,9 @@ class ProcessStatusArchived extends Base implements MappingInterface
             'scope__id' => 'process.StandortID',
             '__clientsCount' => 'process.AnzahlPersonen',
             'waitingTime' => 'process.wartezeit',
-            'bearbeitungszeit' => 'process.bearbeitungszeit',
+            'processingTime' => 'process.bearbeitungszeit',
+            'name' => 'process.name',
+            'services' => 'process.dienstleistungen',
             'queue__arrivalTime' => self::expression(
                 'CONCAT(`process`.`Datum`, " 00:00:00")'
             ),
@@ -52,6 +54,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
                 'CONCAT(`process`.`Datum`, " ", SEC_TO_TIME(`wartezeit`))'
             ),
             'queue__withAppointment' => 'process.mitTermin',
+            'withAppointment' => 'process.mitTermin',
             'queue__status' => self::expression(
                 'IF(`process`.`nicht_erschienen`,
                     "missed",
@@ -118,10 +121,12 @@ class ProcessStatusArchived extends Base implements MappingInterface
     {
         $this->addValues([
             'StandortID' => $process->scope['id'],
+            'name' => $process->getFirstClient()['familyName'],
+            'dienstleistungen' => $this->getArchivedServices($process),
             'Datum' => $process->getFirstAppointment()->toDateTime()->format('Y-m-d'),
             'mitTermin' => ($process->toQueue($now)->withAppointment) ? 1 : 0,
             'nicht_erschienen' => ('missed' == $process->queue['status']) ? 1 : 0,
-            'Timestamp' => $now->format('H:i:s'),
+            'Timestamp' =>$process->getArrivalTime()->format('H:i:s'),
             'wartezeit' => ($process->getWaitedSeconds() > 0) ? $process->getWaitedMinutes() : 0,
             'bearbeitungszeit' => $process->finishTime
                 ? floor(
@@ -150,5 +155,16 @@ class ProcessStatusArchived extends Base implements MappingInterface
             }
         }
         return $data;
+    }
+
+    private function getArchivedServices(\BO\Zmsentities\Process $process)
+    {
+        $services = $process->getRequests()->getFirst()->name;
+
+        if ($process->getRequests()->count() > 1) {
+            $services .= ' +' . ($process->getRequests()->count() - 1);
+        }
+
+        return $services;
     }
 }
