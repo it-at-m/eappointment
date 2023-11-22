@@ -254,6 +254,7 @@ EOS;
     status
     createTimestamp
     updateTimestamp
+    queuedTime
     reminderTimestamp
     appointments{
         date

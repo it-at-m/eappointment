@@ -323,6 +323,11 @@ class Process extends Schema\Entity
         return $this->toProperty()->showUpTime->get();
     }
 
+    public function getQueuedTime()
+    {
+        return $this->toProperty()->queuedTime->get();
+    }
+
     public function getFinishTime()
     {
         return $this->toProperty()->finishTime->get();
