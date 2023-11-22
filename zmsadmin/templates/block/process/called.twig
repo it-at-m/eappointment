@@ -4,6 +4,7 @@
         {% endblock %}
         {% block board_body %} 
             {% if error != "has_called_pickup" %}
+            <p>{{ workstation.process.status }}</p>
             <h4>{% trans %}Zeit seit Kundenaufruf{% endtrans %}:</h4>
             <span id="clock" role="timer" class="clock" title="verstrichene Zeit seit dem Kundenaufruf" data-callTime={{ workstation.process.queue.callTime }} data-now={{ getNow()|date('U') }}></span>
             <h4>

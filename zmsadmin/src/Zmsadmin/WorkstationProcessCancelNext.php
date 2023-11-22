@@ -28,6 +28,13 @@ class WorkstationProcessCancelNext extends BaseController
         if ($workstation->process['id']) {
             \App::$http->readDeleteResult('/workstation/process/')->getEntity();
         }
+        /*
+        error_log($workstation->process->getStatus());
+        //print_r(json_encode($workstation->process));
+        error_log($workstation->process->queuedTime);
+        error_log("Cancel Next");
+        */
+
         return \BO\Slim\Render::redirect(
             'workstationProcessNext',
             array(),
