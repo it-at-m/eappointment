@@ -1,0 +1,358 @@
+{
+  "type": "object",
+  "description": "A process represents a request from one or more clients, usually including an appointment. Compared to an appointment, the process has additional information about the status of the request from the client.",
+  "example": {
+
+    "appointments": [
+      {
+        "date": 1447869171,
+        "scope": {
+          "id": 123
+        },
+        "slotCount": 2
+      }
+    ],
+    "authKey": "abcd",
+    "clients": [
+      {
+        "familyName": "Max Mustermann",
+        "email": "max@service.berlin.de",
+        "telephone": "030 115"
+      }
+    ],
+    "createIP": "145.15.3.10",
+    "createTimestamp": 1447931596,
+    "lastChange": 1447931596,
+    "id": 123456,
+    "queue": {
+      "arrivalTime": 1447922893,
+      "callCount": 1,
+      "callTime": 1447922938,
+      "lastCallTime": 1447922938,
+      "number": "123",
+      "waitingTime": 2,
+      "withAppointment": 1,
+      "status": "queued"
+    },
+    "reminderTimestamp": 1447931730,
+    "requests": [
+      {
+        "id": "120335",
+        "link": "http://service.berlin.de/dienstleistung/120335/",
+        "name": "Abmeldung einer Wohnung",
+        "source": "dldb",
+        "group": "Meldewesen und Ordnung",
+        "data": {
+            "authorities": [
+                {
+                    "id": "12676",
+                    "name": "Bezirksamt Steglitz-Zehlendorf",
+                    "webinfo": "http://www.berlin.de/ba-steglitz-zehlendorf/"
+                },
+                {
+                    "id": "12677",
+                    "name": "Bezirksamt Tempelhof-Schöneberg",
+                    "webinfo": "http://www.berlin.de/ba-tempelhof-schoeneberg/"
+                },
+                {
+                    "id": "12678",
+                    "name": "Bezirksamt Treptow-Köpenick",
+                    "webinfo": "http://www.berlin.de/ba-treptow-koepenick/"
+                }
+            ],
+            "locations": [
+                {
+                    "location": "325341",
+                    "appointment": {
+                        "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=325341&anliegen[]=120335",
+                        "slots": "0",
+                        "external": false,
+                        "multiple": "0",
+                        "allowed": true
+                    },
+                    "hint": ""
+                },
+                {
+                    "location": "324434",
+                    "appointment": {
+                        "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=324434&anliegen[]=120335",
+                        "slots": "0",
+                        "external": false,
+                        "multiple": "0",
+                        "allowed": true
+                    },
+                    "hint": ""
+                },
+                {
+                    "location": "325657",
+                    "appointment": {
+                        "link": "",
+                        "slots": "0",
+                        "external": false,
+                        "multiple": "0",
+                        "allowed": false
+                    },
+                    "hint": ""
+                }
+            ],
+            "meta": {
+                "lastupdate": "2016-02-04T09:45:44+01:00",
+                "locale": "de",
+                "keywords": "Abmeldung, Wohnungsabmeldung, Wegzug, abmelden, Wohnsitz, Wohnung abmelden, Wohnungswechsel, Umzug, Adressänderung, ummelden"
+            },
+            "process_time": "Bei persönlicher Vorsprache in einem Bürgeramt wird die Abmeldung abschließend bearbeitet.",
+            "requirements": [
+                {
+                    "description": "Die Abmeldung kann auch auf dem Postweg erfolgen.<br />\nBitte benutzen Sie dazu aber das angebotene Formular.<br />\nBei mehr als 3 abzumeldenden Personen benutzen Sie bitte weitere Meldescheine.",
+                    "name": "Abmeldung bei der Meldebehörde",
+                    "link": ""
+                },
+                {
+                    "description": "Seit dem 1. November 2015 ist der Wohnungsgeber verpflichtet, dem Meldepflichtigen den Auszug bis zu 7 Tage vor oder nach dem Auszug schriftlich mit Unterschrift zu bestätigen. Die Bestätigung muss folgende Daten enthalten: Name und Anschrift des Wohnungsgebers, Auszugsdatum, Anschrift der Wohnung und Namen der meldepflichtigen Personen.<br />\nEin Muster für die Auszugsbestätigung des Wohnungsgebers steht Ihnen unter &quot;Formulare&quot; zur Verfügung.",
+                    "name": "Auszugsbestätigung des Wohnungsgebers (Vermieter)",
+                    "link": ""
+                }
+            ],
+            "responsibility": "Diese Dienstleistung erhalten Sie in allen Berliner Bürgerämtern.",
+            "forms": [
+                {
+                    "description": false,
+                    "name": "Abmeldung bei der Meldebehörde",
+                    "link": "http://www.berlin.de/formularserver/formular.php?402609"
+                },
+                {
+                    "description": false,
+                    "name": "Muster: Auszugsbestätigung des Wohnungsgebers (Vermieter)",
+                    "link": "http://www.berlin.de/formularserver/formular.php?402544"
+                }
+            ],
+            "fees": "gebührenfrei; dies gilt auch für die Abmeldebestätigung.",
+            "prerequisites": [
+                {
+                    "description": false,
+                    "name": "keine",
+                    "link": ""
+                }
+            ],
+            "id": "120335",
+            "description": "<ul class=\"list\"><li>Sie geben eine Berliner Wohnung auf, weil Sie in das Ausland verziehen</li><br />\n</ul><strong>oder</strong><br />\n<ul class=\"list\"><li>Sie geben eine von mehreren Wohnungen in Deutschland auf, für die Sie angemeldet sind <strong>und</strong> die Berliner Wohnung bleibt bestehen</li></ul><strong>oder</strong><br />\n<ul class=\"list\"><li>Sie geben eine von mehreren Berliner Wohnungen auf, für die Sie angemeldet sind</li><br />\n</ul>Sie müssen sich bei der Meldebehörde in Berlin nur bei einem Wegzug ins Ausland abmelden oder bei der Aufgabe einer Haupt- oder Nebenwohnung, ohne dass Sie in eine andere Wohnung im Inland einziehen.<br />\nBeim Wegzug in das Ausland gilt, dass Sie aus dieser Wohnung ausziehen und dort zukünftig nicht wieder wohnen werden - befristete Auslandsaufenthalte, z.B. zu Studienzwecken bedingen keine Abmeldung.<br />\n<br />\n<br />\nDie Abmeldung kann im Zeitraum von 7 Tagen vor, muss aber bis 14 Tage nach dem Auszug vorgenommen werden.<br />\nSie erhalten eine Abmeldebestätigung.<br />\n<br />\nHinweis:<br />\nWenn Sie jedoch innerhalb Deutschlands nur umziehen wollen, brauchen Sie sich lediglich bei der Meldebehörde Ihrer neuen Wohnung anmelden.",
+            "leika": "99115005070000",
+            "links": [
+                {
+                    "description": false,
+                    "name": "Informationen zum Bundesmeldegesetz",
+                    "link": "http://www.bmi.bund.de/DE/Themen/Moderne-Verwaltung/Verwaltungsrecht/Meldewesen/Bundesmeldegesetz/bundesmeldegesetz_node.html"
+                }
+            ],
+            "responsibility_all": true,
+            "name": "Abmeldung einer Wohnung",
+            "onlineprocessing": {
+                "description": false,
+                "link": ""
+            },
+            "legal": [
+                {
+                    "description": false,
+                    "name": "Ab dem 1. November 2015: Bundesmeldegesetz",
+                    "link": "http://www.gesetze-im-internet.de/bmg/"
+                }
+            ],
+            "relation": {
+                "root_topic": "324835"
+            },
+            "appointment": {
+                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&anliegen[]=120335&dienstleisterlist=327316,327312,327314,327346,122238,327348,122252,327338,122260,327340,122262,122254,327278,327274,327276,327294,327290,327292,122291,327270,122285,327266,122286,327264,122296,327268,150230,327282,327286,327284,122312,122314,122304,327330,122311,327334,122309,327332,317869,324433,325341,324434,327352,122283,327354,122276,327324,122274,327326,122267,327328,327318,327320,327322,122208,327298,122226,327300&herkunft="
+            }
+        }
+      }
+    ],
+    "scope": {
+      "id": 123,
+      "contact": {
+        "city": "Schönefeld",
+        "country": "Germany",
+        "lat": 52.345,
+        "lon": 13.456,
+        "name": "Flughafen Schönefeld, Landebahn",
+        "postalCode": "15831",
+        "region": "Brandenburg",
+        "street": "Zaunstraße",
+        "streetNumber": "1"
+      },
+      "hint": "Standort aus Beispiel-Termin",
+      "provider": {
+        "id": 123,
+        "source": "dldb",
+        "name": "Bürgeramt 1",
+        "contact": {
+          "name": "Bürgeramt 1",
+          "street": "Unter den Linden",
+          "streetNumber": "1",
+          "postalCode": "12345",
+          "city": "Berlin"
+        }
+      },
+      "preferences": {
+        "appointment": {
+            "deallocationDuration": 10,
+            "endInDaysDefault": 60,
+            "multipleSlotsEnabled": true,
+            "notificationConfirmationEnabled": true,
+            "notificationHeadsUpEnabled": true,
+            "reservationDuration": 5,
+            "startInDaysDefault": 2
+        },
+        "client": {
+            "alternateAppointmentUrl": "https://service.berlin.de",
+            "amendmentLabel": "Zusatzinformationen zum Anliegen",
+            "customTextfieldLabel": "Zusatzfeld zum Anliegen",
+            "emailRequired": false,
+            "telephoneActivated": true,
+            "telephoneRequired": false
+        },
+        "notifications": {
+            "confirmationContent": "Ihr Termin wurde erfolgreich gebucht mit der Nummer: ",
+            "headsUpTime": 15,
+            "headsUpContent": "Ihr Termin wird bald aufgerufen, begeben Sie sich zum Warteraum."
+        },
+        "pickup": {
+            "alternateName": "Ausgabe von Dokumenten",
+            "isDefault": false
+        },
+        "queue": {
+            "callCountMax": 3,
+            "callDisplayText": "Herzlich Willkommen,\nHaben Sie bitte ein wenig Geduld, bis ihre Wartenummer aufgerufen wird.",
+            "firstNumber": 300,
+            "lastNumber": 500,
+            "publishWaitingTimeEnabled": true,
+            "processingTimeAverage": 12,
+            "statisticsEnabled": true
+        },
+        "survey": {
+            "emailContent": "###SALUTATION###, <br /><br />wir würden uns sehr freuen, wenn Sie an der Umfrage teilnehmen würden: <a href=\"http://in.berlin.de/umfrage/?token=###TOKEN###\">Zur Umfrage</a>. <br /><br /><strong>Standort</strong>: ###PROVIDERNAME### (###SCOPE###/###PROVIDERID###)<br/><strong>Termin</strong>: ###DATE### ###TIME### <br /><strong>gebucht am</strong>: ###RESERVETIME### <br /><strong>Dienstleistungen</strong/>: ###REQUESTCSV###.",
+            "enabled": true,
+            "label": "Teilnahme an der Kundenzufriedensheits-Umfrage"
+        },
+        "ticketprinter": {
+            "buttonName": "Bürgeramt",
+            "confirmationEnabled": true,
+            "deactivatedText": "Dies Ausgabe von Wartenummern wurde bereits vorzeitig geschlossen, wir bitten um ihr Verständnis.",
+            "notificationsAmendmentEnabled": true,
+            "notificationsEnabled": true,
+            "notificationsDelay": 30
+        },
+        "workstation": {
+            "emergencyEnabled": false,
+            "emergencyRefreshInterval": 10
+        }
+      }
+    },
+    "status": "confirmed"
+  },
+  "required": [
+    "id"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "amendment": {
+      "type": [
+        "string"
+      ],
+      "description": "additional information for this process from the client",
+      "default": ""
+    },
+    "customTextfield": {
+      "type": [
+        "string"
+      ],
+      "description": "additional textfield for this process from the client",
+      "default": ""
+    },
+    "apiclient": {
+      "$ref": "apiclient.json"
+    },
+    "appointments": {
+      "type": "array",
+      "items": {
+        "$ref": "appointment.json"
+      }
+    },
+    "archiveId": {
+      "type": "number",
+      "description": "Number is used to identify a process in an archive (for statistical purposes)\n"
+    },
+    "authKey": {
+      "type": "string",
+      "description": "key for client to delete or change process"
+    },
+    "clients": {
+      "type": "array",
+      "items": {
+        "$ref": "client.json"
+      }
+    },
+    "createIP": {
+      "type": "string",
+      "description": "IP Address of the creator"
+    },
+    "createTimestamp": {
+      "type": "number",
+      "description": "unix timestamp representing creation of the process"
+    },
+    "id": {
+      "type": "number",
+      "description": "Number is used to identify appointments like on call displays\n",
+      "minimum": 1000
+    },
+    "lastChange": {
+      "type": "number",
+      "description": "unix timestamp of the last change on this process"
+    },
+    "showUpTime": {
+      "type": "string",
+      "description": "unix timestamp of showing up after call"
+    },
+    "finishTime": {
+        "type": "string",
+        "description": "unix timestamp og time when process has been finished"
+    },
+    "queue": {
+      "$ref": "queue.json"
+    },
+    "reminderTimestamp": {
+      "type": "number",
+      "description": "timestamp of last reminder message"
+    },
+    "requests": {
+      "type": "array",
+      "items": {
+        "$ref": "request.json"
+      }
+    },
+    "scope": {
+      "$ref": "scope.json"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "free",
+        "reserved",
+        "preconfirmed",
+        "confirmed",
+        "queued",
+        "called",
+        "processing",
+        "pending",
+        "pickup",
+        "finished",
+        "missed",
+        "archived",
+        "deleted",
+        "anonymized",
+        "blocked",
+        "conflict"
+      ],
+      "description": "Status of the process. The following values are possible:\n  * free: open for reservation\n  * reserved: for updating data, no validation yet\n  * confirmed: appointment\n  * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * processing: client appeared and gets service\n  * pending: client has to return to fetch papers\n  * pickup: client is called to fetch papers\n  * finished: successfully processed\n  * missed: no client appeared\n  * archived: only used in statistics\n  * deleted: blocking appointment time\n  * anonymized: for statistically purposes only\n  * blocked: to avoid the reuse of IDs on the same day\n  * conflict: mark process as conflict for check functions\n"
+    }
+  }
+}
