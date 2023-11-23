@@ -31,9 +31,9 @@ class WorkstationProcessCancelNext extends BaseController
         /*
         error_log($workstation->process->getStatus());
         //print_r(json_encode($workstation->process));
-        error_log($workstation->process->queuedTime);
-        error_log("Cancel Next");
-        */
+        error_log($workstation->process->queuedTime);*/
+        error_log("Cancel Next" . $workstation->process->getStatus());
+        
 
         return \BO\Slim\Render::redirect(
             'workstationProcessNext',

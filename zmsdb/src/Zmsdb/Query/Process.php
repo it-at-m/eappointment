@@ -667,13 +667,15 @@ class Process extends Base implements MappingInterface
     public function addValuesUpdateProcess(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $dateTime,
-        $parentProcess = 0
+        $parentProcess = 0,
+        $previousStatus = null
     ) {
         $this->addValuesIPAdress($process);
         $this->addValuesStatusData($process, $dateTime);
         if (0 === $parentProcess) {
             $this->addValuesClientData($process);
-            $this->addProcessingTimeData($process, $dateTime);
+
+            $this->addProcessingTimeData($process, $dateTime, $previousStatus);
             $this->addValuesQueueData($process);
             $this->addValuesWaitingTimeData($process);
         }
@@ -792,22 +794,34 @@ class Process extends Base implements MappingInterface
         $this->addValues($data);
     }
 
-    protected function addProcessingTimeData($process, \DateTimeInterface $dateTime)
+    protected function addProcessingTimeData($process, \DateTimeInterface $dateTime, $previousStatus = null)
     {
         $data = array();
 
-        
-        if ($process->status == 'processing') { 
-            $data['showUpTime'] = $dateTime->format('Y-m-d H:i:s'); 
-        } else if ($process->status == 'called') { 
+        error_log("hey");
+
+        if(isset($previousStatus)){
+            error_log("previousStatus: " . $previousStatus);
+        }
+ 
+        error_log("currentStatus: " . $process->status);
+        if (isset($process->queuedTime)){
+            error_log("queuedTime: " . $process->queuedTime);
+        }
+
+
+        if (isset($previousStatus) && ($process->status == 'called' && $previousStatus == 'called')) {
             $data['queuedTime'] = $dateTime->format('Y-m-d H:i:s');
+        } else if (isset($previousStatus) && ($process->status == 'processing' && $previousStatus == 'processing')) {
+            $data['queuedTime'] = $dateTime->format('Y-m-d H:i:s');
+        } else if ($process->status == 'processing') { 
+            $data['showUpTime'] = $dateTime->format('Y-m-d H:i:s'); 
         } else if ($process->status == 'finished') { 
             $data['finishTime'] = $dateTime->format('Y-m-d H:i:s'); 
-        }    
+        }
 
         $this->addValues($data);
     }
-    
 
     protected function addValuesQueueData($process)
     {

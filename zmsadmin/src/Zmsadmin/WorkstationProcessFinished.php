@@ -68,6 +68,20 @@ class WorkstationProcessFinished extends BaseController
         \BO\Zmsentities\Workstation $workstation,
         Entity $process = null
     ) {
+        
+
+        /*
+        $input = Validator::input()->isJson()->assertValid()->getValue();
+        $entity = new \BO\Zmsentities\Process($input);
+        $entity->testValid();
+        $this->testProcessData($entity);
+        $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 1);
+        $previousStatus = $process->status;
+        $process->status = ('pending' != $process->status) ? 'finished' : $process->status;
+        $process = (new Query())->updateEntity($process, \App::$now, 0, $previousStatus);*/
+
+
+
         $process = ($process) ? $process : clone $workstation->process;
         $process->status = ('pending' != $process->status) ? 'finished' : $process->status;
         \App::$http->readPostResult('/process/status/finished/', new Entity($process))->getEntity();

@@ -55,8 +55,8 @@ class ClusterHelper
         $excludedIds = (1 < $queueList->count()) ? $excludedIds : '';
 
         error_log($excludedIds);
-        error_log("Count: " . $queueList->count());        
-        error_log(json_encode($queueList));
+      
+        //error_log(json_encode($queueList));
 
         if (1 > $queueList->count()) {
             return new \BO\Zmsentities\Process();

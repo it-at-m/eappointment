@@ -25,13 +25,10 @@ class ProcessNextByScope extends BaseController
         array $args
     ) {
 
-
         (new Helper\User($request))->checkRights();
         $query = new Query();
         $selectedDate = Validator::param('date')->isString()->getValue();
         $exclude = Validator::param('exclude')->isString()->getValue();
-
-
 
         $dateTime = ($selectedDate) ? new DateTime($selectedDate) : \App::$now;
         $scope = $query->readEntity($args['id']);
@@ -61,9 +58,7 @@ class ProcessNextByScope extends BaseController
             //error_log($process->queuedTime);
     
             if ('queued' == $process['status']) {
-                error_log($process->queuedTime);
-
-                $process = $query->updateEntity($process, \App::$now);
+                $process = $query->updateEntity($process, \App::$now, 0,$process['status']);
                 (new Workstation)->writeRemovedProcess($workstation);
             }
 
