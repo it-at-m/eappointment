@@ -79,10 +79,6 @@ foreach ($processList as $process) {
 
 
 
-        $queueList = $processList->toQueueList(\App::$now);
-        $queueList = $queueList->withStatus(['queued']);
-
-
 
         
 
