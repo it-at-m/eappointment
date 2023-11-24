@@ -6,7 +6,6 @@
 
         {% block board_body %}
             {% if error != "has_called_pickup" %}
-            <p>{{ process.status }}</p>
             <h4>Der nächste Kunde ist:</h4>
             <p>
             {% if process.clients|first.familyName %}

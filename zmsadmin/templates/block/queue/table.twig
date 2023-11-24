@@ -124,39 +124,34 @@
                                     {{ item.queue.number }}
                                 {% endif %}
                             </td>
-<td class="callnextclient">
-<!--{{ item|json_encode }}-->
-{{ item.status }}
-{{ item.queuedTime }}
-    {% if item.queue.status == "reserved" %}
-        Reservierung
-    {% else %}
-        {% set familyName = item.clients|first.familyName|decodeEntities|raw %}
-        {% set currentTime = "now"|date('U') %}
-        {% set queuedTime = item.queuedTime|date('U') %}
-        {% set fiveMinutes = 300 %}
-        {% set timeDiff = currentTime - queuedTime %}
-        {% set callCount = "" %}
+                            <td class="callnextclient">
+                                {% if item.queue.status == "reserved" %}
+                                    Reservierung
+                                {% else %}
+                                    {% set familyName = item.clients|first.familyName|decodeEntities|raw %}
+                                    {% set currentTime = "now"|date('U') %}
+                                    {% set timeoutTime = item.timeoutTime|date('U') %}
+                                    {% set fiveMinutes = 300 %}
+                                    {% set timeDiff = currentTime - timeoutTime %}
+                                    {% set callCount = "" %}
 
-        {% if item.queue.callCount > 0 %}
-            {% set callCount = "<small>(%d)</small>"|format(item.queue.callCount) %}
-        {% endif %}
+                                    {% if item.queue.callCount > 0 %}
+                                        {% set callCount = "<small>(%d)</small>"|format(item.queue.callCount) %}
+                                    {% endif %}
 
-        {% if timeDiff < fiveMinutes and item.queue.callCount > 0 %}
-            {% set remainingTime = fiveMinutes - timeDiff %}
-            {% set remainingMinutes = (remainingTime // 60) %}
-            {% set remainingSeconds = remainingTime % 60 %}
-            {% set formattedTime = '%02d:%02d'|format(remainingMinutes, remainingSeconds) %}
-            {{ familyName }} {{ callCount|raw }} kann in {{ formattedTime }} Minuten wieder aufgerufen werden.
-        {% elseif source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
-            <a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">{{ familyName }}</a> {{ callCount|raw }}
-        {% else %}
-            {{ familyName }} {{ callCount|raw }}
-        {% endif %}
-    {% endif %}
-</td>
-
-
+                                    {% if timeDiff < fiveMinutes and item.queue.callCount > 0 %}
+                                        {% set remainingTime = fiveMinutes - timeDiff %}
+                                        {% set remainingMinutes = (remainingTime // 60) %}
+                                        {% set remainingSeconds = remainingTime % 60 %}
+                                        {% set formattedTime = '%02d:%02d'|format(remainingMinutes, remainingSeconds) %}
+                                        <b>{{ familyName }}</b> {{ callCount|raw }} war um {{ item.timeoutTime }} Uhr nicht anwesend und kann in {{ formattedTime }} Minuten wieder aufgerufen werden.
+                                    {% elseif source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
+                                        <a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">{{ familyName }}</a> {{ callCount|raw }}
+                                    {% else %}
+                                        {{ familyName }} {{ callCount|raw }}
+                                    {% endif %}
+                                {% endif %}
+                            </td>
                             <td>
                                 {% if item.clients|first.telephone and department.preferences.notifications.enabled %}
                                     <a data-process="{{ item.id }}" class="process-custom-notification-send" href="#">{{ item.clients|first.telephone }}</a>
@@ -259,8 +254,7 @@
                                     {{ item.queue.arrivalTime|date("H:i") }}
                                 {% endif %}
                             </td>
-                            <td>{{ item.status }}
-                            {% if item.clients|first.familyName %}{{ item.clients|first.familyName }}{% else %}Wartenummer {{ item.queue.number }} {% endif %} ({{ item.queue.number }}) </td>
+                            <td>{% if item.clients|first.familyName %}{{ item.clients|first.familyName }}{% else %}Wartenummer {{ item.queue.number }} {% endif %} ({{ item.queue.number }})</td>
                             <td title="{% for request in item.requests%}{{request.name}}{% if not loop.last %}; {% endif %}{% endfor %}">
                                 {{ item.requests|first.name }}
                                 {% if item.requests|length > 1 %}

@@ -291,17 +291,13 @@
                         "type": "string",
                         "description": "unix timestamp of showing up after call"
                     },
-                    "queuedTime": {
+                    "timeoutTime": {
                         "type": "string",
                         "description": "unix timestamp of after a call is entered or re-entered into the queue"
                     },  
                     "finishTime": {
                         "type": "string",
                         "description": "unix timestamp og time when process has been finished"
-                    },
-                    "updateTimestamp": {
-                        "type": "string",
-                        "description": "unix timestamp og time when process has been missed"
                     },
                     "scope": {
                         "id": 123,
