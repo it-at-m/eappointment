@@ -28,6 +28,7 @@ class Organisation extends Base
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
         if (0 < $resolveReferences && $entity->hasId()) {
+            //error_log("Organisation Level $resolveReferences");
             $entity['departments'] = (new Department())
                 ->readByOrganisationId($entity->id, $resolveReferences - 1);
             $entity['ticketprinters'] = (new Ticketprinter())

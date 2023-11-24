@@ -216,16 +216,12 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $excludeNumbers = explode(',', $exclude);
         $queueList = clone $this;
         // sort by waiting time to get realistic next process
-
         $queueList = $queueList
             ->withStatus(['confirmed', 'queued'])
             ->withEstimatedWaitingTime(10, 1, $dateTime, false)
             ->getArrayCopy()
-            ;
-
-        
+            ;        
         $next = array_shift($queueList);
-
         $currentTime = $dateTime->getTimestamp();
         while ($next) {
             if (! in_array($next->number, $excludeNumbers) &&

@@ -144,7 +144,7 @@
                                         {% set remainingMinutes = (remainingTime // 60) %}
                                         {% set remainingSeconds = remainingTime % 60 %}
                                         {% set formattedTime = '%02d:%02d'|format(remainingMinutes, remainingSeconds) %}
-                                        {{ familyName }} {{ callCount|raw }} war um {{ item.timeoutTime }} Uhr nicht anwesend und kann in {{ formattedTime }} Minuten wieder aufgerufen werden.
+                                        <b>{{ familyName }}</b> {{ callCount|raw }} war um {{ item.timeoutTime }} Uhr nicht anwesend und kann in {{ formattedTime }} Minuten wieder aufgerufen werden.
                                     {% elseif source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
                                         <a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">{{ familyName }}</a> {{ callCount|raw }}
                                     {% else %}
