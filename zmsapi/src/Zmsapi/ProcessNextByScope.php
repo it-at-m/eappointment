@@ -52,10 +52,6 @@ class ProcessNextByScope extends BaseController
     
             \BO\Zmsdb\Connection\Select::getWriteConnection();
             $query = new \BO\Zmsdb\ProcessStatusArchived;
-
-            //error_log(json_encode($process));
-
-            //error_log($process->queuedTime);
     
             if ('queued' == $process['status']) {
                 $process = $query->updateEntity($process, \App::$now, 0,$process['status']);

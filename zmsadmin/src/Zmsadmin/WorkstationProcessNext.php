@@ -43,78 +43,28 @@ class WorkstationProcessNext extends BaseController
             Helper\GraphDefaults::getProcess()
         );
 
+        $filteredProcessList = new ProcessList;
 
-$filteredProcessList = new ProcessList;
-
-foreach ($processList as $process) {
-    if ($process->status === "queued") {
-        $queuedTimeUnix = isset($process->queuedTime) ? timeToUnix($process->queuedTime) : null;
-        $currentTimeUnix = time();
-
-        // Check if callCount is 0 or queuedTime is more than five minutes ago
-        if(!isset($process->queuedTime)){
-            $filteredProcessList->addEntity(clone $process);
-        } else if (isset($queuedTimeUnix) && !($process->queue->callCount > 0 && ($currentTimeUnix - $queuedTimeUnix) < 300)) {
-            // Add the process to the filtered list
-            $filteredProcessList->addEntity(clone $process);
-        } else {
-            
-            if (!empty($excludedIds)) {
-                // Add a comma before appending if $excludedIds is not empty
-                $excludedIds .= ",";
-            }
-        
-            $excludedIds .= $process->queue->number;
-        }
-    }
-}
-
-
-    
-        $process = isset($filteredProcessList[0]) ? $filteredProcessList[0] : null;
-
-
-
-        $process = (new Helper\ClusterHelper($workstation))->getNextProcess($excludedIds);
-
-
-
-
-        
-
-        /*
-        do {
-            //error_log("Huh");
-            $process = (new Helper\ClusterHelper($workstation))->getNextProcess($excludedIds);
-        
-            // Log the process details
-            //error_log(json_encode($process->queue->number));
-            error_log($excludedIds);
-            
-
-            
-            if ($process->queue->number !== 0) {
-                $queuedTimeUnix = timeToUnix($process->queuedTime);
+        foreach ($processList as $process) {
+            if ($process->status === "queued") {
+                $queuedTimeUnix = isset($process->queuedTime) ? timeToUnix($process->queuedTime) : null;
                 $currentTimeUnix = time();
-            }
 
-
-            // Check if callCount is greater than 0 and queued time is less than five minutes ago
-
-
-            $fetchAgain = $process->queue->callCount > 0 && ($currentTimeUnix - $queuedTimeUnix) < 300;
-
-            //$fetchAgain = false;
-
-            if ($fetchAgain) {
-                if (!empty($excludedIds)) {
-                    $excludedIds .= ",";
+                if(!isset($process->queuedTime)){
+                    $filteredProcessList->addEntity(clone $process);
+                } else if (isset($queuedTimeUnix) && !($process->queue->callCount > 0 && ($currentTimeUnix - $queuedTimeUnix) < 300)) {
+                    $filteredProcessList->addEntity(clone $process);
+                } else {                    
+                    if (!empty($excludedIds)) {
+                        $excludedIds .= ",";
+                    }                
+                    $excludedIds .= $process->queue->number;
                 }
-                $excludedIds .= $process->queue->number;
             }
-        } while ($fetchAgain);
-        */
-              
+        }
+
+        $process = isset($filteredProcessList[0]) ? $filteredProcessList[0] : null;
+        $process = (new Helper\ClusterHelper($workstation))->getNextProcess($excludedIds);
 
         if (! $process->hasId() || $process->getFirstAppointment()->date > \App::$now->getTimestamp()) {
             return \BO\Slim\Render::withHtml(
