@@ -253,8 +253,7 @@ EOS;
     id
     status
     createTimestamp
-    updateTimestamp
-    queuedTime
+    timeoutTime
     reminderTimestamp
     appointments{
         date
