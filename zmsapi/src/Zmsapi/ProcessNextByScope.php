@@ -32,9 +32,10 @@ class ProcessNextByScope extends BaseController
             throw new Exception\Scope\ScopeNotFound();
         }
         $queueList = $query->readQueueList($scope->id, $dateTime, 1);
-        
+
         $message = Response\Message::create($request);
         $message->data = static::getProcess($queueList, $dateTime, $exclude);
+        
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
         return $response;
