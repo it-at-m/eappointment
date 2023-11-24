@@ -25,7 +25,6 @@ class Log extends Base
             "referenceId" => $referenceId,
             "type" => $type,
             ];
-        //error_log("$message ".static::backtraceLogEntry());
         return $log->perform($sql, $parameters);
     }
 

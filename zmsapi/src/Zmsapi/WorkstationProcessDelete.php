@@ -28,22 +28,9 @@ class WorkstationProcessDelete extends BaseController
             throw new Exception\Process\ProcessNotFound();
         }
 
-        /*
-        $input = Validator::input()->isJson()->assertValid()->getValue();
-        $entity = new \BO\Zmsentities\Process($input);
-        $entity->testValid();
-        $this->testProcessData($entity);
-
-*/
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
-        $previousStatus = $process->status;
-        //$process->status = 'called';
 
-
-        $process = (new Query())->updateEntity($process, \App::$now, 0, $previousStatus);
-
-        error_log("cancelling");
-
+        $process = (new Query())->updateEntity($process, \App::$now, 0, $process->status);
 
         $workstation->process->setStatusBySettings();
         (new Workstation)->writeRemovedProcess($workstation);

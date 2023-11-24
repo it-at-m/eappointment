@@ -798,18 +798,6 @@ class Process extends Base implements MappingInterface
     {
         $data = array();
 
-        error_log("hey");
-
-        if(isset($previousStatus)){
-            error_log("previousStatus: " . $previousStatus);
-        }
- 
-        error_log("currentStatus: " . $process->status);
-        if (isset($process->queuedTime)){
-            error_log("queuedTime: " . $process->queuedTime);
-        }
-
-
         if (isset($previousStatus) && ($process->status == 'called' && $previousStatus == 'called')) {
             $data['queuedTime'] = $dateTime->format('Y-m-d H:i:s');
         } else if (isset($previousStatus) && ($process->status == 'processing' && $previousStatus == 'processing')) {
