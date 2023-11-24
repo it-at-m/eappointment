@@ -164,7 +164,7 @@
                     "type": "string",
                     "description": "unix timestamp of showing up after call"
                 },
-                "queuedTime": {
+                "timeoutTime": {
                     "type": "string",
                     "description": "unix timestamp of after a call is entered or re-entered into the queue"
                 },

@@ -40,8 +40,6 @@ class WorkstationProcessCalled extends BaseController
                 'has_called_pickup' :
                 'has_called_process';
         }
-
-        //print($workstation->process->getStatus());
     
         if ($workstation->process->getStatus() == 'processing') {
             return \BO\Slim\Render::redirect('workstationProcessProcessing', [], ['error' => $error]);

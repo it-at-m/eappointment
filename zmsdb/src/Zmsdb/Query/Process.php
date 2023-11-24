@@ -206,7 +206,7 @@ class Process extends Base implements MappingInterface
             'updateTimestamp' => 'process.updateTimestamp',
             'lastChange' => 'process.updateTimestamp',
             'showUpTime' => 'process.showUpTime',
-            'queuedTime' => 'process.queuedTime',
+            'timeoutTime' => 'process.timeoutTime',
             'finishTime' => 'process.finishTime',           
             'status' => $status_expression,
             'queue__status' => $status_expression,
@@ -799,9 +799,9 @@ class Process extends Base implements MappingInterface
         $data = array();
 
         if (isset($previousStatus) && ($process->status == 'called' && $previousStatus == 'called')) {
-            $data['queuedTime'] = $dateTime->format('Y-m-d H:i:s');
+            $data['timeoutTime'] = $dateTime->format('Y-m-d H:i:s');
         } else if (isset($previousStatus) && ($process->status == 'processing' && $previousStatus == 'processing')) {
-            $data['queuedTime'] = $dateTime->format('Y-m-d H:i:s');
+            $data['timeoutTime'] = $dateTime->format('Y-m-d H:i:s');
         } else if ($process->status == 'processing') { 
             $data['showUpTime'] = $dateTime->format('Y-m-d H:i:s'); 
         } else if ($process->status == 'finished') { 
