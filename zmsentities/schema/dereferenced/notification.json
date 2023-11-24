@@ -311,7 +311,7 @@
                 "finishTime": {
                     "type": "string",
                     "description": "unix timestamp og time when process has been finished"
-                },     
+                },
                 "clients": {
                     "type": "array",
                     "items": {
