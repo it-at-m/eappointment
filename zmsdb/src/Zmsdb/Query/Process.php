@@ -203,7 +203,6 @@ class Process extends Base implements MappingInterface
             'customTextfield' => 'process.custom_text_field',
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
-            'updateTimestamp' => 'process.updateTimestamp',
             'lastChange' => 'process.updateTimestamp',
             'showUpTime' => 'process.showUpTime',
             'timeoutTime' => 'process.timeoutTime',

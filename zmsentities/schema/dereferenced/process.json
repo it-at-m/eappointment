@@ -237,11 +237,7 @@
         "finishTime": {
             "type": "string",
             "description": "unix timestamp og time when process has been finished"
-        },
-        "updateTimestamp": {
-            "type": "string",
-            "description": "unix timestamp og time when process has been missed"
-        },        
+        },       
         "queue": {
             "type": "object",
             "description": "A queue represents a waiting queue for processes\/clients.",

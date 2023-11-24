@@ -30,6 +30,7 @@ class Owner extends Base
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
         if (0 < $resolveReferences && isset($entity['id'])) {
+            //error_log("Owner Level $resolveReferences");
             $entity['organisations'] = (new Organisation())->readByOwnerId($entity['id'], $resolveReferences - 1);
         }
         return $entity;

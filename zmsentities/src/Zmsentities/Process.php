@@ -37,7 +37,6 @@ class Process extends Schema\Entity
         return [
             'amendment' => '',
             'customTextfield' => '',
-            'updateTimestamp' => time(),
             'appointments' => new Collection\AppointmentList(),
             'apiclient' => new Apiclient(),
             'authKey' => '',
@@ -323,7 +322,7 @@ class Process extends Schema\Entity
         return $this->toProperty()->showUpTime->get();
     }
 
-    public function getQueuedTime()
+    public function getTimeoutTime()
     {
         return $this->toProperty()->timeoutTime->get();
     }
@@ -467,7 +466,6 @@ class Process extends Schema\Entity
         }
 
         unset($entity['createTimestamp']);
-        unset($entity['updateTimestamp']);
         unset($entity['createIP']);
 
         if ($entity->toProperty()->scope->status->isAvailable()) {
@@ -586,7 +584,6 @@ class Process extends Schema\Entity
                 'StandortID' => $this->scope['id'],
                 'Anmerkung' => $this->amendment,
                 'IPTimeStamp' => $this->createTimestamp,
-                'updateTimestamp' => $this->updateTimestamp,
                 'LastChange' => $lastChange,
             ),
             1
@@ -602,7 +599,6 @@ class Process extends Schema\Entity
                 'StandortID' => $this->scope['id'],
                 'CustomTextfield' => $this->customTextfield,
                 'IPTimeStamp' => $this->createTimestamp,
-                'updateTimestamp' => $this->updateTimestamp,
                 'LastChange' => $lastChange,
             ),
             1

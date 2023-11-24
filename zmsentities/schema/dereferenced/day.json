@@ -299,10 +299,6 @@
                         "type": "string",
                         "description": "unix timestamp og time when process has been finished"
                     },
-                    "updateTimestamp": {
-                        "type": "string",
-                        "description": "unix timestamp og time when process has been missed"
-                    },
                     "scope": {
                         "id": 123,
                         "hint": "Standort aus Beispiel-Termin",
