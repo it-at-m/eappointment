@@ -1,2 +1,2 @@
 ALTER TABLE buerger 
-ADD COLUMN `timeoutTime` time DEFAULT NULL;
+ADD COLUMN `queuedTime` time DEFAULT NULL;
