@@ -237,7 +237,7 @@
         "finishTime": {
             "type": "string",
             "description": "unix timestamp og time when process has been finished"
-        },       
+        },
         "queue": {
             "type": "object",
             "description": "A queue represents a waiting queue for processes\/clients.",

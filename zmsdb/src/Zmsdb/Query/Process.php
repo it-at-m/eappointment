@@ -673,7 +673,6 @@ class Process extends Base implements MappingInterface
         $this->addValuesStatusData($process, $dateTime);
         if (0 === $parentProcess) {
             $this->addValuesClientData($process);
-
             $this->addProcessingTimeData($process, $dateTime, $previousStatus);
             $this->addValuesQueueData($process);
             $this->addValuesWaitingTimeData($process);
@@ -809,6 +808,7 @@ class Process extends Base implements MappingInterface
 
         $this->addValues($data);
     }
+    
 
     protected function addValuesQueueData($process)
     {
