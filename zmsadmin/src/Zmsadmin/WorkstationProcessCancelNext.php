@@ -27,8 +27,7 @@ class WorkstationProcessCancelNext extends BaseController
         $excludedIds = ($excludedIds) ? $excludedIds : '';
         if ($workstation->process['id']) {
             \App::$http->readDeleteResult('/workstation/process/')->getEntity();
-        }        
-
+        }
         return \BO\Slim\Render::redirect(
             'workstationProcessNext',
             array(),

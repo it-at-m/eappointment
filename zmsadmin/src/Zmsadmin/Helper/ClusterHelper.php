@@ -57,7 +57,6 @@ class ClusterHelper
         if (1 > $queueList->count()) {
             return new \BO\Zmsentities\Process();
         }
-
         if (static::isClusterEnabled()) {
             $nextProcess =  \App::$http->readGetResult(
                 '/cluster/'. static::$cluster['id'] .'/queue/next/',
@@ -72,6 +71,7 @@ class ClusterHelper
                 ['exclude' => $excludedIds]
             )->getEntity();
         }
+        
         
         return ($nextProcess) ? $nextProcess : new \BO\Zmsentities\Process();
     }

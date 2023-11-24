@@ -47,12 +47,12 @@ class WorkstationProcessNext extends BaseController
 
         foreach ($processList as $process) {
             if ($process->status === "queued") {
-                $queuedTimeUnix = isset($process->queuedTime) ? timeToUnix($process->queuedTime) : null;
+                $timeoutTimeUnix = isset($process->timeoutTime) ? timeToUnix($process->timeoutTime) : null;
                 $currentTimeUnix = time();
 
-                if(!isset($process->queuedTime)){
+                if(!isset($process->timeoutTime)){
                     $filteredProcessList->addEntity(clone $process);
-                } else if (isset($queuedTimeUnix) && !($process->queue->callCount > 0 && ($currentTimeUnix - $queuedTimeUnix) < 300)) {
+                } else if (isset($timeoutTimeUnix) && !($process->queue->callCount > 0 && ($currentTimeUnix - $timeoutTimeUnix) < 300)) {
                     $filteredProcessList->addEntity(clone $process);
                 } else {                    
                     if (!empty($excludedIds)) {
