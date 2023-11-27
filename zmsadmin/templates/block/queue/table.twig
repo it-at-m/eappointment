@@ -223,10 +223,12 @@
                 </tbody>
             </table>
             </div>
-            <h2>Verpasste Termine</h2>
-            {% if processListMissed|length %}
-                <div class="table-responsive-wrapper"> 
-                <table class="table--base queue-missed">
+
+            <div class="table-responsive-wrapper">
+                <h2>Verpasste Termine</h2>
+                {% if processListMissed|length %}
+                    <div class="table-responsive-wrapper">
+                                    <table class="table--base queue-missed">
                     <thead>
                         <tr>
                             <th>Lfdnr.</th>
@@ -280,10 +282,98 @@
                         </tr>
                     {% endfor %}
                 </table>
-                </div>
-            {% else %}
-                Keine Einträge gefunden.
-            {% endif %}
+                    </div>
+                {% else %}
+                    Keine Einträge gefunden.
+                {% endif %}
+                <br>
+                <br>
+            </div>
+
+            <div class="table-responsive-wrapper">
+                <h2 id="finished-appointments-control">Abgeschlossene Termine
+                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                    <i class="fas fa-angle-up hidden" aria-hidden="true"></i>
+                </h2>
+                {% if processListFinished|length %}
+                    <div id="finished-appointments-content" class="hidden table-responsive-wrapper">
+                        <table class="table--base queue-missed">
+                            <thead>
+                            <tr>
+                                <th>Lfdnr.</th>
+                                <th>Uhrzeit</th>
+                                <th>Name</th>
+                                <th>Dienstleistung</th>
+                                <th>Art</th>
+                                <th>Wartezeit</th>
+                                <th>Bearbeitungszeit</th>
+                            </tr>
+                            </thead>
+                            {% set lfdnr = 0 %}
+                            {% for item in processListFinished %}
+                                {% set lfdnr = lfdnr + 1 %}
+                                <tr class="missed">
+                                    <td>
+                                        {{ lfdnr }}.
+                                    </td>
+                                    <td>
+                                        {% if item.queue.withAppointment %}
+                                            {{ item.appointments|first.date|date("H:i") }}
+                                        {% else %}
+                                            {{ item.queue.arrivalTime|date("H:i") }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.services }}</td>
+                                    <td>
+                                        {% if item.withAppointment %}
+                                            Termin
+                                        {% else %}
+                                            Spontankunde
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ item.waitingTime }}</td>
+                                    <td>{{ item.processingTime }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                {% else %}
+                    Keine Einträge gefunden.
+                {% endif %}
+
+                <script>
+                    (function() {
+                        let control = $('#finished-appointments-control');
+                        let content = $('#finished-appointments-content');
+                        let upButton = $('#finished-appointments-control .fa-angle-up')
+                        let downButton = $('#finished-appointments-control .fa-angle-down')
+
+                        $(control).click(function(){
+                            if (upButton.hasClass('hidden')) {
+                                upButton.removeClass('hidden')
+                                downButton.addClass('hidden')
+                                content.removeClass('hidden')
+                            } else {
+                                upButton.addClass('hidden')
+                                downButton.removeClass('hidden')
+                                content.addClass('hidden')
+                            }
+                        });
+                    })();
+                </script>
+
+                <style>
+                    .hidden {
+                        display: none;
+                    }
+
+                    #finished-appointments-control:hover {
+                        cursor: pointer;
+                    }
+                </style>
+            </div>
+
             <div class="form-actions">
                 <div class="right">
                     <button title="{% trans %}Warteschlange neu laden{% endtrans %}" class="button button-reload reload"><i class="fas fa-sync"></i> Warteschlange aktualisieren</button>

@@ -275,6 +275,11 @@ EOS;
         waitingTime,
         callCount
     }
+    processingTime
+    waitingTime
+    services
+    name
+    withAppointment
     requests{
         id
         link
