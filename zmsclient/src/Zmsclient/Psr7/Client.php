@@ -2,8 +2,6 @@
 
 namespace BO\Zmsclient\Psr7;
 
-use Jgut\Spiral\Client as Transport;
-use Jgut\Spiral\Transport\Curl as Curl;
 use BO\Zmsclient\Exception\ClientCreationException;
 use BO\Zmsclient\Psr17\ResponseFactory;
 use Exception;
