@@ -122,11 +122,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-main",
+            "version": "dev-roave-update",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "51a4c08085945f4488ea92f925a2996a25173df3"
+                "reference": "d1de6afd3c0cbfef3be99b13d0e8adbea3424016"
             },
             "require": {
                 "ext-json": ">=0",
@@ -136,6 +136,7 @@
             "require-dev": {
                 "phpmd/phpmd": "^2.8.0",
                 "phpunit/phpunit": "^9.5.4",
+                "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
@@ -169,7 +170,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-main",
+            "version": "dev-roave-update",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -228,11 +229,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-main",
+            "version": "dev-roave-update",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "6d50c616376c01caa495318e4a4c3825703dd24b"
+                "reference": "d1de6afd3c0cbfef3be99b13d0e8adbea3424016"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -286,11 +287,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-main",
+            "version": "dev-roave-update",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "dbbbdf39b2231536c550f7b58dd40dc6f873c977"
+                "reference": "d1de6afd3c0cbfef3be99b13d0e8adbea3424016"
             },
             "require": {
                 "eappointment/mellon": "@dev",
