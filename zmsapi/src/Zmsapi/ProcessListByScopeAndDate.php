@@ -9,6 +9,7 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Scope as Query;
+use \BO\Zmsdb\ProcessStatusArchived;
 
 class ProcessListByScopeAndDate extends BaseController
 {
@@ -37,8 +38,12 @@ class ProcessListByScopeAndDate extends BaseController
             $resolveReferences? $resolveReferences + 1 : 1 // resolveReferences is for process, for queue we have to +1
         );
 
+        $archivedProcesses =
+            (new ProcessStatusArchived())->readListByScopeAndDate($scope->getId(), $dateTime);
+
         $message = Response\Message::create($request);
         $message->data = $queueList->toProcessList()->withResolveLevel($resolveReferences);
+        $message->data->addData($archivedProcesses);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
