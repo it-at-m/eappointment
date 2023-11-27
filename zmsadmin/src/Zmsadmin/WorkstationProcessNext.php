@@ -14,6 +14,13 @@ class WorkstationProcessNext extends BaseController
      * @SuppressWarnings(Param)
      * @return String
      */
+
+    public function timeToUnix($timeString)
+    {
+        list($hours, $minutes, $seconds) = explode(':', $timeString);
+        return mktime($hours, $minutes, $seconds);
+    }
+
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -26,12 +33,6 @@ class WorkstationProcessNext extends BaseController
         $validator = $request->getAttribute('validator');
         $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
         $excludedIds = ($excludedIds) ? $excludedIds : '';
-
-        function timeToUnix($timeString)
-        {
-            list($hours, $minutes, $seconds) = explode(':', $timeString);
-            return mktime($hours, $minutes, $seconds);
-        }
 
         $selectedDateTime = \App::$now;
         $selectedDateTime = ($selectedDateTime < \App::$now) ? \App::$now : $selectedDateTime;
@@ -47,7 +48,7 @@ class WorkstationProcessNext extends BaseController
 
         foreach ($processList as $process) {
             if ($process->status === "queued") {
-                $timeoutTimeUnix = isset($process->timeoutTime) ? timeToUnix($process->timeoutTime) : null;
+                $timeoutTimeUnix = isset($process->timeoutTime) ? $this->timeToUnix($process->timeoutTime) : null;
                 $currentTimeUnix = time();
 
                 if(!isset($process->timeoutTime)){
