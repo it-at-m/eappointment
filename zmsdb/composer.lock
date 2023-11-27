@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "00b422fb160c3c95b41784ac2333b479",
+    "content-hash": "4fc1381d1162caddf3094ffa354ea22c",
     "packages": [
         {
             "name": "aura/sql",
@@ -70,7 +70,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "f9fdbb9f75cb3eb74e4b1042d54298faadbfc2bc"
+                "reference": "2f0f52e3d4f6c169392d4cd9826d2b1c1949b5b4"
             },
             "require": {
                 "ext-json": ">=0",
@@ -118,7 +118,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "f9fdbb9f75cb3eb74e4b1042d54298faadbfc2bc"
+                "reference": "2f0f52e3d4f6c169392d4cd9826d2b1c1949b5b4"
             },
             "require": {
                 "ext-curl": ">=0",
@@ -179,7 +179,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "f9fdbb9f75cb3eb74e4b1042d54298faadbfc2bc"
+                "reference": "2f0f52e3d4f6c169392d4cd9826d2b1c1949b5b4"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -4220,7 +4220,7 @@
     },
     "platform-dev": [],
     "platform-overrides": {
-        "php": "7.3"
+        "php": "8.0"
     },
     "plugin-api-version": "2.6.0"
 }
