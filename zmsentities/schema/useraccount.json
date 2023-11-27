@@ -45,12 +45,12 @@
       "type": "string",
       "default": "",
       "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
-      "minLength": 1,
+      "minLength": 0,
       "x-locale": {
         "de_DE": {
           "pointer": "Nutzer E-Mail",
           "messages": {
-            "minLength": "Es muss eine E-Mail-Adresse angegeben werden.",
+            "minLength": "Es kann eine E-Mail-Adresse angegeben werden.",
             "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein."
           }
         }

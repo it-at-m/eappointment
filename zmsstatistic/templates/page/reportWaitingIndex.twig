@@ -76,8 +76,8 @@
                                 </th>
                                 <td class="statistik">
                                     <br />
-                                    <span class="{% if not exchangeWaiting.data.max.max %}ausgegraut{% endif %}">{{ exchangeWaiting.data.max.max|default("-") }}</span><br>
-                                    <span class="{% if not exchangeWaiting.data.max.average %}ausgegraut{% endif %}">{{ exchangeWaiting.data.max.average|default("-") }}</span>
+                                    <span class="{% if not exchangeWaiting.data.max.max_waitingtime %}ausgegraut{% endif %}">{{ exchangeWaiting.data.max.max_waitingtime|default("-") }}</span><br>
+                                    <span class="{% if not exchangeWaiting.data.max.average_waitingtime %}ausgegraut{% endif %}">{{ exchangeWaiting.data.max.average_waitingtime|default("-") }}</span>
                                 </td>
                                 {% for date in dateRange %}
                                     {% if exchangeWaiting.period == "day" %}
@@ -176,8 +176,8 @@
                                 </th>
                                 <td class="statistik">
                                     <br />
-                                    <span class="{% if not exchangeWaiting.data.max.max %}ausgegraut{% endif %}">{{ exchangeWaiting.data.max.max|default("-") }}</span><br>
-                                    <span class="{% if not exchangeWaiting.data.max.average %}ausgegraut{% endif %}">{{ exchangeWaiting.data.max.average|default("-") }}</span>
+                                    <span class="{% if not exchangeWaiting.data.max.max_waitingtime_termin %}ausgegraut{% endif %}">{{ exchangeWaiting.data.max.max_waitingtime_termin|default("-") }}</span><br>
+                                    <span class="{% if not exchangeWaiting.data.max.average_waitingtime_termin %}ausgegraut{% endif %}">{{ exchangeWaiting.data.max.average_waitingtime_termin|default("-") }}</span>
                                 </td>
                                 {% for date in dateRange %}
                                     {% if exchangeWaiting.period == "day" %}
