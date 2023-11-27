@@ -63,7 +63,6 @@ class WorkstationProcessNext extends BaseController
             }
         }
 
-        $process = isset($filteredProcessList[0]) ? $filteredProcessList[0] : null;
         $process = (new Helper\ClusterHelper($workstation))->getNextProcess($excludedIds);
 
         if (! $process->hasId() || $process->getFirstAppointment()->date > \App::$now->getTimestamp()) {
