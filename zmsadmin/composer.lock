@@ -158,11 +158,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-main",
+            "version": "dev-roave-update",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "51a4c08085945f4488ea92f925a2996a25173df3"
+                "reference": "d1de6afd3c0cbfef3be99b13d0e8adbea3424016"
             },
             "require": {
                 "ext-json": ">=0",
@@ -172,6 +172,7 @@
             "require-dev": {
                 "phpmd/phpmd": "^2.8.0",
                 "phpunit/phpunit": "^9.5.4",
+                "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
@@ -205,7 +206,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-main",
+            "version": "dev-roave-update",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -264,11 +265,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-main",
+            "version": "dev-roave-update",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "6d50c616376c01caa495318e4a4c3825703dd24b"
+                "reference": "d1de6afd3c0cbfef3be99b13d0e8adbea3424016"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -322,11 +323,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-main",
+            "version": "dev-roave-update",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "dbbbdf39b2231536c550f7b58dd40dc6f873c977"
+                "reference": "d1de6afd3c0cbfef3be99b13d0e8adbea3424016"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -3340,16 +3341,16 @@
         },
         {
             "name": "symfony/twig-bridge",
-            "version": "v5.4.29",
+            "version": "v5.4.26",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/twig-bridge.git",
-                "reference": "8e94856da373b63e7ba69e51a6c4f834d991cd58"
+                "reference": "832461a5f556df7933fd82e75b097d76182c640b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/twig-bridge/zipball/8e94856da373b63e7ba69e51a6c4f834d991cd58",
-                "reference": "8e94856da373b63e7ba69e51a6c4f834d991cd58",
+                "url": "https://api.github.com/repos/symfony/twig-bridge/zipball/832461a5f556df7933fd82e75b097d76182c640b",
+                "reference": "832461a5f556df7933fd82e75b097d76182c640b",
                 "shasum": ""
             },
             "require": {
@@ -3441,7 +3442,7 @@
             "description": "Provides integration for Twig with various Symfony components",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/twig-bridge/tree/v5.4.29"
+                "source": "https://github.com/symfony/twig-bridge/tree/v5.4.26"
             },
             "funding": [
                 {
@@ -3457,7 +3458,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-09-06T21:54:06+00:00"
+            "time": "2023-07-20T16:28:53+00:00"
         },
         {
             "name": "tracy/tracy",
