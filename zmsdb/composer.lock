@@ -70,7 +70,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "2f0f52e3d4f6c169392d4cd9826d2b1c1949b5b4"
+                "reference": "132bd01dbec27ad473955fb9bb3d410515f9c98f"
             },
             "require": {
                 "ext-json": ">=0",
@@ -118,7 +118,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "2f0f52e3d4f6c169392d4cd9826d2b1c1949b5b4"
+                "reference": "132bd01dbec27ad473955fb9bb3d410515f9c98f"
             },
             "require": {
                 "ext-curl": ">=0",
@@ -179,7 +179,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "2f0f52e3d4f6c169392d4cd9826d2b1c1949b5b4"
+                "reference": "132bd01dbec27ad473955fb9bb3d410515f9c98f"
             },
             "require": {
                 "eappointment/mellon": "@dev",

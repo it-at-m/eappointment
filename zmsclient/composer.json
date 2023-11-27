@@ -36,7 +36,6 @@
         "eappointment/mellon": "@dev",
         "psr/http-message": "^1.0",
         "aronduby/dump": "^0.9",
-        "juliangut/spiral": "0.4",
         "php-http/curl-client": "^2.2",
         "slim/psr7": "^1.5",
         "tracy/tracy": "^2.9",
