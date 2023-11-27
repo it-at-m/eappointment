@@ -66,11 +66,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-roave-update",
+            "version": "dev-roave-test-2",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "d1de6afd3c0cbfef3be99b13d0e8adbea3424016"
+                "reference": "f9fdbb9f75cb3eb74e4b1042d54298faadbfc2bc"
             },
             "require": {
                 "ext-json": ">=0",
@@ -114,11 +114,11 @@
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "dev-roave-update",
+            "version": "dev-roave-test-2",
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "d1de6afd3c0cbfef3be99b13d0e8adbea3424016"
+                "reference": "f9fdbb9f75cb3eb74e4b1042d54298faadbfc2bc"
             },
             "require": {
                 "ext-curl": ">=0",
@@ -175,11 +175,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-roave-update",
+            "version": "dev-roave-test-2",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "d1de6afd3c0cbfef3be99b13d0e8adbea3424016"
+                "reference": "f9fdbb9f75cb3eb74e4b1042d54298faadbfc2bc"
             },
             "require": {
                 "eappointment/mellon": "@dev",
