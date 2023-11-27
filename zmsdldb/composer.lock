@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "defc0ca92f0875b404aa7b754d31c4a4",
+    "content-hash": "559f19106a122dcbef888df870952108",
     "packages": [
         {
             "name": "nategood/httpful",
@@ -3836,7 +3836,7 @@
     },
     "platform-dev": [],
     "platform-overrides": {
-        "php": "7.3"
+        "php": "8.0"
     },
     "plugin-api-version": "2.6.0"
 }
