@@ -1,19 +1,19 @@
 {% extends "page/customized/base.twig" %}
 
 {% block content %}
-    {% set skipAll = 0 %}
+    {% set skipAll = 1 %}
     {% set skipClock = 0 %}
-    {% set skipClients = 1 %}
-    {% set skipTime = 1 %}
+    {% set skipClients = 0 %}
+    {% set skipTime = 0 %}
     {{ parent() }}
 {% endblock %}
 
 {% block tableLayoutSettings %}
 <script type="text/javascript">
 // Allow multiple columns
-window.bo.zmscalldisplay.tableLayout.multiColumns = 2;
+window.bo.zmscalldisplay.tableLayout.multiColumns = 3;
 // Maximum rows per column
-window.bo.zmscalldisplay.tableLayout.maxResults = 4;
+window.bo.zmscalldisplay.tableLayout.maxResults = 6;
 // Label on left side of table
 window.bo.zmscalldisplay.tableLayout.head.left = 'Nummer';
 // Label on right side of table

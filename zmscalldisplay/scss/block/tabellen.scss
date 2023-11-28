@@ -5,6 +5,8 @@
 div.aufrufanzeige_anzeigebereich_einzeilig
 {
 	float:none;
+	margin: auto;
+    margin-left:80px;
     width: 200px;
 }
 div.aufrufanzeige_anzeigebereich_zweizeilig
@@ -17,25 +19,24 @@ div.aufrufanzeige_anzeigebereich_zweizeilig
 
 .aufrufanzeige .aufrufanzeige_main
 {
-    left: 370px;
+    left: 15%;
     position: absolute;
-    top: 105px;
-    width: 980px;
-    height: 880px;
-    overflow-y: auto;
+    top: 135px;
 }
 
 .aufrufanzeige table.aufrufanzeige_aufruf
 {
     border-spacing:0;
     table-layout:fixed;
-    width:700px;
+    width:570px;
 }
 .aufrufanzeige table.aufrufanzeige_aufruf th
 {
-    background: $white;
-    border-right: 20px solid $borderLight;
+    background: $blue;
+    border-right: 3px solid $borderLight;
+    border-left: 3px solid $borderLight;
     border-top: 3px solid $borderLight;
+    color: $white;
     font-size: 36px;
     font-family: Arial, sans-serif;
     font-weight: bold;
@@ -47,21 +48,43 @@ div.aufrufanzeige_anzeigebereich_zweizeilig
 }
 .aufrufanzeige table.aufrufanzeige_aufruf td
 {
-    background: $backgroundLight;
+    background: rgba(255,255,255,0.5);
     color: $black;
-    border-right: 20px solid $borderLight;
+    border-right: 3px solid $borderLight;
+    border-left: 3px solid $borderLight;
     border-top: 3px solid $borderLight;
     /*font-size: 70px;
     line-height: 108px;*/
     font-family: Arial, sans-serif;
     font-weight: bold;
-    text-align:center;
+    text-align: left;
     padding:8px 0px;
+    padding-left: 14px;
+}
+
+.aufrufanzeige table.aufrufanzeige_aufruf .odd td {
+    background: #F2F6FA;
+}
+
+.description_de {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: left;
+  line-height: 18px;
+  padding: 8px 8px 4px 16px;
+}
+
+.description_eng {
+  font-size: 18px;
+  font-weight: normal;
+  text-align: left;
+  line-height: 18px;
+  padding: 4px 8px 8px 16px;
 }
 
 .aufrufanzeige table.aufrufanzeige_aufruf td div.highlight {
     &.called span {
-        color: $red;
+        color: $baseTextColor;
     }
 }
 
@@ -73,8 +96,8 @@ span.terminkundenanzeige
 }
 span.wartenummer
 {
-	font-size: 60px;
-  line-height: 60px;
+  font-size: 50px;
+  line-height: 72px;
 }
 span.terminkundennummer
 {
@@ -90,21 +113,6 @@ span.terminkundennummer.smallerFont8Chars {
 	font-size: 45px;
 	line-height:45px;
 }
-span.longrange {
-    font-size:70px;
-}
-.zweispaltig span.longrange {
-    font-size:30px;
-}
-span.standalone {
-    font-size:60px;
-}
-
-.zweispaltig span.terminkundennummer,
-.zweispaltig span.wartenummer, .zweispaltig span.standalone {
-    font-size: 50px;
-    line-height: 50px;
-}
 
 /* ----------------------------------------------
     Aufruf-Tabelle, zweispaltig
@@ -114,33 +122,29 @@ div.aber_zweispaltig {
     margin-left:0px;
 }
 .aufrufanzeige table.zweispaltig {
-    width:340px;
+    width:500px;
 }
 .aufrufanzeige table.zweispaltig th.wartenummer {
-    width:60%;
+    width:45%;
 }
 .aufrufanzeige table.zweispaltig th,
 .aufrufanzeige table.zweispaltig td {
     border-right:4px solid $borderLight;
 }
 .zweispaltig span.terminkundennummer {
-    font-size:50px;
-    line-height: 50px;
+  font-size: 50px;
+  line-height: 72px;
 }
 .zweispaltig span.terminkundennummer.abholeranzeige
 {
-    font-size: 30px;
-    line-height: 30px;
+  font-size: 50px;
+  line-height: 72px;
 }
 .zweispaltig span.terminkundennummer.smallerFont8Chars {
-    font-size: 40px;
-    line-height: 40px;
+  font-size: 50px;
+  line-height: 72px;
 }
 .puffer {padding-left:10px;}
-
-table.zweispaltig td.platznummer span.destination {
-    font-size:30px;
-}
 
 /* ----------------------------------------------
     Bei mehr als 2 Spalten
