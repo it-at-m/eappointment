@@ -253,7 +253,6 @@ EOS;
     id
     status
     createTimestamp
-    timeoutTime
     reminderTimestamp
     appointments{
         date
