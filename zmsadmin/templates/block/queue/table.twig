@@ -128,12 +128,24 @@
                                 {% if item.queue.status == "reserved" %}
                                     Reservierung
                                 {% else %}
-                                    {% set callCount = "" %}
                                     {% set familyName = item.clients|first.familyName|decodeEntities|raw %}
+                                    {% set currentTime = "now"|date('U') %}
+                                    {% set timeoutTime = item.timeoutTime|date('U') %}
+                                    {% set fiveMinutes = 300 %}
+                                    {% set timeDiff = currentTime - timeoutTime %}
+                                    {% set callCount = "" %}
+
                                     {% if item.queue.callCount > 0 %}
                                         {% set callCount = "<small>(%d)</small>"|format(item.queue.callCount) %}
                                     {% endif %}
-                                    {% if source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
+
+                                    {% if timeDiff < fiveMinutes and item.queue.callCount > 0 %}
+                                        {% set remainingTime = fiveMinutes - timeDiff %}
+                                        {% set remainingMinutes = (remainingTime // 60) %}
+                                        {% set remainingSeconds = remainingTime % 60 %}
+                                        {% set formattedTime = '%02d:%02d'|format(remainingMinutes, remainingSeconds) %}
+                                        <b>{{ familyName }}</b> {{ callCount|raw }} war um {{ item.timeoutTime }} Uhr nicht anwesend und kann in {{ formattedTime }} Minuten wieder aufgerufen werden.
+                                    {% elseif source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
                                         <a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">{{ familyName }}</a> {{ callCount|raw }}
                                     {% else %}
                                         {{ familyName }} {{ callCount|raw }}
@@ -216,57 +228,60 @@
                 <h2>Verpasste Termine</h2>
                 {% if processListMissed|length %}
                     <div class="table-responsive-wrapper">
-                    <table class="table--base queue-missed">
-                        <thead>
-                            <tr>
-                                <th>Lfdnr.</th>
-                                <th>Uhrzeit</th>
-                                <th>Name (Nummer)</th>
-                                <th>Dienstleistung</th>
-                                <th>Telefon</th>
-                                <th>Art</th>
-                                <th>Anmerkung</th>
-                                <th>Freitextfeld: {{workstation.scope.preferences.client.customTextfieldLabel}}</th>
-                                <th>Aktion</th>
-                            </tr>
-                        </thead>
-                        {% set lfdnr = 0 %}
-                        {% for item in processListMissed %}
-                            {% set lfdnr = lfdnr + 1 %}
-                            <tr class="missed">
-                                <td>
-                                    {{ lfdnr }}.
-                                </td>
-                                <td>
-                                    {% if item.queue.withAppointment %}
-                                        {{ item.appointments|first.date|date("H:i") }}
-                                    {% else %}
-                                        {{ item.queue.arrivalTime|date("H:i") }}
+                                    <table class="table--base queue-missed">
+                    <thead>
+                        <tr>
+                            <th>Lfdnr.</th>
+                            <th>Uhrzeit</th>
+                            <th>Name (Nummer)</th>
+                            <th>Dienstleistung</th>
+                            <th>Telefon</th>
+                            <th>Art</th>
+                            <th>Anmerkung</th>
+                            <th>Freitextfeld: {{workstation.scope.preferences.client.customTextfieldLabel}}</th>
+                            <th>Aktion</th>
+                        </tr>
+                    </thead>
+                    {% set lfdnr = 0 %}
+                    {% for item in processListMissed %}
+                        {% set lfdnr = lfdnr + 1 %}
+                        <tr class="missed">
+                            <td>
+                                {{ lfdnr }}.
+                            </td>
+                            <td>
+                                {% if item.queue.withAppointment %}
+                                    {{ item.appointments|first.date|date("H:i") }}
+                                {% else %}
+                                    {{ item.queue.arrivalTime|date("H:i") }}
+                                {% endif %}
+                            </td>
+                            <td>{% if item.clients|first.familyName %}{{ item.clients|first.familyName }}{% else %}Wartenummer {{ item.queue.number }} {% endif %} ({{ item.queue.number }})</td>
+                            <td title="{% for request in item.requests%}{{request.name}}{% if not loop.last %}; {% endif %}{% endfor %}">
+                                {{ item.requests|first.name }}
+                                {% if item.requests|length > 1 %}
+                                    +{{ (item.requests|length) - 1 }}
+                                {% endif %}
+                            </td>{#DL#}
+                            <td>{{ item.clients|first.telephone }}</td>
+                            <td>
+                                {% if item.queue.withAppointment %}
+                                    Termin
+                                    {% if 1 < item.appointments|first.slotCount %}
+                                        ({{ item.appointments|first.slotCount }})
                                     {% endif %}
-                                </td>
-                                <td>{% if item.clients|first.familyName %}{{ item.clients|first.familyName }}{% else %}Wartenummer {{ item.queue.number }} {% endif %} ({{ item.queue.number }}) </td>
-                                <td title="{% for request in item.requests%}{{request.name}}{% if not loop.last %}; {% endif %}{% endfor %}">
-                                    {{ item.requests|first.name }}
-                                    {% if item.requests|length > 1 %}
-                                        +{{ (item.requests|length) - 1 }}
-                                    {% endif %}
-                                </td>{#DL#}
-                                <td>{{ item.clients|first.telephone }}</td>
-                                <td>
-                                    {% if item.queue.withAppointment %}
-                                        Termin
-                                        {% if 1 < item.appointments|first.slotCount %}
-                                            ({{ item.appointments|first.slotCount }})
-                                        {% endif %}
-                                    {% else %}
-                                        Spontankunde
-                                    {% endif %}
-                                </td>
-                                <td>Dieser Kunde ist nicht erschienen</td>
-                                <td><a href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a></td>
-                            </tr>
-                        {% endfor %}
-                    </table>
+                                {% else %}
+                                    Spontankunde
+                                {% endif %}
+                            </td>
+                            <td>Dieser Kunde ist nicht erschienen</td>
+                            <td>{{ item.customTextfield|decodeEntities|raw }}</td>
+                            <td>
+                                <a href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
                     </div>
                 {% else %}
                     Keine Einträge gefunden.
