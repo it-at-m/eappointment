@@ -49,12 +49,12 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Update a process without changing appointment or scope
      */
-    public function updateEntity(\BO\Zmsentities\Process $process, \DateTimeInterface $now, $resolveReferences = 0)
+    public function updateEntity(\BO\Zmsentities\Process $process, \DateTimeInterface $now, $resolveReferences = 0, $previousStatus = null)
     {
         $query = new Query\Process(Query\Base::UPDATE);
         $query->addConditionProcessId($process['id']);
         $query->addConditionAuthKey($process['authKey']);
-        $query->addValuesUpdateProcess($process, $now);
+        $query->addValuesUpdateProcess($process, $now, 0, $previousStatus);
         
         if ($this->perform($query->getLockProcessId(), ['processId' => $process->getId()])) {
             $this->writeItem($query);
