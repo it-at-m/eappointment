@@ -11,7 +11,8 @@
     "require-dev": {
         "phpmd/phpmd": "^2.8.0",
         "squizlabs/php_codesniffer": "*",
-        "phpunit/phpunit": "^9.5.4"
+        "phpunit/phpunit": "^9.5.4",
+        "roave/security-advisories": "dev-latest"
     },
     "require": {
         "php": ">=7.0.0",
