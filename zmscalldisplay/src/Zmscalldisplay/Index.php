@@ -30,7 +30,7 @@ class Index extends BaseController
         $validator = $request->getAttribute('validator');
         $defaultTemplate = $validator->getParameter("template")
             ->isPath()
-            ->setDefault('defaultplatz')
+            ->setDefault('default_platz')
             ->getValue();
         
         $calldisplayHelper = (new Helper\Calldisplay($request));
@@ -42,6 +42,7 @@ class Index extends BaseController
         $calldisplay = $calldisplayHelper->getEntity();
 
         $template = (new Helper\TemplateFinder($defaultTemplate))->setCustomizedTemplate($calldisplay);
+        $parameters['displayNumber'] = $request->getParam('display') ?? null;
 
         return \BO\Slim\Render::withHtml(
             $response,
