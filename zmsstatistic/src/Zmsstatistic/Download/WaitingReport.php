@@ -81,8 +81,8 @@ class WaitingReport extends Base
     {
         $entity = clone $report;
         $totals = array_pop($entity->data);
-        $reportTotal['max'][] = 'Tagesmaximum Spontantkunden';
-        $reportTotal['average'][] = 'Tagesdurchschnitt Spontantkunden';
+        $reportTotal['max'][] = 'Tagesmaximum Spontankunden';
+        $reportTotal['average'][] = 'Tagesdurchschnitt Spontankunden';
         $reportTotal['max'][] = $totals['max_waitingtime'];
         $reportTotal['average'][] = $totals['average_waitingtime'];
         foreach ($entity->data as $entry) {
