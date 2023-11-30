@@ -276,7 +276,7 @@ class Base extends \ArrayObject implements \JsonSerializable
 
     public function chunk($length)
     {
-        $chunks = [];
+        $chunks = [new static()];
         $id = 0;
         foreach ($this as $entry) {
             if (! isset($chunks[floor($id / $length)])) {
