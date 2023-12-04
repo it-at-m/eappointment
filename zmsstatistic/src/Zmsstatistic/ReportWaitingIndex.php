@@ -86,11 +86,13 @@ class ReportWaitingIndex extends BaseController
             $total = 0;
             $count = 0;
             foreach ($dateItems as $hourItems) {
-                foreach ($hourItems as $key => $value) {
-                    if (is_numeric($value) && $targetKey == $key && 0 < $value) {
-                        $total += $value;
-                        $count += 1;
-                        $maxima = ($maxima > $value) ? $maxima : $value;
+                if (is_array($hourItems)) { // Check if $hourItems is an array
+                    foreach ($hourItems as $key => $value) {
+                        if (is_numeric($value) && $targetKey == $key && 0 < $value) {
+                            $total += $value;
+                            $count += 1;
+                            $maxima = ($maxima > $value) ? $maxima : $value;
+                        }
                     }
                 }
             }
@@ -99,4 +101,5 @@ class ReportWaitingIndex extends BaseController
         }
         return $entity;
     }
+    
 }
