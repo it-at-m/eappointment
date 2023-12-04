@@ -37,7 +37,7 @@ class ProcessFinished extends BaseController
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $query = new Query();
         if ('pending' == $process['status']) {
-            $process = $query->updateEntity($process, \App::$now);
+            $process = $query->updateEntity($process, \App::$now, 0, $process['status']);
             (new Workstation)->writeRemovedProcess($workstation);
         } else {
             $query->writeEntityFinished($process, \App::$now, true);

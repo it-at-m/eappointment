@@ -205,7 +205,8 @@ class Process extends Base implements MappingInterface
             'createTimestamp' => 'process.IPTimeStamp',
             'lastChange' => 'process.updateTimestamp',
             'showUpTime' => 'process.showUpTime',
-            'finishTime' => 'process.finishTime',
+            'timeoutTime' => 'process.timeoutTime',
+            'finishTime' => 'process.finishTime',           
             'status' => $status_expression,
             'queue__status' => $status_expression,
             'queue__arrivalTime' => self::expression(
@@ -665,13 +666,14 @@ class Process extends Base implements MappingInterface
     public function addValuesUpdateProcess(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $dateTime,
-        $parentProcess = 0
+        $parentProcess = 0,
+        $previousStatus = null
     ) {
         $this->addValuesIPAdress($process);
         $this->addValuesStatusData($process, $dateTime);
         if (0 === $parentProcess) {
             $this->addValuesClientData($process);
-            $this->addProcessingTimeData($process, $dateTime);
+            $this->addProcessingTimeData($process, $dateTime, $previousStatus);
             $this->addValuesQueueData($process);
             $this->addValuesWaitingTimeData($process);
         }
@@ -790,7 +792,7 @@ class Process extends Base implements MappingInterface
         $this->addValues($data);
     }
 
-    protected function addProcessingTimeData($process, \DateTimeInterface $dateTime)
+    protected function addProcessingTimeData($process, \DateTimeInterface $dateTime, $previousStatus = null)
     {
         $data = array();
 
