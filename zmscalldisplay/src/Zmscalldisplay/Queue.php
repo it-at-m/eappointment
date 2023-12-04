@@ -23,6 +23,7 @@ class Queue extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
+        $displayNumber = $validator->getParameter('display')->isNumber()->getValue();
 
         $calldisplay = new Helper\Calldisplay($request);
 
@@ -32,6 +33,16 @@ class Queue extends BaseController
             ])
             ->getCollection();
 
+        $queueList = ($queueList) ?
+            $queueList->withStatus($calldisplay::getRequestedQueueStatus($request)) :
+            new \BO\Zmsentities\Collection\QueueList();
+
+        if ($displayNumber === 1) {
+            $queueList = $queueList->chunk(10)[0];
+        } else if ($displayNumber === 2) {
+            $queueList = $queueList->chunk(10)[1] ?? new \BO\Zmsentities\Collection\QueueList();
+        }
+
         return Render::withHtml(
             $response,
             'block/queue/queueTable.twig',
@@ -39,9 +50,7 @@ class Queue extends BaseController
                 'tableSettings' => $validator->getParameter('tableLayout')->isArray()->getValue(),
                 'calldisplay' => $calldisplay->getEntity(false),
                 'scope' => $calldisplay->getSingleScope(),
-                'queueList' => ($queueList) ?
-                    $queueList->withStatus($calldisplay::getRequestedQueueStatus($request)) :
-                    new \BO\Zmsentities\Collection\QueueList()
+                'queueList' => $queueList
             )
         );
     }

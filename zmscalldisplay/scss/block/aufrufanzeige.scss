@@ -144,6 +144,14 @@
     background: #F2F6FA;
 }
 
+#display_number {
+    position: fixed;
+    bottom: 20px;
+    right: 54px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
 #infoicon {
     background: url(img/info-icon.svg) top left no-repeat;
     width: 21px;
