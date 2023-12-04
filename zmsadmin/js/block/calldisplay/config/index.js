@@ -344,7 +344,10 @@ class CallDisplayConfigView extends Component {
                                 { name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 6-12 Aufrufe | Raum', value: 'clocknrwaitraum' },
                                 { name: '4-8 Aufrufe, nur Zahlen | Tür', value: 'rawdoor4-8' },
                                 { name: '6-18 Aufrufe | Tür', value: 'raw18door' },
-                                { name: '6-18 Aufrufe | Platz', value: 'raw18platz' }
+                                { name: '6-18 Aufrufe | Platz', value: 'raw18platz' },
+                                { name: '10 Aufrufe | Platz', value: 'default_platz' },
+                                { name: '10 Aufrufe | Tür', value: 'default_tuer' },
+                                { name: '10 Aufrufe | Raum', value: 'default_raum' }
                             ]}
                             value={this.state.template}
                             onChange={onTemplateStatusChange} />

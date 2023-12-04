@@ -1,0 +1,1 @@
+ALTER TABLE buerger RENAME COLUMN `queuedTime` TO `timeoutTime`;
