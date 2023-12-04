@@ -6,12 +6,21 @@
 
 namespace BO\Zmsadmin;
 
+use \BO\Zmsentities\Collection\ProcessList;
+
 class WorkstationProcessNext extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
      * @return String
      */
+
+    public function timeToUnix($timeString)
+    {
+        list($hours, $minutes, $seconds) = explode(':', $timeString);
+        return mktime($hours, $minutes, $seconds);
+    }
+
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
