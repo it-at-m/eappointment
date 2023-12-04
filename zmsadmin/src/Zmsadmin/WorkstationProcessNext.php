@@ -47,7 +47,7 @@ class WorkstationProcessNext extends BaseController
         $filteredProcessList = new ProcessList;
 
         foreach ($processList as $process) {
-            if ($process->status === "queued") {
+            if ($process->status === "queued" || $process->status === "confirmed") {
                 $timeoutTimeUnix = isset($process->timeoutTime) ? $this->timeToUnix($process->timeoutTime) : null;
                 $currentTimeUnix = time();
 
