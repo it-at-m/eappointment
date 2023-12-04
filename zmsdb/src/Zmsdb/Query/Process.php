@@ -794,12 +794,14 @@ class Process extends Base implements MappingInterface
     {
         $data = array();
 
-        if ($process->status == 'processing') { 
-            $data['showUpTime'] = $dateTime->format('Y-m-d H:i:s'); 
-        } 
- 
-        if ($process->status == 'finished') { 
-            $data['finishTime'] = $dateTime->format('Y-m-d H:i:s'); 
+        if (isset($previousStatus) && ($process->status == 'called' && $previousStatus == 'called')) {
+            $data['timeoutTime'] = $dateTime->format('Y-m-d H:i:s');
+        } else if (isset($previousStatus) && ($process->status == 'processing' && $previousStatus == 'processing')) {
+            $data['timeoutTime'] = $dateTime->format('Y-m-d H:i:s');
+        } else if ($process->status == 'processing') {
+            $data['showUpTime'] = $dateTime->format('Y-m-d H:i:s');
+        } else if ($process->status == 'finished') {
+            $data['finishTime'] = $dateTime->format('Y-m-d H:i:s');
         }
 
         $this->addValues($data);
