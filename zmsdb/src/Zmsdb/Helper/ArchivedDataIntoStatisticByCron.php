@@ -90,7 +90,7 @@ class ArchivedDataIntoStatisticByCron
         $requestList = (new \BO\Zmsdb\Request())->readRequestByArchiveId($process->archiveId);
         $processingTime = null;
         if ($requestList->count()) {
-            $processingTime = $requestList->count() === 1 ? $process->bearbeitungszeit : null;
+            $processingTime = $requestList->count() === 1 ? $process->processingTime : null;
         } else {
             $requestList = [new \BO\Zmsentities\Request(['id' => '-1'])];
         }
