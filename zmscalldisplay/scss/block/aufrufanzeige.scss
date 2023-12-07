@@ -1,23 +1,3 @@
-/* ----------------------------------------------
-    qr code
----------------------------------------------- */
-.qrCode--Headline {
-    text-align: center;
-    background: #fff;
-    font-family: Arial,sans-serif;
-    font-size: 32px;
-    font-weight: 700;
-    line-height: 45px;
-    margin-bottom: 3px;
-    margin-top: 0px;
-}
-.qrContainer {
-    background: #fff;
-}
-
-/* ----------------------------------------------
-    aufrufanzeige
----------------------------------------------- */
 .aufrufanzeige
 {
     background:transparent;
@@ -56,8 +36,8 @@
 
 .waitingColumn {
     position: absolute;
-    left: 50px; 
-    top: 450px; 
+    left: 40px; 
+    top: 420px; 
 }
 .aufrufanzeige .wartende_aktuell
 {
@@ -108,11 +88,14 @@
 .aufrufanzeige .uhr
 {
     position: absolute;
-    left:55px;
-    top:105px;
+    left:60px;
+    top:114px;
     width:275px;
-    height:275px;
   }
+.aufrufanzeige .uhr #clock_medium,
+.aufrufanzeige .uhr #clock_big {
+    display:none;
+}
 
 .aufrufanzeige .aufrufanzeige_Datum
 {
@@ -122,14 +105,14 @@
     position:absolute;
     text-align:center;
     font-size:24px;
-    left:50px;
-    top:390px;
+    left:40px;
+    top:370px;
     width:275px;
 }
 
 
 /* ----------------------------------------------
-    Text & Logo|QrCode
+    Text & Logo
 ---------------------------------------------- */
 .aufrufanzeige .aufrufanzeige_text
 {
@@ -142,11 +125,38 @@
     text-align:center;
     left: 1087px;
     top:89px;
-    width: 265px;
+    width: 234px;
 }
 
-.aufrufanzeige_text .qrContainer
+.aufrufanzeige .infotext-content {
+    margin-left: 30px;
+}
+
+.aufrufanzeige .infotext
 {
+    top: 77px;
+    position: absolute;
+    padding: 10px 40px;
+    font-size:2em;
+    font-weight:normal;
+    line-height:26px;
     width: 100%;
-    text-align: center;
+    background: #F2F6FA;
+}
+
+#display_number {
+    position: fixed;
+    bottom: 20px;
+    right: 54px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+#infoicon {
+    background: url(img/info-icon.svg) top left no-repeat;
+    width: 21px;
+    height: 21px;
+    font-size: 36px;
+    position: absolute;
+    background-size: cover;
 }
