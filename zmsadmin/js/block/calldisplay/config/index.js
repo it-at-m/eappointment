@@ -48,6 +48,7 @@ class CallDisplayConfigView extends Component {
             webtemplate: 'defaultplatz',
             hmac: '',
             enableQrCode: false,
+            twoDisplays: false,
             showQrCode: false
         }
 
@@ -73,9 +74,9 @@ class CallDisplayConfigView extends Component {
         return document.location.origin;
     }
 
-    buildCalldisplayUrl() {
+    buildCalldisplayUrl(displayNumber = 1) {
         const baseUrl  = this.props.config.calldisplay.baseUrl
-        let parameters = this.buildParameters(false);
+        let parameters = this.buildParameters(false, 'calldisplay', displayNumber);
 
         return `${this.buildHost()}${baseUrl}?${parameters.join('&')}`
     }
@@ -87,7 +88,7 @@ class CallDisplayConfigView extends Component {
         return `${this.buildHost()}${baseUrl}?${parameters.join('&')}`
     }
 
-    buildParameters(hashParameters, target = 'calldisplay') {
+    buildParameters(hashParameters, target = 'calldisplay', displayNumber = 1) {
         const collections = this.getSelectedItemsCollection(this.state)
         let queryParts = []
 
@@ -113,6 +114,10 @@ class CallDisplayConfigView extends Component {
 
         if (! hashParameters && this.state.enableQrCode) {
             queryParts.push(`qrcode=1`)
+        }
+
+        if (! hashParameters && this.state.twoDisplays) {
+            queryParts.push(`display=` + displayNumber)
         }
 
         if (hashParameters) {
@@ -229,6 +234,22 @@ class CallDisplayConfigView extends Component {
         )
     }
 
+    renderTwoDisplays() {
+        const onChange = () => {
+            this.setState({
+                twoDisplays: !this.state.twoDisplays
+            });
+        }
+        return (
+            <fieldset>
+                <legend className="label">2 Aufrufanzeige</legend>
+                <div key="twoDisplays" className="form-check ticketprinter-config__item">
+                    {this.renderCheckbox(this.state.twoDisplays, onChange, "2 Aufrufanzeige erstellen")}
+                </div>
+            </fieldset>
+        )
+    }
+
     renderScopes(scopes) {
         if (scopes.length > 0) {
             return (
@@ -267,6 +288,7 @@ class CallDisplayConfigView extends Component {
 
     render() {
         const calldisplayUrl = this.buildCalldisplayUrl()
+        const calldisplayUrl2 = this.buildCalldisplayUrl(2)
         const webcalldisplayUrl = this.buildWebcalldisplayUrl()
 
         const onQueueStatusChange = (_, value) => {
@@ -291,6 +313,7 @@ class CallDisplayConfigView extends Component {
             <form className="form--base form-group calldisplay-config">
                 {this.state.departments.map(this.renderDepartment.bind(this))}
                 {this.renderQrCodeEnabled()}
+                {this.renderTwoDisplays()}
                 <FormGroup>
                     <Label 
                         attributes={{ "htmlFor": "visibleCalls" }} 
@@ -328,7 +351,10 @@ class CallDisplayConfigView extends Component {
                     </Controls>
                 </FormGroup>
                 <FormGroup>
-                    <Label attributes={{ "htmlFor": "calldisplayUrl" }} value="URL"></Label>
+                    { this.state.twoDisplays ?
+                    <Label attributes={{ "htmlFor": "calldisplayUrl" }} value="URL Anzeige 1"></Label>
+                        :
+                    <Label attributes={{ "htmlFor": "calldisplayUrl" }} value="URL"></Label> }
                     <Controls>
                         <Inputs.Text
                             value={calldisplayUrl}
@@ -338,6 +364,23 @@ class CallDisplayConfigView extends Component {
                 <div className="form-actions">
                     <a href={calldisplayUrl} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt"></i> Aktuelle Konfiguration in einem neuen Fenster öffnen</a>
                 </div>
+
+
+                { this.state.twoDisplays ?
+                <div className="firstDisplay">
+                    <FormGroup>
+                        <Label attributes={{ "htmlFor": "calldisplayUrl2" }} value="URL Anzeige 2"></Label>
+                        <Controls>
+                            <Inputs.Text
+                                value={calldisplayUrl2}
+                                attributes={{ readOnly: true, id: "calldisplayUrl2" }} />
+                        </Controls>
+                    </FormGroup>
+                    <div className="form-actions">
+                        <a href={calldisplayUrl2} target="_blank" rel="noopener noreferrer" className="button button-submit"><i className="fas fa-external-link-alt"></i> Aktuelle Konfiguration in einem neuen Fenster öffnen</a>
+                    </div>
+                </div>
+                    : null }
 
                 <FormGroup>
                     <Label attributes={{ "htmlFor": "webcalldisplayLayout" }} value="Layout mobile Aufrufanzeige"></Label>
