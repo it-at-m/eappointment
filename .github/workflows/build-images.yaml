@@ -38,7 +38,7 @@ jobs:
             --tag "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
             --build-arg "MODULE=${{ matrix.module }}" \
             --build-arg "PHP_VERSION=${{ matrix.php_version }}"
-            docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
+          docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
           
       - name: Run Unit Tests
         run: |
