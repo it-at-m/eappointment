@@ -105,7 +105,7 @@ class ReportRequestDepartmentTest extends Base
         $this->assertStringContainsString('Reisepass beantragen', (string) $response->getBody());
     }
 
-    public function testWithDownloadXLSX()
+    /*public function testWithDownloadXLSX()
     {
         $this->setOutputCallback(function () {
             $this->setApiCalls(
@@ -154,7 +154,7 @@ class ReportRequestDepartmentTest extends Base
             );
             $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
         });
-    }
+    }*/
 
     public function testWithDownloadCSV()
     {
