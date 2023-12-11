@@ -61,7 +61,6 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          ls
           tag="${{ github.ref_name }}"
           if [ "${{ github.ref_type }}" = "branch" ]; then
             tag="branch-$tag"
@@ -77,6 +76,3 @@ jobs:
             else
               echo "$module directory does not exist"
             fi
-
-
-
