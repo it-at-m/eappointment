@@ -38,7 +38,15 @@ jobs:
             --tag "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
             --build-arg "MODULE=${{ matrix.module }}" \
             --build-arg "PHP_VERSION=${{ matrix.php_version }}"
-          docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
+          
+      # Add unit tests step here
+      - name: Run Unit Tests
+        run: |
+          # Your command to run unit tests, e.g., `docker run --rm ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag test-command`
+
+      - name: Push Image
+        run: docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
+          
     strategy:
       matrix:
         include:
