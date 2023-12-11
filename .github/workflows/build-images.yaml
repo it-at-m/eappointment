@@ -69,11 +69,12 @@ jobs:
       - name: Run Unit Tests
         run: |
           tag="latest" # Replace with appropriate tag logic
-          for module in zmsadmin zmsapi zmscalldisplay zmsmessaging zmsstatistic; do
+          modules=(zmsadmin zmsapi zmscalldisplay zmsmessaging zmsstatistic)
+          for module in "${modules[@]}"; do
             if [ -d "$module" ]; then
               if [ -d "$module/tests" ]; then
                 echo "Running PHPUnit tests in $module"
-                docker run --rm "ghcr.io/${{ github.repository }}/${module}:$tag" /bin/bash -c "cd $module && ./vendor/bin/phpunit"
+                docker run --rm "ghcr.io/${{ github.repository }}/$module:$tag" /bin/bash -c "cd $module && ./vendor/bin/phpunit"
               else
                 echo "No tests found in $module"
               fi
