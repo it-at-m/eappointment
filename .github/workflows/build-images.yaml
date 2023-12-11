@@ -80,8 +80,18 @@ jobs:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
 
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php_version }}
+
+      - name: Install Composer Dependencies
+        run: |
+          cd ${{ matrix.module }}
+          composer install
+
       - name: List contents in the module directory
-        run: ls -l "${{ matrix.module }}"
+        run: ls -l ${{ matrix.module }}
 
       - name: Run Unit Tests
         run: |
@@ -91,8 +101,7 @@ jobs:
           fi
           if [ -d "${{ matrix.module }}/tests" ]; then
             echo "Running PHPUnit tests in ${{ matrix.module }}"
-            ls ${{ matrix.module }} -l
-            docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./workspace/${{ matrix.module }}/.vendor/bin/phpunit"
+            docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
           else
             echo "No tests found in ${{ matrix.module }}"
           fi
