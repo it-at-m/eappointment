@@ -46,7 +46,7 @@ jobs:
           if [ "${{ github.ref_type }}" = "branch" ]; then
             tag="branch-$tag"
           fi
-          docker run --rm "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd tests && phpunit"
+          docker run --rm "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "composer require --dev phpunit/phpunit && cd tests && phpunit"
           
     strategy:
       matrix:
