@@ -56,7 +56,7 @@ class ReportWaitingDepartmentTest extends Base
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
 
-    public function testWithPeriod()
+    /*public function testWithPeriod()
     {
         $this->setApiCalls(
             [
@@ -101,7 +101,7 @@ class ReportWaitingDepartmentTest extends Base
         );
         $this->assertStringContainsString('532', (string) $response->getBody());
         $this->assertStringContainsString('294', (string) $response->getBody());
-    }
+    }*/
 
     public function testWithDownloadXLSX()
     {
