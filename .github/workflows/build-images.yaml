@@ -59,8 +59,8 @@ jobs:
             --build-arg "PHP_VERSION=${{ matrix.php_version }}"
           docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
 
-  run-tests:
-    needs: build-and-test
+  unit-tests:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GitHub Action
