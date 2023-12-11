@@ -23,7 +23,7 @@ jobs:
             php_version: "8.0"
           - module: zmsstatistic
             php_version: "8.0"
-    
+
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
@@ -62,22 +62,33 @@ jobs:
   unit-tests:
     needs: build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - module: zmsadmin
+            php_version: "8.0"
+          - module: zmsapi
+            php_version: "8.0"
+          - module: zmscalldisplay
+            php_version: "7.3"
+          - module: zmsmessaging
+            php_version: "8.0"
+          - module: zmsstatistic
+            php_version: "8.0"
+
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
 
       - name: Run Unit Tests
         run: |
-          tag="latest" # Replace with appropriate tag logic
-          modules=(zmsadmin zmsapi zmscalldisplay zmsmessaging zmsstatistic)
-          for module in "${modules[@]}"; do
-            if [ -d "$module" ]; then
-              if [ -d "$module/tests" ]; then
-                echo "Running PHPUnit tests in $module"
-                docker run --rm "ghcr.io/${{ github.repository }}/$module:$tag" /bin/bash -c "cd $module && ./vendor/bin/phpunit"
-              else
-                echo "No tests found in $module"
-              fi
-            else
-              echo "$module directory does not exist"
-            fi
+          tag="${{ github.ref_name }}"
+          if [ "${{ github.ref_type }}" = "branch" ]; then
+            tag="branch-$tag"
+          fi
+          if [ -d "${{ matrix.module }}/tests" ]; then
+            echo "Running PHPUnit tests in ${{ matrix.module }}"
+            docker run --rm "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd ${{ matrix.module }} && ./vendor/bin/phpunit"
+          else
+            echo "No tests found in ${{ matrix.module }}"
+          fi
