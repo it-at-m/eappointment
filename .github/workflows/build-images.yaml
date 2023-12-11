@@ -94,14 +94,25 @@ jobs:
         run: ls -l ${{ matrix.module }}
 
       - name: Run Unit Tests
+        id: tests
+        continue-on-error: true
         run: |
           tag="${{ github.ref_name }}"
+          test_failed=0
           if [ "${{ github.ref_type }}" = "branch" ]; then
             tag="branch-$tag"
           fi
           if [ -d "${{ matrix.module }}/tests" ]; then
             echo "Running PHPUnit tests in ${{ matrix.module }}"
-            docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
+            if ! docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"; then
+              test_failed=1
+            fi
           else
             echo "No tests found in ${{ matrix.module }}"
           fi
+          echo "::set-output name=test_failed::$test_failed"
+
+      - name: Check for test failures
+        if: steps.tests.outputs.test_failed == '1'
+        run: exit 1
+
