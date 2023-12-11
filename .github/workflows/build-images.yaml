@@ -58,3 +58,25 @@ jobs:
             --build-arg "MODULE=${{ matrix.module }}" \
             --build-arg "PHP_VERSION=${{ matrix.php_version }}"
           docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
+
+  run-tests:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Run Unit Tests
+        run: |
+          tag="latest" # Replace with appropriate tag logic
+          for module in zmsadmin zmsapi zmscalldisplay zmsmessaging zmsstatistic; do
+            if [ -d "$module" ]; then
+              if [ -d "$module/tests" ]; then
+                echo "Running PHPUnit tests in $module"
+                docker run --rm "ghcr.io/${{ github.repository }}/${module}:$tag" /bin/bash -c "cd $module && ./vendor/bin/phpunit"
+              else
+                echo "No tests found in $module"
+              fi
+            else
+              echo "$module directory does not exist"
+            fi
