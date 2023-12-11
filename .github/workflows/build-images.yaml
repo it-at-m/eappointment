@@ -58,7 +58,6 @@ jobs:
             --build-arg "MODULE=${{ matrix.module }}" \
             --build-arg "PHP_VERSION=${{ matrix.php_version }}"
           docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
-          done
 
       - name: Run Unit Tests
         run: |
@@ -78,7 +77,6 @@ jobs:
             else
               echo "$module directory does not exist"
             fi
-          done
 
 
 
