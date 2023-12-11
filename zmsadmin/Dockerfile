@@ -5,9 +5,10 @@ COPY --chown=1000:1000 . /build
 WORKDIR /build
 USER 1000:1000
 
-# Install Composer and PHPUnit
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer require --dev phpunit/phpunit ^9.5
+# Install Composer
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+    && php -r "unlink('composer-setup.php');"
 
 # Continue with your build process
 RUN make live
