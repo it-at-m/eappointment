@@ -1,4 +1,4 @@
-name: build images
+name: Build Images and Run Tests
 
 on:
   push:
@@ -8,46 +8,8 @@ on:
       - '**'
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout GitHub Action
-        uses: actions/checkout@main
-      - name: Install python3
-        run: sudo apt install -y python3 python3-click python3-git
-      - name: Referencing local Modules and Libraries
-        run: python3 ./cli modules reference-libraries --no-symlink
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Set Swap Space
-        uses: pierotofy/set-swap-space@master
-        with:
-          swap-size-gb: 10
-      - name: Build Image
-        run: |
-          tag="${{ github.ref_name }}"
-          if [ "${{ github.ref_type }}" = "branch" ]; then
-            tag="branch-$tag"
-          fi
-          docker build . \
-            --file ".resources/Containerfile" \
-            --tag "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
-            --build-arg "MODULE=${{ matrix.module }}" \
-            --build-arg "PHP_VERSION=${{ matrix.php_version }}"
-          docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
-          
-      - name: Run Unit Tests
-        run: |
-          tag="${{ github.ref_name }}"
-          if [ "${{ github.ref_type }}" = "branch" ]; then
-            tag="branch-$tag"
-          fi
-          docker run --rm "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "composer require --dev phpunit/phpunit && cd tests && phpunit"
-          
     strategy:
       matrix:
         include:
@@ -61,3 +23,46 @@ jobs:
             php_version: "8.0"
           - module: zmsstatistic
             php_version: "8.0"
+    
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Install python3
+        run: sudo apt install -y python3 python3-click python3-git
+
+      - name: Referencing local Modules and Libraries
+        run: python3 ./cli modules reference-libraries --no-symlink
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 10
+
+      - name: Build Image
+        run: |
+          tag="${{ github.ref_name }}"
+          if [ "${{ github.ref_type }}" = "branch" ]; then
+            tag="branch-$tag"
+          fi
+          docker build . \
+            --file ".resources/Containerfile" \
+            --tag "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
+            --build-arg "MODULE=${{ matrix.module }}" \
+            --build-arg "PHP_VERSION=${{ matrix.php_version }}"
+          docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
+
+      - name: Run Unit Tests
+        run: |
+          tag="${{ github.ref_name }}"
+          if [ "${{ github.ref_type }}" = "branch" ]; then
+            tag="branch-$tag"
+          fi
+          docker run --rm "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd tests && phpunit"
