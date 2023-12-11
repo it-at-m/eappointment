@@ -350,7 +350,7 @@ class CallDisplayConfigView extends Component {
                                 { name: '10 Aufrufe | Raum', value: 'default_raum' }
                             ]}
                             value={this.state.template}
-                            onChange={onTemplateStatusChange} />
+                 a           onChange={onTemplateStatusChange} />
                     </Controls>
                 </FormGroup>
                 <FormGroup>
