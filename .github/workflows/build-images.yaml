@@ -66,3 +66,12 @@ jobs:
             tag="branch-$tag"
           fi
           ls
+          # Run tests for the current module in the matrix
+          if [ -d "${{ matrix.module }}" ]; then
+            echo "Running tests in ${{ matrix.module }}"
+            docker run --rm "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd ${{ matrix.module }} && ./vendor/bin/phpunit"
+          else
+            echo "${{ matrix.module }} directory does not exist"
+          fi
+
+
