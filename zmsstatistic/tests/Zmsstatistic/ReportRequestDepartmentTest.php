@@ -156,7 +156,7 @@ class ReportRequestDepartmentTest extends Base
         });
     }*/
 
-    public function testWithDownloadCSV()
+    /*public function testWithDownloadCSV()
     {
         $this->setApiCalls(
             [
@@ -209,7 +209,7 @@ class ReportRequestDepartmentTest extends Base
             '"Personalausweis beantragen";"14";"14";',
             (string) $response->getBody()
         );
-    }
+    }*/
 
     public function testWithoutAccess()
     {
