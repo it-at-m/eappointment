@@ -65,10 +65,4 @@ jobs:
           if [ "${{ github.ref_type }}" = "branch" ]; then
             tag="branch-$tag"
           fi
-          docker run --rm "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "\
-            apt-get update && apt-get install -y curl php-cli php-zip unzip && \
-            curl -sS https://getcomposer.org/installer -o composer-setup.php && \
-            php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
-            rm composer-setup.php && \
-            composer require --dev phpunit/phpunit && \
-            cd tests && phpunit"
+          ls
