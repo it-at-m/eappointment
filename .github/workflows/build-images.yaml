@@ -82,13 +82,13 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          tag="${{ github.ref_name }}"
-          if [ "${{ github.ref_type }}" = "branch" ]; then
-            tag="branch-$tag"
-          fi
-          if [ -d "${{ matrix.module }}/tests" ]; then
-            echo "Running PHPUnit tests in ${{ matrix.module }}"
-            docker run --rm "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd ${{ matrix.module }} && ./vendor/bin/phpunit"
-          else
-            echo "No tests found in ${{ matrix.module }}"
-          fi
+          tag="latest" # Adjust this as needed
+          modules=("zmsadmin" "zmsapi" "zmscalldisplay" "zmsmessaging" "zmsstatistic")
+          for module in "${modules[@]}"; do
+            echo "Checking for tests in $module"
+            if [ -d "$module/tests" ]; then
+              echo "Running PHPUnit tests in $module"
+              docker run --rm "ghcr.io/${{ github.repository }}/$module:$tag" /bin/bash -c "cd $module && ./vendor/bin/phpunit"
+            else
+              echo "No tests found in $module"
+            fi
