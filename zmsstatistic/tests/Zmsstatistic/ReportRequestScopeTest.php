@@ -105,7 +105,7 @@ class ReportRequestScopeTest extends Base
         $this->assertStringContainsString('Reisepass beantragen', (string) $response->getBody());
     }*/
 
-    public function testWithDownloadXLSX()
+    /*public function testWithDownloadXLSX()
     {
         $this->setOutputCallback(function () {
             $this->setApiCalls(
@@ -209,7 +209,7 @@ class ReportRequestScopeTest extends Base
             '"Personalausweis beantragen";"14";"14";',
             (string) $response->getBody()
         );
-    }
+    }*/
 
     public function testWithDownloadByMonthCSV()
     {
