@@ -65,13 +65,21 @@ jobs:
           if [ "${{ github.ref_type }}" = "branch" ]; then
             tag="branch-$tag"
           fi
-          ls
-          # Run tests for the current module in the matrix
+          ls # lists all the directories
+          # Change to the module's directory and run tests if 'tests' folder exists
           if [ -d "${{ matrix.module }}" ]; then
-            echo "Running tests in ${{ matrix.module }}"
-            docker run --rm "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd ${{ matrix.module }} && ./vendor/bin/phpunit"
+            echo "Checking ${matrix.module} for tests"
+            cd "${{ matrix.module }}"
+            if [ -d "tests" ]; then
+              echo "Running PHPUnit tests in ${{ matrix.module }}"
+              docker run --rm "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd ${{ matrix.module }} && ./vendor/bin/phpunit"
+            else
+              echo "No tests found in ${{ matrix.module }}"
+            fi
+            cd ..
           else
             echo "${{ matrix.module }} directory does not exist"
           fi
+
 
 
