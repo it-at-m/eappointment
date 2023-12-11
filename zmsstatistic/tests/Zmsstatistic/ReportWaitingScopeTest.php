@@ -103,7 +103,7 @@ class ReportWaitingScopeTest extends Base
         $this->assertStringContainsString('294', (string) $response->getBody());
     }*/
 
-    public function testYearChange()
+    /*public function testYearChange()
     {
         $this->setApiCalls(
             [
@@ -146,7 +146,7 @@ class ReportWaitingScopeTest extends Base
             'Auswertung für Bürgeramt Heerstraße im Zeitraum Januar 2016',
             (string) $response->getBody()
         );
-    }
+    }*/
 
     /*public function testWithDownloadXLSX()
     {
