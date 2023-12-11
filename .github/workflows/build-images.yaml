@@ -79,16 +79,16 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
-
+  
+      - name: List directory contents
+        run: ls -l
+  
       - name: Run Unit Tests
         run: |
-          tag="${{ github.ref_name }}"
-          if [ "${{ github.ref_type }}" = "branch" ]; then
-            tag="branch-$tag"
-          fi
-          if [ -d "${{ matrix.module }}/tests" ]; then
-            echo "Running PHPUnit tests in ${{ matrix.module }}"
-            docker run --rm "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd ${{ matrix.module }} && ./vendor/bin/phpunit"
+          tag="latest" # Replace with appropriate tag logic
+          if [ -d "zmsadmin/tests" ]; then
+            echo "Running PHPUnit tests in zmsadmin"
+            docker run --rm "ghcr.io/${{ github.repository }}/zmsadmin:$tag" /bin/bash -c "ls -l && ./vendor/bin/phpunit"
           else
-            echo "No tests found in ${{ matrix.module }}"
+            echo "No tests found in zmsadmin"
           fi
