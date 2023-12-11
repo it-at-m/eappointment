@@ -114,7 +114,7 @@ class Messaging
             $client = $mainProcess->getFirstClient();
         }
 
-        $template = self::getTemplate('mail', $status);
+        $template = self::getTemplate('mail', $status, $mainProcess);
         if ($initiator) {
             $template = self::getTemplate('admin', $status);
         }
@@ -193,8 +193,15 @@ class Messaging
         return $message;
     }
 
-    protected static function getTemplate($type, $status)
+    protected static function getTemplate($type, $status, ?Process $process = null)
     {
+        $providerName = $process->getCurrentScope()->getProvider()->getDisplayName();
+        $providerTemplate = 'custom/' . $type . '/' .  $status . '/' . (self::slugify($providerName)) . '.twig';
+
+        if (file_exists('messaging/' . $providerTemplate)) {
+            return $providerTemplate;
+        }
+
         $template = null;
         if (Property::__keyExists($type, self::$templates)) {
             if (Property::__keyExists($status, self::$templates[$type])) {
@@ -202,6 +209,22 @@ class Messaging
             }
         }
         return $template;
+    }
+
+    private static function slugify($text, string $divider = '_')
+    {
+        $text = preg_replace('~[^\pL\d]+~u', $divider, $text);
+        $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+        $text = preg_replace('~[^-\w]+~', '', $text);
+        $text = trim($text, $divider);
+        $text = preg_replace('~-+~', $divider, $text);
+        $text = strtolower($text);
+
+        if (empty($text)) {
+            return 'none';
+        }
+
+        return $text;
     }
 
     public static function getMailSubject(
