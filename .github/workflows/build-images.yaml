@@ -80,8 +80,8 @@ jobs:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
 
-      - name: List directory contents
-        run: ls -l
+      - name: List contents in the module directory
+        run: ls -l "${{ matrix.module }}"
 
       - name: Run Unit Tests
         run: |
@@ -91,8 +91,8 @@ jobs:
           fi
           if [ -d "${{ matrix.module }}/tests" ]; then
             echo "Running PHPUnit tests in ${{ matrix.module }}"
-            ls -l
-            docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
+            ls ${{ matrix.module }} -l
+            docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./workspace/${{ matrix.module }}/vendor/bin/phpunit"
           else
             echo "No tests found in ${{ matrix.module }}"
           fi
