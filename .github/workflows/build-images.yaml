@@ -60,6 +60,7 @@ jobs:
           docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
           
   install-dependencies:
+    needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -81,7 +82,7 @@ jobs:
           composer install --no-progress --prefer-dist --optimize-autoloader
 
   unit-tests:
-    needs: [build, install-dependencies]
+    needs: install-dependencies
     runs-on: ubuntu-latest
     services:
       mysql:
