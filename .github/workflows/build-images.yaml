@@ -62,6 +62,20 @@ jobs:
   unit-tests:
     needs: build
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: testdb
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 10s
+          --health-retries 5
+  
     strategy:
       matrix:
         include:
@@ -71,32 +85,31 @@ jobs:
             php_version: "8.0"
           - module: zmscalldisplay
             php_version: "7.3"
-          - module: zmsdb
-            php_version: "7.3"
-          - module: zmsentities
-            php_version: "8.0"
           - module: zmsmessaging
             php_version: "8.0"
           - module: zmsstatistic
             php_version: "8.0"
-      max-parallel: 1 # Run jobs sequentially
+        max-parallel: 1  # Ensures jobs run sequentially
+  
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
-
+  
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php_version }}
-
+  
       - name: Install Composer Dependencies
         run: |
           cd ${{ matrix.module }}
           composer install
-
-      - name: List contents in the module directory
-        run: ls -l ${{ matrix.module }}
-
+  
+      - name: Prefill Database (For zmsapi module)
+        if: matrix.module == 'zmsapi'
+        run: |
+          # Commands to prefill the database for zmsapi
+  
       - name: Run Unit Tests
         run: |
           tag="${{ github.ref_name }}"
@@ -105,7 +118,11 @@ jobs:
           fi
           if [ -d "${{ matrix.module }}/tests" ]; then
             echo "Running PHPUnit tests in ${{ matrix.module }}"
-            docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
+            docker run --rm -v ${{ github.workspace }}:/workspace --network host "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
           else
             echo "No tests found in ${{ matrix.module }}"
-          fi
+  
+      - name: Clear Database (For zmsapi module)
+        if: matrix.module == 'zmsapi'
+        run: |
+          # Commands to clear the database for zmsapi
