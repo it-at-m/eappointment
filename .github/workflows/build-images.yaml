@@ -59,18 +59,26 @@ jobs:
             --build-arg "PHP_VERSION=${{ matrix.php_version }}"
           docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
           
-  setup-dependencies:
+  install-dependencies:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module:
+          - zmsadmin
+          - zmsapi
+          - zmscalldisplay
+          - zmsmessaging
+          - zmsstatistic
+          - zmsdb
+          - zmsentities
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
 
-      - name: Install ddev
+      - name: Install Composer Dependencies
         run: |
-          curl -L https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh | bash
-
-      - name: Run Composer Install using ddev
-        run: ddev exec "./cli modules loop composer install"
+          cd ${{ matrix.module }}
+          composer install --no-progress --prefer-dist --optimize-autoloader
 
   unit-tests:
     needs: build
