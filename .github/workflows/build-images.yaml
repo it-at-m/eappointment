@@ -88,30 +88,30 @@ jobs:
             php_version: "8.0"
           - module: zmsstatistic
             php_version: "8.0"
-
+  
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
-
+  
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php_version }}
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
           coverage: xdebug
-
+  
       - name: Install Composer Dependencies
         run: |
           cd ${{ matrix.module }}
           composer install --no-progress --prefer-dist --optimize-autoloader
-
+  
       - name: Set up Database for zmsapi
         if: matrix.module == 'zmsapi'
         run: |
           # Add commands to initialize the database for zmsapi
           # Example: Import test data into the database
           echo "Setting up database for zmsapi module"
-
+  
       - name: Run Unit Tests
         run: |
           tag="${{ github.ref_name }}"
@@ -123,7 +123,7 @@ jobs:
             docker run --rm -v ${{ github.workspace }}:/workspace --network host "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
           else
             echo "No tests found in ${{ matrix.module }}"
-
+  
       - name: Cleanup Database after zmsapi tests
         if: matrix.module == 'zmsapi'
         run: |
