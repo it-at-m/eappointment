@@ -67,18 +67,18 @@ jobs:
         include:
           - module: zmsadmin
             php_version: "8.0"
-          - module: zmsstatistic
-            php_version: "8.0"
           - module: zmsapi
             php_version: "8.0"
           - module: zmscalldisplay
             php_version: "7.3"
-          - module: zmsmessaging
-            php_version: "8.0"
-          - module: zmsentities
-            php_version: "8.0"
           - module: zmsdb
             php_version: "7.3"
+          - module: zmsentities
+            php_version: "8.0"
+          - module: zmsmessaging
+            php_version: "8.0"
+          - module: zmsstatistic
+            php_version: "8.0"
       max-parallel: 1 # Run jobs sequentially
     steps:
       - name: Checkout GitHub Action
