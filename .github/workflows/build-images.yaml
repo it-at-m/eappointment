@@ -81,7 +81,7 @@ jobs:
           composer install --no-progress --prefer-dist --optimize-autoloader
 
   unit-tests:
-    needs: build
+    needs: [build, install-dependencies]
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -122,10 +122,10 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
           coverage: xdebug
   
-      - name: Install Composer Dependencies
-        run: |
-          cd ${{ matrix.module }}
-          composer install --no-progress --prefer-dist --optimize-autoloader
+      #- name: Install Composer Dependencies
+        #run: |
+          #cd ${{ matrix.module }}
+          #composer install --no-progress --prefer-dist --optimize-autoloader
   
       - name: Set up Database for zmsapi
         if: matrix.module == 'zmsapi'
