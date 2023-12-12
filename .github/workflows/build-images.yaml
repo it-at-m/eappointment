@@ -58,38 +58,10 @@ jobs:
             --build-arg "MODULE=${{ matrix.module }}" \
             --build-arg "PHP_VERSION=${{ matrix.php_version }}"
           docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
-          
-  install-dependencies:
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        module:
-          - zmsadmin
-          - zmsapi
-          - zmscalldisplay
-          - zmsmessaging
-          - zmsstatistic
-          - zmsdb
-          - zmsentities
-    steps:
-      - name: Checkout GitHub Action
-        uses: actions/checkout@main
-
-      - name: Install Composer Dependencies
-        run: |
-          cd ${{ matrix.module }}
-          composer install --no-progress --prefer-dist --optimize-autoloader
-          
-      - name: Upload vendor directory as artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: vendor-${{ matrix.module }}
-          path: ${{ matrix.module }}/vendor
-  
+         
 
   unit-tests:
-    needs: install-dependencies
+    needs: build
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -117,16 +89,13 @@ jobs:
             php_version: "8.0"
           - module: zmsstatistic
             php_version: "8.0"
+          - module: zmsdb
+          - module: zmsentities       
       max-parallel: 1  # Ensures jobs run sequentially
   
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
-
-      - name: Download vendor directory artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: vendor-${{ matrix.module }}
   
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -134,11 +103,14 @@ jobs:
           php-version: ${{ matrix.php_version }}
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
           coverage: xdebug
-  
-      #- name: Install Composer Dependencies
-        #run: |
-          #cd ${{ matrix.module }}
-          #composer install --no-progress --prefer-dist --optimize-autoloader
+          
+      - name: Install Composer Dependencies for All Modules
+        run: |
+          modules=('zmsadmin' 'zmsapi' 'zmscalldisplay' 'zmsmessaging' 'zmsstatistic' 'zmsdb' 'zmsentities')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
   
       - name: Set up Database for zmsapi
         if: matrix.module == 'zmsapi'
