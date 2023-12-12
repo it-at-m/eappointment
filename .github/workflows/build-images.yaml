@@ -8,21 +8,7 @@ on:
       - '**'
 
 jobs:
-  setup-dependencies:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout GitHub Action
-        uses: actions/checkout@main
-
-      - name: Install ddev
-        run: |
-          curl -L https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh | bash
-
-      - name: Run Composer Install using ddev
-        run: ddev exec "./cli modules loop composer install"
-
   build:
-    needs: setup-dependencies
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -72,6 +58,19 @@ jobs:
             --build-arg "MODULE=${{ matrix.module }}" \
             --build-arg "PHP_VERSION=${{ matrix.php_version }}"
           docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
+          
+  setup-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Install ddev
+        run: |
+          curl -L https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh | bash
+
+      - name: Run Composer Install using ddev
+        run: ddev exec "./cli modules loop composer install"
 
   unit-tests:
     needs: build
@@ -103,23 +102,23 @@ jobs:
           - module: zmsstatistic
             php_version: "8.0"
       max-parallel: 1  # Ensures jobs run sequentially
-
+  
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
-
+  
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php_version }}
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
           coverage: xdebug
-
+  
       - name: Install Composer Dependencies
         run: |
           cd ${{ matrix.module }}
           composer install --no-progress --prefer-dist --optimize-autoloader
-
+  
       - name: Set up Database for zmsapi
         if: matrix.module == 'zmsapi'
         run: |
@@ -128,8 +127,29 @@ jobs:
           if [ "${{ github.ref_type }}" = "branch" ]; then
             tag="branch-$tag"
           fi
+          echo "------------------------------------------"
+          pwd
+          echo "------------------------------------------"
+          ls -l zmsapi/vendor/bin
+          echo "------------------------------------------"
           docker run --rm -v ${{ github.workspace }}:/workspace --network host "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/importTestData --commit"
 
       - name: Run Unit Tests
         run: |
-          tag="${{ github.ref_name
+          tag="${{ github.ref_name }}"
+          if [ "${{ github.ref_type }}" = "branch" ]; then
+            tag="branch-$tag"
+          fi
+          if [ -d "${{ matrix.module }}/tests" ]; then
+            echo "Running PHPUnit tests in ${{ matrix.module }}"
+            docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
+          else
+            echo "No tests found in ${{ matrix.module }}"
+          fi
+
+      - name: Cleanup Database after zmsapi tests
+        if: matrix.module == 'zmsapi'
+        run: |
+          # Add commands to clean up the database after zmsapi tests
+          # Example: Drop tables or reset database
+          echo "Cleaning up database after zmsapi module tests"
