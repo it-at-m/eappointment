@@ -114,6 +114,9 @@ jobs:
           if [ "${{ github.ref_type }}" = "branch" ]; then
             tag="branch-$tag"
           fi
+          echo "------------------------------------------"
+          ls -l ./vendor/bin/
+          echo "------------------------------------------"
           docker run --rm -v ${{ github.workspace }}:/workspace --network host "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/importTestData --commit"
 
       - name: Run Unit Tests
