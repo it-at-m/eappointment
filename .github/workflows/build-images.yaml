@@ -123,6 +123,7 @@ jobs:
           docker run --rm -v ${{ github.workspace }}:/workspace --network host \
             -e DB_HOST=127.0.0.1 \
             -e DB_NAME=testdb \
+            -e DB_USER=root \
             -e DB_PASSWORD=password \
             "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
             /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/importTestData --commit"
