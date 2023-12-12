@@ -80,6 +80,13 @@ jobs:
         run: |
           cd ${{ matrix.module }}
           composer install --no-progress --prefer-dist --optimize-autoloader
+          
+      - name: Upload vendor directory as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: vendor-${{ matrix.module }}
+          path: ${{ matrix.module }}/vendor
+  
 
   unit-tests:
     needs: install-dependencies
@@ -115,6 +122,11 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
+
+      - name: Download vendor directory artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: vendor-${{ matrix.module }}
   
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
