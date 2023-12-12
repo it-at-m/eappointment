@@ -115,6 +115,8 @@ jobs:
             tag="branch-$tag"
           fi
           echo "------------------------------------------"
+          pwd
+          echo "------------------------------------------"
           ls -l zmsapi/vendor/bin
           echo "------------------------------------------"
           docker run --rm -v ${{ github.workspace }}:/workspace --network host "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/importTestData --commit"
