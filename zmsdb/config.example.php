@@ -9,8 +9,8 @@ define('MYSQL_DATABASE', getenv('MYSQL_DATABASE') ? getenv('MYSQL_DATABASE') : '
 // Use Docker environment settings, if exists
 // Check for MYSQL_HOST first
 if (getenv('MYSQL_HOST')) {
-    $host = getenv('MYSQL_HOST');
-    $port = getenv('MYSQL_PORT') ? parse_url(getenv('MYSQL_PORT'), PHP_URL_PORT) : '3306'; // default MySQL port
+    $host = getenv('MYSQL_HOST') ?: '127.0.0.1';
+    $port = getenv('MYSQL_PORT') ?: '3306'; // default MySQL port
     $host .= ";port=" . $port;
 } elseif (getenv('MYSQL_PORT')) {
     // If MYSQL_PORT is set, parse it to get the host and port
