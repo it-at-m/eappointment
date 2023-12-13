@@ -134,6 +134,8 @@ jobs:
           if [ "${{ github.ref_type }}" = "branch" ]; then
             tag="branch-$tag"
           fi
+          docker run --rm --network host -e MYSQL_DATABASE=zmsbo -e MYSQL_USER=root -e MYSQL_ROOT_PASSWORD=zmsapi "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" bash -c "mysql -h mysql -u root -pzmsapi -e 'SHOW DATABASES;'"
+           
           docker run --rm -v ${{ github.workspace }}:/workspace \
               -e MYSQL_HOST=mysql \
               -e MYSQL_DATABASE=zmsbo \
@@ -153,10 +155,7 @@ jobs:
           fi
           if [ -d "${{ matrix.module }}/tests" ]; then
             echo "Running PHPUnit tests in ${{ matrix.module }}"
-
-            docker run --rm --network host -e MYSQL_DATABASE=zmsbo -e MYSQL_USER=root -e MYSQL_ROOT_PASSWORD=zmsapi "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" bash -c "mysql -h mysql -u root -pzmsapi -e 'SHOW DATABASES;'"
-           
-            #docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
+            docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
           else
             echo "No tests found in ${{ matrix.module }}"
           fi
