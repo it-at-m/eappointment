@@ -116,6 +116,9 @@ jobs:
       - name: List MySQL Databases (Schemas)
         run: |
           mysql -h 127.0.0.1 -u root -pzmsapi -e "SHOW DATABASES;"
+      - name: Debug Database Connection
+        run: |
+          docker run --rm --network host mysql:5.7 bash -c "mysql -h mysql -u root -pzmsapi -e 'SHOW DATABASES;'"
 
 
       - name: List dirs
@@ -135,8 +138,6 @@ jobs:
             tag="branch-$tag"
           fi
           echo $tag
-          docker run --rm --network host -e MYSQL_DATABASE=zmsbo -e MYSQL_USER=root -e MYSQL_ROOT_PASSWORD=zmsapi "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" bash -c "mysql -h mysql -u root -pzmsapi -e 'SHOW DATABASES;'"
-           
           docker run --rm -v ${{ github.workspace }}:/workspace \
               -e MYSQL_HOST=mysql \
               -e MYSQL_DATABASE=zmsbo \
