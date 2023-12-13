@@ -67,10 +67,9 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
-          DB_HOST: 127.0.0.1
-          DB_NAME: zmsbo
-          DB_USER: root
-          DB_PASSWORD: password
+          MYSQL_PORT: "tcp://mysql:3306"
+          MYSQL_DATABASE: zmsbo
+          MYSQL_ROOT_PASSWORD: zmsapi
         ports:
           - 3306:3306
         options: >-
