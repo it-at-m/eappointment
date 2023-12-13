@@ -67,8 +67,10 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: zmsbo
+          DB_HOST: 127.0.0.1
+          DB_NAME: zmsbo
+          DB_USER: root
+          DB_PASSWORD: password
         ports:
           - 3306:3306
         options: >-
@@ -123,6 +125,7 @@ jobs:
           docker run --rm -v ${{ github.workspace }}:/workspace \
             -w /workspace/${{ matrix.module }} \
             -e MYSQL_DATABASE=zmsbo \
+            -e MYSQL_USER=root \            
             -e MYSQL_ROOT_PASSWORD=password \
             "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
             ./vendor/bin/importTestData --commit
