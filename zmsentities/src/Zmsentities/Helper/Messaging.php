@@ -196,8 +196,8 @@ class Messaging
     protected static function getTemplate($type, $status, ?Process $process = null)
     {
         if ($process) {
-            $provider = $process->getFirstAppointment()->getScope()->getProvider();
-            $providerName = $provider->getDisplayName() ?? $provider->getName();
+            $provider = $process->scope->provider;
+            $providerName = $provider->displayName;
             $providerTemplateName = self::getProviderTemplateName($providerName);
             $providerTemplate = 'custom/' . $type . '/' .  $status . '/' . $providerTemplateName . '.twig';
 
