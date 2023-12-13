@@ -115,10 +115,9 @@ class Messaging
         }
 
         $template = self::getTemplate('mail', $status, $mainProcess);
-        return $template;
-        //if ($initiator) {
-        //    $template = self::getTemplate('admin', $status);
-        //}
+        if ($initiator) {
+            $template = self::getTemplate('admin', $status);
+        }
         if (!$template) {
             $exception = new \BO\Zmsentities\Exception\TemplateNotFound("Template for status $status not found");
             $exception->data = $status;
