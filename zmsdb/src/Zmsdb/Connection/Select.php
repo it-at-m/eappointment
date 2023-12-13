@@ -112,8 +112,8 @@ class Select
             $pdoOptions = array_merge([
                 ], self::$pdoOptions);
             error_log("***************************************");
-            error_log($username);
-            error_log($password);
+            error_log(self::$username);
+            error_log(self::$password);
             error_log($dataSourceName);
             error_log("***************************************");
             $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
