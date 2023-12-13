@@ -17,6 +17,7 @@ if (getenv('MYSQL_HOST')) {
     $host .= ';port=';
     $host .= parse_url(getenv('MYSQL_PORT'), PHP_URL_PORT);
 } else {
+    $port = '3306'; // default MySQL port
     $host = '127.0.0.1';
 }
 if (getenv('MYSQL_PASSWORD') || getenv('MYSQL_ROOT_PASSWORD')) {
