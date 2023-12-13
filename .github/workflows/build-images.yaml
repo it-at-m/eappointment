@@ -140,7 +140,7 @@ jobs:
           fi
           echo $tag
           docker run --rm -v ${{ github.workspace }}:/workspace \
-              -e MYSQL_HOST=mysql \
+              -e MYSQL_HOST=127.0.0.1 \
               -e MYSQL_DATABASE=zmsbo \
               -e MYSQL_USER=root \
               -e MYSQL_ROOT_PASSWORD=zmsapi \
