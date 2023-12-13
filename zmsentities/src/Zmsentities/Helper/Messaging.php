@@ -198,8 +198,8 @@ class Messaging
         if ($process) {
             $provider = $process->getCurrentScope()->getProvider();
             $providerName = $provider->getDisplayName() ?? $provider->getName();
-            $providerName = str_replace(['(', ')', '/'], '', $providerName);
-            $providerTemplate = 'custom/' . $type . '/' .  $status . '/' . $providerName . '.twig';
+            $providerTemplateName = self::getProviderTemplateName($providerName);
+            $providerTemplate = 'custom/' . $type . '/' .  $status . '/' . $providerTemplateName . '.twig';
 
             if (file_exists(TemplateFinder::getTemplatePath() . '/messaging/' . $providerTemplate)) {
                 return $providerTemplate;
@@ -213,6 +213,26 @@ class Messaging
             }
         }
         return $template;
+    }
+
+    private static function getProviderTemplateName($providerName)
+    {
+        if (strpos($providerName, '(')) {
+            $providerName = substr($providerName, 0, strpos($providerName, '('));
+        }
+        $divider = '-';
+        $providerTemplate = preg_replace('~[^\pL\d]+~u', $divider, $providerName);
+        $providerTemplate = iconv('utf-8', 'us-ascii//TRANSLIT', $providerTemplate);
+        $providerTemplate = preg_replace('~[^-\w]+~', '', $providerTemplate);
+        $providerTemplate = trim($providerTemplate, $divider);
+        $providerTemplate = preg_replace('~-+~', $divider, $providerTemplate);
+        $providerTemplate = strtolower($providerTemplate);
+
+        if (empty($providerTemplate)) {
+            return 'none';
+        }
+
+        return $providerTemplate;
     }
 
     public static function getMailSubject(
