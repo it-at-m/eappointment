@@ -1,40 +1,88 @@
 <?php
 // @codingStandardsIgnoreFile
-//ONLY FOR TESTING
 
-require(__DIR__ . '/vendor/autoload.php');
-date_default_timezone_set('Europe/Berlin');
-
-define('MYSQL_DATABASE', getenv('MYSQL_DATABASE') ?: 'zmsbo');
-
-// Use Docker environment settings, if exists
+// MYSQL_USER with access to DB
+if (!defined('MYSQL_USER')) {
+    define('MYSQL_USER', getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root');
+}
+// MYSQL_PASSWORD
+if (!defined('MYSQL_PASSWORD')) {
+    define('MYSQL_PASSWORD', getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') :'zmsdb');
+}
+// MYSQL_DATABASE is the database name containing the tables
+if (!defined('MYSQL_DATABASE')) {
+    define('MYSQL_DATABASE', getenv('MYSQL_DATABASE') ? getenv('MYSQL_DATABASE') : 'zmsbo');
+}
+// Determine the host and port from the environment or use defaults
 $host = getenv('MYSQL_HOST') ?: '127.0.0.1';
 $port = getenv('MYSQL_PORT') ?: '3306';
 
-if (getenv('MYSQL_PASSWORD') || getenv('MYSQL_ROOT_PASSWORD')) {
-    \BO\Zmsdb\Connection\Select::$username = 
-        getenv('MYSQL_USER') ?: 'root';
-    \BO\Zmsdb\Connection\Select::$password =
-        getenv('MYSQL_ROOT_PASSWORD') ?: getenv('MYSQL_PASSWORD');
+// MYSQL_PORT of type "tcp://127.0.0.1:3306"
+if (getenv('MYSQL_PORT')) {
+    $dsn_rw = "mysql:dbname=" . MYSQL_DATABASE . ";host=" . parse_url(getenv('MYSQL_PORT'), PHP_URL_HOST);
+    $dsn_rw .= ';port=' . parse_url(getenv('MYSQL_PORT'), PHP_URL_PORT);
 } else {
-    \BO\Zmsdb\Connection\Select::$username = 'server';
-    \BO\Zmsdb\Connection\Select::$password = 'internet';
+    $dsn_rw = "mysql:dbname=" . MYSQL_DATABASE . ";host=$host;port=$port";
+}
+if (!defined('DSN_RW')) {
+    define('DSN_RW', $dsn_rw);
 }
 
-\BO\Zmsdb\Connection\Select::$enableProfiling = true;
-\BO\Zmsdb\Connection\Select::$dbname_zms = constant("MYSQL_DATABASE");
-\BO\Zmsdb\Connection\Select::$readSourceName = "mysql:dbname=" . \BO\Zmsdb\Connection\Select::$dbname_zms . ";host=$host;port=$port";
-\BO\Zmsdb\Connection\Select::$writeSourceName = "mysql:dbname=" . \BO\Zmsdb\Connection\Select::$dbname_zms . ";host=$host;port=$port";
-\BO\Zmsdb\Connection\Select::$pdoOptions = [
-    \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-];
-
-\BO\Zmsdb\Source\Dldb::$importPath = 'tests/Zmsdb/fixtures/';
-
-// Additional configurations for ZMS_TIMEADJUST
-if (getenv('ZMS_TIMEADJUST')) {
-    class App {
-        public static $now;
+// MYSQL_PORT_RO for readonly access of type "tcp://127.0.0.1:3306"
+if (getenv('MYSQL_PORT_RO')) {
+    // Allow simple load balancing with multiple values
+    $mysqlPortList = explode(',', getenv('MYSQL_PORT_RO'));
+    $mysqlPortRO = trim($mysqlPortList[array_rand($mysqlPortList)]);
+    $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=";
+    $dsn .= parse_url($mysqlPortRO, PHP_URL_HOST);
+    $dsn .= ';port=';
+    $dsn .= parse_url($mysqlPortRO, PHP_URL_PORT);
+    if (!defined('DSN_RO')) {
+        define('DSN_RO', $dsn);
     }
+} else {
+    if (!defined('DSN_RO')) {
+        define('DSN_RO', DSN_RW);
+    }
+}
+
+class App extends \BO\Zmsdb\Application
+{
+    const APP_PATH = APP_PATH;
+    const IDENTIFIER = 'Zmsdb-ENV';
+    const DEBUG = false;
+    const DB_ENABLE_WSREPSYNCWAIT = true;
+    /**
+     * @var String DB_DSN_READONLY
+     */
+    const DB_DSN_READONLY = DSN_RO;
+
+    /**
+     * @var String DB_DSN_READWRITE
+     */
+    const DB_DSN_READWRITE = DSN_RW;
+
+    /**
+     * @var String DB_USERNAME
+     */
+    const DB_USERNAME = MYSQL_USER;
+
+    /**
+     * @var String DB_PASSWORD
+     */
+    const DB_PASSWORD = MYSQL_PASSWORD;
+
+    /**
+     * Use caching
+     *
+     */
+    const TWIG_CACHE = '/cache/';
+
+    // Uncomment the following line for testing with fixtures
+    // public static $data = "/vendor/bo/zmsdb/tests/Zmsdb/fixtures";
+}
+
+// Uncomment the following line for testing data with vendor/bin/importTestData
+if (getenv('ZMS_TIMEADJUST')) {
     App::$now = new DateTimeImmutable(date(getenv('ZMS_TIMEADJUST')), new DateTimeZone('Europe/Berlin'));
 }
