@@ -119,7 +119,7 @@ jobs:
           mysql -h 127.0.0.1 -u root -pzmsapi -e "SHOW DATABASES;"
       - name: Debug Database Connection
         run: |
-          docker run --rm --network host mysql:5.7 bash -c "mysql -h mysql -u root -pzmsapi -e 'SHOW DATABASES;'"
+          docker run --rm --network host mysql:5.7 bash -c "mysql -h 127.0.0.1 -u root -pzmsapi -e 'SHOW DATABASES;'"
 
 
       - name: List dirs
