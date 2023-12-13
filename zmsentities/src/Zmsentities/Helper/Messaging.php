@@ -197,6 +197,7 @@ class Messaging
     {
         if ($process) {
             $providerName = $process->getCurrentScope()->getProvider()->getName();
+            $providerName = str_replace(['(', ')', '/'], '', $providerName);
             $providerTemplate = 'custom/' . $type . '/' .  $status . '/' . $providerName . '.twig';
 
             if (file_exists(TemplateFinder::getTemplatePath() . '/messaging/' . $providerTemplate)) {
