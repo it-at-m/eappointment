@@ -15,8 +15,9 @@ if (!defined('MYSQL_DATABASE')) {
 }
 // MYSQL_PORT of type "tcp://127.0.0.1:3306"
 if (getenv('MYSQL_HOST')) {
-    $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=" . getenv('MYSQL_HOST');
-    $dsn .= ';port=' . (getenv('MYSQL_PORT') ? parse_url(getenv('MYSQL_PORT'), PHP_URL_PORT) : '3306');
+    $host = getenv('MYSQL_HOST') ?: '127.0.0.1';
+    $port = getenv('MYSQL_PORT') ?: '3306';
+    $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=$host;port=$port";
 } elseif (getenv('MYSQL_PORT')) {
     // Parse MYSQL_PORT if MYSQL_HOST is not set
     $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=";
