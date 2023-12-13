@@ -18,6 +18,9 @@ if (getenv('MYSQL_HOST')) {
     $host = getenv('MYSQL_HOST');
     $port = getenv('MYSQL_PORT') ?: '3306';
     $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=$host;port=$port";
+    if (!defined('DSN_RW')) {
+        define('DSN_RW', $dsn);
+    }
 } else if (getenv('MYSQL_PORT')) {
     $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=";
     $dsn .= parse_url(getenv('MYSQL_PORT'), PHP_URL_HOST);
