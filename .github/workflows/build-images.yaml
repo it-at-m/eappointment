@@ -111,6 +111,10 @@ jobs:
             echo "Installing Composer dependencies for $module"
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
+
+      - name: List MySQL Databases (Schemas)
+        run: |
+          mysql -h 127.0.0.1 -u root -pzmsapi -e "SHOW DATABASES;"
   
       - name: Set up Database for zmsapi
         if: matrix.module == 'zmsapi'
@@ -126,13 +130,6 @@ jobs:
             -e MYSQL_ROOT_PASSWORD=zmsapi \
             "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
             ./vendor/bin/importTestData --commit
-
-      - name: Upload log file
-        if: matrix.module == 'zmsapi'
-        uses: actions/upload-artifact@v2
-        with:
-          name: importTestData-log
-          path: ${{ github.workspace }}/${{ matrix.module }}/importTestData.log
             
       - name: Run Unit Tests
         run: |
