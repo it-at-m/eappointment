@@ -122,7 +122,8 @@ jobs:
           ls -l
           ls -l zmsdb
           ls -l zmsapi
-          
+          cat zmsdb/config.php
+          cat zmsapi/config.php
   
       - name: Set up Database for zmsapi
         if: matrix.module == 'zmsapi'
