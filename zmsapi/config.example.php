@@ -14,19 +14,24 @@ if (!defined('MYSQL_DATABASE')) {
     define('MYSQL_DATABASE', getenv('MYSQL_DATABASE') ? getenv('MYSQL_DATABASE') : 'zmsbo');
 }
 // MYSQL_PORT of type "tcp://127.0.0.1:3306"
-if (getenv('MYSQL_PORT')) {
+if (getenv('MYSQL_HOST') && getenv('MYSQL_PORT')) {
+    $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=" . getenv('MYSQL_HOST');
+    $dsn .= ';port=' . (getenv('MYSQL_PORT') ? parse_url(getenv('MYSQL_PORT'), PHP_URL_PORT) : '3306');
+} elseif (getenv('MYSQL_PORT')) {
+    // Parse MYSQL_PORT if MYSQL_HOST is not set
     $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=";
     $dsn .= parse_url(getenv('MYSQL_PORT'), PHP_URL_HOST);
     $dsn .= ';port=';
     $dsn .= parse_url(getenv('MYSQL_PORT'), PHP_URL_PORT);
-    if (!defined('DSN_RW')) {
-        define('DSN_RW', $dsn);
-    }
 } else {
-    if (!defined('DSN_RW')) {
-        define('DSN_RW', 'mysql:dbname=' . MYSQL_DATABASE . ';host=127.0.0.1');
-    }
+    // Default fallback
+    $dsn = 'mysql:dbname=' . MYSQL_DATABASE . ';host=127.0.0.1;port=3306';
 }
+
+if (!defined('DSN_RW')) {
+    define('DSN_RW', $dsn);
+}
+
 // MYSQL_PORT_RO for readonly access of type "tcp://127.0.0.1:3306"
 if (getenv('MYSQL_PORT_RO')) {
     // Allow simple load balancing with multiple values
