@@ -195,11 +195,13 @@ class Messaging
 
     protected static function getTemplate($type, $status, ?Process $process = null)
     {
-        $providerName = $process->getCurrentScope()->getProvider()->getDisplayName();
-        $providerTemplate = 'custom/' . $type . '/' .  $status . '/' . (self::slugify($providerName)) . '.twig';
+        if ($process) {
+            $providerName = $process->getCurrentScope()->getProvider()->getName();
+            $providerTemplate = 'custom/' . $type . '/' .  $status . '/' . $providerName . '.twig';
 
-        if (file_exists('messaging/' . $providerTemplate)) {
-            return $providerTemplate;
+            if (file_exists(TemplateFinder::getTemplatePath() . '/messaging/' . $providerTemplate)) {
+                return $providerTemplate;
+            }
         }
 
         $template = null;
@@ -209,22 +211,6 @@ class Messaging
             }
         }
         return $template;
-    }
-
-    private static function slugify($text, string $divider = '_')
-    {
-        $text = preg_replace('~[^\pL\d]+~u', $divider, $text);
-        $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
-        $text = preg_replace('~[^-\w]+~', '', $text);
-        $text = trim($text, $divider);
-        $text = preg_replace('~-+~', $divider, $text);
-        $text = strtolower($text);
-
-        if (empty($text)) {
-            return 'none';
-        }
-
-        return $text;
     }
 
     public static function getMailSubject(
