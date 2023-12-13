@@ -79,9 +79,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - module: zmsadmin
-            php_version: "8.0"
           - module: zmsapi
+            php_version: "8.0"
+          - module: zmsadmin
             php_version: "8.0"
           - module: zmscalldisplay
             php_version: "7.3"
@@ -116,6 +116,11 @@ jobs:
       - name: List MySQL Databases (Schemas)
         run: |
           mysql -h 127.0.0.1 -u root -pzmsapi -e "SHOW DATABASES;"
+
+      - name: Debug Database Connection
+        run: |
+          docker run --rm --network host -e MYSQL_DATABASE=zmsbo -e MYSQL_USER=root -e MYSQL_ROOT_PASSWORD=zmsapi "ghcr.io/${{ github.repository }}/${{ matrix.module }}:latest" bash -c "mysql -h mysql -u root -pzmsapi -e 'SHOW DATABASES;'"
+
 
 
       - name: List dirs
