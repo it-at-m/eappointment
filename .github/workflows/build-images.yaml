@@ -125,9 +125,9 @@ jobs:
             tag="branch-$tag"
           fi
           docker run --rm -v ${{ github.workspace }}:/workspace \
-            -w /workspace/${{ matrix.module }} \
             -e MYSQL_DATABASE=zmsbo \
             -e MYSQL_ROOT_PASSWORD=zmsapi \
+            -e MYSQL_PORT=tcp://mysql:3306 \
             "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
             ./vendor/bin/importTestData --commit
             
