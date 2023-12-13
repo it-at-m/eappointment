@@ -115,6 +115,14 @@ jobs:
       - name: List MySQL Databases (Schemas)
         run: |
           mysql -h 127.0.0.1 -u root -pzmsapi -e "SHOW DATABASES;"
+
+
+      - name: List dirs
+        run: |
+          ls -l
+          ls -l zmsdb
+          ls -l zmsapi
+          
   
       - name: Set up Database for zmsapi
         if: matrix.module == 'zmsapi'
@@ -127,7 +135,6 @@ jobs:
           docker run --rm -v ${{ github.workspace }}:/workspace \
             -e MYSQL_DATABASE=zmsbo \
             -e MYSQL_ROOT_PASSWORD=zmsapi \
-            -e MYSQL_HOST=mysql \
             -e MYSQL_PORT=3306 \
             "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
             ./vendor/bin/importTestData --commit
