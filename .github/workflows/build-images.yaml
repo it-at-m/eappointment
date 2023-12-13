@@ -125,7 +125,7 @@ jobs:
             -w /workspace/${{ matrix.module }} \
             -e MYSQL_DATABASE=zmsbo \
             -e MYSQL_USER=root \            
-            -e MYSQL_ROOT_PASSWORD=password \
+            -e MYSQL_ROOT_PASSWORD=zmsapi \
             "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
             ./vendor/bin/importTestData --commit
 
