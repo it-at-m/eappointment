@@ -29,6 +29,7 @@ if (getenv('MYSQL_PASSWORD') || getenv('MYSQL_ROOT_PASSWORD')) {
     \BO\Zmsdb\Connection\Select::$username = 'server';
     \BO\Zmsdb\Connection\Select::$password = 'internet';
 }
+error_log("*************************************wtf************************************************************");
 \BO\Zmsdb\Connection\Select::$enableProfiling = true;
 \BO\Zmsdb\Connection\Select::$dbname_zms = constant("MYSQL_DATABASE");
 \BO\Zmsdb\Connection\Select::$readSourceName = "mysql:dbname=".\BO\Zmsdb\Connection\Select::$dbname_zms.";host=$host";
