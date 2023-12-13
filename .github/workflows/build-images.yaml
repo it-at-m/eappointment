@@ -109,11 +109,10 @@ jobs:
           fi
           docker run --rm -v ${{ github.workspace }}:/workspace \
             -w /workspace/${{ matrix.module }} \
-            -e DB_HOST=mysql \
-            -e DB_NAME=zmsbo \
-            -e DB_NAME=testdb \
-            -e DB_USER=root \
-            -e DB_PASSWORD=password \
+            -e MYSQL_PORT=tcp://mysql:3306 \
+            -e MYSQL_DATABASE=zmsbo \
+            -e MYSQL_USER=root \
+            -e MYSQL_ROOT_PASSWORD=password \
             "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
             ./vendor/bin/importTestData --commit
 
