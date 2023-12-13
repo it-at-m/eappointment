@@ -90,7 +90,8 @@ jobs:
           - module: zmsstatistic
             php_version: "8.0"
           - module: zmsdb
-          - module: zmsentities       
+          - module: zmsentities
+          - module: zmsslim          
       max-parallel: 1  # Ensures jobs run sequentially
   
     steps:
