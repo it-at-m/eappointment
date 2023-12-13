@@ -110,7 +110,6 @@ jobs:
           docker run --rm -v ${{ github.workspace }}:/workspace \
             -w /workspace/${{ matrix.module }} \
             -e MYSQL_DATABASE=testdb \
-            -e MYSQL_USER=root \
             -e MYSQL_ROOT_PASSWORD=password \
             "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
             ./vendor/bin/importTestData --commit
