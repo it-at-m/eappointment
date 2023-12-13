@@ -111,6 +111,11 @@ class Select
         try {
             $pdoOptions = array_merge([
                 ], self::$pdoOptions);
+            error_log("***************************************");
+            error_log($username);
+            error_log($password);
+            error_log($dataSourceName);
+            error_log("***************************************");
             $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
             $pdo->exec('SET NAMES "UTF8";');
             //$timezone = date_default_timezone_get();
