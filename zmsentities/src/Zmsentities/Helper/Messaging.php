@@ -196,12 +196,13 @@ class Messaging
     protected static function getTemplate($type, $status, ?Process $process = null)
     {
         if ($process) {
-            $scopeName = $process->getCurrentScope()->getName();
-            $scopeName = str_replace(['(', ')', '/'], '', $scopeName);
-            $scopeTemplate = 'custom/' . $type . '/' .  $status . '/' . $scopeName . '.twig';
+            $provider = $process->getCurrentScope()->getProvider();
+            $providerName = $provider->getDisplayName() ?? $provider->getName();
+            $providerName = str_replace(['(', ')', '/'], '', $providerName);
+            $providerTemplate = 'custom/' . $type . '/' .  $status . '/' . $providerName . '.twig';
 
-            if (file_exists(TemplateFinder::getTemplatePath() . '/messaging/' . $scopeTemplate)) {
-                return $scopeTemplate;
+            if (file_exists(TemplateFinder::getTemplatePath() . '/messaging/' . $providerTemplate)) {
+                return $providerTemplate;
             }
         }
 
