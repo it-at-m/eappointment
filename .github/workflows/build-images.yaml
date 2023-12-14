@@ -168,11 +168,14 @@ jobs:
           ls -l /home/runner/work/eappointment/eappointment/zmsapi/vendor/eappointment/zmsdb/         
           echo "***************************"
           ls -l /home/runner/work/eappointment/eappointment/zmsapi/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures
-          echo "***************************"
-          ls -l /home/runner/work/eappointment/eappointment/data
-          echo "***************************"
-          ls -l /home/runner/work/eappointment/eappointment/vendor
-          echo "***************************"
+
+          ls -l /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures
+
+          cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /var/www/html/data
+
+          cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
+
+          
           
           #rm -rf /home/runner/work/eappointment/eappointment/data
           #ls -l /home/runner/work/eappointment/eappointment/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures
