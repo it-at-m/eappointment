@@ -124,8 +124,8 @@ jobs:
         #run: |
           #echo "Waiting for MariaDB to be fully ready..."
           #sleep 30  # Adjust the sleep time as necessary
-      
-      - name: Set up Database and Run Unit Tests
+
+      - name: Set up Database
         run: |
           tag="${{ github.ref_name }}"
           if [ "${{ github.ref_type }}" = "branch" ]; then
@@ -147,8 +147,35 @@ jobs:
               -e MYSQL_ROOT_PASSWORD=password \
               -e MYSQL_PORT=3306 \
               "ghcr.io/it-at-m/eappointment/${{ matrix.module }}:$tag" \
-              /bin/bash -c "./vendor/bin/importTestData --commit && cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
+              /bin/bash -c "./vendor/bin/importTestData --commit"
+          else
+            echo "No db setup for ${{ matrix.module }}"
+          fi
+
+
+      - name: Run Unit Tests
+        run: |
+          tag="${{ github.ref_name }}"
+          if [ "${{ github.ref_type }}" = "branch" ]; then
+            tag="branch-$tag"
+          fi
+          if [ "${{ matrix.module }}" == "zmsapi" ] || [ "${{ matrix.module }}" == "zmsdb" ]; then
+            docker run --rm --network host \
+              -v /home/runner/work/eappointment/eappointment:/workspace \
+              -v /home/runner/work/eappointment/eappointment/data:/var/www/html/data \
+              -e MYSQL_HOST=127.0.0.1 \
+              -e MYSQL_DATABASE=zmsbo \
+              -e MYSQL_USER=root \
+              -e MYSQL_ROOT_PASSWORD=password \
+              -e MYSQL_PORT=3306 \
+              "ghcr.io/it-at-m/eappointment/${{ matrix.module }}:$tag" \
+              /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
           else
             echo "Running PHPUnit tests in ${{ matrix.module }}"
             docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
           fi
+
+
+
+      
+
