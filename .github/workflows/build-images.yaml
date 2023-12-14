@@ -119,11 +119,11 @@ jobs:
             (cd ${{ matrix.module }} && composer install --no-progress --prefer-dist --optimize-autoloader)
           fi
 
-      - name: Wait for MariaDB to be ready
-        if: matrix.module == 'zmsapi' || matrix.module == 'zmsdb'
-        run: |
-          echo "Waiting for MariaDB to be fully ready..."
-          sleep 30  # Adjust the sleep time as necessary
+      #- name: Wait for MariaDB to be ready
+        #if: matrix.module == 'zmsapi' || matrix.module == 'zmsdb'
+        #run: |
+          #echo "Waiting for MariaDB to be fully ready..."
+          #sleep 30  # Adjust the sleep time as necessary
       
       - name: Set up Database and Run Unit Tests
         run: |
