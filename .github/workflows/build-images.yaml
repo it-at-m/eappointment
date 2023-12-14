@@ -149,19 +149,34 @@ jobs:
       - name: Prepare Fixture Data
         run: |
           echo "Preparing fixture data..."
-          rm -rf /home/runner/work/eappointment/eappointment/data
-          ls -l /home/runner/work/eappointment/eappointment/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures
-          ln -s /home/runner/work/eappointment/eappointment/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
-          # Alternatively, use cp command if symlinks are not suitable
-
-          
-
-          cp -R /home/runner/work/eappointment/eappointment/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures /var/www/html/data
-          # cp -R /home/runner/work/eappointment/eappointment/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
 
           echo "***************************"
           ls -l /var/www/html
-          echo "***************************"          
+          echo "***************************"  
+          ls -l /home
+          echo "***************************"
+          ls -l /home/runner
+          echo "***************************"
+          ls -l /home/runner/work
+          echo "***************************"
+          ls -l /home/runner/work/eappointment
+          echo "***************************"
+          echo "***************************"
+          ls -l /home/runner/work/eappointment/eappointment
+          echo "***************************"
+          ls -l /home/runner/work/eappointment/eappointment/data
+          echo "***************************"
+          ls -l /home/runner/work/eappointment/eappointment/vendor
+          echo "***************************"
+          
+          #rm -rf /home/runner/work/eappointment/eappointment/data
+          #ls -l /home/runner/work/eappointment/eappointment/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures
+          #ln -s /home/runner/work/eappointment/eappointment/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
+          # Alternatively, use cp command if symlinks are not suitable    
+          #cp -R /home/runner/work/eappointment/eappointment/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures /var/www/html/data
+          # cp -R /home/runner/work/eappointment/eappointment/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
+
+        
        
       - name: Set up Database for zmsapi
         run: |
@@ -170,7 +185,6 @@ jobs:
           if [ "${{ github.ref_type }}" = "branch" ]; then
             tag="branch-$tag"
           fi
-          echo "Docker image to run: ghcr.io/it-at-m/eappointment/zmsapi:$tag"
           docker run --rm --network host -v /home/runner/work/eappointment/eappointment:/workspace \
             -e MYSQL_HOST=172.18.0.2 \
             -e MYSQL_DATABASE=zmsbo \
