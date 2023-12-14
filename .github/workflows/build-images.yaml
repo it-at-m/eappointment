@@ -156,6 +156,7 @@ jobs:
           if [ "${{ github.ref_type }}" = "branch" ]; then
             tag="branch-$tag"
           fi
+          docker exec [container_name_or_id] ls -l /var/www/html/data
           echo "Docker image to run: ghcr.io/it-at-m/eappointment/zmsapi:$tag"
           docker run --rm --network host -v /home/runner/work/eappointment/eappointment:/workspace \
             -e MYSQL_HOST=172.18.0.2 \
