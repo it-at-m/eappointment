@@ -11,7 +11,7 @@ class HealthcheckTest extends Base
 
     protected $parameters = [];
 
-    /*protected function getApiCalls()
+    protected function getApiCalls()
     {
         return [
             [
@@ -21,7 +21,7 @@ class HealthcheckTest extends Base
                 'response' => $this->readFixture("GET_status.json"),
             ]
         ];
-    }*/
+    }
 
     /*public function testRendering()
     {
