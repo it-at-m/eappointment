@@ -93,7 +93,7 @@ jobs:
           - module: zmsslim
           - module: zmsstatistic
             php_version: "8.0"
-      max-parallel: 1  # Ensures jobs run sequentially
+      #max-parallel: 1  # Ensures jobs run sequentially
   
     steps:
       - name: Checkout GitHub Action
