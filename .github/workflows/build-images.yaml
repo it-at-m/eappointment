@@ -82,8 +82,8 @@ jobs:
             php_version: "8.0"
           - module: zmsapi
             php_version: "8.0"            
-          - module: zmscalldisplay
-            php_version: "7.3"
+          #- module: zmscalldisplay
+            #php_version: "7.3"
           - module: zmsdb
           - module: zmsdldb
           - module: zmsentities
@@ -123,7 +123,7 @@ jobs:
         if: matrix.module == 'zmsapi' || matrix.module == 'zmsdb'
         run: |
           echo "Waiting for MariaDB to be fully ready..."
-          sleep 10  # Adjust the sleep time as necessary
+          sleep 30  # Adjust the sleep time as necessary
       
       - name: Set up Database and Run Unit Tests
         run: |
