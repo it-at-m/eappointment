@@ -159,7 +159,7 @@ jobs:
           docker exec [container_name_or_id] ls -l /var/www/html/data
           echo "Docker image to run: ghcr.io/it-at-m/eappointment/zmsapi:$tag"
           docker run --rm --network host -v /home/runner/work/eappointment/eappointment:/workspace \
-            -e MYSQL_HOST=172.18.0.2 \
+            -e MYSQL_HOST=127.0.0.1 \
             -e MYSQL_DATABASE=zmsbo \
             -e MYSQL_USER=root \
             -e MYSQL_ROOT_PASSWORD=password \
