@@ -110,7 +110,8 @@ class Select
     {
         try {
             $pdoOptions = array_merge([
-                ], self::$pdoOptions);
+                PDO::ATTR_TIMEOUT => 30, // Set the timeout to 30 seconds
+            ], self::$pdoOptions);
             error_log("***************************************");
             error_log(self::$username);
             error_log(self::$password);
@@ -133,6 +134,7 @@ class Select
         }
         return $pdo;
     }
+
 
     /**
      * Set the read connection.
