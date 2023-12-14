@@ -135,7 +135,7 @@ jobs:
           if [ "${{ matrix.module }}" == "zmsapi" ] || [ "${{ matrix.module }}" == "zmsdb" ]; then
             echo "Setting up database and running PHPUnit tests for ${{ matrix.module }} module"
             mkdir -p /home/runner/work/eappointment/eappointment/data
-            cp -R /home/runner/work/eappointment/eappointment/${{ matrix.module }}/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
+            cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
             docker run --rm --network host \
               -v /home/runner/work/eappointment/eappointment:/workspace \
               -v /home/runner/work/eappointment/eappointment/data:/var/www/html/data \
