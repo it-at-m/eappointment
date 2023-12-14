@@ -110,7 +110,7 @@ class Select
     {
         try {
             $pdoOptions = array_merge([
-                Pdo::ATTR_TIMEOUT => 1, // Set the timeout to 30 seconds
+                Pdo::ATTR_TIMEOUT => 6000, // Set the timeout to 30 seconds
             ], self::$pdoOptions);
             $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
             $pdo->exec('SET NAMES "UTF8";');
