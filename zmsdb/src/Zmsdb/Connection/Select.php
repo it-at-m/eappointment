@@ -110,7 +110,8 @@ class Select
     {
         try {
             $pdoOptions = array_merge([
-                ], self::$pdoOptions);
+                Pdo::ATTR_TIMEOUT => 120, // Set the timeout to 30 seconds
+            ], self::$pdoOptions);
             error_log("***************************************");
             error_log($username);
             error_log($password);
