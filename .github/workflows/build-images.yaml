@@ -151,27 +151,9 @@ jobs:
           echo "Preparing fixture data..."
 
           echo "***************************"
-          ls -l /var/www/html
-          echo "***************************"  
-          ls -l /home
-          echo "***************************"
-          ls -l /home/runner
-          echo "***************************"
-          ls -l /home/runner/work
-          echo "***************************"
-          ls -l /home/runner/work/eappointment
-          echo "***************************"
-          ls -l /home/runner/work/eappointment/eappointment
-          echo "***************************"
-          ls -l /home/runner/work/eappointment/eappointment/zmsapi/vendor/eappointment/
-          echo "***************************"
-          ls -l /home/runner/work/eappointment/eappointment/zmsapi/vendor/eappointment/zmsdb/         
-          echo "***************************"
-          ls -l /home/runner/work/eappointment/eappointment/zmsapi/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures
-
           ls -l /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures
-
-          cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /var/www/html/data
+          echo "***************************"
+          #cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /var/www/html/data
 
           cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
 
