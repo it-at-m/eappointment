@@ -125,10 +125,6 @@ jobs:
         run: |
           docker run --rm --network host mysql:5.7 bash -c "mysql -h 172.18.0.2 -u root -pzmsapi -e 'SHOW DATABASES;'"
 
-      - name: Debug Database Connection
-        run: |
-          docker run --rm --network host mysql:5.7 bash -c "mariadb -h 127.0.0.1 -u root -pzmsapi -e 'SHOW DATABASES;'"
-
       - name: Debug Network Information
         run: |
           echo "Inspecting Docker network..."
