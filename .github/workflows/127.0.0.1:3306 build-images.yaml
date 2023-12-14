@@ -126,43 +126,31 @@ jobs:
           echo "Waiting for MariaDB to be fully ready..."
           sleep 10  # Adjust the sleep time as necessary
       
-      - name: Set up Database and Run Unit Tests for zmsapi or zmsdb
-        if: matrix.module == 'zmsapi' || matrix.module == 'zmsdb'
-        run: |
-          echo "Setting up database and running PHPUnit tests for ${{ matrix.module }} module"
-          tag="${{ github.ref_name }}"
-          if [ "${{ github.ref_type }}" = "branch" ]; then
-            tag="branch-$tag"
-          fi
-          echo "Setup fixtures..."
-          mkdir -p /home/runner/work/eappointment/eappointment/data
-          cp -R /home/runner/work/eappointment/eappointment/${{ matrix.module }}/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
-          echo "Fixtures copied."
-          echo "Starting migrations, testdata import, and PHPUnit tests..."
-          docker run --rm --network host \
-            -v /home/runner/work/eappointment/eappointment:/workspace \
-            -v /home/runner/work/eappointment/eappointment/data:/var/www/html/data \
-            -e MYSQL_HOST=127.0.0.1 \
-            -e MYSQL_DATABASE=zmsbo \
-            -e MYSQL_USER=root \
-            -e MYSQL_ROOT_PASSWORD=password \
-            -e MYSQL_PORT=3306 \
-            "ghcr.io/it-at-m/eappointment/${{ matrix.module }}:$tag" \
-            /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/importTestData --commit && ./vendor/bin/phpunit"
-          echo "PHPUnit tests completed for ${{ matrix.module }}."
-      
-      - name: Run Unit Tests for other modules
-        if: matrix.module != 'zmsapi' && matrix.module != 'zmsdb'
+      - name: Set up Database and Run Unit Tests
         run: |
           tag="${{ github.ref_name }}"
           if [ "${{ github.ref_type }}" = "branch" ]; then
             tag="branch-$tag"
           fi
-          if [ -d "${{ matrix.module }}/tests" ]; then
+          if [ "${{ matrix.module }}" == "zmsapi" ] || [ "${{ matrix.module }}" == "zmsdb" ]; then
+            echo "Setting up database and running PHPUnit tests for ${{ matrix.module }} module"
+            mkdir -p /home/runner/work/eappointment/eappointment/data
+            cp -R /home/runner/work/eappointment/eappointment/${{ matrix.module }}/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
+            docker run --rm --network host \
+              -v /home/runner/work/eappointment/eappointment:/workspace \
+              -v /home/runner/work/eappointment/eappointment/data:/var/www/html/data \
+              -e MYSQL_HOST=172.18.0.2 \
+              -e MYSQL_DATABASE=zmsbo \
+              -e MYSQL_USER=root \
+              -e MYSQL_ROOT_PASSWORD=password \
+              -e MYSQL_PORT=3306 \
+              "ghcr.io/it-at-m/eappointment/${{ matrix.module }}:$tag" \
+              /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/importTestData --commit && ./vendor/bin/phpunit"
+          else
             echo "Running PHPUnit tests in ${{ matrix.module }}"
             docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
-          else
-            echo "No tests found in ${{ matrix.module }}"
+          fi
+
 
 
       - name: Cleanup Database after zmsapi tests
