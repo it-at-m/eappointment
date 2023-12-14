@@ -115,7 +115,7 @@ jobs:
               echo "Installing Composer dependencies for $module"
               (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
             done
-          ee
+          else
             echo "Installing Composer dependencies for ${{ matrix.module }}"
             (cd ${{ matrix.module }} && composer install --no-progress --prefer-dist --optimize-autoloader)
           fi
