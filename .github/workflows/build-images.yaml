@@ -152,7 +152,6 @@ jobs:
             ./vendor/bin/importTestData --commit
           echo "Migrations and testdata imported for ${{ matrix.module }}."
 
- 
       - name: Run Unit Tests
         run: |
           tag="${{ github.ref_name }}"
