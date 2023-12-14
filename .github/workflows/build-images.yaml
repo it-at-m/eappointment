@@ -165,7 +165,7 @@ jobs:
             -e MYSQL_HOST=127.0.0.1 \
             -e MYSQL_DATABASE=zmsbo \
             -e MYSQL_USER=root \
-            -e MYSQL_ROOT_PASSWORD=zmsapi \
+            -e MYSQL_ROOT_PASSWORD=password \
             -e MYSQL_PORT=3306 \
             "ghcr.io/it-at-m/eappointment/zmsapi:$tag" \
             ./vendor/bin/importTestData --commit
