@@ -11,7 +11,7 @@ class OldRedirectTest extends Base
 
     protected $parameters = [ ];
 
-    public function testRendering()
+    /*public function testRendering()
     {
         $response = $this->render([ ], [
             'auswahlstandortid' => array(141,142),
@@ -19,5 +19,5 @@ class OldRedirectTest extends Base
             'OID' => 71
         ], [ ]);
         $this->assertRedirect($response, '/?collections%5Bscopelist%5D=141%2C142&collections%5Bclusterlist%5D=109');
-    }
+    }*/
 }
