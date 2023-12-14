@@ -142,6 +142,10 @@ jobs:
           cat zmsdb/config.php
           cat zmsapi/config.php
 
+      - name: Wait for MariaDB to be ready
+        run: |
+          echo "Waiting for MariaDB to be fully ready..."
+          sleep 10  # Adjust the sleep time as necessary
   
       - name: Set up Database for zmsapi
         if: matrix.module == 'zmsapi'
