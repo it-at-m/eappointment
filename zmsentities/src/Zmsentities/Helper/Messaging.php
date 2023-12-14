@@ -195,23 +195,24 @@ class Messaging
 
     protected static function getTemplate($type, $status, ?Process $process = null)
     {
-        if ($process) {
-            $provider = $process->scope->provider;
-            $providerName = $provider->displayName;
-            $providerTemplateName = self::getProviderTemplateName($providerName);
-            $providerTemplate = 'custom/' . $type . '/' .  $status . '/' . $providerTemplateName . '.twig';
-
-            if (file_exists(TemplateFinder::getTemplatePath() . '/messaging/' . $providerTemplate)) {
-                return $providerTemplate;
-            }
-        }
-
         $template = null;
         if (Property::__keyExists($type, self::$templates)) {
             if (Property::__keyExists($status, self::$templates[$type])) {
                 $template = self::$templates[$type][$status];
             }
         }
+
+        if ($process) {
+            $provider = $process->scope->provider;
+            $providerName = $provider->displayName;
+            $providerTemplateName = self::getProviderTemplateName($providerName);
+            $providerTemplateFolder = 'custom/' . $providerTemplateName . '/';
+
+            if (file_exists(TemplateFinder::getTemplatePath() . '/messaging/' . $providerTemplateFolder . $template)) {
+                return $providerTemplateFolder . $template;
+            }
+        }
+
         return $template;
     }
 
