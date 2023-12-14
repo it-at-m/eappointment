@@ -149,7 +149,7 @@ jobs:
           echo "Setting up database for zmsapi module"
           # other setup commands...
           docker run --rm -v ${{ github.workspace }}:/workspace \
-              -e MYSQL_HOST=${{ env.MARIADB_IP }} \
+              -e MYSQL_HOST=${{ MARIADB_IP }} \
               -e MYSQL_DATABASE=zmsbo \
               -e MYSQL_USER=root \
               -e MYSQL_ROOT_PASSWORD=zmsapi \
