@@ -109,7 +109,7 @@ jobs:
         run: |
           if [[ ${{ matrix.module }} == "zmsapi" || ${{ matrix.module }} == "zmsdb" ]]; then
             echo "Installing Composer dependencies for all modules"
-            modules=('zmsadmin' 'zmsapi' 'zmscalldisplay' 'zmsmessaging' 'zmsstatistic' 'zmsdb' 'zmsentities')
+            modules=('zmsadmin' 'zmsapi' 'zmscalldisplay' 'zmsmessaging' 'zmsstatistic' 'zmsdb' 'zmsentities' 'zmsdldb' 'zmsentities' 'zmsslim')
             for module in "${modules[@]}"; do
               echo "Installing Composer dependencies for $module"
               (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
