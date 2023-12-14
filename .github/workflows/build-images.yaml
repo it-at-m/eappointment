@@ -168,7 +168,9 @@ jobs:
           if [ "${{ github.ref_type }}" = "branch" ]; then
             tag="branch-$tag"
           fi
+          echo "Setup fixtures..."
           mkdir -p /home/runner/work/eappointment/eappointment/data
+          cp -R /home/runner/work/eappointment/eappointment/zmsapi/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/         
           ln -sfn /home/runner/work/eappointment/eappointment/zmsapi/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
           docker run --rm --network host \
             -v /home/runner/work/eappointment/eappointment:/workspace \
