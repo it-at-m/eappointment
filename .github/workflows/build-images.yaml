@@ -82,8 +82,8 @@ jobs:
             php_version: "8.0"
           - module: zmsapi
             php_version: "8.0"            
-          #- module: zmscalldisplay
-            #php_version: "7.3"
+          - module: zmscalldisplay
+            php_version: "7.3"
           - module: zmsdb
           - module: zmsdldb
           - module: zmsentities
