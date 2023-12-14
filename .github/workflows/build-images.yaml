@@ -156,7 +156,9 @@ jobs:
           if [ "${{ github.ref_type }}" = "branch" ]; then
             tag="branch-$tag"
           fi
-          #ls -l /
+          echo "***************************"
+          ls -l /var/www/
+          echo "***************************"
           #docker exec ls -l /
           echo "Docker image to run: ghcr.io/it-at-m/eappointment/zmsapi:$tag"
           docker run --rm --network host -v /home/runner/work/eappointment/eappointment:/workspace \
