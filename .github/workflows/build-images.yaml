@@ -121,6 +121,14 @@ jobs:
         run: |
           docker run --rm --network host mysql:5.7 bash -c "mysql -h 127.0.0.1 -u root -pzmsapi -e 'SHOW DATABASES;'"
 
+      - name: Debug Database Connection
+        run: |
+          docker run --rm --network host mysql:5.7 bash -c "mysql -h 172.18.0.2 -u root -pzmsapi -e 'SHOW DATABASES;'"
+
+      - name: Debug Database Connection
+        run: |
+          docker run --rm --network host mysql:5.7 bash -c "mariadb -h 127.0.0.1 -u root -pzmsapi -e 'SHOW DATABASES;'"
+
       - name: Debug Network Information
         run: |
           echo "Inspecting Docker network..."
@@ -154,7 +162,7 @@ jobs:
           fi
           echo "Docker image to run: ghcr.io/it-at-m/eappointment/zmsapi:$tag"
           docker run --rm -v /home/runner/work/eappointment/eappointment:/workspace \
-            -e MYSQL_HOST=172.18.0.2 \
+            -e MYSQL_HOST=127.0.0.1 \
             -e MYSQL_DATABASE=zmsbo \
             -e MYSQL_USER=root \
             -e MYSQL_ROOT_PASSWORD=zmsapi \
