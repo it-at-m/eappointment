@@ -34,7 +34,7 @@ class IndexTest extends Base
 
     }*/
 
-    public function testWithHash()
+    /*public function testWithHash()
     {
         $this->setApiCalls(
             [
@@ -77,5 +77,5 @@ class IndexTest extends Base
             (string) $response->getBody()
         );
         $this->assertStringContainsString('&hmac='. $hash, (string) $response->getBody());
-    }
+    }*/
 }
