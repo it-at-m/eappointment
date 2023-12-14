@@ -148,11 +148,9 @@ jobs:
 
       - name: Prepare Fixture Data
         run: |
-          echo "Preparing fixture data..."
-          rm -rf /home/runner/work/eappointment/eappointment/data
-          ln -s /home/runner/work/eappointment/eappointment/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
-          # Alternatively, use cp command if symlinks are not suitable
-          # cp -R /home/runner/work/eappointment/eappointment/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
+          echo "Copying fixture data..."
+          mkdir -p /home/runner/work/eappointment/eappointment/data
+          cp -R /home/runner/work/eappointment/eappointment/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
 
        
       - name: Set up Database for zmsapi
