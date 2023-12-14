@@ -112,11 +112,6 @@ class Select
             $pdoOptions = array_merge([
                 Pdo::ATTR_TIMEOUT => 30, // Set the timeout to 30 seconds
             ], self::$pdoOptions);
-            error_log("***************************************");
-            error_log(self::$username);
-            error_log(self::$password);
-            error_log($dataSourceName);
-            error_log("***************************************");
             $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
             $pdo->exec('SET NAMES "UTF8";');
             //$timezone = date_default_timezone_get();
