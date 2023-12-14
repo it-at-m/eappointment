@@ -127,6 +127,18 @@ jobs:
           ls -l zmsapi
           cat zmsdb/config.php
           cat zmsapi/config.php
+
+      - name: Debug Network Information
+        run: |
+          echo "Inspecting Docker network..."
+          docker network ls
+          docker network inspect bridge
+  
+      - name: Debug Database Hostname
+        run: |
+          echo "Debugging database hostname..."
+          docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mariadb
+
   
       - name: Set up Database for zmsapi
         if: matrix.module == 'zmsapi'
