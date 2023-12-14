@@ -142,7 +142,7 @@ jobs:
             docker run --rm --network host \
               -v /home/runner/work/eappointment/eappointment:/workspace \
               -v /home/runner/work/eappointment/eappointment/data:/var/www/html/data \
-              -e MYSQL_HOST=127.0.0.1 \ #172.18.0.2
+              -e MYSQL_HOST=127.0.0.1 \
               -e MYSQL_DATABASE=zmsbo \
               -e MYSQL_USER=root \
               -e MYSQL_ROOT_PASSWORD=password \
@@ -153,12 +153,3 @@ jobs:
             echo "Running PHPUnit tests in ${{ matrix.module }}"
             docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
           fi
-
-
-
-      - name: Cleanup Database after zmsapi tests
-        if: matrix.module == 'zmsapi'
-        run: |
-          # Add commands to clean up the database after zmsapi tests
-          # Example: Drop tables or reset database
-          echo "Cleaning up database after zmsapi module tests"
