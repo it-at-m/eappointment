@@ -115,24 +115,24 @@ jobs:
           done
 
       - name: Wait for MariaDB to be ready
-        if: matrix.module == 'zmsapi'
+        if: matrix.module == 'zmsapi' || matrix.module == 'zmsdb'
         run: |
           echo "Waiting for MariaDB to be fully ready..."
           sleep 10  # Adjust the sleep time as necessary
-
-      - name: Set up Database for zmsapi
-        if: matrix.module == 'zmsapi'
+      
+      - name: Set up Database for current module
+        if: matrix.module == 'zmsapi' || matrix.module == 'zmsdb'
         run: |
-          echo "Setting up database for zmsapi module"
+          echo "Setting up database for ${{ matrix.module }} module"
           tag="${{ github.ref_name }}"
           if [ "${{ github.ref_type }}" = "branch" ]; then
             tag="branch-$tag"
           fi
           echo "Setup fixtures..."
           mkdir -p /home/runner/work/eappointment/eappointment/data
-          cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/         
+          cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
           ln -sfn /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
-          echo "Fixtures coppied."
+          echo "Fixtures copied."
           echo "Starting migrations and testdata import..."
           docker run --rm --network host \
             -v /home/runner/work/eappointment/eappointment:/workspace \
@@ -142,9 +142,10 @@ jobs:
             -e MYSQL_USER=root \
             -e MYSQL_ROOT_PASSWORD=password \
             -e MYSQL_PORT=3306 \
-            "ghcr.io/it-at-m/eappointment/zmsapi:$tag" \
+            "ghcr.io/it-at-m/eappointment/${{ matrix.module }}:$tag" \
             ./vendor/bin/importTestData --commit
-            echo "Starting migrations and testdata imported."
+          echo "Migrations and testdata imported for ${{ matrix.module }}."
+
  
       - name: Run Unit Tests
         run: |
