@@ -148,9 +148,17 @@ jobs:
 
       - name: Prepare Fixture Data
         run: |
-          echo "Copying fixture data..."
-          mkdir -p /home/runner/work/eappointment/eappointment/data
-          cp -R /home/runner/work/eappointment/eappointment/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
+          echo "Preparing fixture data..."
+          rm -rf /home/runner/work/eappointment/eappointment/data
+          ls -l /home/runner/work/eappointment/eappointment/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures
+          ln -s /home/runner/work/eappointment/eappointment/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
+          # Alternatively, use cp command if symlinks are not suitable
+
+          
+
+          cp -R /home/runner/work/eappointment/eappointment/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures /var/www/html/data
+          # cp -R /home/runner/work/eappointment/eappointment/vendor/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
+
           echo "***************************"
           ls -l /var/www/html
           echo "***************************"          
