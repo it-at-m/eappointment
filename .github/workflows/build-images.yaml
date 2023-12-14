@@ -62,10 +62,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     services:
-      #mariadb:
-        #image: mariadb:10.1
-      mysql:
-        image: mysql:5.7
+      mariadb:
+        image: mariadb:10.1
         env:
           MYSQL_ROOT_PASSWORD: zmsapi
           MYSQL_DATABASE: zmsbo
