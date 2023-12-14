@@ -120,16 +120,6 @@ jobs:
         run: |
           docker run --rm --network host mysql:5.7 bash -c "mysql -h 127.0.0.1 -u root -pzmsapi -e 'SHOW DATABASES;'"
 
-      - name: Retrieve MariaDB IP Address
-        run: |
-          echo "Retrieving MariaDB service IP address..."
-          MARIADB_CONTAINER_ID=$(docker ps --filter "name=^/${{ job.services.mariadb.id }}$" --format "{{.ID}}")
-          echo "MariaDB Container ID: $MARIADB_CONTAINER_ID"
-          MARIADB_IP_ADDRESS=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $MARIADB_CONTAINER_ID)
-          echo "MariaDB IP Address: $MARIADB_IP_ADDRESS"
-          echo "MARIADB_IP_ADDRESS=$MARIADB_IP_ADDRESS" >> $GITHUB_ENV
-
-
       - name: List dirs
         run: |
           ls -l
