@@ -116,17 +116,10 @@ jobs:
       - name: List MySQL Databases (Schemas)
         run: |
           mysql -h 127.0.0.1 -u root -pzmsapi -e "SHOW DATABASES;"
+
       - name: Debug Database Connection
         run: |
           docker run --rm --network host mysql:5.7 bash -c "mysql -h 127.0.0.1 -u root -pzmsapi -e 'SHOW DATABASES;'"
-
-      - name: List dirs
-        run: |
-          ls -l
-          ls -l zmsdb
-          ls -l zmsapi
-          cat zmsdb/config.php
-          cat zmsapi/config.php
 
       - name: Debug Network Information
         run: |
@@ -137,7 +130,17 @@ jobs:
       - name: Debug Database Hostname
         run: |
           echo "Debugging database hostname..."
-          docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mysql
+          CONTAINER_ID=$(docker ps -qf "ancestor=mariadb:10.1")
+          echo "Container ID: $CONTAINER_ID"
+          docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER_ID
+
+      - name: List dirs
+        run: |
+          ls -l
+          ls -l zmsdb
+          ls -l zmsapi
+          cat zmsdb/config.php
+          cat zmsapi/config.php
 
   
       - name: Set up Database for zmsapi
