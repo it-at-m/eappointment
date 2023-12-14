@@ -93,7 +93,7 @@ jobs:
           - module: zmsslim
           - module: zmsstatistic
             php_version: "8.0"
-      #max-parallel: 1  # Ensures jobs run sequentially
+      max-parallel: 1  # Ensures jobs run sequentially
   
     steps:
       - name: Checkout GitHub Action
@@ -143,7 +143,7 @@ jobs:
           docker run --rm --network host \
             -v /home/runner/work/eappointment/eappointment:/workspace \
             -v /home/runner/work/eappointment/eappointment/data:/var/www/html/data \
-            -e MYSQL_HOST=172.18.0.2 \
+            -e MYSQL_HOST=127.0.0.1 \
             -e MYSQL_DATABASE=zmsbo \
             -e MYSQL_USER=root \
             -e MYSQL_ROOT_PASSWORD=password \
