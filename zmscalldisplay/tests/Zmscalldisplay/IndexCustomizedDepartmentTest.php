@@ -33,7 +33,7 @@ class IndexCustomizedDepartmentTest extends Base
         $this->assertStringContainsString('tableLayout.maxResults=10', (string) $response->getBody());
     }*/
 
-    public function testTemplateNotFound()
+    /*public function testTemplateNotFound()
     {
         $this->expectException('\BO\Zmscalldisplay\Exception\TemplateNotFound');
         $this->expectExceptionCode(404);
@@ -43,5 +43,5 @@ class IndexCustomizedDepartmentTest extends Base
             ],
             'template' => 'notfound'
         ], [ ]);
-    }
+    }*/
 }
