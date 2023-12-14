@@ -157,7 +157,7 @@ jobs:
             tag="branch-$tag"
           fi
           echo "***************************"
-          ls -l /var/www/
+          ls -l /var/www/html
           echo "***************************"
           #docker exec ls -l /
           echo "Docker image to run: ghcr.io/it-at-m/eappointment/zmsapi:$tag"
