@@ -147,7 +147,7 @@ jobs:
               -e MYSQL_ROOT_PASSWORD=password \
               -e MYSQL_PORT=3306 \
               "ghcr.io/it-at-m/eappointment/${{ matrix.module }}:$tag" \
-              /bin/bash -c "./vendor/bin/importTestData --commit && cd /workspace/${{ matrix.module }} && sleep 30 && ./vendor/bin/phpunit"
+              /bin/bash -c "./vendor/bin/importTestData --commit && cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
           else
             echo "Running PHPUnit tests in ${{ matrix.module }}"
             docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
