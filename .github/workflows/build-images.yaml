@@ -106,13 +106,19 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
           coverage: xdebug
           
-      - name: Install Composer Dependencies for All Modules
+      - name: Install Composer Dependencies
         run: |
-          modules=('zmsadmin' 'zmsapi' 'zmscalldisplay' 'zmsmessaging' 'zmsstatistic' 'zmsdb' 'zmsentities')
-          for module in "${modules[@]}"; do
-            echo "Installing Composer dependencies for $module"
-            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
-          done
+          if [[ ${{ matrix.module }} == "zmsapi" || ${{ matrix.module }} == "zmsdb" ]]; then
+            echo "Installing Composer dependencies for all modules"
+            modules=('zmsadmin' 'zmsapi' 'zmscalldisplay' 'zmsmessaging' 'zmsstatistic' 'zmsdb' 'zmsentities')
+            for module in "${modules[@]}"; do
+              echo "Installing Composer dependencies for $module"
+              (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+            done
+          else
+            echo "Installing Composer dependencies for ${{ matrix.module }}"
+            (cd ${{ matrix.module }} && composer install --no-progress --prefer-dist --optimize-autoloader)
+          fi
 
       - name: Wait for MariaDB to be ready
         if: matrix.module == 'zmsapi' || matrix.module == 'zmsdb'
