@@ -154,8 +154,3 @@ jobs:
             echo "Running PHPUnit tests in ${{ matrix.module }}"
             docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
           fi
-
-
-
-      
-
