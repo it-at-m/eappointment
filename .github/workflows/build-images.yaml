@@ -116,10 +116,6 @@ jobs:
         include:
           - module: zmsapi
             php_version: "8.0"
-          - module: zmsdb
-          - module: zmsdldb
-          - module: zmsentities
-          - module: zmsslim
       max-parallel: 1  # Ensures jobs run sequentially
     steps:
       - name: Checkout GitHub Action
@@ -146,16 +142,22 @@ jobs:
           if [ "${{ github.ref_type }}" = "branch" ]; then
             tag="branch-$tag"
           fi
+          echo "Setup fixtures..."
+          mkdir -p /home/runner/work/eappointment/eappointment/data
+          cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
+          ln -sfn /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
+          echo "Fixtures copied."
+          echo "Starting migrations and testdata import..."
           docker run --rm --network host \
-            -v /home/runner/work/myrepo/myrepo:/workspace \
-            -v /home/runner/work/myrepo/myrepo/data:/var/www/html/data \
+            -v /home/runner/work/eappointment/eappointment:/workspace \
+            -v /home/runner/work/eappointment/eappointment/data:/var/www/html/data \
             -e MYSQL_HOST=127.0.0.1 \
             -e MYSQL_DATABASE=zmsbo \
             -e MYSQL_USER=root \
-            -e MYSQL_ROOT_PASSWORD=zmsapi \
+            -e MYSQL_ROOT_PASSWORD=password \
             -e MYSQL_PORT=3306 \
-            "ghcr.io/myorg/myrepo:$tag" \
-            /bin/bash -c "./vendor/bin/importTestData --commit && cd /workspace/zmsapi && ./vendor/bin/phpunit"
+            "ghcr.io/it-at-m/eappointment/${{ matrix.module }}:$tag" \
+            /bin/bash -c "./vendor/bin/importTestData --commit && cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
 
   zmsmessaging-test:
     needs: build
