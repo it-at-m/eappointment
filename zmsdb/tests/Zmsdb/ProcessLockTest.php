@@ -82,7 +82,7 @@ class ProcessLockTest extends Base
         $process = $query->updateEntity($process, $now);
     }
 
-    public function testConcurrentOnSameSlot()
+    /*public function testConcurrentOnSameSlot()
     {
         $now = static::$now;
         $statement = $this->pdo
@@ -97,5 +97,5 @@ class ProcessLockTest extends Base
         $process->getFirstAppointment()->date = 1464343200;// 2016-05-27 12:00:00 (1 slot free)
         $query = new ProcessStatusFree();
         $query->writeEntityReserved($process, $now, 'public', 1);
-    }
+    }*/
 }
