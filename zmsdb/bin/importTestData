@@ -6,7 +6,6 @@ ini_set('memory_limit', '2028M');
 
 function performDataImport($argv) {
     $fixtures = realpath(__DIR__ . '/../tests/Zmsdb/fixtures/');
-    $fixtures =  "/home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures";
     $migrations = realpath(__DIR__ . '/../migrations/');
     error_log("**********************");
     error_log($fixtures);
