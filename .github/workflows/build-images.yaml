@@ -67,6 +67,8 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: zmsapi
           MYSQL_DATABASE: zmsbo
+          MYSQL_CHARACTER_SET: utf8mb4
+          MYSQL_COLLATION: utf8mb4_unicode_ci          
         ports:
           - 3306:3306
         options: >-
