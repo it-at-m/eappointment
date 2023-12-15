@@ -2,7 +2,7 @@
 <?php
 require_once(__DIR__."/script_bootstrap.php");
 
-ini_set('memory_limit', '2028M');
+ini_set('memory_limit', '1024M');
 
 function performDataImport($argv) {
     $fixtures = realpath(__DIR__ . '/../tests/Zmsdb/fixtures/');
@@ -23,7 +23,7 @@ function performDataImport($argv) {
 
 if (preg_grep('/--commit/', $argv)) {
     $attempt = 0;
-    $maxAttempts = 1;
+    $maxAttempts = 10;
 
     while ($attempt < $maxAttempts) {
         try {
