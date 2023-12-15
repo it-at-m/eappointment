@@ -240,7 +240,7 @@ jobs:
           MYSQL_PORT: 3306
         run: |
           ./zmsdb/bin/importTestData --commit
-          /bin/bash -c "cd /workspace/zmsdb && ./vendor/bin/phpunit"
+          /bin/bash -c "cd ./zmsdb && ./vendor/bin/phpunit"
 
 
   zmsentities-test:
@@ -267,7 +267,7 @@ jobs:
 
       - name: Import Test Data and Run Unit Tests for zmsdb
         run: |
-          /bin/bash -c "cd /workspace/zmsentities && ./vendor/bin/phpunit"
+          /bin/bash -c "cd ./zmsentities && ./vendor/bin/phpunit"
 
 
 
