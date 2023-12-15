@@ -81,6 +81,10 @@ jobs:
         include:
           - module: zmsapi
             php_version: "8.0"
+          - module: zmsdb
+          - module: zmsdldb
+          - module: zmsentities
+          - module: zmsslim
       max-parallel: 1  # Ensures jobs run sequentially
     steps:
       - name: Checkout GitHub Action
@@ -95,7 +99,7 @@ jobs:
 
       - name: Install Composer Dependencies
         run: |
-            modules=('zmsadmin' 'zmsapi' 'zmscalldisplay' 'zmsmessaging' 'zmsstatistic' 'zmsdb' 'zmsentities' 'zmsdldb' 'zmsentities' 'zmsslim')
+            modules=('zmsapi' 'zmsdb' 'zmsentities' 'zmsdldb' 'zmsslim')
             for module in "${modules[@]}"; do
               echo "Installing Composer dependencies for $module"
               (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
