@@ -2,7 +2,7 @@
 <?php
 require_once(__DIR__."/script_bootstrap.php");
 
-ini_set('memory_limit', '1024M');
+ini_set('memory_limit', '2028M');
 
 if (preg_grep('/--commit/', $argv)) {
     $fixtures = realpath(__DIR__ . '/../tests/Zmsdb/fixtures/');
