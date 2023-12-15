@@ -118,7 +118,7 @@ jobs:
 
       - name: Install Composer Dependencies
         run: |
-          modules=('zmsapi' 'zmsdb' 'zmsdldb')
+          modules=('zmsapi' 'zmsdb')
           for module in "${modules[@]}"; do
             echo "Installing Composer dependencies for $module"
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
@@ -133,7 +133,9 @@ jobs:
           MYSQL_PORT: 3306
         run: |
           echo "Setup fixtures..."
-          ln -sfn ./zmsdb/tests/Zmsdb/fixtures data
+          mkdir -p /home/runner/work/eappointment/eappointment/data
+          cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
+          ln -sfn /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
           ./zmsdb/bin/importTestData --commit
           /bin/bash -c "cd ./zmsapi && ./vendor/bin/phpunit"
 
@@ -224,7 +226,7 @@ jobs:
 
       - name: Install Composer Dependencies
         run: |
-          modules=('zmsdb' 'zmsdldb')
+          modules=('zmsdb')
           for module in "${modules[@]}"; do
             echo "Installing Composer dependencies for $module"
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
@@ -238,7 +240,9 @@ jobs:
           MYSQL_ROOT_PASSWORD: zmsdb
           MYSQL_PORT: 3306
         run: |
-          ln -sfn ./zmsdb/tests/Zmsdb/fixtures data
+          mkdir -p /home/runner/work/eappointment/eappointment/data
+          cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
+          ln -sfn /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
           ./zmsdb/bin/importTestData --commit
           /bin/bash -c "cd ./zmsdb && ./vendor/bin/phpunit"
 
