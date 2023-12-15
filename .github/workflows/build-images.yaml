@@ -164,6 +164,35 @@ jobs:
         run: |
           /bin/bash -c "cd ./zmscalldisplay && ./vendor/bin/phpunit"
 
+
+  zmsclient-test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsclient')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+
+      - name: Run Unit Tests
+        run: |
+          /bin/bash -c "cd ./zmsclient && ./vendor/bin/phpunit"
+
+
+
   zmsdb-test:
     needs: build
     runs-on: ubuntu-latest
@@ -212,6 +241,33 @@ jobs:
           ln -sfn ./zmsdb/tests/Zmsdb/fixtures data
           ./zmsdb/bin/importTestData --commit
           /bin/bash -c "cd ./zmsdb && ./vendor/bin/phpunit"
+
+
+  zmsdldb-test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsdldb')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+
+      - name: Run Unit Tests
+        run: |
+          /bin/bash -c "cd ./zmsdldb && ./vendor/bin/phpunit"
 
 
   zmsentities-test:
@@ -266,6 +322,34 @@ jobs:
       - name: Run Unit Tests
         run: |
           /bin/bash -c "cd ./zmsmessaging && ./vendor/bin/phpunit"
+
+
+  zmsslim-test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsslim')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+
+      - name: Run Unit Tests
+        run: |
+          /bin/bash -c "cd ./zmsslim && ./vendor/bin/phpunit"
+
           
   zmsstatistic-test:
     needs: build
