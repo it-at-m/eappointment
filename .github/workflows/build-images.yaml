@@ -225,7 +225,7 @@ jobs:
 
       - name: Install Composer Dependencies
         run: |
-          modules=('zmsapi' 'zmsdb' 'zmsentities' 'zmsdldb' 'zmsslim')
+          modules=('zmsdb' 'zmsentities' 'zmsdldb' 'zmsslim')
           for module in "${modules[@]}"; do
             echo "Installing Composer dependencies for $module"
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
@@ -243,7 +243,31 @@ jobs:
           ./zmsdb/vendor/bin/phpunit
 
 
+  zmsentities-test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
 
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsdb' 'zmsentities' 'zmsdldb' 'zmsslim')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+
+      - name: Import Test Data and Run Unit Tests for zmsdb
+        run: |
+          ./zmsdb/vendor/bin/phpunit
 
 
 
