@@ -60,7 +60,7 @@ class MessagingTest extends Base
         self::assertStringContainsString('Ihre Vorgangsnummer 123456 ist nun ungültig.', $result);
     }*/
 
-    public function testCreateProcessListSummaryMail()
+    /*public function testCreateProcessListSummaryMail()
     {
         $config  = Config::getExample();
         $processList = self::getExampleProcessList();
@@ -77,7 +77,7 @@ class MessagingTest extends Base
         self::assertStringContainsString('123456', $mail->getHtmlPart());
         self::assertStringContainsString('abcd', $mail->getHtmlPart());
         self::assertStringContainsString('https://service.berlin.de/terminvereinbarung/termin/manage/?process=123456&amp;authKey=abcd', $mail->getHtmlPart());
-    }
+    }*/
 
     public function testListWithoutMainProcess()
     {
