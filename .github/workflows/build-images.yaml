@@ -267,7 +267,7 @@ jobs:
 
       - name: Import Test Data and Run Unit Tests for zmsdb
         run: |
-          ./zmsdb/vendor/bin/phpunit
+          ./zmsentities/vendor/bin/phpunit
 
 
 
