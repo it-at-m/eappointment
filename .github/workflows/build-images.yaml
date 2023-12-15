@@ -124,20 +124,24 @@ jobs:
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
 
-      - name: Import Test Data and Run Unit Tests for zmsapi
+      - name: Set up Fixtures
+        run: |
+          echo "Setup fixtures..."
+          mkdir -p /home/runner/work/eappointment/eappointment/data
+          cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
+          ln -sfn /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
+
+      - name: Import Test Data
         env:
           MYSQL_HOST: 127.0.0.1
           MYSQL_DATABASE: zmsbo
           MYSQL_USER: root
           MYSQL_ROOT_PASSWORD: zmsapi
           MYSQL_PORT: 3306
-        run: |
-          echo "Setup fixtures..."
-          mkdir -p /home/runner/work/eappointment/eappointment/data
-          cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
-          ln -sfn /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
-          ./zmsdb/bin/importTestData --commit
-          /bin/bash -c "cd ./zmsapi && ./vendor/bin/phpunit"
+        run: ./zmsdb/bin/importTestData --commit
+
+      - name: Run Unit Tests for zmsapi
+        run: cd ./zmsapi && ./vendor/bin/phpunit
 
 
   zmscalldisplay-test:
