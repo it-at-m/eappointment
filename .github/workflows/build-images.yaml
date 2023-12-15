@@ -16,6 +16,8 @@ jobs:
             php_version: "8.0"
           - module: zmsapi
             php_version: "8.0"
+          - module: zmsdb
+            php_version: "8.0"
           - module: zmscalldisplay
             php_version: "8.0"
           - module: zmsmessaging
@@ -23,6 +25,7 @@ jobs:
           - module: zmsstatistic
             php_version: "8.0"
 
+            
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
