@@ -13,11 +13,25 @@ if (preg_grep('/--commit/', $argv)) {
     $importer = new \BO\Zmsdb\Source\Dldb();
     $importer->startImport(true);
     \BO\Zmsdb\Cli\Db::startExecuteSqlFile($fixtures . '/mysql_mandantory_unittests_data.sql.gz');
-    sleep(10);
     if (! preg_grep('#^--withoutcalculation$#', $argv)) {
         $calculator = new \BO\Zmsdb\Helper\CalculateSlots(true);
-        $calculator->writeCalculations(new \DateTimeImmutable("2016-01-01"), 3600);
+        
+        $maxAttempts = 10;
+        $attempt = 0;
+    
+        while ($attempt < $maxAttempts) {
+            try {
+                $calculator->writeCalculations(new \DateTimeImmutable("2016-01-01"), 3600);
+                break; // Break out of the loop if successful
+            } catch (Exception $e) {
+                $attempt++;
+                if ($attempt >= $maxAttempts) {
+                    throw $e; // Re-throw the exception if max attempts are reached
+                }
+            }
+        }
     }
+
 } else {
     $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
     $username = \BO\Zmsdb\Connection\Select::$username;
