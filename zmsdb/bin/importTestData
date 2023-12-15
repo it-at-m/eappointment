@@ -21,7 +21,7 @@ if (preg_grep('/--commit/', $argv)) {
     
         while ($attempt < $maxAttempts) {
             try {
-                $calculator->writeCalculations(new \DateTimeImmutable("2016-01-01"), 3600);
+                $calculator->writeCalculations(new \DateTimeImmutable("2016-04-01"), 3600);
                 break; // Break out of the loop if successful
             } catch (Exception $e) {
                 $attempt++;
