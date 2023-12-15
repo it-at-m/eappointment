@@ -20,9 +20,6 @@ class Dldb extends \BO\Zmsdb\Base
 
     public function startImport($verbose = true)
     {
-        error_log("-----------------------------------------");
-        error_log($importPath);
-        error_log("-----------------------------------------");
         if (!static::$importPath) {
             throw new \Exception('No data path given');
         }
