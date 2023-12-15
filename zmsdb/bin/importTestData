@@ -16,7 +16,7 @@ if (preg_grep('/--commit/', $argv)) {
     sleep(10);
     if (! preg_grep('#^--withoutcalculation$#', $argv)) {
         $calculator = new \BO\Zmsdb\Helper\CalculateSlots(true);
-        $calculator->writeCalculations(new \DateTimeImmutable("2016-01-01"), false);
+        $calculator->writeCalculations(new \DateTimeImmutable("2016-01-01"), 3600);
     }
 } else {
     $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
