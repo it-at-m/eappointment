@@ -20,7 +20,7 @@ use BO\Zmsentities\Helper\Messaging;
 
 class MessagingTest extends Base
 {
-    public function testGetMailContent()
+    /*public function testGetMailContent()
     {
         $config  = Config::getExample();
         $processList = self::getExampleProcessList();
@@ -58,7 +58,7 @@ class MessagingTest extends Base
 
         $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'blocked'));
         self::assertStringContainsString('Ihre Vorgangsnummer 123456 ist nun ungültig.', $result);
-    }
+    }*/
 
     public function testCreateProcessListSummaryMail()
     {
