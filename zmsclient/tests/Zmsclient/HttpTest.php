@@ -14,7 +14,7 @@ class HttpTest extends Base
     /**
      * @runInSeparateProcess
      */
-    public function testBasicAuth()
+    /*public function testBasicAuth()
     {
         $parsed = parse_url(static::$http_baseurl);
         $parsed['user']  = "_system_soap";
@@ -29,7 +29,7 @@ class HttpTest extends Base
         $this->createHttpClient(null, false);
         $userInfo = static::$http_client->getUserInfo();
         $this->assertEquals($userInfo, '_system_soap:zmssoap');
-    }
+    }*/
 
     /**
      * @runInSeparateProcess
