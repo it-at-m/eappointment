@@ -137,7 +137,7 @@ jobs:
           cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
           ln -sfn /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
           cd ./zmsapi
-          /bin/bash -c "./zmsdb/bin/importTestData --commit && ./vendor/bin/phpunit"
+          /bin/bash -c "/home/runner/work/eappointment/eappointment/zmsdb/bin/importTestData --commit && ./vendor/bin/phpunit"
 
 
   zmscalldisplay-test:
@@ -244,7 +244,7 @@ jobs:
           cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
           ln -sfn /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
           cd ./zmsdb
-          /bin/bash -c "./zmsdb/bin/importTestData --commit && ./vendor/bin/phpunit"
+          /bin/bash -c "/home/runner/work/eappointment/eappointment/zmsdb/bin/importTestData --commit && ./vendor/bin/phpunit"
 
 
   zmsdldb-test:
