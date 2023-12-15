@@ -15,6 +15,9 @@ class Dldb extends \BO\Zmsdb\Base
     {
         $dir = dirname(__FILE__);
         $importPath = realpath($dir.'/../../../tests/Zmsdb/fixtures/');
+        error_log("-----------------------------------------");
+        error_log($importPath);
+        error_log("-----------------------------------------");
         return $importPath;
     }
 
