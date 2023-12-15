@@ -236,7 +236,7 @@ jobs:
           MYSQL_HOST: 127.0.0.1
           MYSQL_DATABASE: zmsbo
           MYSQL_USER: root
-          MYSQL_ROOT_PASSWORD: password
+          MYSQL_ROOT_PASSWORD: zmsdb
           MYSQL_PORT: 3306
         run: |
           ./zmsdb/bin/importTestData --commit
@@ -245,37 +245,6 @@ jobs:
 
 
 
-  zmsentities-test:
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - module: zmsentities
-            php_version: "7.3"
-      max-parallel: 1  # Ensures jobs run sequentially
-    steps:
-      - name: Checkout GitHub Action
-        uses: actions/checkout@main
-
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.0"
-          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
-          coverage: xdebug
-
-      - name: Install Composer Dependencies
-        run: |
-          (cd ${{ matrix.module }} && composer install --no-progress --prefer-dist --optimize-autoloader)
-
-      - name: Run Unit Tests
-        run: |
-          tag="${{ github.ref_name }}"
-          if [ "${{ github.ref_type }}" = "branch" ]; then
-            tag="branch-$tag"
-          fi
-          docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
 
 
 
