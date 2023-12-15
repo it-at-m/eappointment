@@ -228,14 +228,15 @@ jobs:
 
 
 
-  zmsentities-test:
+
+  zmscalldisplay-test:
     needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
-          - module: zmsentities
-            php_version: "7.3"
+          - module: zmscalldisplay
+            php_version: "8.0"
       max-parallel: 1  # Ensures jobs run sequentially
     steps:
       - name: Checkout GitHub Action
@@ -259,8 +260,6 @@ jobs:
             tag="branch-$tag"
           fi
           docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
-
-
 
 
 
