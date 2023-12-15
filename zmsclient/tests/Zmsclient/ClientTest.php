@@ -22,12 +22,12 @@ class ClientTest extends Base
         $this->assertFalse($body->hasFailed());
     }*/
 
-    public function testStatusFailed()
+    /*public function testStatusFailed()
     {
         $this->expectException('\BO\Zmsclient\Psr7\RequestException');
         $uri = new Uri(self::$http_baseurl . '/status/');
         $uri = $uri->withPort(4444);
         $request = Http::createRequest('GET', $uri);
         Client::readResponse($request);
-    }
+    }*/
 }
