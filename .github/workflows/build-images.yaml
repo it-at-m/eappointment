@@ -132,6 +132,8 @@ jobs:
           MYSQL_ROOT_PASSWORD: zmsapi
           MYSQL_PORT: 3306
         run: |
+          echo "Setup fixtures..."
+          - ln -sfn ./zmsdb/tests/Zmsdb/fixtures data
           ./zmsdb/bin/importTestData --commit
           /bin/bash -c "cd ./zmsapi && ./vendor/bin/phpunit"
 
