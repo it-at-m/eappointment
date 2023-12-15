@@ -7,7 +7,9 @@ ini_set('memory_limit', '2028M');
 function performDataImport($argv) {
     $fixtures = realpath(__DIR__ . '/../tests/Zmsdb/fixtures/');
     $migrations = realpath(__DIR__ . '/../migrations/');
-    
+    error_log("**********************");
+    error_log($fixtures);
+    error_log("**********************");
     \BO\Zmsdb\Cli\Db::startTestDataImport($fixtures);
     \BO\Zmsdb\Cli\Db::startMigrations($migrations);
     \BO\Zmsdb\Cli\Db::startConfigDataImport();
@@ -17,14 +19,14 @@ function performDataImport($argv) {
     
     if (! preg_grep('#^--withoutcalculation$#', $argv)) {
         $calculator = new \BO\Zmsdb\Helper\CalculateSlots(true);
-        sleep(10);
+        sleep(1);
         $calculator->writeCalculations(new \DateTimeImmutable("2016-04-01"), 3600);
     }
 }
 
 if (preg_grep('/--commit/', $argv)) {
     $attempt = 0;
-    $maxAttempts = 10;
+    $maxAttempts = 1;
 
     while ($attempt < $maxAttempts) {
         try {
