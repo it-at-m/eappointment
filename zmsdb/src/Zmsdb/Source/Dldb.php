@@ -15,14 +15,14 @@ class Dldb extends \BO\Zmsdb\Base
     {
         $dir = dirname(__FILE__);
         $importPath = realpath($dir.'/../../../tests/Zmsdb/fixtures/');
-        error_log("-----------------------------------------");
-        error_log($importPath);
-        error_log("-----------------------------------------");
         return $importPath;
     }
 
     public function startImport($verbose = true)
     {
+        error_log("-----------------------------------------");
+        error_log($importPath);
+        error_log("-----------------------------------------");
         if (!static::$importPath) {
             throw new \Exception('No data path given');
         }
