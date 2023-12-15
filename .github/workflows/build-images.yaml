@@ -58,6 +58,41 @@ jobs:
             --build-arg "PHP_VERSION=${{ matrix.php_version }}"
           docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
 
+
+  zmsadmin-test:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - module: zmsadmin
+            php_version: "8.0"
+      max-parallel: 1  # Ensures jobs run sequentially
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          (cd ${{ matrix.module }} && composer install --no-progress --prefer-dist --optimize-autoloader)
+
+      - name: Run Unit Tests
+        run: |
+          tag="${{ github.ref_name }}"
+          if [ "${{ github.ref_type }}" = "branch" ]; then
+            tag="branch-$tag"
+          fi
+          docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
+
+
+
   zmsapi-test:
     needs: build
     runs-on: ubuntu-latest
@@ -122,13 +157,13 @@ jobs:
             "ghcr.io/myorg/myrepo:$tag" \
             /bin/bash -c "./vendor/bin/importTestData --commit && cd /workspace/zmsapi && ./vendor/bin/phpunit"
 
-  zmsadmin-test:
+  zmsmessaging-test:
     needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
-          - module: zmsadmin
+          - module: zmsmessaging
             php_version: "8.0"
       max-parallel: 1  # Ensures jobs run sequentially
     steps:
@@ -153,8 +188,6 @@ jobs:
             tag="branch-$tag"
           fi
           docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
-
-
 
   zmsstatistic-test:
     needs: build
@@ -187,7 +220,6 @@ jobs:
             tag="branch-$tag"
           fi
           docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" /bin/bash -c "cd /workspace/${{ matrix.module }} && ./vendor/bin/phpunit"
-
 
 
 
