@@ -118,7 +118,7 @@ jobs:
 
       - name: Install Composer Dependencies
         run: |
-          modules=('zmsapi' 'zmsdb')
+          modules=('zmsapi' 'zmsdb' 'zmsdldb')
           for module in "${modules[@]}"; do
             echo "Installing Composer dependencies for $module"
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
@@ -224,7 +224,7 @@ jobs:
 
       - name: Install Composer Dependencies
         run: |
-          modules=('zmsdb')
+          modules=('zmsdb' 'zmsdldb')
           for module in "${modules[@]}"; do
             echo "Installing Composer dependencies for $module"
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
