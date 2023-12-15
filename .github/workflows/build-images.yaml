@@ -135,7 +135,31 @@ jobs:
 
 
 
+  zmsstatistic-test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
 
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          (cd zmsstatistic && composer install --no-progress --prefer-dist --optimize-autoloader)
+
+      - name: Run Unit Tests
+        run: |
+          tag="${{ github.ref_name }}"
+          if [ "${{ github.ref_type }}" = "branch" ]; then
+            tag="branch-$tag"
+          fi
+          docker run --rm -v ${{ github.workspace }}:/workspace "ghcr.io/myorg/myrepo:$tag" /bin/bash -c "cd /workspace/zmsstatistic && ./vendor/bin/phpunit"
 
 
 
