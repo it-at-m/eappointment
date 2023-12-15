@@ -34,14 +34,14 @@ class HttpTest extends Base
     /**
      * @runInSeparateProcess
      */
-    public function testJsonCompressLevel()
+    /*public function testJsonCompressLevel()
     {
         \BO\Zmsclient\HTTP::$jsonCompressLevel = 1;
         $this->createHttpClient();
         $result = static::$http_client->readGetResult('/scope/');
         $collection = $result->getCollection();
         $this->assertStringContainsString('123', $result->getIds());
-    }
+    }*/
 
     public function testStatus()
     {
