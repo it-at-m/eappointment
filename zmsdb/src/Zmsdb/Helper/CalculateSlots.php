@@ -144,7 +144,7 @@ class CalculateSlots
         }
         if (count($updatedList)) {
             $this->writePostProcessingByScope($scope, $now);
-            \BO\Zmsdb\Connection\Select::writeCommit();
+            \BO\Zmsdb\Connection\Select::writeCommitWithStartLock();
             $this->readLastRun();
             return true;
         }
