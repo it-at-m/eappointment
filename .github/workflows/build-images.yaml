@@ -136,8 +136,10 @@ jobs:
           mkdir -p /home/runner/work/eappointment/eappointment/data
           cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
           ln -sfn /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
+          cd /home/runner/work/eappointment/eappointment/zmsdb
+          /bin/bash -c "/home/runner/work/eappointment/eappointment/zmsdb/bin/importTestData --commit"
           cd /home/runner/work/eappointment/eappointment/zmsapi
-          /bin/bash -c "/home/runner/work/eappointment/eappointment/zmsdb/bin/importTestData --commit && ./vendor/bin/phpunit"
+          /bin/bash -c "./vendor/bin/phpunit"
 
 
   zmscalldisplay-test:
