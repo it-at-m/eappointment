@@ -17,6 +17,7 @@ function performDataImport($argv) {
     
     if (! preg_grep('#^--withoutcalculation$#', $argv)) {
         $calculator = new \BO\Zmsdb\Helper\CalculateSlots(true);
+        sleep(10);
         $calculator->writeCalculations(new \DateTimeImmutable("2016-04-01"), 3600);
     }
 }
