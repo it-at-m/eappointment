@@ -7,9 +7,6 @@ ini_set('memory_limit', '2028M');
 function performDataImport($argv) {
     $fixtures = realpath(__DIR__ . '/../tests/Zmsdb/fixtures/');
     $migrations = realpath(__DIR__ . '/../migrations/');
-    error_log("**********************");
-    error_log($fixtures);
-    error_log("**********************");
     \BO\Zmsdb\Cli\Db::startTestDataImport($fixtures);
     \BO\Zmsdb\Cli\Db::startMigrations($migrations);
     \BO\Zmsdb\Cli\Db::startConfigDataImport();
