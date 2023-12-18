@@ -15,11 +15,11 @@ use Psr\Http\Message\ResponseInterface;
 class WaitingReport extends Base
 {
     protected $reportParts = [
-        'waitingcalculated' => 'maximal berechnetet Wartezeit Spontankunde',
-        'waitingcount' => 'maximal Wartende Spontankunde',
-        'waitingtime' => 'maximal gemessene Wartezeit Spontankunde',
-        'waitingcount_termin' => 'maximal Wartende Terminkunde',
-        'waitingtime_termin' => 'maximal gemessene Wartezeit Terminkunde'
+        'waitingcalculated' => 'maximal berechnete Wartezeit Spontankunden',
+        'waitingcount' => 'maximal Wartende Spontankunden',
+        'waitingtime' => 'maximal gemessene Wartezeit Spontankunden',
+        'waitingcount_termin' => 'maximal Wartende Terminkunden',
+        'waitingtime_termin' => 'maximal gemessene Wartezeit Terminkunden'
     ];
     
     /**
@@ -81,8 +81,8 @@ class WaitingReport extends Base
     {
         $entity = clone $report;
         $totals = array_pop($entity->data);
-        $reportTotal['max'][] = 'Tagesmaximum Spontantkunde';
-        $reportTotal['average'][] = 'Tagesdurchschnitt Spontantkunde';
+        $reportTotal['max'][] = 'Tagesmaximum Spontankunden';
+        $reportTotal['average'][] = 'Tagesdurchschnitt Spontankunden';
         $reportTotal['max'][] = $totals['max_waitingtime'];
         $reportTotal['average'][] = $totals['average_waitingtime'];
         foreach ($entity->data as $entry) {
@@ -91,8 +91,8 @@ class WaitingReport extends Base
         }
         $sheet->fromArray($reportTotal, null, 'A'. ($sheet->getHighestRow() + 1));
 
-        $reportTotal2['max'][] = 'Tagesmaximum Terminkunde';
-        $reportTotal2['average'][] = 'Tagesdurchschnitt Terminkunde';
+        $reportTotal2['max'][] = 'Tagesmaximum Terminkunden';
+        $reportTotal2['average'][] = 'Tagesdurchschnitt Terminkunden';
         $reportTotal2['max'][] = $totals['max_waitingtime_termin'];
         $reportTotal2['average'][] = $totals['average_waitingtime_termin'];
         foreach ($entity->data as $entry) {
