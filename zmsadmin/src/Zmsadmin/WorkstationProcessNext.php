@@ -6,6 +6,8 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Collection\ProcessList;
+
 class WorkstationProcessNext extends BaseController
 {
     /**
