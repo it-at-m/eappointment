@@ -345,12 +345,13 @@ class CallDisplayConfigView extends Component {
                                 { name: '4-8 Aufrufe, nur Zahlen | Tür', value: 'rawdoor4-8' },
                                 { name: '6-18 Aufrufe | Tür', value: 'raw18door' },
                                 { name: '6-18 Aufrufe | Platz', value: 'raw18platz' },
-                                { name: '10 Aufrufe | Platz', value: 'default_platz' },
-                                { name: '10 Aufrufe | Tür', value: 'default_tuer' },
-                                { name: '10 Aufrufe | Raum', value: 'default_raum' }
+                                { name: '10 Aufrufe | Schalter (engl. counter)', value: 'default_counter' },
+                                { name: '10 Aufrufe | Platz (engl. site)', value: 'default_platz' },
+                                { name: '10 Aufrufe | Tür (engl. door)', value: 'default_tuer' },
+                                { name: '10 Aufrufe | Raum (engl. room)', value: 'default_raum' }
                             ]}
                             value={this.state.template}
-                 a           onChange={onTemplateStatusChange} />
+                            onChange={onTemplateStatusChange} />
                     </Controls>
                 </FormGroup>
                 <FormGroup>
