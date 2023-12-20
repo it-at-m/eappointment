@@ -1,14 +1,5 @@
 <td class="rechterRand wartenummer" data-callTime="{{ queue.callTime }}">
 	<div class="highlight {{ queue.status }}">
-        {% if queue.withAppointment %}
-			{% if queue.number|length == 7 %}
-				{% set addClass = " smallerFont7Chars" %}
-			{% elseif queue.number|length == 8 %}
-				{% set addClass = " smallerFont8Chars" %}
-			{% endif %}
-			<span class="terminkundennummer{{ addClass }}" data-appointment="{{ queue.number }}" data-status="{{ queue.status }}">{{ queue.number }}</span>
-		{% else %}
-		    <span class="wartenummer" data-appointment="{{ queue.number }}" data-status="{{ queue.status }}">{{ queue.number }}</span>
-		{% endif %}
+		<span class="terminkundennummer" data-appointment="{{ queue.number }}" data-status="{{ queue.status }}">{{ queue.number }}</span>
 	</div>
 </td>
