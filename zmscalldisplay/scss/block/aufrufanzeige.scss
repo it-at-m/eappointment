@@ -135,7 +135,8 @@
 .aufrufanzeige .infotext
 {
     top: 77px;
-    position: absolute;
+    left: 0;
+    position: fixed;
     padding: 10px 40px;
     font-size:2em;
     font-weight:normal;
