@@ -1,5 +1,4 @@
 {% use "block/default/head.twig" %}
-{% use "block/default/devhint.twig" %}
 {% use "block/header/pageheader.twig" %}
 {% use "block/footer/footer.twig" %}
 
@@ -10,9 +9,6 @@
     {% endblock %}
     <body class="hiddencursor locale_{{ currentLang() }}{% block customizedClass %}{% endblock %}" id="{% block pageid %}{% endblock %}" type="{% block pagetype %}{% endblock %}">
         {% if getSystemStatus('ZMS_ENV') in ["dev", "stage"] %}
-            {% block devhint %}
-            	{{ parent() }}
-            {% endblock %}
             {% endif %}
             {% block pageheader %}
             	{{ parent() }}
