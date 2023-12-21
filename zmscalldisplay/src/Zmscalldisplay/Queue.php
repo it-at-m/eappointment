@@ -47,8 +47,9 @@ class Queue extends BaseController
             $response,
             'block/queue/queueTable.twig',
             array(
+                'text' => 'asdsadsa',
                 'tableSettings' => $validator->getParameter('tableLayout')->isArray()->getValue(),
-                'calldisplay' => $calldisplay->getEntity(false),
+                'calldisplay' => $calldisplay->getEntity(true),
                 'scope' => $calldisplay->getSingleScope(),
                 'queueList' => $queueList
             )
