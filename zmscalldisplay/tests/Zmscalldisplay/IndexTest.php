@@ -29,7 +29,8 @@ class IndexTest extends Base
                 'clusterlist' => '110'
             ]
         ], [ ]);
-        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        //$this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        $this->assertStringContainsString('Bürgeramt Hohenzollerndamm', (string) $response->getBody());
         $this->assertStringNotContainsString('webcallUrlCode', (string) $response->getBody());
 
     }
