@@ -22,7 +22,7 @@ class IndexCustomizedClusterTest extends Base
         ];
     }
 
-    /*public function testRendering()
+    public function testRendering()
     {
         $response = $this->render([ ], [
             'collections' => [
@@ -31,5 +31,5 @@ class IndexCustomizedClusterTest extends Base
         ], [ ]);
         $this->assertStringContainsString('tableLayout.multiColumns="2"', (string) $response->getBody());
         $this->assertStringContainsString('tableLayout.maxResults=10', (string) $response->getBody());
-    }*/
+    }
 }
