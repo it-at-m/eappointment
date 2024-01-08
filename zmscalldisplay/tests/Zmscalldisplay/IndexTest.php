@@ -12,7 +12,7 @@ class IndexTest extends Base
 
     protected $parameters = [ ];
 
-    /*public function testRendering()
+    public function testRendering()
     {
         $this->setApiCalls(
             [
@@ -32,7 +32,7 @@ class IndexTest extends Base
         $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
         $this->assertStringNotContainsString('webcallUrlCode', (string) $response->getBody());
 
-    }*/
+    }
 
     /*public function testWithHash()
     {
