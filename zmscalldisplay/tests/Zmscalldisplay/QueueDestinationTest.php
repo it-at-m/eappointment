@@ -24,7 +24,7 @@ class QueueDestinationTest extends Base
         ];
     }
 
-    /*public function testRendering()
+    public function testRendering()
     {
         $response = $this->render([ ], [
             'collections' => [
@@ -43,5 +43,5 @@ class QueueDestinationTest extends Base
         $this->assertStringContainsString('52230', (string) $response->getBody());
         $this->assertStringContainsString('data="10"', (string) $response->getBody());
         $this->assertStringContainsString('data="12"', (string) $response->getBody());
-    }*/
+    }
 }
