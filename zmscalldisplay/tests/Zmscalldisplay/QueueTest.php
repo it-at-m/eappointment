@@ -10,7 +10,7 @@ class QueueTest extends Base
 
     protected $parameters = [ ];
 
-    /*public function testRendering()
+    public function testRendering()
     {
         $this->setApiCalls(
             [
@@ -46,5 +46,5 @@ class QueueTest extends Base
         ], [ ]);
         $this->assertStringContainsString('Ausgabe', (string) $response->getBody());
         $this->assertStringContainsString('31316', (string) $response->getBody());
-    }*/
+    }
 }
