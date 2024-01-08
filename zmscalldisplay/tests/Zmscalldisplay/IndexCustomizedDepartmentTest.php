@@ -21,7 +21,7 @@ class IndexCustomizedDepartmentTest extends Base
         ];
     }
 
-    /*public function testRendering()
+    public function testRendering()
     {
         $response = $this->render([ ], [
             'collections' => [
@@ -31,9 +31,9 @@ class IndexCustomizedDepartmentTest extends Base
         $this->assertStringContainsString('Tempelhof-Schöneberg', (string) $response->getBody());
         $this->assertStringContainsString('tableLayout.multiColumns="2"', (string) $response->getBody());
         $this->assertStringContainsString('tableLayout.maxResults=10', (string) $response->getBody());
-    }*/
+    }
 
-    /*public function testTemplateNotFound()
+    public function testTemplateNotFound()
     {
         $this->expectException('\BO\Zmscalldisplay\Exception\TemplateNotFound');
         $this->expectExceptionCode(404);
@@ -43,5 +43,5 @@ class IndexCustomizedDepartmentTest extends Base
             ],
             'template' => 'notfound'
         ], [ ]);
-    }*/
+    }
 }
