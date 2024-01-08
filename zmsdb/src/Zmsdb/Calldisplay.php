@@ -85,6 +85,7 @@ class Calldisplay extends Base
             ->fetchOne((new Query\Calldisplay(Query\Base::SELECT))
                 ->getQueryImage(), ['name' => "logo.png"]);
         }
+        
         $mime = pathinfo($image['name'], PATHINFO_EXTENSION);
         $image['mime'] = ($mime == 'jpg') ? 'jpeg' : $mime;
         return $image;
