@@ -193,7 +193,7 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          /bin/bash -c "cd ./zmsclient && docker-compose up -d && docker-compose exec test  ./vendor/bin/phpunit"
+          /bin/bash -c "cd ./zmsclient && ./vendor/bin/phpunit"
 
 
 

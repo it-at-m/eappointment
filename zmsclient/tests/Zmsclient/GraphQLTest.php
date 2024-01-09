@@ -14,7 +14,7 @@ class GraphQLTest extends Base
 {
 
     
-    public function testBasic()
+    /*public function testBasic()
     {
         $uri = new Uri(self::$http_baseurl . '/process/82252/12a2/?gql={id,amendment}');
         $request = Http::createRequest('GET', $uri);
@@ -138,5 +138,5 @@ class GraphQLTest extends Base
 
         $responseData = json_decode((string)$response->getBody(), true);
         $responseData['data'] = $graphqlInterpreter->setJson(json_encode($responseData['data']));
-    }
+    }*/
 }

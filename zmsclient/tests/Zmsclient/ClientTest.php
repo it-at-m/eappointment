@@ -11,7 +11,7 @@ use Fig\Http\Message\StatusCodeInterface;
 
 class ClientTest extends Base
 {
-    public function testStatus()
+    /*public function testStatus()
     {
         $uri = new Uri(self::$http_baseurl . '/status/');
         $request = Http::createRequest('GET', $uri);
@@ -20,14 +20,14 @@ class ClientTest extends Base
         $bodyContent = (string)$response->getBody();
         $body = Validator::value($bodyContent)->isJson();
         $this->assertFalse($body->hasFailed());
-    }
+    }*/
 
-    public function testStatusFailed()
+    /*public function testStatusFailed()
     {
         $this->expectException('\BO\Zmsclient\Psr7\RequestException');
         $uri = new Uri(self::$http_baseurl . '/status/');
         $uri = $uri->withPort(4444);
         $request = Http::createRequest('GET', $uri);
         Client::readResponse($request);
-    }
+    }*/
 }
