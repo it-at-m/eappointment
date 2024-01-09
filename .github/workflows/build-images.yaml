@@ -6,12 +6,15 @@ on:
       - '**'
     branches:
       - '**'
+
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
+          - module: php-base
+            php_version: "7.3"
           - module: zmsadmin
             php_version: "8.0"
           - module: zmsapi
@@ -22,16 +25,13 @@ jobs:
             php_version: "8.0"
           - module: zmsstatistic
             php_version: "8.0"
-          - module: php-base
-            php_version: "7.3"
 
-            
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
 
       - name: Install python3
-        run: sudo apt install -y python3 python3-click python3-git
+        run: sudo apt-get update && sudo apt-get install -y python3 python3-click python3-git
 
       - name: Referencing local Modules and Libraries
         run: python3 ./cli modules reference-libraries --no-symlink
@@ -69,7 +69,6 @@ jobs:
               --build-arg "MODULE=${{ matrix.module }}" \
               --build-arg "PHP_VERSION=${{ matrix.php_version }}"
             docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
-
 
   zmsadmin-test:
     needs: build
