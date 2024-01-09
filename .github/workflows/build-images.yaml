@@ -13,16 +13,16 @@ jobs:
       matrix:
         include:
           - version: "8.1"
-            dockerfile: "php81/Dockerfile"
+            dockerfile: "php-base/php81/Dockerfile"
             xdebug_version: "xdebug-3.1.3"
           - version: "8.0"
-            dockerfile: "php80/Dockerfile"
+            dockerfile: "php-base/php80/Dockerfile"
             xdebug_version: "xdebug-3.1.3"
           - version: "7.4"
-            dockerfile: "php74/Dockerfile"
+            dockerfile: "php-base/php74/Dockerfile"
             xdebug_version: "xdebug-2.9.8"
           - version: "7.3"
-            dockerfile: "php73/Dockerfile"
+            dockerfile: "php-base/php73/Dockerfile"
             xdebug_version: "xdebug-2.9.8"
 
     steps:
@@ -44,7 +44,7 @@ jobs:
             --tag "ghcr.io/${{ github.repository }}/$tag" \
             --build-arg XDEBUG_VERSION=${{ matrix.xdebug_version }}
           docker push "ghcr.io/${{ github.repository }}/$tag"
-          
+
   build:
     runs-on: ubuntu-latest
     strategy:
