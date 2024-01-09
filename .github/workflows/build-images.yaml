@@ -1,4 +1,4 @@
-name: build images
+name: Build Images and Run Tests
 
 on:
   push:
@@ -6,27 +6,86 @@ on:
       - '**'
     branches:
       - '**'
-
 jobs:
-  build:
+  build-php-base:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - version: "8.1"
+            dockerfile: "php81/Dockerfile"
+            xdebug_version: "xdebug-3.1.3"
+          - version: "8.0"
+            dockerfile: "php80/Dockerfile"
+            xdebug_version: "xdebug-3.1.3"
+          - version: "7.4"
+            dockerfile: "php74/Dockerfile"
+            xdebug_version: "xdebug-2.9.8"
+          - version: "7.3"
+            dockerfile: "php73/Dockerfile"
+            xdebug_version: "xdebug-2.9.8"
+
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
-      - name: Install python3
-        run: sudo apt install -y python3 python3-click python3-git
-      - name: Referencing local Modules and Libraries
-        run: python3 ./cli modules reference-libraries --no-symlink
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+
+
+      - name: Build and Push Docker Image
+        run: |
+          tag="php-base-${{ matrix.version }}"
+          docker build php-base/ \
+            --file "php-base/${{ matrix.dockerfile }}" \
+            --tag "ghcr.io/${{ github.repository }}/$tag" \
+            --build-arg XDEBUG_VERSION=${{ matrix.xdebug_version }}
+          docker push "ghcr.io/${{ github.repository }}/$tag"
+
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - module: zmsadmin
+            php_version: "8.0"
+          - module: zmsapi
+            php_version: "8.0"
+          - module: zmscalldisplay
+            php_version: "8.0"
+          - module: zmsmessaging
+            php_version: "8.0"
+          - module: zmsstatistic
+            php_version: "8.0"
+
+            
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Install python3
+        run: sudo apt install -y python3 python3-click python3-git
+
+      - name: Referencing local Modules and Libraries
+        run: python3 ./cli modules reference-libraries --no-symlink
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Set Swap Space
         uses: pierotofy/set-swap-space@master
         with:
           swap-size-gb: 10
+
       - name: Build Image
         run: |
           tag="${{ github.ref_name }}"
@@ -39,16 +98,340 @@ jobs:
             --build-arg "MODULE=${{ matrix.module }}" \
             --build-arg "PHP_VERSION=${{ matrix.php_version }}"
           docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
-    strategy:
-      matrix:
-        include:
-          - module: zmsadmin
-            php_version: "8.0"
-          - module: zmsapi
-            php_version: "8.0"
-          - module: zmscalldisplay
-            php_version: "7.3"
-          - module: zmsmessaging
-            php_version: "8.0"
-          - module: zmsstatistic
-            php_version: "8.0"
+
+
+  zmsadmin-test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsadmin')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+
+      - name: Run Unit Tests
+        run: |
+          /bin/bash -c "cd ./zmsadmin && ./vendor/bin/phpunit"
+
+
+  zmsapi-test:
+    needs: build
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.1
+        env:
+          MYSQL_ROOT_PASSWORD: zmsapi
+          MYSQL_DATABASE: zmsbo
+          MYSQL_CHARACTER_SET: utf8mb4
+          MYSQL_COLLATION: utf8mb4_unicode_ci
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 10s
+          --health-retries 5
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsapi' 'zmsdb')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+
+      - name: Import Test Data and Run Unit Tests for zmsapi
+        env:
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_DATABASE: zmsbo
+          MYSQL_USER: root
+          MYSQL_ROOT_PASSWORD: zmsapi
+          MYSQL_PORT: 3306
+        run: |
+          echo "Setup fixtures..."
+          mkdir -p /home/runner/work/eappointment/eappointment/data
+          cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
+          ln -sfn /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
+          cd /home/runner/work/eappointment/eappointment/zmsdb
+          /bin/bash -c "/home/runner/work/eappointment/eappointment/zmsdb/bin/importTestData --commit"
+          cd /home/runner/work/eappointment/eappointment/zmsapi
+          /bin/bash -c "./vendor/bin/phpunit"
+
+
+  zmscalldisplay-test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmscalldisplay')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+
+      - name: Run Unit Tests
+        run: |
+          /bin/bash -c "cd ./zmscalldisplay && ./vendor/bin/phpunit"
+
+
+  zmsclient-test:
+    needs: [build, build-php-base]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsclient')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+
+      - name: Run Unit Tests
+        run: |
+          /bin/bash -c "cd ./zmsclient && docker-compose up -d && docker-compose exec -T test ./vendor/bin/phpunit"
+
+
+
+
+  zmsdb-test:
+    needs: build
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.1
+        env:
+          MYSQL_ROOT_PASSWORD: zmsdb
+          MYSQL_DATABASE: zmsbo
+          MYSQL_CHARACTER_SET: utf8mb4
+          MYSQL_COLLATION: utf8mb4_unicode_ci
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 10s
+          --health-retries 5
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsdb')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+
+      - name: Import Test Data and Run Unit Tests for zmsdb
+        env:
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_DATABASE: zmsbo
+          MYSQL_USER: root
+          MYSQL_ROOT_PASSWORD: zmsdb
+          MYSQL_PORT: 3306
+        run: |
+          mkdir -p /home/runner/work/eappointment/eappointment/data
+          cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
+          ln -sfn /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
+          cd ./zmsdb
+          /bin/bash -c "/home/runner/work/eappointment/eappointment/zmsdb/bin/importTestData --commit && ./vendor/bin/phpunit"
+
+
+  zmsdldb-test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsdldb')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+
+      - name: Run Unit Tests
+        run: |
+          /bin/bash -c "cd ./zmsdldb && ./vendor/bin/phpunit"
+
+
+  zmsentities-test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsentities')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+
+      - name: Run Unit Tests
+        run: |
+          /bin/bash -c "cd ./zmsentities && ./vendor/bin/phpunit"
+
+
+  zmsmessaging-test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsmessaging')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+
+      - name: Run Unit Tests
+        run: |
+          /bin/bash -c "cd ./zmsmessaging && ./vendor/bin/phpunit"
+
+
+  zmsslim-test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsslim')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+
+      - name: Run Unit Tests
+        run: |
+          /bin/bash -c "cd ./zmsslim && ./vendor/bin/phpunit"
+
+          
+  zmsstatistic-test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsstatistic')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+
+      - name: Run Unit Tests
+        run: |
+          /bin/bash -c "cd ./zmsstatistic && ./vendor/bin/phpunit"
+
+
+
+
+
+
+
+
+
+
+
+ 

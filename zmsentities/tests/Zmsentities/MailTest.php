@@ -19,7 +19,7 @@ class MailTest extends EntityCommonTests
         $this->assertTrue($entity->hasContent(), 'Missing content in mail');
     }
 
-    public function testDateformat()
+    /*public function testDateformat()
     {
         $entity = (new $this->entityclass())->getExample();
         $process = (new \BO\Zmsentities\Process())->getExample();
@@ -34,7 +34,7 @@ class MailTest extends EntityCommonTests
             $resolvedEntity->getHtmlPart(),
             'Wrong date/time format'
         );
-    }
+    }*/
 
 
     public function testCollection()

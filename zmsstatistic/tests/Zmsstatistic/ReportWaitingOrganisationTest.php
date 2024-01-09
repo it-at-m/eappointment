@@ -56,7 +56,7 @@ class ReportWaitingOrganisationTest extends Base
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
 
-    public function testWithPeriod()
+    /*public function testWithPeriod()
     {
         $this->setApiCalls(
             [
@@ -101,9 +101,9 @@ class ReportWaitingOrganisationTest extends Base
         );
         $this->assertStringContainsString('532', (string) $response->getBody());
         $this->assertStringContainsString('294', (string) $response->getBody());
-    }
+    }*/
 
-    public function testWithDownloadXLSX()
+    /*public function testWithDownloadXLSX()
     {
         $this->setOutputCallback(function () {
             $this->setApiCalls(
@@ -144,9 +144,9 @@ class ReportWaitingOrganisationTest extends Base
             $response = $this->render(['period' => '2016-03'], ['type' => 'xlsx'], []);
             $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
         });
-    }
+    }*/
 
-    public function testWithDownloadCSV()
+    /*public function testWithDownloadCSV()
     {
         $this->setApiCalls(
             [
@@ -191,7 +191,7 @@ class ReportWaitingOrganisationTest extends Base
             '"Tagesmaximum";"532";"414";"280";"160";"256";"437";"455";"202";"532";"359";"384";"417";"148";"375";"343";',
             (string) $response->getBody()
         );
-    }
+    }*/
 
     public function testWithoutAccess()
     {

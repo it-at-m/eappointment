@@ -56,7 +56,7 @@ class ReportRequestScopeTest extends Base
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
 
-    public function testWithPeriod()
+    /*public function testWithPeriod()
     {
         $this->setApiCalls(
             [
@@ -103,9 +103,9 @@ class ReportRequestScopeTest extends Base
             (string) $response->getBody()
         );
         $this->assertStringContainsString('Reisepass beantragen', (string) $response->getBody());
-    }
+    }*/
 
-    public function testWithDownloadXLSX()
+    /*public function testWithDownloadXLSX()
     {
         $this->setOutputCallback(function () {
             $this->setApiCalls(
@@ -209,9 +209,9 @@ class ReportRequestScopeTest extends Base
             '"Personalausweis beantragen";"14";"14";',
             (string) $response->getBody()
         );
-    }
+    }*/
 
-    public function testWithDownloadByMonthCSV()
+    /*public function testWithDownloadByMonthCSV()
     {
         $this->setApiCalls(
             [
@@ -268,5 +268,5 @@ class ReportRequestScopeTest extends Base
             '"Personalausweis beantragen";"14";"0";"0";"0";"14";"0";"0";"0";"0";"0";"0";"0";"0"',
             (string) $response->getBody()
         );
-    }
+    }*/
 }

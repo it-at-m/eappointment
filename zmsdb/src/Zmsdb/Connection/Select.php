@@ -110,7 +110,8 @@ class Select
     {
         try {
             $pdoOptions = array_merge([
-                ], self::$pdoOptions);
+                Pdo::ATTR_TIMEOUT => 6000, // Set the timeout to 30 seconds
+            ], self::$pdoOptions);
             $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
             $pdo->exec('SET NAMES "UTF8";');
             //$timezone = date_default_timezone_get();
@@ -128,6 +129,7 @@ class Select
         }
         return $pdo;
     }
+
 
     /**
      * Set the read connection.

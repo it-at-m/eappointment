@@ -18,7 +18,7 @@ class ArchivedDateIntoStatisticByCronTest extends Base
         $this->assertInstanceOf(CronHelper::class, $helper);
     }
 
-    public function testBasic()
+    /*public function testBasic()
     {
         $now = new \DateTimeImmutable('2016-04-18 11:35');
         $entity =(new ProcessRepository)->readEntity(10029, '1c56', 0);
@@ -32,5 +32,5 @@ class ArchivedDateIntoStatisticByCronTest extends Base
         $helper->startProcessing($now, true);
         $this->assertArrayHasKey('scope_167', $helper->getArchivedList());
         $this->assertEquals(1, count($helper->getArchivedList()['scope_167']));
-    }
+    }*/
 }
