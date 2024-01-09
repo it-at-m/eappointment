@@ -36,7 +36,7 @@ class Factory
         $class = "\\BO\\Zmsentities\\$entityName";
         return new $class(new UnflattedArray($this->data));
     }
-    
+
     /**
      * Parse schema and return Entity name
      *
