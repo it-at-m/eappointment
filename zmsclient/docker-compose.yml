@@ -15,7 +15,7 @@ services:
   test:
     depends_on:
       - mockup
-    image: ghcr.io/it-at-m/eappointment/php-base:7.3-base # Updated image path
+    image: ghcr.io/it-at-m/eappointment/php-base-7.3 # Updated image path
     volumes:
       - type: bind
         source: "."
