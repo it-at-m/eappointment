@@ -34,8 +34,10 @@ class Factory
     {
         $entityName = $this->getEntityName();
         $class = "\\BO\\Zmsentities\\$entityName";
+        error_log($class);
         return new $class(new UnflattedArray($this->data));
     }
+    
 
     /**
      * Parse schema and return Entity name
@@ -48,6 +50,7 @@ class Factory
             throw new \BO\Zmsentities\Exception\SchemaMissingKey('Missing $schema-key on given data.');
         }
         $schema = $this->data['$schema'];
+        error_log($schema );
         $entityName = preg_replace('#^.*/([^/]+)\.json#', '$1', $schema);
         return ucfirst($entityName);
     }
