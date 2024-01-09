@@ -208,7 +208,7 @@ jobs:
 
 
   zmsclient-test:
-    needs: build
+    needs: [build, build-php-base]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GitHub Action
