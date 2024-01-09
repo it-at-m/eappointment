@@ -183,9 +183,6 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
           coverage: xdebug
 
-      - name: Pull Docker Image from GitLab
-        run: docker pull [gitlab-registry-image]
-
       - name: Install Composer Dependencies
         run: |
           modules=('zmsclient')
@@ -196,10 +193,7 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          cd ./zmsclient
-          docker-compose up -d
-          container_id=$(docker-compose ps -q test)
-          docker exec $container_id ./vendor/bin/phpunit
+          /bin/bash -c "cd ./zmsclient && docker-compose up -d && docker-compose exec test  ./vendor/bin/phpunit"
 
 
 
