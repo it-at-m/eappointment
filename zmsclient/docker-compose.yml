@@ -11,10 +11,11 @@ services:
         source: "./tests/mockup/config"
         target: "/config"
         consistency: cached
+
   test:
     depends_on:
       - mockup
-    image: registry.gitlab.com/eappointment/php-base:7.3-base
+    image: ghcr.io/it-at-m/eappointment/php-base:7.3-base # Updated image path
     volumes:
       - type: bind
         source: "."

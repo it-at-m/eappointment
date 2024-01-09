@@ -22,6 +22,8 @@ jobs:
             php_version: "8.0"
           - module: zmsstatistic
             php_version: "8.0"
+          - module: php-base
+            php_version: "7.3"
 
             
     steps:
@@ -52,12 +54,21 @@ jobs:
           if [ "${{ github.ref_type }}" = "branch" ]; then
             tag="branch-$tag"
           fi
-          docker build . \
-            --file ".resources/Containerfile" \
-            --tag "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
-            --build-arg "MODULE=${{ matrix.module }}" \
-            --build-arg "PHP_VERSION=${{ matrix.php_version }}"
-          docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
+          if [ "${{ matrix.module }}" = "php-base" ]; then
+            # Commands to build php-base
+            docker build . \
+              --file "Dockerfile-for-php-base" \
+              --tag "ghcr.io/${{ github.repository }}/php-base:$tag" \
+              --build-arg "PHP_VERSION=${{ matrix.php_version }}"
+            docker push "ghcr.io/${{ github.repository }}/php-base:$tag"
+          else
+            # Commands to build other modules
+            docker build . \
+              --file ".resources/Containerfile" \
+              --tag "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag" \
+              --build-arg "MODULE=${{ matrix.module }}" \
+              --build-arg "PHP_VERSION=${{ matrix.php_version }}"
+            docker push "ghcr.io/${{ github.repository }}/${{ matrix.module }}:$tag"
 
 
   zmsadmin-test:
@@ -183,9 +194,6 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
           coverage: xdebug
 
-      - name: Pull Docker Image from GitLab
-        run: docker pull [gitlab-registry-image]
-
       - name: Install Composer Dependencies
         run: |
           modules=('zmsclient')
@@ -196,10 +204,7 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          cd ./zmsclient
-          docker-compose up -d
-          container_id=$(docker-compose ps -q test)
-          docker exec $container_id ./vendor/bin/phpunit
+          /bin/bash -c "cd ./zmsclient && docker-compose up -d && docker-compose exec test  ./vendor/bin/phpunit"
 
 
 
