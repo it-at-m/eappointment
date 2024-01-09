@@ -1,0 +1,92 @@
+
+
+stages:
+    - build
+    - test
+    - deploy
+    - e2e
+
+variables:
+    CLI_PHPCS: "vendor/bin/phpcs --standard=psr2 src/"
+    CLI_PHPMD: "vendor/bin/phpmd src/ text phpmd.rules.xml"
+    CLI_PHPUNIT: "php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit -v --colors=never --coverage-text --coverage-html public/_tests/coverage/ --log-junit public/_tests/junit.xml"
+    CLI_PHPUNIT_PARAM: ""
+    CLI_COMPOSER:       "composer install --no-progress --ansi -n --no-plugins --no-suggest"
+    CLI_COMPOSER_NODEV: "composer install --no-progress --ansi -n --no-plugins --no-suggest --no-dev"
+    CLI_COMPOSER_OUTDATED: "composer outdated -a -n -m --ansi --no-plugins --strict "
+    COMPOSER_CACHE_DIR: "cache/composer"
+
+.test-php:
+    stage: test
+    variables:
+      PHP_VERSION: 7.3
+    image: registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-dev
+    cache:
+        key: "zmsbase"
+        paths:
+            - cache
+    script:
+        - $CLI_COMPOSER
+        - $CLI_PHPCS
+        - $CLI_PHPMD
+        - docker-php-ext-enable xdebug
+        - $CLI_PHPUNIT $CLI_PHPUNIT_PARAM
+    coverage: '/^\s*Lines:\s*\d+.\d+\%/'
+    artifacts:
+        paths:
+            - public/_tests
+        expire_in: 7d
+        reports:
+            junit: public/_tests/junit.xml
+
+.test-phpoutdated:
+    stage: test
+    image: registry.gitlab.com/eappointment/php-base:7.3-dev
+    cache:
+        key: "zmsbase"
+        paths:
+            - cache
+    allow_failure: true
+    script:
+        - $CLI_COMPOSER_NODEV
+        - $CLI_COMPOSER_OUTDATED 2>/dev/null
+    only:
+        refs:
+            - main
+        changes:
+            - composer.lock
+            - composer.json
+
+.build-docker:
+    stage: build
+    image: docker:stable
+    services:
+        - docker:dind
+    variables:
+        PHP_VERSION: "7.3"
+        BUILD_CONTEXT: "."
+    script:
+        - if [ -z ${TAG+x} ]; then TAG="${CI_COMMIT_TAG:-branch-$(echo $CI_COMMIT_BRANCH | sed -e 's/[^a-zA-Z0-9]/-/g')}"; fi
+        - 'echo "Docker Image Tag: $TAG"'
+        - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+        - docker pull "${CI_REGISTRY_IMAGE}:${TAG}" || true
+        - docker build 
+            --pull
+            --build-arg "PHP_VERSION=${PHP_VERSION}"
+            --build-arg "IMAGE_TAG=${TAG}"
+            --label "com.gitlab.eappointment.commit-tag=${CI_COMMIT_TAG}"
+            --label "com.gitlab.eappointment.commit-sha=${CI_COMMIT_SHA}"
+            --label "com.gitlab.eappointment.commit-branch=${CI_COMMIT_BRANCH}"
+            -t "${CI_REGISTRY_IMAGE}:${TAG}"
+            "$BUILD_CONTEXT"
+        - docker push "${CI_REGISTRY_IMAGE}:${TAG}"
+    only:
+        - tags
+        - main
+        - /^[a-z]+[\/-]bug[\/-][a-zA-Z0-9_-]+$/
+        - /^[a-z]+[\/-]feature[\/-][a-zA-Z0-9_-]+$/
+        - /^[a-z]+[\/-]hotfix[\/-][a-zA-Z0-9_-]+$/
+        - /^[a-z]+[\/-]dev(-[a-zA-Z0-9_-]+)?$/
+        - /^[a-z]+[\/-]test(-[a-zA-Z0-9_-]+)?$/
+        - /^[a-z]+[\/-]release[\/-][a-zA-Z0-9_-]+$/
+        - /^[a-z]+[\/-]prod$/
