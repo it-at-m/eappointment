@@ -36,11 +36,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+
+
       - name: Build and Push Docker Image
         run: |
           tag="php-base-${{ matrix.version }}"
-          docker build . \
-            --file "${{ matrix.dockerfile }}" \
+          docker build php-base/ \
+            --file "php-base/${{ matrix.dockerfile }}" \
             --tag "ghcr.io/${{ github.repository }}/$tag" \
             --build-arg XDEBUG_VERSION=${{ matrix.xdebug_version }}
           docker push "ghcr.io/${{ github.repository }}/$tag"
