@@ -70,7 +70,7 @@ class MessagingTest extends Base
         self::assertStringContainsString('Terminübersicht', $mail->subject);
         self::assertStringContainsString('Sie haben folgende Termine gebucht:', $mail->getHtmlPart());
         self::assertStringContainsString('am Wednesday, 18. November 2015 um 18:52 Uhr', $mail->getHtmlPart());
-        self::assertStringContainsString('am Wednesday, 30. Dezember 2015 um 11:55 Uhr', $mail->getHtmlPart());
+        self::assertStringContainsString('am Wednesday, 30. December 2015 um 11:55 Uhr', $mail->getHtmlPart());
         self::assertStringContainsString('Bürgeramt 1, Unter den Linden 1, 12345 Berlin', $mail->getHtmlPart());
         self::assertStringContainsString('Bürgeramt Mitte, Zaunstraße 1, 15831 Schönefeld', $mail->getHtmlPart());
         self::assertStringContainsString('Abmeldung einer Wohnung', $mail->getHtmlPart());
