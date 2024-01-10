@@ -110,8 +110,7 @@ class Select
     {
         try {
             $pdoOptions = array_merge([
-                Pdo::ATTR_TIMEOUT => 6000, // Set the timeout to 30 seconds
-            ], self::$pdoOptions);
+                ], self::$pdoOptions);
             $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
             $pdo->exec('SET NAMES "UTF8";');
             //$timezone = date_default_timezone_get();
@@ -129,7 +128,6 @@ class Select
         }
         return $pdo;
     }
-
 
     /**
      * Set the read connection.
@@ -324,5 +322,10 @@ class Select
             return $status;
         }
         return null;
+    }
+
+    public static function writeCommitWithStartLock()
+    {
+        return self::writeCommit() && (new \BO\Zmsdb\Config)->readProperty('status__calculateSlotsLastRun', true);
     }
 }
