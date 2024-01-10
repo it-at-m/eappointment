@@ -7,13 +7,13 @@ use PHPUnit\Framework\TestCase;
 class DateTimeFormatTest extends TestCase
 {
 
-    /*public function testDateTimeFormat()
+    public function testDateTimeFormat()
     {
         $request = \BO\Slim\Tests\Base::createBasicRequest('GET', '/unittest/');
         $exception = new \BO\Slim\Exception\SessionFailed();
         $infoArr = \BO\Slim\TwigExceptionHandler::getExtendedExceptionInfo($exception, $request);
         $this->assertEquals($infoArr['servertime'], (new \DateTimeImmutable())->format('Y-m-d H:i:s'));
-    }*/
+    }
 
     public function testTwigDateFormat()
     {
