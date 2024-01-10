@@ -30,7 +30,7 @@ class MailTest extends EntityCommonTests
         $entity->client = null;
         $resolvedEntity = $entity->toResolvedEntity($process, $config, 'appointment');
         $this->assertStringContainsString(
-            'Montag, 30. Dezember 2019 um 11:55 Uhr',
+            'Monday, 30. Dezember 2019 um 11:55 Uhr',
             $resolvedEntity->getHtmlPart(),
             'Wrong date/time format'
         );

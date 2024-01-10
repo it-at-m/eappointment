@@ -33,13 +33,13 @@ class MessagingTest extends Base
 
         $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'appointment'));
         self::assertStringContainsString('hiermit bestätigen wir Ihnen Ihren gebuchten Termin:', $result);
-        self::assertStringContainsString('Zeit: am Mittwoch, 18. November 2015 um 18:52 Uhr', $result);
+        self::assertStringContainsString('Zeit: am Wednesday, 18. November 2015 um 18:52 Uhr', $result);
         self::assertStringContainsString('Vorgangsnummer: 123456', $result);
         self::assertStringContainsString('Absage-Code: abcd', $result);
 
         $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'reminder'));
         self::assertStringContainsString('hiermit erinnern wir Sie an Ihren Termin:', $result);
-        self::assertStringContainsString('Zeit: am Mittwoch, 18. November 2015 um 18:52 Uhr', $result);
+        self::assertStringContainsString('Zeit: am Wednesday, 18. November 2015 um 18:52 Uhr', $result);
         self::assertStringContainsString('Vorgangsnummer: 123456', $result);
         self::assertStringContainsString('Absage-Code: abcd', $result);
 
