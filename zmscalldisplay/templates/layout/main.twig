@@ -1,6 +1,6 @@
 {% use "block/default/head.twig" %}
-{% use "block/default/devhint.twig" %}
 {% use "block/header/pageheader.twig" %}
+{% use "block/footer/footer.twig" %}
 
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{{ currentLang() }}" lang="{{ currentLang() }}">
@@ -9,9 +9,6 @@
     {% endblock %}
     <body class="hiddencursor locale_{{ currentLang() }}{% block customizedClass %}{% endblock %}" id="{% block pageid %}{% endblock %}" type="{% block pagetype %}{% endblock %}">
         {% if getSystemStatus('ZMS_ENV') in ["dev", "stage"] %}
-            {% block devhint %}
-            	{{ parent() }}
-            {% endblock %}
             {% endif %}
             {% block pageheader %}
             	{{ parent() }}
@@ -22,6 +19,10 @@
                 </div>
             </div>
 
+     {% block footer %}
+    	{{ parent() }}
+    {% endblock %}      
+
             {% include("element/ring.twig") %}
 			<script type="text/javascript" src="{{ includeUrl() }}/_js/index.js"></script>
             <script type="text/javascript">window.bo.zmscalldisplay.includepath="{{ includeUrl() }}"</script>
@@ -30,7 +31,6 @@
             <script type="text/javascript">window.bo.zmscalldisplay.reloadInterval={{ zmscalldisplay.reload }}</script>
             {% endif %}
             <script type="text/javascript">window.bo.zmscalldisplay.queue.timeUntilOld=60</script>
-            <script type="text/javascript">window.bo.zmscalldisplay.queue.timeWaitingInfo=20</script>
             <script type="text/javascript">window.bo.zmscalldisplay.queue.status="{{ queueStatusRequested }}"</script>
             {% block tableLayoutSettings %}{% endblock %}
             {% if debug %}

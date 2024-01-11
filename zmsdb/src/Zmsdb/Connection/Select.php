@@ -323,4 +323,9 @@ class Select
         }
         return null;
     }
+
+    public static function writeCommitWithStartLock()
+    {
+        return self::writeCommit() && (new \BO\Zmsdb\Config)->readProperty('status__calculateSlotsLastRun', true);
+    }
 }

@@ -254,6 +254,7 @@ EOS;
     id
     status
     createTimestamp
+    timeoutTime
     reminderTimestamp
     appointments{
         date
@@ -275,6 +276,11 @@ EOS;
         waitingTime,
         callCount
     }
+    processingTime
+    waitingTime
+    services
+    name
+    withAppointment
     requests{
         id
         link
