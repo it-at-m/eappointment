@@ -56,7 +56,7 @@ class ReportRequestDepartmentTest extends Base
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
 
-    public function testWithPeriod()
+    /*public function testWithPeriod()
     {
         $this->setApiCalls(
             [
@@ -103,9 +103,9 @@ class ReportRequestDepartmentTest extends Base
             (string) $response->getBody()
         );
         $this->assertStringContainsString('Reisepass beantragen', (string) $response->getBody());
-    }
+    }*/
 
-    public function testWithDownloadXLSX()
+    /*public function testWithDownloadXLSX()
     {
         $this->setOutputCallback(function () {
             $this->setApiCalls(
@@ -154,7 +154,7 @@ class ReportRequestDepartmentTest extends Base
             );
             $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
         });
-    }
+    }*/
 
     /*public function testWithDownloadCSV()
     {

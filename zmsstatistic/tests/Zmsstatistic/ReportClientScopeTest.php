@@ -264,7 +264,6 @@ class ReportClientScopeTest extends Base
         );
     }
 
-    /*
     public function testWithoutSelectedScope()
     {
         $this->expectException('\BO\Zmsentities\Exception\WorkstationMissingScope');
@@ -279,5 +278,5 @@ class ReportClientScopeTest extends Base
             ]
         );
         $this->render([ ], [ ], [ ]);
-    }*/
+    }
 }
