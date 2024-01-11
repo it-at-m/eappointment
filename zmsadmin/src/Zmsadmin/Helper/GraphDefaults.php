@@ -127,6 +127,7 @@ EOS;
         name 
         data { 
             payment 
+            slotTimeInMinutes
         }
     }
     queue
@@ -253,6 +254,7 @@ EOS;
     id
     status
     createTimestamp
+    timeoutTime
     reminderTimestamp
     appointments{
         date

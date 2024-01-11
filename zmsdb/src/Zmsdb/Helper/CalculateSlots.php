@@ -144,7 +144,7 @@ class CalculateSlots
         }
         if (count($updatedList)) {
             $this->writePostProcessingByScope($scope, $now);
-            \BO\Zmsdb\Connection\Select::writeCommit();
+            \BO\Zmsdb\Connection\Select::writeCommitWithStartLock();
             $this->readLastRun();
             return true;
         }
@@ -183,7 +183,7 @@ class CalculateSlots
         $this->log("Maintenance: Delete slots older than ". $now->format('Y-m-d'));
         $slotQuery = new \BO\Zmsdb\Slot();
         $pdo = \BO\Zmsdb\Connection\Select::getWriteConnection();
-        $pdo->exec('SET SESSION innodb_lock_wait_timeout=120');
+        $pdo->exec('SET SESSION innodb_lock_wait_timeout=600');
         if ($slotQuery->deleteSlotsOlderThan($now)) {
             \BO\Zmsdb\Connection\Select::writeCommit();
             $this->log("Deleted old slots successfully");
