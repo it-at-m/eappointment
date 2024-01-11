@@ -80,6 +80,7 @@ class Provider extends Schema\Entity
 
     public function getSlotTimeInMinutes()
     {
+        error_log(json_encode($this->getAdditionalData()));
         return $this->getAdditionalData()['slotTimeInMinutes'];
     }
 }

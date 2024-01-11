@@ -19,7 +19,7 @@ class GraphDefaults
     id,
     name,
     scope {
-        id, 
+        id 
         shortName
         source,
         contact {
@@ -31,6 +31,24 @@ class GraphDefaults
             workstation
             ticketprinter
         }
+        provider {
+            id
+            contact {
+                city
+                country
+                name
+                postalCode
+                region
+                street
+                streetNumber
+            }
+            source
+            link
+            name
+            displayName
+        }
+        
+
         status 
     },
     queue {
