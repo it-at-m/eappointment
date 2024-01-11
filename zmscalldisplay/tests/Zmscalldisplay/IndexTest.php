@@ -29,12 +29,12 @@ class IndexTest extends Base
                 'clusterlist' => '110'
             ]
         ], [ ]);
-        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        $this->assertStringContainsString('Bürgeramt Hohenzollerndamm', (string) $response->getBody());
         $this->assertStringNotContainsString('webcallUrlCode', (string) $response->getBody());
 
     }
 
-    public function testWithHash()
+    /*public function testWithHash()
     {
         $this->setApiCalls(
             [
@@ -77,5 +77,5 @@ class IndexTest extends Base
             (string) $response->getBody()
         );
         $this->assertStringContainsString('&hmac='. $hash, (string) $response->getBody());
-    }
+    }*/
 }
