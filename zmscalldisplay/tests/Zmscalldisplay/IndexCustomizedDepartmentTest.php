@@ -28,7 +28,7 @@ class IndexCustomizedDepartmentTest extends Base
                 'scopelist' => '146'
             ]
         ], [ ]);
-        $this->assertStringContainsString('Tempelhof-Schöneberg', (string) $response->getBody());
+        $this->assertStringContainsString('Anmeldung an Warteschlange', (string) $response->getBody());
         $this->assertStringContainsString('tableLayout.multiColumns = 2', (string) $response->getBody());
         $this->assertStringContainsString('tableLayout.maxResults = 10', (string) $response->getBody());
     }
