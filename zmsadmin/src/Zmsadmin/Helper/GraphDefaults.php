@@ -127,6 +127,7 @@ EOS;
         name 
         data { 
             payment 
+            slotTimeInMinutes
         }
     }
     queue
