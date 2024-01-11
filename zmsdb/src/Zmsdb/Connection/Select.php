@@ -328,5 +328,4 @@ class Select
     {
         return self::writeCommit() && (new \BO\Zmsdb\Config)->readProperty('status__calculateSlotsLastRun', true);
     }
-    
 }
