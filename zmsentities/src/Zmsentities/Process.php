@@ -51,6 +51,7 @@ class Process extends Schema\Entity
             'scope' => new Scope(),
             'status' => 'free',
             'lastChange' => time()
+
         ];
     }
 

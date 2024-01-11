@@ -85,7 +85,9 @@
             },
             "id": 123456,
             "name": "Flughafen Schönefeld, Aufsicht",
-            "source": "dldb"
+            "source": "dldb",
+            "link":"https:\/\/service.berlin.de\/standort\/122280\/",
+            "displayName":"001"
         },
         "shortName": "Zentrale",
         "status": {

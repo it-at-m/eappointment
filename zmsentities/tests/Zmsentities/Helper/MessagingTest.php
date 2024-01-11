@@ -169,6 +169,7 @@ class MessagingTest extends Base
         $processList = new \BO\Zmsentities\Collection\ProcessList();
         $processList->addEntity($mainProcess);
         $processList->addEntity($process2);
+        //error_log(json_encode($processList));
         return $processList;
     }
 }

@@ -119,7 +119,9 @@
                             "streetNumber": "1",
                             "postalCode": "12345",
                             "city": "Berlin"
-                        }
+                        },
+                        "link":"https:\/\/service.berlin.de\/standort\/122280\/",
+                        "displayName":"001"
                     }
                 },
                 "status": "confirmed"
