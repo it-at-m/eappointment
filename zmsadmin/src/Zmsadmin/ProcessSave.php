@@ -126,12 +126,11 @@ class ProcessSave extends BaseController
             return true;
         }
 
-        if (isset($requestData['selecteddate']) && isset($requestData['selectedtime'])) {
-            $newDate = $requestData['selecteddate'] . ' ' . str_replace('-', ':', $requestData['selectedtime']);
-    
-            if ($process->getFirstAppointment()->toDateTime()->format('Y-m-d H:i') !== $newDate) {
-                return true;
-            }
+        $newDate = $requestData['selecteddate'] . ' '
+            . str_replace('-', ':', $requestData['selectedtime']);
+
+        if ($process->getFirstAppointment()->toDateTime()->format('Y-m-d H:i') !== $newDate) {
+            return true;
         }
 
         return false;
