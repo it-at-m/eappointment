@@ -50,6 +50,8 @@ class AppointmentForm extends BaseController
             ? Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation)
             : null;
 
+        $provider = $selectedScope->getProvider();
+
         return \BO\Slim\Render::withHtml(
             $response,
             'block/appointment/form.twig',
@@ -65,7 +67,8 @@ class AppointmentForm extends BaseController
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'selectedTime' => $selectedTime,
                 'freeProcessList' => $freeProcessList,
-                'requestList' => $requestList
+                'requestList' => $requestList,
+                'slotTimeInMinutes' => $provider->getSlotTimeInMinutes(),
             )
         );
     }
