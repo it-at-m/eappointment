@@ -40,7 +40,7 @@ class ProcessReserveTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
+                        'resolveReferences' => 2,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
@@ -90,7 +90,7 @@ class ProcessReserveTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
+                        'resolveReferences' => 2,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
@@ -146,7 +146,7 @@ class ProcessReserveTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
+                        'resolveReferences' => 2,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
@@ -196,7 +196,7 @@ class ProcessReserveTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
+                        'resolveReferences' => 2,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
@@ -260,7 +260,7 @@ class ProcessReserveTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
+                        'resolveReferences' => 2,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
@@ -302,7 +302,7 @@ class ProcessReserveTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
+                        'resolveReferences' => 2,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
                     'response' => $this->readFixture("GET_scope_141_required_mail.json")
@@ -346,7 +346,7 @@ class ProcessReserveTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 1,
+                        'resolveReferences' => 2,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
