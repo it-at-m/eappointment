@@ -143,7 +143,7 @@ class AppointmentFormTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 2,
+                        'resolveReferences' => 1,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
                     'response' => $this->readFixture("GET_scope_141.json")
@@ -312,7 +312,7 @@ class AppointmentFormTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'parameters' => [
-                        'resolveReferences' => 2,
+                        'resolveReferences' => 1,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getScope()
                     ],
                     'response' => $this->readFixture("GET_scope_141_multipleSlotsEnabled.json")
