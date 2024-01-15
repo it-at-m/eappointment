@@ -1,0 +1,101 @@
+.wartenummern .smshinweis
+{
+    left:160px;
+    position:absolute;
+    top:129px;
+    width:400px;
+}
+.wartenummern .sms_bestaetigung
+{
+    left:160px;
+    position:absolute;
+    top:640px;
+    width:640px;
+}
+.wartenummern form.smseintragen .label
+{
+    display:none;
+}
+.wartenummern .anleitung
+{
+    left:160px;
+    position:absolute;
+    top:227px;
+    width:400px;
+}
+.wartenummern .anleitung .radioauswahl
+{
+    margin-top:20px;
+    font-size:18px;
+    border: black;
+    border-width:5px;
+    border-style:outset;
+    padding:5px;
+}
+.wartenummern .anleitung .radioauswahl .radiobutton
+{
+}
+.wartenummern .disclaimer
+{
+    left:160px;
+    position:absolute;
+    top:397px;
+    width:410px;
+}
+
+.wartenummern .nummernblock
+{
+    left:621px;
+    position:absolute;
+    top:223px;
+    width:400px;
+}
+.wartenummern .nummernblock .ziffer
+{
+    background: url(img/zahl.png) 9px 10px no-repeat;
+    border:0;
+    color:#fff;
+    font-size:28px;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    height: 80px;
+    margin: -8px 0 0 -19px;
+    padding:0;
+    width: 80px;
+}
+.wartenummern .nummernblock .ziffer.active
+{
+    background: url(img/zahl_a.png) 9px 10px no-repeat;
+}
+.wartenummern  .eingabe {
+    background: url(img/textflaeche_klein.png) 0px 0px no-repeat;
+    height: 60px;
+    left:610px;
+    position:absolute;
+    top:135px;
+    width: 200px;
+}
+.wartenummern .nummerneingabe
+{
+    border:0;
+    background:transparent;
+    color:#4C4C4C;
+    font-size:20px;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    margin: 16px 10px;
+    width: 180px;
+}
+.wartenummern .sms_next
+{
+    background: url(img/naechster_kunde.png) 0px 10px no-repeat;
+    border:0;
+    color:#fff;
+    font-size:42px;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    height: 166px;
+    margin: 54px 0 0 -1px;
+    padding:0;
+    width: 660px;
+}
