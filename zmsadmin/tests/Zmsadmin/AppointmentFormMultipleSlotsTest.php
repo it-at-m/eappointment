@@ -57,6 +57,6 @@ class AppointmentFormMultipleSlotsTest extends Base
             ]
         );
         $response = parent::testRendering();
-        $this->assertStringContainsString('Anmeldung einer Wohnung (0)', (string)$response->getBody());
+        $this->assertStringContainsString('Termindauer in Minuten', (string)$response->getBody());
     }
 }

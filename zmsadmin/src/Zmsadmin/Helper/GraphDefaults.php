@@ -146,7 +146,7 @@ EOS;
 { 
     id 
     name
-    preferences 
+    preferences
 }
 EOS;
         return static::defaultFormat($default);
