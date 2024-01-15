@@ -1,0 +1,49 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2017-07-03T18:12:38+02:00",
+    "server": "Zmsapi-ENV"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/config.json",
+    "appointments": {
+      "urlChange": "https://service.berlin.de/terminvereinbarung/termin/manage/",
+      "urlAppointments": "https://service.berlin.de/terminvereinbarung/"
+    },
+    "notifications": {
+      "kommandoAbsage": "Storno",
+      "kommandoAbfrage": "Berlin",
+      "number": "0174-8882288",
+      "absage": "0",
+      "gateway": "mail",
+      "gatewayUrl": "",
+      "eMailkonfigurierbar": "0",
+      "benachrichtigungsfrist": "10",
+      "headsUpContent": "Sie sind in Kürze an der Reihe. Bitte kommen Sie zum Schalter. Ihre Vorgangsnr. ist",
+      "confirmationContent": "Ihre Telefonnummer wurde erfolgreich registriert. Ihre Wartenr. lautet:",
+      "costs": "0.15",
+      "erinnerungsvorlauf": "180"
+    },
+    "ticketprinter": {
+      "baseUrl": "/terminvereinbarung/ticketprinter/"
+    },
+    "calldisplay": {
+      "baseUrl": "/terminvereinbarung/calldisplay/"
+    },
+    "emergency": {
+      "refreshInterval": "5"
+    }
+  },
+  "profiler": [
+    {
+      "duration": 0.00011301040649414,
+      "function": "perform",
+      "statement": " SELECT * FROM config ",
+      "bind_values": [
+        
+      ]
+    }
+  ]
+}

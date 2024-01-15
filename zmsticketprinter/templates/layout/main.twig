@@ -1,0 +1,43 @@
+{% use "block/default/head.twig" %}
+{% use "block/default/devhint.twig" %}
+{% use "block/header/pageheader.twig" %}
+{% use "block/ticketprinterhash.twig" %}
+
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{{ currentLang() }}" lang="{{ currentLang() }}">
+    {% block head %}
+    	{{ parent() }}
+    {% endblock %}
+    <body class="hiddencursor locale_{{ currentLang() }}" id="{% block pageid %}{% endblock %}" type="{% block pagetype %}{% endblock %}">
+            {% if getSystemStatus('ZMS_ENV') in ["dev", "stage"] %}
+            {% block devhint %}
+            	{{ parent() }}
+            {% endblock %}
+            {% endif %}
+            {% block pageheader %}
+            	{{ parent() }}
+            {% endblock %}
+            <div class="wartenummern">
+    			<div class="content">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
+
+            {% block ticketprinterhash %}
+            	{{ parent() }}
+            {% endblock %}
+
+            <script type="text/javascript" src="{{ includeUrl() }}/_js/vendor.js?version={{ currentVersion() }}"></script>
+            <script type="text/javascript" src="{{ includeUrl() }}/_js/index.js?version={{ currentVersion() }}"></script>
+            <script type="text/javascript">window.bo.zmsticketprinter.includepath="{{ includeUrl() }}"</script>
+            {% if ticketprinter.reload %}
+            <script type="text/javascript">window.bo.zmsticketprinter.reloadInterval={{ ticketprinter.reload }}</script>
+            {% endif %}
+            {% if debug %}
+            <div class="debug noprint">
+            <!-- httplog -->{{ dumpHttpLog() }}
+            </div>
+        {% endif %}
+    </body>
+</html>

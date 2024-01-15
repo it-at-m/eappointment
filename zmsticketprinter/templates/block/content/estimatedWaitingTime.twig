@@ -1,0 +1,13 @@
+{% block estimatedWaitingTime %}
+{% trans %}Voraussichtliche Wartezeit{% endtrans %}:
+
+{% if waitingTime and scope.status.queue.ghostWorkstationCount %}
+    {% if waitingTime < 120 %}
+        {{ waitingTimeOptimistic }} - {{ waitingTime }} {{ "%s"|format("Minuten")|trans }}
+    {% else %}
+        {{ (waitingTime / 60)|round(0, 'floor') }} {{ "%s"|format("Stunden")|trans }}
+    {% endif %}
+{% else %}
+    {{ "%s"|format("unbekannt")|trans }}
+{% endif %}
+{% endblock %}

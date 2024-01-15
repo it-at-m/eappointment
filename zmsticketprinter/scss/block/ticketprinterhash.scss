@@ -1,0 +1,14 @@
+.ticketprinterhash {
+
+    position:       absolute;
+    left:           1010px;
+    top:            720px;
+    width:          500px;
+    z-index:        0;
+    color:          darken(#c8d5e6, 10%);
+    color:          white;
+    font-size:      0.4em;
+    font-weight:    normal;
+    transform:      rotate(270deg);
+    transform-origin: left;
+}

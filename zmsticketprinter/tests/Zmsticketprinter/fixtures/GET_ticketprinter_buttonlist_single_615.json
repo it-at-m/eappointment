@@ -1,0 +1,109 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2016-04-29T11:53:31+02:00",
+    "server": "Zmsapi-unconfigured"
+  },
+  "data": {
+	"$schema": "https://schema.berlin.de/queuemanagement/ticketprinter.json",
+    "enabled": true,
+    "reload": 30,
+    "buttonlist": "s615",
+    "hash": "710caa9f2e7547a52106d6b00868c5cf3a",
+    "lastUpdate": 1447925326000,
+    "id": 2,
+    "name": "",
+    "buttons": [
+      {
+        "type": "scope",
+        "url": "/scope/615/",
+        "scope": {
+          "hint": "Bitte gehen Sie zum Raum 2001",
+          "id": "615",
+          "shortName": "",
+          "contact": {
+            "name": "Ordnungsamt Charlottenburg-Wilmersdorf (Zentrale Anlauf- und Beratungsstelle)",
+            "street": "Hohenzollerndamm 174-177, 10713 Berlin",
+            "email": "",
+            "country": "Germany"
+          },
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": "30",
+              "endInDaysDefault": "21",
+              "multipleSlotsEnabled": "0",
+              "reservationDuration": "20",
+              "startInDaysDefault": "2"
+            },
+            "client": {
+              "alternateAppointmentUrl": "",
+              "amendmentActivated": "1",
+              "amendmentLabel": "1",
+              "emailRequired": "1",
+              "telephoneActivated": "0",
+              "telephoneRequired": "0"
+            },
+            "notifications": {
+              "confirmationContent": "",
+              "headsUpContent": "",
+              "headsUpTime": "0"
+            },
+            "pickup": {
+              "alternateName": "",
+              "isDefault": "0"
+            },
+            "queue": {
+              "callCountMax": "0",
+              "callDisplayText": "Antragstellung und Beratung für Gaststättenbetriebe mit Ausschank alkoholischer Getränke ist ab sofort nur mit Terminvereinbarung möglich!\r\n\r\nBitte vereinbaren Sie einen Termin per E-Mail: ordnungsamt@charlottenburg-wilmersdorf.de",
+              "firstNumber": "1",
+              "lastNumber": "999",
+              "processingTimeAverage": "7",
+              "publishWaitingTimeEnabled": "0",
+              "statisticsEnabled": "0"
+            },
+            "survey": {
+              "emailContent": "",
+              "enabled": "0",
+              "label": ""
+            },
+            "ticketprinter": {
+              "buttonName": "Ordnungsamt Charlottenburg-Wilmersdorf (Zentrale Anlauf- und Beratungsstelle)",
+              "confirmationEnabled": "0",
+              "deactivatedText": "",
+              "notificationsAmendmentEnabled": "0",
+              "notificationsEnabled": "0",
+              "notificationsDelay": "0"
+            },
+            "workstation": {
+              "emergencyEnabled": "0"
+            }
+          },
+          "status": {
+            "emergency": {
+              "acceptedByWorkstation": "-1",
+              "activated": "0",
+              "calledByWorkstation": "-1"
+            },
+            "queue": {
+              "ghostWorkstationCount": "-1",
+              "givenNumberCount": "1",
+              "lastGivenNumber": "1",
+              "lastGivenNumberTimestamp": 1459461600
+            },
+            "ticketprinter": {
+              "deactivated": "0"
+            }
+          },
+          "provider": {
+            "id": "122058",
+            "$ref": "/provider/122058/"
+          }
+        },
+        "enabled": true,
+        "name": "Ordnungsamt Charlottenburg-Wilmersdorf (Zentrale Anlauf- und Beratungsstelle)"
+      }
+    ]
+  }
+}

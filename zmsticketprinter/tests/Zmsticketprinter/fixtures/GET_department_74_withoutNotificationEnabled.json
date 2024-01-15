@@ -1,0 +1,99 @@
+{
+    "$schema": "https://127.0.0.1/terminvereinbarung/api/2/",
+    "meta": {
+      "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+      "error": false,
+      "generated": "2018-10-24T13:29:55+02:00",
+      "server": "Zmsapi-ENV (v2.18.02-25-gc214cea)"
+    },
+    "data": {
+      "$schema": "https://schema.berlin.de/queuemanagement/department.json",
+      "id": "74",
+      "scopes": [
+        {
+          "id": "380",
+          "source": "dldb",
+          "contact": {
+            "name": "Bürgeramt Halemweg (Außenstelle)"
+          },
+          "$ref": "/scope/380/"
+        }
+      ],
+      "links": [
+        {
+          "name": "Bürgerämter Charlottenburg-Wilmersdorf",
+          "url": "http://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+          "target": "1",
+          "id": "119"
+        }
+      ],
+      "dayoff": [
+        {
+          "id": "1590",
+          "date": 1478041200,
+          "lastChange": 1540372571,
+          "name": "Personalversammlung"
+        }
+      ],
+      "name": "Bürgeramt",
+      "email": "buergeramt@charlottenburg-wilmersdorf.de",
+      "contact": {
+        "city": "Berlin",
+        "street": "Otto-Suhr-Allee 100, 10585 Berlin",
+        "country": "Germany",
+        "name": "Fr. Krause-Jentsch"
+      },
+      "preferences": {
+        "notifications": {
+          "enabled": "0",
+          "identification": "support@berlin.de",
+          "sendConfirmationEnabled": "1",
+          "sendReminderEnabled": "1"
+        }
+      },
+      "clusters": [
+        {
+          "scopes": [
+            {
+              "id": "141",
+              "source": "dldb",
+              "$ref": "/scope/141/"
+            }
+          ],
+          "id": "109",
+          "name": "Bürgeramt Heerstraße",
+          "hint": "",
+          "shortNameEnabled": "1",
+          "callDisplayText": ""
+        },
+        {
+          "scopes": [
+            {
+              "id": "140",
+              "source": "dldb",
+              "$ref": "/scope/140/"
+            }
+          ],
+          "id": "110",
+          "name": "Bürgeramt Hohenzollerndamm",
+          "hint": "",
+          "shortNameEnabled": "1",
+          "callDisplayText": ""
+        },
+        {
+          "scopes": [
+            {
+              "id": "142",
+              "source": "dldb",
+              "$ref": "/scope/142/"
+            }
+          ],
+          "id": "192",
+          "name": "Bürgeramt Wilmersdorfer Str.",
+          "hint": "",
+          "shortNameEnabled": "1",
+          "callDisplayText": ""
+        }
+      ]
+    }
+  }

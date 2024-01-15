@@ -1,0 +1,40 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2016-04-29T11:53:31+02:00",
+    "server": "Zmsapi-unconfigured"
+  },
+  "data": {
+	"$schema": "https://schema.berlin.de/queuemanagement/ticketprinter.json",
+    "enabled": true,
+    "reload": 30,
+    "buttonlist": "c283",
+    "hash": "710caa9f2e7547a52106d6b00868c5cf3a",
+    "lastUpdate": 1447925326000,
+    "id": 2,
+    "name": "",
+    "buttons": [
+      {
+        "type": "cluster",
+        "url": "/cluster/283/",
+        "cluster": {
+          "id": "283",
+          "name": "Ordnungsamt Lichtenberg",
+          "hint": "",
+          "shortNameEnabled": "1",
+          "callDisplayText": "",
+          "scopes": [
+            {
+              "id": 0,
+              "$ref": "/scope/637/"
+            }
+          ]
+        },
+        "enabled": true,
+        "name": "Ordnungsamt Lichtenberg"
+      }
+    ]
+  }
+}
