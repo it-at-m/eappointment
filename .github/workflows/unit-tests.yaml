@@ -68,6 +68,7 @@ jobs:
             echo "Installing Composer dependencies for $module"
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
+        shell: bash
       - name: Import Test Data and Run Unit Tests for zmsapi
         env:
           MYSQL_HOST: 127.0.0.1
