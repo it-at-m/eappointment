@@ -77,11 +77,15 @@ jobs:
           MYSQL_ROOT_PASSWORD: zmsapi
           MYSQL_PORT: 3306
         run: |
+          pwd
+          echo "----------------"
           ls
-          ls zmsdb/tests/Zmsdb
+          echo "----------------"
           ls /
-          ls /home/runner/work/
-          ls /home/runner/work/eappointment/eappointment/
+          echo "----------------"
+          ls zmsdb/tests/Zmsdb
+          echo "----------------"
+
           echo "Setup fixtures..."
           mkdir -p /home/runner/work/eappointment/eappointment/data
           cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
