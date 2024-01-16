@@ -78,7 +78,10 @@ jobs:
           MYSQL_PORT: 3306
         run: |
           ls
-          ls zmsdb
+          ls zmsdb/tests/Zmsdb
+          ls /
+          ls /home/runner/work/
+          ls /home/runner/work/eappointment/eappointment/
           echo "Setup fixtures..."
           mkdir -p /home/runner/work/eappointment/eappointment/data
           cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
