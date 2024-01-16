@@ -20,6 +20,7 @@ jobs:
           cd "${{ matrix.module }}"
           ./vendor/bin/phpunit
     strategy:
+      fail-fast: false
       matrix:
         include:
           - module: zmsadmin
