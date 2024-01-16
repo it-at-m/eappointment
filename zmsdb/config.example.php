@@ -7,11 +7,16 @@ date_default_timezone_set('Europe/Berlin');
 
 define('MYSQL_DATABASE', getenv('MYSQL_DATABASE') ? getenv('MYSQL_DATABASE') : 'zmsbo');
 // Use Docker environment settings, if exists
-if (getenv('MYSQL_PORT')) {
+if (getenv('MYSQL_HOST')) {
+    $host = getenv('MYSQL_HOST') ?: '127.0.0.1';
+    $port = getenv('MYSQL_PORT') ?: '3306'; // default MySQL port
+    $host .= ";port=$port";
+} else if (getenv('MYSQL_PORT')) {
     $host = parse_url(getenv('MYSQL_PORT'), PHP_URL_HOST);
     $host .= ';port=';
     $host .= parse_url(getenv('MYSQL_PORT'), PHP_URL_PORT);
 } else {
+    $port = '3306'; // default MySQL port
     $host = '127.0.0.1';
 }
 if (getenv('MYSQL_PASSWORD') || getenv('MYSQL_ROOT_PASSWORD')) {
