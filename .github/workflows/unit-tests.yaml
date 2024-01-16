@@ -37,3 +37,55 @@ jobs:
             php_version: "8.0"
           - module: zmsstatistic
             php_version: "8.0"
+
+
+  zmsapi-test:
+    needs: module-test
+    runs-on: ubuntu-latest
+    container:
+      image: "registry.gitlab.com/eappointment/php-base:8.0-dev"
+    services:
+      mariadb:
+        image: mariadb:10.1
+        env:
+          MYSQL_ROOT_PASSWORD: zmsapi
+          MYSQL_DATABASE: zmsbo
+          MYSQL_CHARACTER_SET: utf8mb4
+          MYSQL_COLLATION: utf8mb4_unicode_ci
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 10s
+          --health-retries 5
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsapi' 'zmsdb')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+      - name: Import Test Data and Run Unit Tests for zmsapi
+        env:
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_DATABASE: zmsbo
+          MYSQL_USER: root
+          MYSQL_ROOT_PASSWORD: zmsapi
+          MYSQL_PORT: 3306
+        run: |
+          echo "Setup fixtures..."
+          mkdir -p /home/runner/work/eappointment/eappointment/data
+          cp -R /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /home/runner/work/eappointment/eappointment/data/
+          ln -sfn /home/runner/work/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /home/runner/work/eappointment/eappointment/data
+          cd /home/runner/work/eappointment/eappointment/zmsdb
+          /bin/bash -c "/home/runner/work/eappointment
