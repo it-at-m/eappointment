@@ -2,11 +2,6 @@ name: unit tests
 
 on:
   workflow_call:
-  push:
-    tags:
-      - '**'
-    branches:
-      - '**'
 
 jobs:
   module-test:
