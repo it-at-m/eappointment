@@ -85,11 +85,13 @@ jobs:
           echo "----------------"
           ls zmsdb/tests/Zmsdb
           echo "----------------"
-
+          ls /__w/eappointment/eappointment/zmsdb/vendor
+          echo "----------------"
           echo "Setup fixtures..."
           mkdir -p /__w/eappointment/eappointment/data
           cp -R /__w/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /__w/eappointment/eappointment/data/
           ln -sfn /__w/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /__w/eappointment/eappointment/data
+          echo "importing test data..."
           cd /__w/eappointment/eappointment/zmsdb
           /bin/bash -c "/__w/eappointment/eappointment/zmsdb/bin/importTestData --commit"
           cd /__w/eappointment/eappointment/zmsapi
