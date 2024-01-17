@@ -35,7 +35,7 @@ class PickupTest extends Base
         $response = (new ProcessFinishedTest())->render([], [
             '__body' => json_encode($entity)
         ], []);
-
+        $this->parameters['displayName'] = '001';
         $response = $this->render([], ['selectedScope' => 141], []);
         $this->assertStringContainsString('141', (string)$response->getBody());
         $this->assertStringContainsString('10030', (string)$response->getBody());
