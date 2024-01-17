@@ -49,8 +49,12 @@ class AppointmentForm extends BaseController
         $freeProcessList = ($selectedScope)
             ? Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation)
             : null;
-
+            
         $provider = $selectedScope->getProvider();
+
+        $resolvedProvider = \App::$http->readGetResult('/provider/'.$selectedScope->source.'/'.$provider->id.'/', [
+            'resolveReferences' => 1,
+        ])->getEntity();
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -68,7 +72,7 @@ class AppointmentForm extends BaseController
                 'selectedTime' => $selectedTime,
                 'freeProcessList' => $freeProcessList,
                 'requestList' => $requestList,
-                'slotTimeInMinutes' => $provider->getSlotTimeInMinutes(),
+                'slotTimeInMinutes' => $resolvedProvider->getSlotTimeInMinutes(),
             )
         );
     }
