@@ -152,6 +152,7 @@ EOS;
         return static::defaultFormat($default);
     }
 
+
     /**
      * requests reduced response data
      */
