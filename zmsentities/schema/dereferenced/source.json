@@ -31,7 +31,8 @@
                 "provider": {
                     "id": 21334,
                     "name": "Bürgeramt Mitte",
-                    "source": "dldb"
+                    "source": "dldb",
+                    "displayName": "001"
                 },
                 "request": {
                     "id": "120335",
@@ -391,7 +392,8 @@
                     "provider": {
                         "id": 21334,
                         "name": "Bürgeramt Mitte",
-                        "source": "dldb"
+                        "source": "dldb",
+                        "displayName": "001"
                     },
                     "request": {
                         "id": "120335",
