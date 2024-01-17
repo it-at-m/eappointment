@@ -75,7 +75,7 @@ jobs:
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
         shell: bash
-      - name: Import Test Data and Run Unit Tests for zmsapi
+      - name: Import Test Data and Run Unit Tests
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
           MYSQL_DATABASE: zmsbo
@@ -87,7 +87,6 @@ jobs:
           ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
           echo "Importing test data..."
           vendor/bin/importTestData --commit
-          docker-php-ext-enable xdebug
           php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit \
             -v --colors=never --coverage-text --coverage-html public/_tests/coverage/ --log-junit \
             public/_tests/junit.xml
@@ -128,14 +127,14 @@ jobs:
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
         shell: bash
-      - name: Import Test Data and Run Unit Tests for zmsapi
+      - name: Import Test Data and Run Unit Tests
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
           MYSQL_DATABASE: zmsbo
           MYSQL_ROOT_PASSWORD: zmsdb
         run: |
           cd zmsdb
-          docker-php-ext-enable xdebug
+          vendor/bin/importTestData --commit
           php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit \
             -v --colors=never --coverage-text --coverage-html public/_tests/coverage/ --log-junit \
             public/_tests/junit.xml
