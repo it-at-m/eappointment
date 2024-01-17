@@ -16,8 +16,7 @@
         "id": 21334,
         "name": "Bürgeramt Mitte",
         "source": "dldb",
-        "link": "https:\/\/service.berlin.de\/standort\/122280\/",
-        "displayName": "001"
+        "link": "https:\/\/service.berlin.de\/standort\/122280\/"
     },
     "required": [
         "id",
