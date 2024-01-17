@@ -76,7 +76,7 @@ class AppointmentFormHelper
         if ($selectedScopeId) {
             $selectedScope = \App::$http
               ->readGetResult('/scope/'. $selectedScopeId .'/', [
-                  'resolveReferences' => 2,
+                  'resolveReferences' => 1,
                   'gql' => GraphDefaults::getScope()
                 ])
               ->getEntity();
