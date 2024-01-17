@@ -122,9 +122,9 @@ jobs:
           MYSQL_DATABASE: zmsbo
           MYSQL_ROOT_PASSWORD: zmsdb
         run: |
-          mkdir -p /__w/eappointment/eappointment/eappointment/data
-          cp -R /__w/eappointment/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /__w/eappointment/eappointment/eappointment/data/
-          ln -sfn /__w/eappointment/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /__w/eappointment/eappointment/eappointment/data
+          mkdir -p /__w/eappointment/eappointment/data
+          cp -R /__w/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /__w/eappointment/eappointment/data/
+          ln -sfn /__w/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /__w/eappointment/eappointment/data
           echo "Importing test data..."
           cd /__w/eappointment/eappointment/zmsdb
-          /bin/bash -c "/__w/eappointment/eappointment/eappointment/zmsdb/bin/importTestData --commit && ./vendor/bin/phpunit"
+          /bin/bash -c "/__w/eappointment/eappointment/zmsdb/bin/importTestData --commit && ./vendor/bin/phpunit"
