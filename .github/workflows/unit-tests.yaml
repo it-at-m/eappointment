@@ -45,6 +45,7 @@ jobs:
       image: "registry.gitlab.com/eappointment/php-base:8.0-dev"
     services:
       mariadb:
+        alias: mysql
         image: mariadb:10.1
         env:
           MYSQL_ROOT_PASSWORD: zmsapi
