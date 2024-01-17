@@ -59,14 +59,14 @@ jobs:
           --health-timeout 10s
           --health-retries 5
     steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
       - name: Install python3
         run: |
           apt update
           apt install -y python3 python3-click python3-git
       - name: Referencing local Modules and Libraries
         run: python3 ./cli modules reference-libraries --no-symlink
-      - name: Checkout GitHub Action
-        uses: actions/checkout@main
       - name: Install Composer Dependencies
         run: |
           modules=('zmsapi' 'zmsdb')
@@ -112,14 +112,14 @@ jobs:
           --health-timeout 10s
           --health-retries 5
     steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
       - name: Install python3
         run: |
           apt update
           apt install -y python3 python3-click python3-git
       - name: Referencing local Modules and Libraries
         run: python3 ./cli modules reference-libraries --no-symlink
-      - name: Checkout GitHub Action
-        uses: actions/checkout@main
       - name: Install Composer Dependencies
         run: |
           modules=('zmsdb')
