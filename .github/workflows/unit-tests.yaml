@@ -60,7 +60,9 @@ jobs:
           --health-retries 5
     steps:
       - name: Install python3
-        run: apt install -y python3 python3-click python3-git
+        run: |
+          apt update
+          apt install -y python3 python3-click python3-git
       - name: Referencing local Modules and Libraries
         run: python3 ./cli modules reference-libraries --no-symlink
       - name: Checkout GitHub Action
@@ -111,7 +113,9 @@ jobs:
           --health-retries 5
     steps:
       - name: Install python3
-        run: apt install -y python3 python3-click python3-git
+        run: |
+          apt update
+          apt install -y python3 python3-click python3-git
       - name: Referencing local Modules and Libraries
         run: python3 ./cli modules reference-libraries --no-symlink
       - name: Checkout GitHub Action
