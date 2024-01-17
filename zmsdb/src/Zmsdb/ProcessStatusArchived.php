@@ -1,7 +1,7 @@
 <?php
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\ProcessArchived as Entity;
+use \BO\Zmsentities\Processarchived as Entity;
 use \BO\Zmsentities\Collection\ProcessList as Collection;
 
 /**
