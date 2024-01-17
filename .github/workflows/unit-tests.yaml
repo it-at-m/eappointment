@@ -134,7 +134,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: zmsdb
         run: |
           cd zmsdb
-          vendor/bin/importTestData --commit
+          bin/importTestData --commit
           php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit \
             -v --colors=never --coverage-text --coverage-html public/_tests/coverage/ --log-junit \
             public/_tests/junit.xml
