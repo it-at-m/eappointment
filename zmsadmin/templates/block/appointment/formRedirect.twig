@@ -21,9 +21,10 @@
             {% set scopeOptionsGroup = scopeOptionsGroup|merge([{ 'name' : department.name, 'options' : scopeOptionsGroupOptions|msort('name') }]) %}
 
             {{ formgroup(
-                {"label": "Weiterleiten zu Standort"},
+                {"label": "Weiterleiten zu Standort", "required": true, "errors": [errors.location]},
                 [{
                     "type": "select",
+                    "required": true,
                     "parameter": {
                         "name": "location",
                         "options": scopeOptionsGroup
