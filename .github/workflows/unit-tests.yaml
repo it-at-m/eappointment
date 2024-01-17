@@ -75,16 +75,16 @@ jobs:
           MYSQL_DATABASE: zmsbo
           MYSQL_ROOT_PASSWORD: zmsapi
         run: |
+          cd zmsapi
           echo "Setup fixtures..."
-          mkdir -p /__w/eappointment/eappointment/data
-          cp -R /__w/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /__w/eappointment/eappointment/data/
-          ln -sfn /__w/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /__w/eappointment/eappointment/data
+          rm -rf data
+          ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
           echo "Importing test data..."
-          cd /__w/eappointment/eappointment/zmsdb
-          /bin/bash -c "/__w/eappointment/eappointment/zmsdb/bin/importTestData --commit"
-          cd /__w/eappointment/eappointment/zmsapi
-          /bin/bash -c "./vendor/bin/phpunit"
-
+          vendor/bin/importTestData --commit
+          docker-php-ext-enable xdebug
+          php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit \
+            -v --colors=never --coverage-text --coverage-html public/_tests/coverage/ --log-junit \
+            public/_tests/junit.xml
 
   zmsdb-test:
     runs-on: ubuntu-latest
@@ -122,9 +122,7 @@ jobs:
           MYSQL_DATABASE: zmsbo
           MYSQL_ROOT_PASSWORD: zmsdb
         run: |
-          mkdir -p /__w/eappointment/eappointment/data
-          cp -R /__w/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /__w/eappointment/eappointment/data/
-          ln -sfn /__w/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /__w/eappointment/eappointment/data
-          echo "Importing test data..."
-          cd /__w/eappointment/eappointment/zmsdb
-          /bin/bash -c "/__w/eappointment/eappointment/zmsdb/bin/importTestData --commit && ./vendor/bin/phpunit"
+          docker-php-ext-enable xdebug
+          php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit \
+            -v --colors=never --coverage-text --coverage-html public/_tests/coverage/ --log-junit \
+            public/_tests/junit.xml
