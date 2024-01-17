@@ -225,6 +225,8 @@ class ProcessSaveTest extends Base
                 ]
             ]
         );
+        $this->parameters['selecteddate'] = '2016-04-01';
+        $this->parameters['selectedtime'] = '11-55';
         $response = $this->render(['id' => 100011], $this->parameters, [], 'POST');
         $this->assertStringContainsString(
             'Der Spontankunde mit der Wartenummer 5 wurde erfolgreich aktualisiert.',
