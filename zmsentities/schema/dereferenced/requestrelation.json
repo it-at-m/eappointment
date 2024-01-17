@@ -5,8 +5,7 @@
         "provider": {
             "id": 21334,
             "name": "Bürgeramt Mitte",
-            "source": "dldb",
-            "displayName": "001"
+            "source": "dldb"
         },
         "request": {
             "id": "120335",

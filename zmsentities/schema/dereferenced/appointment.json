@@ -314,8 +314,7 @@
                     },
                     "id": 123456,
                     "name": "Flughafen Schönefeld, Aufsicht",
-                    "source": "dldb",
-                    "displayName": "001"
+                    "source": "dldb"
                 },
                 "shortName": "Zentrale",
                 "status": {
