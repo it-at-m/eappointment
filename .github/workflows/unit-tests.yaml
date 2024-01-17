@@ -71,11 +71,9 @@ jobs:
         shell: bash
       - name: Import Test Data and Run Unit Tests for zmsapi
         env:
-          MYSQL_HOST: 127.0.0.1
+          MYSQL_PORT: "tcp://mysql:3306"
           MYSQL_DATABASE: zmsbo
-          MYSQL_USER: root
           MYSQL_ROOT_PASSWORD: zmsapi
-          MYSQL_PORT: 3306
         run: |
           pwd
           echo "----------------"
