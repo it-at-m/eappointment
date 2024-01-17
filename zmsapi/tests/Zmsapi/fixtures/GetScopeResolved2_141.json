@@ -21,7 +21,8 @@
             "streetNumber": "12"
         },
         "link": "https://service.berlin.de/standort/122217/",
-        "name": "B\u00fcrgeramt Heerstra\u00dfe"
+        "name": "B\u00fcrgeramt Heerstra\u00dfe",
+        "displayName":"001"
     },
     "hint": "Nr. wird zum Termin aufgerufen",
     "lastChange": 1618265883,
