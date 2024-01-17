@@ -29,9 +29,24 @@ class WorkstationProcessRedirect extends BaseController
         $process = $workstation->process;
 
         if ($request->getMethod() === 'POST') {
+            $validator = $request->getAttribute('validator');
+            $selectedLocation = $validator->getParameter('location')->isNumber()->getValue();
+
+            if (empty($selectedLocation)) {
+                return \BO\Slim\Render::redirect(
+                    'workstationProcessRedirect',
+                    [],
+                    [
+                        'errors' => [
+                            'location' => 'Bitte wählen Sie einen Standort aus.'
+                        ]
+                    ]
+                );
+            }
+
             $scope = \App::$http
                 ->readGetResult(
-                    '/scope/' . $input['location'] . '/',
+                    '/scope/' . $selectedLocation . '/',
                     ['resolveReferences' => 2]
                 )->getEntity();
 
@@ -54,7 +69,7 @@ class WorkstationProcessRedirect extends BaseController
                 array()
             );
         }
- 
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/workstationProcessRedirect.twig',
@@ -64,7 +79,8 @@ class WorkstationProcessRedirect extends BaseController
                 'department' => $department,
                 'scope' => $workstation->scope,
                 'scopes' => $department->getScopeList(),
-                'menuActive' => 'workstation'
+                'menuActive' => 'workstation',
+                'errors' => $request->getParam('errors')
             )
         );
     }
