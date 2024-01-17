@@ -87,9 +87,8 @@ class RequestReport extends Base
     {
         $reportData = [];
         foreach ($report->data as $name => $entry) {
-            if ('sum' != $name && 'average_processingtime' != $name) {
+            if ('sum' != $name) {
                 $reportData[$name][] = $name;
-                $reportData[$name][] = $report->data['average_processingtime'][$name];
                 $reportData[$name][] = $report->data['sum'][$name];
                 $dateTime = clone $this->firstDayDate;
                 do {
