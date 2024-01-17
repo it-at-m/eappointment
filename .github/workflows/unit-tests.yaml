@@ -84,3 +84,47 @@ jobs:
           /bin/bash -c "/__w/eappointment/eappointment/zmsdb/bin/importTestData --commit"
           cd /__w/eappointment/eappointment/zmsapi
           /bin/bash -c "./vendor/bin/phpunit"
+
+
+  zmsdb-test:
+    runs-on: ubuntu-latest
+    container:
+      image: "registry.gitlab.com/eappointment/php-base:8.0-dev"
+    services:
+      mariadb:
+        image: mariadb:10.1
+        env:
+          MYSQL_ROOT_PASSWORD: zmsdb
+          MYSQL_DATABASE: zmsbo
+          MYSQL_CHARACTER_SET: utf8mb4
+          MYSQL_COLLATION: utf8mb4_unicode_ci
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 10s
+          --health-retries 5
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsdb')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+        shell: bash
+      - name: Import Test Data and Run Unit Tests for zmsapi
+        env:
+          MYSQL_PORT: "tcp://mariadb:3306"
+          MYSQL_DATABASE: zmsbo
+          MYSQL_ROOT_PASSWORD: zmsdb
+        run: |
+          mkdir -p /__w/eappointment/eappointment/eappointment/data
+          cp -R /__w/eappointment/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /__w/eappointment/eappointment/eappointment/data/
+          ln -sfn /__w/eappointment/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures /__w/eappointment/eappointment/eappointment/data
+          echo "Importing test data..."
+          cd /__w/eappointment/eappointment/zmsdb
+          /bin/bash -c "/__w/eappointment/eappointment/eappointment/zmsdb/bin/importTestData --commit && ./vendor/bin/phpunit"
