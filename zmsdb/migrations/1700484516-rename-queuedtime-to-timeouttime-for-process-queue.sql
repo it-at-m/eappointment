@@ -1,1 +1,1 @@
-ALTER TABLE buerger CHANGE COLUMN `queuedTime` `timeoutTime` DATETIME;
+ALTER TABLE buerger CHANGE `queuedTime` `timeoutTime` DATETIME;
