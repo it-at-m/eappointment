@@ -45,7 +45,7 @@ jobs:
       image: "registry.gitlab.com/eappointment/php-base:8.0-dev"
     services:
       mariadb:
-        image: mariadb:10.1
+        image: mariadb:10.6
         env:
           MYSQL_ROOT_PASSWORD: zmsapi
           MYSQL_DATABASE: zmsbo
@@ -59,6 +59,10 @@ jobs:
           --health-timeout 10s
           --health-retries 5
     steps:
+      - name: Install python3
+        run: apt install -y python3 python3-click python3-git
+      - name: Referencing local Modules and Libraries
+        run: python3 ./cli modules reference-libraries --no-symlink
       - name: Checkout GitHub Action
         uses: actions/checkout@main
       - name: Install Composer Dependencies
@@ -92,7 +96,7 @@ jobs:
       image: "registry.gitlab.com/eappointment/php-base:8.0-dev"
     services:
       mariadb:
-        image: mariadb:10.1
+        image: mariadb:10.6
         env:
           MYSQL_ROOT_PASSWORD: zmsdb
           MYSQL_DATABASE: zmsbo
@@ -106,6 +110,10 @@ jobs:
           --health-timeout 10s
           --health-retries 5
     steps:
+      - name: Install python3
+        run: apt install -y python3 python3-click python3-git
+      - name: Referencing local Modules and Libraries
+        run: python3 ./cli modules reference-libraries --no-symlink
       - name: Checkout GitHub Action
         uses: actions/checkout@main
       - name: Install Composer Dependencies
