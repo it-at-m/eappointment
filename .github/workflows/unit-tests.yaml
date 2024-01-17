@@ -75,16 +75,6 @@ jobs:
           MYSQL_DATABASE: zmsbo
           MYSQL_ROOT_PASSWORD: zmsapi
         run: |
-          pwd
-          echo "----------------"
-          ls
-          echo "----------------"
-          ls /
-          echo "----------------"
-          ls zmsdb/tests/Zmsdb
-          echo "----------------"
-          ls /__w/eappointment/eappointment/zmsdb/vendor
-          echo "----------------"
           echo "Setup fixtures..."
           mkdir -p /__w/eappointment/eappointment/data
           cp -R /__w/eappointment/eappointment/zmsdb/tests/Zmsdb/fixtures/* /__w/eappointment/eappointment/data/
