@@ -73,6 +73,5 @@ class IndexTest extends Base
         $this->assertStringContainsString(
             'Bürgeramt', 
             (string) $response->getBody()
-        );
-    }
+        );    }
 }

@@ -49,7 +49,7 @@ class Queue extends BaseController
             array(
                 'text' => 'asdsadsa',
                 'tableSettings' => $validator->getParameter('tableLayout')->isArray()->getValue(),
-                'calldisplay' => $calldisplay->getEntity(true),
+                'calldisplay' => $calldisplay->getEntity(false),
                 'scope' => $calldisplay->getSingleScope(),
                 'queueList' => $queueList
             )
