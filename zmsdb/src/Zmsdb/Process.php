@@ -1,6 +1,7 @@
 <?php
 namespace BO\Zmsdb;
 
+use BO\Zmsentities\Collection\AppointmentList;
 use \BO\Zmsentities\Process as Entity;
 use \BO\Zmsentities\Collection\ProcessList as Collection;
 use BO\Zmsdb\Helper\ProcessStatus;
@@ -125,6 +126,29 @@ class Process extends Base implements Interfaces\ResolveReferences
         $process->addQueue($newQueueNumber, $dateTime);
         Log::writeLogEntry("CREATE (Process::writeNewPickup) $process ", $process->id);
         return $this->writeNewProcess($process, $dateTime);
+    }
+
+    public function redirectToScope($process, \BO\Zmsentities\Scope $scope, int $waitingNumber)
+    {
+        $datetime = \App::$now;
+        $process->setStatus('confirmed');
+
+        $appointment = $process->getFirstAppointment();
+        $date = (new \DateTimeImmutable())->setTimestamp($appointment->date);
+        $date = $date->setTime(0, 0, 0);
+        $appointment->date = $date->getTimestamp();
+        $process->appointments = new AppointmentList([$appointment]);
+
+        $newQueueNumber = (new Scope())->readWaitingNumberUpdated($scope->id, $datetime);
+        $process->addQueue($newQueueNumber, $datetime);
+        $process->queue['number'] = $waitingNumber;
+
+        Log::writeLogEntry("CREATE (Process::redirectToScope) $process ", $process->id);
+
+        $process = $this->writeNewProcess($process, $datetime);
+        $this->writeRequestsToDb($process);
+
+        return $process;
     }
 
     public function readSlotCount(\BO\Zmsentities\Process $process)

@@ -63,9 +63,13 @@
                     {% endif %}
                 </dd>
             </dl>
-                
-            <a class="button button--positive button--fullwidth button-finish right" href="{{ urlGet("workstationProcessFinished", {}, {}) }}" style="margin: 0.5em 0;">Fertig stellen</a>   
-            <button type="button" class="button button--destructive button--fullwidth button-cancel left" style="margin: 0.5em 0;">Abbruch</button>  
+                <a class="button button--positive button--fullwidth button-finish right" href="{{ urlGet("workstationProcessFinished", {}, {}) }}" style="margin: 0.5em 0;">Fertig stellen</a>
+
+                {% if workstation.process.withAppointment %}
+                    <a class="button button--default button--fullwidth button-finish right" href="{{ urlGet("workstationProcessRedirect", {}, {}) }}" style="margin: 0.5em 0;">Weiterleiten</a>
+                {% endif %}
+
+                <button type="button" class="button button--destructive button--fullwidth button-cancel left" style="margin: 0.5em 0;">Abbruch</button>
             {% endif %}  
               
         {% endblock %}

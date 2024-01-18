@@ -1,0 +1,57 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'appointment-form'} %}
+
+    {% from 'element/helper/form.twig' import formgroup, formbutton, checkboxfield, selectfield, inputfield %}
+
+    {% block board_title %}
+        Termin Weiterleiten
+    {% endblock %}
+
+    {% block board_body %}
+        {% include "element/helper/messageHandler.twig" %}
+        {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield, providername %}
+
+        <form data-formData="{{ formData|json_encode }}" data-saved-process="{{ selectedProcess.id }}" method="POST">
+            <div class="aural" id="auralmessage" aria-live="polite" data-aural='{"clean":"{{ cleanupRequestAuralMessage|trans }}", "add":"{{ addRequestAuralMessage|trans }}","remove":"{{ removeRequestAuralMessage|trans }}", "chooseRequestFirst":"{{ chooseRequestFirst|trans }}"}'></div>
+
+            {% set scopeOptionsGroup = [{ 'value' : '', 'name' : '-- bitte auswählen --'}] %}
+            {% set scopeOptionsGroupOptions = [] %}
+            {% for scopeOption in scopes|filter((s) => s.name != '' and s.id != scope.id) %}
+                {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scopeOption.id, "name": providername(scopeOption) }]) %}
+            {% endfor %}
+            {% set scopeOptionsGroup = scopeOptionsGroup|merge([{ 'name' : department.name, 'options' : scopeOptionsGroupOptions|msort('name') }]) %}
+
+            {{ formgroup(
+                {"label": "Weiterleiten zu Standort", "required": true, "errors": [errors.location]},
+                [{
+                    "type": "select",
+                    "required": true,
+                    "parameter": {
+                        "name": "location",
+                        "options": scopeOptionsGroup
+                    }
+                }]
+            ) }}
+
+            {{ formgroup(
+                {
+                    "label": "Anmerkung",
+                    "checked": scope.preferences.client.amendmentActivated,
+                    "class": "form-group--nomaxwidth",
+                    "errors": formData.amendment.messages
+                },
+                [{
+                    "type":"textarea",
+                    "parameter": {
+                        "name": "amendment",
+                        "rows": "3",
+                        "maxlength": 300,
+                        "value": workstation.process.amendment,
+                        "accesskey":"w"
+                    }
+                }]
+            ) }}
+
+            <button class="button button--positive button-submit process-reserve" accesskey="h">{{ "%s"|format("Termin buchen")|trans }}</button>
+        </form>
+    {% endblock %}
+{% endembed %}
