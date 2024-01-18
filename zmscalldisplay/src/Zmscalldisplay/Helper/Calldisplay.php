@@ -51,7 +51,6 @@ class Calldisplay
     public function getEntity($resolveEntity = true)
     {
         if (!$this->isEntityResolved && $resolveEntity) {
-            error_log(json_encode($this->entity));
             $this->entity = \App::$http->readPostResult('/calldisplay/', $this->entity)->getEntity();
             $this->isEntityResolved = true;
         }
