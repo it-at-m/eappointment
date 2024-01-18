@@ -80,7 +80,7 @@ class WorkstationProcessRedirect extends BaseController
                 'scope' => $workstation->scope,
                 'scopes' => $department->getScopeList(),
                 'menuActive' => 'workstation',
-                'errors' => $request->getParam('errors')
+                'errors' => $request->getParam('errors') ?? null
             )
         );
     }
