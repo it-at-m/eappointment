@@ -375,6 +375,9 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->map(['GET','POST'], '/workstation/process/finished/', \BO\Zmsadmin\WorkstationProcessFinished::class)
     ->setName("workstationProcessFinished");
 
+\App::$slim->map(['GET','POST'], '/workstation/process/redirect/', \BO\Zmsadmin\WorkstationProcessRedirect::class)
+    ->setName("workstationProcessRedirect");
+
 \App::$slim->get('/workstation/call/{id:\d+}/', \BO\Zmsadmin\WorkstationProcessCall::class)
     ->setName("workstationProcessCall");
 
