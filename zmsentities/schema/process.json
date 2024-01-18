@@ -185,6 +185,7 @@
         "id": 123,
         "source": "dldb",
         "name": "Bürgeramt 1",
+        "displayName":"001",
         "contact": {
           "name": "Bürgeramt 1",
           "street": "Unter den Linden",
