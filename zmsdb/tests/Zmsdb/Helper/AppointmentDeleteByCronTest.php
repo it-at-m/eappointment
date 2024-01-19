@@ -61,7 +61,7 @@ class AppointmentDeleteByCronTest extends Base
         error_log($process->id);
 
         
-        $process['requests'] = json_decode($requests);
+        $process['requests'] = json_decode($requests, true);
 
 
         $json = json_encode($process);
