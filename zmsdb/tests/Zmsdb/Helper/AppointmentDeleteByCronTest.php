@@ -54,13 +54,13 @@ class AppointmentDeleteByCronTest extends Base
 
         error_log($process->id);
 
-        error_log(json_encode( (new \BO\Zmsdb\Request())->readRequestByProcessId($process->id, 2)));
+        error_log(json_encode( (new \BO\Zmsdb\Request())->readRequestByProcessId(10251250, 2)));
         //print_r( (new \BO\Zmsdb\Request())->readRequestByProcessId($process->id, 2), true);
 
         error_log($process->id);
 
         
-        $process['requests'] = (new \BO\Zmsdb\Request())->readRequestByProcessId($process->id, 2);
+        $process['requests'] = (new \BO\Zmsdb\Request())->readRequestByProcessId(10251250, 2);
 
 
         $json = json_encode($process);
