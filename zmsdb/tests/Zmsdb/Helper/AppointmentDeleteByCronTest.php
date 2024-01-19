@@ -51,6 +51,7 @@ class AppointmentDeleteByCronTest extends Base
         $process = (new Query())->readEntity($process->id, $process->authKey, 0);
         $process->status = 'finished';
 
+        error_log($process->id);
         $process['requests'] = (new \BO\Zmsdb\Request())->readRequestByProcessId($process->id, 2);
 
         $json = json_encode($process);
