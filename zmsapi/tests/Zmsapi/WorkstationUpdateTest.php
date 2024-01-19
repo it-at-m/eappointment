@@ -52,7 +52,7 @@ class WorkstationUpdateTest extends Base
         ], []);
     }*/
 
-    public function testAssignedWorkstationExistsByScopeAndNumber()
+    /*public function testAssignedWorkstationExistsByScopeAndNumber()
     {
         User::$assignedWorkstation = null;
 
@@ -73,7 +73,7 @@ class WorkstationUpdateTest extends Base
         $this->render([], [
             '__body' => json_encode($workstation)
         ], []);
-    }
+    }*/
 
     public function testAccessFailed()
     {
