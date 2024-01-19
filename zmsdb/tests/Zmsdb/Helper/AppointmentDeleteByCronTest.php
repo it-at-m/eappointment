@@ -51,16 +51,6 @@ class AppointmentDeleteByCronTest extends Base
         $process = (new Query())->readEntity($process->id, $process->authKey, 0);
         $process->status = 'finished';
         $process['requests'] = (new \BO\Zmsdb\Request())->readRequestByProcessId(100130, 2);
-
-
-        $json = json_encode($process);
-        $maxLength = 1024; // Set maximum length of each chunk
-        
-        for ($i = 0; $i < ceil(strlen($json) / $maxLength); $i++) {
-            error_log(substr($json, $i * $maxLength, $maxLength));
-        }
-        
-
         (new ProcessStatusArchived())->writeEntityFinished($process, $now);
 
         $helper = new AppointmentDeleteByCron(0, $now, false); // verbose
