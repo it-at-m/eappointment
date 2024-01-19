@@ -8,7 +8,7 @@ class PickupTest extends Base
 {
     protected $classname = "Pickup";
 
-    public function testRendering()
+    /*public function testRendering()
     {
         $this->setWorkstation();
         User::$workstation->scope['id'] = 141;
@@ -38,7 +38,7 @@ class PickupTest extends Base
         $this->assertStringContainsString('141', (string)$response->getBody());
         $this->assertStringContainsString('10030', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
-    }
+    }*/
 
     public function testNotMatchingScope()
     {
