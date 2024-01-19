@@ -59,7 +59,7 @@ class AppointmentDeleteByCronTest extends Base
         error_log($process->id);
 
         
-        $process['requests'] = (new Request())->readRequestByProcessId($process->id, $resolveReferences);
+        $process['requests'] = (new \BO\Zmsdb\Request())->readRequestByProcessId($process->id, $resolveReferences);
 
 
         $json = json_encode($process);
