@@ -47,6 +47,7 @@ class AppointmentDeleteByCronTest extends Base
         $now = static::$now;
                 
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141);
+        error_log(json_encode($scope));
         $process = (new Query())->writeNewPickup($scope, $now);
         $process = (new Query())->readEntity($process->id, $process->authKey, 0);
         $process->status = 'finished';
