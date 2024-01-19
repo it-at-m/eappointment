@@ -53,7 +53,7 @@ class AppointmentDeleteByCronTest extends Base
 
         error_log($process->id);
 
-        print_r( (new Request())->readRequestByProcessId($process->id, 2), true);
+        print_r( (new \BO\Zmsdb\Request())->readRequestByProcessId($process->id, 2), true);
 
         error_log($process->id);
         $requestsJson = "[{\"id\": \"120703\",\"link\": \"https://service.berlin.de/dienstleistung/120703/\",\"name\": \"Personalausweis beantragen\",\"source\": \"dldb\"}]";
