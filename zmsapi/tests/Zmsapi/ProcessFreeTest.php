@@ -25,7 +25,8 @@ class ProcessFreeTest extends Base
                 "providers": [
                     {
                         "id": 122217,
-                        "source": "dldb"
+                        "source": "dldb",
+                        "displayName":"001"
                     }
                 ]
             }'
@@ -55,7 +56,8 @@ class ProcessFreeTest extends Base
                 "providers": [
                     {
                         "id": 122217,
-                        "source": "dldb"
+                        "source": "dldb",
+                        "displayName":"001"
                     }
                 ]
             }'
@@ -85,7 +87,8 @@ class ProcessFreeTest extends Base
                 "providers": [
                     {
                         "id": 122217,
-                        "source": "dldb"
+                        "source": "dldb",
+                        "displayName":"001"
                     }
                 ]
             }'
@@ -266,7 +269,8 @@ class ProcessFreeTest extends Base
                 "providers": [
                     {
                       "id": 122217,
-                      "source": "dldb"
+                      "source": "dldb",
+                      "displayName":"001"
                     }
                 ]
             }'
@@ -296,7 +300,8 @@ class ProcessFreeTest extends Base
                 "providers": [
                     {
                         "id": 122217,
-                        "source": "dldb"
+                        "source": "dldb",
+                        "displayName":"001"
                     }
                 ]
             }'
