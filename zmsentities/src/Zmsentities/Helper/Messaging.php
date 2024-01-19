@@ -204,16 +204,6 @@ class Messaging
 
         if ($process) {
             $provider = $process->scope->provider;
-            error_log(json_encode($process));
-            error_log("***************************");
-            error_log(json_encode($process->scope));
-            error_log("***************************");
-            error_log(json_encode($provider));
-            error_log("***************************");
-            error_log(json_encode($provider->source));
-            error_log("***************************");
-            error_log(json_encode($provider->id));
-            print_r($provider, true);
             $providerName = $provider->displayName;
             $providerTemplateName = self::getProviderTemplateName($providerName);
             $providerTemplateFolder = 'custom/' . $providerTemplateName . '/';
