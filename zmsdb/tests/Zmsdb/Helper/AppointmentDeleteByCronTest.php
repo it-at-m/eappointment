@@ -53,6 +53,7 @@ class AppointmentDeleteByCronTest extends Base
         //$process->getRequests()->getFirst()->name = 'Personalausweis beantragen';
 
         error_log(json_encode($process));
+        print_r(($process, true));
 
         (new ProcessStatusArchived())->writeEntityFinished($process, $now);
 
