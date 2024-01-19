@@ -17,8 +17,7 @@ class DepartmentAddScopeTest extends Base
                   "shortName": "Test Scope",
                   "provider": {
                       "id": 122217,
-                      "source" : "dldb",
-                      "displayName":"001"
+                      "source" : "dldb"
                   }
               }'
         ], []);
