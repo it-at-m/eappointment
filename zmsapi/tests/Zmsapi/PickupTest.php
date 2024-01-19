@@ -22,7 +22,7 @@ class PickupTest extends Base
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertStringContainsString('"status":"pending"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
-    }
+    }*/
 
     public function testSelectedScope()
     {
@@ -38,7 +38,7 @@ class PickupTest extends Base
         $this->assertStringContainsString('141', (string)$response->getBody());
         $this->assertStringContainsString('10030', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
-    }*/
+    }
 
     public function testNotMatchingScope()
     {
