@@ -94,7 +94,8 @@
               },
               "source": "dldb",
               "link": "https://service.berlin.de/standort/122217/",
-              "name": "Bürgeramt Heerstraße"
+              "name": "Bürgeramt Heerstraße",
+              "displayName":"001"
             },
             "dayoff": [
               {
@@ -436,7 +437,8 @@
                 },
                 "source": "dldb",
                 "link": "https://service.berlin.de/standort/122217/",
-                "name": "Bürgeramt Heerstraße"
+                "name": "Bürgeramt Heerstraße",
+                "displayName":"001"
               },
               "dayoff": [
                 {
@@ -764,7 +766,8 @@
             "streetNumber": "12"
           },
           "link": "https://service.berlin.de/standort/122217/",
-          "name": "Bürgeramt Heerstraße"
+          "name": "Bürgeramt Heerstraße",
+          "displayName":"001"
         },
         "dayoff": [
           {
@@ -1082,7 +1085,8 @@
               },
               "source": "dldb",
               "link": "https://service.berlin.de/standort/122217/",
-              "name": "Bürgeramt Heerstraße"
+              "name": "Bürgeramt Heerstraße",
+              "displayName":"001"
             },
             "dayoff": [
               {
@@ -1424,7 +1428,8 @@
                 },
                 "source": "dldb",
                 "link": "https://service.berlin.de/standort/122217/",
-                "name": "Bürgeramt Heerstraße"
+                "name": "Bürgeramt Heerstraße",
+                "displayName":"001"
               },
               "dayoff": [
                 {
@@ -1752,7 +1757,8 @@
             "streetNumber": "12"
           },
           "link": "https://service.berlin.de/standort/122217/",
-          "name": "Bürgeramt Heerstraße"
+          "name": "Bürgeramt Heerstraße",
+          "displayName":"001"
         },
         "dayoff": [
           {
