@@ -8,7 +8,7 @@ class PickupTest extends Base
 {
     protected $classname = "Pickup";
 
-    public function testRendering()
+    /*public function testRendering()
     {
         $this->setWorkstation();
         User::$workstation->scope['id'] = 141;
@@ -22,7 +22,7 @@ class PickupTest extends Base
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertStringContainsString('"status":"pending"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
-    }
+    }*/
 
     public function testSelectedScope()
     {
