@@ -52,9 +52,6 @@ class AppointmentDeleteByCronTest extends Base
         $process->status = 'finished';
 
         error_log($process->id);
-        //$process['requests'] = (new \BO\Zmsdb\Request())->readRequestByProcessId($process->id, 2);
-        // Create a new Request entity
-        //$requestEntity = new \BO\Zmsentities\Request();
 
         $requests = [
             (object)[
@@ -65,7 +62,7 @@ class AppointmentDeleteByCronTest extends Base
             ]
         ];
     
-        $process['requests'] = [$requests];
+        $process['requests'] = $requests;
 
 
         $json = json_encode($process);
