@@ -51,9 +51,8 @@ class AppointmentDeleteByCronTest extends Base
         $process = (new Query())->readEntity($process->id, $process->authKey, 0);
         $process->status = 'finished';
         //$process->getRequests()->getFirst()->name = 'Personalausweis beantragen';
-
         $requests = [
-            [
+            (object)[
                 "id" => "120703",
                 "link" => "https://service.berlin.de/dienstleistung/120703/",
                 "name" => "Personalausweis beantragen",
