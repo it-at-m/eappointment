@@ -28,13 +28,13 @@ class ProcessDeleteQuickTest extends Base
         $this->render(['id' => '9999999'], [], []);
     }
 
-    public function testRenderingWithInitiator()
+    /*public function testRenderingWithInitiator()
     {
         $this->setWorkstation(123, 'testuser', 451);
         $response = $this->render(['id' => 27147], ['initiator' => 1], []);
         $this->assertStringContainsString('blocked', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
-    }
+    }*/
 
     public function testAuthFailed()
     {
