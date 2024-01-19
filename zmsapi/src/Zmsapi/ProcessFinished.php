@@ -83,6 +83,13 @@ class ProcessFinished extends BaseController
     protected function writeSurveyMail($process)
     {
         $process = clone $process;
+        $json = json_encode($process);
+        $maxLength = 1024; // Set the maximum length of each chunk
+        
+        for ($i = 0; $i < ceil(strlen($json) / $maxLength); $i++) {
+            error_log(substr($json, $i * $maxLength, $maxLength));
+        }
+        
         foreach ($process->getClients() as $client) {
             if ($client->hasSurveyAccepted()) {
                 $config = (new \BO\Zmsdb\Config())->readEntity();
