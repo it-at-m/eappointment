@@ -88,7 +88,8 @@
               "streetNumber": "12"
             },
             "link": "https://service.berlin.de/standort/122217/",
-            "name": "Bürgeramt Heerstraße"
+            "name": "Bürgeramt Heerstraße",
+            "displayName":"001"
           }
     },
     "status": "confirmed"
