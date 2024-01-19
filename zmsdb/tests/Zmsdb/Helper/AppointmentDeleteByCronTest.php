@@ -52,6 +52,18 @@ class AppointmentDeleteByCronTest extends Base
         $process->status = 'finished';
         //$process->getRequests()->getFirst()->name = 'Personalausweis beantragen';
 
+        $requests = [
+            [
+                "id" => "120703",
+                "link" => "https://service.berlin.de/dienstleistung/120703/",
+                "name" => "Personalausweis beantragen",
+                "source" => "dldb"
+            ]
+        ];
+    
+        // Assign the requests array to the process object
+        $process->requests = $requests;
+
         $json = json_encode($process);
         $maxLength = 1024; // Set maximum length of each chunk
         
