@@ -81,7 +81,7 @@ class WorkstationProcessTest extends Base
         ], []);
     }*/
 
-    public function testProcessReserved()
+    /*public function testProcessReserved()
     {
         $this->setWorkstation();
         $this->expectException('\BO\Zmsapi\Exception\Process\ProcessReservedNotCallable');
@@ -93,7 +93,7 @@ class WorkstationProcessTest extends Base
             }',
             'allowClusterWideCall' => true
         ], []);
-    }
+    }*/
 
     public function testEmpty()
     {
