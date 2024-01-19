@@ -916,7 +916,8 @@
                     },
                     "source": "dldb",
                     "link": "https://service.berlin.de/standort/122217/",
-                    "name": "Bürgeramt Heerstraße"
+                    "name": "Bürgeramt Heerstraße",
+                    "displayName":"001"
                 },
                 "department": {
                     "id": "74",
