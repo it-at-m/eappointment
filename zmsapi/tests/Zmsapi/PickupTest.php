@@ -18,6 +18,8 @@ class PickupTest extends Base
         $response = (new ProcessFinishedTest())->render([], [
             '__body' => json_encode($entity)
         ], []);
+        
+        error_log(json_encode($entity));
         $response = $this->render([], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertStringContainsString('"status":"pending"', (string)$response->getBody());
