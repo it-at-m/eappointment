@@ -52,7 +52,21 @@ class AppointmentDeleteByCronTest extends Base
         $process->status = 'finished';
 
         error_log($process->id);
-        $process['requests'] = (new \BO\Zmsdb\Request())->readRequestByProcessId($process->id, 2);
+        //$process['requests'] = (new \BO\Zmsdb\Request())->readRequestByProcessId($process->id, 2);
+        // Create a new Request entity
+        //$requestEntity = new \BO\Zmsentities\Request();
+
+        $requests = [
+            (object)[
+                "id" => "120703",
+                "link" => "https://service.berlin.de/dienstleistung/120703/",
+                "name" => "Personalausweis beantragen",
+                "source" => "dldb"
+            ]
+        ];
+    
+        $process['requests'] = [$requests];
+
 
         $json = json_encode($process);
         $maxLength = 1024; // Set maximum length of each chunk
