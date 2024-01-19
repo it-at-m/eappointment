@@ -50,12 +50,6 @@ class WorkstationProcessRedirect extends BaseController
                     ['resolveReferences' => 2]
                 )->getEntity();
 
-            $process = \App::$http
-                ->readGetResult(
-                    '/process/'. $process->getId() .'/'. $process->getAuthKey() .'/',
-                    ['resolveReferences' => 2]
-                )->getEntity();
-
             $newProcess = clone $process;
             $newProcess->scope = $scope;
             $newProcess->appointments[0]->scope = $scope;
