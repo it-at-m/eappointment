@@ -53,7 +53,7 @@ class AppointmentDeleteByCronTest extends Base
         $process->status = 'finished';
 
         // Create a new Request entity
-        $requestEntity = new \BO\Zmsentities\Request();
+        $requestEntity = new Request();
         $requestEntity->setId("120703");
         $requestEntity->setLink("https://service.berlin.de/dienstleistung/120703/");
         $requestEntity->setName("Personalausweis beantragen");
