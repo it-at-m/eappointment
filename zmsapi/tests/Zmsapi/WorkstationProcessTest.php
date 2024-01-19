@@ -71,7 +71,7 @@ class WorkstationProcessTest extends Base
     {
         $this->setWorkstation();
         $this->expectException('\BO\Zmsapi\Exception\Process\ProcessAlreadyCalled');
-        $this->expectExceptionCode(404);
+        $this->expectExceptionCode(403);
         $this->render([], [
             '__body' => '{
                 "id": '. self::PROCESS_ID .',
