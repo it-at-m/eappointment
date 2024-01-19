@@ -50,7 +50,7 @@ class AppointmentDeleteByCronTest extends Base
         $process = (new Query())->writeNewPickup($scope, $now);
         $process = (new Query())->readEntity($process->id, $process->authKey, 0);
         $process->status = 'finished';
-        $process->getRequests()->getFirst()->name = 'Bezirksamt Steglitz-Zehlendorf';
+        //$process->getRequests()->getFirst()->name = 'Personalausweis beantragen';
 
         (new ProcessStatusArchived())->writeEntityFinished($process, $now);
 
