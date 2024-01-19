@@ -12,6 +12,7 @@ use BO\Zmsdb\Process;
 use \BO\Zmsdb\Process as Query;
 use \BO\Zmsdb\ProcessStatusQueued;
 use BO\Zmsdb\Workstation;
+use BO\Zmsentities\Collection\RequestList;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -31,13 +32,8 @@ class ProcessRedirect extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
         $newProcess = new \BO\Zmsentities\Process($input);
-
-
-
         $process = $this->readValidProcess($workstation, $entity, $input);
-        $process = (new Process())->readEntity($process->id, $process->authKey, 2);
-        $requests = $process->getRequests();
-        $newProcess->requests = $requests;
+        $newProcess->requests = new RequestList();
 
         $this->testProcessAccess($workstation, $process);
 
