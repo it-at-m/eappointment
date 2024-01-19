@@ -52,6 +52,8 @@ class AppointmentDeleteByCronTest extends Base
         $process->status = 'finished';
         //$process->getRequests()->getFirst()->name = 'Personalausweis beantragen';
 
+        error_log(json_encode($process));
+
         (new ProcessStatusArchived())->writeEntityFinished($process, $now);
 
         $helper = new AppointmentDeleteByCron(0, $now, false); // verbose
