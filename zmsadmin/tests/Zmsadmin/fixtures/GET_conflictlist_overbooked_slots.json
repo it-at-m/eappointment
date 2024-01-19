@@ -112,8 +112,7 @@
         },
         "provider": {
           "id": "122217",
-          "source": "dldb",
-          "displayName":"001"
+          "source": "dldb"
         },
         "hint": "Nr. wird zum Termin aufgerufen",
         "lastChange": "2021-12-17 09:51:22",
@@ -299,8 +298,7 @@
         },
         "provider": {
           "id": "122217",
-          "source": "dldb",
-          "displayName":"001"
+          "source": "dldb"
         },
         "hint": "Nr. wird zum Termin aufgerufen",
         "lastChange": "2021-12-17 09:51:22",
