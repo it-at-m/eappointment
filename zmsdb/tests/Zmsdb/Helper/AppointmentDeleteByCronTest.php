@@ -5,6 +5,7 @@ namespace BO\Zmsdb\Tests;
 use \BO\Zmsdb\Helper\AppointmentDeleteByCron;
 use \BO\Zmsdb\Process as Query;
 use \BO\Zmsdb\ProcessStatusArchived;
+use \BO\Zmsentities\Collection\RequestList as Collection;
 
 class AppointmentDeleteByCronTest extends Base
 {
@@ -50,18 +51,20 @@ class AppointmentDeleteByCronTest extends Base
         $process = (new Query())->writeNewPickup($scope, $now);
         $process = (new Query())->readEntity($process->id, $process->authKey, 0);
         $process->status = 'finished';
-        //$process->getRequests()->getFirst()->name = 'Personalausweis beantragen';
-        $requests = [
-            (object)[
-                "id" => "120703",
-                "link" => "https://service.berlin.de/dienstleistung/120703/",
-                "name" => "Personalausweis beantragen",
-                "source" => "dldb"
-            ]
-        ];
-    
-        // Assign the requests array to the process object
-        $process->requests = $requests;
+
+        // Create a new Request entity
+        $requestEntity = new \BO\Zmsentities\Request();
+        $requestEntity->setId("120703");
+        $requestEntity->setLink("https://service.berlin.de/dienstleistung/120703/");
+        $requestEntity->setName("Personalausweis beantragen");
+        $requestEntity->setSource("dldb");
+
+        // Create a RequestList collection and add the Request entity to it
+        $requestList = new \BO\Zmsentities\Collection\RequestList();
+        $requestList->addEntity($requestEntity);
+
+        // Assign the RequestList collection to the process object
+        $process->requests = $requestList;
 
         $json = json_encode($process);
         $maxLength = 1024; // Set maximum length of each chunk
