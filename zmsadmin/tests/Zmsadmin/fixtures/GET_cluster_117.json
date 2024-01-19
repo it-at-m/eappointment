@@ -20,8 +20,7 @@
           },
           "provider": {
             "id": "122291",
-            "source": "dldb",
-            "displayName":"001"
+            "source": "dldb"
           },
           "hint": "Aufruf im Warteraum/Zimmer 231",
           "lastChange": 1566566542,
@@ -108,8 +107,7 @@
           },
           "provider": {
             "id": "122291",
-            "source": "dldb",
-            "displayName":"001"
+            "source": "dldb"
           },
           "hint": "",
           "lastChange": 1566566542,
