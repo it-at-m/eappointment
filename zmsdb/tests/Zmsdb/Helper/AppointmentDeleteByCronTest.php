@@ -50,6 +50,10 @@ class AppointmentDeleteByCronTest extends Base
         $process = (new Query())->writeNewPickup($scope, $now);
         $process = (new Query())->readEntity($process->id, $process->authKey, 0);
         $process->status = 'finished';
+        $process->getRequests()->getFirst()->id = '12676';
+        $process->getRequests()->getFirst()->name = 'Bezirksamt Steglitz-Zehlendorf';
+        $process->getRequests()->getFirst()->webinfo = 'http:\/\/www.berlin.de\/ba-steglitz-zehlendorf\/s';
+
         (new ProcessStatusArchived())->writeEntityFinished($process, $now);
 
         $helper = new AppointmentDeleteByCron(0, $now, false); // verbose
