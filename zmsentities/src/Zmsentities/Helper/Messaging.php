@@ -206,10 +206,6 @@ class Messaging
             $provider = $process->scope->provider;
             error_log(json_encode($provider));
             error_log("***************************");
-            error_log(json_encode($provider->scope));
-            error_log("***************************");
-            error_log(json_encode($provider->scope->provider));
-            error_log("***************************");
             print_r($provider, true);
             $providerName = $provider->displayName;
             $providerTemplateName = self::getProviderTemplateName($providerName);
