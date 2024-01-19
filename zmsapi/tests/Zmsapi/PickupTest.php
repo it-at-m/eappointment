@@ -8,21 +8,21 @@ class PickupTest extends Base
 {
     protected $classname = "Pickup";
 
-    /*public function testRendering()
+    public function testRendering()
     {
         $this->setWorkstation();
         User::$workstation->scope['id'] = 141;
         
         $entity = (new \BO\Zmsdb\Process)->readEntity(10030, new \BO\Zmsdb\Helper\NoAuth);
         $entity->status = 'pending';
-        $response = (new ProcessFinishedTest())->render(['displayName' => '001'], [
+        $response = (new ProcessFinishedTest())->render([], [
             '__body' => json_encode($entity)
         ], []);
         $response = $this->render([], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertStringContainsString('"status":"pending"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
-    }*/
+    }
 
     public function testSelectedScope()
     {
