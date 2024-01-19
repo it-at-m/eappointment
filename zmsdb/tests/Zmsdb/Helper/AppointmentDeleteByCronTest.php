@@ -51,19 +51,7 @@ class AppointmentDeleteByCronTest extends Base
         $process = (new Query())->readEntity($process->id, $process->authKey, 0);
         $process->status = 'finished';
 
-        // Create a new Request entity
-        $requestEntity = new \BO\Zmsdb\Request();
-        $requestEntity->setId("120703");
-        $requestEntity->setLink("https://service.berlin.de/dienstleistung/120703/");
-        $requestEntity->setName("Personalausweis beantragen");
-        $requestEntity->setSource("dldb");
-
-        // Create a RequestList collection and add the Request entity to it
-        $requestList = new \BO\Zmsentities\Collection\RequestList();
-        $requestList->addEntity($requestEntity);
-
-        // Assign the RequestList collection to the process object
-        $process->requests = $requestList;
+        $process['requests'] = (new \BO\Zmsdb\Request())->readRequestByProcessId($process->id, 2);
 
         $json = json_encode($process);
         $maxLength = 1024; // Set maximum length of each chunk
