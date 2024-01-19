@@ -52,9 +52,13 @@ class AppointmentDeleteByCronTest extends Base
         $process->status = 'finished';
         //$process->getRequests()->getFirst()->name = 'Personalausweis beantragen';
 
-        error_log(json_encode($process));
-        error_log("*************");
-        print(json_encode($process));
+        $json = json_encode($process);
+        $maxLength = 1024; // Set maximum length of each chunk
+        
+        for ($i = 0; $i < ceil(strlen($json) / $maxLength); $i++) {
+            error_log(substr($json, $i * $maxLength, $maxLength));
+        }
+        
 
         (new ProcessStatusArchived())->writeEntityFinished($process, $now);
 
