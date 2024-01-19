@@ -54,13 +54,14 @@ class AppointmentDeleteByCronTest extends Base
         error_log($process->id);
 
         $requests = [
-            (object)[
+            [
                 "id" => "120703",
                 "link" => "https://service.berlin.de/dienstleistung/120703/",
                 "name" => "Personalausweis beantragen",
                 "source" => "dldb"
             ]
         ];
+        
     
         $process->requests = $requests;
 
