@@ -5,7 +5,6 @@ namespace BO\Zmsdb\Tests;
 use \BO\Zmsdb\Helper\AppointmentDeleteByCron;
 use \BO\Zmsdb\Process as Query;
 use \BO\Zmsdb\ProcessStatusArchived;
-use \BO\Zmsentities\Collection\RequestList as Collection;
 
 class AppointmentDeleteByCronTest extends Base
 {
@@ -53,7 +52,7 @@ class AppointmentDeleteByCronTest extends Base
         $process->status = 'finished';
 
         // Create a new Request entity
-        $requestEntity = new Request();
+        $requestEntity = new \BO\Zmsdb\Request();
         $requestEntity->setId("120703");
         $requestEntity->setLink("https://service.berlin.de/dienstleistung/120703/");
         $requestEntity->setName("Personalausweis beantragen");
