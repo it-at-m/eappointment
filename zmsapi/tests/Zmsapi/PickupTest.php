@@ -15,7 +15,14 @@ class PickupTest extends Base
         
         $entity = (new \BO\Zmsdb\Process)->readEntity(10030, new \BO\Zmsdb\Helper\NoAuth);
         $entity->status = 'pending';
-        error_log(json_encode($entity));
+        $entity = /* your entity data */;
+        $json = json_encode($entity);
+        $maxLength = 1024; // Set the maximum length of each chunk
+        
+        for ($i = 0; $i < ceil(strlen($json) / $maxLength); $i++) {
+            error_log(substr($json, $i * $maxLength, $maxLength));
+        }
+        
         $response = (new ProcessFinishedTest())->render([], [
             '__body' => json_encode($entity)
         ], []);
