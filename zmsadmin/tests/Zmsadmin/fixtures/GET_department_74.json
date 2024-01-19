@@ -104,6 +104,7 @@
                     },
                     "source": "dldb",
                     "link": "https://service.berlin.de/standort/122210/",
+                    "displayName":"001",
                     "name": "Bürgeramt Halemweg (Außenstelle)"
                 }
             },
@@ -201,6 +202,7 @@
                     },
                     "source": "dldb",
                     "link": "https://service.berlin.de/standort/122217/",
+                    "displayName":"001",
                     "name": "Bürgeramt Heerstraße"
                 }
             }
