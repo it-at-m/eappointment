@@ -53,21 +53,16 @@ class AppointmentDeleteByCronTest extends Base
 
         error_log($process->id);
 
-// Initialize the requests object
-$requestsObject = new \stdClass();
-
-// Create and add individual request objects
-$request1 = new \stdClass();
-$request1->id = "120703";
-$request1->link = "https://service.berlin.de/dienstleistung/120703/";
-$request1->name = "Personalausweis beantragen";
-$request1->source = "dldb";
-
-// Add the request to the requests object
-$requestsObject->request120703 = $request1;
-
-// Assign the requests object to the process object
-$process->requests = $requestsObject;
+        $requests = [
+            (object)[
+                "id" => "120703",
+                "link" => "https://service.berlin.de/dienstleistung/120703/",
+                "name" => "Personalausweis beantragen",
+                "source" => "dldb"
+            ]
+        ];
+    
+        $process->requests = $requests;
 
 
         $json = json_encode($process);
