@@ -15,11 +15,12 @@ class PickupTest extends Base
         
         $entity = (new \BO\Zmsdb\Process)->readEntity(10030, new \BO\Zmsdb\Helper\NoAuth);
         $entity->status = 'pending';
+        error_log(json_encode($entity));
         $response = (new ProcessFinishedTest())->render([], [
             '__body' => json_encode($entity)
         ], []);
-        
-        error_log(json_encode($entity));
+
+       
         $response = $this->render([], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertStringContainsString('"status":"pending"', (string)$response->getBody());
