@@ -210,7 +210,7 @@ class Messaging
             error_log("***************************");
             error_log(json_encode($provider->scope->provider));
             error_log("***************************");
-            print_r($provider, true)
+            print_r($provider, true);
             $providerName = $provider->displayName;
             $providerTemplateName = self::getProviderTemplateName($providerName);
             $providerTemplateFolder = 'custom/' . $providerTemplateName . '/';
