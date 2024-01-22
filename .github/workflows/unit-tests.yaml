@@ -172,7 +172,7 @@ jobs:
         run: |
           cd zmsclient 
           ls
-          docker-compose up -d && docker-compose exec -T test
+          /bin/bash -c docker-compose up -d && docker-compose exec -T test
       - name: Run Unit Tests
         run: |
           ./vendor/bin/phpunit
