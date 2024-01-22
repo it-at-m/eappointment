@@ -158,8 +158,11 @@ jobs:
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
 
-      - name: Run Unit Tests
+      - name: Run docker compose
         run: |
           cd ./zmsclient 
           docker-compose up -d && docker-compose exec -T test
+
+      - name: Run Unit Tests
+        run: |
           ./vendor/bin/phpunit
