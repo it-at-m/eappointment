@@ -164,6 +164,14 @@ jobs:
           curl -L "https://github.com/docker/compose/releases/download/v2.5.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
           docker-compose --version
+      - name: Check directory existence
+        run: |
+          if [ -d "zmsclient/tests/mockup/config" ]; then
+            echo "Directory exists"
+          else
+            echo "Directory does not exist"
+            exit 1
+          fi
       - name: Docker Setup
         run: |
           cd zmsclient  
