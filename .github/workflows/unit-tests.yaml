@@ -157,9 +157,17 @@ jobs:
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
         shell: bash
+      - name: Install Docker Compose
+        run: |
+          apt-get update
+          apt-get install -y docker.io
+          curl -L "https://github.com/docker/compose/releases/download/v2.5.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
       - name: Run docker compose
         run: |
           cd zmsclient 
+          ls
           docker-compose up -d && docker-compose exec -T test
       - name: Run Unit Tests
         run: |
