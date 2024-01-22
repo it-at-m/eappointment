@@ -145,11 +145,7 @@ jobs:
   zmsclient-test:
     runs-on: ubuntu-latest
     container:
-      image: "registry.gitlab.com/eappointment/php-base:8.0-dev"
-    services:
-      mariadb:
-        image: mariadb:10.6
-
+      image: "registry.gitlab.com/eappointment/php-base:7.3-dev"
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
