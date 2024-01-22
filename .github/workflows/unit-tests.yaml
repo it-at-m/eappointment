@@ -168,7 +168,10 @@ jobs:
           chmod +x /usr/local/bin/docker-compose
           docker-compose --version
 
-
+      - name: Adjust docker-compose file for absolute paths
+        run: |
+          sed -i 's|./tests/mockup/config|'"$GITHUB_WORKSPACE"'/zmsclient/tests/mockup/config|' "$GITHUB_WORKSPACE"/zmsclient/docker-compose.yml
+          sed -i 's|\.\./|'"$GITHUB_WORKSPACE"'/zmsclient/|' "$GITHUB_WORKSPACE"/zmsclient/docker-compose.yml
 
       - name: Output effective Docker Compose configuration
         run: |
