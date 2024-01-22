@@ -147,37 +147,37 @@ jobs:
     container:
       image: "registry.gitlab.com/eappointment/php-base:7.3-dev"
     steps:
-      - name: Checkout GitHub Action
-        uses: actions/checkout@main
-      - name: Install Composer Dependencies
-        run: |
-          modules=('zmsclient')
-          for module in "${modules[@]}"; do
-            echo "Installing Composer dependencies for $module"
-            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
-          done
-        shell: bash
-      - name: Install Docker and Docker Compose
-        run: |
-          apt-get update
-          apt-get install -y docker.io
-          curl -L "https://github.com/docker/compose/releases/download/v2.5.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          chmod +x /usr/local/bin/docker-compose
-          docker-compose --version
-      - name: Check directory existence
-        run: |
-          if [ -d "zmsclient/tests/mockup/config" ]; then
-            echo "Directory exists"
-          else
-            echo "Directory does not exist"
-            exit 1
-          fi
-      - name: Docker Setup
-        run: |
-          cd zmsclient  
-          docker-compose up -d && docker-compose exec -T test
-      - name: Run Unit Tests
-        run: |
-          docker-compose exec -T my_service php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit \
-            -v --colors=never --coverage-text --coverage-html public/_tests/coverage/ --log-junit \
-            public/_tests/junit.xml
+    - name: Checkout GitHub Action
+      uses: actions/checkout@main
+
+    - name: Install Composer Dependencies
+      run: |
+        modules=('zmsclient')
+        for module in "${modules[@]}"; do
+          echo "Installing Composer dependencies for $module"
+          (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+        done
+      shell: bash
+
+    - name: Install Docker Compose
+      run: |
+        apt-get update
+        apt-get install -y docker.io
+        curl -L "https://github.com/docker/compose/releases/download/v2.5.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        chmod +x /usr/local/bin/docker-compose
+        docker-compose --version
+
+    - name: Adjust docker-compose file for absolute paths
+      run: |
+        sed -i 's|./tests/mockup/config|'"$GITHUB_WORKSPACE"'/zmsclient/tests/mockup/config|' "$GITHUB_WORKSPACE"/zmsclient/docker-compose.yml
+        sed -i 's|.|'"$GITHUB_WORKSPACE"'/zmsclient|' "$GITHUB_WORKSPACE"/zmsclient/docker-compose.yml
+
+    - name: Output effective Docker Compose configuration
+      run: |
+        cd zmsclient
+        docker-compose config
+
+    - name: Start Docker Compose services
+      run: |
+        cd zmsclient
+        docker-compose up -d
