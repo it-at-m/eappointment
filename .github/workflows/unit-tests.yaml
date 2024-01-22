@@ -149,7 +149,6 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
-
       - name: Install Composer Dependencies
         run: |
           modules=('zmsclient')
@@ -157,12 +156,11 @@ jobs:
             echo "Installing Composer dependencies for $module"
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
-
+        shell: bash
       - name: Run docker compose
         run: |
           cd ./zmsclient 
           docker-compose up -d && docker-compose exec -T test
-
       - name: Run Unit Tests
         run: |
           ./vendor/bin/phpunit
