@@ -151,6 +151,9 @@ jobs:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
 
+      - name: List contents of the repository
+        run: ls -l
+
       - name: Install Composer Dependencies
         run: |
           modules=('zmsclient')
@@ -173,10 +176,8 @@ jobs:
           echo "Before adjustment:"
           cat "$GITHUB_WORKSPACE"/zmsclient/docker-compose.yml
           sed -i 's|./tests/mockup/config|'"$GITHUB_WORKSPACE"'/zmsclient/tests/mockup/config|' "$GITHUB_WORKSPACE"/zmsclient/docker-compose.yml
-          sed -i 's|\.\./|'"$GITHUB_WORKSPACE"'/zmsclient/|' "$GITHUB_WORKSPACE"/zmsclient/docker-compose.yml
           echo "After adjustment:"
           cat "$GITHUB_WORKSPACE"/zmsclient/docker-compose.yml
-
 
       - name: Output effective Docker Compose configuration
         run: |
@@ -186,10 +187,11 @@ jobs:
       - name: Docker Setup
         run: |
           cd zmsclient  
-          docker-compose up -d && docker-compose exec -T test
+          docker-compose up -d
 
       - name: Run Unit Tests
         run: |
-          docker-compose exec -T my_service php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit \
+          cd zmsclient
+          docker-compose exec -T test php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit \
             -v --colors=never --coverage-text --coverage-html public/_tests/coverage/ --log-junit \
             public/_tests/junit.xml
