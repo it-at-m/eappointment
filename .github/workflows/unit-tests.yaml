@@ -164,6 +164,10 @@ jobs:
           curl -L "https://github.com/docker/compose/releases/download/v2.5.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
           docker-compose --version
+      - name: Adjust docker-compose file for GitHub Actions
+        run: |
+          sed -i 's|./tests/mockup/config|'"$GITHUB_WORKSPACE"'/zmsclient/tests/mockup/config|' zmsclient/docker-compose.yml
+          cat zmsclient/docker-compose.yml
       - name: Run docker compose
         run: |
           cd zmsclient 
