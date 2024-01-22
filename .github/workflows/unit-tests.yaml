@@ -181,3 +181,9 @@ jobs:
         run: |
           cd zmsclient
           docker-compose up -d
+
+      - name: Run Unit Tests
+        run: |
+          docker-compose exec -T my_service php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit \
+            -v --colors=never --coverage-text --coverage-html public/_tests/coverage/ --log-junit \
+            public/_tests/junit.xml
