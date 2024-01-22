@@ -159,7 +159,7 @@ jobs:
         shell: bash
       - name: Run docker compose
         run: |
-          cd ./zmsclient 
+          cd zmsclient 
           docker-compose up -d && docker-compose exec -T test
       - name: Run Unit Tests
         run: |
