@@ -146,6 +146,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: "registry.gitlab.com/eappointment/php-base:7.3-dev"
+
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
