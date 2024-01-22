@@ -175,13 +175,13 @@ jobs:
 
       - name: Output effective Docker Compose configuration
         run: |
-          cd zmsclient
+          cd zmsclient  
           docker-compose config
 
-      - name: Start Docker Compose services
+      - name: Docker Setup
         run: |
-          cd zmsclient
-          docker-compose up -d
+          cd zmsclient  
+          docker-compose up -d && docker-compose exec -T test
 
       - name: Run Unit Tests
         run: |
