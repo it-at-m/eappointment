@@ -50,11 +50,30 @@ class AppointmentForm extends BaseController
             ? Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation)
             : null;
             
-        $provider = $selectedScope->getProvider();
 
-        $resolvedProvider = \App::$http->readGetResult('/provider/'.$selectedScope->source.'/'.$provider->id.'/', [
-            'resolveReferences' => 1,
-        ])->getEntity();
+            if ($selectedProcess && $selectedProcess->hasId()) {
+                $slotTimeInMinutes = 222;
+
+                $resolvedProvider = \App::$http->readGetResult('/provider/'.$selectedScope->source.'/'.$selectedScope['provider']['id'].'/', [
+                    'resolveReferences' => 1,
+                ])->getEntity();
+        
+                $slotTimeInMinutes = $resolvedProvider->getSlotTimeInMinutes();
+
+            } else {
+                $resolvedProvider = \App::$http->readGetResult('/provider/'.$selectedScope->source.'/'.$selectedScope['provider']['id'].'/', [
+                    'resolveReferences' => 1,
+                ])->getEntity();
+        
+                $slotTimeInMinutes = $resolvedProvider->getSlotTimeInMinutes();
+            }
+
+            /*
+        if (!isset($selectedScope['provider']['id'])) {
+            print_r($workstation);
+        }
+*/
+
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -72,7 +91,7 @@ class AppointmentForm extends BaseController
                 'selectedTime' => $selectedTime,
                 'freeProcessList' => $freeProcessList,
                 'requestList' => $requestList,
-                'slotTimeInMinutes' => $resolvedProvider->getSlotTimeInMinutes(),
+                'slotTimeInMinutes' => $slotTimeInMinutes,
             )
         );
     }
