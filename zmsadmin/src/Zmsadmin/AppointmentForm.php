@@ -24,7 +24,7 @@ class AppointmentForm extends BaseController
         $validator = $request->getAttribute('validator');
         $workstation = \App::$http->readGetResult('/workstation/', [
             'resolveReferences' => 2,
-            'gql' => Helper\GraphDefaults::getWorkstation()
+            'gql' => Helper\GraphDefaults::getWorkstationWithProvider(),
         ])->getEntity();
         $selectedProcess = Helper\AppointmentFormHelper::readSelectedProcess($request);
         if ($selectedProcess && ! $workstation->hasSuperUseraccount()) {
@@ -40,40 +40,23 @@ class AppointmentForm extends BaseController
             ? $selectedProcess->getFirstAppointment()->getStartTime()->format('H-i')
             : $validator->getParameter('selectedtime')->isString()->getValue();
         
-        $selectedScope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation, $selectedProcess);
+        $selectedScope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation, $selectedProcess, 2);
 
         $requestList = ($selectedScope && $selectedScope->hasId())
             ? Helper\AppointmentFormHelper::readRequestList($request, $workstation, $selectedScope)
             : null;
         
         $freeProcessList = ($selectedScope)
-            ? Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation)
+            ? Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation, 2)
             : null;
-            
-
-            if ($selectedProcess && $selectedProcess->hasId()) {
-                $slotTimeInMinutes = 222;
-
-                $resolvedProvider = \App::$http->readGetResult('/provider/'.$selectedScope->source.'/'.$selectedScope['provider']['id'].'/', [
-                    'resolveReferences' => 1,
-                ])->getEntity();
-        
-                $slotTimeInMinutes = $resolvedProvider->getSlotTimeInMinutes();
-
-            } else {
-                $resolvedProvider = \App::$http->readGetResult('/provider/'.$selectedScope->source.'/'.$selectedScope['provider']['id'].'/', [
-                    'resolveReferences' => 1,
-                ])->getEntity();
-        
-                $slotTimeInMinutes = $resolvedProvider->getSlotTimeInMinutes();
-            }
-
-            /*
-        if (!isset($selectedScope['provider']['id'])) {
-            print_r($workstation);
+           
+        $slotTimeInMinutes = null;
+        if ($selectedProcess && $selectedProcess->hasId()) {
+            $slotTimeInMinutes = $selectedProcess->getAppointments()->getFirst()->getAvailability()['slotTimeInMinutes'];
+        } else if ($selectedScope) {
+            $provider = $selectedScope->getProvider();
+            $slotTimeInMinutes = $provider->getSlotTimeInMinutes();
         }
-*/
-
 
         return \BO\Slim\Render::withHtml(
             $response,
