@@ -55,15 +55,14 @@ def cli_modules_reference_libraries(no_symlink: bool):
     with open(composer_file_path, "r") as f:
       composer_content = json.load(f)
 
-    composer_content["repositories"] = composer_content.get("repositories", [])
-    if len(list(filter(lambda x: x.get("url") == "../*", composer_content["repositories"]))) == 0:
-      composer_content["repositories"].append({
-        "type": "path",
-        "url": "../*",
-        "options": {
-          "symlink": not no_symlink
-        }
-      })
+    composer_content["repositories"] = list([i for i in composer_content.get("repositories", []) if i.get("type") != "path" and i.get("url", None) != "../*"])
+    composer_content["repositories"].append({
+      "type": "path",
+      "url": "../*",
+      "options": {
+        "symlink": not no_symlink
+      }
+    })
 
     require = composer_content.get("require", [])
     for dependency_key in require:
