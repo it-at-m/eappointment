@@ -1,5 +1,4 @@
-
-COMPOSER=php -d suhosin.executor.include.whitelist=phar bin/composer.phar
+COMPOSER=composer
 
 help:
 	grep -P "^\w+:" Makefile|sort|perl -pe 's/^(\w+):([^\#]+)(\#\s*(.*))?/\1\n\t\4\n/'
