@@ -143,12 +143,19 @@ jobs:
 
 
   zmsclient-test:
+    needs: [build, build-php-base]
     runs-on: ubuntu-latest
-    container:
-      image: "registry.gitlab.com/eappointment/php-base:7.3-dev"
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
       - name: Install Composer Dependencies
         run: |
           modules=('zmsclient')
@@ -156,23 +163,7 @@ jobs:
             echo "Installing Composer dependencies for $module"
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
-        shell: bash
-      - name: Install Docker Compose
-        run: |
-          apt-get update
-          apt-get install -y docker.io
-          curl -L "https://github.com/docker/compose/releases/download/v2.5.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          chmod +x /usr/local/bin/docker-compose
-          docker-compose --version
-      - name: Adjust docker-compose file for GitHub Actions
-        run: |
-          sed -i 's|./tests/mockup/config|'"$GITHUB_WORKSPACE"'/zmsclient/tests/mockup/config|' zmsclient/docker-compose.yml
-          cat zmsclient/docker-compose.yml
-      - name: Run docker compose
-        run: |
-          cd zmsclient 
-          ls
-          /bin/bash -c docker-compose up -d && docker-compose exec -T test
+
       - name: Run Unit Tests
         run: |
-          ./vendor/bin/phpunit
+          /bin/bash -c "cd ./zmsclient && docker-compose up -d && docker-compose exec -T test ./vendor/bin/phpunit"
