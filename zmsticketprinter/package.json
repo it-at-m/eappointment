@@ -1,0 +1,39 @@
+{
+  "name": "zmsticketprinter",
+  "version": "1.0.0",
+  "description": "zms ticketprinter frontend ",
+  "main": "index.js",
+  "private": true,
+  "keywords": [
+    "zms",
+    "eappointment"
+  ],
+  "author": "BerlinOnline GmbH & Co. KG",
+  "license": "EUPL-1.2",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint js/",
+    "fix": "eslint --fix js/",
+    "css": "parcel build scss/ticketprinter.scss --log-level verbose --detailed-report --target css",
+    "js": "parcel build js/index.js --log-level verbose --detailed-report --target js",
+    "csswatch": "parcel watch scss/ticketprinter.scss --log-level verbose  --target css",
+    "jswatch": "parcel watch js/index.js --log-level verbose --no-hmr --target js",
+    "watch": "npm run jswatch & npm run csswatch &"
+  },
+  "targets": {
+    "js": {
+      "publicUrl": "./",
+      "distDir": "public/_js/"
+    },
+    "css": {
+      "publicUrl": "./",
+      "distDir": "public/_css/"
+    }
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "jquery": "^3.7.0",
+    "js-cookie": "^2.2.1",
+    "parcel-bundler-v2": "git+https://gitlab+deploy-token-134:LvrEUypzSw6XBd1xDNXD@gitlab.berlinonline.net/module/parcel-bunder-v2.git#master"
+  }
+}
