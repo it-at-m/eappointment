@@ -29,6 +29,7 @@ modules = [
   "zmsmessaging",
   "zmsslim",
   "zmsstatistic",
+  "zmsticketprinter",
 ]
 
 
@@ -54,15 +55,15 @@ def cli_modules_reference_libraries(no_symlink: bool):
     with open(composer_file_path, "r") as f:
       composer_content = json.load(f)
 
-    composer_content["repositories"] = [
-      {
+    composer_content["repositories"] = composer_content.get("repositories", [])
+    if len(list(filter(lambda x: x.get("url") == "../*", composer_content["repositories"]))) == 0:
+      composer_content["repositories"].append({
         "type": "path",
         "url": "../*",
         "options": {
           "symlink": not no_symlink
         }
-      }
-    ]
+      })
 
     require = composer_content.get("require", [])
     for dependency_key in require:
@@ -75,6 +76,7 @@ def cli_modules_reference_libraries(no_symlink: bool):
 
     with open(composer_file_path, "w") as f:
       json.dump(composer_content, f, indent=4)
+      f.write("\n")
 
   for module in module_dependencies:
     module_dir = os.path.join(repo_dir, module)
