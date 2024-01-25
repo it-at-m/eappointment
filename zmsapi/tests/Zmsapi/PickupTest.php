@@ -25,7 +25,7 @@ class PickupTest extends Base
             error_log($chunk);
         }
         $entity->status = 'pending';
-        $response = (new ProcessFinishedTest())->render([], [
+        $response = (new ProcessFinishedTest())->render(['source' => 'dldb', 'id' => 122217, 'displayName' => 'B\u00fcrgeramt Heerstra\u00dfe'], [
             '__body' => json_encode($entity)
         ], []);
         $response = $this->render(['source' => 'dldb', 'id' => 122217, 'displayName' => 'B\u00fcrgeramt Heerstra\u00dfe'], [], []);
