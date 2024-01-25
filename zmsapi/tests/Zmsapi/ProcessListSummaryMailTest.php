@@ -3,7 +3,7 @@
 namespace BO\Zmsapi\Tests;
 
 use Slim\Http\StatusCode;
-/*
+
 class ProcessListSummaryMailTest extends Base
 {
     protected $classname = "ProcessListSummaryMail";
@@ -61,4 +61,4 @@ class ProcessListSummaryMailTest extends Base
     }
 
     
-}*/
+}

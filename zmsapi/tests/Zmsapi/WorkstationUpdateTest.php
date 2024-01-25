@@ -35,7 +35,7 @@ class WorkstationUpdateTest extends Base
         $this->render([], ['__body' => json_encode($workstation)], []);
     }
 
-    /*public function testAssignedWorkstationExists()
+    public function testAssignedWorkstationExists()
     {
         $this->expectException('\BO\Zmsapi\Exception\Workstation\WorkstationAlreadyAssigned');
         $this->expectExceptionCode(200);
@@ -50,9 +50,9 @@ class WorkstationUpdateTest extends Base
         $this->render([], [
             '__body' => json_encode($workstation)
         ], []);
-    }*/
+    }
 
-    /*public function testAssignedWorkstationExistsByScopeAndNumber()
+    public function testAssignedWorkstationExistsByScopeAndNumber()
     {
         User::$assignedWorkstation = null;
 
@@ -73,7 +73,7 @@ class WorkstationUpdateTest extends Base
         $this->render([], [
             '__body' => json_encode($workstation)
         ], []);
-    }*/
+    }
 
     public function testAccessFailed()
     {
