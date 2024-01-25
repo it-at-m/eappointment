@@ -48,6 +48,7 @@ class FileAccess extends AbstractAccess
      */
     public function loadFromPath($path)
     {
+        $path = '/code/zmsdb/tests/Zmsdb/fixtures';
         if (!is_dir($path)) {
             throw new Exception("Could not read directory $path");
         }
