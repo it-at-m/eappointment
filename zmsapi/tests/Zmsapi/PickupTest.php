@@ -15,6 +15,7 @@ class PickupTest extends Base
         
         $entity = (new \BO\Zmsdb\Process)->readEntity(10030, new \BO\Zmsdb\Helper\NoAuth);
         $entity->status = 'pending';
+        $this->parameters['displayName'] = '001';
         $response = (new ProcessFinishedTest())->render([], [
             '__body' => json_encode($entity)
         ], []);
