@@ -14,7 +14,7 @@ class PickupTest extends Base
         User::$workstation->scope['id'] = 141;
         
         $entity = (new \BO\Zmsdb\Process)->readEntity(10030, new \BO\Zmsdb\Helper\NoAuth);
-        $entityJson = json_encode($entity);
+        /*$entityJson = json_encode($entity);
         $chunkSize = 1024; // Define the size of each chunk, e.g., 1024 bytes
         
         // Split the JSON string into chunks
@@ -23,13 +23,26 @@ class PickupTest extends Base
         foreach ($chunks as $index => $chunk) {
             // Prepend the chunk index to each log entry for easier reassembly or reference
             error_log($chunk);
-        }
+        }*/
 
         $entity->status = 'pending';
         /*$response = (new ProcessFinishedTest())->render([], [
             '__body' => json_encode($entity)
         ], []);*/
         $response = $this->render([], ['__body' => json_encode($entity)], []);
+
+        $responseJson = json_encode($response);
+        $chunkSize = 1024; // Define the size of each chunk, e.g., 1024 bytes
+        
+        // Split the JSON string into chunks
+        $chunks = str_split($responseJson, $chunkSize);
+        
+        foreach ($chunks as $index => $chunk) {
+            // Prepend the chunk index to each log entry for easier reassembly or reference
+            error_log($chunk);
+        }
+
+
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertStringContainsString('"status":"pending"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
