@@ -19,7 +19,7 @@ class AppointmentFormMultipleSlotsTest extends Base
                     'url' => '/workstation/',
                     'parameters' => [
                         'resolveReferences' => 2,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstationWithProvider()
                     ],
                     'response' => $this->readFixture("GET_Workstation_scope_141_multipleSlotsEnabled.json")
                 ],
@@ -57,6 +57,6 @@ class AppointmentFormMultipleSlotsTest extends Base
             ]
         );
         $response = parent::testRendering();
-        $this->assertStringContainsString('Anmeldung einer Wohnung (0)', (string)$response->getBody());
+        $this->assertStringContainsString('Anmeldung einer Wohnung (0 min)', (string)$response->getBody());
     }
 }
