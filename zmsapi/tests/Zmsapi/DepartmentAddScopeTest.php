@@ -17,6 +17,7 @@ class DepartmentAddScopeTest extends Base
                   "shortName": "Test Scope",
                   "provider": {
                       "id": 122217,
+                      "displayName": "B\u00fcrgeramt Heerstra\u00dfe",
                       "source" : "dldb"
                   }
               }'
@@ -45,7 +46,8 @@ class DepartmentAddScopeTest extends Base
             '__body' => '{
                   "shortName": "Test Scope",
                   "provider": {
-                      "id": 122217
+                      "id": 122217,
+                      "displayName": "B\u00fcrgeramt Heerstra\u00dfe"
                   }
               }'
         ], []);
