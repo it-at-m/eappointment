@@ -24,11 +24,12 @@ class PickupTest extends Base
             // Prepend the chunk index to each log entry for easier reassembly or reference
             error_log($chunk);
         }
+
         $entity->status = 'pending';
-        $response = (new ProcessFinishedTest())->render([], [
+        /*$response = (new ProcessFinishedTest())->render([], [
             '__body' => json_encode($entity)
-        ], []);
-        $response = $this->render([], [], []);
+        ], []);*/
+        $response = $this->render([], ['__body' => json_encode($entity)], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertStringContainsString('"status":"pending"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
