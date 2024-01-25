@@ -56,12 +56,12 @@ class ProcessDeleteTest extends Base
         $this->assertEquals('blocked', $entity->status);
     }
 
-    /*public function testRenderingWithInitiator()
+    public function testRenderingWithInitiator()
     {
         $response = $this->render(['id' => 27147, 'authKey' => 'f1d5'], ['initiator' => 1], []);
         $this->assertStringContainsString('Abgesagter Termin', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
-    }*/
+    }
 
     public function testAuthKeyMatchFailed()
     {
