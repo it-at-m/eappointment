@@ -78,6 +78,7 @@
         "provider": {
             "id": "122217",
             "source": "dldb",
+            "displayName":"001",
             "contact": {
               "city": "Berlin",
               "country": "Germany",
@@ -88,8 +89,7 @@
               "streetNumber": "12"
             },
             "link": "https://service.berlin.de/standort/122217/",
-            "name": "Bürgeramt Heerstraße",
-            "displayName": "001"
+            "name": "Bürgeramt Heerstraße"
           }
     },
     "status": "confirmed"
