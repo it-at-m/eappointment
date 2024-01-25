@@ -8,6 +8,8 @@ class PickupTest extends Base
 {
     protected $classname = "Pickup";
 
+
+
     public function testRendering()
     {
         $this->setWorkstation();
@@ -15,10 +17,12 @@ class PickupTest extends Base
         
         $entity = (new \BO\Zmsdb\Process)->readEntity(10030, new \BO\Zmsdb\Helper\NoAuth);
         $entity->status = 'pending';
-        $this->parameters['displayName'] = '001';
-        $response = (new ProcessFinishedTest())->render([], [
+
+        protected $parameters = [
             '__body' => json_encode($entity)
-        ], []);
+        ];
+        $this->parameters['displayName'] = '001';
+        $response = (new ProcessFinishedTest())->render([], $this->parameters, []);
         $response = $this->render([], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertStringContainsString('"status":"pending"', (string)$response->getBody());
