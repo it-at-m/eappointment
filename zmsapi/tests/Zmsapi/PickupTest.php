@@ -22,7 +22,7 @@ class PickupTest extends Base
         
         foreach ($chunks as $index => $chunk) {
             // Prepend the chunk index to each log entry for easier reassembly or reference
-            error_log("Chunk {$index}: " . $chunk);
+            error_log($chunk);
         }
         $entity->status = 'pending';
         $response = (new ProcessFinishedTest())->render([], [
