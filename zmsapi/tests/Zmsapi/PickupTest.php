@@ -11,7 +11,7 @@ class PickupTest extends Base
     public function testRendering()
     {
         $this->setWorkstation();
-        User::$workstation->scope['id'] = 146;
+        User::$workstation->scope['id'] = 141;
         
         $entity = (new \BO\Zmsdb\Process)->readEntity(10030, new \BO\Zmsdb\Helper\NoAuth);
         $entity->status = 'pending';
