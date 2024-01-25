@@ -119,7 +119,8 @@
                             "streetNumber": "1",
                             "postalCode": "12345",
                             "city": "Berlin"
-                        }
+                        },
+                        "displayName":"001"
                     }
                 },
                 "status": "confirmed"
