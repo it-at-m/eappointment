@@ -14,6 +14,7 @@ class PickupTest extends Base
         User::$workstation->scope['id'] = 141;
         
         $entity = (new \BO\Zmsdb\Process)->readEntity(10030, new \BO\Zmsdb\Helper\NoAuth);
+        print_r($entity, true);
         $entity->status = 'pending';
         $response = (new ProcessFinishedTest())->render([], [
             '__body' => json_encode($entity)
