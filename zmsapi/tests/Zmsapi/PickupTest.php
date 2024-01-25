@@ -25,9 +25,9 @@ class PickupTest extends Base
             error_log($chunk);
         }
         $entity->status = 'pending';
-        /*$response = (new ProcessFinishedTest())->render([], [
+        $response = (new Base())->render([], [
             '__body' => json_encode($entity)
-        ], []);*/
+        ], []);
         $response = $this->render([], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertStringContainsString('"status":"pending"', (string)$response->getBody());
