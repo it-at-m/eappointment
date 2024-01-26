@@ -1,0 +1,60 @@
+{
+    "name": "bo/zmsticketprinter",
+    "description": "Frontend for ticketprinter",
+    "license": "EUPL-1.2",
+    "authors": [
+        {
+            "name": "Torsten Kunst",
+            "email": "torsten.kunst@berlinonline.de"
+        },
+        {
+            "name": "Philipp G\u00e4bler",
+            "email": "philipp.gaebler@berlinonline.de"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "scripts": {
+        "command": "bin/configure"
+    },
+    "config": {
+        "platform": {
+            "php": "7.3"
+        },
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    },
+    "require-dev": {
+        "phpmd/phpmd": "@stable",
+        "squizlabs/php_codesniffer": "*",
+        "phpunit/phpunit": "^9.5.4",
+        "helmich/phpunit-psr7-assert": "^4.3.0",
+        "phpspec/prophecy-phpunit": "^2.0.0"
+    },
+    "require": {
+        "eappointment/mellon": "@dev",
+        "eappointment/zmsentities": "@dev",
+        "eappointment/zmsslim": "@dev",
+        "eappointment/zmsclient": "@dev",
+        "ext-json": ">=1.0",
+        "monolog/monolog": "1.*",
+        "roave/security-advisories": "dev-master",
+        "twig/twig": "3.*",
+        "twig/intl-extra": "^3.4"
+    },
+    "bin": [],
+    "autoload": {
+        "psr-4": {
+            "BO\\Zmsticketprinter\\": "src/Zmsticketprinter/",
+            "BO\\Zmsticketprinter\\Tests\\": "tests/Zmsticketprinter/"
+        }
+    }
+}

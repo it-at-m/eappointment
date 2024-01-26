@@ -1,0 +1,13 @@
+{% use "block/content/buttons.twig" %}
+{% block process_success %}
+	<h1>Vielen Dank</h1>
+	<p>
+		Wartenummernausdruck erfolgt.
+	</p>
+	<p>
+		Sie haben keine valide Handynummer zur Benachrichtigung vor dem Termin angegeben. Bitte geben Sie ausschließlich Nummern an. Nachfolgend können Sie Ihre Telefonnummer nachträglich hinterlegen.
+    </p>
+    <p>
+        {{ block("button_append_notification") }}
+    </p>
+{% endblock %}
