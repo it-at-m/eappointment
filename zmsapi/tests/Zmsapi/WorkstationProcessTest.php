@@ -74,8 +74,8 @@ class WorkstationProcessTest extends Base
         $this->expectExceptionCode(404);
         $this->render([], [
             '__body' => '{
-                "id": '. self::PROCESS_ID .',
-                "authKey": '. self::AUTHKEY .',
+                "id": "'. self::PROCESS_ID .'",
+                "authKey": "'. self::AUTHKEY .'",
                 "status": "called"
             }',
             'allowClusterWideCall' => true
@@ -89,8 +89,8 @@ class WorkstationProcessTest extends Base
         $this->expectExceptionCode(404);
         $this->render([], [
             '__body' => '{
-                "id": '. self::PROCESS_ID .',
-                "authKey": '. self::AUTHKEY .',
+                "id": "'. self::PROCESS_ID .'",
+                "authKey": "'. self::AUTHKEY .'",
                 "status": "reserved"
             }',
             'allowClusterWideCall' => true
