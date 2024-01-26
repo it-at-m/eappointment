@@ -13,9 +13,9 @@ class ProcessListSummaryMailTest extends Base
     {
         $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 30000], []);
         self::assertStringContainsString('Sie haben folgende Termine gebucht', (string)$response->getBody());
-        self::assertStringContainsString('10118', (string)$response->getBody());
-        self::assertStringContainsString('10114', (string)$response->getBody());
-        self::assertStringContainsString('10030', (string)$response->getBody());
+        self::assertStringContainsString('77777', (string)$response->getBody());
+        self::assertStringContainsString('77776', (string)$response->getBody());
+        self::assertStringContainsString('77778', (string)$response->getBody());
 
         self::assertStringContainsString('am Dienstag, 19. April 2016 um 17:40 Uhr', (string)$response->getBody());
         self::assertStringContainsString('am Dienstag, 26. April 2016 um 14:20 Uhr', (string)$response->getBody());
