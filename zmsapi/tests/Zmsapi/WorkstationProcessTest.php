@@ -12,7 +12,7 @@ class WorkstationProcessTest extends Base
 
     const PROCESS_ID = 11468;
 
-    const AUTHKEY = 'A4262';
+    const AUTHKEY = '7b41';
 
     const SCOPE_ID = 143;
 
