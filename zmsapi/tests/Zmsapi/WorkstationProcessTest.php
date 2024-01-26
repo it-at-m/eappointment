@@ -70,7 +70,6 @@ class WorkstationProcessTest extends Base
     public function testProcessAlreadyCalled()
     {
         $this->setWorkstation();
-        User::$workstation->process = $this->getInput();
         $this->expectException('\BO\Zmsapi\Exception\Process\ProcessAlreadyCalled');
         $this->expectExceptionCode(404);
         $this->render([], [
@@ -85,7 +84,6 @@ class WorkstationProcessTest extends Base
     public function testProcessReserved()
     {
         $this->setWorkstation();
-        User::$workstation->process = $this->getInput();
         $this->expectException('\BO\Zmsapi\Exception\Process\ProcessReservedNotCallable');
         $this->expectExceptionCode(404);
         $this->render([], [
