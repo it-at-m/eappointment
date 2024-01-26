@@ -113,7 +113,8 @@
         "id": "324433",
         "link": "https://service.berlin.de/standort/324433/",
         "name": "Mobiles Bürgeramt MV",
-        "source": "dldb"
+        "source": "dldb",
+        "displayName":"001"
     },
     "hint": "",
     "lastChange": 1566566542,

@@ -14,7 +14,7 @@ use \BO\Zmsentities\Collection\ScopeList;
  */
 class AppointmentFormHelper
 {
-    public static function readFreeProcessList($request, $workstation)
+    public static function readFreeProcessList($request, $workstation, $resolveReferences = 1)
     {
         $validator = $request->getAttribute('validator');
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
@@ -24,7 +24,7 @@ class AppointmentFormHelper
             ])->getEntity()
             : null;
 
-        $scope = static::readSelectedScope($request, $workstation, $selectedProcess);
+        $scope = static::readSelectedScope($request, $workstation, $selectedProcess, $resolveReferences);
         $scopeList = ($scope) ? (new ScopeList)->addEntity($scope) : (new ClusterHelper($workstation))->getScopeList();
         
         $slotType = static::setSlotType($validator);
@@ -59,7 +59,7 @@ class AppointmentFormHelper
         return ($requestList) ? $requestList->sortByName() : new \BO\Zmsentities\Collection\RequestList;
     }
 
-    public static function readSelectedScope($request, $workstation, $selectedProcess = null)
+    public static function readSelectedScope($request, $workstation, $selectedProcess = null, $resolveReferences = 1)
     {
         $validator = $request->getAttribute('validator');
         $input = $request->getParsedBody();
@@ -76,7 +76,7 @@ class AppointmentFormHelper
         if ($selectedScopeId) {
             $selectedScope = \App::$http
               ->readGetResult('/scope/'. $selectedScopeId .'/', [
-                  'resolveReferences' => 2,
+                  'resolveReferences' => $resolveReferences,
                   'gql' => GraphDefaults::getScope()
                 ])
               ->getEntity();

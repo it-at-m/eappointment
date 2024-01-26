@@ -16,6 +16,7 @@ class CounterGhostWorkstationTest extends Base
                 "shortName": "",
                 "provider": {
                     "id": "122217",
+                    "displayName": "B\u00fcrgeramt Heerstra\u00dfe",
                     "$ref": "/provider/122217/"
                 },
                 "status": {
@@ -68,6 +69,7 @@ class CounterGhostWorkstationTest extends Base
                 "shortName": "",
                 "provider": {
                     "id": "122217",
+                    "displayName": "B\u00fcrgeramt Heerstra\u00dfe",
                     "$ref": "/provider/122217/"
                 }
             }'

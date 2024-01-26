@@ -86,7 +86,7 @@ class ProcessFinished extends BaseController
         foreach ($process->getClients() as $client) {
             if ($client->hasSurveyAccepted()) {
                 $config = (new \BO\Zmsdb\Config())->readEntity();
-                $process->scope = (new \BO\Zmsdb\Scope())->readEntity($process['scope']['id'], 0);
+                $process->scope = (new \BO\Zmsdb\Scope())->readEntity($process['scope']['id'], 1);
                 $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, 'survey');
                 (new \BO\Zmsdb\Mail())->writeInQueue($mail, \App::$now, false);
             }

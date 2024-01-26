@@ -15,11 +15,12 @@ use Psr\Http\Message\ResponseInterface;
 class WaitingReport extends Base
 {
     protected $reportParts = [
-        'waitingcalculated' => 'maximal berechnete Wartezeit Spontankunden',
         'waitingcount' => 'maximal Wartende Spontankunden',
         'waitingtime' => 'maximal gemessene Wartezeit Spontankunden',
+        'waitingcalculated' => 'maximal berechnete Wartezeit Spontankunden',
         'waitingcount_termin' => 'maximal Wartende Terminkunden',
-        'waitingtime_termin' => 'maximal gemessene Wartezeit Terminkunden'
+        'waitingtime_termin' => 'maximal gemessene Wartezeit Terminkunden',
+        'waitingcalculated_termin' => 'maximal berechnete Wartezeit Terminkunden'
     ];
     
     /**

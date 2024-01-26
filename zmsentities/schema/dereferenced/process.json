@@ -24,7 +24,6 @@
         "createIP": "145.15.3.10",
         "createTimestamp": 1447931596,
         "lastChange": 1447931596,
-        "updateTimestamp": 1447931596,
         "id": 123456,
         "queue": {
             "arrivalTime": 1447922893,
@@ -55,7 +54,8 @@
                     "streetNumber": "1",
                     "postalCode": "12345",
                     "city": "Berlin"
-                }
+                },
+                "displayName":"001"
             }
         },
         "status": "confirmed"
@@ -593,7 +593,8 @@
                     },
                     "id": 123456,
                     "name": "Flughafen Schönefeld, Aufsicht",
-                    "source": "dldb"
+                    "source": "dldb",
+                    "displayName":"001"
                 },
                 "shortName": "Zentrale",
                 "status": {

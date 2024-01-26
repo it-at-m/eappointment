@@ -1,0 +1,168 @@
+name: unit tests
+
+on:
+  workflow_call:
+
+jobs:
+  module-test:
+    runs-on: ubuntu-latest
+    container:
+      image: "registry.gitlab.com/eappointment/php-base:${{ matrix.php_version }}-dev"
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+      - name: Install Composer Dependencies
+        run: |
+          cd "${{ matrix.module }}"
+          composer install --no-progress --prefer-dist --optimize-autoloader
+      - name: Run Unit Tests
+        run: |
+          cd "${{ matrix.module }}"
+          ./vendor/bin/phpunit
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: zmsadmin
+            php_version: "8.0"
+          - module: zmscalldisplay
+            php_version: "8.0"
+          - module: zmsdldb
+            php_version: "8.0"
+          - module: zmsentities
+            php_version: "8.0"
+          - module: zmsmessaging
+            php_version: "8.0"
+          - module: zmsslim
+            php_version: "8.0"
+          - module: zmsstatistic
+            php_version: "8.0"
+
+
+  zmsapi-test:
+    runs-on: ubuntu-latest
+    container:
+      image: "registry.gitlab.com/eappointment/php-base:8.0-dev"
+    services:
+      mariadb:
+        image: mariadb:10.6
+        env:
+          MYSQL_ROOT_PASSWORD: zmsapi
+          MYSQL_DATABASE: zmsbo
+          MYSQL_CHARACTER_SET: utf8mb4
+          MYSQL_COLLATION: utf8mb4_unicode_ci
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 10s
+          --health-retries 5
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+      - name: Install python3
+        run: |
+          apt update
+          apt install -y python3 python3-click python3-git
+      - name: Referencing local Modules and Libraries
+        run: python3 ./cli modules reference-libraries --no-symlink
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsapi' 'zmsdb')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+        shell: bash
+      - name: Import Test Data and Run Unit Tests
+        env:
+          MYSQL_PORT: "tcp://mariadb:3306"
+          MYSQL_DATABASE: zmsbo
+          MYSQL_ROOT_PASSWORD: zmsapi
+        run: |
+          cd zmsapi
+          echo "Setup fixtures..."
+          rm -rf data
+          ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
+          echo "Importing test data..."
+          vendor/bin/importTestData --commit
+          php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit \
+            -v --colors=never --coverage-text --coverage-html public/_tests/coverage/ --log-junit \
+            public/_tests/junit.xml
+
+  zmsdb-test:
+    runs-on: ubuntu-latest
+    container:
+      image: "registry.gitlab.com/eappointment/php-base:8.0-dev"
+    services:
+      mariadb:
+        image: mariadb:10.6
+        env:
+          MYSQL_ROOT_PASSWORD: zmsdb
+          MYSQL_DATABASE: zmsbo
+          MYSQL_CHARACTER_SET: utf8mb4
+          MYSQL_COLLATION: utf8mb4_unicode_ci
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 10s
+          --health-retries 5
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+      - name: Install python3
+        run: |
+          apt update
+          apt install -y python3 python3-click python3-git
+      - name: Referencing local Modules and Libraries
+        run: python3 ./cli modules reference-libraries --no-symlink
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsdb')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+        shell: bash
+      - name: Import Test Data and Run Unit Tests
+        env:
+          MYSQL_PORT: "tcp://mariadb:3306"
+          MYSQL_DATABASE: zmsbo
+          MYSQL_ROOT_PASSWORD: zmsdb
+        run: |
+          cd zmsdb
+          bin/importTestData --commit
+          php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit \
+            -v --colors=never --coverage-text --coverage-html public/_tests/coverage/ --log-junit \
+            public/_tests/junit.xml
+
+
+
+
+  zmsclient-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsclient')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+
+      - name: Run Unit Tests
+        run: |
+          /bin/bash -c "cd ./zmsclient && docker-compose up -d && docker-compose exec -T test ./vendor/bin/phpunit"
