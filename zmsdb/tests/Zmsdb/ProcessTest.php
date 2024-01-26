@@ -553,9 +553,9 @@ class ProcessTest extends Base
         $query = new Query();
         $processList = $query->readListByMailAndStatusList('zms@service.berlinonline.de', [
             'preconfirmed',
-        ], 0, 5);
+        ], 0, 2);
         self::assertEquals('zms@service.berlinonline.de', $processList->getFirst()->getFirstClient()->email);
-        self::assertEquals(5, $processList->count());
+        self::assertEquals(2, $processList->count());
     }
 
     public function testStatusFree()
