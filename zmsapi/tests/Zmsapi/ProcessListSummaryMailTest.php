@@ -21,7 +21,7 @@ class ProcessListSummaryMailTest extends Base
         self::assertStringContainsString('am Dienstag, 26. April 2016 um 14:20 Uhr', (string)$response->getBody());
         self::assertStringContainsString('am Montag, 16. Mai 2016 um 08:10 Uhr', (string)$response->getBody());
 
-        self::assertSame(StatusCodeInterface::HTTP_OK, $response->getStatusCode());
+        self::assertSame(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
 
         $this->testShortRepetitionFailure();
         $this->testShortRepetitionSuccess();
@@ -31,7 +31,7 @@ class ProcessListSummaryMailTest extends Base
     {
         $this->expectException('BO\Zmsapi\Exception\Process\ProcessListSummaryTooOften');
         $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 3], []);
-        self::assertSame(StatusCodeInterface::HTTP_TOO_MANY_REQUESTS, $response->getStatusCode());
+        self::assertSame(StatusCodeInterface::STATUS_TOO_MANY_REQUESTS, $response->getStatusCode());
     }
 
     private function testShortRepetitionSuccess()
