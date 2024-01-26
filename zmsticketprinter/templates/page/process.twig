@@ -8,6 +8,11 @@
 
 <div class="boxontop">
 	{{ block("print") }}
+	<script>
+		window.onload = function() {
+			window.print();
+		}
+	</script>
 	<div class="noprint">
 		<span class="msg_wartenummer_lautet">
 		    {% trans %}Ihre Wartenummer lautet{% endtrans %}: <br>
