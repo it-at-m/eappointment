@@ -119,7 +119,8 @@
                             "streetNumber": "1",
                             "postalCode": "12345",
                             "city": "Berlin"
-                        }
+                        },
+                        "displayName":"001"
                     }
                 },
                 "status": "confirmed"
@@ -340,7 +341,8 @@
                     },
                     "id": 123456,
                     "name": "Flughafen Schönefeld, Aufsicht",
-                    "source": "dldb"
+                    "source": "dldb",
+                    "displayName":"001"
                 },
                 "shortName": "Zentrale",
                 "status": {

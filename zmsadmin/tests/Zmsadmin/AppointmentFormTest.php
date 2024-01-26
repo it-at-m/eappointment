@@ -19,7 +19,7 @@ class AppointmentFormTest extends Base
                     'url' => '/workstation/',
                     'parameters' => [
                         'resolveReferences' => 2,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstationWithProvider()
                     ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
@@ -72,7 +72,7 @@ class AppointmentFormTest extends Base
                     'url' => '/workstation/',
                     'parameters' => [
                         'resolveReferences' => 2,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstationWithProvider()
                     ],
                     'response' => $this->readFixture("GET_workstation_basic.json")
                 ],
@@ -103,7 +103,7 @@ class AppointmentFormTest extends Base
                     'url' => '/workstation/',
                     'parameters' => [
                         'resolveReferences' => 2,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstationWithProvider()
                     ],
                     'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
                 ],
@@ -135,7 +135,7 @@ class AppointmentFormTest extends Base
                     'url' => '/workstation/',
                     'parameters' => [
                         'resolveReferences' => 2,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstationWithProvider()
                     ],
                     'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
                 ],
@@ -194,7 +194,7 @@ class AppointmentFormTest extends Base
                     'url' => '/workstation/',
                     'parameters' => [
                         'resolveReferences' => 2,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstationWithProvider()
                     ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
@@ -252,7 +252,7 @@ class AppointmentFormTest extends Base
                     'url' => '/workstation/',
                     'parameters' => [
                         'resolveReferences' => 2,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstationWithProvider()
                     ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
@@ -304,7 +304,7 @@ class AppointmentFormTest extends Base
                     'url' => '/workstation/',
                     'parameters' => [
                         'resolveReferences' => 2,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstationWithProvider()
                     ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
@@ -373,7 +373,7 @@ class AppointmentFormTest extends Base
                     'url' => '/workstation/',
                     'parameters' => [
                         'resolveReferences' => 2,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstationWithProvider()
                     ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
@@ -438,7 +438,7 @@ class AppointmentFormTest extends Base
                     'url' => '/workstation/',
                     'parameters' => [
                         'resolveReferences' => 2,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstationWithProvider()
                     ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
@@ -503,7 +503,7 @@ class AppointmentFormTest extends Base
                     'url' => '/workstation/',
                     'parameters' => [
                         'resolveReferences' => 2,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstationWithProvider()
                     ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],

@@ -53,6 +53,7 @@
         "clients": [
             {
                 "familyName": "Test BO",
+                "selecteddate": "2016-04-01",
                 "email": "test@example.com",
                 "emailSendCount": "0",
                 "notificationsSendCount": "0",
@@ -102,7 +103,8 @@
                 "source": "dldb",
                 "id": "122217",
                 "link": "https://service.berlin.de/standort/122217/",
-                "name": "Bürgeramt Heerstraße"
+                "name": "Bürgeramt Heerstraße",
+                "displayName":"001"
             },
             "hint": "Nr. wird zum Termin aufgerufen",
             "contact": {

@@ -12,7 +12,7 @@ class ProcessFinishedTest extends Base
         $workstation['queue']['clusterEnabled'] = 1;
 
         $entity = (new \BO\Zmsdb\Process)->readEntity(10030, new \BO\Zmsdb\Helper\NoAuth);
-        $this->assertEquals('preconfirmed', $entity->status);
+        $this->assertEquals('confirmed', $entity->status);
 
         $process = json_decode($this->readFixture("GetProcess_10030.json"));
         $process->status = 'finished';

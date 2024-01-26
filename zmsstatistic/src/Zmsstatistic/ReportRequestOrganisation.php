@@ -40,8 +40,7 @@ class ReportRequestOrganisation extends BaseController
             ->readGetResult('/warehouse/requestorganisation/' . $this->organisation->id . '/'. $args['period']. '/')
             ->getEntity()
             ->toGrouped($this->groupfields, $this->hashset)
-            ->withRequestsSum()
-            ->withAverage('processingtime');
+            ->withRequestsSum();
         }
 
         $type = $validator->getParameter('type')->isString()->getValue();

@@ -40,8 +40,7 @@ class ReportRequestDepartment extends BaseController
             ->readGetResult('/warehouse/requestdepartment/' . $this->department->id . '/'. $args['period']. '/')
             ->getEntity()
             ->toGrouped($this->groupfields, $this->hashset)
-            ->withRequestsSum()
-            ->withAverage('processingtime');
+            ->withRequestsSum();
         }
 
         $type = $validator->getParameter('type')->isString()->getValue();

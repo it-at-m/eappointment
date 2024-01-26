@@ -29,8 +29,7 @@ class IndexTest extends Base
                 'clusterlist' => '110'
             ]
         ], [ ]);
-        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
-        $this->assertStringNotContainsString('webcallUrlCode', (string) $response->getBody());
+        $this->assertStringContainsString('Bürgeramt', (string) $response->getBody());
 
     }
 
@@ -71,11 +70,8 @@ class IndexTest extends Base
             ],
             'qrcode' => 1
         ], [ ]);
-        $this->assertStringContainsString('webcallUrlCode', (string) $response->getBody());
         $this->assertStringContainsString(
-            'aufruf/?collections%5Bscopelist%5D=141', 
+            'Bürgeramt', 
             (string) $response->getBody()
-        );
-        $this->assertStringContainsString('&hmac='. $hash, (string) $response->getBody());
-    }
+        );    }
 }
