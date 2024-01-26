@@ -65,8 +65,8 @@ class WorkstationProcess extends BaseController
     {
         $authCheck = (new Query())->readAuthKeyByProcessId($entity->id);
         error_log("entity " . $entity->authKey);
-        error_log("------------");
         error_log("authCheck " . $authCheck['authKey']);
+        error_log("------------");
 
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
