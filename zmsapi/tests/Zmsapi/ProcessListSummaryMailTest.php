@@ -11,7 +11,7 @@ class ProcessListSummaryMailTest extends Base
 
     public function testRendering()
     {
-        $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 3000], []);
+        $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 30000], []);
         self::assertStringContainsString('Sie haben folgende Termine gebucht', (string)$response->getBody());
         self::assertStringContainsString('10118', (string)$response->getBody());
         self::assertStringContainsString('10114', (string)$response->getBody());
