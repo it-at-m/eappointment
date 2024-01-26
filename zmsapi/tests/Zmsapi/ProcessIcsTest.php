@@ -8,9 +8,9 @@ class ProcessIcsTest extends Base
 
     public function testRendering()
     {
-        //$response = $this->render(['id' => 10030, 'authKey' => '1c56'], [], []);
-        //$this->assertStringContainsString('ics.json', (string)$response->getBody());
-        //$this->assertTrue(200 == $response->getStatusCode());
+        $response = $this->render(['id' => 10030, 'authKey' => '1c56'], [], []);
+        $this->assertStringContainsString('ics.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testEmpty()

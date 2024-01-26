@@ -31,9 +31,9 @@ class ProcessDeleteQuickTest extends Base
     public function testRenderingWithInitiator()
     {
         $this->setWorkstation(123, 'testuser', 451);
-        //$response = $this->render(['id' => 27147], ['initiator' => 1], []);
-        //$this->assertStringContainsString('blocked', (string)$response->getBody());
-        //$this->assertTrue(200 == $response->getStatusCode());
+        $response = $this->render(['id' => 27147], ['initiator' => 1], []);
+        $this->assertStringContainsString('blocked', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testAuthFailed()
