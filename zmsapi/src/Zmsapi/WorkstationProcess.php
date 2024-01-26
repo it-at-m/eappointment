@@ -64,11 +64,6 @@ class WorkstationProcess extends BaseController
     protected function testProcessData($entity)
     {
         $authCheck = (new Query())->readAuthKeyByProcessId($entity->id);
-        error_log("entity " . $entity->authKey);
-        error_log("authCheck " . $authCheck['authKey']);
-        error_log(json_encode($entity));
-        error_log("------------");
-
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
