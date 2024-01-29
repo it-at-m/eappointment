@@ -12,15 +12,6 @@
             "email": "philipp.gaebler@berlinonline.de"
         }
     ],
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../*",
-            "options": {
-                "symlink": true
-            }
-        }
-    ],
     "scripts": {
         "command": "bin/configure"
     },
@@ -56,5 +47,18 @@
             "BO\\Zmsticketprinter\\": "src/Zmsticketprinter/",
             "BO\\Zmsticketprinter\\Tests\\": "tests/Zmsticketprinter/"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://gitlab+deploy-token-203:RMAsMMns5SocfWcUnktt@gitlab.berlinonline.net/land-intranet/slim-psr7.git"
+        },
+        {
+            "type": "path",
+            "url": "../*",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
 }
