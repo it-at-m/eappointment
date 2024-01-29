@@ -24,7 +24,7 @@ class ProcessIcs extends BaseController
     ) {
         $status = Validator::param('status')->isNumber()->setDefault('appointment')->getValue();
         $this->testProcessData($args['id'], $args['authKey']);
-        $process = (new Process)->readEntity($args['id'], $args['authKey'], 1);
+        $process = (new Process)->readEntity($args['id'], $args['authKey'], 2);
 
         $config = (new Config())->readEntity();
         $ics = \BO\Zmsentities\Helper\Messaging::getMailIcs($process, $config, $status);

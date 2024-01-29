@@ -77,4 +77,9 @@ class Provider extends Schema\Entity
     {
         return $this->toProperty()->data->get();
     }
+
+    public function getSlotTimeInMinutes()
+    {
+        return $this->getAdditionalData()['slotTimeInMinutes'];
+    }
 }

@@ -17,7 +17,8 @@ class ReportWaitingDepartment extends BaseController
         'waitingtime',
         'waitingcalculated',
         'waitingcount_termin',
-        'waitingtime_termin'
+        'waitingtime_termin',
+        'waitingcalculated_termin'
     ];
 
     protected $groupfields = [

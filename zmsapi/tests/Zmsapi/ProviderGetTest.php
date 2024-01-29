@@ -8,7 +8,7 @@ class ProviderGetTest extends Base
 
     public function testRendering()
     {
-        $response = $this->render(['source' => 'dldb', 'id' => 122217], [], []); //Heerstraße
+        $response = $this->render(['source' => 'dldb', 'id' => 122217, 'displayName' => 'B\u00fcrgeramt Heerstra\u00dfe'], [], []); //Heerstraße
         $this->assertStringContainsString('provider.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
