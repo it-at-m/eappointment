@@ -10,7 +10,7 @@ use \BO\Zmsentities\Process;
  * @SuppressWarnings(Public)
  *
  */
-class ProcessArchived extends Process
+class Processarchived extends Process
 {
     public static $schema = "processarchived.json";
 }
