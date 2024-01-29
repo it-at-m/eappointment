@@ -1,6 +1,6 @@
 name: Combined Workflow
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   call-unit-tests:
