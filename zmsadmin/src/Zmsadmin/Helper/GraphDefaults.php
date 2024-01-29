@@ -45,6 +45,48 @@ EOS;
         return static::defaultFormat($default);
     }
 
+    public static function getWorkstationWithProvider()
+    {
+        $default =<<< EOS
+{ 
+    id,
+    name,
+    scope {
+        provider {
+            id
+            contact 
+            name 
+            data { 
+                payment 
+                slotTimeInMinutes
+            }
+        },  
+        id, 
+        shortName
+        source,
+        contact {
+            name
+        }
+        preferences {
+            appointment
+            client
+            workstation
+            ticketprinter
+        }
+        status 
+    },
+    queue {
+        clusterEnabled
+        appointmentsOnly
+    }
+    useraccount {
+        rights
+    }
+}
+EOS;
+        return static::defaultFormat($default);
+    }
+
     /**
      * availability reduced response data
      */
@@ -127,6 +169,7 @@ EOS;
         name 
         data { 
             payment 
+            slotTimeInMinutes
         }
     }
     queue

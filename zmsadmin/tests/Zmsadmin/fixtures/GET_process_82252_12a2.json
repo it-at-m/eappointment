@@ -97,7 +97,8 @@
             "id": "141",
             "provider": {
                 "$ref": "/provider/122217/",
-                "id": "122217"
+                "id": "122217",
+                "displayName":"001"
             },
             "hint": "Nr. wird zum Termin aufgerufen",
             "contact": {
