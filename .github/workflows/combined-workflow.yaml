@@ -1,0 +1,11 @@
+name: Combined Workflow
+
+on: [push]
+
+jobs:
+  call-unit-tests:
+    uses: ./.github/workflows/unit-tests.yaml
+
+  call-build-images:
+    needs: call-unit-tests
+    uses: ./.github/workflows/build-images.yaml
