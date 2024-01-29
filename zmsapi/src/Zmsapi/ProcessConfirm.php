@@ -26,6 +26,7 @@ class ProcessConfirm extends BaseController
     ) {
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
 
+        $initiator = Validator::param('initiator')->isString()->getValue();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(3)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
@@ -45,6 +46,13 @@ class ProcessConfirm extends BaseController
             $resolveReferences,
             $userAccount
         );
+
+        if ($initiator && $process->hasScopeAdmin()) {
+            $config = (new Config())->readEntity();
+            $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, 'confirmed', $initiator);
+            (new Mail())->writeInQueueWithAdmin($mail);
+        }
+
         $message = Response\Message::create($request);
         $message->data = $process;
 
