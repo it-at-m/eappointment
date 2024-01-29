@@ -54,10 +54,11 @@
                                 {% else %}
                                     {% set selected = "" %}
                                 {% endif %}
-                                {% set slotCountOptions = slotCountOptions|merge([{ "value": slotCount, "name": slotCount, "selected":selected}]) %}
+                                {% set duration = slotTimeInMinutes * slotCount %}
+                                {% set slotCountOptions = slotCountOptions|merge([{ "value": slotCount, "name": duration, "selected":selected}]) %}
                             {% endfor %}
                             {{ formgroup(
-                                {"label": "Slots"},
+                                {"label": "Termindauer in Minuten"},
                                 [{
                                     "type":"select",
                                     "parameter": {
@@ -297,8 +298,9 @@
                                     {% endif %}
 
                                     {% set requestName = request.name %}
+                                    {% set duration = slotTimeInMinutes * request.timeSlotCount %}
                                     {% if scope.preferences.appointment.multipleSlotsEnabled or selectedProcess.scope.preferences.appointment.multipleSlotsEnabled %}
-                                        {% set requestName = request.name ~ " (" ~ request.timeSlotCount ~ ")" %}
+                                        {% set requestName = request.name ~ " (" ~ duration ~ " min)" %}
                                     {% endif %}
                                     {% set requestsOptions = requestsOptions|merge([{ "value": request.id, "name": requestName, "class": "service-checkbox", "data": {'slots': request.timeSlotCount}, "selected": checked }]) %}
                                 {% endfor %}

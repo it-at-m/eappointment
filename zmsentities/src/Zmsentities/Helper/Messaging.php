@@ -204,6 +204,8 @@ class Messaging
 
         if ($process) {
             $provider = $process->scope->provider;
+            //error_log($provider);
+            //print_r($provider, true);
             $providerName = $provider->displayName;
             $providerTemplateName = self::getProviderTemplateName($providerName);
             $providerTemplateFolder = 'custom/' . $providerTemplateName . '/';

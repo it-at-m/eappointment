@@ -27,7 +27,7 @@ class ProcessDelete extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        $process = (new Process)->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 1);
+        $process = (new Process)->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 2);
         $this->testProcessData($process, $args['authKey']);
         if ('reserved' == $process->status) {
             if (!(new Process)->writeBlockedEntity($process)) {
