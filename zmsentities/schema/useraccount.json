@@ -186,7 +186,7 @@
         "de_DE": {
           "pointer": "Behördenauswahl",
           "messages": {
-            "minItems": "Wählen sie mindestens eine Behörde aus."
+            "minItems": "Wählen Sie mindestens eine Behörde aus."
           }
         }
       }
