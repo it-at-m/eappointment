@@ -7,8 +7,10 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
-use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process;
+use \BO\Zmsdb\Mail;
+use \BO\Zmsdb\Config;
+use \BO\Mellon\Validator;
 
 /**
  * @SuppressWarnings(CouplingBetweenObjects)
@@ -45,6 +47,7 @@ class ProcessConfirm extends BaseController
             $resolveReferences,
             $userAccount
         );
+        $this->writeMails($request, $process);
         $message = Response\Message::create($request);
         $message->data = $process;
 
@@ -52,7 +55,20 @@ class ProcessConfirm extends BaseController
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
     }
-
+    protected function writeMails($request, $process)
+    {
+        if ($process->hasScopeAdmin()) {
+            $authority = $request->getUri()->getAuthority();
+            $validator = $request->getAttribute('validator');
+            $initiator = $validator->getParameter('initiator')
+                ->isString()
+                ->setDefault("$authority API-User")
+                ->getValue();
+            $config = (new Config())->readEntity();
+            $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, 'appointment', $initiator);
+            (new Mail())->writeInQueueWithAdmin($mail, \App::$now);
+        }
+    }
     protected function testProcessData($entity)
     {
         $authCheck = (new Process())->readAuthKeyByProcessId($entity->id);

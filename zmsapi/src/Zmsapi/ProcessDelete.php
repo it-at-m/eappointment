@@ -10,7 +10,7 @@ use \BO\Slim\Render;
 use \BO\Zmsdb\Process;
 use \BO\Zmsdb\Mail;
 use \BO\Zmsdb\Config;
-use BO\Mellon\Validator;
+use \BO\Mellon\Validator;
 
 /**
  * @SuppressWarnings(CouplingBetweenObjects)
