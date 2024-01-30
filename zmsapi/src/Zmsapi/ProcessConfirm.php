@@ -57,7 +57,6 @@ class ProcessConfirm extends BaseController
     }
     protected function writeMails($request, $process)
     {
-        error_log("Inside function");
         if ($process->hasScopeAdmin()) {
             $authority = $request->getUri()->getAuthority();
             $validator = $request->getAttribute('validator');
