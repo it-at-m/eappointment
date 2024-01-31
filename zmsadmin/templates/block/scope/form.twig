@@ -188,6 +188,31 @@
                             }
                         }]
                     ) }}
+
+                    {{ formgroup(
+                        {
+                            
+                            "groupTag": "fieldset"
+                        },
+                        [{
+                            "type":"checkbox",
+                            "parameter": {
+                                "label": "bei Terminbestätigung",
+                                "name": "preferences[client][adminMailOnAppointment]",
+                                "value": 1,
+                                "checked": scope.preferences.client.adminMailOnAppointment|default(0),
+                            }
+                        },{
+                            "type":"checkbox",
+                            "parameter": {
+                                "label": "bei Terminlöschung",
+                                "name": "preferences[client][adminMailOnDeleted]",
+                                "id": "telefonpflicht",
+                                "value": 1,
+                                "checked": scope.preferences.client.adminMailOnDeleted|default(0),
+                            }
+                        }]
+                    ) }}       
                     </div>
                 </fieldset>
 

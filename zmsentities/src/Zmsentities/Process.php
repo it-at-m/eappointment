@@ -146,6 +146,16 @@ class Process extends Schema\Entity
         return ('' != $this->toProperty()->scope->contact->email->get());
     }
 
+    public function sendAdminMailOnConfirmation()
+    {
+        return ('' != $this->toProperty()->scope->preferences->client->adminMailOnAppointment->get());
+    }
+    
+    public function sendAdminMailOnDeleted()
+    {
+        return ('' != $this->toProperty()->scope->preferences->client->adminMailOnDeleted->get());
+    }
+
     public function withUpdatedData($requestData, \DateTimeInterface $dateTime, $scope = null, $notice = '')
     {
         $this->scope = ($scope) ? $scope : $this->scope;

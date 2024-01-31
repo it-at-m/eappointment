@@ -208,6 +208,8 @@
             "amendmentLabel": "Zusatzinformationen zum Anliegen",
             "customTextfieldLabel": "Zusatzfeld zum Anliegen",
             "emailRequired": false,
+            "adminMailOnAppointment": false,
+            "adminMailOnDeleted": false,
             "telephoneActivated": true,
             "telephoneRequired": false
         },
