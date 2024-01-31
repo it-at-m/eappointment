@@ -288,6 +288,8 @@
                         "amendmentLabel": "Zusatzinformationen zum Anliegen",
                         "customTextfieldLabel": "Zusatzfeld zum Anliegen",
                         "emailRequired": false,
+                        "adminMailOnAppointment": false,
+                        "adminMailOnDeleted": false,
                         "telephoneActivated": true,
                         "telephoneRequired": false
                     },
@@ -521,6 +523,22 @@
                                         "number"
                                     ],
                                     "description": "true if client is required to enter a telephone number",
+                                    "default": false
+                                },
+                                "adminMailOnAppointment": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "confirmation mail is sent to scope admin",
+                                    "default": false
+                                },
+                                "adminMailOnDeleted": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "deleted mail is sent to admin",
                                     "default": false
                                 }
                             }
