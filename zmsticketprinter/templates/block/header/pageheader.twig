@@ -1,0 +1,16 @@
+{% use "block/timer/time.twig" %}
+{% block pageheader %}
+
+<div id="main-header" class="noprint">
+	<span>
+    	<div class="adressangabe">
+            <div class="adressangabe_behoerde">{{ organisation.name }}</div>
+    		<div class="adressangabe_name">{{ department.name }}</div>
+        </div>
+    </span>
+    {% block timer %}
+        {{ parent() }}
+    {% endblock %}
+</div>
+
+{% endblock %}

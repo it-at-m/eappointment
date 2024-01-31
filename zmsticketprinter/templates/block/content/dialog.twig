@@ -1,0 +1,23 @@
+{% if class is empty %}{% set class = 'dialog' %}{% endif %}
+{% block dialog %}
+
+<!-- start: board {{ class }} -->
+<div class="{{ class }}" data-reload="{% if reload %}{{ reload }}{% endif %}" {% for key, value in data %}data-{{ key }}="{{ value }}"{% endfor %}>
+    <div class="header">
+        <h2 class="title">
+            {% block dialog_title -%}{%- endblock %}
+        </h2>
+    </div>
+    <div class="body">
+        {% block dialog_body -%}{%- endblock %}
+    </div>
+    {% if block('board_footer') is defined %}
+    <div class="footer">
+        {% block dialog_footer -%}{%- endblock %}
+    </div>
+    {%- endif %}
+</div>
+
+<!-- /end: board {{ class }} -->
+
+{% endblock %}

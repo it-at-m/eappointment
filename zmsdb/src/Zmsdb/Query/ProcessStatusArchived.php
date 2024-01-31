@@ -159,6 +159,10 @@ class ProcessStatusArchived extends Base implements MappingInterface
 
     private function getArchivedServices(\BO\Zmsentities\Process $process)
     {
+        if ($process->getRequests()->count() === 0) {
+            return '';
+        }
+        
         $services = $process->getRequests()->getFirst()->name;
 
         if ($process->getRequests()->count() > 1) {

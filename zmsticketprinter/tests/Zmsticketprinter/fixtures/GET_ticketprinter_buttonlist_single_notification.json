@@ -1,0 +1,109 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2016-04-29T11:53:31+02:00",
+    "server": "Zmsapi-unconfigured"
+  },
+  "data": {
+	"$schema": "https:\/\/schema.berlin.de\/queuemanagement\/ticketprinter.json",
+	"enabled": "1",
+	"hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
+	"id": "1",
+	"lastUpdate": "1477661416",
+	"name": "Test Ticketprinter",
+	"buttonlist": "s141",
+	"buttons": [{
+		"type": "scope",
+		"url": "\/scope\/141\/",
+		"scope": {
+			"hint": "Bürgeramt | Nr. wird zum Termin aufgerufen",
+		    "id": "141",
+		    "contact": {
+		      "name": "Bürgeramt Heerstraße",
+		      "street": "Heerstr. 12, 14052 Berlin",
+		      "email": "",
+		      "country": "Germany"
+		    },
+		    "preferences": {
+		      "appointment": {
+		        "deallocationDuration": "10",
+		        "endInDaysDefault": "60",
+		        "multipleSlotsEnabled": "1",
+		        "reservationDuration": "20",
+		        "startInDaysDefault": "0",
+		        "notificationConfirmationEnabled": "1",
+		        "notificationHeadsUpEnabled": "1"
+		      },
+		      "client": {
+		        "alternateAppointmentUrl": "",
+		        "amendmentActivated": "1",
+		        "amendmentLabel": "1",
+		        "emailRequired": "1",
+		        "telephoneActivated": "1",
+		        "telephoneRequired": "1"
+		      },
+		      "notifications": {
+		        "confirmationContent": "",
+		        "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+		        "headsUpTime": "30"
+		      },
+		      "pickup": {
+		        "alternateName": "Ausgabe",
+		        "isDefault": "1"
+		      },
+		      "queue": {
+		        "callCountMax": "0",
+		        "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+		        "firstNumber": "1",
+		        "lastNumber": "499",
+		        "processingTimeAverage": "15",
+		        "publishWaitingTimeEnabled": "1",
+		        "statisticsEnabled": "1"
+		      },
+		      "survey": {
+		        "emailContent": "",
+		        "enabled": "1",
+		        "label": ""
+		      },
+		      "ticketprinter": {
+		        "buttonName": "Bürgeramt Heerstraße",
+		        "confirmationEnabled": "1",
+		        "deactivatedText": "",
+		        "notificationsAmendmentEnabled": "1",
+		        "notificationsEnabled": "1",
+		        "notificationsDelay": "0"
+		      },
+		      "workstation": {
+		        "emergencyEnabled": "1"
+		      }
+		    },
+		    "shortName": "",
+		    "status": {
+		      "emergency": {
+		        "acceptedByWorkstation": "-1",
+		        "activated": "0",
+		        "calledByWorkstation": "-1"
+		      },
+		      "queue": {
+		        "workstationCount": "0",
+		        "ghostWorkstationCount": "-1",
+		        "givenNumberCount": "2",
+		        "lastGivenNumber": "2",
+		        "lastGivenNumberTimestamp": 1459461600
+		      },
+		      "ticketprinter": {
+		        "deactivated": "0"
+		      }
+		    },
+		    "provider": {
+		      "id": "122217",
+		      "$ref": "/provider/122217/"
+		    }
+		},
+		"enabled": true,
+		"name": "Bürgeramt Heerstraße"
+	}]
+}
+}
