@@ -366,6 +366,9 @@ class Scope extends Base implements MappingInterface
         if (!$data[$this->getPrefixed('preferences__client__telephoneActivated')]) {
             $data[$this->getPrefixed("preferences__client__telephoneRequired")] = 0;
         }
+        if (!$data[$this->getPrefixed('preferences__client__adminMailOnAppointment')]) {
+            $data[$this->getPrefixed("preferences__client__adminMailOnDeleted")] = 0;
+        }
         if (!$data[$this->getPrefixed('preferences__client__customTextfieldActivated')]) {
             $data[$this->getPrefixed("preferences__client__customTextfieldRequired")] = 0;
         }
