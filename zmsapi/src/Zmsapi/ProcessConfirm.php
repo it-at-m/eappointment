@@ -47,6 +47,7 @@ class ProcessConfirm extends BaseController
             $resolveReferences,
             $userAccount
         );
+
         $this->writeMails($request, $process);
         $message = Response\Message::create($request);
         $message->data = $process;
@@ -57,7 +58,7 @@ class ProcessConfirm extends BaseController
     }
     protected function writeMails($request, $process)
     {
-        if ($process->hasScopeAdmin()) {
+        if ($process->hasScopeAdmin() && $process->sendAdminMailOnConfirmation() === 1) {
             $authority = $request->getUri()->getAuthority();
             $validator = $request->getAttribute('validator');
             $initiator = $validator->getParameter('initiator')
