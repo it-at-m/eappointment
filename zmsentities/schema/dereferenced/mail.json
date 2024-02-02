@@ -66,6 +66,7 @@
                         "emailRequired": "1",
                         "adminMailOnAppointment": "0",
                         "adminMailOnDeleted": "0",
+                        "adminMailOnUpdated": "0",
                         "telephoneActivated": "1",
                         "telephoneRequired": "1"
                     },

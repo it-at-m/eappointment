@@ -210,6 +210,7 @@
             "emailRequired": false,
             "adminMailOnAppointment": false,
             "adminMailOnDeleted": false,
+            "adminMailOnUpdated": false,
             "telephoneActivated": true,
             "telephoneRequired": false
         },

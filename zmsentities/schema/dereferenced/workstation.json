@@ -290,6 +290,7 @@
                         "emailRequired": false,
                         "adminMailOnAppointment": false,
                         "adminMailOnDeleted": false,
+                        "adminMailOnUpdated": false,
                         "telephoneActivated": true,
                         "telephoneRequired": false
                     },
@@ -531,6 +532,14 @@
                                         "number"
                                     ],
                                     "description": "confirmation mail is sent to scope admin",
+                                    "default": false
+                                },
+                                "adminMailOnUpdated": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "updated mail is sent to scope admin",
                                     "default": false
                                 },
                                 "adminMailOnDeleted": {
