@@ -197,19 +197,29 @@
                         [{
                             "type":"checkbox",
                             "parameter": {
-                                "label": "bei Terminbestätigung",
+                                "label": "bei Terminbestätigung (Betreff: Terminbest\u00e4tigung)",
                                 "name": "preferences[client][adminMailOnAppointment]",
+                                "id": "adminMailOnAppointment",
                                 "value": 1,
                                 "checked": scope.preferences.client.adminMailOnAppointment|default(0),
                             }
                         },{
                             "type":"checkbox",
                             "parameter": {
-                                "label": "bei Terminlöschung",
+                                "label": "bei Terminlöschung (Betreff: Terminabsage)",
                                 "name": "preferences[client][adminMailOnDeleted]",
-                                "id": "telefonpflicht",
+                                "id": "adminMailOnDeleted",
                                 "value": 1,
                                 "checked": scope.preferences.client.adminMailOnDeleted|default(0),
+                            }
+                        },{
+                            "type":"checkbox",
+                            "parameter": {
+                                "label": "bei Terminänderung durch Sachbearbeiter*in (Betreff: Information Termin\u00e4nderung)",
+                                "name": "preferences[client][adminMailOnUpdated]",
+                                "id": "adminMailOnUpdated",
+                                "value": 1,
+                                "checked": scope.preferences.client.adminMailOnUpdated|default(0),
                             }
                         }]
                     ) }}       
