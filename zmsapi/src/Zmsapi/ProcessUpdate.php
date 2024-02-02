@@ -62,12 +62,11 @@ class ProcessUpdate extends BaseController
             $process = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
         }
        
-        if ($initiator && $process->hasScopeAdmin()) {
+        if ($initiator && $process->hasScopeAdmin() && $process->sendAdminMailOnUpdated()) {
             $config = (new Config())->readEntity();
             $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, 'updated', $initiator);
             (new Mail())->writeInQueueWithAdmin($mail);
         }
-
         $message = Response\Message::create($request);
         $message->data = $process;
         
@@ -75,7 +74,6 @@ class ProcessUpdate extends BaseController
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
     }
-
     protected function testProcessData($entity)
     {
         $authCheck = (new Process())->readAuthKeyByProcessId($entity->id);
