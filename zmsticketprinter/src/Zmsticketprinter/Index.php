@@ -57,6 +57,8 @@ class Index extends BaseController
             $template->getTemplate(),
             array(
                 'debug' => \App::DEBUG,
+                'enabled' => $ticketprinter->isEnabled()
+                    || !$organisation->getPreference('ticketPrinterProtectionEnabled'),
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $organisation,
