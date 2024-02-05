@@ -62,7 +62,7 @@ class ProcessUpdate extends BaseController
             $process = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
         }
        
-        if ($initiator && $process->hasScopeAdmin()) {
+        if ($initiator && $process->hasScopeAdmin() && $process->sendAdminMailOnUpdated()) {
             $config = (new Config())->readEntity();
             $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, 'updated', $initiator);
             (new Mail())->writeInQueueWithAdmin($mail);

@@ -79,6 +79,7 @@
                                     "emailRequired": false,
                                     "adminMailOnAppointment": false,
                                     "adminMailOnDeleted": false,
+                                    "adminMailOnUpdated": false,
                                     "telephoneActivated": true,
                                     "telephoneRequired": false
                                 },
@@ -312,6 +313,14 @@
                                                     "number"
                                                 ],
                                                 "description": "true if client is required to enter a telephone number",
+                                                "default": false
+                                            },
+                                            "adminMailOnUpdated": {
+                                                "type": [
+                                                    "boolean",
+                                                    "number"
+                                                ],
+                                                "description": "updated mail is sent to scope admin",
                                                 "default": false
                                             },
                                             "adminMailOnAppointment": {

@@ -148,12 +148,17 @@ class Process extends Schema\Entity
 
     public function sendAdminMailOnConfirmation()
     {
-        return ('' != $this->toProperty()->scope->preferences->client->adminMailOnAppointment->get());
+        return (bool)((int)$this->toProperty()->scope->preferences->client->adminMailOnAppointment->get());
     }
-    
+
     public function sendAdminMailOnDeleted()
     {
-        return ('' != $this->toProperty()->scope->preferences->client->adminMailOnDeleted->get());
+        return (bool)((int)$this->toProperty()->scope->preferences->client->adminMailOnDeleted->get());
+    }
+
+    public function sendAdminMailOnUpdated()
+    {
+        return (bool)((int)$this->toProperty()->scope->preferences->client->adminMailOnUpdated->get());
     }
 
     public function withUpdatedData($requestData, \DateTimeInterface $dateTime, $scope = null, $notice = '')
