@@ -18,10 +18,6 @@ class TicketprinterAccess
             $organisation = (new \BO\Zmsdb\Organisation)->readByHash($entity->hash);
         }
         self::testTicketprinterNotFound($entity);
-        self::testTicketprinterIsProtectedEnabled(
-            $entity,
-            $organisation->getPreference('ticketPrinterProtectionEnabled')
-        );
         self::testTicketprinterValidHash($entity);
         self::testMatchingClusterAndScopes($entity, $organisation->getId());
     }
