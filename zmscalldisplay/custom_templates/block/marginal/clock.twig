@@ -1,0 +1,11 @@
+{% block clock %}
+<div id="Uhr" class="uhr">
+    <canvas id="clock" class="CoolClock:themed:120:showSecondHand::{{ getNow()|date("U") * 1000 }} myClock"></canvas>
+    <canvas id="clock_medium" class="CoolClock:themed:160:showSecondHand::{{ getNow()|date("U") * 1000 }} myClock"></canvas>
+    <canvas id="clock_big" class="CoolClock:themed:200:showSecondHand::{{ getNow()|date("U") * 1000 }} myClock"></canvas>
+</div>
+
+<div id="aufrufanzeige_Datum" class="aufrufanzeige_Datum">
+    {{ getNow()|format_date(pattern="EE dd. MMMM y") }}<br>
+</div>
+{% endblock %}
