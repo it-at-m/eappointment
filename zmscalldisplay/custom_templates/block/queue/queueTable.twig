@@ -1,0 +1,24 @@
+{% set text = '' %}
+{% if calldisplay.clusters|length == 1 and calldisplay.clusters|first.callDisplayText %}
+    {% set text = calldisplay.clusters|first.callDisplayText|raw|nl2br %}
+{% elseif calldisplay.scopes|length == 1 and calldisplay.scopes|first.preferences.queue.callDisplayText%}
+    {% set text = calldisplay.scopes|first.preferences.queue.callDisplayText|raw|nl2br %}
+{% endif %}
+
+{% if text %}
+    <div class="infotext">
+        <span id="infoicon"></span>
+        <div class="infotext-content">{{ text }}</div>
+    </div>
+{% endif %}
+
+{% block queueTable %}
+    {% if tableSettings.multiColumns == 1 %}
+        {% include "block/queue/table/oneColumn.twig" with {"settings": tableSettings} %}
+    {% else %}
+        {% include "block/queue/table/multiColumn.twig" with {"settings": tableSettings} %}
+    {% endif %}
+
+    {# Give ServerTime (\App::$now) from calldisplay to queue call - important for testing #}
+    <script type="text/javascript">window.bo.zmscalldisplay.serverTime={{ calldisplay.serverTime }}</script>
+{% endblock %}

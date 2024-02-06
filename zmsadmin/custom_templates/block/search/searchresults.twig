@@ -1,0 +1,74 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless searchresults'} %}
+
+        {% block board_title %}
+            {% trans %}Suchergebnisse für {% endtrans %} "{{ searchQuery }}"
+        {% endblock %}
+
+        {% block board_body %}
+        <div class="table-responsive-wrapper"> 
+            <table class="table--base" data-processList-count="{{ processList.count() }}"  data-processListOther-count="{{ processListOther.count() }}">
+                <thead>
+                    <tr>
+                        <th>Name (Nr.)</th>
+                        <th>Datum</th>
+                        <th>Ort</th>
+                        <th>Telefon</th>
+                        <th>E-Mail</th>
+                        <th>Anmerkung</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for process in processList %}
+                    <tr>
+                        <td>
+                            {% if process.status == "pickup" or process.status == "pending" %}
+                                <a href="{{ urlGet("pickup", {}, {}) }}">
+                                    {{process.clients.0.familyName}} ({{process.id}})
+                                </a>
+                            {% else %}
+                                <a href="{{ urlGet("counter", {}, {'selectedprocess': process.id, 'date': process.appointments.0.date|date('Y-m-d'), 'selectedscope': process.scope.id }) }}">
+                                    {{process.clients.0.familyName}} ({{process.id}})
+                                </a>
+                            {% endif %}
+                        </td>
+                        <td>{{process.appointments.0.date|date('d.m.Y, H:i')}}&nbsp;Uhr</td>
+                        <td>{{process.scope.contact.name}} {{process.scope.shortName}}</td>
+                        <td>{{process.clients.0.telephone}}</td>
+                        <td>{{process.clients.0.email}}</td>
+                        <td>{{process.amendment}}</td>
+                    </tr>
+                {% endfor %}
+                {% for process in processListOther %}
+                    <tr>
+                        <td>
+                                {{process.clients.0.familyName}} ({{process.id}})
+                        </td>
+                        <td>{{process.appointments.0.date|date('d.m.Y, H:i')}}&nbsp;Uhr</td>
+                        <td>{{process.scope.contact.name}} {{process.scope.shortName}}</td>
+                        <td colspan="4"><small>(nicht im aktuellen Standort)</small></td>
+                    </tr>
+                {% endfor %}
+                {% if processList.count() == 0 and processListOther.count() == 0 %}
+                    <tr>
+                        <td colspan="7">Keine Ergebnisse gefunden</td>
+                    </tr>
+                {% endif %}
+                {% if logList.count() %}
+                    <tr>
+                        <th colspan="7">Log-Ergebnisse (nur Superuser):</th>
+                    </tr>
+                {% for log in logList %}
+                    <tr>
+                        <td>{{ log.reference }}</td>
+                        <td>{{log.ts|date('d.m.Y, H:i:s')}}&nbsp;Uhr</td>
+                        <td colspan="7">{{ log.message }}</td>
+                    </tr>
+                {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+        {% endblock %}
+
+
+{% endembed %}
