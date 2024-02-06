@@ -79,22 +79,24 @@ class Request extends \Slim\Psr7\Request
      */
     public function getBasePath(): string
     {
-        $basePath = '';
-        $serverParams = $this->getServerParams();
+        $basePath = getenv('ZMS_MODULE_BASEPATH') !== false ? getenv('ZMS_MODULE_BASEPATH') : '';
+        if (empty($basePath)) {
+            $serverParams = $this->getServerParams();
 
-        if (!isset($serverParams['REQUEST_URI']) || !isset($serverParams['SCRIPT_NAME'])) {
-            return $basePath;
-        }
+            if (!isset($serverParams['REQUEST_URI']) || !isset($serverParams['SCRIPT_NAME'])) {
+                return $basePath;
+            }
 
-        while (min(strlen($serverParams['REQUEST_URI']), strlen($serverParams['SCRIPT_NAME'])) > strlen($basePath)
-            && strncmp($serverParams['REQUEST_URI'], $serverParams['SCRIPT_NAME'], strlen($basePath) + 1) === 0
-        ) {
-            $basePath = substr($serverParams['REQUEST_URI'], 0, strlen($basePath) + 1);
+            while (min(strlen($serverParams['REQUEST_URI']), strlen($serverParams['SCRIPT_NAME'])) > strlen($basePath)
+                && strncmp($serverParams['REQUEST_URI'], $serverParams['SCRIPT_NAME'], strlen($basePath) + 1) === 0
+            ) {
+                $basePath = substr($serverParams['REQUEST_URI'], 0, strlen($basePath) + 1);
+            }
         }
 
         return rtrim($basePath, '/');
     }
-
+    
     /**
      * Return the fully qualified base URL.
      *
