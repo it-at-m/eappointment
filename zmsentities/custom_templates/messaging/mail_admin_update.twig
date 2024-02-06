@@ -1,0 +1,12 @@
+{% block german %}
+{% if process.queue.withAppointment %}
+Geändert wurde der Termin von {{ process.clients|first.familyName }} (Vorgangsnummer: {{ process.id }})
+am {{ process.appointments|first.date|format_date(pattern="EE dd. MMMM y") }} um {{ process.appointments|first.date|date("H:i") }} Uhr
+{% else %}
+Einem Spontankunden mit der Wartenummer {{ process.queue.number }} wurde am {{ now|format_date(pattern="EE dd. MMMM y") }} der Termin geändert
+{% endif %} für den Standort {{ process.scope.contact.name }}{% if process.scope.shortName %} {{ process.scope.shortName }}{% endif %}, {{ process.scope.contact.street }}{% if process.scope.shortName %} {{ process.scope.contact.streetNumber }}{% endif %}.
+<br /><br />
+Die Terminänderung wurde initiiert via "{{ initiator }}".
+<br /><br />
+Dies ist ein Service Ihres ZMS.
+{% endblock %}
