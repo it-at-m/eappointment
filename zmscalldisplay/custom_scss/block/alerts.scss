@@ -1,0 +1,27 @@
+.alert {
+	font-size: 			$alert-font-size;
+	line-height: 		$alert-line-height;
+}
+
+.alert.alert-info {
+	background-color: 	$backgroundLight;
+    border-radius: 		4px;
+    color: 				$black;
+    padding: 			.7em 1em;
+    margin-bottom: 		1.385em;
+    text-shadow: 		0 1px 0 rgba(255,255,255,0.5);
+    border: 			1px solid #c0e1f2;
+}
+
+.devhint {
+	position:absolute;
+	right:10px;
+	top:10px;
+	width:300px;
+}
+
+.textile {
+	width:				$contentMaxWidth;
+	font-size:			14px;
+	line-height:		18px;
+}
