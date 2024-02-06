@@ -91,7 +91,7 @@ class WorkstationProcessNextTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString(
-            'Entweder ist kein Termin/Spontankunde in der Warteschlange oder die Terminzeit liegt noch in der Zukunft',
+            'Aktuell gibt es keine wartenden Kunden',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -129,7 +129,7 @@ class WorkstationProcessNextTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString(
-            'Entweder ist kein Termin/Spontankunde in der Warteschlange oder die Terminzeit liegt noch in der Zukunft',
+            'Aktuell gibt es keine wartenden Kunden',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
