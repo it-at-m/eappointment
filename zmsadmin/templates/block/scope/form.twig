@@ -176,7 +176,7 @@
                     {{ formgroup(
                         {
                             "label": "E-Mail Standortadmin:",
-                            "description": "Wenn hier eine E-Mail-Adresse des Standort-Administrators eingetragen ist, so wird jede Terminlöschung und Terminänderung per E-Mail mitgeteilt.",
+                            "description": "Wenn hier eine E-Mail-Adresse des Standort-Administrators eingetragen ist, so wird jede Terminbestätigung, Terminlöschung und Terminänderung per E-Mail mitgeteilt.",
                             "errors": exception.data.email.messages
                         },
                         [{
@@ -188,6 +188,41 @@
                             }
                         }]
                     ) }}
+
+                    {{ formgroup(
+                        {
+                            
+                            "groupTag": "fieldset"
+                        },
+                        [{
+                            "type":"checkbox",
+                            "parameter": {
+                                "label": "bei Terminbestätigung (Betreff: Terminbest\u00e4tigung)",
+                                "name": "preferences[client][adminMailOnAppointment]",
+                                "id": "adminMailOnAppointment",
+                                "value": 1,
+                                "checked": scope.preferences.client.adminMailOnAppointment|default(0),
+                            }
+                        },{
+                            "type":"checkbox",
+                            "parameter": {
+                                "label": "bei Terminlöschung (Betreff: Terminabsage)",
+                                "name": "preferences[client][adminMailOnDeleted]",
+                                "id": "adminMailOnDeleted",
+                                "value": 1,
+                                "checked": scope.preferences.client.adminMailOnDeleted|default(0),
+                            }
+                        },{
+                            "type":"checkbox",
+                            "parameter": {
+                                "label": "bei Terminänderung durch Sachbearbeiter*in (Betreff: Information Termin\u00e4nderung)",
+                                "name": "preferences[client][adminMailOnUpdated]",
+                                "id": "adminMailOnUpdated",
+                                "value": 1,
+                                "checked": scope.preferences.client.adminMailOnUpdated|default(0),
+                            }
+                        }]
+                    ) }}       
                     </div>
                 </fieldset>
 
