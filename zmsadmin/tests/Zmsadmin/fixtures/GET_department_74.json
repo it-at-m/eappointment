@@ -35,6 +35,8 @@
                         "amendmentActivated": "0",
                         "amendmentLabel": "",
                         "emailRequired": "0",
+                        "adminMailOnAppointment": "0",
+                        "adminMailOnDeleted": "0",
                         "telephoneActivated": "0",
                         "telephoneRequired": "0"
                     },
@@ -132,6 +134,8 @@
                         "amendmentActivated": "0",
                         "amendmentLabel": "0",
                         "emailRequired": "0",
+                        "adminMailOnAppointment": "0",
+                        "adminMailOnDeleted": "0",
                         "telephoneActivated": "0",
                         "telephoneRequired": "0"
                     },
@@ -263,6 +267,8 @@
                                 "amendmentActivated": "0",
                                 "amendmentLabel": "",
                                 "emailRequired": "0",
+                                "adminMailOnAppointment": "0",
+                                "adminMailOnDeleted": "0",
                                 "telephoneActivated": "0",
                                 "telephoneRequired": "0"
                             },
@@ -358,6 +364,8 @@
                                 "amendmentActivated": "0",
                                 "amendmentLabel": "",
                                 "emailRequired": "0",
+                                "adminMailOnAppointment": "0",
+                                "adminMailOnDeleted": "0",
                                 "telephoneActivated": "0",
                                 "telephoneRequired": "0"
                             },
@@ -453,6 +461,8 @@
                                 "amendmentActivated": "0",
                                 "amendmentLabel": "",
                                 "emailRequired": "0",
+                                "adminMailOnAppointment": "0",
+                                "adminMailOnDeleted": "0",
                                 "telephoneActivated": "0",
                                 "telephoneRequired": "0"
                             },
