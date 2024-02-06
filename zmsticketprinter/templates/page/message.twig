@@ -1,0 +1,19 @@
+{% extends "layout/main.twig" %}
+
+{% from 'element/helper/form.twig' import custombutton %}
+
+{% block pageid %}message{% endblock %}
+{% block content %}
+
+	{% for message in messages %}
+		{% include "block/messages/" ~ message ~ ".twig" %}
+	{% endfor %}
+
+	{% if homeRedirect %}
+	{% set label = "Zur Startseite" %}
+	{{ custombutton({ "type":"submit", "href":urlGet('Home', {}, {}), "class": "button back", "name": "submit_no", "label":label|trans }) }}
+	{% endif %}
+
+{% endblock %}
+
+
