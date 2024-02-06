@@ -1,6 +1,6 @@
 name: Combined Workflow
 
-on: [push]
+on: [push,workflow_dispatch]
 
 jobs:
   call-unit-tests:
