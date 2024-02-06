@@ -1,0 +1,80 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'client-info'} %}
+{% from "element/helper/snippets.twig" import namelist %}
+        {% block board_title %}
+            Kundeninformationen
+        {% endblock %}
+        {% block board_body %}
+            {% if error != "has_called_pickup" %}
+            <dl>
+                <dt>
+                    Name
+                </dt>
+                <dd>
+                    {{ workstation.process.clients|first.familyName }} <br>(Wartenr. {{ workstation.process.queue.number }})
+                </dd>
+                <dt>
+                    Anliegen
+                </dt>
+                <dd>
+                    {{ namelist(workstation.process.requests) }}
+                </dd>
+                {% if workstation.process.amendment %}
+                <dt>
+                    Anmerkung
+                </dt>
+                <dd>
+                    {{ workstation.process.amendment }}
+                </dd>
+                {% endif %}
+                {% if workstation.process.clients|first.telephone %}
+                <dt>
+                    Telefon
+                </dt>
+                <dd>
+                    {{ workstation.process.clients|first.telephone }}
+                </dd>
+                {% endif %}
+                {% if workstation.process.clients|first.email %}
+                <dt>
+                    E-Mail
+                </dt>
+                <dd>
+                    {{ workstation.process.clients|first.email }}
+                </dd>
+                {% endif %}
+                {% if workstation.process.customTextfield %}
+                <dt>
+                    {{workstation.scope.preferences.client.customTextfieldLabel}}
+                </dt>
+                <dd>
+                    {{ workstation.process.customTextfield }}
+                </dd>
+                {% endif %}    
+                <dt>
+                    Wartezeit
+                </dt>
+                <dd>
+                    {% if workstation.process.queue.waitingTime < 120 %}
+                        {{ workstation.process.queue.waitingTime }} {% trans %}Minuten{% endtrans %}
+                    {% else %}
+                    	{{ (workstation.process.queue.waitingTime / 60)|round(0, 'floor') }} {% trans %}Stunden{% endtrans %} und
+                        {{ (workstation.process.queue.waitingTime % 60) }} {% trans %}Minuten{% endtrans %}
+                    {% endif %}
+                </dd>
+            </dl>
+            <a class="button button--positive button--fullwidth button-finish right" href="{{ urlGet("workstationProcessFinished", {}, {}) }}" style="margin: 0.5em 0;">Fertig stellen</a>
+
+            {% if workstation.process.withAppointment %}
+                <a class="button button--default button--fullwidth button-finish right" href="{{ urlGet("workstationProcessRedirect", {}, {}) }}" style="margin: 0.5em 0;">Weiterleiten</a>
+            {% endif %}
+
+            <button type="button" class="button button--destructive button--fullwidth button-cancel left" style="margin: 0.5em 0;">Abbruch</button>
+            {% endif %}  
+              
+        {% endblock %}
+
+        {% block board_footer %}
+        {% include "block/process/footer.twig" %}
+        {% endblock %}
+
+{% endembed %}
