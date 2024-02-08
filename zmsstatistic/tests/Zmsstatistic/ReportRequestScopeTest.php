@@ -265,7 +265,7 @@ class ReportRequestScopeTest extends Base
             (string) $response->getBody()
         );
         $this->assertStringContainsString(
-            '"Personalausweis beantragen";"14";"0";"0";"0";"14";"0";"0";"0";"0";"0";"0";"0";"0"',
+            '"Personalausweis beantragen";"";"14";"0";"0";"0";"14";"0";"0";"0";"0";"0";"0";"0";"0"',
             (string) $response->getBody()
         );
     }
