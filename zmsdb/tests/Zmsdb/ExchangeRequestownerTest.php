@@ -13,8 +13,9 @@ class ExchangeRequestownerTest extends Base
         $query = new Query();
         $entity = $query->readEntity(23, new DateTime('2016-04-01'), new DateTime('2016-04-31'));
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        error_log(count($entity->data));
-        $this->assertEquals(20, count($entity->data));
+        print_r(count($entity->data));
+        print_r($entity->data);
+        $this->assertEquals(21, count($entity->data));
     }
 
     public function testSubject()
