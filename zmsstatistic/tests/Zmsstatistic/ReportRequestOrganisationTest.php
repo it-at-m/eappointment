@@ -205,7 +205,7 @@ class ReportRequestOrganisationTest extends Base
 
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
         $this->assertStringContainsString(
-            '"Personalausweis beantragen";"14";"14";',
+            '"Personalausweis beantragen";"";"14";"14";',
             (string) $response->getBody()
         );
     }
