@@ -66,7 +66,7 @@ class MessagingTest extends Base
         $processList = self::getExampleProcessList();
         $mail = (new Mail())->toResolvedEntity($processList, $config, 'overview');
 
-        self::assertStringContainsString('Guten Tag Max Mustermann,', $mail->getHtmlPart());
+        self::assertStringContainsString('Sehr geehrte\*r Max Mustermann,', $mail->getHtmlPart());
         self::assertStringContainsString('Terminübersicht', $mail->subject);
         self::assertStringContainsString('Sie haben folgende Termine gebucht:', $mail->getHtmlPart());
         self::assertStringContainsString('am Mittwoch, 18. November 2015 um 18:52 Uhr', $mail->getHtmlPart());
