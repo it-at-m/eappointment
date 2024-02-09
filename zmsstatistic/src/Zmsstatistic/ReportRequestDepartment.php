@@ -40,13 +40,15 @@ class ReportRequestDepartment extends BaseController
             ->readGetResult('/warehouse/requestdepartment/' . $this->department->id . '/'. $args['period']. '/')
             ->getEntity()
             ->toGrouped($this->groupfields, $this->hashset)
-            ->withRequestsSum();
+            ->withRequestsSum()
+            ->withAverage('processingtime');
         }
 
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
             $args['category'] = 'requestdepartment';
             $args['reports'][] = $exchangeRequest;
+            $args['scope'] = $this->workstation->scope;
             $args['department'] = $this->department;
             $args['organisation'] = $this->organisation;
             return (new Download\RequestReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
@@ -61,6 +63,7 @@ class ReportRequestDepartment extends BaseController
               'menuActive' => 'request',
               'department' => $this->department,
               'organisation' => $this->organisation,
+              'owner' => $this->owner,
               'requestPeriod' => $requestPeriod,
               'showAll' => 1,
               'period' => (isset($args['period'])) ? $args['period'] : null,
