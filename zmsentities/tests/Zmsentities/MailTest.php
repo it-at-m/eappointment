@@ -196,7 +196,7 @@ class MailTest extends EntityCommonTests
         $entity->addMultiPart(array());
         $entity->client = null;
         $resolvedEntity = $entity->toResolvedEntity($process, $config, 'appointment');
-        $this->assertStringContainsString('Sie haben folgende Dienstleistungen ausgewählt:', $resolvedEntity->getPlainPart());
+        $this->assertStringContainsString('Folgende Dienstleistungen sind für diesen Termin gebucht:', $resolvedEntity->getPlainPart());
     }
 
     public function testMailWithoutRequests()
@@ -330,7 +330,7 @@ class MailTest extends EntityCommonTests
         $entity->addMultiPart(array());
         $entity->client = null;
         $resolvedEntity = $entity->toResolvedEntity($process, $config, 'survey');
-        $this->assertStringContainsString('Guten Tag Max Mustermann', $resolvedEntity->getPlainPart());
+        $this->assertStringContainsString('Sehr geehrte', $resolvedEntity->getPlainPart());
         $processSurvey = clone $process;
         $processSurvey->getFirstClient()->familyName = null;
         $resolvedEntity = $entity->toResolvedEntity($processSurvey, $config, 'survey');
@@ -342,7 +342,14 @@ class MailTest extends EntityCommonTests
             $entity->addMultiPart(array());
             $entity->client = null;
             $resolvedEntity = $entity->toResolvedEntity($process, $config, $status);
-            $this->assertStringContainsString('Guten Tag', $resolvedEntity->getPlainPart());
+            $resultString = $resolvedEntity->getPlainPart();
+            
+            if (in_array($status, array('deleted','blocked','appointment','reminder')) ) {
+                $this->assertStringContainsString('Guten Tag', $resultString);
+            } else {
+                $this->assertStringContainsString('Sehr geehrte', $resultString);
+            }
+
             $this->assertStringContainsString(
                 'Achtung! Dies ist eine automatisch erstellte E-Mail.',
                 $resolvedEntity->getPlainPart()
