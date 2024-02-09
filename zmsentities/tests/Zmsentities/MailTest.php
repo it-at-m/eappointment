@@ -30,10 +30,16 @@ class MailTest extends EntityCommonTests
         $entity->client = null;
         $resolvedEntity = $entity->toResolvedEntity($process, $config, 'appointment');
         $this->assertStringContainsString(
-            'Montag, 30. Dezember 2019 um 11:55 Uhr',
+            'Montag, 30. Dezember 2019',
             $resolvedEntity->getHtmlPart(),
             'Wrong date/time format'
         );
+        $this->assertStringContainsString(
+            '11:55 Uhr',
+            $resolvedEntity->getHtmlPart(),
+            'Wrong date/time format'
+        );
+
     }
 
 
@@ -66,13 +72,14 @@ class MailTest extends EntityCommonTests
             'Mimepart content is not html'
         );
         $this->assertStringContainsString(
-            '**Vorgangsnummer:** 123456',
+            'Ihre Terminnummer und weitere Informationen erhalten Sie 24 Stunden vor Ihrem Termin',
             $resolvedEntity->getPlainPart(),
             'Mimepart content is not plain text'
         );
         $this->assertStringContainsString('BEGIN:VCALENDAR', $resolvedEntity->getIcsPart(), 'Mimepart content is not plain text');
         // test if appointment date formatted correct
-        $this->assertStringContainsString('18. November 2015 um 18:52', $resolvedEntity->getIcsPart());
+        $this->assertStringContainsString('18. November 2015', $resolvedEntity->getIcsPart());
+        $this->assertStringContainsString('18:52 Uhr', $resolvedEntity->getIcsPart());
         $this->assertStringContainsString('DTSTART;TZID=Europe/Berlin:20151118T185251', $resolvedEntity->getIcsPart());
     }
 
@@ -184,7 +191,7 @@ class MailTest extends EntityCommonTests
         $entity->addMultiPart(array());
         $entity->client = null;
         $resolvedEntity = $entity->toResolvedEntity($process, $config, 'appointment');
-        $this->assertStringContainsString('Sie haben folgende Dienstleistung ausgewählt:', $resolvedEntity->getPlainPart());
+        $this->assertStringContainsString('Folgende Dienstleistung ist für diesen Termin gebucht:', $resolvedEntity->getPlainPart());
     }
 
     public function testMailWithMultipleRequests()
@@ -343,7 +350,7 @@ class MailTest extends EntityCommonTests
             $entity->client = null;
             $resolvedEntity = $entity->toResolvedEntity($process, $config, $status);
             $resultString = $resolvedEntity->getPlainPart();
-            
+
             if (in_array($status, array('deleted','blocked','appointment','reminder')) ) {
                 $this->assertStringContainsString('Guten Tag', $resultString);
             } else {
