@@ -1,0 +1,117 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'welcome'} %}
+        {% from 'element/helper/form.twig' import formgroup, custombutton, formbutton, inputfield %}
+        
+        {% block board_title %}
+            {{ title|trans }}
+        {% endblock %} 
+        
+        {% set class = '' %}
+        {% block board_body %}
+            {% if oidclogin %}
+            <p>
+            Um alle Funktionen des Systems nutzen zu können, müssen Ihrem Account noch entsprechende Rollen und Rechte zugeordnet werden. Wenden Sie sich hierfür bitte an Ihren Administrator.
+            </p>
+            {% else %}
+            <p>Um alle Funktionen des Systems nutzen zu können, melden Sie sich bitte am System an und wählen Sie im folgenden Schritt einen <strong>Standort</strong> und falls erforderlich eine <strong>Platz- oder Raum-Nummer</strong>.</p>
+            {% endif %}
+
+
+            {% if oidcproviderlist|length and not oidclogin %}
+                <div class="form-actions" style="justify-content:center; margin-bottom:10px;">
+                    {% for providername in oidcproviderlist %}
+                        <form action="./oidc/?provider={{ providername }}" method="POST" class="form--base">
+                            {{ formbutton({"label": "Anmelden", "value": providername}) }}
+                        </form>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <style>
+                .hidden {
+                    display: none;
+                }
+
+                .toggle-login {
+                    cursor: pointer;
+                }
+
+                .toggle-container {
+                    text-align: left;
+                }
+
+                .form-group {
+                    text-align: left;
+                }
+            </style>
+
+            <script>
+                function toggleLogin() {
+                    const loginForm = document.getElementById('loginform')
+                    const toggles = document.querySelectorAll('.toggle-login')
+
+                    toggles.forEach(toggle => {
+                        if (toggle.classList.contains('hidden')) {
+                            toggle.classList.remove('hidden')
+                        } else {
+                            toggle.classList.add('hidden')
+                        }
+                    });
+
+                    if (loginForm.classList.contains('hidden')) {
+                        loginForm.classList.remove('hidden')
+                    } else {
+                        loginForm.classList.add('hidden')
+                    }
+                }
+            </script>
+        {% endblock %} 
+
+        {% block board_footer %}
+            <span>Version {{ currentVersion() }}</span>
+
+            {% if not oidclogin %}
+                <div class="toggle-container">
+                    <i class="toggle-login fas fa-solid fa-chevron-down" onclick="toggleLogin()"></i>
+                    <i class="toggle-login fas fa-solid fa-chevron-up hidden" onclick="toggleLogin()"></i>
+                </div>
+
+                <div id="loginform" class="loginform hidden">
+                    <form action="./" method="POST" class="form--base">
+                        <fieldset>
+                            {{ formgroup(
+                                {"label": "Nutzername:", "errors": exception.data.id.messages },
+                                [{
+                                    "type":"input",
+                                    "parameter": {
+                                        "name": "loginName",
+                                        "maxlength": "40",
+                                        "value": loginData.loginName.value,
+                                        "accesskey": "n",
+                                    }
+                                }]
+                            ) }}
+
+                            {{ formgroup(
+                                {"label": "Passwort:", "errors": exception.data.password.messages},
+                                [{
+                                    "type":"input",
+                                    "parameter": {
+                                        "type": "password",
+                                        "name": "password",
+                                        "maxlength": "40",
+                                        "accesskey": "p",
+                                    }
+                                }]
+                            ) }}
+                        </fieldset>
+                        {{ inputfield({ "name":"login_form_validate", "type":"hidden", "value":"1" }) }}
+                        <div class="form-actions">
+                            {{ formbutton({ "type":"login", "label":"Anmelden", "value": "Anmelden", "accesskey":"a", "class": "button button--diamond"}) }}
+                        </div>
+                    </form>
+
+                    <div>Wenden Sie sich bei vergessenen Passwörtern bitte an Ihren lokalen Anwendungssystembetreuer.</div>
+                </div>
+            {% endif %}
+        {% endblock %}
+{% endembed %}
