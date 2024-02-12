@@ -1,8 +1,8 @@
 //@import "bo-layout-admin-scss/zms-styles.scss"; // <- ToDo: do this work again
 
 // Settings & Mixins
-@import "bo-layout-admin-scss/default-settings"; 
-@import "bo-layout-admin-scss/zms-settings"; 
+@import "bo-layout-admin-scss/default-settings";
+@import "bo-layout-admin-scss/zms-settings";
 @import "bo-layout-admin-scss/mixins";
 
 // Template 
@@ -72,7 +72,6 @@ $fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
 
 // ZMS special css
 @import 'bo-layout-admin-scss/themes/zms/availability-timetable.scss';
-@import 'bo-layout-admin-scss/themes/zms/calendar.scss';
 @import 'bo-layout-admin-scss/themes/zms/form-input-counter.scss';
 @import 'bo-layout-admin-scss/themes/zms/pickup-keyboard-handheld.scss';
 @import 'bo-layout-admin-scss/themes/zms/emergency.scss';
@@ -84,7 +83,9 @@ $fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
 @import 'bo-layout-admin-scss/themes/zms/lightbox.scss';
 @import 'bo-layout-admin-scss/themes/zms/add-date-picker.scss';
 @import 'bo-layout-admin-scss/themes/zms/form.scss';
-@import 'bo-layout-admin-scss/themes/zms/selectively.scss';
 
 // Inserting CSS styles for accessibility
 @import 'bo-layout-admin-scss/themes/zms/accessibility.scss';
+
+
+@import "../custom_scss/admin.scss";

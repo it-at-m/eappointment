@@ -1,0 +1,50 @@
+$messageBackgroundColor:        #F4F4F4 !default;
+$messageInfoBackgroundColor:    #fffbd5 !default;
+$messageErrorBackgroundColor:   #FFE4E4 !default;
+$messageSuccessBackgroundColor: #E0F0D9 !default;
+$messagePadding:                0.75em 1em 1em 1em;
+
+
+.message {
+    font-size:          2.5em;
+    margin-left:        80px;
+    width:              702px;
+    border:             1px solid darken($messageBackgroundColor,10%);
+    background-color:   $messageBackgroundColor;
+    padding:            1em 10px 1em 10px;
+    margin:             1em 0 1em 80px;
+    text-align:         center;
+    display:            block;
+    .title {
+        margin-top:     0;
+        margin-bottom:  0.25em;
+    }
+    > *:first-child {
+        margin-top:     0;
+    }
+    > *:last-child {
+        margin-bottom:  0;
+    }
+}
+
+.message-info {
+    @extend .message;
+    //border-color:       darken($messageInfoBackgroundColor,40%);
+    background-color:   $messageInfoBackgroundColor;
+}
+
+.message-error {
+    @extend .message;
+    border-color:       darken($messageErrorBackgroundColor,10%);
+    background-color:   $messageErrorBackgroundColor;
+}
+
+.message-success {
+    @extend .message;
+    border-color:       darken($messageSuccessBackgroundColor,10%);
+    background-color:   $messageSuccessBackgroundColor
+}
+
+.message-hide {
+  display:          none;
+}

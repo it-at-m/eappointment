@@ -1,0 +1,574 @@
+{% set showList = "complete-list" %}
+{% if shortchangelog %}
+{% set showList = "short-list" %}
+{% endif %}
+
+<div class="{{ showList }}">
+
+    <div class="last-changelog-items">
+        {#
+        <div class="changelog-item">
+            <h3>Version in Vorbereitung <small>(?)</small></h3>
+            <ul>
+                <li><strong>Kategorie:</strong> <span>Text</span></li>
+            </ul>
+        </div>
+        #}
+         <div class="changelog-item">
+            <h3>Version 2.25.00 <small>(15. März 2023)</small></h3>
+            <ul>
+                <li><strong>Sicherheit</strong> <span>Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt.</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Die Öffnungszeiten werden nur noch aktualisiert, wenn es Änderungen an diesen gab</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Verbesserte Validierung von Öffnungszeiten, Filterung von Konflikten und Fehlern nach Öffnungszeiten-ID</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Verbesserte Handhabung von Öffnungszeiten für Spontankunden - Speichern von Einzelterminen bei Bedarf anstatt ausschließlich Speichern der kompletten Liste</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Download aller Bürgertermine des Tages auf der Standortauswahlseite korrigiert.</span></li>                
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.14 <small>(15. Februar 2023)</small></h3>
+            <ul>
+                <li><strong>Sicherheit</strong> <span>Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt.</span></li>
+                <li><strong>Barrierefreiheit</strong> <span>Weitere W3C Warnungen wurden korrigiert</span></li>
+                <li><strong>Administration</strong> <span>Beim Sichern von Öffnungszeitänderungen wird nun eine Ladeanzeige über die Seite gelegt bis die Bearbeitung im Hintergrund abgeschlossen ist</span></li>
+                <li><strong>Administration</strong> <span>Wartelisten und Abholerlisten werden nun als CSV-Export angeboten um eine bessere Kompatibilität herzustellen, Umlautprobleme wurden behoben</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.13 <small>(14. Dezember 2022)</small></h3>
+            <ul>
+                <li><strong>Administration</strong> <span>Konfiguration der Webcalldisplay-Url in der Konfiguration mit den zugehörigen Templates.</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Kalenderlegende ist nun unter dem Kalender auf der Sachbearbeiter- und Tresenansicht verfügbar</span></li>
+                <li><strong>Barrierefreiheit</strong> <span>Diverse Barrierefreiheitsanpassungen und W3C Warnungen wurden korrigiert sowie Verbesserung der Tastaturbedienung</span></li>
+                <li><strong>Administration</strong> <span>Bearbeiten/Auswahl von Öffnungszeiten wurde verbessert und die Anzahl der Konfliktberechnungen reduziert um die Leistung zu verbessern</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Das Aktualisieren der Warteschlange über den Button am Ende der Liste ist nun auch per Tastaturbedienung möglich</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Anzeige einer Fehlermeldung als Dialog, wenn ein Termin mit der aktuellen Auswahl/Änderung nicht mehr möglich ist</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Lightbox-Dialoge für Informations- und Erfolgsmeldungen überarbeitet</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.12 <small>(16. November 2022)</small></h3>
+            <ul>
+                <li><strong>Barrierefreiheit</strong> <span>Verbesserte akustische Aktionsbeschreibungen für Blinde Nutzer; die Darstellung der Öffnungszeiten wurde verbessert und barrierefreier gestaltet; Verbesserungen für Screenreader</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.11 <small>(19. Oktober 2022)</small></h3>
+            <ul>
+                <li><strong>Barrierefreiheit</strong> <span>Überschriften hinzugefügt, Kontrastdarstellung überarbeitet, Fehlermeldungen klar als Fehler gekennzeichnet; Auflistungen werden nun korrekt als Listen ausgegeben; die Kalender- und Uhrzeitenauswahlboxen haben nun ein zusätzliches klickbares Symbol zum Öffnen der Auswahl</span></li>
+                <li><strong>Administration</strong> <span>Tabellenaktionen werden nun auch oberhalb der Tabellen platziert, um langes Scrollen zu vermeiden</span></li>
+                <li><strong>Administration</strong> <span>Überarbeitung der Darstellung von E-Mail-Vorlagen in der Systemkonfiguration</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.10 <small>(21. September 2022)</small></h3>
+            <ul>
+                <li><strong>Nutzerlogin</strong> <span>OpenID-Connect (OIDC) als zusätzliche Login-Lösung getestet</span></li>
+                <li><strong>Administration</strong> <span>Ansicht der Mailing-Konfigurationen wurde um die Terminübersichten erweitert</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Die Berechnung der Benachrichtigungsvorlaufzeit beim Termin erstellen wurde korrigiert</span></li>
+            </ul>
+        </div>
+
+        {% if not shortchangelog %}
+
+        <div class="changelog-item">
+            <h3>Version 2.24.09 <small>(17. August 2022)</small></h3>
+            <ul>
+                <li><strong>Administration</strong> <span>Links und Feiertage, die einer Behörde zugeordnet werden können, werden nun auf ihre Existenz geprüft.</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Für Spontankunden wird jetzt eine separate SMS-Nachricht gesendet, wenn deren Vorgänge abgesagt bzw. gelöscht werden</span></li>
+                <li><strong>Administration</strong> <span>Konfigurationsvariablen können nun vom Superuser geändert werden</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.08 <small>(15. Juni 2022)</small></h3>
+            <ul>
+                <li><strong>Sicherheit</strong> <span>Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt.</span></li>
+                <li><strong>Warteschlange</strong> <span>Die Berechnung der Wartezeit von Spontankunden wurde korrigiert</span></li>
+                <li><strong>Performance</strong> <span>Die Erstellung und Berechnung der Erinnungsmails an Terminkunden wurde verbessert und beschleunigt</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.07 <small>(18. Mai 2022)</small></h3>
+            <ul>
+                <li><strong>Statistik</strong> <span>Zusätzliche statistische Auswertungen für die Eigentümerebene für Dienstleistungen, SMS-Benachrichtigungen, Wartestatistiken</span></li>
+                
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.06 <small>(20. April 2022)</small></h3>
+            <ul>
+                <li><strong>Sicherheit</strong> <span>Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt.</span></li>
+                <li><strong>Termin E-Mails</strong> <span>Die ausgewählten Dienstleistungen eines Termins sind in den E-Mailbenachrichtigungen nun als Link hinterlegt</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.05 <small>(16. März 2022)</small></h3>
+            <ul>
+                <li><strong>Öffnungszeiten</strong> <span>Verbesserte und erweiterte Prüfung auf Konflikte beim Anlegen und Ändern von Öffnungszeiten</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>SlotCount auch für spontane Kunden anzeigen</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.04 <small>(19. Januar 2022)</small></h3>
+            <ul>
+                <li><strong>Sachbearbeiter</strong> <span>Spontankunden können nun korrekt aufgerufen werden und aufgerufene Vorgänge werden nicht bei Abbruch als aufgerufen gezählt</span></li>
+                <li><strong>Abholeransicht</strong> <span>In Abholerlisten mit mehr als 500 Einträgen kann nun navigiert werden um weitere Einträge anzuzeigen. Der Download der Abholerliste ist auf 3000 Einträge beschränkt</span></li>
+                <li><strong>Performance</strong> <span>Im Adminbereich wurden die Antwort-Inhalte der API-Abfragen reduziert um eine bessere Leistung zu erreichen</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Dem letzte Termin des Tages können nun auch weitere Slots zugeordnet werden, außerdem werden doppelte Konflikte beim aktualisieren eines Termins nicht mehr angezeigt</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Beim Aktualisieren eines Vorgangs wird nun geprüft ob dem Standort die angegebene Dienstleistung zugeordnet ist.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.03 <small>(15. Dezember 2021)</small></h3>
+            <ul>
+                <li><strong>Sicherheit</strong> <span>Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt.</span></li>
+                <li><strong>Tresen</strong> <span>In der Tresenansicht funktioniert nun die Auswahl des Standortes bei ausgewähltem Cluster</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Das Löschen eines Nutzers muss nun bestätigt werden und mehrfache Erfolgsmeldungen sind entfernt</span></li>
+                <li><strong>Sachbearbeiter</strong> Beim Löschen eines Vorgangs wird geprüft ob der Vorgang SMS oder Email als Bestätigung empfängt</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.24.02 <small>(17. November 2021)</small></h3>
+            <ul>
+                <li><strong>Sicherheit</strong> <span>Aktualisierung zentraler Bibliotheken für Stabilität und Sicherheit des Systems durchgeführt.</span></li>
+                <li><strong>Abholerverwaltung</strong> <span>Abholer können wieder gelöscht werden.</span></li>
+                <li><strong>Öffnungszeiten</strong> <span>Öffnungszeiten können wieder gelöscht werden.</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Bei Änderungen einer Terminzeit oder des Datums wird die Vorgangsnummer beibehalten.</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Die Terminzeiten und Buttons im Terminvereinbarungsformular werden wieder korrekt angezeigt.</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Bei der Änderungen der Terminslots im Terminvereinbarungsdialog werden die Slots nun als Folgetermine gespeichert. Bei einer Überbuchung erhält der Sachbearbeiter eine Meldung, die Buchung wird dennoch durchgeführt.</span></li>
+                <li><strong>Sicherheit</strong> <span>Passwortsicherheit wurde angehoben. Alle Passwörter werden beim ersten Login eines Sachbearbeiters automatisch sicherer in der Datenbank gespeichert.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.23.10 <small>(31. März 2021)</small></h3>
+            <ul>
+                <li><strong>Sachbearbeiter</strong> <span>Die Checkbox zur E-Mail Bestätigung im Terminformular wird bei Auswahl einer Terminzeit standardmäßig aktiviert und für einen Spontankunden deaktiviert.</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Das Kopieren von Spontankunden wurde korrigiert.</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Das Verschieben von Spontankunden als Termin an einem anderen Tag funktioniert nun korrekt.</span></li>
+                <li><strong>Abholerverwaltung</strong> <span>Die Sortierung der Abholerlisten erfolgt nun zuerst nach Ankunftszeit gefolgt von einer Namenssortierung.</span></li>
+                <li><strong>Öffnungszeiten</strong> <span>Terminslots werden nun gleichmäßig auf einen Tag verteilt.</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Korrektur und Verbesserung der Auswahl von Standorten bei aktivierter Clusteransicht.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.23.09 <small>(10. Februar 2021)</small></h3>
+            <ul>
+                <li><strong>Nutzerrechte</strong> <span>Ein Nutzer kann anderen Nutzern nur noch maximal die Rechte gewähren, welche ihm selbst zugewiesen sind.</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Die falsche Mehrfachauswahl von Checkboxen beim Abschluss eines Vorgangs wurde korrigiert.</span></li>
+                <li><strong>Abholerverwaltung</strong> <span>Es ist nun möglich Abholer aus allen Standorten einer Behörde anzuzeigen und die Fehler bei der direkten Eingabe von Nummern in der Tabletansicht wurde behoben.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.23.08 <small>(09. Dezember 2020)</small></h3>
+            <ul>
+                <li><strong>Nutzerrechte</strong> <span>Ein Nutzer mit den Rechten "Behörden einrichten" kann jetzt auch eine Behörde im Bezirk anlegen.</span></li>
+                <li><strong>Tresen</strong> <span>In der Tresen Infobox werden nun die Terminzeiten auch für Nutzer mit Basisrechten angezeigt</span></li>
+                <li><strong>Öffnungszeiten</strong> <span>Öffnungszeiten die in der Vergangenheit liegen können beim Anlegen von Ausnahmen nicht mehr verändert werden.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.23.07 <small>(11. November 2020)</small></h3>
+            <ul>
+                <li><strong>Allgemein</strong> <span>In der Navigation und den Metalinks sind nun Mouseover Texte zu sehen und die Mouseover Texte in der Kalenderansicht sind aussagekräftiger mit formatierter Datumsausgabe</span></li>
+                <li><strong>Nutzerrechte</strong> <span>Einem Nutzer dem die ausgewählte Behörde nicht zugewiesen ist, darf keinen Standort oder ein Cluster für diese Behörde anlegen. Die Buttons sind deaktiviert und mit einem Mouseover-Text versehen</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.23.06 <small>(28. Oktober 2020)</small></h3>
+            <ul>
+                <li><strong>E-Mail</strong> <span>Eine Mail zur Kundenbefragung wird nur noch verschickt, wenn auch ein Text dafür konfiguriert ist.</span></li>
+                <li><strong>Terminvereinbarung</strong> <span>Die Fehlermeldungen "MatchingNotFound" und "ProviderNotFound" werden bei einer berlinweiten Suche nicht mehr ausgelöst.</span></li>
+                <li><strong>Tresen/Sachbearbeiter</strong> <span>Es können jetzt auch Abholer aus einem ganzen Cluster angezeigt werden.</span></li>
+                <li><strong>Tresen/Sachbearbeiter</strong> <span>Beim Aufruf des nächsten Kunden bei einer leeren Warteschlange wird jetzt eine verständliche Fehlermeldung angezeigt.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.23.05 <small>(12. August 2020)</small></h3>
+            <ul>
+                <li><strong>Allgemein</strong> <span>Die Validierung von Telefonnummern wurde auf ein anderes Verfahren umgestellt.</span></li>
+                <li><strong>E-Mail</strong> <span>Die Kompatibilität des ICS-Anhangs wurde verbessert und ist jetzt in weiteren E-Mail-Clients nutzbar.</span></li>
+                <li><strong>Terminvereinbarung</strong> <span>Die Checkbox für einen Kundenumfrage wird nur noch angezeigt, wenn auch ein Mail-Text angegeben wurde.</span></li>
+                <li><strong>Tresen/Sachbearbeiter</strong> <span>Der Aufruf von nur reservierten Terminen wurde unterbunden.</span></li>
+                <li><strong>Tresen/Sachbearbeiter</strong> <span>Ist die Warteliste beim Aufruf eine neuen Kunden leer, wird jetzt eine aussagekräftigere Fehlermeldung angezeigt.</span></li>
+                <li><strong>Tresen/Sachbearbeiter</strong> <span>Nach dem Freigeben oder Sperren eines Kiosk erscheint jetzt eine Erfolgsmeldung als Bestätigung.</span></li>
+                <li><strong>Tresen/Sachbearbeiter</strong> <span>Das Formular zum SMS-Versand kann jetzt auch mit kleineren Bildschirmen verwendet werden.</span></li>
+                <li><strong>Tresen/Sachbearbeiter</strong> <span>Die Formulardaten beim Spontankunden werden nur validiert, wenn ein Name oder eine E-Mail-Adresse eingetragen wurde.</span></li>
+                <li><strong>Tresen/Sachbearbeiter</strong> <span>Bei Auswahl eines Clusters können nun alle enthaltenen Termine des Clusters aufgerufen werden.</span></li>
+            </ul>
+        </div>
+
+
+        <div class="changelog-item">
+            <h3>Version 2.23.04 <small>(13. Mai 2020)</small></h3>
+            <ul>
+                <li><strong>Barrierefreiheit</strong> <span>Korrekturen einzelner Darstellungsfehler.</span></li>
+                <li><strong>Terminvereinbarung</strong> <span>Bei Eingabe einer Telefonnummer mit mehr als 17 Ziffern wird jetzt eine Fehlermeldung angezeigt.</span></li>
+                <li><strong>Tresen/Sachbearbeiter</strong> <span>Statt eines leeren Namens wird jetzt die Vorgangs- oder Aufrufnummer angezeigt.</span></li>
+                <li><strong>Tresen/Sachbearbeiter</strong> <span>Die Option "Mit E-Mail Bestätigung" bei der Terminbestätigung ist jetzt im Standardfall aktiviert.</span></li>
+                <li><strong>Tresen/Sachbearbeiter</strong> <span>Sind keine Dienstleistungen auswählbar wird jetzt eine passende Meldung angezeigt.</span></li>
+                <li><strong>Tresen/Sachbearbeiter</strong> <span>Nach der Buchung eines Termins erscheint in der Bestätigung ein Button "Termin erneut bearbeiten".</span></li>
+                <li><strong>Tresen/Sachbearbeiter</strong> <span>Ein bereits aufgerufener Kunde führt nicht mehr zu einer Fehlermeldung bei einem erneuten Aufruf aus der Tablet-Ansicht</span></li>
+                <li><strong>Tresen/Sachbearbeiter</strong> <span>Nach dem Löschen eines Spontankunden wird jetzt die Wartenummer anstatt der Vorgangsnummer als Bestätigung angezeigt.</span></li>
+                <li><strong>Tresen/Sachbearbeiter</strong> <span>Bei einer Änderung eines Termins wird jetzt eine Absage-E-Mail für den alten Termin verschickt, aber erst wenn der neue bestätigt ist.</span></li>
+                <li><strong>Tresen/Sachbearbeiter</strong> <span>In der Liste der nicht erschienenen Vorgänge wird die Anzahl der Dienstleistungen des Vorgangs nun auch angezeigt.</span></li>
+                <li><strong>Allgemein</strong> <span>Bei Bestätigungsmails und Bestätigungs-SMS wird der Zähler für Erinnerungen nicht mehr erhöht.</span></li>
+                <li><strong>Terminsuche</strong> <span>Das Absagen eines Termins kann jetzt bei gleichzeitiger Terminsuche in einem anderen Tab erfolgen.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.23.03 <small>(11. Februar 2020)</small></h3>
+            <ul>
+                <li><strong>Barrierefreiheit</strong> <span>Weitere Änderungen in Bezug zum Prüfbericht vom 14.11.2019.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.23.02 <small>(08. Januar 2020)</small></h3>
+            <ul>
+                <li><strong>Barrierefreiheit</strong> <span>Änderungen in Bezug zum Prüfbericht vom 14.11.2019.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.23.01 <small>(11. Dezember 2019)</small></h3>
+            <ul>
+                <li><strong>E-Mail</strong> <span>Bestimmte funktionale E-Mail-Postfächer können nicht mehr angeschrieben werden. Das betrifft vor allem Buchungen durch die 115.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.23.00 <small>(13. November 2019)</small></h3>
+            <ul>
+                <li><strong>Barrierefreiheit</strong> <span>Tresen und Sachbearbeiterplatz verwenden jetzt ein auf barrierefreiheit optimiertes Layout</span></li>
+                <li><strong>Kundenbefragung</strong> <span>Der automatische Einleitungstext in der Kundenbefragung entfällt, die Anrede muss jetzt selbst im Standort konfiguriert werden.</span></li>
+                <li><strong>Terminabsage</strong> <span>Ein versehentlich kopiertes Leerzeichen im Absagecode wird jetzt ignoriert.</span></li>
+                <li><strong>Terminbestätigung</strong> <span>Bestätigungen für die erste Woche des nächsten Jahres (30. + 31. Dezember 2019) enthalten jetzt die korrekte Jahreszahl.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.22.00 <small>(11. September 2019)</small></h3>
+            <ul>
+                <li><strong>SMS</strong> <span>Ein SMS-Empfänger muss jetzt mindestens 7 Zeichen lang sein.</span></li>
+                <li><strong>Terminbuchung</strong> <span>Bei der Verwendung von nicht ganzzahligen Slots von 0,4 und kleiner werden ausgebuchte Terminslots jetzt korrekt erkannt.</span></li>
+                <li><strong>API</strong> <span>Der Buchungsweg für Termine wird jetzt erfasst (ServiceApp, Chatbot).</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.21.00 <small>(14. August 2019)</small></h3>
+            <ul>
+                <li><strong>Tresen</strong> <span>Die Warteliste beim Drucken und der Excel-Export zeigen jetzt auch Standort-Kürzel, wenn die Clusteransicht ausgewählt wurde.</span></li>
+                <li><strong>Tresen</strong> <span>Der Excel-Export zeigt jetzt die Uhrzeiten in der korrekten Zeitzone an.</span></li>
+                <li><strong>Tresen</strong> <span>Die Sortierung der Termine in der Cluster-Ansicht erfolgt jetzt nach geplanter Aufrufzeit.</span></li>
+                <li><strong>Tresen</strong> <span>Der Wochenkalender zeigt jetzt auch Uhrzeiten außerhalb von 7-18 Uhr an.</span></li>
+                <li><strong>Tresen</strong> <span>Links zu freien Terminen im Wochenkalender übernehmen beim Buchungsformular jetzt die Uhrzeit.</span></li>
+                <li><strong>Administration</strong> <span>Callcenter- und Internet-Arbeitsplätze lassen sich jetzt unabhängig voneinander einstellen.</span></li>
+                <li><strong>Administration</strong> <span>Das Pflichtfeld zur E-Mail-Eingabe wird jetzt ignoriert, wenn kein E-Mail-Absenderadresse angegeben wurde.</span></li>
+                <li><strong>Terminsuche</strong> <span>Die Auswahl zur Teilnahme an einer Kundenbefragung wird zum Pflichtfeld.</span></li>
+                <li><strong>Kundenbefragung</strong> <span>Der Versand einer Kundenbefragung kann jetzt mittels Platzhaltern dynamisch angepasst werden.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.20.00 <small>(12. Juni 2019)</small></h3>
+            <ul>
+                <li><strong>Tresen</strong> <span>Über die Kundensuche werden jetzt Kunden aus allen Standorten gefunden, für die Zugriffsrechte bestehen.</span></li>
+                <li><strong>Sachbearbeiter</strong> <span>Eine Platz- oder Raumangabe, die nur aus Leerzeichen besteht, ist nicht mehr erlaubt.</span></li>
+                <li><strong>Mails</strong> <span>Bestätigungsmails werden an konfigurierte Empfänger ohne Kalender-Anhang verschickt (Auschluss vorerst von outlook.com, hotmail.com und live.com).</span></li>
+                <li><strong>Terminsuche</strong> <span>Reservierte Termine werden jetzt bei einem Abbruch sofort wieder freigegeben.</span></li>
+                <li><strong>Terminsuche</strong> <span>Die Status-Seite wurde um weitere Eigenschaften ergänzt.</span></li>
+                <li><strong>Terminsuche</strong> <span>Weiße Kalender-Seiten können jetzt übersprungen werden, wenn erst Monate später ein Termin verfügbar wird.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.19.07 <small>(10. April 2019)</small></h3>
+            <ul>
+                <li><strong>Tresen</strong> <span>Das schnelle Löschen eines abgesagten Termins vor dem SMS-Versand erzeugt keine Wiederholung des SMS-Versands mehr.</span></li>
+                <li><strong>Statistik</strong> <span>Das schnelle Löschen eines abgesagten Termins vor dem SMS-Versand verhindert nicht mehr die Zählung der SMS.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.19.06 <small>(19. März 2019)</small></h3>
+            <ul>
+                <li><strong>Terminsuche</strong> <span>Nach einer Änderung einer Öffnungszeit und der sofortigen Löschung dieser danach werden die alten gültigen Termine jetzt ohne Verzögerung auch gelöscht.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.19.05 <small>(13. März 2019)</small></h3>
+            <ul>
+                <li><strong>Tresen</strong> <span>Der Wochenkalender zeigt keine Abholer der vorangegangenen Tage mehr an.</span></li>
+                <li><strong>Tresen</strong> <span>Über den Button "als neu hinzufügen" kann man die Daten eines Spontankunden jetzt für einen neuen Spontankunden wiederverwenden.</span></li>
+                <li><strong>Tresen</strong> <span>Eine Änderungen der Dienstleistungen zu einem Termin ändert jetzt immer die Slot-Anzahl, auch wenn man diese zuvor per Hand auf einen anderen Wert gesetzt hatte.</span></li>
+                <li><strong>Tresen</strong> <span>Die Wartezeit wird jetzt einheitlich als eine "von ... bis" Zeit dargestellt.</span></li>
+                <li><strong>Tresen</strong> <span>Neue Fehlermeldung: Wenn ein Termin mit mehreren Slots nicht buchbar ist, weil ein Zeitslot in der Folge vergeben wurde, wird jetzt eine differenzierte Fehlermeldung angezeigt.</span></li>
+                <li><strong>Tresen</strong> <span>Neue Fehlermeldung: Wenn ein Termin auf Grund fehlender Rechte nicht gelöscht werden kann, wird dies jetzt angezeigt.</span></li>
+                <li><strong>Öffnungszeiten</strong> <span>Bei Fehlkonfigurationen in den Öffnungszeiten werden jetzt direkt beim Speichern Fehlermeldungen angezeigt.</span></li>
+                <li><strong>Terminsuche</strong> <span>Neue Fehlermeldung: Wenn jemand nach dem "Abbrechen"-Button die Zurück-Taste im Browser verwendet wird jetzt korrekt angezeigt, dass die Reservierung nicht mehr besteht.</span></li>
+                <li><strong>Aufrufanzeige</strong> <span>Es können jetzt auch Wartende mit der voraussichtlichen Wartezeit angezeigt werden.</span></li>
+                <li><strong>Statistik</strong> <span>Die Rohdaten können jetzt auch ohne Auswahl eines Standortes genutzt werden.</span></li>
+                <li><strong>Kiosk</strong> <span>Die Wartezeit wird jetzt einheitlich als eine "von ... bis" Zeit dargestellt.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.19.04 <small>(25. Februar 2019)</small></h3>
+            <ul>
+                <li><strong>Terminbuchung</strong> <span>Für die Berechnung der Zeitslots eines Termins wird jetzt die Einstellung aus der Öffnungszeit und nicht mehr aus dem Standort verwendet.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.19.03 <small>(13. Februar 2019)</small></h3>
+            <ul>
+                <li><strong>Terminsuche</strong> <span>Bestätigungs-SMS verwendet jetzt das 24 Stunden Format für die Uhrzeit.</span></li>
+                <li><strong>Öffnungszeiten</strong> <span>Alte Öffnungszeiten werden jetzt 28 Tagen nach Ablaufdatum gelöscht.</span></li>
+                <li><strong>Öffnungszeiten</strong> <span>Button "Schließen" wurde in "Abbrechen" umbenannt und bei begonnender Anpassung einer Öffnungszeit kann jetzt auch abgebrochen werden.</span></li>
+                <li><strong>Öffnungszeiten</strong> <span>Wenn der Zeitschlitz nicht in die Terminzeit passt, erscheint beim Speichern jetzt eine Fehlermeldung und ein Anlegen oder Verändern von Öffnungszeiten in der Vergangenheit ist nicht mehr möglich.</span></li>
+                <li><strong>Administration</strong> <span>Missverständliches "aktiviert" in der Standort-Maske bei den Optionen "SMS-Bestätigung" und "SMS-Erinnerung" entfernt.</span></li>
+                <li><strong>Administration</strong> <span>Die grüne Box für Bestätigungen in der Behörden-Übersicht wird jetzt nicht mehr angezeigt, wenn keine Meldungen vorliegen.</span></li>
+                <li><strong>Administration</strong> <span>Wird ein Eintrag aus dem Fomrular heraus gelöscht, erscheint jetzt ein Bestätigungsdialog um ein versehentliches Löschen zu vermeiden.</span></li>
+                <li><strong>Administration</strong> <span>Wechselt man aus der Warteschlangentabelle heraus den Standort oder wählt die Clusteransicht, wird jetzt ein Bestätigungsdialog-Feld angzeigt, welches darauf hinweist, dass sich das Terminformular aktualisieren wird und alle Eingaben verloren gehen.</span></li>
+                <li><strong>Tresen</strong> <span>Bei einem ausgewählten Cluster muss erst der Standort gewählt werden, bevor ein Termin vereinbart werden kann.</span></li>
+                <li><strong>Tresen</strong> <span>Die Anzahl der Wartenenden wird jetzt neben der Länge der Warteschlange angezeigt.</span></li>
+                <li><strong>Tresen</strong> <span>Im Feld "Informationen" wird jetzt auch die Anzahl Vorgänge vor dem nächsten Spontankunden und die Anzahl Vorgänge mit aktueller Wartezeit angezeigt. </span></li>
+                <li><strong>Aufrufanzeige/Kiosk</strong> <span>Wenn die virtuelle Sachbearbeiterzahl auf 0 gesetzt wird, wird für die Wartezeit ein "unbekannt" angezeigt.</span></li>
+                <li><strong>Kiosk</strong> <span>Wenn im Vorgang bereits eine Telefonnummer hinterlegt ist, lässt sich diese über den Nachtrag-Mechanismus im Kiosk nicht mehr überschreiben.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.19.02 <small>(09. Januar 2019)</small></h3>
+            <ul>
+                <li><strong>Terminsuche</strong> <span>Öffnungszeiten mit Wiederholungen größer einer Woche verwenden jetzt den Montag der Kalenderwoche und nicht das Startdatum der Öffnungszeit zur Berechnung der Serie.</span></li>
+                <li><strong>Kundenbefragung</strong> <span>Die Befragung wird jetzt auch versendet, wenn der Standort keinem Cluster zugeordnet ist.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.19.01 <small>(12. Dezember 2018)</small></h3>
+            <ul>
+                <li><strong>Terminsuche</strong> <span>E-Mail Texte enthalten nun vollständige Datumsformate in Deutsch.</span></li>
+                <li><strong>Terminsuche</strong> <span>E-Mails werden nur noch versendet, wenn eine Absender-Adresse hinterlegt ist. Ohne diesen Absender werden auch keine E-Mail-Adressen abgefragt.</span></li>
+                <li><strong>Terminsuche</strong> <span>Nur intern buchbare Termine werden für die Internet-Buchung nicht mehr rot als bereits belegt angezeigt.</span></li>
+                <li><strong>Terminsuche</strong> <span>Der Buchungszeitraum wird jetzt in allen Varianten vollständig zur Verfügung gestellt.</span></li>
+                <li><strong>Terminsuche</strong> <span>Layout-Anpassung bei der Terminbestätigung wurden vorgenommen. Die Druckversion enthält keine Seitenleiste mehr.</span></li>
+                <li><strong>Aufrufanlage</strong> <span>Bei Netzwerkstörungen wird bei Verzögerung von mehr als 5 Sekunden ein Fehler angezeigt.</span></li>
+                <li><strong>Tresen</strong> <span>Beim Löschen aus der Tabelle wird jetzt auch eine Absage-Mail verschickt.</span></li>
+                <li><strong>Statistik</strong> <span>Beim Monat Januar wird jetzt wieder das richtige Jahr angezeigt.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.19.00 <small>(14. November 2018)</small></h3>
+            <ul>
+                <li><strong>Mandantenfähigkeit</strong> <span>Zusätzlich zur Dienstleistungsdatenbank können jetzt eigene Standorte und Dienstleistungen ergänzt werden. Dafür sind erweiterte Rechte notwendig.</span></li>
+                <li><strong>Terminsuche</strong> <span>Die Blätter-Funktion im Kalender wurde so angepasst, dass ein zukünftiger Monat solange wählbar bleibt, bis ein Monat nur noch weiße, also nicht buchbare Tage aufweist.</span></li>
+                <li><strong>Administration</strong> <span>Beim Löschen von Standorten, Behörden oder Organisationen erscheint jetzt eine Bestätigung bei Erfolg.</span></li>
+                <li><strong>Administration</strong> <span>Der maximale Buchungszeitraum kann jetzt wieder dreistellig angegeben werden.</span></li>
+                <li><strong>Administration</strong> <span>Die Standort-Einstellungen zu SMS wurden nach oben zu denen der Online-Terminbuchung verschoben.</span></li>
+                <li><strong>Administration/Tresen</strong> <span>Buttons und Checkboxen werden jetzt besser hervorgehoben, wenn man den Fokus beispielsweise über die TAB-Taste ändert.</span></li>
+                <li><strong>Administration/Tresen</strong> <span>Ein Blättern in die Vergangenheit ist nicht mehr möglich.</span></li>
+                <li><strong>Tresen</strong> <span>Spontan- und Terminkunden werden jetzt in Formularen jeweils korrekt ausgewiesen.</span></li>
+                <li><strong>Tresen</strong> <span>Fehlender OK-Button bei erfolgreich verschickten SMS ergänzt.</span></li>
+                <li><strong>Tresen</strong> <span>Nicht erschienene Kunden werden nicht mehr in die voraussichtliche Wartezeit eingerechnet.</span></li>
+                <li><strong>Tresen</strong> <span>Beim Wochenkalender lässt sich jetzt auch beim Jahreswechsel wieder zur vorherigen Woche wechseln.</span></li>
+                <li><strong>Öffnungszeiten</strong> <span>Fehler bei nicht zu den Zeitschlitz-Einstellungen passenden Uhrzeiten werden sofort angezeigt.</span></li>
+                <li><strong>Öffnungszeiten</strong> <span>Bei neuen Öffnungszeiten wird jetzt ein Abbrechen- statt eines Löschen-Buttons angezeigt.</span></li>
+                <li><strong>Statistik</strong> <span>Es werden jetzt auch Standorte ohne Daten mit jeweiligen Null-Werten angezeigt.</span></li>
+                <li><strong>Statistik</strong> <span>Der fehlende Tag in Monaten mit Sommer- und Winterzeit-Umstellung wird jetzt wieder angezeigt.</span></li>
+                <li><strong>Kiosk</strong> <span>Bei einer Auswahl von mehreren Standorten führt der abschließende OK-Button nicht mehr nur zum ersten Standort.</span></li>
+                <li><strong>Kiosk</strong> <span>Bei einem Wechsel eines Kiosk-Terminals in eine andere Organisation wird jetzt ein Reset-Button angeboten um die vormalige Zuordnung zu löschen.</span></li>
+                <li><strong>Aufrufanlage</strong> <span>Die aufgerufenen Nummern bleiben jetzt auf dem Bildschirm stehen, bis diese abschließend bearbeitet wurden. So ist ersichtlich, wieviele Sachbearbeiter zur Zeit aktiv sind.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.18.02 <small>(10. Oktober 2018)</small></h3>
+            <ul>
+                <li><strong>Administration/Tresen:</strong> <span>Tastaturkürzel wurden angepasst und zum Teil ergänzt (siehe Handbuch)</span></li>
+                <li><strong>Tresen:</strong> <span>Es werden wieder mehr als ein freier Termin pro Uhrzeit angezeigt (betraf nur die Darstellung).</span></li>
+                <li><strong>Tresen:</strong> <span>Beim Anlegen eines Termins werden bei Fehlern die Eingaben aus anderen Feldern nicht mehr zurückgesetzt.</span></li>
+                <li><strong>Administration:</strong> <span>Beim Anlegen eines Standortes ist nicht mehr der erste Standort aus der DLDB vorausgewählt.</span></li>
+                <li><strong>Mails:</strong> <span>Bei einer Terminerinnerung wird jetzt das deutsche Datumsformat verwendet.</span></li>
+                <li><strong>Statistik:</strong> <span>Zur Abfrage der Dienstleistungsstatistik werden keine erweiterten Rechte mehr benötigt.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.18.00 <small>(12. September 2018)</small></h3>
+            <ul>
+                <li><strong>Allgemein:</strong> <span>Die Bezeichnung der Standorte wird jetzt immer aus der Dienstleistungsdatenbank übernommen. Sollte ein "nicht zugeordnet" erscheinen, fehlt eine Verknüpfung mit einem Standort in der Dienstleistungsdatenbank oder der Standort wurde dort zwischenzeitlich gelöscht.</span></li>
+                <li><strong>Allgemein:</strong> <span>Tasturkürzel lassen sich nun verwenden. Eine Liste der möglichen Kürzel findet man im Handbuch.</span></li>
+                <li><strong>Terminsuche:</strong> <span>Nach einem Wechsel der IP-Adresse wird jetzt ein Captcha abgefragt.</span></li>
+                <li><strong>Tresen:</strong> <span>Fiktive Arbeitsplätze können wieder auf 0 gestellt werden.</span></li>
+                <li><strong>Tresen:</strong> <span>Die Angabe einer Telefonnummer zur Terminvereinbarung wird nur noch verlangt, wenn eine Bestätigung per Checkbox ausgewählt wurde.</span></li>
+                <li><strong>Administration:</strong> <span>Fiktive Arbeitsplätze können wieder auf 0 gestellt werden.</span></li>
+                <li><strong>Statistik:</strong> <span>Die doppelte Verlinkung von Jahren wurde korrigiert</span></li>
+                <li><strong>Statistik:</strong> <span>Standorte ohne SMS-Statistik können jetzt ohne Fehlermeldung angeschaut werden.</span></li>
+                <li><strong>Statistik:</strong> <span>Wenn kein HTTPS verwendet wird, erscheint jetzt vor dem Login bereits eine Meldung, die automatisch weiterleitet.</span></li>
+                <li><strong>Statistik:</strong> <span>Eine Liste der Nutzerkonten kann nun exportiert werden, so dass alle Nutzerinnen und Nutzer per E-Mail angeschrieben werden können. Der Zugriff auf diese Liste ist auf wenige Personen beschränkt.</span></li>
+            </ul>
+        </div>
+
+<div class="changelog-item">
+            <h3>Version 2.17.03 <small>(27. Juni 2018)</small></h3>
+            <ul>
+                <li><strong>Allgemein:</strong> <span>Eine Änderung an einer Öffnungszeit kann sich erst nach bis zu zu 10 Minuten auf freie Termine auswirken.</span></li>
+                <li><strong>Standort:</strong> <span>Die Beschreibung einiger Felder im Formular wurde angepasst.</span></li>
+                <li><strong>Status:</strong> <span>Es wurde eine Anzeige zur Status der Berechnung von Termin-Slots hinzugefügt.</span></li>
+                <li><strong>Öffnungszeiten:</strong> <span>Unter bestimmten Umständen wurden nicht alle Spontankunden-Zeiten angezeigt. Das wurde behoben.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.17.00 <small>(06. Juni 2018)</small></h3>
+            <ul>
+                <li><strong>Allgemein:</strong> <span>Die Suche nach freien Terminen wurde optimiert und ist jetzt schneller. Dabei werden freie Termine, die sich aus den Einstellungen zu den Öffnungszeiten ergeben, vorberechnet. Daher kann es passieren, dass eine Änderung, zum Beispiel an einer Öffnungszeit, einem Standort oder das Hinzufügen eines neuen freien Tages, sich erst nach ein paar Minuten auf freie Termine auswirkt.</span></li>
+                <li><strong>Allgemein:</strong> <span>Ein Termin muss mindestens 10 Minuten vor Beginn gebucht werden. Zuvor gab es keine Beschränkung für Tresenmitarbeiter und 30 Minuten für Internet-Buchungen.</span></li>
+                <li><strong>Aufrufanlage:</strong> <span>Es können jetzt auch Bilder im SVG-Format hochgeladen werden. Damit kann eine bessere Bildqualität bei hochauflösenden Bildschirmen erreicht werden. (Tipp: Bei Wikipedia gibt es die Bezirkswappen als SVG zur freien Verwendung.)</span></li>
+                <li><strong>Handbuch:</strong> <span>Das Layout des Handbuchs wurde in weiten Teilen angepasst und gliedert sich nun besser in die Anwendung ein.</span></li>
+                <li><strong>Statistik:</strong> <span>Rohdaten einer Behörde werden jetzt zusammen mit den Organisationsnamen aufgelistet, so dass Behörden wie "Bürgeramt" auch ohne Kenntnis der internen ID unterscheidbar werden.</span></li>
+                <li><strong>Terminsuche:</strong> <span>Zu Fehlermeldungen werden jetzt mehr Informationen angezeigt um schneller Hilfe anbieten zu können.</span></li>
+                <li><strong>Kiosk:</strong> <span>Das Feld "Name zur internen Identifikation" benennt jetzt jeden Kiosk und macht diesen in der Organisations-Verwaltung identifizierbar ohne die kryptische ID kennen zu müssen.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.16.02 <small>(16. Mai 2018)</small></h3>
+            <ul>
+                <li><strong>Umfrage:</strong> <span>In der Bestätigung einer Terminbuchung wie in der dazugehörigen Mail wird eine Online-Umfrage verlinkt.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.16.00 <small>(25. April 2018)</small></h3>
+            <ul>
+                <li><strong>Allgemein:</strong> <span>Wenn im Browser keine sichere Verbindung verwendet wird (HTTPS), erscheint jetzt eine Warnung gefolgt von einem automatischen Redirect zur korrekten URL.</span></li>
+                <li><strong>Handbuch:</strong> <span>Eine Nutzerhandbuch ist jetzt verfügbar.</span></li>
+                <li><strong>E-Mail-Erfassung:</strong> <span>Feld für E-Mail-Adressen im Formular für Nutzerkonten ist jetzt Pflicht</span></li>
+                <li><strong>Fehlermeldungen:</strong> <span>Fehlermeldungen beim Tresen/Sachbearbeiter lassen sich jetzt immer schließen.</span></li>
+                <li><strong>Externe Anwendungen:</strong> <span>Schnittstellen für externe Anwendungen werden umgestellt</span></li>
+                <li><strong>Öffnungszeiten:</strong> <span>Monatsansicht: Bei der Berechnung von Gesamtkontingenten werden das aktuelle Datum und die Uhrzeit nicht mehr beachtet. Es wird jetzt das maximal mögliche Kontingent für einen Monat angezeigt.</span></li>
+                <li><strong>Öffnungszeiten:</strong> <span>Umlautprobleme in Monatsnamen wurden behoben.</span></li>
+                <li><strong>Öffnungszeiten:</strong> <span>Tagesansicht: Bei der Berechnung verfügbarer Slots werden Termine mit mehreren Slots jetzt korrekt mehrfach in die Summer der belegten Slots eingerechnet.</span></li>
+                <li><strong>Standort:</strong> <span>Die Abwahl der Optionen per Checkbox wie "Mehrfachtermine" oder "Notruf" ist wieder möglich.</span></li>
+                <li><strong>Standort:</strong> <span>Eine Mindestgröße von 25 bei Wartenummer-Kreisen ist nicht mehr erforderlich.</span></li>
+                <li><strong>Standort:</strong> <span>SMS-Einstellungen zur Bestätigung und Erinnerung werden jetzt korrekt in Bezug zu den Behörden-Einstellungen angezeigt.</span></li>
+                <li><strong>Behörde:</strong> <span>Für Favoriten und freie Tage wurde das Layout verbessert, damit Formular-Felder besser zuzuordnen sind.</span></li>
+                <li><strong>Cluster:</strong> <span>Der Löschen-Button taucht nicht mehr beim Erstellen eines Clusters auf.</span></li>
+                <li><strong>Tresen:</strong> <span>Terminvereinbarung: Die Slots der Dienstleistungen werden jetzt je nach Standorteinstellung korrekt summiert.</span></li>
+                <li><strong>Tresen:</strong> <span>Die Reihenfolge der Formular-Elemente, wenn man mit der &lt;TAB&gt;-Taste navigiert, wurde optimiert.</span></li>
+                <li><strong>Tresen:</strong> <span>Der fehlende Button zum Drucken eines Termins nach einer erfolgreichen Reservierung wurde ergänzt.</span></li>
+                <li><strong>Tresen:</strong> <span>Bei Auswahl eines Clusters kann man bei der Terminvereinbarung jetzt einen Cluster-Standort wählen, um eine automatische Zuordnung zu umgehen.</span></li>
+                <li><strong>Tresen:</strong> <span>In der Suche werden jetzt auch unvollständige Telefonnummern gefunden.</span></li>
+                <li><strong>Sachbearbeiter:</strong> <span>Bei Eingabe eines Wortes als Platznummer wie "Azubi" wird jetzt nach einem abgeschlossenen Termin korrekt zum Sachbearbeiterplatz weitergeleitet (vorher zum Tresen).</span></li>
+                <li><strong>Sachbearbeiter:</strong> <span>Nimmt man eine nicht erschienene Kundin oder Kunden wieder in die Warteschlange auf und bearbeitet diesen, erhält dieser jetzt eine korrekt formatierte E-Mail.</span></li>
+                <li><strong>Sachbearbeiter:</strong> <span>Die Erhebung der Statistik nach der Bearbeitung einer Kundin oder eines Kunden kann wieder deaktiviert werden.</span></li>
+                <li><strong>Terminsuche:</strong> <span>Fehlende Hinweise zur Zahlungsarten werden wieder angezeigt.</span></li>
+                <li><strong>Terminsuche:</strong> <span>Wenn die Reservierung eines Termins fehlschlägt, wird jetzt eine nutzerfreundliche Fehlermeldung angezeigt.</span></li>
+                <li><strong>Terminsuche:</strong> <span>Fehlerberichte enthalten jetzt für den Support auch die ausgewählten Dienstleistungen und Standorte.</span></li>
+                <li><strong>Terminsuche:</strong> <span>Ein Fehler wurde korrigiert, bei dem trotz Einstellung unter Umständen keine Weiterleitung zu einer externen Terminvereinbarung stattfand.</span></li>
+                <li><strong>Terminsuche:</strong> <span>Der ICS-Anhang in Terminbestätigungs-Mails trägt jetzt die korrekte Uhrzeit nach Mitteleuropäischer Winter-/Sommerzeit ein.</span></li>
+                <li><strong>Nutzerkonto:</strong> <span>Nur noch Superuser sind systemweite Nutzerkonten. Für normale Nutzerkonten müssen jetzt zwingend Behörden ausgewählt werden.</span></li>
+                <li><strong>Kiosk:</strong> <span>Bei der Zusammenstellung einer Kiosk-URL wird nicht mehr ein Cluster mit ausgewählt, wenn dieser die selbe ID hat, wie ein gerade ausgewählter Standort.</span></li>
+                <li><strong>Kiosk:</strong> <span>Die eingegebene StartUrl geht nicht mehr verloren, wenn der Kiosk nur für einen Standort genutzt wird.</span></li>
+                <li><strong>Kiosk:</strong> <span>Auch bei vergebenen Wartenummern größer 1000 funktioniert jetzt der Nachtrag von SMS.</span></li>
+                <li><strong>Kiosk:</strong> <span>Im Formular "Wartenummerausgabe am Kiosk" zum freigeben/sperren wurde der Abbrechen-Button entfernt.</span></li>
+                <li><strong>Statistik:</strong> <span>Ruft man eine Seite ohne erforderliche Zugriffsrechte auf, erscheint eine entsprechende Meldung und kein Fehlerreport mehr.</span></li>
+                <li><strong>Statusseite:</strong> <span>Es werden jetzt Informationen über den letzten Import der Dienstleistungsdatenbank angezeigt.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.15.06 <small>(26. März 2018)</small></h3>
+            <ul>
+                <li><strong>E-Mail-Erfassung:</strong> <span>Ermöglicht die Erfassung von E-Mail-Adressen für Nutzerkonten</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.15.04 <small>(26. März 2018)</small></h3>
+            <ul>
+                <li><strong>Terminsuche:</strong> <span>Öffnungszeiten mit der Einstellung "einmaliger Termin" werden jetzt korrekt als belegt angezeigt.</span></li>
+            </ul>
+        </div>
+
+
+        <div class="changelog-item">
+            <h3>Version 2.15.00 <small>(31. Januar 2018)</small></h3>
+            <ul>
+                <li><strong>Statistik:</strong> <span>Korrektur des Tagesdurchschnittwertes für die gemessene Wartezeit.</span></li>
+                <li><strong>Kiosk:</strong> <span>Die Auswahl von Clustern zur Wartenummernvergabe wurde entfernt.</span></li>
+                <li><strong>Öffnungszeiten:</strong> <span>Einmalige Termine können wieder angelegt werden.</span></li>
+                <li><strong>Öffnungszeiten:</strong> <span>Wochentage werden jetzt auf Deutsch angezeigt.</span></li>
+                <li><strong>Aufrufbildschirm:</strong> <span>Aufrufbildschirme aktualisieren sich jetzt auch nach einem Server-Fehler wieder.</span></li>
+                <li><strong>Administration:</strong> <span>Formular zur Einrichtung von Standorten wurde korrigiert, einige Beschreibungen waren fehlerhaft.</span></li>
+                <li><strong>Terminbestätigung:</strong> <span>Die versendete E-Mail wurde leicht überarbeitet.</span></li>
+                <li><strong>Captcha:</strong> <span>Redirect nach einem Captcha geht im Zweifel auf die Tagesauswahl.</span></li>
+                <li><strong>Terminsuche:</strong> <span>Wenn zwei gleichzeitig den selben Termin buchen erhält der langsamere jetzt eine lesbare Fehlermeldung.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.14 <small>(29. November 2017)</small></h3>
+            <ul>
+                <li><strong>SMS-Versand:</strong> <span>Fehlerhafte SMS werden nicht mehr versendet.</span></li>
+                <li><strong>Administration:</strong> <span>Passwörter können auch wieder durch den Admin vergeben werden</span></li>
+                <li><strong>Tresen:</strong> <span>Hinzufügen von Spontankunden funktioniert wieder.</span></li>
+            </ul>
+        </div>
+
+        <div class="changelog-item">
+            <h3>Version 2.13.00 <small>(27. September 2017)</small></h3>
+            <p>Erste Version des überarbeiteten Zeitmanagementsystems. In den ersten Monaten werden sowohl das alte wie das neue System parallel betrieben. Ein Wechsel zwischen den Systemen ist jederzeit möglich, um die Eingewöhnung zu erleichtern. Folgende sichtbare Änderungen ergeben sich durch die neue Version:</p>
+            <ul>
+                <li><strong>Layout und Benuteroberfläche:</strong> <span>Das Layout wurde komplett überarbeitet. Bedienelemente wie Buttons und Formulare bleiben weitestgehend gleich. Über Änderungen in der Bedienung wird gesondert informiert.</span></li>
+                <li><strong>Login:</strong> <span>Der Login findet nun in zwei Schritten statt. Loggen Sie sich zuerst ein und auf der folgenden Seite wählen Sie nun Standort und Platz- oder Raum-Nummer aus.</span></li>
+                <li><strong>Sachbearbeiter:</strong> <span>Der Aufruf einer Kundin oder eines Kunden erfolgt nun ohne Popup. Ein Wechsel der Seite ist während des Aufrufs möglich. Beachten Sie, dass vor einem Abmelden am System der Aufruf einer Kundin oder eines Kunden abeschlossen sein muss.</span></li>
+                <li><strong>Versand von E-Mail und SMS:</strong> <span>E-Mails und SMS können nur noch für eingetragene Termine verschickt werden. Eine freie Eingabe einer Telefonnummer oder E-Mail-Adresse ist nicht mehr möglich.</span></li>
+                <li><strong>Notruf:</strong> <span>Ein Notruf kann nun ausgeblendet werden.</span></li>
+                <li><strong>Gruppierung von Dienstleistungen:</strong> <span>Die Auswahl von Dienstleistungen werden nun nach den aktuellen Themen aus dem Service-Portal gruppiert.</span></li>
+                <li><strong>Browser-Kompatibilität und Klang-Ereignisse:</strong> <span>Für das Abspielen von Klang-Ereignissen (Notruf, Aufrufbildschirm) wird kein Quicktime-Plugin mehr benötigt. Eine aktuelle Browser-Version wird vorausgesetzt.</span></li>
+                <li><strong>Öffnungszeiten:</strong> <span>Die Administration der Öffnungszeiten wurde komplett überarbeitet.</span></li>
+                <li><strong>Konfiguration Kiosk-System und Aufrufanlage:</strong> <span>Die Erstellung einer URL für ein Kiosk-System zur Ziehung von Wartenummern oder einer Aufrufanlage erfordert nun einen Login im System. Die fertige URL kann aber weiterhin kopiert und ohne Login genutzt werden.</span></li>
+                <li><strong>Templates für Kiosk-System und Aufrufanlage:</strong> <span>Es können nun aus einer Liste vorgefertigte Templates ausgewählt und innerhalb eines Standorts auch unterschiedliche Ansichten realisiert werden.</span></li>
+                <li><strong>Startseite des Kiosk-System:</strong> <span>Für ein Kiosk-System können nun abweichende Startseiten angegeben werden. Damit ist eine Integration in digitale Informationssysteme möglich.</span></li>
+                <li><strong>Berechnung der Wartezeit:</strong> <span>Die Berechnung der Wartezeit erfolgt nun durch eine andere Formel und es kann zu Abweichungen kommen. Passen Sie falls nötig in den Standort-Einstellungen die "Durchschnittliche Bearbeitungszeit" an.</span></li>
+                <li><strong>Suche:</strong> <span>Durch Eingabe einer Vorgangsnummer kann nun eine kurze Historie dieser Nummer eingesehen werden.</span></li>
+                <li><strong>Externe Datenquellen:</strong> <span>Die Dienstleistungsdatenbank der Berliner Behörden ist nun nicht mehr die einzige Datenquelle. Einstellungen zu Standorten erfordern nun die Auswahl einer vorgegebenen Datenquelle.</span></li>
+                <li><strong>Darstellung von Dienstleistungen:</strong> <span>Voraussetzungen und erforderliche Unterlagen werden jetzt wie in der Dienstleistungsdatenbank getrennt dargestellt (z.B. in Terminbestätigungen).</span></li>
+                <li><strong>Fehlerbehebung Internetbuchung:</strong> <span>Eine Fehlbuchung eines Termins durch eine gleichzeitige Buchung über mehrere Tabs im Browser ist nun nicht mehr möglich.</span></li>
+                <li><strong>Systemumgebung:</strong> <span>Softwarekomponenten sowie Servertechnik wurden umfangreich erneuert.</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="changelog-item">
+        <h3>Version 1.6.12 <small>(2017)</small></h3>
+        <p>Letzte Version des Vorgänger-Systems.</p>
+    </div>
+
+{% endif %}
+</div>

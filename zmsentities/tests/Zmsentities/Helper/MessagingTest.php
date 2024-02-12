@@ -27,21 +27,22 @@ class MessagingTest extends Base
 
         $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'queued'));
         self::assertStringContainsString('hiermit bestätigen wir Ihre Wartenummer', $result);
-        self::assertStringContainsString('Wartenummer: 123', $result);
-        self::assertStringContainsString('Ort: Bürgeramt 1, Unter den Linden 1, 12345 Berlin', $result);
+        self::assertStringContainsString('Ihre Wartenummer ist die "123"', $result);
+        self::assertStringContainsString('Ort: 001 Unter den Linden 1, 12345 Berlin', $result);
         self::assertStringContainsString('Abmeldung einer Wohnung', $result);
 
         $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'appointment'));
-        self::assertStringContainsString('hiermit bestätigen wir Ihnen Ihren gebuchten Termin:', $result);
-        self::assertStringContainsString('Zeit: am Mittwoch, 18. November 2015 um 18:52 Uhr', $result);
-        self::assertStringContainsString('Vorgangsnummer: 123456', $result);
-        self::assertStringContainsString('Absage-Code: abcd', $result);
+        self::assertStringContainsString('wir bestätigen Ihren Termin im 001', $result);
+        self::assertStringContainsString('Datum: Mittwoch, 18. November 2015', $result);
+        self::assertStringContainsString('Uhrzeit: 18:52 Uhr', $result);
+        self::assertStringContainsString('Ihre Terminnummer und weitere Informationen erhalten Sie 24 Stunden vor Ihrem Termin', $result);
+        self::assertStringContainsString('Ein Einlass ins Gebäude ist frühestens 10 Minuten  vor Ihrem Termin möglich', $result);
 
         $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'reminder'));
-        self::assertStringContainsString('hiermit erinnern wir Sie an Ihren Termin:', $result);
-        self::assertStringContainsString('Zeit: am Mittwoch, 18. November 2015 um 18:52 Uhr', $result);
-        self::assertStringContainsString('Vorgangsnummer: 123456', $result);
-        self::assertStringContainsString('Absage-Code: abcd', $result);
+        self::assertStringContainsString('wir erinnern Sie an Ihren Termin', $result);
+        self::assertStringContainsString('Mi. 18. November 2015 um 18:52 Uhr', $result);
+        self::assertStringContainsString('Terminnummer: 123456', $result);
+        self::assertStringContainsString('Bitte gehen Sie rechtzeitig zur "Unter den Linden 1"', $result);
 
         $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'pickup'));
         self::assertStringContainsString(
@@ -49,15 +50,15 @@ class MessagingTest extends Base
             $result
         );
         self::assertStringContainsString(
-            'Die Adresse lautet: Bürgeramt 1 Unter den Linden 1, 12345 Berlin.', 
+            'Die Adresse lautet: 001 Unter den Linden 1, 12345 Berlin', 
             $result
         );
 
         $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'deleted'));
-        self::assertStringContainsString('Ihre Vorgangsnummer 123456 ist nun ungültig.', $result);
+        self::assertStringContainsString('Ihr Termin am Mittwoch, 18. November 2015  um 18:52 Uhr  wurde gelöscht.', $result);
 
         $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'blocked'));
-        self::assertStringContainsString('Ihre Vorgangsnummer 123456 ist nun ungültig.', $result);
+        self::assertStringContainsString('Ihr Termin am Mittwoch, 18. November 2015  um 18:52 Uhr  wurde gelöscht.', $result);
     }
 
     public function testCreateProcessListSummaryMail()
@@ -66,8 +67,8 @@ class MessagingTest extends Base
         $processList = self::getExampleProcessList();
         $mail = (new Mail())->toResolvedEntity($processList, $config, 'overview');
 
-        self::assertStringContainsString('Guten Tag Max Mustermann,', $mail->getHtmlPart());
-        self::assertStringContainsString('Terminübersicht', $mail->subject);
+        self::assertStringContainsString('Sehr geehrte*r Max Mustermann,', $mail->getHtmlPart());
+        self::assertStringContainsString('Terminerinnerung', $mail->subject);
         self::assertStringContainsString('Sie haben folgende Termine gebucht:', $mail->getHtmlPart());
         self::assertStringContainsString('am Mittwoch, 18. November 2015 um 18:52 Uhr', $mail->getHtmlPart());
         self::assertStringContainsString('am Mittwoch, 30. Dezember 2015 um 11:55 Uhr', $mail->getHtmlPart());
@@ -84,8 +85,8 @@ class MessagingTest extends Base
         $processList = self::getExampleProcessList();
         $config  = Config::getExample();
         $mail = (new Mail())->toResolvedEntity($processList, $config, 'appointment');
-        self::assertStringContainsString('**Vorgangsnummer:** 234567', $mail->getPlainPart());
-        self::assertStringContainsString('**Vorgangsnummer:** 123456', $mail->getPlainPart());
+        self::assertStringContainsString('Ihre Terminnummer und weitere Informationen erhalten Sie 24 Stunden vor Ihrem Termin', $mail->getPlainPart());
+        self::assertStringContainsString('Bitte erscheinen Sie rechtzeitig zu Ihrem Termin', $mail->getPlainPart());
         
         self::assertTrue(2 === $processList->count());
     }

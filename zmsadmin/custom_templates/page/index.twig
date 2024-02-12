@@ -1,0 +1,36 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% block title %}Anmeldung{% endblock %}
+
+{% block pageheader_middle %}
+    {% if workstation %}
+        {{ parent() }}
+    {% else %}
+        <span class="sitename">Zeitmanagementsystem - Anmeldung für Behördenmitarbeiter</span>
+    {% endif %}
+{% endblock %}
+
+{% block pageheader_right %}
+    {% if workstation %}
+        {{ parent() }}
+    {% else %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+	{{ parent() }}
+    <div class="grid grid--stretch">
+        {% if workstation %}
+        <div class="grid__item one-half">
+            {% include "block/index/logout.twig" %}
+        </div>
+        {% else %}
+            {% if showloginform %}
+            <div class="grid__item one-half">
+                {% include "block/index/welcome.twig" %}
+            </div>
+            {% endif %}
+        {% endif %}
+    </div>
+   {# {% include "block/index/versioninfo.twig" %} #}
+{% endblock %}

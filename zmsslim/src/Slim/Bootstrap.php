@@ -119,10 +119,20 @@ class Bootstrap
 
     public static function getTwigView(): Twig
     {
-        $templatePath = (is_array(App::TEMPLATE_PATH)) ? App::TEMPLATE_PATH : [App::APP_PATH  . App::TEMPLATE_PATH];
+        $customTemplatesPath = 'custom_templates/';
+        $templatePaths = (is_array(App::TEMPLATE_PATH)) ? App::TEMPLATE_PATH : [App::APP_PATH  . App::TEMPLATE_PATH];
+
+
+        if (getenv("ZMS_CUSTOM_TEMPLATES_PATH")) {
+            $customTemplatesPath = getenv("ZMS_CUSTOM_TEMPLATES_PATH");
+        }
+
+        if (is_dir($customTemplatesPath)) {
+            array_unshift($templatePaths, $customTemplatesPath);
+        }
 
         return new Twig(
-            new FilesystemLoader($templatePath),
+            new FilesystemLoader($templatePaths),
             [
                 'cache' => self::readCacheDir(),
                 'debug' => App::DEBUG,
