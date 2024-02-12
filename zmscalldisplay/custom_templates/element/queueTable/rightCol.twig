@@ -1,0 +1,19 @@
+<td class="platznummer">
+	<div class="highlight {{ queue.status }}">
+        {% if queue.destinationHint and queue.destination != queue.destinationHint %}
+            <span class="terminkundenanzeige">{{ queue.destinationHint | raw }}</span><br/>
+        {% elseif queue.status in ['queued', 'confirmed'] %}
+            <span class="terminkundenanzeige">Aufruf in</span><br/>
+        {% endif %}
+
+        <span data="{{ queue.destination | raw }}" class="destination terminkundennummer{% if not isNumeric(queue.destination) and queue.destination|length > 6 %} abholeranzeige{% endif %}">
+            {% if queue.status in ['queued', 'confirmed'] %}
+                <span class="longrange">{{queue.waitingTimeOptimistic}}-{{queue.waitingTimeEstimate}}min</span>
+            {% elseif queue.status in ['empty'] %}
+                <span class="standalone">&nbsp;</span>
+            {% else %}
+                <span class="standalone">{{ queue.destination | raw }}</span>
+            {% endif %}
+        </span>
+	</div>
+</td>

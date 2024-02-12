@@ -82,7 +82,8 @@ class ProcessUpdateTest extends Base
         $process = json_decode($this->readFixture("GetProcess_27758.json"), 1);
         $response = $this->render([], [
             '__body' => json_encode($process),
-            'initiator' => 1
+            'initiator' => 1,
+            'adminMailOnUpdated' => 1
         ], []);
         $mailList = (new \BO\Zmsdb\Mail)->readList();
         $this->assertStringContainsString('Information Terminänderung', $mailList->getFirst()['subject']);

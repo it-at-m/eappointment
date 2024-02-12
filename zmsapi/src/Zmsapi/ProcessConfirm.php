@@ -47,7 +47,6 @@ class ProcessConfirm extends BaseController
             $resolveReferences,
             $userAccount
         );
-
         $this->writeMails($request, $process);
         $message = Response\Message::create($request);
         $message->data = $process;
