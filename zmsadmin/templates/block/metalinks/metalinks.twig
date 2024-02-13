@@ -1,24 +1,2 @@
             <h2 class="aural">Weiterführende Links</h2>
-            <ul class="footer-servicelinks">
-                <li>
-                    <h3>Support</h3>
-                    {% set email = workstation.support.eMail|default(config.support.eMail) %}
-                    <a title="{% trans %}Support E-Mail verfassen{% endtrans %}" href="mailto::{{ email }}">{{ email }}</a>
-                    <span>{{ workstation.support.telephone|default(config.support.telephone) }}</span>
-                </li>
-                <li>
-                    <h3>Benutzerhandbuch</h3>
-                    <a title="{% trans %}Webseite des Benutzerhandbuchs{% endtrans %}" href="/terminvereinbarung/handbuch/" target="_blank">Web-Seite</a>
-                    <a title="{% trans %}PDF-Download des Benutzerhandbuchs{% endtrans %}" href="/terminvereinbarung/handbuch/ZMS-Handbuch.pdf" target="_blank">PDF-Download (nicht barrierefrei)</a>
-                </li>
-                <li>
-                    <h3>entwickelt von</h3>
-                    {% if isImageAllowed() %}
-                    <a title="{% trans %}Dieser Link führt zur Webseite des ITDZ Berlin{% endtrans %}" href="http://www.itdz-berlin.de/" target="_blank" ><img class="logo" alt="ITDZ-Berlin" src="{{ includeUrl() }}/_css/images/itdz_berlin.svg"></a>
-                    <a title="{% trans %}Dieser Link führt zur Webseite von BerlinOnline{% endtrans %}" href="https://www.berlinonline.net/" target="_blank"><img class="logo" alt="BerlinOnline" src="{{ includeUrl() }}/_css/images/bo_logo.svg"></a>
-                    {% else %}
-                    <a title="{% trans %}Dieser Link führt zur Webseite des ITDZ Berlin{% endtrans %}" href="http://www.itdz-berlin.de/" target="_blank">ITDZ-Berlin</a>
-                    <a title="{% trans %}Dieser Link führt zur Webseite von BerlinOnline{% endtrans %}" href="https://www.berlinonline.net/" target="_blank">BerlinOnline</a>
-                    {% endif %}
-                </li>
-            </ul>
+                IT&commat;M

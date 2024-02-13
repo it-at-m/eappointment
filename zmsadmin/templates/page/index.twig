@@ -2,15 +2,11 @@
 {% from 'element/helper/snippets.twig' import headline1 %}
 {% block title %}Anmeldung{% endblock %}
 
-{% block headline %}
-    {{ headline1("Anmeldung") }}
-{% endblock %}
-
 {% block pageheader_middle %}
     {% if workstation %}
         {{ parent() }}
     {% else %}
-    <span class="sitename">Zeitmanagementsystem - Anmeldung für Behördenmitarbeiter</span>
+        <span class="sitename">Zeitmanagementsystem - Anmeldung für Behördenmitarbeiter</span>
     {% endif %}
 {% endblock %}
 
@@ -26,21 +22,15 @@
     <div class="grid grid--stretch">
         {% if workstation %}
         <div class="grid__item one-half">
-            {% include "block/index/welcome.twig" %}
-        </div>
-        <div class="grid__item one-half">
             {% include "block/index/logout.twig" %}
         </div>
         {% else %}
-        <div class="grid__item one-half">
-            {% include "block/index/welcome.twig" %}
-        </div>
             {% if showloginform %}
-                <div class="grid__item one-half">
-                    {% include "block/index/loginform.twig" %}
-                </div>
+            <div class="grid__item one-half">
+                {% include "block/index/welcome.twig" %}
+            </div>
             {% endif %}
         {% endif %}
     </div>
-    {% include "block/index/versioninfo.twig" %}
+   {# {% include "block/index/versioninfo.twig" %} #}
 {% endblock %}
