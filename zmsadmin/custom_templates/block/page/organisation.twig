@@ -1,0 +1,20 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% set sitename = organisation.name %}
+
+{% use "block/breadcrumb/breadcrumb.twig" %}
+{% block breadcrumb_items %}
+    {{ parent() }}
+    <li><a href="{{ urlGet('owner_overview', {}, {}) }}">Behörden und Standorte</a></li>
+    <li>Referat einrichten</li>
+{% endblock %}
+
+{% block headline %}
+    {{ headline1("Referat einrichten") }}
+{% endblock %}
+
+{% block content %}
+	{{ parent() }}
+    {% include "block/organisation/form.twig" %}
+
+{% endblock %}

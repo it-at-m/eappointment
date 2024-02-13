@@ -10,8 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="robots" content="noindex">
     <title>{{ title }} - Zeitmanagementsystem</title>
-    <link rel="stylesheet" media="screen" type="text/css" href="{{ includeUrl() }}/_css/statistic.css" />
-    <link rel="stylesheet" media="print" type="text/css" href="{{ includeUrl() }}/_css/print.css" />
+    <link rel="stylesheet" media="all" type="text/css" href="{{ includeUrl() }}/_css/statistic.css?version={{ currentVersion() }}&ts={{ getNow()|date("U") }}">
+    {#<link rel="stylesheet" media="print" type="text/css" href="{{ includeUrl() }}/_css/print.css">#}
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 </head>
 <body>
@@ -47,7 +47,9 @@
                 <div class="grid__item five-sixths">
                     <section role="main" id="main-content">
                         {% block headline %}
-                            {{ snippets.headline1("untitled") }}
+                            {% if headline is defined and headline|trim is not empty %}
+                                {{ snippets.headline1(headline) }}
+                            {% endif %}
                         {% endblock %}
                         {% block content %}
                             {% include "element/helper/messageHandler.twig" %}
@@ -71,8 +73,9 @@
         </footer>
 
     </div>
-    {#<script type="text/javascript" src="{{ includeUrl() }}/_js/vendor.js"></script>#}
-    <script type="text/javascript" src="{{ includeUrl() }}/_js/index.js"></script>
+    {#<script src="{{ includeUrl() }}/_js/vendor.js?version={{ currentVersion() }}"></script>#}
+    <script src="{{ includeUrl() }}/_js/index.js?version={{ currentVersion() }}"></script>
+    {#<script src="{{ includeUrl() }}/_js/index.js?2"></script>#}
     {% block javascript %}
     {%- endblock %}
     {% if (debug)  %}
