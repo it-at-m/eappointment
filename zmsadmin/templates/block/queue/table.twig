@@ -75,7 +75,9 @@
                         <th>Mail</th>
                         <th>Dienstleistung</th>
                         <th>Anmerkung</th>
-                        <th>Freitextfeld: {{workstation.scope.preferences.client.customTextfieldLabel}}</th>                        
+                        {% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
+                            <th>{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
+                        {% endif %}                        
                         <th>Wartezeit</th>
                         <th></th>
                         <th></th>
@@ -195,9 +197,11 @@
                                     {{ item.createTimestamp|date("d.m.Y, H:i") }}&nbsp;Uhr
                                 </p>
                             </td>
+                            {% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}                   
                             <td>
                                 {{ item.customTextfield|decodeEntities|raw }}
-                            </td>                            
+                            </td>   
+                            {% endif %}                              
                             <td>
                                 {% if item.queue.withAppointment %}
                                     Termin
@@ -223,7 +227,6 @@
                 </tbody>
             </table>
             </div>
-
             <div class="table-responsive-wrapper">
                 <h2>Verpasste Termine</h2>
                 {% if processListMissed|length %}
@@ -292,8 +295,10 @@
 
             <div class="table-responsive-wrapper">
                 <h2 id="finished-appointments-control">Abgeschlossene Termine
-                    <i class="fas fa-angle-down" aria-hidden="true"></i>
-                    <i class="fas fa-angle-up hidden" aria-hidden="true"></i>
+                    {% if processListFinished|length %}
+                        <i class="fas fa-angle-down" aria-hidden="true"></i>
+                        <i class="fas fa-angle-up hidden" aria-hidden="true"></i>
+                    {% endif %}
                 </h2>
                 {% if processListFinished|length %}
                     <div id="finished-appointments-content" class="hidden table-responsive-wrapper">
@@ -338,30 +343,30 @@
                             {% endfor %}
                         </table>
                     </div>
+
+                    <script>
+                        (function() {
+                            let control = $('#finished-appointments-control');
+                            let content = $('#finished-appointments-content');
+                            let upButton = $('#finished-appointments-control .fa-angle-up')
+                            let downButton = $('#finished-appointments-control .fa-angle-down')
+
+                            $(control).click(function(){
+                                if (upButton.hasClass('hidden')) {
+                                    upButton.removeClass('hidden')
+                                    downButton.addClass('hidden')
+                                    content.removeClass('hidden')
+                                } else {
+                                    upButton.addClass('hidden')
+                                    downButton.removeClass('hidden')
+                                    content.addClass('hidden')
+                                }
+                            });
+                        })();
+                    </script>
                 {% else %}
                     Keine Einträge gefunden.
                 {% endif %}
-
-                <script>
-                    (function() {
-                        let control = $('#finished-appointments-control');
-                        let content = $('#finished-appointments-content');
-                        let upButton = $('#finished-appointments-control .fa-angle-up')
-                        let downButton = $('#finished-appointments-control .fa-angle-down')
-
-                        $(control).click(function(){
-                            if (upButton.hasClass('hidden')) {
-                                upButton.removeClass('hidden')
-                                downButton.addClass('hidden')
-                                content.removeClass('hidden')
-                            } else {
-                                upButton.addClass('hidden')
-                                downButton.removeClass('hidden')
-                                content.addClass('hidden')
-                            }
-                        });
-                    })();
-                </script>
 
                 <style>
                     .hidden {

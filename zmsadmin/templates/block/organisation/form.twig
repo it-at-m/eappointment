@@ -10,7 +10,7 @@
             <form method="post" action="./" class="form--base">
 
                 <fieldset>
-                    <legend>Bezirk: Einrichtung und Administration</legend>
+                    <legend>Referat: Einrichtung und Administration</legend>
                     <div class="panel--heavy">
 {{ formgroup(
                         {"label": "Name:"},
@@ -107,7 +107,7 @@
 				<div class="form-actions">
                     <div class="controls">
                         {% if action != "add" %}
-                        {{ custombutton({ "type":"delete","class": "button button--destructive", "target": urlGet("organisationDelete", {"id": organisation.id}, {}), "label":"Bezirk löschen", "disabled":(0 == workstation.useraccount.rights.organisation) }) }}
+                        {{ custombutton({ "type":"delete","class": "button button--destructive", "target": urlGet("organisationDelete", {"id": organisation.id}, {}), "label":"Referat löschen", "disabled":(0 == workstation.useraccount.rights.organisation) }) }}
                         {{ custombutton({ "type":"new","class": "button button--default", "target": urlGet("organisationAddDepartment", {'id': organisation.id}, {}), "label":"Behörde hinzufügen", "disabled":(0 == workstation.useraccount.rights.department) }) }}
                         {% endif %}
                         {{ formbutton({ "type":"save", "class": "button button--positive", "name": "save", "label":"Speichern", "value": "save", "disabled":(0 == workstation.useraccount.rights.organisation) }) }}

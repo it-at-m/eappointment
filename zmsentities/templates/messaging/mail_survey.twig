@@ -4,7 +4,7 @@
 
 {% set salutation = "Guten Tag" %}
 {% if client.familyName %}
-{% set salutation = "%s%s"|format("Guten Tag ", client.familyName) %}
+{% set salutation = "%s%s"|format("Sehr geehrte*r ", client.familyName) %}
 {% endif %}
 
 {{ process.scope.preferences.survey.emailContent|replace({

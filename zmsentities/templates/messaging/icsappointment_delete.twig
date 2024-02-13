@@ -3,7 +3,7 @@ BEGIN:VCALENDAR
 X-LOTUS-CHARSET:UTF-8
 CALSCALE:GREGORIAN
 VERSION:2.0
-PRODID:ZMS-Berlin
+PRODID:ZMS-München
 METHOD:REQUEST
 X-WR-TIMEZONE:Europe/Berlin
 BEGIN:VTIMEZONE
@@ -12,23 +12,23 @@ X-LIC-LOCATION:Europe/Berlin
 BEGIN:DAYLIGHT
 TZOFFSETFROM:+0100
 TZOFFSETTO:+0200
-TZNAME:Central European Summer Time
+TZNAME:CEST
 DTSTART:19700329T020000
 RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=3
 END:DAYLIGHT
 BEGIN:STANDARD
 TZOFFSETFROM:+0200
 TZOFFSETTO:+0100
-TZNAME:Central European Time
+TZNAME:CET
 DTSTART:19701025T030000
 RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
 UID:{{ startTime|date("Ymd") }}-{{ process.id }}
-ORGANIZER;CN="{{ process.scope.provider.name }}":MAILTO:{{ process.scope.preferences.client.emailFrom }}
+ORGANIZER;CN="{{ process.scope.provider.displayName }}":MAILTO:{{ process.scope.preferences.client.emailFrom }}
 SEQUENCE:0
-LOCATION:{{ process.scope.provider.name }} {{ process.scope.provider.contact.street }} {{ process.scope.provider.contact.streetNumber }}\, {{ process.scope.provider.contact.postalCode }} {{ process.scope.provider.contact.city }}
+LOCATION:{{ process.scope.provider.displayName }} {{ process.scope.provider.contact.street }} {{ process.scope.provider.contact.streetNumber }}\, {{ process.scope.provider.contact.postalCode }} {{ process.scope.provider.contact.city }}
 GEO:48.85299;2.36885
 SUMMARY:{{ "Terminabsage:"|trans }} {{ process.id }}
 DESCRIPTION:{{ message }}
