@@ -132,6 +132,9 @@
         "amendmentLabel": "Anmerkung",
         "emailFrom": "test@example.com",
         "emailRequired": "0",
+        "adminMailOnAppointment": "0",
+        "adminMailOnDeleted": "0",  
+        "adminMailOnUpdated": "1",  
         "telephoneActivated": "0",
         "telephoneRequired": 0
         },
