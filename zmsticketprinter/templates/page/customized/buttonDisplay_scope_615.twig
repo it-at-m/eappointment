@@ -1,0 +1,19 @@
+{% extends "layout/main.twig" %}
+
+{% use "block/content/IntroText.twig" %}
+{% use "block/content/buttons.twig" %}
+{% use "block/content/estimatedWaitingTime.twig" %}
+{% use "block/content/estimatedWaitingClients.twig" %}
+
+{% block pageid %}index{% endblock %}
+{% block pagetype %}customized{% endblock %}
+{% block content %}
+
+	<div class="werbeblock_oben">
+		{{ block("estimatedWaitingClients") }}
+	</div>
+
+	{{ block("button_single") }}
+
+	{{ block("button_append_notification") }}
+{% endblock %}
