@@ -1,0 +1,77 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'client-precall'} %}
+{% from "element/helper/snippets.twig" import namelist %}
+        {% block board_title %}
+            Kundeninformationen
+        {% endblock %}
+        {% block board_body %}
+            {% if error != "has_called_pickup" %}
+            <h4>Der nächste Kunde ist:</h4>
+            <dl>
+                <dt>
+                    Name
+                </dt>
+                <dd>
+                    {{ process.clients|first.familyName }} <br>(Wartenr. {{ process.queue.number }})
+                </dd>
+                <dt>
+                    Anliegen
+                </dt>
+                <dd>
+                    {{ namelist(process.requests) }}
+                </dd>
+                {% if process.amendment %}
+                <dt>
+                    Anmerkung
+                </dt>
+                <dd>
+                    {{ process.amendment }}
+                </dd>
+                {% endif %}
+                {% if process.clients|first.telephone %}
+                <dt>
+                    Telefon
+                </dt>
+                <dd>
+                    {{ process.clients|first.telephone }}
+                </dd>
+                {% endif %}
+                {% if process.clients|first.email %}
+                <dt>
+                    E-Mail
+                </dt>
+                <dd>
+                    {{ process.clients|first.email }}
+                </dd>
+                {% endif %}
+                {% if process.customTextfield %}
+                <dt>
+                    {{workstation.scope.preferences.client.customTextfieldLabel}}
+                </dt>
+                <dd>
+                    {{ process.customTextfield }}
+                </dd>
+                {% endif %}    
+                <dt>
+                    Wartezeit
+                </dt>
+                <dd>
+                    {% if process.queue.waitingTime < 120 %}
+                        {{ process.queue.waitingTime }} {% trans %}Minuten{% endtrans %}
+                    {% else %}
+                    	{{ (process.queue.waitingTime / 60)|round(0, 'floor') }} {% trans %}Stunden{% endtrans %} und
+                        {{ (process.queue.waitingTime % 60) }} {% trans %}Minuten{% endtrans %}
+                    {% endif %}
+                </dd>
+            </dl> 
+            <h4>Möchten Sie den Kunden aufrufen?</h4>
+            <button type="button" class="button button--default button--fullwidth client-precall_button-success" data-processid="{{ process.id }}" data-exclude="{{ exclude }}">Ja, Kunden jetzt aufrufen</button>   
+            <button type="button" class="button button--diamond button--fullwidth client-precall_button-skip right" data-exclude="{{ exclude }}">Nein, nächster Kunde bitte</button> 
+            <button type="button" class="button button--destructive button--fullwidth client-precall_button-abort left">Abbruch</button>     
+            {% endif %}   
+        {% endblock %}
+
+        {% block board_footer %}
+        {% include "block/process/footer.twig" %}
+        {% endblock %}
+
+{% endembed %}

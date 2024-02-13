@@ -132,6 +132,8 @@
             "amendmentLabel": "",
             "emailFrom": "test@example.com",
             "emailRequired": "0",
+            "adminMailOnAppointment": "0",
+            "adminMailOnDeleted": "0",
             "telephoneActivated": "0",
             "telephoneRequired": "0"
           },
@@ -318,6 +320,8 @@
             "amendmentLabel": "",
             "emailFrom": "test@example.com",
             "emailRequired": "0",
+            "adminMailOnAppointment": "0",
+            "adminMailOnDeleted": "0",
             "telephoneActivated": "0",
             "telephoneRequired": "0"
           },
