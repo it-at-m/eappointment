@@ -51,8 +51,10 @@
                 <div class="grid__item five-sixths">
                     <section role="main" id="main-content">
                         {% block headline %}
-                            {{ headline1("untitled") }}
-                        {% endblock %}
+                            {% if headline is defined and headline|trim is not empty %}
+                                {{ headline1(headline) }}
+                            {% endif %}
+                        {% endblock %}                    
                         {% block content %}
                             {% set timeString = "am " ~ getNow()|date('d.m.Y') ~ " um " ~ getNow()|date('H:i') ~ " Uhr" %}
                             {% include "element/helper/exceptionHandler.twig" %}
@@ -80,7 +82,7 @@
 
     </div>
     {#<script src="{{ includeUrl() }}/_js/vendor.js?version={{ currentVersion() }}"></script>#}
-    <script src="{{ includeUrl() }}/_js/index.js?version={{ currentVersion() }}&ts={{ getNow()|date("U") }}"></script>
+    <script src="{{ includeUrl() }}/_js/index.js?version={{ currentVersion() }}"></script>
     {#<script src="{{ includeUrl() }}/_js/index.js?2"></script>#}
     {% block javascript %}
     {%- endblock %}

@@ -29,7 +29,6 @@
                     <th>Uhrzeit</th>
                     <th>Nr.</th>
                     <th>Name</th>
-                    <th>Absage&shy;code</th>
                     <th>Telefon</th>
                     <th>Email</th>
                     <th>Dienstleistung</th>
@@ -43,7 +42,6 @@
                         <td>{{ item.queue.arrivalTime|date('H:i') }}</td>
                         <td>{{ item.queue.number }}</td>
                         <td>{{ item.clients.0.familyName }}</td>
-                        <td>{{ item.authKey }}</td>
                         <td>{{ item.clients.0.telephone }}</td>
                         <td>{{ item.clients.0.email }}</td>
                         <td class="wrap">{{ item.requests.0.name }}</td>
