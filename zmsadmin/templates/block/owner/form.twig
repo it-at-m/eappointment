@@ -57,7 +57,7 @@
                     <div class="controls">
                         {% if action != "add" %}
                         {{ custombutton({ "type":"delete","class": "button button--destructive" ,"target": urlGet("ownerDelete", {"id": owner.id}, {}), "label":"Löschen" }) }}
-                        {{ custombutton({ "type":"new","class": "button" ,"target": urlGet("ownerAddOrganisation", {'id': owner.id}, {}), "label":"Bezirk hinzufügen" }) }}
+                        {{ custombutton({ "type":"new","class": "button" ,"target": urlGet("ownerAddOrganisation", {'id': owner.id}, {}), "label":"Referat hinzufügen" }) }}
                         {% endif %}
                         {{ formbutton({ "type":"save", "class": "button button--positive", "name": "save", "label":"Speichern", "value": "save" }) }}
 

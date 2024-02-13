@@ -1,10 +1,11 @@
 //@import "bo-layout-admin-scss/zms-styles.scss"; // <- ToDo: do this work again
 
 // Settings & Mixins
-@import "bo-layout-admin-scss/default-settings";
-@import "bo-layout-admin-scss/zms-settings";
+@import "muenchen.scss";
+@import "bo-layout-admin-scss/default-settings"; 
+@import "bo-layout-admin-scss/zms-settings"; 
 @import "bo-layout-admin-scss/mixins";
-
+ 
 // Template 
 //@import "bo-layout-admin-scss/template/**/*.scss";
 @import 'bo-layout-admin-scss/template/aural.scss';
@@ -86,6 +87,3 @@ $fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
 
 // Inserting CSS styles for accessibility
 @import 'bo-layout-admin-scss/themes/zms/accessibility.scss';
-
-
-@import "../custom_scss/admin.scss";

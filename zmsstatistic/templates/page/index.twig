@@ -2,10 +2,6 @@
 {% from 'element/helper/snippets.twig' import headline1 %}
 {% block title %}Anmeldung{% endblock %}
 
-{% block headline %}
-    {{ headline1("Anmeldung") }}
-{% endblock %}
-
 {% block pageheader_middle %}
     {% if workstation %}
         {{ parent() }}
@@ -25,17 +21,11 @@
     <div class="grid grid--stretch">
          {% if workstation %}
         <div class="grid__item one-half">
-            {% include "block/index/welcome.twig" %}
-        </div>
-        <div class="grid__item one-half">
             {% include "block/index/logout.twig" %}
         </div>
         {% else %}
         <div class="grid__item one-half">
             {% include "block/index/welcome.twig" %}
-        </div>
-        <div class="grid__item one-half">
-            {% include "block/index/loginform.twig" %}
         </div>
         {% endif %}
     </div>
