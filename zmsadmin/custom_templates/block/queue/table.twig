@@ -197,9 +197,11 @@
                                     {{ item.createTimestamp|date("d.m.Y, H:i") }}&nbsp;Uhr
                                 </p>
                             </td>
+                            {% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}                   
                             <td>
                                 {{ item.customTextfield|decodeEntities|raw }}
-                            </td>                            
+                            </td>   
+                            {% endif %}                              
                             <td>
                                 {% if item.queue.withAppointment %}
                                     Termin
