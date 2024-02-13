@@ -1,6 +1,6 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'versioninfo'} %}
 
-        {% block board_title %}
+     {#   {% block board_title %}
             Aktuelle Informationen
         {% endblock %}
 
@@ -9,6 +9,6 @@
             {% include "block/changelog/changelogitem.twig" with {'shortchangelog': 1} %}
         	<a href="{{ urlGet('changelog', {}, {}) }}" target="_self">Mehr anzeigen</a>
         {% endblock %}
-
+     #}
 
 {% endembed %}

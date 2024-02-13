@@ -197,17 +197,20 @@
                                     {{ item.createTimestamp|date("d.m.Y, H:i") }}&nbsp;Uhr
                                 </p>
                             </td>
+                            {% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}                   
                             <td>
                                 {{ item.customTextfield|decodeEntities|raw }}
-                            </td>                            
-                            <td>
+                            </td>   
+                            {% endif %}                              
+                            <td class="nowrap">
                                 {% if item.queue.withAppointment %}
                                     Termin
                                 {% else %}
                                     Spontankunde
                                 {% endif %}
                                 {% if 1 < item.appointments|first.slotCount %}
-                                    ({{ item.appointments|first.slotCount }})
+                                    {% set duration = item.appointments|first.availability.slotTimeInMinutes * item.appointments|first.slotCount %}
+                                    ({{ duration }} min)
                                 {% endif %}
                                 {% if (item.queue.waitingTimeEstimate != item.queue.waitingTimeOptimistic) and isToday %}
                                     <p class="queue-table-amendment-time">+{{ item.queue.waitingTimeOptimistic }}&#8209;{{ item.queue.waitingTimeEstimate }}&nbsp;Min.</p>
@@ -239,7 +242,9 @@
                             <th>Telefon</th>
                             <th>Art</th>
                             <th>Anmerkung</th>
-                            <th>Freitextfeld: {{workstation.scope.preferences.client.customTextfieldLabel}}</th>
+                            {% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
+                                <th>{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
+                            {% endif %}>
                             <th>Aktion</th>
                         </tr>
                     </thead>
@@ -276,7 +281,11 @@
                                 {% endif %}
                             </td>
                             <td>Dieser Kunde ist nicht erschienen</td>
-                            <td>{{ item.customTextfield|decodeEntities|raw }}</td>
+                            {% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}                   
+                            <td>
+                                {{ item.customTextfield|decodeEntities|raw }}
+                            </td>   
+                            {% endif %}
                             <td>
                                 <a href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a>
                             </td>
