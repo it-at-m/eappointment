@@ -1,0 +1,49 @@
+.wartenummern {
+    height: 	758px;
+    //left: 		0;
+    //position: 	absolute;
+    //top: 		0;
+    width: 		1014px;
+}
+
+.hiddencursor, button, input, select {
+    cursor: url(img/invisible_Mauszeiger.cur),crosshair !important;
+}
+
+.wartenummern .werbeblock_oben {
+    position: 	absolute;
+    top: 		150px;
+}
+
+.wartenummern .werbeblock_mehrfachkiosk_oben {
+    position: 	absolute;
+    top: 		130px;
+    left: 		95px;
+    width: 		800px;
+}
+
+.wartenummern .nummernanzeige {
+    color: 			#004376;
+    font-size: 		112px;
+    font-family: 	Arial, sans-serif;
+    font-weight: 	bold;
+    line-height: 	149px;
+    text-align: 	center;
+}
+
+.wartenummern div.smsoptionbutton {
+	display:table;
+	margin-top:10px;
+}
+
+.wartenummern div.smsoptionbutton form {
+	display: table-cell;
+	margin-top:0px;
+}
+
+.wartenummern .content {
+    font-size: 		28px;
+    font-family: 	Arial, sans-serif;
+    font-weight: 	bold;
+    line-height: 	36px;
+}

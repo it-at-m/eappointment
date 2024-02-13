@@ -30,7 +30,7 @@ class WorkstationProcessPreCallTest extends Base
             ]
         );
         $response = $this->render($this->arguments, ['exclude' => '999999'], []);
-        $this->assertStringContainsString('Für ihn ist die folgende Notiz hinterlegt', (string)$response->getBody());
+        $this->assertStringContainsString('Möchten Sie den Kunden aufrufen?', (string)$response->getBody());
         $this->assertStringContainsString('data-exclude="999999,82252"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }

@@ -1,0 +1,163 @@
+.aufrufanzeige
+{
+    background:transparent;
+    height:758px;
+    left:0;
+    position:absolute;
+    top:0;
+    width:100%;
+}
+
+.hiddencursor, button, input, select {
+    cursor: url(img/invisible_Mauszeiger.cur),crosshair !important;
+}
+
+/* ----------------------------------------------
+    Adresse
+---------------------------------------------- */
+#main-header .adressangabe
+{
+    color: $white;
+    font-size:2.2em;
+    font-family: $base-font-family;
+    font-weight:bold;
+    left:38px;
+    position: absolute;
+    top:14px;
+}
+#main-header .adressangabe .adressangabe_adresse
+{
+    display:none;
+}
+
+/* ----------------------------------------------
+    Wartende & Wartezeit
+---------------------------------------------- */
+
+.waitingColumn {
+    position: absolute;
+    left: 40px; 
+    top: 420px; 
+}
+.aufrufanzeige .wartende_aktuell
+{
+    font-size:2.4em;
+    font-family: Roboto Condensed, Arial, sans-serif;
+    font-weight:bold;
+    text-align:center;
+    width:275px;
+}
+.aufrufanzeige .wartende_text {
+	background:$white;
+	padding:5px 0px;
+}
+.aufrufanzeige .wartende_aktuell #wartende
+{
+    font-size:52px;
+    font-family: Roboto Condensed, Arial, sans-serif;
+    font-weight:bold;
+    margin-top:3px;
+    background:$white;
+}
+
+.aufrufanzeige .wartezeit_aktuell
+{
+    font-size:2.4em;
+    font-family: Roboto Condensed, Arial, sans-serif;
+    font-weight:bold;
+    text-align:center;
+    width:275px;
+}
+.aufrufanzeige .wartezeit_text {
+    margin-top:3px;
+	background:$backgroundLight;
+	padding:5px 0px;
+}
+.aufrufanzeige .wartezeit_aktuell #wartezeit
+{
+    font-size:35px;
+    font-family: Roboto Condensed, Arial, sans-serif;
+    font-weight:bold;
+    margin-top:3px;
+    background:$backgroundLight;
+}
+
+/* ----------------------------------------------
+    Uhr und Datum
+---------------------------------------------- */
+.aufrufanzeige .uhr
+{
+    position: absolute;
+    left:60px;
+    top:114px;
+    width:275px;
+  }
+.aufrufanzeige .uhr #clock_medium,
+.aufrufanzeige .uhr #clock_big {
+    display:none;
+}
+
+.aufrufanzeige .aufrufanzeige_Datum
+{
+    font-size:24px;
+    font-family: Roboto Condensed, Arial, sans-serif;
+    font-weight:bold;
+    position:absolute;
+    text-align:center;
+    font-size:24px;
+    left:40px;
+    top:370px;
+    width:275px;
+}
+
+
+/* ----------------------------------------------
+    Text & Logo
+---------------------------------------------- */
+.aufrufanzeige .aufrufanzeige_text
+{
+    font-size:2em;
+    font-family: Roboto Condensed, Arial, sans-serif;
+    font-weight:normal;
+    line-height:26px;
+    padding: 18px 0 0 6px;
+    position: absolute;
+    text-align:center;
+    left: 1087px;
+    top:89px;
+    width: 234px;
+}
+
+.aufrufanzeige .infotext-content {
+    margin-left: 30px;
+}
+
+.aufrufanzeige .infotext
+{
+    top: 77px;
+    left: 0;
+    position: fixed;
+    padding: 10px 40px;
+    font-size:2em;
+    font-weight:normal;
+    line-height:26px;
+    width: 100%;
+    background: #F2F6FA;
+}
+
+#display_number {
+    position: fixed;
+    bottom: 20px;
+    right: 54px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+#infoicon {
+    background: url(img/info-icon.svg) top left no-repeat;
+    width: 21px;
+    height: 21px;
+    font-size: 36px;
+    position: absolute;
+    background-size: cover;
+}

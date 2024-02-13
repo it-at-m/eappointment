@@ -1,0 +1,27 @@
+{% extends "layout/main.twig" %}
+{% block title %}Sie sind nicht eingeloggt{% endblock %}
+
+{% block headline %}
+    {{ snippets.headline1("Sie sind nicht eingeloggt.") }}
+{% endblock %}
+{% block content %}
+
+    <div class="textile">
+                <p>
+                Die angeforderte Seite ist nur mit einem verifizierten Nutzerkonto zu erreichen. Bitte loggen Sie sich unter der folgenden URL ein:
+                </p>
+
+                <a class="button" href="{{ urlGet('index', {}, {}) }}">Zum Login</a>
+
+                <h3>Mögliche Gründe</h3>
+                <p>
+                Sollten diese Seite trotz eines korrekten Logins erscheinen, kann einer der folgenden Gründe zutreffen:
+                </p>
+                <ul>
+                    <li>Ihre Sitzung ist eventuell ausgelaufen: Nach einiger Zeit wird eine Sitzung beendet. Das kann vor allem nach einer längeren Inaktivität vorkommen.</li>
+                    <li>Ihr Nutzerkonto könnte gelöscht worden sein. In dem Fall sollte eine erneute Anmeldung keinen Erfolg haben.</li>
+                    <li>Das von ihnen verwendete Nutzerkonto könnte gleichzeitig von jemand anderem mit verwendet werden. In diesem Fall sind Sie abgemeldet falls ein anderer sich erfolgreich angemeldet hat. Das kann auch bei der Verwendung von zwei Browsern vorkommen.</li>
+                </ul>
+            </div>
+
+{% endblock %}

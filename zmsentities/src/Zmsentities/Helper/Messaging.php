@@ -88,7 +88,26 @@ class Messaging
     protected static function twigView(): Environment
     {
         $templatePath = TemplateFinder::getTemplatePath();
-        $loader = new FilesystemLoader($templatePath);
+        $customTemplatesPath = 'custom_templates/';
+
+        if (getenv("ZMS_CUSTOM_TEMPLATES_PATH")) {
+            $customTemplatesPath = getenv("ZMS_CUSTOM_TEMPLATES_PATH");
+        }
+
+        $initialTemplatePaths = [];
+
+        if (is_dir($customTemplatesPath)) {
+            $initialTemplatePaths[] = $customTemplatesPath;
+        }
+
+        $initialTemplatePaths[] = $templatePath;
+
+        $loader = new FilesystemLoader($initialTemplatePaths);
+        
+        if (is_dir($customTemplatesPath)) {
+            $loader->addPath($customTemplatesPath, 'zmsentities');
+        }
+
         $loader->addPath($templatePath, 'zmsentities');
         $twig = new Environment($loader, array(
             //'cache' => '/cache/',
