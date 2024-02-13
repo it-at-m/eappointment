@@ -1,0 +1,61 @@
+{% extends "layout/main.twig" %}
+
+{% use "block/content/numberpad.twig" %}
+
+{% from 'element/helper/form.twig' import formbutton, custombutton, hiddenfield, inputfield %}
+
+{% block pageid %}notification{% endblock %}
+{% block content %}
+<div class="boxontop">
+	<div class="noprint">
+		<div class="smsbox" id="notificationPad">
+    		<div class="smshinweis">
+                Bitte geben Sie hier<br/> Ihre Handynummer ein:
+            </div>
+            {% if scope.preferences.ticketprinter.confirmationEnabled %}
+            	<div class="sms_bestaetigung">
+            		Zur Bestätigung des Eintrags erhalten Sie eine SMS mit Ihrer Wartenummer.
+            	</div>
+            {% endif %}
+
+            <form action="{{ urlGet('NotificationAssign', {}, {}) }}" method="post" class="smseintragen" id="postNotification">
+                <div class="label">
+                    Handynummer:
+                </div>
+                <div class="eingabe">
+                	{{ inputfield({ "name": "telephone", "id": "numberInput", "class": "nummerneingabe", "value": "" }) }}
+                </div>
+        	    {% if process.id %}
+        	    {{ hiddenfield({ "name": "processId", "value": process.id }) }}
+        	    {{ hiddenfield({ "name": "authKey", "value": process.authKey }) }}
+        	    {% endif %}
+
+        	    {{ block("numberpad") }}
+
+                <div class="anleitung">
+                    Mit der Taste "&lt;" können Sie die letzte Ziffer löschen, mit der "C"-Taste löschen Sie Ihre komplette Eingabe.
+                </div>
+                <div class="disclaimer">
+                    Ihre Handynummer wird nur zu diesem Zweck gespeichert und anschließend gelöscht.
+                </div>
+            </form>
+
+						{% if hasProcess %}
+							{% set message = "process_notification_amendment_canceled" %}
+						{% else %}
+							{% set message = "notification_amendment_canceled" %}
+						{% endif %}
+            <form action="{{ urlGet('Message', {'status': message}, {}) }}" method="post" class="smseintragen" id="postCancel">
+            	{{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
+            </form>
+            <div class="smsbuttons">
+                {% set label = "Handynummer übermitteln" %}
+                {{ formbutton({ "type":"submit", "disabled": "1", "name": "Telefonnachtragen", "formTarget":"postNotification", "id":"Telefonnachtragen", "class": "button nachtrag disabled", "label":label|trans, "value": label|trans }) }}
+
+                {% set label = "Abbrechen" %}
+                {{ formbutton({ "type":"submit", "name": "Telefonnachtragen", "formTarget":"postCancel", "id":"Telefonnachtragen", "class": "button abbrechen", "label":label|trans, "value": label|trans }) }}
+    		</div>
+    	</div>
+	</div>
+</div>
+{% endblock %}

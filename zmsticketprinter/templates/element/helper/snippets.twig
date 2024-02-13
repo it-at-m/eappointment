@@ -1,0 +1,79 @@
+{% macro collapsiblegroup(step, title, value, route, appendend, args) %}
+<div class="collapsible-group {% if appendend %}toggle{% else %}closed{% endif %}">
+    {{ _self.collapsibleheading(step, title, value, route) }}
+    {% if appendend %}
+        {{ _self.collapsiblebody(appendend, args) }}
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro collapsiblebody(appendend, args) %}
+<div class="collapsible-body">
+    {% include "block/appendends/" ~ appendend ~ ".twig" %}
+</div>
+{% endmacro %}
+
+{% macro collapsibleheading(step, title, value, route) %}
+<div class="collapsible-heading row-fluid">
+    <div class="collapsible-toggle">
+        <div class="table-cell collapsible-counter span1">{{ step }}</div>
+        <div class="table-cell collapsible-title {% if not value %}span11{% else %}span3{% endif %}">{{ title|trans }}</div>
+        <div class="table-cell collapsible-description span7">
+        	{{ value }}
+        </div>
+        {% if route %}
+        <div class="table-cell collapsible-options span1">
+        	<a href="{{ route }}" class="edit icon-pencil" title="Standort Bearbeiten">{% trans %}Bearbeiten{% endtrans %}</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}
+
+{% macro providerlist(items, single) %}
+	<ul class="list-bullet">
+	{% if single %}
+		<li>{{ _self.providercontact(items) }}</li>
+	{% else %}
+        {% for key, item in items %}
+        	<li>{{ _self.providercontact(item) }}</li>
+        {% endfor %}
+    {% endif %}
+</ul>
+{% endmacro %}
+
+{% macro providercontact(provider, part) %}
+    {% set address = provider.contact.street ~" "~ provider.contact.streetNumber ~", "~ provider.contact.postalCode ~" "~ provider.contact.city %}
+	{% if part == "address"  %}
+		{{ address }}
+	{% else %}
+        {{ provider.name }} - {{ address }}
+        <br />
+    	<strong>{% trans %}Zahlungshinweis{% endtrans %}:</strong><br />
+    	{{ provider.data.payment }}
+   	{% endif %}
+{% endmacro %}
+
+{% macro namelist(list) %}
+<ul class="list-bullet">
+    {% for item in list %}
+    <li>{{ item.name }}</li>
+    {% endfor %}
+</ul>
+{% endmacro %}
+
+{% macro headline1(title) %}
+<div class="html5-header header">
+    <h1 class="title">{{ title|trans }}</h1>
+</div>
+{% endmacro %}
+
+{% macro headline2(title) %}
+<div class="html5-header header">
+    <h2 class="title">{{ title|trans }}</h2>
+</div>
+{% endmacro %}
+
+{% macro getValue(value) %}
+	{{ value }}
+{% endmacro %}
