@@ -4,11 +4,16 @@
 
     {% block board_body %}
         {% if processNotFoundInQueue %}
-        <section class="dialog message message--error" role="alert">
-		<h2 class="message__heading">Es ist ein Fehler aufgetreten</h2>
-		<div class="message__body">
-             Fehler: Entweder ist kein Termin/Spontankunde in der Warteschlange oder die Terminzeit liegt noch in der Zukunft.           
-        </div>
+        <!-- The section tag now has relative positioning -->
+        <section style="position: relative; border-color:#cccccc;" class="dialog message" role="alert">
+            <!-- Icon in a green square box, adjusting its positioning -->
+            <div style="position: absolute; top: -15px; left: 7px; background-color: #fcaa67; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center;">
+                <i class="fas fa-exclamation-circle" title="Wichtiger Hinweis" aria-hidden="true" style="color: white;"></i>
+            </div>
+            <h2 class="message__heading">Aktuell gibt es keine wartenden Kunden</h2>
+            <div class="message__body">
+                Vielen Dank für die fleißigen Aufrufe.           
+            </div>
         </section>
         {% endif %}
         <div class="button-callnextclient">

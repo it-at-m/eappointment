@@ -202,10 +202,6 @@
                                 {{ item.customTextfield|decodeEntities|raw }}
                             </td>   
                             {% endif %}                              
-                            <td>
-                            <td>
-                                {{ item.customTextfield|decodeEntities|raw }}
-                            </td>                            
                             <td class="nowrap">
                                 {% if item.queue.withAppointment %}
                                     Termin
@@ -290,7 +286,7 @@
                             <td>
                                 {{ item.customTextfield|decodeEntities|raw }}
                             </td>   
-                            {% endif %} 
+                            {% endif %}
                             <td>
                                 <a href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a>
                             </td>
