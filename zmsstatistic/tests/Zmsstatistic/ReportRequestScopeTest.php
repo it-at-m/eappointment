@@ -206,7 +206,7 @@ class ReportRequestScopeTest extends Base
 
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
         $this->assertStringContainsString(
-            '"Personalausweis beantragen";"";"14";"14";',
+            '"Personalausweis beantragen";"0";"14";"14";',
             (string) $response->getBody()
         );
     }
@@ -265,7 +265,7 @@ class ReportRequestScopeTest extends Base
             (string) $response->getBody()
         );
         $this->assertStringContainsString(
-            '"Personalausweis beantragen";"";"14";"0";"0";"0";"14";"0";"0";"0";"0";"0";"0";"0";"0"',
+            '"Personalausweis beantragen";"0";"14";"0";"0";"0";"14";"0";"0";"0";"0";"0";"0";"0";"0"',
             (string) $response->getBody()
         );
     }
