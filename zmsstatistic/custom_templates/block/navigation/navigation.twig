@@ -16,6 +16,9 @@
             {% endif %}
             {% if workstation.scope.id %}
                 <li class="nav__link">
+                    <h3 class="nav__heading">
+                        <span class="heading__label">Auswertungen</span>
+                    </h3>
                     <ul class="nav__list">
                         <li class="nav__link{{ menuActive == 'client'? ' active' }}">
                             <a title="{% trans %}Ausgabe der Kundenstatistik (wieviele Kunden mit wievielen Dienstleistungen in welchem Zeitraum), inkl. SMS-Auswertung{% endtrans %}" href="{{ urlGet('ReportClientIndex', {}, {}) }}">Kundenstatistik</a>
@@ -67,6 +70,9 @@
         <li class="nav__block">
             <h3 class="nav__heading">
                 <span class="heading__label">Weiterführende Links</span>
+    {% else %}
+        <li class="nav__block">
+            <h3 class="nav__heading">
                 <span class="heading__button js-nav-heading" role="button" aria-expanded="false">Weiterführende Links</span>
             </h3>
              <ul class="nav__list">
