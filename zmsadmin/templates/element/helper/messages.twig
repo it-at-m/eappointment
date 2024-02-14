@@ -123,19 +123,19 @@
 
     	{% block organisation_deleted %}
     	{{ block('success_start') }}
-        	Der Bezirk wurde {{ timeString }} erfolgreich entfernt.
+        	Das Referat wurde {{ timeString }} erfolgreich entfernt.
         {{ block('success_end') }}
     	{% endblock %}
 
     	{% block organisation_created %}
     	{{ block('success_start') }}
-        	Der Bezirk wurde {{ timeString }} erfolgreich angelegt.
+        	Das Referat wurde {{ timeString }} erfolgreich angelegt.
         {{ block('success_end') }}
     	{% endblock %}
 
     	{% block organisation_saved %}
     	{{ block('success_start') }}
-        	Der Bezirk wurde {{ timeString }} erfolgreich aktualisiert.
+        	Das Referat wurde {{ timeString }} erfolgreich aktualisiert.
         {{ block('success_end') }}
     	{% endblock %}
 
@@ -249,9 +249,9 @@
     	{% endblock %}
 
 		{% block process_changed %}
-			{% set successTitle = "Vorgang wurde geändert" %}
+			{% set successTitle = "Vorgang wurde geändert." %}
 			{{ block('success_start') }}
-				Die Terminzeit des Vorgangs mit der Nummer {{ selectedprocess.queue.number }} wurden erfolgreich geändert.
+				Die Terminzeit des Vorgangs mit der Nummer {{ selectedprocess.queue.number }} wurde erfolgreich geändert.
 				<div class="form-actions">
                     <button type="button" data-action-ok class="button button-ok btn right">OK</button>
                 </div>
@@ -309,9 +309,6 @@
 			{{ block('success_start') }}
 					<p>
 						Der Vorgang mit der Nummer {{ changedProcess.queue.number }}{% if changedProcess.clients|first.familyName  %} (Name: {{ changedProcess.clients|first.familyName|raw }}){% endif %} wurde erfolgreich zum Aufruf zurückgesetzt.
-						<div class="form-actions">
-							<a data-action-ok class="button button--default button-ok" href="#">OK</a>
-						</div>
 					</p>
 			{{ block('success_end') }}
 		{% endblock %}
@@ -349,12 +346,12 @@
 
 {% block success_start %}
 	<section class="dialog message message--success" role="alert">
-		<h2 class="message__heading title"><i aria-hidden="true" title="{{ successTitle|default("Erfolgreiche Anfrage")|trans }}" class="fas fa-check-circle"></i> {{ successTitle|default("Erfolgreiche Anfrage")|trans }}</h2>
+		<h2 class="message__heading title">{{ successTitle|default("Erfolgreiche Anfrage")|trans }}</h2>
 		<div class="message__body">
 {% endblock %}
 {% block success_start_keep %}
 	<section class="dialog message message--success message-keep" role="alert">
-		<h2 class="message__heading title"><i aria-hidden="true" title="{{ successTitle|default("Erfolgreiche Anfrage")|trans }}" class="fas fa-check-circle"></i> {{ successTitle|default("Erfolgreiche Anfrage")|trans }}</h2>
+		<h2 class="message__heading title">{{ successTitle|default("Erfolgreiche Anfrage")|trans }}</h2>
 		<div class="message__body">
 {% endblock %}
 {% block success_end %}</div></section>{% endblock %}
@@ -362,7 +359,6 @@
 
 {% block notice_start %}
 	<div class="dialog message message--info" role="alert">
-		<h2 class="message__heading title"><i aria-hidden="true" title="{{ ("Information")|trans }}" class="fas fa-info-circle"></i> {{ ("Information")|trans }}</h2>
 		<div class="message__body">
 {% endblock %}
 

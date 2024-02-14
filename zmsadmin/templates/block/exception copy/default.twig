@@ -1,0 +1,94 @@
+{% extends "layout/main.twig" %}
+ {% block headline %}
+        <h1>{% trans %}Es ist ein Fehler aufgetreten.{% endtrans %}</h1>
+    {% endblock %}
+{% block content %}
+    {% set exceptionData = {'exception': 'default'} %}
+
+    {#% set debug = true %#}
+    {% embed "block/scaffholding/board.twig" with {'class': 'exception', 'data': exceptionData} %}
+        {% block board_title %}{% endblock %}
+        {% block board_body %}
+            <h3>
+                {{ title|trans }}
+            </h3>
+            <p>
+                Es ist ein Fehler aufgetreten und die gewünschte Seite kann
+                nicht angezeigt werden. 
+                </p>
+                <h3>
+                    Beschreibung des Fehlers
+                </h3>
+                <p>
+                Bei Anfragen zum Fehler schicken Sie bitte die folgenden
+                Informationen mit. Dies hilft uns, den Fehler zuzuordnen und
+                schnell zu beheben.
+            </p>
+            <div class="table-responsive">
+                <ul class="list--table clean">
+                    <li>
+                        <div class="cell th">Projekt:</div>
+                        <div class="cell wordbreak">ZMS Admin</div>
+                    </li>
+                    <li>
+                        <div class="cell th">Fehlerklasse:</div>
+                        <div class="cell wordbreak">{{exceptionclass}} ({{basefile}}+{{line}})</div>
+                    </li>
+                    {% if debug %}
+                    <li>
+                        <div class="cell th">Fehlerbeschreibung:</div>
+                        <div class="cell wordbreak">{{ failed }}</div>
+                    </li>
+                    {% endif %}
+                    <li>
+                        <div class="cell th">Aufruf:</div>
+                        <div class="cell wordbreak">{{requestmethod}}&nbsp;{{requesturi}}</div>
+                    </li>
+                     {% if apirequesturi and debug %}
+                    <li>
+                        <div class="cell th">Aufruf API:</div>
+                        <div class="cell wordbreak">{{apirequestmethod}}&nbsp;{{apirequesturi}}</div>
+                    </li>
+                    {% endif %}
+                    <li>
+                        <div class="cell th">Übertragene Daten:</div>
+                        <div class="cell wordbreak"><pre>{{requestdata}}</pre></div>
+                    </li>
+                    {% if apirequesturi and debug %}
+                    <li>
+                        <div class="cell th">Übertragene Daten API:</div>
+                        <div class="cell wordbreak"><pre>{{apirequestdata}}</pre></div>
+                    </li>
+                    {% endif %}
+                    <li>
+                        <div class="cell th">Serverzeit:</div>
+                        <div class="cell wordbreak">{{servertime}}</div>
+                    </li>
+                    <li>
+                        <div class="cell th">Trace:</div>
+                        <div class="cell wordbreak">
+                            see logs for ID #{{uniqueid}}
+                            {% if debug %}
+                            <pre style=" width: 100%; background:#000; font-size: 1rem; color: #fff; border:1px solid #ccc; padding:0.5em; overflow:auto;">
+                            - {{file|nl2br}} ({{line|nl2br}})
+                            {{trace|nl2br}}
+                            
+                            </pre>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% if debug %}
+                    <li>
+                        <div class="cell th">Curl:</div>
+                        <div class="cell wordbreak"><pre>curl -X "{{request.method}}" -d "{{requestdata|replace({"\n": "", "    ": ""})}}" "{{requesturi}}"</pre></div>
+                    </li>
+                    <li>
+                        <div class="cell th">Response:</div>
+                        <div class="cell wordbreak"><iframe style="width:100%; height: 600px" src="data:text/html,{{responsedata|url_encode}}"></iframe></div>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endblock %}
+    {% endembed %}
+{% endblock %}

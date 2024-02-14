@@ -23,7 +23,7 @@ class Application extends \BO\Slim\Application
 
     const DEBUG = false;
 
-    const TWIG_CACHE = '/cache/';
+    const TWIG_CACHE = false;
 
     const SESSION_DURATION = ZMS_STATISTIC_SESSION_DURATION;
 

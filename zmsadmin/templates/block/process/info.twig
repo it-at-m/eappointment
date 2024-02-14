@@ -3,7 +3,6 @@
         {% block board_title %}
             Kundeninformationen
         {% endblock %}
-
         {% block board_body %}
             {% if error != "has_called_pickup" %}
             <dl>
@@ -45,7 +44,7 @@
                 {% endif %}
                 {% if workstation.process.customTextfield %}
                 <dt>
-                    Freitextfeld: {{workstation.scope.preferences.client.customTextfieldLabel}}
+                    {{workstation.scope.preferences.client.customTextfieldLabel}}
                 </dt>
                 <dd>
                     {{ workstation.process.customTextfield }}
@@ -63,13 +62,13 @@
                     {% endif %}
                 </dd>
             </dl>
-                <a class="button button--positive button--fullwidth button-finish right" href="{{ urlGet("workstationProcessFinished", {}, {}) }}" style="margin: 0.5em 0;">Fertig stellen</a>
+            <a class="button button--positive button--fullwidth button-finish right" href="{{ urlGet("workstationProcessFinished", {}, {}) }}" style="margin: 0.5em 0;">Fertig stellen</a>
 
-                {% if workstation.process.withAppointment %}
-                    <a class="button button--default button--fullwidth button-finish right" href="{{ urlGet("workstationProcessRedirect", {}, {}) }}" style="margin: 0.5em 0;">Weiterleiten</a>
-                {% endif %}
+            {% if workstation.process.withAppointment %}
+                <a class="button button--default button--fullwidth button-finish right" href="{{ urlGet("workstationProcessRedirect", {}, {}) }}" style="margin: 0.5em 0;">Weiterleiten</a>
+            {% endif %}
 
-                <button type="button" class="button button--destructive button--fullwidth button-cancel left" style="margin: 0.5em 0;">Abbruch</button>
+            <button type="button" class="button button--destructive button--fullwidth button-cancel left" style="margin: 0.5em 0;">Abbruch</button>
             {% endif %}  
               
         {% endblock %}
@@ -77,6 +76,5 @@
         {% block board_footer %}
         {% include "block/process/footer.twig" %}
         {% endblock %}
-
 
 {% endembed %}
