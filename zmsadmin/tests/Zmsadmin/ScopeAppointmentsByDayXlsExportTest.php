@@ -30,7 +30,7 @@ class ScopeAppointmentsByDayXlsExportTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
                     'parameters' => [
-                        'resolveReferences' => 1,
+                        'resolveReferences' => 2,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
@@ -62,7 +62,7 @@ class ScopeAppointmentsByDayXlsExportTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
                     'parameters' => [
-                        'resolveReferences' => 1,
+                        'resolveReferences' => 2,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processList_with_csvInjection.json")

@@ -301,6 +301,9 @@ EOS;
     appointments{
         date
         slotCount
+        availability{
+            slotTimeInMinutes
+        }
     }
     clients{
         familyName
