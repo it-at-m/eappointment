@@ -209,7 +209,6 @@
                                     Spontankunde
                                 {% endif %}
                                 {% if 1 < item.appointments|first.slotCount %}
-                                    ({{ item.appointments|first.slotCount }})
                                     {% set duration = item.appointments|first.availability.slotTimeInMinutes * item.appointments|first.slotCount %}
                                     ({{ duration }} min)
                                 {% endif %}
