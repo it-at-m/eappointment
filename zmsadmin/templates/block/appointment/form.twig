@@ -53,7 +53,7 @@
                                     {% set selected = "selected" %}
                                 {% else %}
                                     {% set selected = "" %}
-                                {% endif %}
+                                {% endif %}                                
                                 {% set duration = slotTimeInMinutes * slotCount %}
                                 {% set slotCountOptions = slotCountOptions|merge([{ "value": slotCount, "name": duration, "selected":selected}]) %}
                             {% endfor %}
@@ -258,22 +258,24 @@
                             }]
                         ) }}
 
-                        {{ formgroup(
-                            {
-                                "label": "Freitextfeld: " ~ scope.preferences.client.customTextfieldLabel,
-                                "required": selectedProcess.preferences.client.customTextfieldRequired|default(scope.preferences.client.customTextfieldRequired),
-                                "errors": formData.customTextfield.messages,
-                                "checked": scope.preferences.client.customTextfieldActivated,
-                            },
-                            [{
-                                "type": "input",
-                                "parameter": {
-                                    "name": "customTextfield",
-                                    "value": selectedProcess.customTextfield,
-                                    "accesskey":"a"
-                                }
-                            }]
-                        ) }}                       
+                        {% if scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
+                            {{ formgroup(
+                                {
+                                    "label": scope.preferences.client.customTextfieldLabel,
+                                    "required": selectedProcess.preferences.client.customTextfieldRequired|default(scope.preferences.client.customTextfieldRequired),
+                                    "errors": formData.customTextfield.messages,
+                                    "checked": scope.preferences.client.customTextfieldActivated,
+                                },
+                                [{
+                                    "type": "input",
+                                    "parameter": {
+                                        "name": "customTextfield",
+                                        "value": selectedProcess.customTextfield,
+                                        "accesskey":"a"
+                                    }
+                                }]
+                            ) }}
+                        {% endif %}                       
                     </div>
 
                     <div id="requests_checkboxlist" class="grid__item one-half">

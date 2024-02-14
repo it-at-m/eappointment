@@ -39,7 +39,6 @@
                                 <th colspan="2">{% trans %}Organisation{% endtrans %}</th>
                                 <th colspan="2">{% trans %}Behörde{% endtrans %}</th>
                                 <th colspan="2">{% trans %}Standort{% endtrans %}</th>
-                                <th>{% trans %}SMS{% endtrans %}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -62,18 +61,28 @@
                                 <td colspan="2">{{ organisation.name }}</td>
                                 <td colspan="2">{{ department.name }}</td>
                                 <td colspan="2">{{ workstation.scope.contact.name }}</td>
-                                <td colspan="2">0</td>
                             </tr>
                             {% endif %}
-                            <tr class="report-board--empty"><td colspan="7"></td></tr>
                         </tbody>
+                        </table>
+                        <table class="table--base">
                         <thead>
-                            <th colspan="2">{% trans %}Datum{% endtrans %}</th>
-                            <th>{% trans %}SMS{% endtrans %}</th>
-                            <th>{% trans %}SMS-Kosten{% endtrans %} *</th>
-                            <th>{% trans %}Kunden{% endtrans %} **</th>
-                            <th>{% trans %}davon mit Termin{% endtrans %} **</th>
-                            <th>{% trans %}Dienstleistungen{% endtrans %}</th>
+                            <tr>
+                                <th rowspan="2" colspan="2">{% trans %}Datum{% endtrans %}</th>
+                                <th colspan="2">{% trans %}Kunden{% endtrans %}</th>
+                                <th colspan="2">{% trans %}davon Terminkunden{% endtrans %}</th>
+                                <th colspan="2">{% trans %}davon Spontankunden{% endtrans %}</th>
+                                <th rowspan="2">{% trans %}Dienstleistungen{% endtrans %}</th>
+                            </tr>
+                            <tr>
+
+                                <th>{% trans %}Erschienen{% endtrans %}</th>
+                                <th>{% trans %}Nicht Erschienen{% endtrans %}</th>
+                                <th>{% trans %}Erschienen{% endtrans %}</th>
+                                <th>{% trans %}Nicht Erschienen{% endtrans %}</th>
+                                <th>{% trans %}Erschienen{% endtrans %}</th>
+                                <th>{% trans %}Nicht Erschienen{% endtrans %}</th>
+                            </tr>
                         </thead>
                         <tbody>
                             {% if exchangeClient.data %}
@@ -83,10 +92,12 @@
                                     {% set totaldate = "Kalenderjahr " ~ period %}
                                     {% endif %}
                                     <td class="report-board--summary" colspan="2">{{ totaldate }}</td>
-                                    <td class="report-board--summary">{{ exchangeClient.data|last.notificationscount }}</td>
-                                    <td class="report-board--summary">{{ exchangeClient.data|last.notificationscost|number_format(2, ',', '.') }} EUR</td>
-                                    <td class="colKunden report-board--summary">{{ exchangeClient.data|last.clientscount }} ({{ exchangeClient.data|last.missed }})</td>
-                                    <td class="colMitTermin report-board--summary">{{ exchangeClient.data|last.withappointment }} ({{ exchangeClient.data|last.missedwithappointment }})</td>
+                                    <td class="colKunden report-board--summary">{{ exchangeClient.data|last.clientscount }}</td>
+                                    <td class="colKundenNoShow report-board--summary">{{ exchangeClient.data|last.missed }}</td>
+                                    <td class="colMitTermin report-board--summary">{{ exchangeClient.data|last.withappointment }}</td>
+                                    <td class="colMitTerminNowShow report-board--summary">{{ exchangeClient.data|last.missedwithappointment }}</td>                                   
+                                    <td class="colMitKeinTermin report-board--summary">{{ exchangeClient.data|last.clientscount - exchangeClient.data|last.withappointment }}</td>
+                                    <td class="colMitKeinTerminNoShow report-board--summary">{{ exchangeClient.data|last.missed - exchangeClient.data|last.missedwithappointment }}</td>                                    
                                     <td class="colDienstleistungen report-board--summary">{{ exchangeClient.data|last.requestscount }}</td>
                                 </tr>
                                 {% for item in exchangeClient.data  %}
@@ -100,10 +111,12 @@
                                         <tr>
                                             <td class="colWochenTag statistik">{{ dateCol1 }}</td>
                                             <td class="colDatumTag statistik">{{ dateCol2 }}</td>
-                                            <td class="statistik">{{ item.notificationscount|default(0) }}</td>
-                                            <td class="statistik">{{ item.notificationscost|number_format(2, ',', '.') }} EUR</td>
-                                            <td class="colKunden statistik">{{ item.clientscount }} ({{ item.missed }})</td>
-                                            <td class="colMitTermin statistik">{{ item.withappointment }} ({{ item.missedwithappointment }})</td>
+                                            <td class="colKunden statistik">{{ item.clientscount }}</td>
+                                            <td class="colKundenNoShow statistik">{{ item.missed }}</td>
+                                            <td class="colMitTermin statistik">{{ item.withappointment }}</td>
+                                            <td class="colMitTerminNoShow statistik">{{ item.missedwithappointment }}</td>
+                                            <td class="colMitKeinTTermin statistik">{{ (item.clientscount - item.withappointment) }}</td>
+                                            <td class="colMitKeinTTerminNoShow statistik">{{ (item.missed - item.missedwithappointment) }}</td>
                                             <td class="colDienstleistungen statistik">{{ item.requestscount }}</td>
                                         </tr>
                                     {% endif %}
