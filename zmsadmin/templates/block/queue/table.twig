@@ -71,7 +71,6 @@
                         <th>Nr.</th>
                         <th>Name <small>(Aufrufe)</small></th>
                         <th>Telefon</th>
-                        <th>SMS</th>
                         <th>Mail</th>
                         <th>Dienstleistung</th>
                         <th>Anmerkung</th>
@@ -162,15 +161,6 @@
                                 {% endif %}
                             </td>
                             <td class="center nowrap">
-                                {# maybe also check for department.preferences.notifications.sendReminderEnabled #}
-                                {% if item.clients|first.telephone and department.preferences.notifications.enabled %}
-                                    <a href="#" data-process="{{ item.id }}" class="icon process-notification-send" title="SMS schicken"><i class="fas fa-mobile-alt" aria-hidden="true"></i> <span class="aural">SMS schicken</span></a>
-                                    {% if item.clients|first.notificationsSendCount %}<span class="counter">{{ item.clients|first.notificationsSendCount }}</span>{% endif %}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td class="center nowrap">
                                 {% if item.clients|first.email and workstation.scope.preferences.client.emailFrom %}
                                     <a data-process="{{ item.id }}" href="#" class="icon process-custom-mail-send" title="e-Mail versenden"><i class="fas fa-envelope" aria-hidden="true"></i> <span class="aural">Email</span></a>
                                     {% if item.clients|first.emailSendCount %}<span class="counter">{{ item.clients|first.emailSendCount }}</span>{% endif %}
@@ -202,14 +192,15 @@
                                 {{ item.customTextfield|decodeEntities|raw }}
                             </td>   
                             {% endif %}                              
-                            <td>
+                            <td class="nowrap">
                                 {% if item.queue.withAppointment %}
                                     Termin
                                 {% else %}
                                     Spontankunde
                                 {% endif %}
                                 {% if 1 < item.appointments|first.slotCount %}
-                                    ({{ item.appointments|first.slotCount }})
+                                    {% set duration = item.appointments|first.availability.slotTimeInMinutes * item.appointments|first.slotCount %}
+                                    ({{ duration }} min)
                                 {% endif %}
                                 {% if (item.queue.waitingTimeEstimate != item.queue.waitingTimeOptimistic) and isToday %}
                                     <p class="queue-table-amendment-time">+{{ item.queue.waitingTimeOptimistic }}&#8209;{{ item.queue.waitingTimeEstimate }}&nbsp;Min.</p>
@@ -241,7 +232,9 @@
                             <th>Telefon</th>
                             <th>Art</th>
                             <th>Anmerkung</th>
-                            <th>Freitextfeld: {{workstation.scope.preferences.client.customTextfieldLabel}}</th>
+                            {% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
+                                <th>{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
+                            {% endif %}>
                             <th>Aktion</th>
                         </tr>
                     </thead>
@@ -278,7 +271,11 @@
                                 {% endif %}
                             </td>
                             <td>Dieser Kunde ist nicht erschienen</td>
-                            <td>{{ item.customTextfield|decodeEntities|raw }}</td>
+                            {% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}                   
+                            <td>
+                                {{ item.customTextfield|decodeEntities|raw }}
+                            </td>   
+                            {% endif %}
                             <td>
                                 <a href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a>
                             </td>

@@ -71,7 +71,6 @@
                         <th>Nr.</th>
                         <th>Name <small>(Aufrufe)</small></th>
                         <th>Telefon</th>
-                        <th>SMS</th>
                         <th>Mail</th>
                         <th>Dienstleistung</th>
                         <th>Anmerkung</th>
@@ -159,15 +158,6 @@
                                     <a data-process="{{ item.id }}" class="process-custom-notification-send" href="#">{{ item.clients|first.telephone }}</a>
                                 {% else %}
                                     {{ item.clients|first.telephone }}
-                                {% endif %}
-                            </td>
-                            <td class="center nowrap">
-                                {# maybe also check for department.preferences.notifications.sendReminderEnabled #}
-                                {% if item.clients|first.telephone and department.preferences.notifications.enabled %}
-                                    <a href="#" data-process="{{ item.id }}" class="icon process-notification-send" title="SMS schicken"><i class="fas fa-mobile-alt" aria-hidden="true"></i> <span class="aural">SMS schicken</span></a>
-                                    {% if item.clients|first.notificationsSendCount %}<span class="counter">{{ item.clients|first.notificationsSendCount }}</span>{% endif %}
-                                {% else %}
-                                    -
                                 {% endif %}
                             </td>
                             <td class="center nowrap">
