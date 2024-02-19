@@ -40,7 +40,7 @@ class MessagingTest extends Base
 
         $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'reminder'));
         self::assertStringContainsString('wir erinnern Sie an Ihren Termin', $result);
-        self::assertStringContainsString('Mi. 18. November 2015 um 18:52 Uhr', $result);
+        self::assertStringContainsString('Mittwoch, 18. November 2015 um 18:52 Uhr', $result);
         self::assertStringContainsString('Terminnummer: 123456', $result);
         self::assertStringContainsString('Bitte gehen Sie rechtzeitig zur "Unter den Linden 1"', $result);
 
