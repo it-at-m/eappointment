@@ -395,7 +395,6 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readList($statement, $resolveReferences);
     }
 
-
     /**
      * Read conflictList by scopeId and DateTime
      *
@@ -565,6 +564,7 @@ class Process extends Base implements Interfaces\ResolveReferences
      */
     public function readProcessListByMailAddress(
         string $mailAddress,
+        int $scopeId = null,
         $resolveReferences = 0,
         $limit = 2000
     ) : Collection {
@@ -574,8 +574,12 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addEntityMapping()
             ->addConditionMail($mailAddress)
             ->addConditionIgnoreSlots()
-            ->addLimit($limit)
-            ;
+            ->addLimit($limit);
+
+        if ($scopeId) {
+            $query->addConditionScopeId($scopeId);
+        }
+
         $statement = $this->fetchStatement($query);
         return $this->readList($statement, $resolveReferences);
     }

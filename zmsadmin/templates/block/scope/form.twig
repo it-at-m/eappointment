@@ -357,7 +357,21 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+                        {{ formgroup(
+                            {
+                                "label": "Maximale Anzahl an Terminen pro E-Mail-Adresse:"
+                            },
+                            [{
+                                "type":"input",
+                                "parameter": {
+                                    "name": "preferences[client][appointmentsPerMail]",
+                                    "value": scope.preferences.client.appointmentsPerMail,
+                                    "maxlength": 2
+                                }
+                            }]
+                        ) }}
+
+                        {{ formgroup(
                         {
                             "legend": "Freitextfeld:",
                             "groupTag": "fieldset"
