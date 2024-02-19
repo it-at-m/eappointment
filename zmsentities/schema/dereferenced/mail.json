@@ -59,6 +59,7 @@
                     },
                     "client": {
                         "alternateAppointmentUrl": "",
+                        "appointmentsPerMail": "",
                         "amendmentActivated": "0",
                         "amendmentLabel": "",
                         "customTextfieldActivated": "0",

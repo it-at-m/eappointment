@@ -178,6 +178,7 @@ class MailTest extends Base
                             "amendmentActivated" => "0",
                             "amendmentLabel" => "",
                             "customTextfieldActivated" => "0",
+                            "appointmentsPerMail" => "",
                             "customTextfieldLabel" => "",
                             "emailRequired" => "1",
                             "telephoneActivated" => "1",
