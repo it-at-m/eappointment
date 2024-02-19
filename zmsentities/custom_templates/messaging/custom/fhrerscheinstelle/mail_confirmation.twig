@@ -13,7 +13,7 @@
         ({{ process.scope.hint }})<br />
         {% endif %}<br />
         #}
-        Datum:<strong> {{ (date|default(getNow))|format_date(pattern="EEEE, dd. MMMM y") }} </strong><br>
+        Datum:<strong> {{ (date|default(getNow))|format_date(locale="de", pattern="EEEE, dd. MMMM y") }} </strong><br>
         Uhrzeit: <strong>{{ (date|default(getNow))|date("H:i") }} {% trans %}Uhr{% endtrans %}</strong><br />
         <br>
         <b>Ihre Terminnummer und weitere Informationen erhalten Sie 24 Stunden vor Ihrem Termin.</b>
