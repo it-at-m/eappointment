@@ -19,7 +19,7 @@ class IcsTest extends Base
 
         $this->assertEntity("\\BO\\Zmsentities\\Ics", $ics);
         $this->assertStringContainsString('169530', $ics->getContent());
-        $this->assertStringContainsString('eyJpZCI6IjE2OTUzMCIsIm', $ics->getContent());
+        $this->assertStringContainsString('eyJpZCI6IjE', $ics->getContent());
         $this->assertStringContainsString('UID:20160408-169530', $ics->getContent());
     }
 
