@@ -27,7 +27,7 @@ foreach ($mailAddressList as $mailAddress) {
                     $query->updateEntity($process, new \DateTimeImmutable());
                 }
             }
-            $results = $query->readProcessListByMailAddress($mailAddress, 0, 500);
+            $results = $query->readProcessListByMailAddress($mailAddress, null, 0, 500);
         } while ($results->count() && $maxRuns--);
     }
 }
