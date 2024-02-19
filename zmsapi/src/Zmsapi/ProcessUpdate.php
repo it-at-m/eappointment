@@ -90,7 +90,7 @@ class ProcessUpdate extends BaseController
 
     protected function checkIfAppointmentIsAllowedWithSameMail($entity)
     {
-        if (empty($entity->getClients() || ! isset($entity->getClients()[0]))) {
+        if (empty($entity->getClients()) || ! isset($entity->getClients()[0])) {
             return;
         }
 
