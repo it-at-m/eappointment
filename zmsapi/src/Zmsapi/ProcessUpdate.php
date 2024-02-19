@@ -94,7 +94,9 @@ class ProcessUpdate extends BaseController
             return;
         }
 
+        var_dump($entity->getClients()->getFirst());
         $maxAppointmentsPerMail = $entity->scope->getAppointmentsPerMail();
+        var_dump($maxAppointmentsPerMail);
         $processes = (new Process())->readProcessListByMailAddress(
             $entity->getClients()->getFirst()->email,
             $entity->scope->id
@@ -105,6 +107,7 @@ class ProcessUpdate extends BaseController
             $process->getStatus() === 'confirmed' && $activeAppointments++;
         }
 
+        var_dump($activeAppointments);
         if ($maxAppointmentsPerMail > 0 && $activeAppointments > $maxAppointmentsPerMail) {
             throw new Exception\Process\MoreThanAllowedAppointmentsPerMail();
         }
