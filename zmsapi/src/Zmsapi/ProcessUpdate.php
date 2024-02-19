@@ -105,6 +105,8 @@ class ProcessUpdate extends BaseController
 
         var_dump(count($processes));
         foreach ($processes as $process) {
+            var_dump('====');
+            var_dump($process->getStatus());
             if ($process->getStatus() === 'confirmed') {
                 $activeAppointments++;
             }
