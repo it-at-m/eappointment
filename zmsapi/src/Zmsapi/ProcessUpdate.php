@@ -90,6 +90,10 @@ class ProcessUpdate extends BaseController
 
     protected function checkIfAppointmentIsAllowedWithSameMail($entity)
     {
+        if (empty($entity->getClients())) {
+            return;
+        }
+        
         $maxAppointmentsPerMail = $entity->scope->getAppointmentsPerMail();
         $processes = (new Process())->readProcessListByMailAddress($entity->getClients()[0]->email, $entity->scope->id);
         $activeAppointments = 0;
