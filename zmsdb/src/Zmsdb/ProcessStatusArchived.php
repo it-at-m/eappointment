@@ -198,11 +198,11 @@ class ProcessStatusArchived extends Process
      */
     public function anonymizeNames(\DateTimeInterface $dateTime)
     {
-        $query = new Query\Buergerarchiv(Query\Base::UPDATE);
+        /*$query = new Query\Buergerarchiv(Query\Base::UPDATE);
         $query->addConditionOlderThanDate($dateTime)
               ->setAnonymizeFields(['name' => null])
               ->setLimit($limit); // Assume the query builder supports limit
         
-        return $this->performUpdate($query);
+        return $this->performUpdate($query);*/
     }
 }
