@@ -33,6 +33,11 @@ class QueueListHelper
         return static::$queueList;
     }
 
+    public static function getFullList()
+    {
+        return static::$fullList;
+    }
+
     public static function getEstimatedWaitingTime()
     {
         return self::getList()->getFakeOrLastWaitingnumber()->waitingTimeEstimate;
