@@ -65,6 +65,14 @@
                     </li>
                     <li>
                         <div class="cell middle">
+                        <h4>{% trans %}Anzahl Vorgänge in Arbeit{% endtrans %}:</h4>
+                        </div>
+                        <div class="cell right">
+                        {{ workstationInfo.countCurrentlyProcessing }}
+                        </div>
+                    </li>
+                    <li>
+                        <div class="cell middle">
                         <h4>{% trans %}Anzahl offener Vorgänge{% endtrans %}:</h4>
                         </div>
                         <div class="cell right">
