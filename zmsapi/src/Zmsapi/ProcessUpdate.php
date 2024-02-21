@@ -102,7 +102,7 @@ class ProcessUpdate extends BaseController
         $activeAppointments = 0;
 
         foreach ($processes as $process) {
-            if ($process->getStatus() === 'confirmed') {
+            if (in_array($process->getStatus(), ['preconfirmed', 'confirmed'])) {
                 $activeAppointments++;
             }
         }
