@@ -3,6 +3,7 @@ namespace BO\Zmsdb;
 
 use BO\Zmsentities\Collection\AppointmentList;
 use \BO\Zmsentities\Process as Entity;
+use \BO\Zmsentities\Scope as ScopeEntity;
 use \BO\Zmsentities\Collection\ProcessList as Collection;
 use BO\Zmsdb\Helper\ProcessStatus;
 
@@ -933,7 +934,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         return true;
     }
 
-    private function isMailWhitelisted(string $email, Scope $scope): bool
+    private function isMailWhitelisted(string $email, ScopeEntity $scope): bool
     {
         $emailsWithNoLimit = explode(',', $scope->getWhitelistedMails());
 
