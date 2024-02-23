@@ -117,9 +117,16 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
 
     public function getAppointmentsPerMail()
     {
-        $appoitmentsPerMail = $this->toProperty()->preferences->client->appointmentsPerMail->get();
+        $appointmentsPerMail = $this->toProperty()->preferences->client->appointmentsPerMail->get();
 
-        return ($appoitmentsPerMail) ? $appoitmentsPerMail : null;
+        return ($appointmentsPerMail) ? $appointmentsPerMail : null;
+    }
+
+    public function getWhitelistedMails()
+    {
+        $emails = $this->toProperty()->preferences->client->whitelistedMails->get();
+
+        return ($emails) ? $emails : '';
     }
 
     public function getWaitingTimeFromQueueList(Collection\QueueList $queueList, \DateTimeInterface $dateTime)

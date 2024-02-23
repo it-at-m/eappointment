@@ -816,6 +816,7 @@
                         "client": {
                             "alternateAppointmentUrl": "https:\/\/service.berlin.de",
                             "appointmentsPerMail": "",
+                            "whitelistedMails": "",
                             "amendmentLabel": "Zusatzinformationen zum Anliegen",
                             "customTextfieldLabel": "Zusatzfeld zum Anliegen",
                             "emailRequired": false,
@@ -996,6 +997,11 @@
                                     "appointmentsPerMail": {
                                         "type": "string",
                                         "description": "allowed appointments per e-mail address",
+                                        "default": ""
+                                    },
+                                    "whitelistedMails": {
+                                        "type": "string",
+                                        "description": "e-mail addresses that have no limitation on appointments count",
                                         "default": ""
                                     },
                                     "amendmentLabel": {
