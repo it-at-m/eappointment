@@ -196,13 +196,10 @@ class ProcessStatusArchived extends Process
      * @param \DateTimeInterface $dateTime The date before which records should be anonymized.
      * @return bool Indicates whether the update operation was successful.
      */
-    public function anonymizeNames(\DateTimeInterface $dateTime, $limit = 1000)
+    public function anonymizeNames(\DateTimeInterface $dateTime)
     {
         $query = new Query\ProcessStatusArchived(Query\Base::UPDATE);
-        $query->addConditionOlderThanDate($dateTime);
-
-        //print_r($dateTime);
-    
+        $query->addConditionOlderThanDate($dateTime);  
         $query->addValues([
             'name' => 'ANONYMIZED'
         ]);
