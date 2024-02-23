@@ -60,6 +60,7 @@
                     "client": {
                         "alternateAppointmentUrl": "",
                         "appointmentsPerMail": "",
+                        "whitelistedMails": "",
                         "amendmentActivated": "0",
                         "amendmentLabel": "",
                         "customTextActivated": "0",
