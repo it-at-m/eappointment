@@ -171,4 +171,14 @@ class ProcessStatusArchived extends Base implements MappingInterface
 
         return $services;
     }
+
+    public function addConditionOlderThanDate(\DateTimeInterface $dateTime)
+    {
+        // Assuming 'Datum' is the column name that holds the date of the record
+        // and you want to select records older than the specified $dateTime
+        $this->query->where('Datum', '<', $dateTime->format('Y-m-d'));
+        return $this;
+    }
+    
+    
 }
