@@ -189,4 +189,22 @@ class ProcessStatusArchived extends Process
         ]);
         $this->writeItem($query);
     }
+
+    /**
+     * Anonymizes names in the buergerarchiv table for entries older than a specified timespan.
+     *
+     * @param \DateTimeInterface $dateTime The date before which records should be anonymized.
+     * @return bool Indicates whether the update operation was successful.
+     */
+    public function anonymizeNames(\DateTimeInterface $dateTime)
+    {
+        $query = new Query\ProcessStatusArchived(Query\Base::UPDATE);
+        $query->addConditionOlderThanDate($dateTime);  
+        $query->addValues([
+            'name' => 'ANONYMIZED'
+        ]);
+    
+        return $this->writeItem($query);
+    }
+        
 }
