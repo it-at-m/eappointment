@@ -901,7 +901,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function isAppointmentAllowedWithSameMail(Process $entity): bool
+    public function isAppointmentAllowedWithSameMail(Entity $entity): bool
     {
         if (empty($entity->getClients()) || empty($entity->getClients()->getFirst())) {
             return true;
