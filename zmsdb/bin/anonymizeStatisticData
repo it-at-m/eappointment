@@ -4,7 +4,7 @@ require_once(__DIR__."/script_bootstrap.php");
 
 $usage = <<<EOS
 
-Usage: {$argv[0]} [limit] [--verbose] --commit
+Usage: {$argv[0]} [--verbose] --commit
         ATTENTION! Anonymizes names in the buergerarchiv table for entries older than a specified timespan. USE WITH CAUTION!
         --commit        Execute the changes on the database (no dry run).
         --verbose       Show detailed logs.
@@ -13,15 +13,6 @@ Usage: {$argv[0]} [limit] [--verbose] --commit
         !! DATA LOSS WARNING !!
         !!!!!!!!!!!!!!!!!!!!!!!
 EOS;
-
-// Extract limit from arguments
-$limit = 1000; // Default limit
-foreach ($argv as $arg) {
-    if (preg_match('#^\d+$#', $arg)) {
-        $limit = (int)$arg;
-        break;
-    }
-}
 
 $verbose = in_array('--verbose', $argv);
 $commit = in_array('--commit', $argv);
@@ -37,7 +28,7 @@ if (class_exists('\App') && isset(\App::$now)) {
     $now = new \DateTimeImmutable();
 }
 
-$job = new \BO\Zmsdb\Helper\AnonymizeStatisticDataByCron($verbose, $limit);
+$job = new \BO\Zmsdb\Helper\AnonymizeStatisticDataByCron($verbose);
 $job->startAnonymizing($now, $commit);
 
 if (!$commit) {

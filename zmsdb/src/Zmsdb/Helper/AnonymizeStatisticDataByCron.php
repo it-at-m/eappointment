@@ -8,22 +8,20 @@ class AnonymizeStatisticDataByCron
 {
     protected $verbose = false;
     protected $timespan = '-90 days';
-    protected $limit = 1000; // Default limit
 
-    public function __construct($verbose = false, $limit = 1000)
+    public function __construct($verbose = false)
     {
         $this->verbose = $verbose;
-        $this->limit = $limit;
     }
 
     public function startAnonymizing(\DateTimeImmutable $currentDate, $commit = false)
     {
         $targetDate = $currentDate->modify($this->timespan);
-        $this->logMessage("INFO: Beginning anonymization for entries older than {$targetDate->format('Y-m-d')} with a limit of {$this->limit} entries per run.");
+        $this->logMessage("INFO: Beginning anonymization for entries older than {$targetDate->format('Y-m-d')}.");
 
         if ($commit) {
             $processStatusArchived = new ProcessStatusArchived();
-            $success = $processStatusArchived->anonymizeNames($targetDate, $this->limit);
+            $success = $processStatusArchived->anonymizeNames($targetDate);
             if ($success) {
                 $this->logMessage("INFO: Anonymization process completed successfully.");
             } else {
