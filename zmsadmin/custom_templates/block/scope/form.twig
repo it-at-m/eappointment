@@ -373,6 +373,21 @@
 
                     {{ formgroup(
                         {
+                            "label": "E-Mail-Adressen die unbegrenzte Termine buchen können:",
+                            "description": "Durch Kommas getrennte E-Mail-Adressen (ganze Domänen kann man mit beispielsweise @muenchen.de erlauben)"
+                        },
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "name": "preferences[client][whitelistedMails]",
+                                "value": scope.preferences.client.whitelistedMails,
+                                "maxlength": 1000
+                            }
+                        }]
+                    ) }}
+
+                    {{ formgroup(
+                        {
                             "legend": "Freitextfeld:",
                             "groupTag": "fieldset"
                         },
