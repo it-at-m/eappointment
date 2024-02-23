@@ -37,6 +37,7 @@
     },
     "bin": [
         "bin/archiveStatisticData",
+        "bin/anonymizeStatisticData",
         "bin/calculateSlots",
         "bin/calculateDayOffList",
         "bin/deallocateAppointmentData",
