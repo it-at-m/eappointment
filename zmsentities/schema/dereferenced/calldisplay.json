@@ -128,6 +128,7 @@
                         },
                         "client": {
                             "alternateAppointmentUrl": "https:\/\/service.berlin.de",
+                            "appointmentsPerMail": "",
                             "amendmentLabel": "Zusatzinformationen zum Anliegen",
                             "customTextfieldLabel": "Zusatzfeld zum Anliegen",
                             "emailRequired": false,
@@ -303,6 +304,11 @@
                                     "alternateAppointmentUrl": {
                                         "type": "string",
                                         "description": "redirect url if client should book appointments over a specialised application",
+                                        "default": ""
+                                    },
+                                    "appointmentsPerMail": {
+                                        "type": "string",
+                                        "description": "allowed appointments per e-mail address",
                                         "default": ""
                                     },
                                     "amendmentLabel": {

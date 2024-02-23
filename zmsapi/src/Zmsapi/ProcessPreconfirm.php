@@ -56,10 +56,37 @@ class ProcessPreconfirm extends BaseController
     protected function testProcessData($entity)
     {
         $authCheck = (new Process())->readAuthKeyByProcessId($entity->id);
+
+        $this->checkIfAppointmentIsAllowedWithSameMail($entity);
+
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
+        }
+    }
+
+    protected function checkIfAppointmentIsAllowedWithSameMail($entity)
+    {
+        if (empty($entity->getClients()) || empty($entity->getClients()->getFirst())) {
+            return;
+        }
+
+        $maxAppointmentsPerMail = $entity->scope->getAppointmentsPerMail();
+        $processes = (new Process())->readProcessListByMailAddress(
+            $entity->getClients()->getFirst()->email,
+            $entity->scope->id
+        );
+        $activeAppointments = 0;
+
+        foreach ($processes as $process) {
+            if (in_array($process->getStatus(), ['preconfirmed', 'confirmed'])) {
+                $activeAppointments++;
+            }
+        }
+
+        if ($maxAppointmentsPerMail > 0 && $activeAppointments > $maxAppointmentsPerMail) {
+            throw new Exception\Process\MoreThanAllowedAppointmentsPerMail();
         }
     }
 }

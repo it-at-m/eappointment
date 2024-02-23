@@ -111,7 +111,15 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     public function getAlternateRedirectUrl()
     {
         $alternateUrl = $this->toProperty()->preferences->client->alternateAppointmentUrl->get();
+
         return ($alternateUrl) ? $alternateUrl : null;
+    }
+
+    public function getAppointmentsPerMail()
+    {
+        $appoitmentsPerMail = $this->toProperty()->preferences->client->appointmentsPerMail->get();
+
+        return ($appoitmentsPerMail) ? $appoitmentsPerMail : null;
     }
 
     public function getWaitingTimeFromQueueList(Collection\QueueList $queueList, \DateTimeInterface $dateTime)
