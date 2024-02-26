@@ -1,0 +1,36 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+$usage = <<<EOS
+
+Usage: {$argv[0]} [--verbose] --commit
+        ATTENTION! Anonymizes names in the buergerarchiv table for entries older than a specified timespan. USE WITH CAUTION!
+        --commit        Execute the changes on the database (no dry run).
+        --verbose       Show detailed logs.
+
+        !!!!!!!!!!!!!!!!!!!!!!!
+        !! DATA LOSS WARNING !!
+        !!!!!!!!!!!!!!!!!!!!!!!
+EOS;
+
+$verbose = in_array('--verbose', $argv);
+$commit = in_array('--commit', $argv);
+
+if (!$commit && !$verbose) {
+    echo $usage;
+    exit;
+}
+
+if (class_exists('\App') && isset(\App::$now)) {
+    $now = \App::$now;
+} else {
+    $now = new \DateTimeImmutable();
+}
+
+$job = new \BO\Zmsdb\Helper\AnonymizeStatisticDataByCron($verbose);
+$job->startAnonymizing($now, $commit);
+
+if (!$commit) {
+    error_log("Use with --commit to perform anonymization.");
+}
