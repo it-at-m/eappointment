@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb\Tests;
 
+use BO\Zmsdb\Cli\Db;
 use PHPUnit\Framework\TestCase;
 
 abstract class Base extends TestCase
@@ -21,6 +22,8 @@ abstract class Base extends TestCase
         \BO\Zmsdb\Connection\Select::setQueryCache(false);
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         \BO\Zmsdb\Connection\Select::setTransaction(false);
+
+        Db::executeTestData($this, 'setup');
     }
 
     public function tearDown(): void
@@ -34,6 +37,8 @@ abstract class Base extends TestCase
         \BO\Zmsdb\Connection\Select::writeRollback();
         \BO\Zmsdb\Connection\Select::closeWriteConnection();
         \BO\Zmsdb\Connection\Select::closeReadConnection();
+
+        Db::executeTestData($this, 'teardown');
     }
 
     protected function getFixturePath($filename)
