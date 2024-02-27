@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb\Tests;
 
+use BO\Zmsdb\Cli\Db;
 use \BO\Zmsdb\Process as Query;
 use \BO\Zmsdb\Availability as AvailabilityQuery;
 use \BO\Zmsdb\Scope as ScopeQuery;
@@ -9,8 +10,12 @@ use \BO\Zmsdb\Process as ProcessQuery;
 use \BO\Zmsdb\ProcessStatusFree;
 use \BO\Zmsdb\ProcessStatusQueued;
 use \BO\Zmsdb\ProcessStatusArchived;
+use BO\Zmsentities\Client;
+use BO\Zmsentities\Process;
 use \BO\Zmsentities\Process as Entity;
 use \BO\Zmsentities\Calendar;
+use \BO\Zmsentities\Collection\Base as Collection;
+use BO\Zmsentities\Scope;
 
 /**
  * @SuppressWarnings(TooManyPublicMethods)
@@ -619,6 +624,107 @@ class ProcessTest extends Base
         $expirationDate = new \DateTimeImmutable("2016-03-28 11:10:00");
         $processList = $query->readExpiredReservationsList($expirationDate, 142);
         $this->assertEquals(0, $processList->count());
+    }
+
+    public function testAppointmentIsAllowedBecauseThereAreNoLimitations()
+    {
+        Db::executeSql('UPDATE standort SET appointments_per_mail = null WHERE StandortID = 140;
+            UPDATE buerger SET EMail = "testmail@mail.com" WHERE absagecode = "a156";
+            UPDATE buerger SET EMail = "testmail@mail.com" WHERE absagecode = "c01b";
+');
+        $process = new Process();
+        $scope = (new ScopeQuery())->readEntity(140);
+        $process->scope = $scope;
+        $client = new Client();
+        $client->email = 'testmail@mail.com';
+        $process->clients = new Collection([$client]);
+        $result = (new Query)->isAppointmentAllowedWithSameMail($process);
+
+        $this->assertTrue($result);
+
+        Db::executeSql('UPDATE standort SET appointments_per_mail = null WHERE StandortID = 140;
+UPDATE buerger SET EMail = "zms@service.berlinonline.de" WHERE absagecode = "a156";
+UPDATE buerger SET EMail = "zms@service.berlinonline.de" WHERE absagecode = "c01b";
+');
+    }
+
+    public function testAppointmentIsAllowedBecauseEMailLimitationIsNotReached()
+    {
+        Db::executeSql('UPDATE standort SET appointments_per_mail = 2 WHERE StandortID = 140;
+            UPDATE buerger SET EMail = "testmail@mail.com" WHERE absagecode = "a156";
+');
+        $process = new Process();
+        $scope = (new ScopeQuery())->readEntity(140);
+        $process->scope = $scope;
+        $client = new Client();
+        $client->email = 'testmail@mail.com';
+        $process->clients = new Collection([$client]);
+
+        $result = (new Query)->isAppointmentAllowedWithSameMail($process);
+        $this->assertTrue($result);
+
+        Db::executeSql('UPDATE standort SET appointments_per_mail = null WHERE StandortID = 140;
+UPDATE buerger SET EMail = "zms@service.berlinonline.de" WHERE absagecode = "a156";');
+    }
+
+    public function testAppointmentIsNotAllowedBecauseEMailLimitationIsReached()
+    {
+        $process = new Process();
+        $scope = (new ScopeQuery())->readEntity(140);
+
+        $process->scope = $scope;
+        $client = new Client();
+        $client->email = 'testmail@mail.com';
+        $process->clients = new Collection([$client]);
+
+        $result = (new Query)->isAppointmentAllowedWithSameMail($process);
+        $this->assertFalse($result);
+    }
+
+    public function testAppointmentIsAllowedBecauseEMailIsWhitelisted()
+    {
+        Db::executeSql('UPDATE standort SET appointments_per_mail = 1, whitelisted_mails = "testmail@mail.com" WHERE StandortID = 140;
+            UPDATE buerger SET EMail = "testmail@mail.com" WHERE absagecode = "a156";
+            UPDATE buerger SET EMail = "testmail@mail.com" WHERE absagecode = "c01b";
+');
+        $process = new Process();
+        $scope = (new ScopeQuery())->readEntity(140);
+
+        $process->scope = $scope;
+        $client = new Client();
+        $client->email = 'testmail@mail.com';
+        $process->clients = new Collection([$client]);
+
+        $result = (new Query)->isAppointmentAllowedWithSameMail($process);
+        $this->assertTrue($result);
+
+        Db::executeSql('UPDATE standort SET appointments_per_mail = null, whitelisted_mails = null WHERE StandortID = 140;
+UPDATE buerger SET EMail = "zms@service.berlinonline.de" WHERE absagecode = "a156";
+UPDATE buerger SET EMail = "zms@service.berlinonline.de" WHERE absagecode = "c01b";
+');
+    }
+
+    public function testAppointmentIsAllowedBecauseEMailDomainIsWhitelisted()
+    {
+        Db::executeSql('UPDATE standort SET appointments_per_mail = 1, whitelisted_mails = "test@gmail.com,@mail.com" WHERE StandortID = 140;
+            UPDATE buerger SET EMail = "testmail@mail.com" WHERE absagecode = "a156";
+            UPDATE buerger SET EMail = "testmail@mail.com" WHERE absagecode = "c01b";
+');
+        $process = new Process();
+        $scope = (new ScopeQuery())->readEntity(140);
+
+        $process->scope = $scope;
+        $client = new Client();
+        $client->email = 'testmail@mail.com';
+        $process->clients = new Collection([$client]);
+
+        $result = (new Query)->isAppointmentAllowedWithSameMail($process);
+        $this->assertTrue($result);
+
+        Db::executeSql('UPDATE standort SET appointments_per_mail = null, whitelisted_mails = null WHERE StandortID = 140;
+UPDATE buerger SET EMail = "zms@service.berlinonline.de" WHERE absagecode = "a156";
+UPDATE buerger SET EMail = "zms@service.berlinonline.de" WHERE absagecode = "c01b";
+');
     }
 
     protected function getTestCalendarEntity()

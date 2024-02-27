@@ -915,7 +915,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
 
         $maxAppointmentsPerMail = $entity->scope->getAppointmentsPerMail();
-        $processes = (new Process())->readProcessListByMailAddress(
+        $processes = $this->readProcessListByMailAddress(
             $entity->getClients()->getFirst()->email,
             $entity->scope->id
         );
@@ -934,7 +934,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         return true;
     }
 
-    private function isMailWhitelisted(string $email, ScopeEntity $scope): bool
+    protected function isMailWhitelisted(string $email, ScopeEntity $scope): bool
     {
         $emailsWithNoLimit = explode(',', $scope->getWhitelistedMails());
 
