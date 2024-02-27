@@ -2,8 +2,6 @@
 
 namespace BO\Zmsdb\Cli;
 
-use PHPUnit\Framework\TestCase;
-
 /**
  * @codeCoverageIgnore
  * @SuppressWarnings(Short)
@@ -118,31 +116,10 @@ class Db
         return $addedMigrations;
     }
 
-    public static function executeTearDownTestData(TestCase $test)
+    public static function executeTestData(string $testName, string $step)
     {
-        $className = explode('\\', $test::class);
-        var_dump(end($className) . '/' . $test->getName());
-
-        $fixtures = realpath(__DIR__ . '/../tests/Zmsdb/fixtures/');
-        $sqlFile = $fixtures . '/' . end($className) . '/' . $test->getName() . '/teardown.sql';
-
-        if (! file_exists($sqlFile)) {
-            return;
-        }
-
-        self::startExecuteSqlFile(
-            $sqlFile,
-            null,
-            false
-        );
-    }
-
-    public static function executeTestData(TestCase $test, string $step)
-    {
-        $className = explode('\\', $test::class);
-
         $fixtures = realpath(__DIR__ . '/../../../tests/Zmsdb/fixtures/');
-        $sqlFile = $fixtures . '/' . end($className) . '/' . $test->getName() . '/' . $step . '.sql';
+        $sqlFile = $fixtures . '/' . $testName . '/' . $step . '.sql';
 
         if (! file_exists($sqlFile)) {
             return;
