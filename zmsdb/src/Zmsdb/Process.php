@@ -3,6 +3,7 @@ namespace BO\Zmsdb;
 
 use BO\Zmsentities\Collection\AppointmentList;
 use \BO\Zmsentities\Process as Entity;
+use \BO\Zmsentities\Scope as ScopeEntity;
 use \BO\Zmsentities\Collection\ProcessList as Collection;
 use BO\Zmsdb\Helper\ProcessStatus;
 
@@ -395,7 +396,6 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readList($statement, $resolveReferences);
     }
 
-
     /**
      * Read conflictList by scopeId and DateTime
      *
@@ -565,6 +565,7 @@ class Process extends Base implements Interfaces\ResolveReferences
      */
     public function readProcessListByMailAddress(
         string $mailAddress,
+        int $scopeId = null,
         $resolveReferences = 0,
         $limit = 2000
     ) : Collection {
@@ -574,8 +575,12 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addEntityMapping()
             ->addConditionMail($mailAddress)
             ->addConditionIgnoreSlots()
-            ->addLimit($limit)
-            ;
+            ->addLimit($limit);
+
+        if ($scopeId) {
+            $query->addConditionScopeId($scopeId);
+        }
+
         $statement = $this->fetchStatement($query);
         return $this->readList($statement, $resolveReferences);
     }
@@ -895,5 +900,60 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addLimit($limit, $offset);
         $statement = $this->fetchStatement($selectQuery);
         return $this->readList($statement, $resolveReferences);
+    }
+
+    public function isAppointmentAllowedWithSameMail(Entity $entity): bool
+    {
+        if (empty($entity->getClients()) || empty($entity->getClients()->getFirst())) {
+            return true;
+        }
+
+        $emailToCheck = $entity->getClients()->getFirst()->email;
+
+        if ($this->isMailWhitelisted($emailToCheck, $entity->scope)) {
+            return true;
+        }
+
+        $maxAppointmentsPerMail = $entity->scope->getAppointmentsPerMail();
+        $processes = $this->readProcessListByMailAddress(
+            $entity->getClients()->getFirst()->email,
+            $entity->scope->id
+        );
+        $activeAppointments = 0;
+
+        foreach ($processes as $process) {
+            if (in_array($process->getStatus(), ['preconfirmed', 'confirmed'])) {
+                $activeAppointments++;
+            }
+        }
+
+        if ($maxAppointmentsPerMail > 0 && $activeAppointments > $maxAppointmentsPerMail) {
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function isMailWhitelisted(string $email, ScopeEntity $scope): bool
+    {
+        $emailsWithNoLimit = explode(',', $scope->getWhitelistedMails());
+
+        if (empty($emailsWithNoLimit)) {
+            return false;
+        }
+
+        foreach ($emailsWithNoLimit as $whitelistedMail) {
+            $whitelistedMail = trim($whitelistedMail);
+
+            if ($email === $whitelistedMail) {
+                return true;
+            }
+
+            if (str_starts_with($whitelistedMail, '@') && str_contains($email, $whitelistedMail)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
