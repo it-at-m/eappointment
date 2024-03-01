@@ -89,8 +89,7 @@ class Ticketprinter extends Base
                     throw new Exception\Ticketprinter\UnvalidButtonList();
                 }
                 $ticketprinter->buttons[$key]['scope'] = $scope;
-                $ticketprinter->buttons[$key]['enabled'] = true;
-                //$ticketprinter->buttons[$key]['enabled'] = $query->readIsEnabled($scope->id, $now);
+                $ticketprinter->buttons[$key]['enabled'] = $query->readIsEnabled($scope->id, $now);
                 $ticketprinter->buttons[$key]['name'] = $scope->getPreference('ticketprinter', 'buttonName');
             }
 
@@ -101,13 +100,12 @@ class Ticketprinter extends Base
                 $scope = (new Scope)->readWithWorkstationCount($scopeId, $now);
 
                 if (! $request || ! $scope) {
-                    //throw new Exception\Ticketprinter\UnvalidButtonList();
+                    throw new Exception\Ticketprinter\UnvalidButtonList();
                 }
                 $ticketprinter->buttons[$key]['scope'] = $scope;
 
-                $ticketprinter->buttons[$key]['enabled'] = true;
                 $ticketprinter->buttons[$key]['requestId'] = $requestId;
-                //$ticketprinter->buttons[$key]['enabled'] = $query->readIsEnabled($scope->id, $now);
+                $ticketprinter->buttons[$key]['enabled'] = $query->readIsEnabled($scope->id, $now);
                 $ticketprinter->buttons[$key]['name'] = $request->getProperty('name');
             }
         }
