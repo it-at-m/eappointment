@@ -35,9 +35,10 @@ class Process extends BaseController
         if (null === $scopeId) {
             throw new Exception\ScopeNotFound();
         }
+
         $process = \App::$http->readGetResult(
             '/scope/'. $scopeId .'/waitingnumber/'. $ticketprinterHelper->getEntity()->hash .'/',
-            ['requestId' => $requestId]
+            $requestId ? ['requestId' => $requestId] : null
         )->getEntity();
 
         $scope = new Scope($process->scope);

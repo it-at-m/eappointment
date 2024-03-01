@@ -44,6 +44,11 @@ class TicketprinterConfig extends BaseController
             $department = (new DepartmentEntity($departmentData))->withCompleteScopeList();
             foreach ($department->scopes as $scope) {
                 $scope->services = [];
+
+                if (! isset($scope->provider->data)) {
+                    continue;
+                }
+
                 foreach ($scope->provider->data['services'] as $serviceArray) {
                     $service = $requestList->getEntity($serviceArray['service']);
                     $scope->services[] = [
