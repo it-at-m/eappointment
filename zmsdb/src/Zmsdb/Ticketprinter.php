@@ -80,6 +80,7 @@ class Ticketprinter extends Base
         if (count($ticketprinter->buttons) > 6) {
             throw new Exception\Ticketprinter\TooManyButtons();
         }
+
         foreach ($ticketprinter->buttons as $key => $button) {
             if ('scope' == $button['type']) {
                 $query = new Scope();
@@ -88,8 +89,26 @@ class Ticketprinter extends Base
                     throw new Exception\Ticketprinter\UnvalidButtonList();
                 }
                 $ticketprinter->buttons[$key]['scope'] = $scope;
-                $ticketprinter->buttons[$key]['enabled'] = $query->readIsEnabled($scope->id, $now);
+                $ticketprinter->buttons[$key]['enabled'] = true;
+                //$ticketprinter->buttons[$key]['enabled'] = $query->readIsEnabled($scope->id, $now);
                 $ticketprinter->buttons[$key]['name'] = $scope->getPreference('ticketprinter', 'buttonName');
+            }
+
+            if ('request' == $button['type']) {
+                $scopeId = explode('-', $button['request']['id'])[0];
+                $requestId = explode('-', $button['request']['id'])[1];
+                $request = (new Request)->readEntity('dldb', $requestId);
+                $scope = (new Scope)->readWithWorkstationCount($scopeId, $now);
+
+                if (! $request || ! $scope) {
+                    //throw new Exception\Ticketprinter\UnvalidButtonList();
+                }
+                $ticketprinter->buttons[$key]['scope'] = $scope;
+
+                $ticketprinter->buttons[$key]['enabled'] = true;
+                $ticketprinter->buttons[$key]['requestId'] = $requestId;
+                //$ticketprinter->buttons[$key]['enabled'] = $query->readIsEnabled($scope->id, $now);
+                $ticketprinter->buttons[$key]['name'] = $request->getProperty('name');
             }
         }
         $this->readExceptions($ticketprinter);
