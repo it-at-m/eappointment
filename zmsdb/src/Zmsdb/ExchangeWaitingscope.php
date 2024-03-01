@@ -196,12 +196,14 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         }
 
         $waitingTime = $process->getWaitedMinutes($now);
+        $wayTime = $process->getWayMinutes($now);
         $existingEntry = $this->readByDateTime(
             $process->scope,
             $process->getArrivalTime($now),
             $process->isWithAppointment()
         );
         $waitingTime = $existingEntry['waitingtime'] > $waitingTime ? $existingEntry['waitingtime'] : $waitingTime;
+        $wayTime = $existingEntry['wayTime'] > $wayTime ? $existingEntry['wayTime'] : $wayTime;
         $this->perform(
             Query\ExchangeWaitingscope::getQueryUpdateByDateTime(
                 $process->getArrivalTime($now),
@@ -211,6 +213,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
                 'waitingcalculated' => $existingEntry['waitingcalculated'],
                 'waitingcount' => $existingEntry['waitingcount'],
                 'waitingtime' => $waitingTime,
+                'wayTime' => $wayTime,                
                 'scopeid' => $process->scope->id,
                 'date' => $now->format('Y-m-d'),
                 'hour' => $now->format('H')
