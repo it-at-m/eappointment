@@ -31,11 +31,13 @@ class Process extends BaseController
         $config = \App::$http->readGetResult('/config/', [], \App::SECURE_TOKEN)->getEntity();
         $validator = $request->getAttribute('validator');
         $scopeId = $validator->getParameter('scopeId')->isNumber()->getValue();
+        $requestId = $validator->getParameter('requestId')->isNumber()->getValue();
         if (null === $scopeId) {
             throw new Exception\ScopeNotFound();
         }
         $process = \App::$http->readGetResult(
-            '/scope/'. $scopeId .'/waitingnumber/'. $ticketprinterHelper->getEntity()->hash .'/'
+            '/scope/'. $scopeId .'/waitingnumber/'. $ticketprinterHelper->getEntity()->hash .'/',
+            ['requestId' => $requestId]
         )->getEntity();
 
         $scope = new Scope($process->scope);
