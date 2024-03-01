@@ -105,7 +105,7 @@ class Ticketprinter extends Base
                 $ticketprinter->buttons[$key]['scope'] = $scope;
 
                 $ticketprinter->buttons[$key]['requestId'] = $requestId;
-                $ticketprinter->buttons[$key]['enabled'] = $query->readIsEnabled($scope->id, $now);
+                $ticketprinter->buttons[$key]['enabled'] = (new Scope)->readIsEnabled($scope->id, $now);
                 $ticketprinter->buttons[$key]['name'] = $request->getProperty('name');
             }
         }
