@@ -3,14 +3,15 @@ import moment from 'moment'
 export const getStateFromProps = props => {
     return {
         availabilitylistslices: writeSlotCalculationIntoAvailability(
-            props.availabilitylist, 
-            props.maxslots, 
+            props.availabilitylist,
+            props.maxslots,
             props.busyslots
         ),
         availabilitylist: props.availabilitylist,
         conflicts: props.conflicts,
         today: props.today,
-        busyslots: props.busyslots
+        busyslots: props.busyslots,
+        slotbuckets: props.slotbuckets,
     }
 }
 
@@ -132,7 +133,7 @@ export const availabilityTypes = [
     { value: "appointment", name: "Terminkunden" },
 ]
 
-export const weekDayList=[
+export const weekDayList = [
     { value: "monday", label: "Montag" },
     { value: "tuesday", label: "Dienstag" },
     { value: "wednesday", label: "Mittwoch" },
@@ -142,7 +143,7 @@ export const weekDayList=[
     { value: "sunday", label: "Sonntag" }
 ]
 
-export const availabilitySeries=[
+export const availabilitySeries = [
     { value: "0", name: "einmaliger Termin" },
     { value: "-1", name: "jede Woche" },
     { value: "-2", name: "alle 2 Wochen" },
@@ -305,5 +306,5 @@ export const accordionTitle = (data) => {
     let description = (data.description) ? `: ${data.description}` : "";
     let type = (availabilityType && availabilityWeekDay) ? ` Typ: ${availabilityType.name}, Wochentag: ${availabilityWeekDay}` : "";
     return `Zeitraum: ${startDate} bis ${endDate}, Uhrzeit: von ${startTime} bis ${endTime}, ${type}${description}`
-        
+
 }
