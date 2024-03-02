@@ -510,6 +510,7 @@ class AvailabilityPage extends Component {
             onSelect={onSelect}
             onDelete={onDelete}
             onAbort={this.onRevertUpdates.bind(this)}
+            slotBuckets={this.state.slotbuckets}
         />
     }
 
