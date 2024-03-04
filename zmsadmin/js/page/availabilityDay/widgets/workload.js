@@ -26,18 +26,37 @@ const options = {
         x: {
             stacked: true,
             grid: {
-                display: false, // This will hide the grid lines for the x-axis
+                display: false,
             },
             barPercentage: 1,
-            categoryPercentage: 1
+            categoryPercentage: 1,
+            ticks: {
+                callback: function(val, index, ticks) {
+                    // Assuming this is your previously configured x-axis callback
+                    const label = this.getLabelForValue(val);
+                    if (label && label.endsWith(':00')) {
+                        return label;
+                    } else {
+                        return null;
+                    }
+                }
+            }
         },
         y: {
             stacked: true,
             beginAtZero: true,
             grid: {
-                display: false, // This will hide the grid lines for the y-axis
+                display: false,
             },
-
+            ticks: {
+                stepSize: 1, // Ensures the step between ticks is 1
+                // Optional: Round values to ensure they are integers (might not be necessary with stepSize: 1)
+                callback: function(value) {
+                    if (value % 1 === 0) { // Check if the value is an integer
+                        return value;
+                    }
+                }
+            }
         },
     },
 };
@@ -80,51 +99,9 @@ function transformSlotBucketsToChartData(slotBuckets) {
 
 
 
-// Adjusted generateTestData for stacked bar chart
-const generateTestData = () => {
-    const data = {
-        labels: [],
-        datasets: [
-            {
-                label: 'Occupied Slots',
-                data: [],
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                barThickness: 'flex',
-            },
-            {
-                label: 'Free Slots',
-                data: [],
-                backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                barThickness: 'flex',
-            }
-        ]
-    };
-
-    let currentTime = new Date('2024-01-01T08:00:00');
-    const addMinutes = (date, minutes) => new Date(date.getTime() + minutes * 60000);
-
-    for (let i = 0; i < 120; i++) { // For simplicity, using 12 data points (1 hour)
-        const timeLabel = `${currentTime.getHours()}:${currentTime.getMinutes() < 10 ? '0' : ''}${currentTime.getMinutes()}`;
-        data.labels.push(timeLabel);
-
-        const totalSlots = Math.floor(Math.random() * 50) + 50; // Random total slots between 50 and 99
-        const occupiedSlots = Math.floor(Math.random() * totalSlots); // Random occupied slots within total
-        const freeSlots = totalSlots - occupiedSlots; // Calculate remaining free slots
-
-        data.datasets[0].data.push(occupiedSlots);
-        data.datasets[1].data.push(freeSlots);
-
-        currentTime = addMinutes(currentTime, 5); // Increase by 5 minutes
-    }
-
-    return data;
-};
 
 export const Workload = ({ slotBuckets }) => {
-    const data = generateTestData();
-
     const slotBucketData = transformSlotBucketsToChartData(slotBuckets);
-
     return <Bar options={options} data={slotBucketData} />;
 };
 
