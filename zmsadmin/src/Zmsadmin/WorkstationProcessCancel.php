@@ -43,6 +43,8 @@ class WorkstationProcessCancel extends BaseController
     {
         if (0 < $process->queue['callCount']) {
             $process->queue['callCount']--;
+        } else {
+            $process->queue['callCount']++;
         }
         \App::$http->readPostResult('/process/'. $process->id .'/'. $process->authKey .'/', $process);
     }
