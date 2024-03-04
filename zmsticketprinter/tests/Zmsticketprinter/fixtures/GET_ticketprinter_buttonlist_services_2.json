@@ -16,22 +16,24 @@
 	"buttonlist": "s141",
 	"buttons": [
 		{
-			"type": "scope",
-			"url": "/scope/141/",
+			"type": "request",
+			"url": "/request/141-111/",
+			"requestId": "111",
 			"scope": {
 				"id": 141
 			},
 			"enabled": true,
-			"name": "Bürgeramt Heerstraße"
+			"name": "Request 1"
 		},
 		{
-			"type": "cluster",
-			"url": "/cluster/110/",
-			"cluster": {
-				"id": 110
+			"type": "request",
+			"url": "/request/141-222/",
+			"requestId": "222",
+			"scope": {
+				"id": 141
 			},
 			"enabled": true,
-			"name": "Bürgeramt Hohenzollerndamm"
+			"name": "Request 2"
 		}
 	]
 }
