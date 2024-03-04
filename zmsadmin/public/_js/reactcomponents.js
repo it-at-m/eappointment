@@ -30107,18 +30107,15 @@ const Workload = ({ slotBuckets })=>{
                 height: "300px",
                 width: "100%"
             },
-            children: [
-                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _reactChartjs2.Bar), {
-                    options: options,
-                    data: slotBucketData
-                }, void 0, false, {
-                    fileName: "js/page/availabilityDay/widgets/workload.js",
-                    lineNumber: 107,
-                    columnNumber: 13
-                }, undefined),
-                ";"
-            ]
-        }, void 0, true, {
+            children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _reactChartjs2.Bar), {
+                options: options,
+                data: slotBucketData
+            }, void 0, false, {
+                fileName: "js/page/availabilityDay/widgets/workload.js",
+                lineNumber: 107,
+                columnNumber: 13
+            }, undefined)
+        }, void 0, false, {
             fileName: "js/page/availabilityDay/widgets/workload.js",
             lineNumber: 106,
             columnNumber: 9
@@ -98731,12 +98728,21 @@ const readPropsCluster = (cluster)=>{
     };
 };
 const readPropsScope = (scope)=>{
-    const { shortName, contact, id } = scope;
+    const { shortName, contact, id, services } = scope;
     return {
         type: "s",
         id,
         shortName,
-        contact
+        contact,
+        services: services.map(readPropsService)
+    };
+};
+const readPropsService = (service)=>{
+    const { id, name } = service;
+    return {
+        type: "r",
+        id,
+        name
     };
 };
 class TicketPrinterConfigView extends (0, _react.Component) {
@@ -98791,12 +98797,12 @@ class TicketPrinterConfigView extends (0, _react.Component) {
                     children: n ? `Position ${n}` : "nicht anzeigen"
                 }, n, false, {
                     fileName: "js/block/ticketprinter/config/index.js",
-                    lineNumber: 84,
+                    lineNumber: 95,
                     columnNumber: 42
                 }, this))
         }, void 0, false, {
             fileName: "js/block/ticketprinter/config/index.js",
-            lineNumber: 83,
+            lineNumber: 94,
             columnNumber: 13
         }, this);
     }
@@ -98844,44 +98850,69 @@ class TicketPrinterConfigView extends (0, _react.Component) {
                         ]
                     }, void 0, true, {
                         fileName: "js/block/ticketprinter/config/index.js",
-                        lineNumber: 128,
+                        lineNumber: 139,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Controls, {
                         children: this.renderNumberSelect(position, onChange)
                     }, void 0, false, {
                         fileName: "js/block/ticketprinter/config/index.js",
-                        lineNumber: 129,
+                        lineNumber: 140,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "js/block/ticketprinter/config/index.js",
-                lineNumber: 127,
+                lineNumber: 138,
                 columnNumber: 17
             }, this)
         }, item.type + "-" + item.id, false, {
             fileName: "js/block/ticketprinter/config/index.js",
-            lineNumber: 126,
+            lineNumber: 137,
             columnNumber: 13
         }, this);
     }
     renderScopes(scopes) {
-        if (scopes.length > 0) return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("fieldset", {
+        if (scopes.length > 0) return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+            children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("fieldset", {
+                children: [
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("legend", {
+                        className: "label",
+                        children: "Standorte"
+                    }, void 0, false, {
+                        fileName: "js/block/ticketprinter/config/index.js",
+                        lineNumber: 153,
+                        columnNumber: 25
+                    }, this),
+                    scopes.map(this.renderScope.bind(this))
+                ]
+            }, "scopeList", true, {
+                fileName: "js/block/ticketprinter/config/index.js",
+                lineNumber: 152,
+                columnNumber: 21
+            }, this)
+        }, void 0, false, {
+            fileName: "js/block/ticketprinter/config/index.js",
+            lineNumber: 151,
+            columnNumber: 17
+        }, this);
+    }
+    renderServices(services) {
+        if (services.length > 0) return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("fieldset", {
             children: [
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("legend", {
                     className: "label",
-                    children: "Standorte"
+                    children: "Dienstleistungen"
                 }, void 0, false, {
                     fileName: "js/block/ticketprinter/config/index.js",
-                    lineNumber: 141,
+                    lineNumber: 165,
                     columnNumber: 21
                 }, this),
-                scopes.map(this.renderItem.bind(this))
+                services.map(this.renderItem.bind(this))
             ]
         }, "scopeList", true, {
             fileName: "js/block/ticketprinter/config/index.js",
-            lineNumber: 140,
+            lineNumber: 164,
             columnNumber: 17
         }, this);
     }
@@ -98893,15 +98924,37 @@ class TicketPrinterConfigView extends (0, _react.Component) {
                     children: "Standort\xadgruppe"
                 }, void 0, false, {
                     fileName: "js/block/ticketprinter/config/index.js",
-                    lineNumber: 152,
+                    lineNumber: 176,
                     columnNumber: 21
                 }, this),
                 clusters.map(this.renderItem.bind(this))
             ]
         }, "clusterList", true, {
             fileName: "js/block/ticketprinter/config/index.js",
-            lineNumber: 151,
+            lineNumber: 175,
             columnNumber: 17
+        }, this);
+    }
+    renderScope(scope) {
+        return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+            children: [
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h2", {
+                    className: "block__heading",
+                    children: scope.shortName
+                }, void 0, false, {
+                    fileName: "js/block/ticketprinter/config/index.js",
+                    lineNumber: 186,
+                    columnNumber: 17
+                }, this),
+                [
+                    scope
+                ].map(this.renderItem.bind(this)),
+                this.renderServices(scope.services)
+            ]
+        }, scope.id, true, {
+            fileName: "js/block/ticketprinter/config/index.js",
+            lineNumber: 185,
+            columnNumber: 13
         }, this);
     }
     renderDepartment(department) {
@@ -98912,14 +98965,14 @@ class TicketPrinterConfigView extends (0, _react.Component) {
                     children: department.name
                 }, void 0, false, {
                     fileName: "js/block/ticketprinter/config/index.js",
-                    lineNumber: 162,
+                    lineNumber: 196,
                     columnNumber: 17
                 }, this),
                 this.renderScopes(department.scopes)
             ]
         }, department.id, true, {
             fileName: "js/block/ticketprinter/config/index.js",
-            lineNumber: 161,
+            lineNumber: 195,
             columnNumber: 13
         }, this);
     }
@@ -98955,7 +99008,7 @@ class TicketPrinterConfigView extends (0, _react.Component) {
                                     value: "Name zur internen Identifikation (optional)"
                                 }, void 0, false, {
                                     fileName: "js/block/ticketprinter/config/index.js",
-                                    lineNumber: 191,
+                                    lineNumber: 225,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Controls, {
@@ -98966,18 +99019,18 @@ class TicketPrinterConfigView extends (0, _react.Component) {
                                         onChange: onNameChange
                                     }, void 0, false, {
                                         fileName: "js/block/ticketprinter/config/index.js",
-                                        lineNumber: 193,
+                                        lineNumber: 227,
                                         columnNumber: 29
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "js/block/ticketprinter/config/index.js",
-                                    lineNumber: 192,
+                                    lineNumber: 226,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, "ticketprinter-name", true, {
                             fileName: "js/block/ticketprinter/config/index.js",
-                            lineNumber: 190,
+                            lineNumber: 224,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(FormGroup, {
@@ -98989,7 +99042,7 @@ class TicketPrinterConfigView extends (0, _react.Component) {
                                     value: "StartUrl (optional)"
                                 }, void 0, false, {
                                     fileName: "js/block/ticketprinter/config/index.js",
-                                    lineNumber: 200,
+                                    lineNumber: 234,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Controls, {
@@ -99002,7 +99055,7 @@ class TicketPrinterConfigView extends (0, _react.Component) {
                                             onChange: onHomeChange
                                         }, void 0, false, {
                                             fileName: "js/block/ticketprinter/config/index.js",
-                                            lineNumber: 202,
+                                            lineNumber: 236,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Description, {
@@ -99012,19 +99065,19 @@ class TicketPrinterConfigView extends (0, _react.Component) {
                                             children: "Tragen Sie eine alternative URL ein, wenn nach der Ausgabe einer Wartenummer eine alternative Startseite aufgerufen werden soll"
                                         }, void 0, false, {
                                             fileName: "js/block/ticketprinter/config/index.js",
-                                            lineNumber: 206,
+                                            lineNumber: 240,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "js/block/ticketprinter/config/index.js",
-                                    lineNumber: 201,
+                                    lineNumber: 235,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, "ticketprinter-Starturl", true, {
                             fileName: "js/block/ticketprinter/config/index.js",
-                            lineNumber: 199,
+                            lineNumber: 233,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(FormGroup, {
@@ -99036,7 +99089,7 @@ class TicketPrinterConfigView extends (0, _react.Component) {
                                     value: "Layout"
                                 }, void 0, false, {
                                     fileName: "js/block/ticketprinter/config/index.js",
-                                    lineNumber: 210,
+                                    lineNumber: 244,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Controls, {
@@ -99066,18 +99119,18 @@ class TicketPrinterConfigView extends (0, _react.Component) {
                                         onChange: onTemplateStatusChange
                                     }, void 0, false, {
                                         fileName: "js/block/ticketprinter/config/index.js",
-                                        lineNumber: 212,
+                                        lineNumber: 246,
                                         columnNumber: 29
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "js/block/ticketprinter/config/index.js",
-                                    lineNumber: 211,
+                                    lineNumber: 245,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, "ticketprinter-layout", true, {
                             fileName: "js/block/ticketprinter/config/index.js",
-                            lineNumber: 209,
+                            lineNumber: 243,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(FormGroup, {
@@ -99089,7 +99142,7 @@ class TicketPrinterConfigView extends (0, _react.Component) {
                                     value: "URL"
                                 }, void 0, false, {
                                     fileName: "js/block/ticketprinter/config/index.js",
-                                    lineNumber: 225,
+                                    lineNumber: 259,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(Controls, {
@@ -99101,18 +99154,18 @@ class TicketPrinterConfigView extends (0, _react.Component) {
                                         }
                                     }, void 0, false, {
                                         fileName: "js/block/ticketprinter/config/index.js",
-                                        lineNumber: 227,
+                                        lineNumber: 261,
                                         columnNumber: 29
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "js/block/ticketprinter/config/index.js",
-                                    lineNumber: 226,
+                                    lineNumber: 260,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, "ticketprinter-url", true, {
                             fileName: "js/block/ticketprinter/config/index.js",
-                            lineNumber: 224,
+                            lineNumber: 258,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -99127,31 +99180,31 @@ class TicketPrinterConfigView extends (0, _react.Component) {
                                         className: "fas fa-external-link-alt"
                                     }, void 0, false, {
                                         fileName: "js/block/ticketprinter/config/index.js",
-                                        lineNumber: 232,
+                                        lineNumber: 266,
                                         columnNumber: 123
                                     }, this),
                                     " Aktuelle Kiosk-Konfiguration in einem neuen Fenster \xf6ffnen"
                                 ]
                             }, void 0, true, {
                                 fileName: "js/block/ticketprinter/config/index.js",
-                                lineNumber: 232,
+                                lineNumber: 266,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "js/block/ticketprinter/config/index.js",
-                            lineNumber: 231,
+                            lineNumber: 265,
                             columnNumber: 21
                         }, this)
                     ]
                 }, "ticketprinter-fieldset", true, {
                     fileName: "js/block/ticketprinter/config/index.js",
-                    lineNumber: 189,
+                    lineNumber: 223,
                     columnNumber: 17
                 }, this)
             ]
         }, void 0, true, {
             fileName: "js/block/ticketprinter/config/index.js",
-            lineNumber: 187,
+            lineNumber: 221,
             columnNumber: 13
         }, this);
     }
