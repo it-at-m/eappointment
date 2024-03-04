@@ -645,7 +645,7 @@ class ProcessTest extends Base
         $scope = (new ScopeQuery())->readEntity(140);
         $process->scope = $scope;
         $client = new Client();
-        $client->email = 'testmail@mail.com';
+        $client->email = 'testmail2@mail.com';
         $process->clients = new Collection([$client]);
 
         $result = (new Query)->isAppointmentAllowedWithSameMail($process);
