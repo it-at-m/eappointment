@@ -1,3 +1,7 @@
+body fieldset fieldset, body fieldset fieldset fieldset {
+  margin-left: 20px;
+}
+
 .clearfix:after {
   content: "";
   clear: both;
