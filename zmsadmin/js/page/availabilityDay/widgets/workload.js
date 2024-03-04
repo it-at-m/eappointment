@@ -13,13 +13,14 @@ ChartJS.register(
 
 const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
         legend: {
             position: 'top',
         },
         title: {
             display: true,
-            text: 'Occupied vs Total Slots Every 5 Minutes (Stacked)',
+            text: 'Terminkunden',
         },
     },
     scales: {
@@ -49,10 +50,9 @@ const options = {
                 display: false,
             },
             ticks: {
-                stepSize: 1, // Ensures the step between ticks is 1
-                // Optional: Round values to ensure they are integers (might not be necessary with stepSize: 1)
+                stepSize: 1, 
                 callback: function(value) {
-                    if (value % 1 === 0) { // Check if the value is an integer
+                    if (value % 1 === 0) {
                         return value;
                     }
                 }
@@ -68,14 +68,14 @@ function transformSlotBucketsToChartData(slotBuckets) {
     const labels = Object.keys(slotBuckets); // Extract time slots as labels
     const datasets = {
         occupied: { // Dataset for occupied slots
-            label: 'Occupied Intern Slots',
+            label: 'Gebuchte Slots',
             data: [],
             backgroundColor: 'rgba(255, 99, 132, 0.5)',
         },
         available: { // Dataset for available slots within intern
-            label: 'Available Intern Slots',
+            label: 'Freie Slots',
             data: [],
-            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+            backgroundColor: '#CCE0E6',
         },
     };
 
@@ -102,6 +102,10 @@ function transformSlotBucketsToChartData(slotBuckets) {
 
 export const Workload = ({ slotBuckets }) => {
     const slotBucketData = transformSlotBucketsToChartData(slotBuckets);
-    return <Bar options={options} data={slotBucketData} />;
+    return <>
+        <div style={{ height: '300px', width: '100%' }}>
+            <Bar options={options} data={slotBucketData} />;
+        </div>
+    </>
 };
 
