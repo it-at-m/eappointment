@@ -28,8 +28,14 @@ class TicketprinterConfigTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/organisation/',
-                    'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                    'parameters' => ['resolveReferences' => 5],
+                    'response' => $this->readFixture("GET_organisation_71_resolved5.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/source/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture('GET_source.json')
                 ]
             ]
         );
@@ -40,6 +46,14 @@ class TicketprinterConfigTest extends Base
         );
         $this->assertStringContainsString(
             'Charlottenburg-Wilmersdorf',
+            (string)$response->getBody()
+        );
+        $this->assertStringContainsString(
+            '380-9999998',
+            (string)$response->getBody()
+        );
+        $this->assertStringContainsString(
+            '380-9999999',
             (string)$response->getBody()
         );
         $this->assertStringContainsString('data-ticketprinter-config', (string)$response->getBody());
