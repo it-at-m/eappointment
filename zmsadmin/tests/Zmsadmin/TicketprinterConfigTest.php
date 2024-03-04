@@ -49,11 +49,11 @@ class TicketprinterConfigTest extends Base
             (string)$response->getBody()
         );
         $this->assertStringContainsString(
-            'Dienstleistung A',
+            '380-9999998',
             (string)$response->getBody()
         );
         $this->assertStringContainsString(
-            'Dienstleistung B',
+            '380-9999999',
             (string)$response->getBody()
         );
         $this->assertStringContainsString('data-ticketprinter-config', (string)$response->getBody());
