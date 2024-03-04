@@ -104,7 +104,7 @@ export const Workload = ({ slotBuckets }) => {
     const slotBucketData = transformSlotBucketsToChartData(slotBuckets);
     return <>
         <div style={{ height: '300px', width: '100%' }}>
-            <Bar options={options} data={slotBucketData} />;
+            <Bar options={options} data={slotBucketData} />
         </div>
     </>
 };
