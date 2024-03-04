@@ -14,6 +14,7 @@ const GraphView = (props) => {
     const { onSelect, timestamp } = props;
     const titleTime = moment(timestamp, 'X').format('dddd, DD.MM.YYYY')
     const graphBody = <GraphBodyLayout
+        slotBuckets={props.slotBuckets}
         showConflicts={props.conflicts.length > 0}
         conflicts={constants.renderConflicts(props.conflicts)}
         appointments={constants.renderAppointments(props.availabilityList, props.maxWorkstationCount, onSelect)}
@@ -22,7 +23,6 @@ const GraphView = (props) => {
     />
     return (
         <>
-            <Workload slotBuckets={props.slotBuckets} />
             <Board className="board--light availability-timetable"
                 title={titleTime}
                 titleAside={calendarNavigation(props.links)}
