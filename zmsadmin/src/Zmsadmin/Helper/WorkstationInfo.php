@@ -30,6 +30,9 @@ class WorkstationInfo
             static::getWorkstationsByScope($scope->getId());
 
         $queueListHelper = (new QueueListHelper($clusterHelper, $selectedDate));
+        
+        $infoData['countCurrentlyProcessing'] = count($queueListHelper->getFullList()->withStatus(['called', 'processing']));
+
         if ($queueListHelper->getWaitingCount()) {
             $infoData['waitingClientsFullList'] = $queueListHelper->getWaitingCount();
             if ($selectedDate == \App::$now->format('Y-m-d')) {
