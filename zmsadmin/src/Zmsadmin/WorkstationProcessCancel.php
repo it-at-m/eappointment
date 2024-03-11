@@ -26,7 +26,6 @@ class WorkstationProcessCancel extends BaseController
         $noRedirect = $validator->getParameter('noredirect')->isNumber()->getValue();
 
         if ($workstation->process['id']) {
-            $this->writeCallCount($workstation->process);
             \App::$http->readDeleteResult('/workstation/process/')->getEntity();
         }
         if (1 == $noRedirect) {
@@ -37,13 +36,5 @@ class WorkstationProcessCancel extends BaseController
             array(),
             array()
         );
-    }
-
-    protected function writeCallCount($process)
-    {
-        if (0 < $process->queue['callCount']) {
-            $process->queue['callCount']--;
-        }
-        \App::$http->readPostResult('/process/'. $process->id .'/'. $process->authKey .'/', $process);
     }
 }
