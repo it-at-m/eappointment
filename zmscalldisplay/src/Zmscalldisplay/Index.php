@@ -7,6 +7,7 @@
  */
 namespace BO\Zmscalldisplay;
 
+use BO\Slim\Render;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use BO\Slim\Request as SlimRequest;
@@ -32,6 +33,12 @@ class Index extends BaseController
             ->isPath()
             ->setDefault('default_platz')
             ->getValue();
+
+        if (empty(str_replace('/', '', $request->getUri()->getQuery()))) {
+            return Render::withJson($response, [
+                'error' => 'No parameter provided'
+            ]);
+        }
         
         $calldisplayHelper = (new Helper\Calldisplay($request));
         $parameters = $this->getDefaultParamters($request, $calldisplayHelper);

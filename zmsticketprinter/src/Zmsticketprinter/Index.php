@@ -33,6 +33,14 @@ class Index extends BaseController
         $defaultTemplate = $validator->getParameter("template")
             ->isPath()
             ->setDefault('default');
+
+
+        if (empty(str_replace('/', '', $request->getUri()->getQuery()))) {
+            return Render::withJson($response, [
+                'error' => 'No parameter provided'
+            ]);
+        }
+
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
         $ticketprinter->testValid();
