@@ -1,10 +1,14 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless searchresults'} %}
 
         {% block board_title %}
-            <span tabindex="1">{% trans %}Suchergebnisse für {% endtrans %} "{{ searchQuery }}"</span>
+            <span tabindex="1" id="search-result-title">{% trans %}Suchergebnisse für {% endtrans %} "{{ searchQuery }}"</span>
         {% endblock %}
 
         {% block board_body %}
+        <script>
+            document.getElementById("search-result-title").focus();
+        </script>
+
         <div tabindex="1" class="table-responsive-wrapper">
             <table class="table--base" data-processList-count="{{ processList.count() }}"  data-processListOther-count="{{ processListOther.count() }}">
                 <thead>
