@@ -364,6 +364,12 @@ class View extends BaseView {
         }
         this.loadCall(url).then((response) => {
             this.loadDialog(response, callback, abortCallback, event.currentTarget);
+
+            console.log('aaaaaa');
+            const dialog = document.getElementsByClassName('dialog')[0]
+            console.log('-----')
+            console.log(dialog)
+            dialog.focus();
         })
     }
 
