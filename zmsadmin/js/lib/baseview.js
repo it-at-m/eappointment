@@ -135,8 +135,6 @@ class BaseView extends ErrorHandler {
         })
 
         const dialog = document.getElementsByClassName('dialog')[0]
-        console.log('-----')
-        console.log(dialog)
         dialog.focus();
     }
 

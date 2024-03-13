@@ -161,7 +161,7 @@ class View extends RequestView {
         }).on('click', '.form-actions button.process-copy', (event) => {
             this.onCopyProcess(this, event);
         }).on('click', '.form-actions button.process-delete', (event) => {
-            this.onConfirm(event, "confirm_delete", () => { console.log('loaooaaaaaaddd');this.onDeleteProcess(event) });
+            this.onConfirm(event, "confirm_delete", () => { this.onDeleteProcess(event) });
         }).on('click', '.form-actions button.process-abort', (event) => {
             this.onAbortProcess(this.$main, event);
         }).on('click', '.form-actions .button-cancel', (event) => {
