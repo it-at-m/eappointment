@@ -45,13 +45,13 @@
 
 {% block success_start %}
 	<section class="dialog message message--success" role="alert">
-		<h2 class="message__heading title">{{ successTitle|default("Erfolgreiche Anfrage")|trans }}</h2>
-		<div class="message__body">
+		<h2 tabindex="1" class="message__heading title">{{ successTitle|default("Erfolgreiche Anfrage")|trans }}</h2>
+		<div tabindex="1" class="message__body">
 {% endblock %}
 {% block success_start_keep %}
 	<section class="dialog message message--success message-keep" role="alert">
-		<h2 class="message__heading title">{{ successTitle|default("Erfolgreiche Anfrage")|trans }}</h2>
-		<div class="message__body">
+		<h2 tabindex="1" class="message__heading title">{{ successTitle|default("Erfolgreiche Anfrage")|trans }}</h2>
+		<div tabindex="1" class="message__body">
 {% endblock %}
 {% block success_end %}</div></section>{% endblock %}
 

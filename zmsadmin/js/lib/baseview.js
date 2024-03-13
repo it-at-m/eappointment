@@ -133,6 +133,11 @@ class BaseView extends ErrorHandler {
             parent: this,
             handleLightbox: destroyLightbox
         })
+
+        const dialog = document.getElementsByClassName('dialog')[0]
+        console.log('-----')
+        console.log(dialog)
+        dialog.focus();
     }
 
     loadDialog(response, callback, abortCallback, returnTarget) {
