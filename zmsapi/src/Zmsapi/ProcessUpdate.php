@@ -71,12 +71,18 @@ class ProcessUpdate extends BaseController
         $message->data = $process;
         
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
-        return $response;
+
+        return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }
+
     protected function testProcessData($entity)
     {
         $authCheck = (new Process())->readAuthKeyByProcessId($entity->id);
+
+        if (! (new Process())->isAppointmentAllowedWithSameMail($entity)) {
+            throw new Exception\Process\MoreThanAllowedAppointmentsPerMail();
+        }
+
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
