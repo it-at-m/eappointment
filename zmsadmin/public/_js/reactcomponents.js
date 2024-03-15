@@ -98734,7 +98734,7 @@ const readPropsScope = (scope)=>{
         id,
         shortName,
         contact,
-        services: services.map(readPropsService)
+        services: services ? services.map(readPropsService) : []
     };
 };
 const readPropsService = (service)=>{
