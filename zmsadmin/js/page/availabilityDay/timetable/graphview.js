@@ -8,11 +8,13 @@ import Board from '../layouts/board'
 import GraphBodyLayout from '../layouts/graphBody'
 import calendarNavigation from '../widgets/calendarNavigation'
 import * as constants from './index.js'
+import { Workload } from '../widgets/workload.js';
 
 const GraphView = (props) => {
     const { onSelect, timestamp } = props;
     const titleTime = moment(timestamp, 'X').format('dddd, DD.MM.YYYY')
     const graphBody = <GraphBodyLayout
+        slotBuckets={props.slotBuckets}
         showConflicts={props.conflicts.length > 0}
         conflicts={constants.renderConflicts(props.conflicts)}
         appointments={constants.renderAppointments(props.availabilityList, props.maxWorkstationCount, onSelect)}
@@ -20,14 +22,17 @@ const GraphView = (props) => {
         openings={constants.renderOpenings(props.availabilityList, onSelect)} 
     />
     return (
-        <Board className="board--light availability-timetable"
-            title={titleTime}
-            titleAside={calendarNavigation(props.links)}
-            headerRight={constants.headerRight(props.links, props.onNewAvailability)}
-            headerMiddle={constants.headerMiddle()}
-            body={graphBody}
-            footer={constants.renderFooter()}
-        />
+        <>
+            <Board className="board--light availability-timetable"
+                title={titleTime}
+                titleAside={calendarNavigation(props.links)}
+                headerRight={constants.headerRight(props.links, props.onNewAvailability)}
+                headerMiddle={constants.headerMiddle()}
+                body={graphBody}
+                footer={constants.renderFooter()}
+            />
+
+        </>
     )
 }
 
