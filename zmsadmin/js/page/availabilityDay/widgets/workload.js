@@ -32,7 +32,7 @@ const options = {
             barPercentage: 1,
             categoryPercentage: 1,
             ticks: {
-                callback: function(val, index, ticks) {
+                callback: function (val, index, ticks) {
                     // Assuming this is your previously configured x-axis callback
                     const label = this.getLabelForValue(val);
                     if (label && label.endsWith(':00')) {
@@ -50,8 +50,8 @@ const options = {
                 display: false,
             },
             ticks: {
-                stepSize: 1, 
-                callback: function(value) {
+                stepSize: 1,
+                callback: function (value) {
                     if (value % 1 === 0) {
                         return value;
                     }
@@ -83,7 +83,7 @@ function transformSlotBucketsToChartData(slotBuckets) {
         const slot = slotBuckets[label];
         const totalInternSlots = parseInt(slot.intern, 10);
         const occupiedSlots = parseInt(slot.occupiedCount, 10);
-        const availableSlots = totalInternSlots - occupiedSlots; // Calculate available slots as difference
+        const availableSlots = Math.max(0, totalInternSlots - occupiedSlots); // Calculate available slots as difference
 
         // For "available", push the calculated number of available slots
         datasets.available.data.push(availableSlots);
@@ -101,7 +101,7 @@ function transformSlotBucketsToChartData(slotBuckets) {
 
 
 export const Workload = ({ slotBuckets }) => {
-    const slotBucketData = transformSlotBucketsToChartData(slotBuckets);
+    const slotBucketData = slotBuckets ? transformSlotBucketsToChartData(slotBuckets) : transformSlotBucketsToChartData({});
     return <>
         <div style={{ height: '300px', width: '100%' }}>
             <Bar options={options} data={slotBucketData} />
