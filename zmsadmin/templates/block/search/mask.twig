@@ -3,25 +3,28 @@
 {% from 'element/helper/form.twig' import formgroup %}
 
 <section class="block panel--heavy" style="margin-bottom:0px;">
-    <h3 class="aural">Kundensuche</h3>
-    <form method="GET" action="{{ urlGet('search', {}, {}) }}" class="form--base">
-        {{ formgroup(
-            {
-                "label":"Kundensuche"
-            },
-            [{
-                "type":"input",
-                "parameter":{
-                    "name":"query",
-                    "value": searchQuery
-                }
-            }]
-        ) }}
-        <div class="form-actions">
-            <button class="button button-submit right">Suche</button>
-        </div>
-    </form>
+    {% if workstation.scope.id %}
+        <h3 class="aural">Kundensuche</h3>
+        <form method="GET" action="{{ urlGet('search', {}, {}) }}" class="form--base">
+            {{ formgroup(
+                {
+                    "label":"Kundensuche"
+                },
+                [{
+                    "type":"input",
+                    "parameter":{
+                        "name":"query",
+                        "value": searchQuery
+                    }
+                }]
+            ) }}
+            <div class="form-actions">
+                <button class="button button-submit right">Suche</button>
+            </div>
+        </form>
+    {% endif %}
 </section>
+
 
 {#% embed "block/scaffholding/board.twig" with {'class': 'search-mask board--heavy'} %}
     {% from 'element/helper/form.twig' import formgroup %}
