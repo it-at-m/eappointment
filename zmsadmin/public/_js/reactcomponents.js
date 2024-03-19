@@ -15131,6 +15131,7 @@ const GraphView = (props)=>{
     const titleTime = (0, _momentWithLocalesDefault.default)(timestamp, "X").format("dddd, DD.MM.YYYY");
     const graphBody = /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _graphBodyDefault.default), {
         slotBuckets: props.slotBuckets,
+        timestamp: timestamp,
         showConflicts: props.conflicts.length > 0,
         conflicts: _indexJs.renderConflicts(props.conflicts),
         appointments: _indexJs.renderAppointments(props.availabilityList, props.maxWorkstationCount, onSelect),
@@ -15152,7 +15153,7 @@ const GraphView = (props)=>{
             footer: _indexJs.renderFooter()
         }, void 0, false, {
             fileName: "js/page/availabilityDay/timetable/graphview.js",
-            lineNumber: 26,
+            lineNumber: 27,
             columnNumber: 13
         }, undefined)
     }, void 0, false);
@@ -29917,14 +29918,14 @@ const refScroll = (element)=>{
     if (element) element.scrollLeft += 470;
 };
 const GraphBodyLayout = (props)=>{
-    console.log("props", props);
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
         children: [
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _workload.Workload), {
-                slotBuckets: props.slotBuckets
+                slotBuckets: props.slotBuckets,
+                timestamp: props.timestamp
             }, void 0, false, {
                 fileName: "js/page/availabilityDay/layouts/graphBody.js",
-                lineNumber: 43,
+                lineNumber: 42,
                 columnNumber: 13
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -29940,7 +29941,7 @@ const GraphBodyLayout = (props)=>{
                                     children: "Konflikte"
                                 }, void 0, false, {
                                     fileName: "js/page/availabilityDay/layouts/graphBody.js",
-                                    lineNumber: 48,
+                                    lineNumber: 47,
                                     columnNumber: 48
                                 }, undefined) : null,
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -29948,18 +29949,18 @@ const GraphBodyLayout = (props)=>{
                                     children: "Spontan\xadkunden"
                                 }, void 0, false, {
                                     fileName: "js/page/availabilityDay/layouts/graphBody.js",
-                                    lineNumber: 49,
+                                    lineNumber: 48,
                                     columnNumber: 25
                                 }, undefined)
                             ]
                         }, void 0, true, {
                             fileName: "js/page/availabilityDay/layouts/graphBody.js",
-                            lineNumber: 47,
+                            lineNumber: 46,
                             columnNumber: 21
                         }, undefined)
                     }, void 0, false, {
                         fileName: "js/page/availabilityDay/layouts/graphBody.js",
-                        lineNumber: 46,
+                        lineNumber: 45,
                         columnNumber: 17
                     }, undefined),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -29980,29 +29981,29 @@ const GraphBodyLayout = (props)=>{
                                         children: props.openings
                                     }, void 0, false, {
                                         fileName: "js/page/availabilityDay/layouts/graphBody.js",
-                                        lineNumber: 57,
+                                        lineNumber: 56,
                                         columnNumber: 29
                                     }, undefined)
                                 ]
                             }, void 0, true, {
                                 fileName: "js/page/availabilityDay/layouts/graphBody.js",
-                                lineNumber: 54,
+                                lineNumber: 53,
                                 columnNumber: 25
                             }, undefined)
                         }, void 0, false, {
                             fileName: "js/page/availabilityDay/layouts/graphBody.js",
-                            lineNumber: 53,
+                            lineNumber: 52,
                             columnNumber: 21
                         }, undefined)
                     }, void 0, false, {
                         fileName: "js/page/availabilityDay/layouts/graphBody.js",
-                        lineNumber: 52,
+                        lineNumber: 51,
                         columnNumber: 17
                     }, undefined)
                 ]
             }, void 0, true, {
                 fileName: "js/page/availabilityDay/layouts/graphBody.js",
-                lineNumber: 45,
+                lineNumber: 44,
                 columnNumber: 13
             }, undefined)
         ]
@@ -30071,37 +30072,54 @@ const options = {
         }
     }
 };
-function transformSlotBucketsToChartData(slotBuckets) {
-    const labels = Object.keys(slotBuckets); // Extract time slots as labels
+function transformSlotBucketsToChartData(slotBuckets, timestamp) {
+    const now = new Date();
+    const dayDate = new Date(timestamp * 1000);
+    const dayString = dayDate.toISOString().split("T")[0];
+    const labels = Object.keys(slotBuckets);
     const datasets = {
+        past: {
+            label: "Past Slots",
+            data: new Array(labels.length).fill(0),
+            backgroundColor: "rgba(211, 211, 211, 0.5)"
+        },
         occupied: {
             label: "Gebuchte Slots",
             data: [],
-            backgroundColor: "rgba(255, 99, 132, 0.5)"
+            backgroundColor: []
         },
         available: {
             label: "Freie Slots",
             data: [],
-            backgroundColor: "#CCE0E6"
+            backgroundColor: []
         }
     };
-    labels.forEach((label)=>{
+    labels.forEach((label, index)=>{
         const slot = slotBuckets[label];
         const totalInternSlots = parseInt(slot.intern, 10);
         const occupiedSlots = parseInt(slot.occupiedCount, 10);
-        const availableSlots = Math.max(0, totalInternSlots - occupiedSlots); // Calculate available slots as difference
-        // For "available", push the calculated number of available slots
-        datasets.available.data.push(availableSlots);
-        // For "occupied", push the number of occupied slots
-        datasets.occupied.data.push(occupiedSlots);
+        const availableSlots = Math.max(0, totalInternSlots - occupiedSlots);
+        const slotDateTime = new Date(`${dayString}T${label}:00`);
+        const isPast = slotDateTime < now;
+        if (isPast) {
+            datasets.past.data[index] = totalInternSlots;
+            datasets.available.data.push(0);
+            datasets.occupied.data.push(0);
+        } else {
+            datasets.available.data.push(availableSlots);
+            datasets.occupied.data.push(occupiedSlots);
+            datasets.available.backgroundColor.push("#CCE0E6");
+            datasets.occupied.backgroundColor.push("rgba(255, 99, 132, 0.5)");
+        }
     });
+    const finalDatasets = Object.values(datasets).filter((dataset)=>dataset.data.some((value)=>value > 0));
     return {
         labels,
-        datasets: Object.values(datasets)
+        datasets: finalDatasets
     };
 }
-const Workload = ({ slotBuckets })=>{
-    const slotBucketData = slotBuckets ? transformSlotBucketsToChartData(slotBuckets) : transformSlotBucketsToChartData({});
+const Workload = ({ slotBuckets, timestamp })=>{
+    const slotBucketData = slotBuckets ? transformSlotBucketsToChartData(slotBuckets, timestamp) : transformSlotBucketsToChartData({}, timestamp);
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
         children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
             style: {
@@ -30113,12 +30131,12 @@ const Workload = ({ slotBuckets })=>{
                 data: slotBucketData
             }, void 0, false, {
                 fileName: "js/page/availabilityDay/widgets/workload.js",
-                lineNumber: 107,
+                lineNumber: 127,
                 columnNumber: 13
             }, undefined)
         }, void 0, false, {
             fileName: "js/page/availabilityDay/widgets/workload.js",
-            lineNumber: 106,
+            lineNumber: 126,
             columnNumber: 9
         }, undefined)
     }, void 0, false);
