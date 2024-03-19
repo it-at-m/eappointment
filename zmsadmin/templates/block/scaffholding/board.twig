@@ -11,12 +11,12 @@
 {% if ("exception" in class) %}
     <{{ blockTag }} class="board {{ class }}" role="alert" data-exception-errorlist="{{ data|json_encode() }}">
 {% else %}
-    <{{ blockTag }} class="board {{ class }}" data-reload="{% if reload %}{{ reload }}{% endif %}" {% for key, value in data %}data-{{ key }}="{{ value }}"{% endfor %}>
+    <{{ blockTag }} tabindex="0" class="board {{ class }}" data-reload="{% if reload %}{{ reload }}{% endif %}" {% for key, value in data %}data-{{ key }}="{{ value }}"{% endfor %}>
 {% endif %}
 
     {% if block('board_title') is not empty %}
     <div class="header board__header">
-        <{{ headingWeight|default('h2') }} class="{{ ("exception" in class)? 'message__heading' : 'board__heading' }}">
+        <{{ headingWeight|default('h2') }} tabindex="0" class="{{ ("exception" in class)? 'message__heading' : 'board__heading' }}">
             {% block board_title -%}{%- endblock %}
         </{{ headingWeight|default('h2') }}>
     </div>
@@ -37,7 +37,7 @@
     </div>
     {%- endif %}
 
-    <div class="{{ ("exception" in class)? 'body message__body message message--error message-keep' : 'body board__body' }} {{ bodyclass }}">
+    <div tabindex="0" class="{{ ("exception" in class)? 'body message__body message message--error message-keep' : 'body board__body' }} {{ bodyclass }}">
         {% if messages != "hide" %}
         {% include "element/helper/messageHandler.twig" %}
         {%- endif %}
