@@ -30079,7 +30079,7 @@ function transformSlotBucketsToChartData(slotBuckets, timestamp) {
     const labels = Object.keys(slotBuckets);
     const datasets = {
         past: {
-            label: "Past Slots",
+            label: "Vergangene Slots",
             data: new Array(labels.length).fill(0),
             backgroundColor: "rgba(211, 211, 211, 0.5)"
         },
