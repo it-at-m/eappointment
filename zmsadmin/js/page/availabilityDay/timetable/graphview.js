@@ -15,11 +15,12 @@ const GraphView = (props) => {
     const titleTime = moment(timestamp, 'X').format('dddd, DD.MM.YYYY')
     const graphBody = <GraphBodyLayout
         slotBuckets={props.slotBuckets}
+        timestamp={timestamp}
         showConflicts={props.conflicts.length > 0}
         conflicts={constants.renderConflicts(props.conflicts)}
         appointments={constants.renderAppointments(props.availabilityList, props.maxWorkstationCount, onSelect)}
         numberOfAppointments={constants.renderNumberOfAppointments(props.availabilityList, props.maxWorkstationCount)}
-        openings={constants.renderOpenings(props.availabilityList, onSelect)} 
+        openings={constants.renderOpenings(props.availabilityList, onSelect)}
     />
     return (
         <>
