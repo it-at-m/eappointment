@@ -18,12 +18,12 @@ const background = () => {
                     <span className="text">{i}:00</span>
                 </div>
             </div>
-         ))}
+        ))}
     </div>
 }
 
 const conflicts = (showConflicts, conflicts) => {
-    if ( showConflicts) {
+    if (showConflicts) {
         return (
             <div className="bars conflict-level">{conflicts}</div>
         )
@@ -39,17 +39,17 @@ const refScroll = (element) => {
 const GraphBodyLayout = (props) => {
     return (
         <>
-            <Workload slotBuckets={props.slotBuckets} />
+            <Workload slotBuckets={props.slotBuckets} timestamp={props.timestamp} />
 
             <div className="grid">
                 <div className="grid__item one-tenth">
                     <div className="availability-timetable_legend">
-                    { props.showConflicts ? <div className="legend__item legend_conflict">Konflikte</div> : null }
+                        {props.showConflicts ? <div className="legend__item legend_conflict">Konflikte</div> : null}
                         <div className="legend__item legend_opening">Spontan&shy;kunden</div>
                     </div>
                 </div>
                 <div className="grid__item nine-tenths">
-                    <div className="availability-timetable_container" ref={refScroll} style={{fontSize: "70px"}} >
+                    <div className="availability-timetable_container" ref={refScroll} style={{ fontSize: "70px" }} >
                         <div className="inner">
                             {background()}
                             {conflicts(props.showConflicts, props.conflicts)}
