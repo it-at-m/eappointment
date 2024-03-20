@@ -32,7 +32,7 @@ const options = {
             barPercentage: 1,
             categoryPercentage: 1,
             ticks: {
-                callback: function(val, index, ticks) {
+                callback: function (val, index, ticks) {
                     // Assuming this is your previously configured x-axis callback
                     const label = this.getLabelForValue(val);
                     if (label && label.endsWith(':00')) {
@@ -50,8 +50,8 @@ const options = {
                 display: false,
             },
             ticks: {
-                stepSize: 1, 
-                callback: function(value) {
+                stepSize: 1,
+                callback: function (value) {
                     if (value % 1 === 0) {
                         return value;
                     }
@@ -64,44 +64,64 @@ const options = {
 
 
 
-function transformSlotBucketsToChartData(slotBuckets) {
-    const labels = Object.keys(slotBuckets); // Extract time slots as labels
+function transformSlotBucketsToChartData(slotBuckets, timestamp) {
+    const now = new Date();
+    const dayDate = new Date(timestamp * 1000);
+    const dayString = dayDate.toISOString().split('T')[0];
+    const labels = Object.keys(slotBuckets);
+
     const datasets = {
-        occupied: { // Dataset for occupied slots
+        past: {
+            label: 'Vergangene Slots',
+            data: new Array(labels.length).fill(0),
+            backgroundColor: 'rgba(211, 211, 211, 0.5)',
+        },
+        occupied: {
             label: 'Gebuchte Slots',
             data: [],
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            backgroundColor: [],
         },
-        available: { // Dataset for available slots within intern
+        available: {
             label: 'Freie Slots',
             data: [],
-            backgroundColor: '#CCE0E6',
+            backgroundColor: [],
         },
     };
 
-    labels.forEach(label => {
+    labels.forEach((label, index) => {
         const slot = slotBuckets[label];
         const totalInternSlots = parseInt(slot.intern, 10);
         const occupiedSlots = parseInt(slot.occupiedCount, 10);
-        const availableSlots = totalInternSlots - occupiedSlots; // Calculate available slots as difference
+        const availableSlots = Math.max(0, totalInternSlots - occupiedSlots);
 
-        // For "available", push the calculated number of available slots
-        datasets.available.data.push(availableSlots);
-        // For "occupied", push the number of occupied slots
-        datasets.occupied.data.push(occupiedSlots);
+        const slotDateTime = new Date(`${dayString}T${label}:00`);
+        const isPast = slotDateTime < now;
+
+        if (isPast) {
+            datasets.past.data[index] = totalInternSlots;
+            datasets.available.data.push(0);
+            datasets.occupied.data.push(0);
+        } else {
+            datasets.available.data.push(availableSlots);
+            datasets.occupied.data.push(occupiedSlots);
+            datasets.available.backgroundColor.push('#CCE0E6');
+            datasets.occupied.backgroundColor.push('rgba(255, 99, 132, 0.5)');
+        }
     });
+
+    const finalDatasets = Object.values(datasets).filter(dataset => dataset.data.some(value => value > 0));
 
     return {
         labels,
-        datasets: Object.values(datasets),
+        datasets: finalDatasets,
     };
 }
 
 
 
 
-export const Workload = ({ slotBuckets }) => {
-    const slotBucketData = transformSlotBucketsToChartData(slotBuckets);
+export const Workload = ({ slotBuckets, timestamp }) => {
+    const slotBucketData = slotBuckets ? transformSlotBucketsToChartData(slotBuckets, timestamp) : transformSlotBucketsToChartData({}, timestamp);
     return <>
         <div style={{ height: '300px', width: '100%' }}>
             <Bar options={options} data={slotBucketData} />
