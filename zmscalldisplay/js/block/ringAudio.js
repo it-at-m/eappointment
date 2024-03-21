@@ -18,11 +18,15 @@ class View extends BaseView {
         this.writeCalledQueueIds(newQueueIds);
     }
 
-    hasNewQueueId() {
+    getNewQueueIds() {
         let newQueueIds = this.getCalledQueueIds();
         let oldQueueIds = window.bo.zmscalldisplay.queue.calledIds;
         let diff = $(newQueueIds).not(oldQueueIds).get();
-        return (0 < diff.length);
+        return diff;
+    }
+
+    hasNewQueueId() {
+        return (0 < this.getNewQueueIds().length);
     }
 
     getCalledQueueIds() {

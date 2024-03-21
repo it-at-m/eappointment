@@ -1,0 +1,222 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2016-11-25T08:57:28+01:00",
+    "server": "Zmsapi-ENV"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/organisation.json",
+    "contact": {
+      "city": "",
+      "street": "",
+      "country": "Germany",
+      "name": "Treptow-Köpenick"
+    },
+    "name": "Treptow-Köpenick",
+    "id": "78",
+    "preferences": {
+      "ticketPrinterProtectionEnabled": "0"
+    },
+    "departments": [
+      {
+        "contact": {
+          "city": "",
+          "street": "",
+          "country": "Germany",
+          "name": ""
+        },
+        "email": "buergeraemter@ba-tk.berlin.de",
+        "id": "96",
+        "name": "Bürgeramt",
+        "clusters": [
+          {
+            "id": "78",
+            "name": "Bürgeramt Köpenick",
+            "hint": "Gute Tag",
+            "shortNameEnabled": "1",
+            "callDisplayText": "Herzlich Willkommen im Bürgeramt Köpenick\r\n\r\n",
+            "scopes": [
+              {
+                "hint": "Bürgeramt | ",
+                "id": "312",
+                "contact": {
+                  "name": "Bürgeramt I in Köpenick",
+                  "street": "Alt-Köpenick 21, 12555 Berlin",
+                  "email": "",
+                  "country": "Germany"
+                },
+                "preferences": {
+                  "appointment": {
+                    "deallocationDuration": "20",
+                    "endInDaysDefault": "60",
+                    "multipleSlotsEnabled": "1",
+                    "reservationDuration": "20",
+                    "startInDaysDefault": "0"
+                  },
+                  "client": {
+                    "alternateAppointmentUrl": "https://service.berlin.de",
+                    "amendmentActivated": "1",
+                    "amendmentLabel": "",
+                    "emailRequired": "1",
+                    "telephoneActivated": "1",
+                    "telephoneRequired": "1"
+                  },
+                  "notifications": {
+                    "confirmationContent": "",
+                    "headsUpContent": "",
+                    "headsUpTime": "0"
+                  },
+                  "pickup": {
+                    "alternateName": "Ausgabe",
+                    "isDefault": "0"
+                  },
+                  "queue": {
+                    "callCountMax": "0",
+                    "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Köpenick\r\n======================",
+                    "firstNumber": "1",
+                    "lastNumber": "399",
+                    "processingTimeAverage": "12",
+                    "publishWaitingTimeEnabled": "1",
+                    "statisticsEnabled": "1"
+                  },
+                  "survey": {
+                    "emailContent": "",
+                    "enabled": "0",
+                    "label": ""
+                  },
+                  "ticketprinter": {
+                    "buttonName": "Bürgeramt I in Köpenick",
+                    "confirmationEnabled": "0",
+                    "deactivatedText": "",
+                    "notificationsAmendmentEnabled": "0",
+                    "notificationsEnabled": "0",
+                    "notificationsDelay": "0"
+                  },
+                  "workstation": {
+                    "emergencyEnabled": "1"
+                  }
+                },
+                "shortName": "",
+                "status": {
+                  "emergency": {
+                    "acceptedByWorkstation": "-1",
+                    "activated": "0",
+                    "calledByWorkstation": "-1"
+                  },
+                  "queue": {
+                    "workstationCount": "0",
+                    "ghostWorkstationCount": "-1",
+                    "givenNumberCount": "35",
+                    "lastGivenNumber": "36",
+                    "lastGivenNumberTimestamp": 1458774000
+                  },
+                  "ticketprinter": {
+                    "deactivated": "0"
+                  }
+                },
+                "provider": {
+                  "id": "122208",
+                  "$ref": "/provider/122208/"
+                }
+              }
+            ]
+          },
+          {
+            "id": "76",
+            "name": "Bürgeramt Schöneweide",
+            "hint": "",
+            "shortNameEnabled": "1",
+            "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Schöneweide\r\n=====================\r\n\r\nDokumentenausgabe:\r\nneben der Information\r\nPlatz 1-2 Erdgeschoss\r\n\r\nPlätze 10-16\r\n1. Etage\r\n\r\nPlätze 20-28\r\n2. Etage",
+            "scopes": [
+              {
+                "hint": "Bürgeramt | ",
+                "id": "313",
+                "contact": {
+                  "name": "Bürgeramt II in Schöneweide",
+                  "street": "Michael-Brückner-Str. 1, 12439 Berlin",
+                  "email": "",
+                  "country": "Germany"
+                },
+                "preferences": {
+                  "appointment": {
+                    "deallocationDuration": "20",
+                    "endInDaysDefault": "60",
+                    "multipleSlotsEnabled": "1",
+                    "reservationDuration": "20",
+                    "startInDaysDefault": "0"
+                  },
+                  "client": {
+                    "alternateAppointmentUrl": "",
+                    "amendmentActivated": "1",
+                    "amendmentLabel": "",
+                    "emailRequired": "1",
+                    "telephoneActivated": "1",
+                    "telephoneRequired": "1"
+                  },
+                  "notifications": {
+                    "confirmationContent": "",
+                    "headsUpContent": "",
+                    "headsUpTime": "0"
+                  },
+                  "pickup": {
+                    "alternateName": "Ausgabe",
+                    "isDefault": "0"
+                  },
+                  "queue": {
+                    "callCountMax": "0",
+                    "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Schöneweide\r\n=====================\r\n\r\nDokumentenausgabe:\r\nPlatz 1-2 Erdgeschoss\r\n\r\nPlätze 10-16\r\n1. Etage\r\n\r\nPlätze 20-28\r\n2. Etage",
+                    "firstNumber": "1",
+                    "lastNumber": "399",
+                    "processingTimeAverage": "12",
+                    "publishWaitingTimeEnabled": "0",
+                    "statisticsEnabled": "1"
+                  },
+                  "survey": {
+                    "emailContent": "",
+                    "enabled": "0",
+                    "label": ""
+                  },
+                  "ticketprinter": {
+                    "buttonName": "Bürgeramt II in Schöneweide",
+                    "confirmationEnabled": "0",
+                    "deactivatedText": "",
+                    "notificationsAmendmentEnabled": "0",
+                    "notificationsEnabled": "0",
+                    "notificationsDelay": "0"
+                  },
+                  "workstation": {
+                    "emergencyEnabled": "1"
+                  }
+                },
+                "shortName": "",
+                "status": {
+                  "emergency": {
+                    "acceptedByWorkstation": "-1",
+                    "activated": "0",
+                    "calledByWorkstation": "-1"
+                  },
+                  "queue": {
+                    "workstationCount": "0",
+                    "ghostWorkstationCount": "-1",
+                    "givenNumberCount": "72",
+                    "lastGivenNumber": "73",
+                    "lastGivenNumberTimestamp": 1458774000
+                  },
+                  "ticketprinter": {
+                    "deactivated": "0"
+                  }
+                },
+                "provider": {
+                  "id": "122226",
+                  "$ref": "/provider/122226/"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

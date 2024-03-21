@@ -23,24 +23,26 @@ class ExchangeRequestdepartment extends Base
               ELSE r.name
             END
         ) as name,
-        SUM(statistikJoin.requestscount) as requestscount
- FROM '. Department::TABLE .' d
+        SUM(statistikJoin.requestscount) as requestscount,
+        AVG(statistikJoin.processingtime) as processingtime
+    FROM '. Department::TABLE .' d
         INNER JOIN (
-          SELECT
-            s.anliegenid,
-            s.behoerdenid,
-            s.organisationsid,
-        COUNT(s.anliegenid) as requestscount,
-        s.`datum`
-      FROM '. self::TABLE .' s
-      WHERE s.behoerdenid = :departmentid AND s.`datum` BETWEEN :datestart AND :dateend
-      GROUP BY s.`datum`, s.anliegenid
+            SELECT
+                s.anliegenid,
+                s.behoerdenid,
+                s.organisationsid,
+                COUNT(s.anliegenid) as requestscount,
+                AVG(s.bearbeitungszeit) as processingtime,
+                s.`datum`
+            FROM '. self::TABLE .' s
+            WHERE s.behoerdenid = :departmentid AND s.`datum` BETWEEN :datestart AND :dateend
+            GROUP BY s.`datum`, s.anliegenid
         ) as statistikJoin ON statistikJoin.`behoerdenid` = d.BehoerdenID
         LEFT JOIN '. self::REQUESTTABLE .' r ON r.id = statistikJoin.anliegenid
     WHERE d.`behoerdenid` = :departmentid AND statistikJoin.`datum` BETWEEN :datestart AND :dateend
     GROUP BY DATE_FORMAT(statistikJoin.`datum`, :groupby), name, statistikJoin.anliegenid
     ORDER BY r.name, statistikJoin.anliegenid
-    ';
+    ';    
 
     const QUERY_SUBJECTS = '
       SELECT

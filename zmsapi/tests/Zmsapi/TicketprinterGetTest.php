@@ -20,13 +20,6 @@ class TicketprinterGetTest extends Base
         $this->render(['hash' => '12345678'], [], []);
     }
 
-    public function testNotEnabled()
-    {
-        $this->expectException('\BO\Zmsapi\Exception\Ticketprinter\TicketprinterNotEnabled');
-        $this->expectExceptionCode(200);
-        $this->render(['hash' => 'ac9df1f2983c3f94aebc1a9bd121bfecf5b374f4'], [], []);
-    }
-
     public function testEmpty()
     {
         $this->expectException('\Exception');

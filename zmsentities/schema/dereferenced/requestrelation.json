@@ -5,7 +5,8 @@
         "provider": {
             "id": 21334,
             "name": "Bürgeramt Mitte",
-            "source": "dldb"
+            "source": "dldb",
+            "displayName":"001"
         },
         "request": {
             "id": "120335",
@@ -213,7 +214,8 @@
                 "id": 21334,
                 "name": "Bürgeramt Mitte",
                 "source": "dldb",
-                "link": "https:\/\/service.berlin.de\/standort\/122280\/"
+                "link": "https:\/\/service.berlin.de\/standort\/122280\/",
+                "displayName":"001"
             },
             "required": [
                 "id",

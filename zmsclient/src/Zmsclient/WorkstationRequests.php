@@ -77,7 +77,7 @@ class WorkstationRequests
                 ->readGetResult(
                     '/cluster/'. $this->readCluster()->id .'/process/'. $selectedDate->format('Y-m-d') .'/',
                     [
-                        'resolveReferences' => 1,
+                        'resolveReferences' => 2,
                         'gql' => $gql
                     ]
                 )
@@ -87,7 +87,7 @@ class WorkstationRequests
                 ->readGetResult(
                     '/scope/'. $this->scope['id'] .'/process/'. $selectedDate->format('Y-m-d') .'/',
                     [
-                        'resolveReferences' => 1,
+                        'resolveReferences' => 2,
                         'gql' => $gql
                     ]
                 )

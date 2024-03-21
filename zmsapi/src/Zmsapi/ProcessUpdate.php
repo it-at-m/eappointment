@@ -62,23 +62,27 @@ class ProcessUpdate extends BaseController
             $process = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
         }
        
-        if ($initiator && $process->hasScopeAdmin()) {
+        if ($initiator && $process->hasScopeAdmin() && $process->sendAdminMailOnUpdated()) {
             $config = (new Config())->readEntity();
             $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, 'updated', $initiator);
             (new Mail())->writeInQueueWithAdmin($mail);
         }
-
         $message = Response\Message::create($request);
         $message->data = $process;
         
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
-        return $response;
+
+        return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }
 
     protected function testProcessData($entity)
     {
         $authCheck = (new Process())->readAuthKeyByProcessId($entity->id);
+
+        if (! (new Process())->isAppointmentAllowedWithSameMail($entity)) {
+            throw new Exception\Process\MoreThanAllowedAppointmentsPerMail();
+        }
+
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {

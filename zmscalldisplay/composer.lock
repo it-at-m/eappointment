@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "31ec0e202bd39520e8ba7d5c7dbe1bd8",
+    "content-hash": "dc629e43e09fb829335b28d4351746c5",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -122,11 +122,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-main",
+            "version": "dev-roave-test-2",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "51a4c08085945f4488ea92f925a2996a25173df3"
+                "reference": "132bd01dbec27ad473955fb9bb3d410515f9c98f"
             },
             "require": {
                 "ext-json": ">=0",
@@ -136,6 +136,7 @@
             "require-dev": {
                 "phpmd/phpmd": "^2.8.0",
                 "phpunit/phpunit": "^9.5.4",
+                "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
@@ -169,11 +170,11 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-main",
+            "version": "dev-roave-test-2",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
-                "reference": "a3041b800445f8aca076b2a79397eeca5fe7af85"
+                "reference": "249f1aa96e13e3c2379353bf33539f0174fced53"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -184,7 +185,6 @@
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
                 "ext-pcre": ">=0",
-                "juliangut/spiral": "0.4",
                 "php": ">=7.3.0",
                 "php-http/curl-client": "^2.2",
                 "psr/http-message": "^1.0",
@@ -228,11 +228,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-main",
+            "version": "dev-roave-test-2",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "6d50c616376c01caa495318e4a4c3825703dd24b"
+                "reference": "132bd01dbec27ad473955fb9bb3d410515f9c98f"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -286,11 +286,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-main",
+            "version": "dev-roave-test-2",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "dbbbdf39b2231536c550f7b58dd40dc6f873c977"
+                "reference": "132bd01dbec27ad473955fb9bb3d410515f9c98f"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -913,67 +913,6 @@
                 }
             ],
             "time": "2023-08-27T10:13:57+00:00"
-        },
-        {
-            "name": "juliangut/spiral",
-            "version": "0.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/juliangut/spiral.git",
-                "reference": "967e130a5b36f069998baa2136a239fdc6bd95f2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/juliangut/spiral/zipball/967e130a5b36f069998baa2136a239fdc6bd95f2",
-                "reference": "967e130a5b36f069998baa2136a239fdc6bd95f2",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "fig/http-message-util": "^1.0",
-                "lib-curl": "*",
-                "php": "^5.5|^7.0",
-                "psr/http-message": "^1.0",
-                "zendframework/zend-diactoros": "^1.3"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^1.0",
-                "phpmd/phpmd": "~2.2",
-                "phpunit/phpunit": "~4.5|^5.0",
-                "sebastian/phpcpd": "~2.0",
-                "squizlabs/php_codesniffer": "~2.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Jgut\\Spiral\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Julián Gutiérrez",
-                    "email": "juliangut@gmail.com",
-                    "homepage": "http://juliangut.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "A PSR7 aware cURL client",
-            "homepage": "http://github.com/juliangut/spiral",
-            "keywords": [
-                "curl",
-                "psr7",
-                "request",
-                "response"
-            ],
-            "support": {
-                "issues": "https://github.com/juliangut/spiral/issues",
-                "source": "https://github.com/juliangut/spiral"
-            },
-            "time": "2017-06-03T15:19:22+00:00"
         },
         {
             "name": "league/html-to-markdown",
@@ -3624,16 +3563,16 @@
         },
         {
             "name": "symfony/polyfill-php80",
-            "version": "v1.27.0",
+            "version": "v1.28.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php80.git",
-                "reference": "7a6ff3f1959bb01aefccb463a0f2cd3d3d2fd936"
+                "reference": "6caa57379c4aec19c0a12a38b59b26487dcfe4b5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/7a6ff3f1959bb01aefccb463a0f2cd3d3d2fd936",
-                "reference": "7a6ff3f1959bb01aefccb463a0f2cd3d3d2fd936",
+                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/6caa57379c4aec19c0a12a38b59b26487dcfe4b5",
+                "reference": "6caa57379c4aec19c0a12a38b59b26487dcfe4b5",
                 "shasum": ""
             },
             "require": {
@@ -3642,7 +3581,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.27-dev"
+                    "dev-main": "1.28-dev"
                 },
                 "thanks": {
                     "name": "symfony/polyfill",
@@ -3687,7 +3626,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.27.0"
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.28.0"
             },
             "funding": [
                 {
@@ -3703,7 +3642,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-11-03T14:55:06+00:00"
+            "time": "2023-01-26T09:26:14+00:00"
         },
         {
             "name": "symfony/translation",
@@ -3882,16 +3821,16 @@
         },
         {
             "name": "symfony/twig-bridge",
-            "version": "v5.4.22",
+            "version": "v5.4.26",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/twig-bridge.git",
-                "reference": "e5b174464f68be6876046db3ad6e217d9a7dbbac"
+                "reference": "832461a5f556df7933fd82e75b097d76182c640b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/twig-bridge/zipball/e5b174464f68be6876046db3ad6e217d9a7dbbac",
-                "reference": "e5b174464f68be6876046db3ad6e217d9a7dbbac",
+                "url": "https://api.github.com/repos/symfony/twig-bridge/zipball/832461a5f556df7933fd82e75b097d76182c640b",
+                "reference": "832461a5f556df7933fd82e75b097d76182c640b",
                 "shasum": ""
             },
             "require": {
@@ -3983,7 +3922,7 @@
             "description": "Provides integration for Twig with various Symfony components",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/twig-bridge/tree/v5.4.22"
+                "source": "https://github.com/symfony/twig-bridge/tree/v5.4.26"
             },
             "funding": [
                 {
@@ -3999,7 +3938,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-03-31T08:28:44+00:00"
+            "time": "2023-07-20T16:28:53+00:00"
         },
         {
             "name": "tracy/tracy",
@@ -4219,73 +4158,6 @@
                 }
             ],
             "time": "2023-02-08T07:49:20+00:00"
-        },
-        {
-            "name": "zendframework/zend-diactoros",
-            "version": "1.8.7",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/zendframework/zend-diactoros.git",
-                "reference": "a85e67b86e9b8520d07e6415fcbcb8391b44a75b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/a85e67b86e9b8520d07e6415fcbcb8391b44a75b",
-                "reference": "a85e67b86e9b8520d07e6415fcbcb8391b44a75b",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^5.6 || ^7.0",
-                "psr/http-message": "^1.0"
-            },
-            "provide": {
-                "psr/http-message-implementation": "1.0"
-            },
-            "require-dev": {
-                "ext-dom": "*",
-                "ext-libxml": "*",
-                "php-http/psr7-integration-tests": "dev-master",
-                "phpunit/phpunit": "^5.7.16 || ^6.0.8 || ^7.2.7",
-                "zendframework/zend-coding-standard": "~1.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-release-1.8": "1.8.x-dev"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "src/functions/create_uploaded_file.php",
-                    "src/functions/marshal_headers_from_sapi.php",
-                    "src/functions/marshal_method_from_sapi.php",
-                    "src/functions/marshal_protocol_version_from_sapi.php",
-                    "src/functions/marshal_uri_from_sapi.php",
-                    "src/functions/normalize_server.php",
-                    "src/functions/normalize_uploaded_files.php",
-                    "src/functions/parse_cookie_header.php"
-                ],
-                "psr-4": {
-                    "Zend\\Diactoros\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-2-Clause"
-            ],
-            "description": "PSR HTTP Message implementations",
-            "homepage": "https://github.com/zendframework/zend-diactoros",
-            "keywords": [
-                "http",
-                "psr",
-                "psr-7"
-            ],
-            "support": {
-                "issues": "https://github.com/zendframework/zend-diactoros/issues",
-                "source": "https://github.com/zendframework/zend-diactoros"
-            },
-            "abandoned": "laminas/laminas-diactoros",
-            "time": "2019-08-06T17:53:53+00:00"
         }
     ],
     "packages-dev": [
@@ -4498,28 +4370,28 @@
         },
         {
             "name": "helmich/phpunit-json-assert",
-            "version": "v3.4.3",
+            "version": "v3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/martin-helmich/phpunit-json-assert.git",
-                "reference": "73d72cc86f427ff247c8f356798b0568a185cf53"
+                "reference": "5a3a53e46f4d1f1b324c5cc2e33d87ad2d37260c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/martin-helmich/phpunit-json-assert/zipball/73d72cc86f427ff247c8f356798b0568a185cf53",
-                "reference": "73d72cc86f427ff247c8f356798b0568a185cf53",
+                "url": "https://api.github.com/repos/martin-helmich/phpunit-json-assert/zipball/5a3a53e46f4d1f1b324c5cc2e33d87ad2d37260c",
+                "reference": "5a3a53e46f4d1f1b324c5cc2e33d87ad2d37260c",
                 "shasum": ""
             },
             "require": {
                 "justinrainbow/json-schema": "^5.0",
-                "php": "^7.2 || ^8.0",
-                "softcreatr/jsonpath": "^0.7.2 || ^0.8"
+                "php": "^8.0",
+                "softcreatr/jsonpath": "^0.8"
             },
             "conflict": {
-                "phpunit/phpunit": "<8.0 || >= 10.0"
+                "phpunit/phpunit": "<8.0 || >= 11.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^8.0 || ^9.0"
+                "phpunit/phpunit": "^8.0 || ^9.0 || ^10.0"
             },
             "type": "library",
             "autoload": {
@@ -4540,7 +4412,7 @@
             "description": "PHPUnit assertions for JSON documents",
             "support": {
                 "issues": "https://github.com/martin-helmich/phpunit-json-assert/issues",
-                "source": "https://github.com/martin-helmich/phpunit-json-assert/tree/v3.4.3"
+                "source": "https://github.com/martin-helmich/phpunit-json-assert/tree/v3.5.1"
             },
             "funding": [
                 {
@@ -4552,7 +4424,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-02-01T09:41:56+00:00"
+            "time": "2023-03-03T14:09:38+00:00"
         },
         {
             "name": "helmich/phpunit-psr7-assert",
@@ -4615,16 +4487,16 @@
         },
         {
             "name": "justinrainbow/json-schema",
-            "version": "5.2.12",
+            "version": "v5.2.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/justinrainbow/json-schema.git",
-                "reference": "ad87d5a5ca981228e0e205c2bc7dfb8e24559b60"
+                "reference": "fbbe7e5d79f618997bc3332a6f49246036c45793"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/justinrainbow/json-schema/zipball/ad87d5a5ca981228e0e205c2bc7dfb8e24559b60",
-                "reference": "ad87d5a5ca981228e0e205c2bc7dfb8e24559b60",
+                "url": "https://api.github.com/repos/justinrainbow/json-schema/zipball/fbbe7e5d79f618997bc3332a6f49246036c45793",
+                "reference": "fbbe7e5d79f618997bc3332a6f49246036c45793",
                 "shasum": ""
             },
             "require": {
@@ -4679,9 +4551,9 @@
             ],
             "support": {
                 "issues": "https://github.com/justinrainbow/json-schema/issues",
-                "source": "https://github.com/justinrainbow/json-schema/tree/5.2.12"
+                "source": "https://github.com/justinrainbow/json-schema/tree/v5.2.13"
             },
-            "time": "2022-04-13T08:02:27+00:00"
+            "time": "2023-09-26T02:20:38+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -6716,29 +6588,28 @@
         },
         {
             "name": "softcreatr/jsonpath",
-            "version": "0.7.6",
+            "version": "0.8.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SoftCreatR/JSONPath.git",
-                "reference": "e04c02cb78bcc242c69d17dac5b29436bf3e1076"
+                "reference": "fc12dee0b46f3fa3a175c4051dbab60984acef4b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SoftCreatR/JSONPath/zipball/e04c02cb78bcc242c69d17dac5b29436bf3e1076",
-                "reference": "e04c02cb78bcc242c69d17dac5b29436bf3e1076",
+                "url": "https://api.github.com/repos/SoftCreatR/JSONPath/zipball/fc12dee0b46f3fa3a175c4051dbab60984acef4b",
+                "reference": "fc12dee0b46f3fa3a175c4051dbab60984acef4b",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "php": ">=7.1,<8.0"
+                "php": ">=8.0"
             },
             "replace": {
                 "flow/jsonpath": "*"
             },
             "require-dev": {
-                "phpunit/phpunit": ">=7.0",
-                "roave/security-advisories": "dev-latest",
-                "squizlabs/php_codesniffer": "^3.5"
+                "phpunit/phpunit": "^9.6",
+                "roave/security-advisories": "dev-latest"
             },
             "type": "library",
             "autoload": {
@@ -6781,7 +6652,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-09-27T09:27:12+00:00"
+            "time": "2023-08-17T20:14:00+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
@@ -7359,7 +7230,7 @@
     },
     "platform-dev": [],
     "platform-overrides": {
-        "php": "7.3"
+        "php": "8.0"
     },
     "plugin-api-version": "2.6.0"
 }

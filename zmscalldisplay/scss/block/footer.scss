@@ -1,0 +1,37 @@
+.footer {
+	position:absolute;
+	left:0px;
+	top:630px;
+	width:800px;
+}
+
+#animate-container {
+ background-color: $blue;
+ color: #ffffff;
+ font-size: 70px;
+ font-weight: 700;
+ white-space: nowrap;
+ overflow: hidden;
+ padding: 10px 0;
+ width: 200%;
+
+ animation-name: text-indent-animate;
+ animation-duration: 60s;
+ animation-timing-function: linear;
+ animation-direction: reverse;
+ animation-iteration-count: infinite;
+}
+
+#animate-container:hover {
+ animation-play-state: paused;
+}
+
+@keyframes text-indent-animate {
+ 0% {
+   text-indent: -200%;
+ }
+
+ 100% {
+  text-indent: 100%;
+ }
+}

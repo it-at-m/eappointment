@@ -171,6 +171,7 @@ webimage_extra_packages:
   - python3-click
   - python3-git
   - python3-colorama
+  - make
 
 # Extra Debian packages that are needed in the webimage can be added here
 

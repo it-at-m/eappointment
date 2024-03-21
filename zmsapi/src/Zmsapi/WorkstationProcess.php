@@ -10,6 +10,7 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Workstation;
 use \BO\Zmsdb\Process;
+use \BO\Zmsdb\Process as Query;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -34,10 +35,20 @@ class WorkstationProcess extends BaseController
             $exception->data = ['process' => $workstation->process];
             throw $exception;
         }
+
+        $entity = new \BO\Zmsentities\Process($input);
+        $entity->testValid();
+        $this->testProcessData($entity);
+        $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 1);
+        $previousStatus = $process->status;
+        $process->status = 'called';
+        $process = (new Query())->updateEntity($process, \App::$now, 0, $previousStatus);
+
         $process = new \BO\Zmsentities\Process($input);
         $this->testProcess($process, $workstation, $allowClusterWideCall);
         $process->setCallTime(\App::$now);
         $process->queue['callCount']++;
+
         $process->status = 'called';
         
         $workstation->process = (new Workstation)->writeAssignedProcess($workstation, $process, \App::$now);
@@ -48,6 +59,17 @@ class WorkstationProcess extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
+    }
+
+    protected function testProcessData($entity)
+    {
+        $authCheck = (new Query())->readAuthKeyByProcessId($entity->id);
+        if (! $authCheck) {
+            throw new Exception\Process\ProcessNotFound();
+        } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
+            throw new Exception\Process\AuthKeyMatchFailed();
+        }
+        Helper\Matching::testCurrentScopeHasRequest($entity);
     }
 
     protected function testProcess($process, $workstation, $allowClusterWideCall)

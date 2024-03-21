@@ -139,7 +139,10 @@
         "source": "dldb",
         "id": "122217",
         "link": "https://service.berlin.de/standort/122217/",
-        "name": "Bürgeramt Heerstraße"
+        "name": "Bürgeramt Heerstraße",
+        "data": {
+          "slotTimeInMinutes": 12
+        }
       },
       "hint": "Nr. wird zum Termin aufgerufen",
       "contact": {

@@ -50,6 +50,7 @@ class AppointmentDeleteByCronTest extends Base
         $process = (new Query())->writeNewPickup($scope, $now);
         $process = (new Query())->readEntity($process->id, $process->authKey, 0);
         $process->status = 'finished';
+        $process['requests'] = (new \BO\Zmsdb\Request())->readRequestByProcessId(100130, 2);
         (new ProcessStatusArchived())->writeEntityFinished($process, $now);
 
         $helper = new AppointmentDeleteByCron(0, $now, false); // verbose

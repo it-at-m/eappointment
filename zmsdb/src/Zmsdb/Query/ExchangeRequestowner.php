@@ -18,27 +18,29 @@ class ExchangeRequestowner extends Base
         (
             CASE
               WHEN statistikJoin.anliegenid = -1 THEN "Dienstleistung wurde nicht erfasst"
-					    WHEN statistikJoin.anliegenid = 0 THEN "Dienstleistung konnte nicht erbracht werden"
-					    ELSE r.name
-				    END
-				) as name,
-        SUM(statistikJoin.requestscount) as requestscount
- FROM '. Organisation::TABLE .' o
+              WHEN statistikJoin.anliegenid = 0 THEN "Dienstleistung konnte nicht erbracht werden"
+              ELSE r.name
+            END
+        ) as name,
+        SUM(statistikJoin.requestscount) as requestscount,
+        AVG(statistikJoin.processingtime) as processingtime
+    FROM '. Organisation::TABLE .' o
         INNER JOIN (
-        	SELECT
-        		s.anliegenid,
-        		s.kundenid,
-				COUNT(s.anliegenid) as requestscount,
-				s.`datum`
-			FROM '. self::TABLE .' s
-			WHERE s.kundenid = :ownerid AND s.`datum` BETWEEN :datestart AND :dateend
-			GROUP BY s.`datum`, s.anliegenid
+            SELECT
+                s.anliegenid,
+                s.kundenid,
+                COUNT(s.anliegenid) as requestscount,
+                AVG(s.bearbeitungszeit) as processingtime,
+                s.`datum`
+            FROM '. self::TABLE .' s
+            WHERE s.kundenid = :ownerid AND s.`datum` BETWEEN :datestart AND :dateend
+            GROUP BY s.`datum`, s.anliegenid
         ) as statistikJoin ON statistikJoin.`kundenid` = o.KundenID
         LEFT JOIN '. self::REQUESTTABLE .' r ON r.id = statistikJoin.anliegenid
     WHERE o.`KundenID` = :ownerid AND statistikJoin.`datum` BETWEEN :datestart AND :dateend
     GROUP BY DATE_FORMAT(statistikJoin.`datum`, :groupby), name, statistikJoin.anliegenid
     ORDER BY r.name, statistikJoin.anliegenid
-    ';
+    ';    
 
     const QUERY_SUBJECTS = '
       SELECT

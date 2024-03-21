@@ -6,12 +6,21 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Collection\ProcessList;
+
 class WorkstationProcessNext extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
      * @return String
      */
+
+    public function timeToUnix($timeString)
+    {
+        list($hours, $minutes, $seconds) = explode(':', $timeString);
+        return mktime($hours, $minutes, $seconds);
+    }
+
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -24,6 +33,37 @@ class WorkstationProcessNext extends BaseController
         $validator = $request->getAttribute('validator');
         $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
         $excludedIds = ($excludedIds) ? $excludedIds : '';
+
+        $selectedDateTime = \App::$now;
+        $selectedDateTime = ($selectedDateTime < \App::$now) ? \App::$now : $selectedDateTime;
+
+        $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
+
+        $processList = $workstationRequest->readProcessListByDate(
+            $selectedDateTime,
+            Helper\GraphDefaults::getProcess()
+        );
+
+        $filteredProcessList = new ProcessList;
+
+        foreach ($processList as $process) {
+            if ($process->status === "queued" || $process->status === "confirmed") {
+                $timeoutTimeUnix = isset($process->timeoutTime) ? $this->timeToUnix($process->timeoutTime) : null;
+                $currentTimeUnix = time();
+
+                if(!isset($process->timeoutTime)){
+                    $filteredProcessList->addEntity(clone $process);
+                } else if (isset($timeoutTimeUnix) && !($process->queue->callCount > 0 && ($currentTimeUnix - $timeoutTimeUnix) < 300)) {
+                    $filteredProcessList->addEntity(clone $process);
+                } else {                    
+                    if (!empty($excludedIds)) {
+                        $excludedIds .= ",";
+                    }                
+                    $excludedIds .= $process->queue->number;
+                }
+            }
+        }
+
         $process = (new Helper\ClusterHelper($workstation))->getNextProcess($excludedIds);
 
         if (! $process->hasId() || $process->getFirstAppointment()->date > \App::$now->getTimestamp()) {

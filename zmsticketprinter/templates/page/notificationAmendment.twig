@@ -1,0 +1,50 @@
+{% extends "layout/main.twig" %}
+
+{% use "block/content/numberpad.twig" %}
+
+{% from 'element/helper/form.twig' import formbutton, custombutton, hiddenfield, inputfield %}
+
+{% block pageid %}notification{% endblock %}
+{% block content %}
+<div class="boxontop">
+	<div class="noprint">
+		<div class="smsbox" id="waitingNumberPad">
+            <div class="smshinweis">
+                Bitte geben Sie hier Ihre Wartenummer ein:
+            </div>
+
+			<form action="{{ urlGet('Notification', {}, {}) }}" method="post" class="smseintragen" id="postQueueNumber">
+            	<div class="label">
+                    Wartenummer:
+                </div>
+                <div class="eingabe">
+                	{{ inputfield({ "name": "waitingNumber", "id": "numberInput", "class": "nummerneingabe" }) }}
+                </div>
+            	{% if scope %}
+                	{{ hiddenfield({ "name": "scopeId", "value": scope.id }) }}
+    			{% endif %}
+
+    			{{ block("numberpad") }}
+            </form>
+
+            <div class="anleitung">
+                Mit der Taste "&lt;" können Sie die letzte Eingabe löschen, mit der "C"-Taste löschen Sie Ihre komplette Eingabe.
+            </div>
+
+            <form action="{{ urlGet('Message', {'status': 'notification_amendment_canceled'}, {}) }}" method="post" class="smseintragen" id="postCancel">
+	            	{% if scope %}
+	                	{{ hiddenfield({ "name": "scopeId", "value": scope.id }) }}
+	    					{% endif %}
+            </form>
+
+            <div class="smsbuttons">
+                {% set label = "Wartenummer übermitteln" %}
+                {{ formbutton({ "type":"submit", "disabled": "1", "name": "Wartenummereintragen", "formTarget":"postQueueNumber", "id":"waitingNumberSubmit", "class": "button nachtrag disabled", "label":label|trans, "value": label|trans }) }}
+
+                {% set label = "Abbrechen" %}
+                {{ formbutton({ "type":"submit", "name": "Telefonnachtragen", "formTarget":"postCancel", "id":"waitingNumberAbort", "class": "button abbrechen", "label":label|trans, "value": label|trans }) }}
+    		 </div>
+    	</div>
+	</div>
+</div>
+{% endblock %}

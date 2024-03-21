@@ -10,14 +10,15 @@
     ],
     "config": {
         "platform": {
-            "php": "7.3"
+            "php": "8.0"
         }
     },
     "require-dev": {
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
         "phpunit/phpunit": "^9.5.4",
-        "seld/jsonlint": "*"
+        "seld/jsonlint": "*",
+        "roave/security-advisories": "dev-latest"
     },
     "require": {
         "php": ">=7.3.0",

@@ -1,0 +1,11 @@
+{% use "block/content/buttons.twig" %}
+{% block process_success %}
+	<h1>Vielen Dank</h1>
+	<p>
+		Wartenummernausdruck erfolgt.<br />
+		Sie haben eine falsche Wartenummer angegeben. Bitte überprüfen Sie Ihre Eingabe und versuchen Sie erneut Ihre Telefonnummer nachzutragen.
+    </p>
+    <p>
+        {{ block("button_append_notification") }}
+    </p>
+{% endblock %}

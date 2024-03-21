@@ -54,9 +54,9 @@
                 <span class="heading__label">Weiterführende Links</span>
                 <span class="heading__button js-nav-heading" role="button" aria-expanded="false">Weiterführende Links</span>
             </h3>
-            <ul class="nav__list">
+             <ul class="nav__list">
                 <li class="nav__link">
-                    <a class="extern" href="https://gitlab.com/eappointment/eappointment" target="_blank">E-Appointment Projekt</a>
+                    <a class="extern" title="{% trans %}Zu Statistiken / Auswertungen{% endtrans %}" href="{{ includeUrl() }}/../statistic/" target="_blank">Statistiken/Auswertungen</a>
                 </li>
             </ul>
         </li>
@@ -128,6 +128,17 @@
                     <a {{ menuActive == 'configinfo'? ' aria-current="page"' }} href="{{ urlGet('configinfo', {}, {}) }}">System&shy;konfiguration</a>
                 </li>
             {% endif %}
+            <li class="nav__block">
+                <h3 class="nav__heading">
+                    <span class="heading__label">Weiterführende Links</span>
+                    <span class="heading__button js-nav-heading" role="button" aria-expanded="false">Weiterführende Links</span>
+                </h3>
+                <ul class="nav__list">
+                    <li class="nav__link">
+                        <a class="extern" title="{% trans %}Zu Statistiken / Auswertungen{% endtrans %}" href="{{ includeUrl() }}/../statistic/" target="_blank">Statistiken/Auswertungen</a>
+                    </li>
+                </ul>
+            </li>    
         </ul>
     </li>
     {% endif %}

@@ -59,11 +59,16 @@
                     },
                     "client": {
                         "alternateAppointmentUrl": "",
+                        "appointmentsPerMail": "",
+                        "whitelistedMails": "",
                         "amendmentActivated": "0",
                         "amendmentLabel": "",
                         "customTextfieldActivated": "0",
                         "customTextfieldLabel": "",
                         "emailRequired": "1",
+                        "adminMailOnAppointment": "0",
+                        "adminMailOnDeleted": "0",
+                        "adminMailOnUpdated": "0",
                         "telephoneActivated": "1",
                         "telephoneRequired": "1"
                     },
@@ -363,7 +368,8 @@
                             "streetNumber": "1",
                             "postalCode": "12345",
                             "city": "Berlin"
-                        }
+                        },
+                        "displayName":"001"
                     }
                 },
                 "status": "confirmed"
@@ -401,6 +407,10 @@
                     "type": "string",
                     "description": "unix timestamp of showing up after call"
                 },
+                "timeoutTime": {
+                    "type": "string",
+                    "description": "unix timestamp of after a call is entered or re-entered into the queue"
+                },  
                 "finishTime": {
                     "type": "string",
                     "description": "unix timestamp og time when process has been finished"

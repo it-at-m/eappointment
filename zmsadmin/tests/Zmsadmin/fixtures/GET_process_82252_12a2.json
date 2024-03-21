@@ -97,7 +97,8 @@
             "id": "141",
             "provider": {
                 "$ref": "/provider/122217/",
-                "id": "122217"
+                "id": "122217",
+                "displayName":"001"
             },
             "hint": "Nr. wird zum Termin aufgerufen",
             "contact": {
@@ -121,6 +122,8 @@
                     "amendmentActivated": "0",
                     "amendmentLabel": "",
                     "emailRequired": "0",
+                    "adminMailOnAppointment": "0",
+                    "adminMailOnDeleted": "0",
                     "telephoneActivated": "0",
                     "telephoneRequired": "0",
                     "emailFrom": "test@example.com"

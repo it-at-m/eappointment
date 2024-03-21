@@ -10,7 +10,7 @@ use \BO\Slim\Render;
 use \BO\Zmsdb\Process;
 use \BO\Zmsdb\Mail;
 use \BO\Zmsdb\Config;
-use BO\Mellon\Validator;
+use \BO\Mellon\Validator;
 
 /**
  * @SuppressWarnings(CouplingBetweenObjects)
@@ -27,7 +27,7 @@ class ProcessDelete extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        $process = (new Process)->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 1);
+        $process = (new Process)->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 2);
         $this->testProcessData($process, $args['authKey']);
         if ('reserved' == $process->status) {
             if (!(new Process)->writeBlockedEntity($process)) {
@@ -51,7 +51,7 @@ class ProcessDelete extends BaseController
 
     protected function writeMails($request, $process)
     {
-        if ($process->hasScopeAdmin()) {
+        if ($process->hasScopeAdmin() && $process->sendAdminMailOnDeleted()) {
             $authority = $request->getUri()->getAuthority();
             $validator = $request->getAttribute('validator');
             $initiator = $validator->getParameter('initiator')

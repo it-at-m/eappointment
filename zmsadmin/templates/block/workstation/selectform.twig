@@ -104,9 +104,9 @@
                 {{ inputfield({ "name":"workstation_select_form_validate", "type":"hidden", "value":"1" }) }}
                 {{ inputfield({ "name":"appointmentsOnly", "type":"hidden", "value":workstation.queue.appointmentsOnly }) }}
                 <div class="form-actions">
+                    {{ formbutton({ "type":"login", "label":"Auswahl bestätigen", "value": "weiter", "accesskey":"a"}) }}
                     <button type="button" class="button button--diamond" data-button-print accesskey="y"><i class="fas fa-print" aria-hidden="true"></i> Heutige Termine des Standorts drucken</button>
                     <button type="button" class="button button--diamond" data-button-download accesskey="r"><i class="fas fa-download" aria-hidden="true"></i> Heutige Termine als Tabelle downloaden</button>
-                    {{ formbutton({ "type":"login", "label":"Auswahl bestätigen", "value": "weiter", "accesskey":"a"}) }}
                 </div>
             </form>
         </div>

@@ -30,7 +30,8 @@ class CalendarTest extends Base
                 "providers": [
                     {
                       "id": 122217,
-                      "source": "dldb"
+                      "source": "dldb",
+                      "displayName": "B\u00fcrgeramt Heerstra\u00dfe"
                     }
                 ],
                 "scopes": [
@@ -99,7 +100,8 @@ class CalendarTest extends Base
                 "providers": [
                     {
                       "id": 122217,
-                      "source": "dldb"
+                      "source": "dldb",
+                      "displayName": "B\u00fcrgeramt Heerstra\u00dfe"
                     }
                 ],
                 "scopes": [

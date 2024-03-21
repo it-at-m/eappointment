@@ -10,35 +10,47 @@ class Db
 {
     public static $baseDSN = '';
 
-    public static function startExecuteSqlFile($file, $dbname = null)
+    public static function startExecuteSqlFile($file, $dbname = null, $verbose = true)
     {
-        $pdo = self::startUsingDatabase($dbname);
+        $pdo = self::startUsingDatabase($dbname, $verbose);
         $startTime = microtime(true);
-        //var_dump($pdo->fetchPairs('SHOW STATUS'));
-        //var_dump($pdo->fetchAll('SHOW TABLES;'));
         $sqlFile = gzopen($file, 'r');
-        echo "Importing " . basename($file) . "\n";
+        if ($verbose) {
+            echo "Importing " . basename($file) . "\n";
+        }
         $query = '';
         while ($line = gzgets($sqlFile)) {
             $query .= $line;
             if (preg_match('/;\s*$/', $line)) {
                 try {
                     $pdo->exec($query);
-                    echo ".";
+                    if ($verbose) {
+                        echo ".";
+                    }
                     //echo "Successful:\n$query\n";
                     $query = '';
                 } catch (\Exception $exception) {
-                    echo "Offending query: \n$query\n";
+                    if ($verbose) {
+                        echo "Offending query: \n$query\n";
+                    }
                     throw $exception;
                 }
             }
         }
         gzclose($sqlFile);
         $time = round(microtime(true) - $startTime, 3);
-        echo "\nTook $time seconds\n";
+        if ($verbose) {
+            echo "\nTook $time seconds\n";
+        }
     }
 
-    public static function startUsingDatabase($dbname = null) : \BO\Zmsdb\Connection\Pdo
+    public static function executeSql($query, $dbname = null)
+    {
+        $pdo = self::startUsingDatabase($dbname, false);
+        $pdo->exec($query);
+    }
+
+    public static function startUsingDatabase($dbname = null, $verbose = true) : \BO\Zmsdb\Connection\Pdo
     {
         if (!self::$baseDSN) {
             self::$baseDSN = \BO\Zmsdb\Connection\Select::$writeSourceName;
@@ -52,7 +64,11 @@ class Db
             \BO\Zmsdb\Connection\Select::$writeSourceName =
                 preg_replace("#dbname=$dbname_zms.*?;#", "dbname=$dbname;", self::$baseDSN);
         }
-        error_log("Use Connection ".\BO\Zmsdb\Connection\Select::$writeSourceName);
+
+        if ($verbose) {
+            error_log("Use Connection ".\BO\Zmsdb\Connection\Select::$writeSourceName);
+        }
+
         $pdo = \BO\Zmsdb\Connection\Select::getWriteConnection();
         return $pdo;
     }
@@ -98,5 +114,21 @@ class Db
         }
         echo "\nFound " . count($migrationsDoneList) . " completed migrations and added $addedMigrations migrations.\n";
         return $addedMigrations;
+    }
+
+    public static function executeTestData(string $testName, string $step)
+    {
+        $fixtures = realpath(__DIR__ . '/../../../tests/Zmsdb/fixtures/');
+        $sqlFile = $fixtures . '/' . $testName . '/' . $step . '.sql';
+
+        if (! file_exists($sqlFile)) {
+            return;
+        }
+
+        self::startExecuteSqlFile(
+            $sqlFile,
+            null,
+            false
+        );
     }
 }

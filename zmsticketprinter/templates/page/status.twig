@@ -1,0 +1,54 @@
+{% extends "layout/main.twig" %}
+
+
+{% block pageid %}status{% endblock %}
+{% block title %}{% trans %}Status{% endtrans %}{% endblock %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<div class="textile">
+    <div class="table-responsive">
+        <h2>Ticketprinter Settings</h2>
+        <table>
+            <tr>
+                <td>Aktiviert: </th>
+                <td>{{ status.ticketprinter.enabled ? 1 : 0 }}</td>
+            </tr>
+            <tr>
+                <td>Homeurl: </th>
+                <td>{{ status.homeurl }}</td>
+            </tr>
+            <tr>
+                <td>Hash: </th>
+                <td>{{ status.ticketprinter.hash }}</td>
+            </tr>
+            <tr>
+                <td>Reload Intervall: </th>
+                <td>{{ status.ticketprinter.reload }}</td>
+            </tr>
+            <tr>
+                <td>Id: </th>
+                <td>{{ status.ticketprinter.id }}</td>
+            </tr>
+            <tr>
+                <td>Name: </th>
+                <td>{{ status.ticketprinter.name }}</td>
+            </tr>
+            <tr>
+                <td>Zuletzt geändert: </th>
+                <td>{{ status.ticketprinter.lastUpdate|format_date(pattern="EE dd. MMMM Y, HH:mm") }} Uhr</td>
+            </tr>
+        <table>
+        <h2>Request Cookies</h2>
+        <table>
+            {% for name, value in cookies %}
+                <tr>
+                    <td>{{ name }}: </th>
+                    <td>{{ value }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}

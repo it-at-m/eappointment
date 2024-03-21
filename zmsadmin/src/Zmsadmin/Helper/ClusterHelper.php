@@ -52,7 +52,7 @@ class ClusterHelper
         $queueList = static::getProcessList(\App::$now->format('Y-m-d'))
             ->toQueueList(\App::$now)
             ->withoutStatus(['fake','missed']);
-        $excludedIds = (1 < $queueList->count()) ? $excludedIds : '';
+        $excludedIds = (0 < $queueList->count()) ? $excludedIds : '';
 
         if (1 > $queueList->count()) {
             return new \BO\Zmsentities\Process();

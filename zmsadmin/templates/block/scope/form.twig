@@ -155,7 +155,7 @@
                             "parameter": {
                                 "name": "shortName",
                                 "value": scope.shortName,
-                                "maxlength": 10,
+                                "maxlength": 40,
                                 "width": 3,
                             }
                         }]
@@ -176,7 +176,7 @@
                     {{ formgroup(
                         {
                             "label": "E-Mail Standortadmin:",
-                            "description": "Wenn hier eine E-Mail-Adresse des Standort-Administrators eingetragen ist, so wird jede Terminlöschung und Terminänderung per E-Mail mitgeteilt.",
+                            "description": "E-Mail-Adresse für E-Mail-Benachrichtigungen bei Terminbestätigungen, -absagen oder -änderungen.",
                             "errors": exception.data.email.messages
                         },
                         [{
@@ -188,6 +188,41 @@
                             }
                         }]
                     ) }}
+
+                    {{ formgroup(
+                        {
+                            
+                            "groupTag": "fieldset"
+                        },
+                        [{
+                            "type":"checkbox",
+                            "parameter": {
+                                "label": "bei Terminbestätigung (Betreff: Terminbestätigung)",
+                                "name": "preferences[client][adminMailOnAppointment]",
+                                "id": "adminMailOnAppointment",
+                                "value": 1,
+                                "checked": scope.preferences.client.adminMailOnAppointment|default(0),
+                            }
+                        },{
+                            "type":"checkbox",
+                            "parameter": {
+                                "label": "bei Terminlöschung (Betreff: Terminabsage)",
+                                "name": "preferences[client][adminMailOnDeleted]",
+                                "id": "adminMailOnDeleted",
+                                "value": 1,
+                                "checked": scope.preferences.client.adminMailOnDeleted|default(0),
+                            }
+                        },{
+                            "type":"checkbox",
+                            "parameter": {
+                                "label": "bei Terminänderung durch Sachbearbeiter*in (Betreff: Information Terminänderung)",
+                                "name": "preferences[client][adminMailOnUpdated]",
+                                "id": "adminMailOnUpdated",
+                                "value": 1,
+                                "checked": scope.preferences.client.adminMailOnUpdated|default(0),
+                            }
+                        }]
+                    ) }}                     
                     </div>
                 </fieldset>
 
@@ -322,38 +357,21 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
-                        {
-                            "legend": "Anmerkungtexteingabe aktivieren:",
-                            "groupTag": "fieldset"
-                        },
-                        [{
-                            "type":"checkbox",
-                            "parameter": {
-                                "label": "bei der Internetbuchung",
-                                "name": "preferences[client][amendmentActivated]",
-                                "value": 1,
-                                "checked": scope.preferences.client.amendmentActivated|default(0),
-                            }
-                        }]
-                    ) }}
+                        {{ formgroup(
+                            {
+                                "label": "Maximale Anzahl an Terminen pro E-Mail-Adresse:"
+                            },
+                            [{
+                                "type":"input",
+                                "parameter": {
+                                    "name": "preferences[client][appointmentsPerMail]",
+                                    "value": scope.preferences.client.appointmentsPerMail,
+                                    "maxlength": 2
+                                }
+                            }]
+                        ) }}
 
-                    {{ formgroup(
-                        {
-                            "label": "Anmerkungtextlabel:"
-                        },
-                        [{
-                            "type":"input",
-                            "parameter": {
-                                "name": "preferences[client][amendmentLabel]",
-                                "value": scope.preferences.client.amendmentLabel,
-                                "maxlength": 100
-                            }
-                        }]
-                    ) }}
-
-
-                    {{ formgroup(
+                        {{ formgroup(
                         {
                             "legend": "Freitextfeld:",
                             "groupTag": "fieldset"
@@ -808,6 +826,7 @@
                             "parameter": {
                                 "name": "preferences[queue][callDisplayText]",
                                 "id": "aufrufanzeigetext",
+                                "maxlength": 120,
                                 "value": scope.preferences.queue.callDisplayText|default('Herzlich Willkommen'),
                             }
                         }]

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2016-04-29T11:53:31+02:00",
+    "server": "Zmsapi-unconfigured"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+    "id": "100009",
+    "authKey": "52ec",
+    "createIP": "",
+    "createTimestamp": "1459504500",
+    "reminderTimestamp": "0",
+    "appointments": [
+      {
+        "date": 1459461600,
+        "scope": {
+          "id": "141"
+        },
+        "slotCount": "1"
+      }
+    ],
+    "scope": {
+      "id": "141"
+    },
+    "clients": [
+      {
+        "email": "",
+        "emailSendCount": "0",
+        "familyName": "",
+        "notificationsSendCount": "0",
+        "telephone": ""
+      }
+    ],
+    "queue": {
+      "arrivalTime": 1459504500,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "2",
+      "withAppointment": "0"
+    }
+  }
+}

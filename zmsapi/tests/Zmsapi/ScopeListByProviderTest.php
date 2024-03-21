@@ -9,7 +9,7 @@ class ScopeListByProviderTest extends Base
     public function testRendering()
     {
         $this->setWorkstation();
-        $response = $this->render(['source' => 'dldb', 'id' => 122217], [], []); //Bürgeramt Heerstraße
+        $response = $this->render(['source' => 'dldb', 'id' => 122217, 'displayName' => 'B\u00fcrgeramt Heerstra\u00dfe'], [], []); //Bürgeramt Heerstraße
         $this->assertStringContainsString('scope.json', (string)$response->getBody());
         $this->assertStringContainsString('preferences', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -17,7 +17,7 @@ class ScopeListByProviderTest extends Base
 
     public function testLessData()
     {
-        $response = $this->render(['source' => 'dldb', 'id' => 122217], [], []); //Bürgeramt Heerstraße
+        $response = $this->render(['source' => 'dldb', 'id' => 122217, 'displayName' => 'B\u00fcrgeramt Heerstra\u00dfe'], [], []); //Bürgeramt Heerstraße
         $this->assertStringContainsString('scope.json', (string)$response->getBody());
         $this->assertStringNotContainsString('preferences', (string)$response->getBody());
         $this->assertStringContainsString('"reducedData":true', (string)$response->getBody());
@@ -30,7 +30,7 @@ class ScopeListByProviderTest extends Base
         $entity = (new \BO\Zmsentities\Apikey)->createExample();
         $xApiKey = (new \BO\Zmsdb\Apikey())->writeEntity($entity);
 
-        $response = $this->render(['source' => 'dldb', 'id' => 122217], [
+        $response = $this->render(['source' => 'dldb', 'id' => 122217, 'displayName' => 'B\u00fcrgeramt Heerstra\u00dfe'], [
             '__header' => array(
                 'X-Api-Key' => 'wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs'
             )

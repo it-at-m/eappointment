@@ -1,0 +1,7 @@
+{% block german %}
+{% if process.scope.preferences.notifications.headsUpContent %}
+{{ process.scope.preferences.notifications.headsUpContent }} {{ process.queue.number }}
+{% else %}
+{{ config.notifications.headsUpContent }} {{ process.queue.number }}
+{% endif %}
+{% endblock %}

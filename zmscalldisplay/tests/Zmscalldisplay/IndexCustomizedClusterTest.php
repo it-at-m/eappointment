@@ -29,7 +29,7 @@ class IndexCustomizedClusterTest extends Base
                 'clusterlist' => '118'
             ]
         ], [ ]);
-        $this->assertStringContainsString('tableLayout.multiColumns="2"', (string) $response->getBody());
-        $this->assertStringContainsString('tableLayout.maxResults=10', (string) $response->getBody());
+        $this->assertStringContainsString('tableLayout.multiColumns = 2', (string) $response->getBody());
+        $this->assertStringContainsString('tableLayout.maxResults = 10', (string) $response->getBody());
     }
 }

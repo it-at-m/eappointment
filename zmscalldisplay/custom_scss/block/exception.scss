@@ -1,0 +1,11 @@
+.textile.exception, .textile.alert {
+	position:relative;
+	left:40px;
+	top:100px;
+	width:800px;
+	box-sizing:border-box;
+}
+
+.exception table, .exception iframe, .exception pre  {
+	width:800px !important;
+}

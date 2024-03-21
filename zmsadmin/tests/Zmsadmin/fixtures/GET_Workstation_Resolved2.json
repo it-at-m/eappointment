@@ -119,7 +119,7 @@
         "name": "12",
         "id": "136",
         "authkey": "8520c285985b5bd209a0110442dc4e45",
-        "password":"$2y$10$1pl\/ZPVjrqSPgI6rvR.zgOfCLqvPGI3DdbQW\/YTOgZDP2yJjfrsgO",
+        "password": "$2y$10$1pl\/ZPVjrqSPgI6rvR.zgOfCLqvPGI3DdbQW\/YTOgZDP2yJjfrsgO",
         "hint": "12",
         "queue": {
             "appointmentsOnly": "0",
@@ -140,7 +140,10 @@
                 "source": "dldb",
                 "id": "122217",
                 "link": "https://service.berlin.de/standort/122217/",
-                "name": "Bürgeramt Heerstraße"
+                "name": "Bürgeramt Heerstraße",
+                "data": {
+                    "slotTimeInMinutes": 12
+                }
             },
             "hint": "Nr. wird zum Termin aufgerufen",
             "contact": {

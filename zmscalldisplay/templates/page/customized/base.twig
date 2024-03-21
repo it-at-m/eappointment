@@ -33,6 +33,12 @@
 <div class="aufrufanzeige_text">
 	{% include "block/marginal/infoColumn.twig" %}
 </div>
+
+    {% if displayNumber %}
+        <div id="display_number">
+            {{ displayNumber }}/2
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block tableLayoutSettings %}

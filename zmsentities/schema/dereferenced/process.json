@@ -54,7 +54,8 @@
                     "streetNumber": "1",
                     "postalCode": "12345",
                     "city": "Berlin"
-                }
+                },
+                "displayName":"001"
             }
         },
         "status": "confirmed"
@@ -228,6 +229,10 @@
         "showUpTime": {
             "type": "string",
             "description": "unix timestamp of showing up after call"
+        },
+        "timeoutTime": {
+            "type": "string",
+            "description": "unix timestamp of after a call is entered or re-entered into the queue"
         },
         "finishTime": {
             "type": "string",
@@ -532,9 +537,14 @@
                     },
                     "client": {
                         "alternateAppointmentUrl": "https:\/\/service.berlin.de",
+                        "appointmentsPerMail": "",
+                        "whitelistedMails": "",
                         "amendmentLabel": "Zusatzinformationen zum Anliegen",
                         "customTextfieldLabel": "Zusatzfeld zum Anliegen",
                         "emailRequired": false,
+                        "adminMailOnAppointment": false,
+                        "adminMailOnDeleted": false,
+                        "adminMailOnUpdated": false,
                         "telephoneActivated": true,
                         "telephoneRequired": false
                     },
@@ -588,7 +598,8 @@
                     },
                     "id": 123456,
                     "name": "Flughafen Schönefeld, Aufsicht",
-                    "source": "dldb"
+                    "source": "dldb",
+                    "displayName":"001"
                 },
                 "shortName": "Zentrale",
                 "status": {
@@ -705,6 +716,16 @@
                                     "description": "redirect url if client should book appointments over a specialised application",
                                     "default": ""
                                 },
+                                "appointmentsPerMail": {
+                                    "type": "string",
+                                    "description": "allowed appointments per e-mail address",
+                                    "default": ""
+                                },
+                                "whitelistedMails": {
+                                    "type": "string",
+                                    "description": "e-mail addresses that have no limitation on appointments count",
+                                    "default": ""
+                                },
                                 "amendmentLabel": {
                                     "type": "string",
                                     "description": "label for the form field to enter additional informations to a process",
@@ -767,6 +788,30 @@
                                         "number"
                                     ],
                                     "description": "true if client is required to enter a telephone number",
+                                    "default": false
+                                },
+                                "adminMailOnAppointment": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "confirmation mail is sent to scope admin",
+                                    "default": false
+                                },
+                                "adminMailOnUpdated": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "updated mail is sent to scope admin",
+                                    "default": false
+                                },
+                                "adminMailOnDeleted": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "deleted mail is sent to admin",
                                     "default": false
                                 }
                             }

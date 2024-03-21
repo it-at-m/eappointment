@@ -159,6 +159,10 @@ class ProcessStatusArchived extends Base implements MappingInterface
 
     private function getArchivedServices(\BO\Zmsentities\Process $process)
     {
+        if ($process->getRequests()->count() === 0) {
+            return '';
+        }
+        
         $services = $process->getRequests()->getFirst()->name;
 
         if ($process->getRequests()->count() > 1) {
@@ -167,4 +171,14 @@ class ProcessStatusArchived extends Base implements MappingInterface
 
         return $services;
     }
+
+    public function addConditionOlderThanDate(\DateTimeInterface $dateTime)
+    {
+        // Assuming 'Datum' is the column name that holds the date of the record
+        // and you want to select records older than the specified $dateTime
+        $this->query->where('Datum', '<', $dateTime->format('Y-m-d'));
+        return $this;
+    }
+    
+    
 }

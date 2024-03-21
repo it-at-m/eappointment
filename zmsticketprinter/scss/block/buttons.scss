@@ -1,0 +1,176 @@
+div.wartebuttonbereich_einzeilig {
+    position: absolute;
+    top: 295px;
+    width: 875px;
+    left: 160px;
+}
+
+div.wartebuttonbereich_zweizeilig
+{
+	position: absolute;
+	top:180px;
+	width:875px;
+	left:95px;
+}
+
+div.wartebuttonbereich_zweizeilig_tief {
+    position: absolute;
+    top: 295px;
+    width: 875px;
+    left: 95px;
+}
+
+div.warteschlangebutton_gross button.eintragen,
+div.warteschlangebutton_gross a.eintragen {
+    background: url(img/wartenummer_anfordern.png) 0 24px no-repeat;
+    border: 0;
+    color: #fff;
+    font-size: 42px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    height: 195px;
+    width: 660px;
+    display:block;
+    text-align:center;
+    padding: 0px 35px;
+}
+
+div.variablerwarteschlangebutton {
+    float: left;
+    margin-right: 25px;
+}
+
+div.variablerwarteschlangebutton button.eintragen,
+div.variablerwarteschlangebutton a.eintragen {
+    background: url(img/multibutton.png) 0 24px no-repeat;
+    border: 0;
+    color: #fff;
+    padding-bottom: 0px;
+    padding-top: 15px;
+    font-size: 28px;
+    line-height: 36px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    height: 158px;
+    padding-right: 10px;
+    width: 385px;
+    display:block;
+}
+
+div.variablerwarteschlangebutton a.eintragen,
+div.warteschlangebutton_gross a.eintragen {
+	text-align:center;
+	display: table-cell;
+    vertical-align: middle;
+    padding:0px;
+    margin:0px;
+    text-decoration:none;
+}
+
+div.variablerwarteschlangebutton button.disabled {
+	color:#999;
+	background: url(img/multibutton_disabled.png) 0 24px no-repeat;
+}
+
+button.buttonTelefonnummernachtragen
+{
+    background: url(img/handynummer_nachtragen.png) 0 24px no-repeat;
+    border:0;
+    color:#fff;
+    font-size:28px;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    height: 105px;
+    width: 800px;
+    left: 96px;
+    top: 665px;
+    padding: 38px 121px;
+    position:absolute;
+}
+
+a.button {
+	display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    line-height: auto;
+    text-decoration:none;
+}
+
+a.button.ja_nein, .ja_nein {
+    background: url(img/ja_nein.png) 0 5px no-repeat;
+    border: 0;
+    color: #fff;
+    font-size: 42px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    height: 141px;
+    width: 314px;
+}
+
+.smsbuttons
+{
+    left:155px;
+    position:absolute;
+    top:545px;
+    width:700px;
+    display:table;
+}
+.smsbuttons .nachtrag
+{
+    background: url(img/handynummer_uebermitteln.png) 5px 10px no-repeat;
+    border:0;
+    color:#fff;
+    font-size:28px;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    height: 80px;
+    margin: 0px 0 0 0px;
+    padding:0;
+    width: 439px;
+}
+
+.smsbuttons .nachtrag.active
+{
+    background: url(img/handynummer_uebermitteln_a.png) 5px 10px no-repeat;
+}
+
+.smsbuttons .nachtrag.disabled
+{
+    background: url(img/handynummer_uebermitteln_i.png) 5px 10px no-repeat;
+}
+
+.smsbuttons .abbrechen
+{
+    background: url(img/abbrechen.png) 5px 10px no-repeat;
+    border:0;
+    color:#fff;
+    font-size:28px;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    height: 80px;
+    width: 210px;
+    line-height: 80px;
+}
+
+#message .back
+{
+    background: url(img/abbrechen.png) 5px 10px no-repeat;
+    border:0;
+    color:#fff;
+    font-size:20px;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    height: 80px;
+    width: 210px;
+    line-height: 80px;
+}
+
+.smsbuttons .abbrechen.active
+{
+    background: url(img/abbrechen_a.png) 5px 10px no-repeat;
+}
+.smsbuttons .hilfe
+{
+	margin-top: 20px;
+    font-size: 20px;
+}

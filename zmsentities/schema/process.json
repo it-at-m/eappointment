@@ -184,6 +184,7 @@
         "id": 123,
         "source": "dldb",
         "name": "Bürgeramt 1",
+        "displayName":"001",
         "contact": {
           "name": "Bürgeramt 1",
           "street": "Unter den Linden",
@@ -204,9 +205,14 @@
         },
         "client": {
             "alternateAppointmentUrl": "https://service.berlin.de",
+            "appointmentsPerMail": "",
+            "whitelistedMails": "",
             "amendmentLabel": "Zusatzinformationen zum Anliegen",
             "customTextfieldLabel": "Zusatzfeld zum Anliegen",
             "emailRequired": false,
+            "adminMailOnAppointment": false,
+            "adminMailOnDeleted": false,
+            "adminMailOnUpdated": false,
             "telephoneActivated": true,
             "telephoneRequired": false
         },
@@ -312,6 +318,10 @@
       "type": "string",
       "description": "unix timestamp of showing up after call"
     },
+    "timeoutTime": {
+      "type": "string",
+      "description": "unix timestamp of after a call is entered or re-entered into the queue"
+    },    
     "finishTime": {
         "type": "string",
         "description": "unix timestamp og time when process has been finished"

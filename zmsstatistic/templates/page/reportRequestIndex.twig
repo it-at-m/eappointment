@@ -74,7 +74,7 @@
                         <th class="report-board--long-text">{{ name|trans }}</th>
                         {% if exchangeRequest.period == "day" %}
                             <td class="report-board--summary">
-                                {{ exchangeRequest.data.average_processingtime[name] }}
+                                {{ exchangeRequest.data.average_processingtime[name]|default("-") }}
                             </td>
                         {% endif %}
                         <td class="report-board--summary">

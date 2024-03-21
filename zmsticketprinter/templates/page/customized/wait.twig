@@ -1,0 +1,26 @@
+{% extends "layout/main.twig" %}
+
+{% use "block/content/buttons.twig" %}
+{% use "block/content/estimatedWaitingTime.twig" %}
+{% use "block/content/estimatedWaitingClients.twig" %}
+{% use "block/content/IntroText.twig" %}
+
+{% block pageid %}index{% endblock %}
+{% block pagetype %}customized{% endblock %}
+{% block content %}
+
+	{% if buttonDisplay == "button_single" %}
+    {% if waitingClients >= 0 %}
+	<div class="werbeblock_oben">
+		{{ block("estimatedWaitingClients") }}
+	</div>
+	{% endif %}
+	{% set buttonLabelPrefix = "Wartenummer für " %}
+	{% else %}
+	{{ block("IntroMultiButtonText") }}
+	{% endif %}
+
+    {{ block(buttonDisplay) }}
+
+	{{ block("button_append_notification") }}
+{% endblock %}

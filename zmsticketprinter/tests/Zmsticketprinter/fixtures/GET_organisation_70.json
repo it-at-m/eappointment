@@ -1,0 +1,140 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2016-11-25T08:57:28+01:00",
+    "server": "Zmsapi-ENV"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/organisation.json",
+    "name": "Lichtenberg",
+    "id": "70",
+    "contact": {
+      "city": "",
+      "street": "",
+      "country": "Germany",
+      "name": "Lichtenberg"
+    },
+    "preferences": {
+      "ticketPrinterProtectionEnabled": "0"
+    },
+    "departments": [
+      {
+        "email": "post.buergeramt@lichtenberg.berlin.de",
+        "id": "72",
+        "name": "Bürgeramt",
+        "contact": {
+          "city": "Egon-Erwin-Kisch-Str.",
+          "street": "Egon-Erwin-Kisch-Str.",
+          "country": "Germany",
+          "name": "Frau Bräuer"
+        },
+        "clusters": [
+          {
+            "id": "30",
+            "name": "Bürgeramt 4",
+            "hint": "",
+            "shortNameEnabled": "1",
+            "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Bürgertelefons:\r\n115",
+            "scopes": [
+              {
+                "id": 0,
+                "$ref": "/scope/133/"
+              }
+            ]
+          },
+          {
+            "id": "60",
+            "name": "Bürgeramt 1",
+            "hint": "Bürgeramt 1",
+            "shortNameEnabled": "1",
+            "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Bürgertelefons:\r\n115",
+            "scopes": [
+              {
+                "id": 0,
+                "$ref": "/scope/134/"
+              }
+            ]
+          },
+          {
+            "id": "28",
+            "name": "Bürgeramt 2",
+            "hint": "",
+            "shortNameEnabled": "1",
+            "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Berlintelefon:\r\n115",
+            "scopes": [
+              {
+                "id": 0,
+                "$ref": "/scope/135/"
+              }
+            ]
+          },
+          {
+            "id": "29",
+            "name": "Bürgeramt 3",
+            "hint": "",
+            "shortNameEnabled": "1",
+            "callDisplayText": "Herzlich Willkommen \r\nin Berlin Lichtenberg\r\n=====================\r\nTermin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-lichtenberg/\r\noder \r\nden Service des Bürgertelefons:\r\n115",
+            "scopes": [
+              {
+                "id": 0,
+                "$ref": "/scope/136/"
+              }
+            ]
+          }
+        ],
+        "scopes": [
+          {
+            "id": "133",
+            "$ref": "/scope/133/"
+          },
+          {
+            "id": "134",
+            "$ref": "/scope/134/"
+          },
+          {
+            "id": "135",
+            "$ref": "/scope/135/"
+          },
+          {
+            "id": "136",
+            "$ref": "/scope/136/"
+          }
+        ]
+      },
+      {
+        "email": "zms.ordnungsamt@lichtenberg.berlin.de",
+        "id": "128",
+        "name": "Ordnungsamt",
+        "contact": {
+          "city": "Berlin",
+          "street": "Große-Leege-Str. 103, 13055 Berlin",
+          "country": "Germany",
+          "name": "Frau Elke Fischer"
+        },
+        "clusters": [
+          {
+            "id": "283",
+            "name": "Ordnungsamt Lichtenberg",
+            "hint": "",
+            "shortNameEnabled": "1",
+            "callDisplayText": "Herzlich Willkommen im Ordnungsamt Lichtenberg\r\n\r\nUnsere Sprechzeiten:\r\n\r\nMontag, Dienstag\r\n09:00-13:00 Uhr\r\nDonnerstag\r\n14:00-18:00 Uhr\r\nFreitag\r\n09:00-12:00 Uhr",
+            "scopes": [
+              {
+                "id": 0,
+                "$ref": "/scope/637/"
+              }
+            ]
+          }
+        ],
+        "scopes": [
+          {
+            "id": "637",
+            "$ref": "/scope/637/"
+          }
+        ]
+      }
+    ]
+  }
+}

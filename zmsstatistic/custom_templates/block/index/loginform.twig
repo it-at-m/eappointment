@@ -1,0 +1,59 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'loginform loginform-view'} %}
+        {% from 'element/helper/form.twig' import formgroup, custombutton, formbutton, inputfield %}
+
+        {% block board_title %}
+            {{ title }}
+        {% endblock %}
+
+        {% block board_body %}
+            {% if oidcproviderlist|length %}
+                <div class="form-actions" style="justify-content:left; margin-bottom:10px;">
+                    {% for providername in oidcproviderlist %}
+                        <form action="./oidc/?provider={{ providername }}" method="POST" class="form--base">
+                            {{ formbutton({"label": "Anmelden", "value": providername, "class": "button button--diamond"}) }}
+                        </form>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form action="./" method="POST" class="form--base">
+                <fieldset>
+                    {{ formgroup(
+                        {"label": "Nutzername:", "errors": exception.data.id.messages },
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "name": "loginName",
+                                "maxlength": "40",
+                                "value": loginData.loginName.value,
+                                "accesskey": "n",
+                            }
+                        }]
+                    ) }}
+
+                    {{ formgroup(
+                        {"label": "Passwort:", "errors": exception.data.password.messages},
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "type": "password",
+                                "name": "password",
+                                "maxlength": "40",
+                                "accesskey": "p",
+                            }
+                        }]
+                    ) }}
+                </fieldset>
+                {{ inputfield({ "name":"login_form_validate", "type":"hidden", "value":"1" }) }}
+                <div class="form-actions">
+                    {{ formbutton({ "type":"login", "label":"Anmelden", "value": "Anmelden", "accesskey":"a"}) }}
+                </div>
+            </form>
+        {% endblock %}
+
+
+        {% block board_footer %}
+            Wenden Sie sich bei vergessenen Passwörtern bitte an Ihren lokalen Anwendungssystembetreuer.
+        {% endblock %}
+
+{% endembed %}

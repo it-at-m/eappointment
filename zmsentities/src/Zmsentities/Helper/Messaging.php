@@ -88,7 +88,26 @@ class Messaging
     protected static function twigView(): Environment
     {
         $templatePath = TemplateFinder::getTemplatePath();
-        $loader = new FilesystemLoader($templatePath);
+        $customTemplatesPath = 'custom_templates/';
+
+        if (getenv("ZMS_CUSTOM_TEMPLATES_PATH")) {
+            $customTemplatesPath = getenv("ZMS_CUSTOM_TEMPLATES_PATH");
+        }
+
+        $initialTemplatePaths = [];
+
+        if (is_dir($customTemplatesPath)) {
+            $initialTemplatePaths[] = $customTemplatesPath;
+        }
+
+        $initialTemplatePaths[] = $templatePath;
+
+        $loader = new FilesystemLoader($initialTemplatePaths);
+        
+        if (is_dir($customTemplatesPath)) {
+            $loader->addPath($customTemplatesPath, 'zmsentities');
+        }
+
         $loader->addPath($templatePath, 'zmsentities');
         $twig = new Environment($loader, array(
             //'cache' => '/cache/',
@@ -114,7 +133,7 @@ class Messaging
             $client = $mainProcess->getFirstClient();
         }
 
-        $template = self::getTemplate('mail', $status);
+        $template = self::getTemplate('mail', $status, $mainProcess);
         if ($initiator) {
             $template = self::getTemplate('admin', $status);
         }
@@ -193,7 +212,7 @@ class Messaging
         return $message;
     }
 
-    protected static function getTemplate($type, $status)
+    protected static function getTemplate($type, $status, ?Process $process = null)
     {
         $template = null;
         if (Property::__keyExists($type, self::$templates)) {
@@ -201,7 +220,41 @@ class Messaging
                 $template = self::$templates[$type][$status];
             }
         }
+
+        if ($process) {
+            $provider = $process->scope->provider;
+            //error_log($provider);
+            //print_r($provider, true);
+            $providerName = $provider->displayName;
+            $providerTemplateName = self::getProviderTemplateName($providerName);
+            $providerTemplateFolder = 'custom/' . $providerTemplateName . '/';
+
+            if (file_exists(TemplateFinder::getTemplatePath() . '/messaging/' . $providerTemplateFolder . $template)) {
+                return $providerTemplateFolder . $template;
+            }
+        }
+
         return $template;
+    }
+
+    private static function getProviderTemplateName($providerName)
+    {
+        if (strpos($providerName, '(')) {
+            $providerName = substr($providerName, 0, strpos($providerName, '('));
+        }
+        $divider = '-';
+        $providerTemplate = preg_replace('~[^\pL\d]+~u', $divider, $providerName);
+        $providerTemplate = iconv('utf-8', 'us-ascii//TRANSLIT', $providerTemplate);
+        $providerTemplate = preg_replace('~[^-\w]+~', '', $providerTemplate);
+        $providerTemplate = trim($providerTemplate, $divider);
+        $providerTemplate = preg_replace('~-+~', $divider, $providerTemplate);
+        $providerTemplate = strtolower($providerTemplate);
+
+        if (empty($providerTemplate)) {
+            return 'none';
+        }
+
+        return $providerTemplate;
     }
 
     public static function getMailSubject(

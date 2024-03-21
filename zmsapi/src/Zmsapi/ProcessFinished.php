@@ -37,7 +37,7 @@ class ProcessFinished extends BaseController
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $query = new Query();
         if ('pending' == $process['status']) {
-            $process = $query->updateEntity($process, \App::$now);
+            $process = $query->updateEntity($process, \App::$now, 0, $process['status']);
             (new Workstation)->writeRemovedProcess($workstation);
         } else {
             $query->writeEntityFinished($process, \App::$now, true);
@@ -86,7 +86,7 @@ class ProcessFinished extends BaseController
         foreach ($process->getClients() as $client) {
             if ($client->hasSurveyAccepted()) {
                 $config = (new \BO\Zmsdb\Config())->readEntity();
-                $process->scope = (new \BO\Zmsdb\Scope())->readEntity($process['scope']['id'], 0);
+                $process->scope = (new \BO\Zmsdb\Scope())->readEntity($process['scope']['id'], 1);
                 $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, 'survey');
                 (new \BO\Zmsdb\Mail())->writeInQueue($mail, \App::$now, false);
             }

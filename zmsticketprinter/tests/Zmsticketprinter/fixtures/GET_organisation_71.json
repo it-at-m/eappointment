@@ -1,0 +1,143 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2016-04-29T11:53:31+02:00",
+    "server": "Zmsapi-unconfigured"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/organisation.json",
+    "name": "Charlottenburg-Wilmersdorf",
+    "id": "71",
+    "contact": {
+      "city": "",
+      "street": "",
+      "country": "Germany",
+      "name": "Charlottenburg-Wilmersdorf"
+    },
+    "preferences": {
+      "ticketPrinterProtectionEnabled": "0"
+    },
+    "departments": [
+      {
+        "email": "buergeramt@charlottenburg-wilmersdorf.de",
+        "id": "74",
+        "name": "Bürgeramt",
+        "contact": {
+          "city": "Berlin",
+          "street": "Otto-Suhr-Allee 100, 10585 Berlin",
+          "country": "Germany",
+          "name": "Fr. Krause-Jentsch"
+        },
+        "preferences": {
+          "notifications": {
+            "enabled": "1",
+            "identification": "support@berlin.de",
+            "sendConfirmationEnabled": "1",
+            "sendReminderEnabled": "1"
+          }
+        },
+        "clusters": [
+          {
+            "id": "110",
+            "name": "Bürgeramt Hohenzollerndamm",
+            "hint": "",
+            "shortNameEnabled": "1",
+            "callDisplayText": "",
+            "scopes": [
+              {
+                "id": 0,
+                "$ref": "/scope/140/"
+              }
+            ]
+          },
+          {
+            "id": "109",
+            "name": "Bürgeramt Heerstraße",
+            "hint": "",
+            "shortNameEnabled": "1",
+            "callDisplayText": "",
+            "scopes": [
+              {
+                "id": 0,
+                "$ref": "/scope/141/"
+              }
+            ]
+          },
+          {
+            "id": "192",
+            "name": "Bürgeramt Wilmersdorfer Str.",
+            "hint": "",
+            "shortNameEnabled": "1",
+            "callDisplayText": "",
+            "scopes": [
+              {
+                "id": 0,
+                "$ref": "/scope/142/"
+              }
+            ]
+          }
+        ],
+        "scopes": [
+          {
+            "id": "140",
+            "$ref": "/scope/140/"
+          },
+          {
+            "id": "141",
+            "$ref": "/scope/141/"
+          },
+          {
+            "id": "142",
+            "$ref": "/scope/142/"
+          },
+          {
+            "id": "380",
+            "$ref": "/scope/380/"
+          }
+        ]
+      },
+      {
+        "id": "127",
+        "name": "Ordnungsamt",
+        "contact": {
+          "city": "174/177",
+          "street": "Hohenzollerndamm 174/177",
+          "country": "Germany",
+          "name": "Herr Pflücker"
+        },
+        "clusters": [
+          {
+            "id": "290",
+            "name": "Ordnungsamt -ZAB-",
+            "hint": "",
+            "shortNameEnabled": "1",
+            "callDisplayText": "",
+            "scopes": [
+              {
+                "id": 0,
+                "$ref": "/scope/615/"
+              }
+            ]
+          }
+        ],
+        "scopes": [
+          {
+            "id": "615",
+            "$ref": "/scope/615/"
+          }
+        ]
+      }
+    ],
+    "ticketprinters": [
+      {
+        "enabled": "1",
+        "hash": "710caa9f2e7547a52106d6b00868c5cf3a",
+        "id": "2",
+        "lastUpdate": "1481533240",
+        "name": ""
+      }
+    ]
+  }
+}
