@@ -939,10 +939,6 @@ class Process extends Base implements Interfaces\ResolveReferences
             }
         }
 
-        if ($maxAppointmentsPerMail > 0 && $activeAppointments >= $maxAppointmentsPerMail) {
-            return false;
-        }
-
         return true;
     }
 
