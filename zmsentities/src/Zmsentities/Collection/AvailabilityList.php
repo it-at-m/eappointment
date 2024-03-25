@@ -148,6 +148,19 @@ class AvailabilityList extends Base
         return $slotList;
     }
 
+    public function getSlotListByType($type)
+    {
+        $slotList = new SlotList();
+        foreach ($this as $availability) {
+            if ($availability->type == $type) {
+                foreach ($availability->getSlotList() as $slot) {
+                    $slotList->addEntity($slot);
+                }
+            }
+        }
+        return $slotList;
+    }
+
     public function getConflicts($startDate, $endDate)
     {
         $processList = new ProcessList();
