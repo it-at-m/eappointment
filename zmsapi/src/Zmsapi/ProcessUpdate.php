@@ -36,7 +36,7 @@ class ProcessUpdate extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
         $entity->testValid();
-        $this->testProcessData($entity);
+        $this->testProcessData($entity, $slotType !== 'intern');
 
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
 
@@ -75,11 +75,11 @@ class ProcessUpdate extends BaseController
         return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }
 
-    protected function testProcessData($entity)
+    protected function testProcessData($entity, bool $checkMailLimit = true)
     {
         $authCheck = (new Process())->readAuthKeyByProcessId($entity->id);
 
-        if (! (new Process())->isAppointmentAllowedWithSameMail($entity)) {
+        if ($checkMailLimit && ! (new Process())->isAppointmentAllowedWithSameMail($entity)) {
             throw new Exception\Process\MoreThanAllowedAppointmentsPerMail();
         }
 
