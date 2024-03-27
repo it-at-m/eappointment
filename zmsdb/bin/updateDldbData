@@ -2,10 +2,18 @@
 <?php
 require_once(__DIR__."/script_bootstrap.php");
 
-if (!\BO\Zmsdb\Source\Dldb::$importPath) {
-    echo "MISSING dldb data directory. Does a config.php exists?\n";
+// Check for an optional environment variable to specify a backup source directory
+$backupSourceDir = getenv('DLDB_BACKUP_SOURCE_DIR');
+
+if ($backupSourceDir && is_dir($backupSourceDir)) {
+    // Use the backup source directory if the environment variable is set and points to a valid directory
+    \BO\Zmsdb\Source\Dldb::$importPath = $backupSourceDir;
+} elseif (!\BO\Zmsdb\Source\Dldb::$importPath || !is_dir(\BO\Zmsdb\Source\Dldb::$importPath)) {
+    // If the backup source directory is not set or invalid, and no valid default import path is set, exit with an error
+    echo "MISSING dldb data directory. Does a config.php exists, or is DLDB_BACKUP_SOURCE_DIR correctly set?\n";
     exit(1);
 }
+
 if (isset($argv[1]) && $argv[1] == '--commit') {
     $importer = new \BO\Zmsdb\Source\Dldb();
     $importer->startImport(preg_grep('#--?v(erbose)?#', $argv));

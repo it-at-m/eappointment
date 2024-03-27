@@ -1,12 +1,67 @@
 #!/bin/bash
-DIR=$(dirname ${BASH_SOURCE[0]})
-BIN=$DIR/../vendor/bin
-EXPORT=$DIR/../data/
+
+# Directory setup
+DIR=$(dirname "${BASH_SOURCE[0]}")
+BIN="$DIR/../vendor/bin"
+EXPORT="$DIR/../data/"
+BACKUP="$DIR/../data/backup/"
+
+# Load environment variables
 set -a
 [ -z "$ZMS_ENV" ] && [ -e /etc/sysconfig/zms ] && source /etc/sysconfig/zms
 set +a
 
+# Function to compare current dump with the last one
+compare_dumps() {
+    local current_files=("$EXPORT"*.json)
+    local last_backup="$1"
+    
+    # If no backup exists, always return 1 (different)
+    [[ ! -d "$last_backup" ]] && return 1
+
+    local different=0
+    for file in "${current_files[@]}"; do
+        local filename=$(basename "$file")
+        # Compare each file with its counterpart in the last backup
+        if ! cmp -s "$file" "$last_backup/$filename"; then
+            different=1
+            break
+        fi
+    done
+    
+    return $different
+}
+
+# Function to backup current dump
+backup_dump() {
+    local backup_date=$(date +%Y-%m-%d)
+    local backup_dir="$BACKUP$backup_date"
+    mkdir -p "$backup_dir"
+    
+    # Move each file to the new backup directory
+    for file in "$EXPORT"*.json; do
+        mv "$file" "$backup_dir"
+    done
+}
+
+# Get the most recent backup directory
+last_backup=$(ls -td "$BACKUP"*/ | head -1)
+
+# Only run if ZMS_CRONROOT is set correctly
 if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
-    $BIN/dldbget -o $EXPORT -b $ZMS_SOURCE_DLDB
+    # Fetch the new dump
+    echo "Fetching new dump..."
+    $BIN/dldbget -o "$EXPORT" -b $ZMS_SOURCE_DLDB
+    
+    # Update DLDB Data
+    echo "Updating DLDB Data..."
     $BIN/updateDldbData --commit
+    
+    # Compare the new dump with the last backup
+    if compare_dumps "$last_backup"; then
+        echo "The current dump is identical to the last backup. No need to backup."
+    else
+        echo "The current dump is different. Backing up..."
+        backup_dump
+    fi
 fi
