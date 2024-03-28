@@ -14,23 +14,25 @@
 	"lastUpdate": "1477661416",
 	"name": "Test Ticketprinter",
 	"buttonlist": "s141",
-	"buttons": [{
-		"type": "scope",
-		"url": "/scope/141/",
-		"scope": {
-			"id": 141
+	"buttons": [
+		{
+			"type": "scope",
+			"url": "/scope/141/",
+			"scope": {
+				"id": 141
+			},
+			"enabled": true,
+			"name": "Bürgeramt Heerstraße"
 		},
-		"enabled": true,
-		"name": "Bürgeramt Heerstraße"
-	},
-	{
-		"type": "cluster",
-		"url": "/cluster/110/",
-		"cluster": {
-			"id": 110
-		},
-		"enabled": true,
-		"name": "Bürgeramt Hohenzollerndamm"
-	}]
+		{
+			"type": "cluster",
+			"url": "/cluster/110/",
+			"cluster": {
+				"id": 110
+			},
+			"enabled": true,
+			"name": "Bürgeramt Hohenzollerndamm"
+		}
+	]
 }
 }
