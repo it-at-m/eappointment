@@ -2,8 +2,7 @@
 <?php
 require_once(__DIR__."/script_bootstrap.php");
 
-// Set the path to the "current" directory for the import
-$currentImportPath = __DIR__ . '/../data/current'; // Adjust the path as necessary
+$currentImportPath = __DIR__ . '/data/current'; // Adjust the path as necessary
 
 // Now, use the setter method to set the import path
 \BO\Zmsdb\Source\Dldb::setImportPath($currentImportPath);
