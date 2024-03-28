@@ -3,30 +3,51 @@
 namespace BO\Zmsdb\Source;
 
 /**
- * @codeCoverageIgnore
+ * Extends the base class to include functionality for managing data dumps,
+ * including conditional backup based on changes and structured storage.
  */
 class Dldb extends \BO\Zmsdb\Base
 {
     public static $importPath = '';
+    public static $backupPath = ''; // Path to the backup directory
     public static $repository = null;
     public static $verbose = false;
 
+    /**
+     * Returns the path to import fixtures.
+     *
+     * @return string Path to the fixtures import directory.
+     */
     public static function getFixturesImportPath()
     {
         $dir = dirname(__FILE__);
-        $importPath = realpath($dir.'/../../../tests/Zmsdb/fixtures/');
-        return $importPath;
+        return realpath($dir . '/../../../tests/Zmsdb/fixtures/');
     }
 
+    /**
+     * Initiates the import process, includes conditional backup and data processing.
+     *
+     * @param bool $verbose Whether to log verbose output.
+     */
     public function startImport($verbose = true)
     {
         if (!static::$importPath) {
             throw new \Exception('No data path given');
         }
+
+        if (static::$backupPath === '') {
+            throw new \Exception('Backup path not specified');
+        }
+
         if ($verbose) {
             self::$verbose = $verbose;
-            echo "Use source-path for dldb: ". static::$importPath . "\n";
+            echo "Use source-path for dldb: " . static::$importPath . "\n";
         }
+
+        if ($this->isBackupRequired()) {
+            $this->backupData();
+        }
+
         self::$repository = new \BO\Dldb\FileAccess();
         self::$repository->loadFromPath(static::$importPath);
 
@@ -39,6 +60,61 @@ class Dldb extends \BO\Zmsdb\Base
 
         \BO\Zmsdb\Connection\Select::writeCommit();
     }
+
+    /**
+     * Checks if any file in the current dump is different from the last backup,
+     * indicating that a backup is required.
+     *
+     * @return bool Whether a backup is required.
+     */
+    protected function isBackupRequired()
+    {
+        $files = glob(static::$importPath . '*.json');
+        $lastBackupDir = $this->getLastBackupDir();
+
+        foreach ($files as $file) {
+            $basename = basename($file);
+            $backupFile = $lastBackupDir . '/' . $basename;
+            if (!file_exists($backupFile) || md5_file($file) !== md5_file($backupFile)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Backs up the current data to a new directory named with the current date.
+     */
+    protected function backupData()
+    {
+        $date = date('Y-m-d');
+        $backupDir = static::$backupPath . $date;
+        if (!is_dir($backupDir)) {
+            mkdir($backupDir, 0777, true);
+        }
+
+        $files = glob(static::$importPath . '*.json');
+        foreach ($files as $file) {
+            $basename = basename($file);
+            rename($file, $backupDir . '/' . $basename);
+        }
+    }
+
+    /**
+     * Returns the directory of the most recent backup.
+     *
+     * @return string The path to the last backup directory.
+     */
+    protected function getLastBackupDir()
+    {
+        $directories = glob(static::$backupPath . '*', GLOB_ONLYDIR);
+        usort($directories, function ($a, $b) {
+            return filemtime($b) - filemtime($a);
+        });
+
+        return !empty($directories) ? array_shift($directories) : '';
+    } 
 
     protected function writeRequestList()
     {
