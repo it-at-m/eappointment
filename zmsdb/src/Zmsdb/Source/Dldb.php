@@ -92,19 +92,26 @@ class Dldb extends \BO\Zmsdb\Base
      */
     protected function isBackupRequired()
     {
-        $files = glob(static::$importPath . '*.json');
+        // Use array_filter to exclude .json files from the backups/ subdirectory
+        $files = array_filter(glob(static::$importPath . '*.json'), function ($file) {
+            return strpos($file, static::$importPath . 'backups/') === false;
+        });
+    
         $lastBackupDir = $this->getLastBackupDir();
-
+    
         foreach ($files as $file) {
             $basename = basename($file);
+            // Construct the path to the counterpart file in the last backup
             $backupFile = $lastBackupDir . '/' . $basename;
+            
+            // Check if the file exists in the last backup and compare MD5 hashes
             if (!file_exists($backupFile) || md5_file($file) !== md5_file($backupFile)) {
-                return true;
+                return true; // Backup required if the file is new or different
             }
         }
-
-        return false;
-    }
+    
+        return false; // No backup needed if all files are unchanged
+    }    
 
     /**
      * Backs up the current data to a new directory named with the current date.
