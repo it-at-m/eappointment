@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 /**
- * Download and validate json files, and handle backups if changes are detected.
+ * Download and validate JSON files, and handle backups if changes are detected.
  */
 require 'vendor/autoload.php';
 
@@ -9,19 +9,18 @@ use Garden\Cli\Cli;
 use Httpful\Request;
 
 $cli = new Cli();
-$cli->description("Downloads json files from the official site, validates them, replaces the old files, and handles backups if changes are detected.")
+$cli->description("Downloads JSON files from the official site, validates them, replaces the old files, and handles backups if changes are detected.")
     ->opt('output:o', 'Path to save files', true)
     ->opt('proxy:p', 'Proxy server like \"proxy:3128\"', false)
     ->opt('base:b', 'Base download url', true);
 $args = $cli->parse($argv, true);
 
 $destinationPath = $args->getOpt('output');
-$currentPath = $destinationPath . '/current';
 $backupPath = $destinationPath . '/backups';
 
-// Ensure the current directory exists
-if (!is_dir($currentPath) && !mkdir($currentPath, 0777, true) && !is_dir($currentPath)) {
-    echo $cli->red("Failed to create the current directory at $currentPath\n");
+// Ensure the destination directory exists
+if (!is_dir($destinationPath) && !mkdir($destinationPath, 0777, true) && !is_dir($destinationPath)) {
+    echo $cli->red("Failed to create the destination directory at $destinationPath\n");
     exit(1);
 }
 
@@ -66,10 +65,10 @@ $downloads = [
     ],
 ];
 
-// Validate and download new files, determine if backup is necessary
+// Backup logic
 $backupRequired = false;
 foreach ($downloads as $download) {
-    $destFile = $currentPath . '/' . $download['file'];
+    $destFile = $destinationPath . '/' . $download['file'];
     $request = Request::get($baseDomain . $download['url'])->send();
     
     if ($request->code !== 200 || (isset($request->body->error) && $request->body->error)) {
@@ -96,25 +95,23 @@ if ($backupRequired) {
     }
     
     // Copy updated files to backup
-    foreach (glob($currentPath . '/*.json') as $file) {
-        if (!copy($file, $backupDir . '/' . basename($file))) {
+    foreach (glob($destinationPath . '/*.json') as $file) {
+        if (strpos($file, '/backups/') === false && !copy($file, $backupDir . '/' . basename($file))) {
             echo $cli->red("Failed to backup $file\n");
         }
     }
 }
 
-// Delete backups older than 7 days
-$sevenDaysAgo = time() - (7 * 24 * 60 * 60); // 7 days in seconds
-
+// Logic to delete backups older than 7 days
+$sevenDaysAgo = time() - (7 * 24 * 60 * 60);
 foreach (glob($backupPath . '/*', GLOB_ONLYDIR) as $dir) {
     if (filemtime($dir) < $sevenDaysAgo) {
-        // Recursively delete directory contents
         foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $item) {
             $item->isDir() ? rmdir($item->getRealPath()) : unlink($item->getRealPath());
         }
-        // Delete the backup directory
         rmdir($dir);
         echo "Deleted old backup: $dir\n";
     }
 }
+
 echo "Downloads and backups (if necessary) completed.\n";
