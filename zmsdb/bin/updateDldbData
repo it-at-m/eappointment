@@ -7,7 +7,7 @@ if (!\BO\Zmsdb\Source\Dldb::$importPath) {
     exit(1);
 }
 echo "\n******\n"
-echo $importPath
+echo \BO\Zmsdb\Source\Dldb::$importPath
 echo "\n******\n"
 if (isset($argv[1]) && $argv[1] == '--commit') {
     $importer = new \BO\Zmsdb\Source\Dldb();
