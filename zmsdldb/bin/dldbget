@@ -82,7 +82,7 @@ foreach ($downloads as $download) {
 
 // Perform backup if necessary
 if ($backupRequired) {
-    $timestamp = date('Y-m-d');
+    $timestamp = date('Y-m-d'); // More granular timestamp to prevent overwriting
     $backupDir = $backupPath . '/' . $timestamp;
     
     if (!mkdir($backupDir, 0777, true) && !is_dir($backupDir)) {
@@ -90,13 +90,17 @@ if ($backupRequired) {
         exit(1);
     }
     
-    // Move current files to backup
+    // Copy current files to backup instead of moving them
     foreach (glob($currentPath . '/*.json') as $file) {
-        rename($file, $backupDir . '/' . basename($file));
+        if (!copy($file, $backupDir . '/' . basename($file))) {
+            echo $cli->red("Failed to backup $file\n");
+            // Decide how to handle backup failures. May continue or exit.
+        }
     }
 }
 
-// Download and validate new files
+
+// Download overwrites files in current directory and validate new files
 foreach ($downloads as $download) {
     $destFile = $currentPath . '/' . $download['file'];
     $request = Request::get($baseDomain . $download['url'])->send();
