@@ -9,7 +9,7 @@ namespace BO\Zmsdb\Source;
 class Dldb extends \BO\Zmsdb\Base
 {
     public static $importPath = '';
-    public static $backupPath = ''; // Path to the backup directory
+    public static $backupPath = 'backups'; // Path to the backup directory
     public static $repository = null;
     public static $verbose = false;
 
@@ -25,7 +25,34 @@ class Dldb extends \BO\Zmsdb\Base
     }
 
     /**
-     * Initiates the import process, includes conditional backup and data processing.
+     * Initiates the import process, includes conditional backup and data processing for unit test data.
+     *
+     * @param bool $verbose Whether to log verbose output.
+     */
+    public function startTestImport($verbose = true)
+    {
+        if (!static::$importPath) {
+            throw new \Exception('No data path given');
+        }
+        if ($verbose) {
+            self::$verbose = $verbose;
+            echo "Use source-path for dldb: ". static::$importPath . "\n";
+        }
+        self::$repository = new \BO\Dldb\FileAccess();
+        self::$repository->loadFromPath(static::$importPath);
+
+        \BO\Zmsdb\Connection\Select::setTransaction();
+
+        $this->writeRequestList();
+        $this->writeProviderList();
+        $this->writeRequestRelationList();
+        $this->writeLastUpdate($verbose);
+
+        \BO\Zmsdb\Connection\Select::writeCommit();
+    }
+
+    /**
+     * Initiates the import process, includes conditional backup and data processing for dldb mapper data.
      *
      * @param bool $verbose Whether to log verbose output.
      */
@@ -61,29 +88,6 @@ class Dldb extends \BO\Zmsdb\Base
         \BO\Zmsdb\Connection\Select::writeCommit();
     }
 
-    
-    public function startTestImport($verbose = true)
-    {
-        if (!static::$importPath) {
-            throw new \Exception('No data path given');
-        }
-        if ($verbose) {
-            self::$verbose = $verbose;
-            echo "Use source-path for dldb: ". static::$importPath . "\n";
-        }
-        self::$repository = new \BO\Dldb\FileAccess();
-        self::$repository->loadFromPath(static::$importPath);
-
-        \BO\Zmsdb\Connection\Select::setTransaction();
-
-        $this->writeRequestList();
-        $this->writeProviderList();
-        $this->writeRequestRelationList();
-        $this->writeLastUpdate($verbose);
-
-        \BO\Zmsdb\Connection\Select::writeCommit();
-    }
-
     /**
      * Checks if any file in the current dump is different from the last backup,
      * indicating that a backup is required.
@@ -92,9 +96,12 @@ class Dldb extends \BO\Zmsdb\Base
      */
     protected function isBackupRequired()
     {
+        // Correctly construct the full path to the backup directory
+        $fullBackupPath = rtrim(static::$importPath, '/') . '/' . ltrim(static::$backupPath, '/');
+    
         // Use array_filter to exclude .json files from the backups/ subdirectory
-        $files = array_filter(glob(static::$importPath . '*.json'), function ($file) {
-            return strpos($file, static::$importPath . 'backups/') === false;
+        $files = array_filter(glob(static::$importPath . '*.json'), function ($file) use ($fullBackupPath) {
+            return strpos($file, $fullBackupPath) === false;
         });
     
         $lastBackupDir = $this->getLastBackupDir();
@@ -111,26 +118,27 @@ class Dldb extends \BO\Zmsdb\Base
         }
     
         return false; // No backup needed if all files are unchanged
-    }    
+    }     
 
     /**
      * Backs up the current data to a new directory named with the current date.
      */
     protected function backupData()
     {
-        // Ensure the root backup directory exists
-        if (!is_dir(static::$backupPath)) {
-            mkdir(static::$backupPath, 0777, true);
-            echo "Created root backup directory: " . static::$backupPath . "\n";
+        // Construct the full backup path
+        $fullBackupPath = rtrim(static::$importPath, '/') . '/' . ltrim(static::$backupPath, '/');
+        if (!is_dir($fullBackupPath)) {
+            mkdir($fullBackupPath, 0777, true);
+            echo "Created root backup directory: " . $fullBackupPath . "\n";
         }
-    
+        
         $date = date('Y-m-d');
-        $backupDir = static::$backupPath . $date;
+        $backupDir = $fullBackupPath . '/' . $date;
         if (!is_dir($backupDir)) {
             mkdir($backupDir, 0777, true);
             echo "Created backup directory for today: " . $backupDir . "\n";
         }
-    
+        
         $files = glob(static::$importPath . '*.json');
         foreach ($files as $file) {
             $basename = basename($file);
@@ -138,6 +146,7 @@ class Dldb extends \BO\Zmsdb\Base
             echo "Backed up " . $basename . " to " . $backupDir . '/' . $basename . "\n";
         }
     }
+    
 
     /**
      * Returns the directory of the most recent backup.
@@ -146,13 +155,15 @@ class Dldb extends \BO\Zmsdb\Base
      */
     protected function getLastBackupDir()
     {
-        $directories = glob(static::$backupPath . '*', GLOB_ONLYDIR);
+        // Construct the full backup path
+        $fullBackupPath = rtrim(static::$importPath, '/') . '/' . ltrim(static::$backupPath, '/');
+        $directories = glob($fullBackupPath . '/*', GLOB_ONLYDIR);
         usort($directories, function ($a, $b) {
             return filemtime($b) - filemtime($a);
         });
-
+    
         return !empty($directories) ? array_shift($directories) : '';
-    } 
+    }    
 
     protected function writeRequestList()
     {
