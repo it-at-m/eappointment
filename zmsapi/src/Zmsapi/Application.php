@@ -83,7 +83,6 @@ class Application extends \BO\Slim\Application
      * dldb data path
      */
     public static $data = '/data';
-    public static $current = '/current';
 
     /**
      * @var \DateTimeInterface $now time to use for today (testing)
