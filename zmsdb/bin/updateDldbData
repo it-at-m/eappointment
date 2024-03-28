@@ -2,17 +2,28 @@
 <?php
 require_once(__DIR__."/script_bootstrap.php");
 
-if (!\BO\Zmsdb\Source\Dldb::$importPath) {
-    echo "MISSING dldb data directory. Does a config.php exists?\n";
+// Set the path to the "current" directory for the import
+$currentImportPath = __DIR__ . '/../data/current'; // Adjust the path as necessary
+
+// Check if the "current" directory exists
+if (!is_dir($currentImportPath)) {
+    echo "The 'current' data directory does not exist. Please check your setup.\n";
     exit(1);
 }
+
+// Now, use the setter method to set the import path
+\BO\Zmsdb\Source\Dldb::setImportPath($currentImportPath);
+
 if (isset($argv[1]) && $argv[1] == '--commit') {
+    // Instantiate the importer and start the import process
     $importer = new \BO\Zmsdb\Source\Dldb();
-    $importer->startImport(preg_grep('#--?v(erbose)?#', $argv));
+    $verbose = in_array('--verbose', $argv) || in_array('-v', $argv);
+    $importer->startImport($verbose);
 } else {
+    // Help message for correct script usage
     $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
     echo "Usage: {$argv[0]} --commit [--verbose]\n"
-        . "\tATTENTION! Replaces dldb source data in $dbname. USE WITH CAUTION!\n\n"
+        . "\tATTENTION! Replaces dldb source data in database $dbname. USE WITH CAUTION!\n\n"
         . "\t!!!!!!!!!!!!!!!!!!!!!!!\n"
         . "\t!! DATA LOSS WARNING !!\n"
         . "\t!!!!!!!!!!!!!!!!!!!!!!!\n\n";
