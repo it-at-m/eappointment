@@ -85,7 +85,6 @@ class Application extends \BO\Slim\Application
     public static $data = '/data';
     public static $current = '/current';
 
-
     /**
      * @var \DateTimeInterface $now time to use for today (testing)
      */

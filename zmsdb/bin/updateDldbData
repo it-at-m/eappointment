@@ -2,9 +2,9 @@
 <?php
 require_once(__DIR__."/script_bootstrap.php");
 
-if (!\BO\Zmsdb\Source\Dldb::$importPath) {
+if (!\BO\Zmsdb\Source\Dldb::$importPath . '/current') {
     echo "MISSING dldb \data\current directory. Does a config.php exists?\n";
-    exit(1);
+    echo "Full path: " . $importPath . "\n";
 }
 
 if (isset($argv[1]) && $argv[1] == '--commit') {
