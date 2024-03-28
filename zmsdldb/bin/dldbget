@@ -103,4 +103,18 @@ if ($backupRequired) {
     }
 }
 
+// Delete backups older than 7 days
+$sevenDaysAgo = time() - (7 * 24 * 60 * 60); // 7 days in seconds
+
+foreach (glob($backupPath . '/*', GLOB_ONLYDIR) as $dir) {
+    if (filemtime($dir) < $sevenDaysAgo) {
+        // Recursively delete directory contents
+        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $item) {
+            $item->isDir() ? rmdir($item->getRealPath()) : unlink($item->getRealPath());
+        }
+        // Delete the backup directory
+        rmdir($dir);
+        echo "Deleted old backup: $dir\n";
+    }
+}
 echo "Downloads and backups (if necessary) completed.\n";
