@@ -62,7 +62,7 @@ class Dldb extends \BO\Zmsdb\Base
     }
 
     
-    public function startTestDataImport($verbose = true)
+    public function startTestImport($verbose = true)
     {
         if (!static::$importPath) {
             throw new \Exception('No data path given');
