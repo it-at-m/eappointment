@@ -29,7 +29,7 @@ class Dldb extends \BO\Zmsdb\Base
      *
      * @param bool $verbose Whether to log verbose output.
      */
-    public function startImport($verbose = true)
+    public function startDLDBImport($verbose = true)
     {
         if (!static::$importPath) {
             throw new \Exception('No data path given');
@@ -48,6 +48,29 @@ class Dldb extends \BO\Zmsdb\Base
             $this->backupData();
         }
 
+        self::$repository = new \BO\Dldb\FileAccess();
+        self::$repository->loadFromPath(static::$importPath);
+
+        \BO\Zmsdb\Connection\Select::setTransaction();
+
+        $this->writeRequestList();
+        $this->writeProviderList();
+        $this->writeRequestRelationList();
+        $this->writeLastUpdate($verbose);
+
+        \BO\Zmsdb\Connection\Select::writeCommit();
+    }
+
+    
+    public function startTestDataImport($verbose = true)
+    {
+        if (!static::$importPath) {
+            throw new \Exception('No data path given');
+        }
+        if ($verbose) {
+            self::$verbose = $verbose;
+            echo "Use source-path for dldb: ". static::$importPath . "\n";
+        }
         self::$repository = new \BO\Dldb\FileAccess();
         self::$repository->loadFromPath(static::$importPath);
 
@@ -88,16 +111,24 @@ class Dldb extends \BO\Zmsdb\Base
      */
     protected function backupData()
     {
+        // Ensure the root backup directory exists
+        if (!is_dir(static::$backupPath)) {
+            mkdir(static::$backupPath, 0777, true);
+            echo "Created root backup directory: " . static::$backupPath . "\n";
+        }
+    
         $date = date('Y-m-d');
         $backupDir = static::$backupPath . $date;
         if (!is_dir($backupDir)) {
             mkdir($backupDir, 0777, true);
+            echo "Created backup directory for today: " . $backupDir . "\n";
         }
-
+    
         $files = glob(static::$importPath . '*.json');
         foreach ($files as $file) {
             $basename = basename($file);
             rename($file, $backupDir . '/' . $basename);
+            echo "Backed up " . $basename . " to " . $backupDir . '/' . $basename . "\n";
         }
     }
 
