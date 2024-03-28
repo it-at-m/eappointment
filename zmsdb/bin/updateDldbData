@@ -8,7 +8,7 @@ if (!\BO\Zmsdb\Source\Dldb::$importPath) {
 }
 if (isset($argv[1]) && $argv[1] == '--commit') {
     $importer = new \BO\Zmsdb\Source\Dldb();
-    $importer->startDLDBImport(preg_grep('#--?v(erbose)?#', $argv));
+    $importer->startImport(preg_grep('#--?v(erbose)?#', $argv));
 } else {
     $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
     echo "Usage: {$argv[0]} --commit [--verbose]\n"
