@@ -3,7 +3,7 @@
 /**
  * Download and validate json files and handle backups if changes are detected.
  */
-require 'vendor/autoload.php'; // Adjust this path as necessary
+require 'vendor/autoload.php';
 
 use Garden\Cli\Cli;
 use Httpful\Request;
@@ -19,7 +19,6 @@ $destinationPath = $args->getOpt('output');
 $currentPath = $destinationPath . '/current';
 $backupPath = $destinationPath . '/backups';
 
-// Ensure the current directory exists
 if (!is_dir($currentPath) && !mkdir($currentPath, 0777, true) && !is_dir($currentPath)) {
     echo $cli->red("Failed to create the current directory at $currentPath\n");
     exit(1);
@@ -30,13 +29,11 @@ $proxy = $args->getOpt('proxy') ?: getenv('HTTP_PROXY');
 $client = Request::init()->withoutAutoParsing()->followRedirects()->timeout(30);
 
 if ($proxy) {
-    // Simplified proxy setup for brevity
     $client->useProxy($proxy);
 }
 
 Request::ini($client);
 
-// Define downloads
 $downloads = [
     [
         'url' => '/export/standorte/json/',
@@ -82,7 +79,7 @@ foreach ($downloads as $download) {
 
 // Perform backup if necessary
 if ($backupRequired) {
-    $timestamp = date('Y-m-d'); // More granular timestamp to prevent overwriting
+    $timestamp = date('Y-m-d');
     $backupDir = $backupPath . '/' . $timestamp;
     
     if (!mkdir($backupDir, 0777, true) && !is_dir($backupDir)) {
@@ -94,7 +91,6 @@ if ($backupRequired) {
     foreach (glob($currentPath . '/*.json') as $file) {
         if (!copy($file, $backupDir . '/' . basename($file))) {
             echo $cli->red("Failed to backup $file\n");
-            // Decide how to handle backup failures. May continue or exit.
         }
     }
 }
