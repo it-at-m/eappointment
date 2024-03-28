@@ -40,7 +40,7 @@ $errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
 $errorMiddleware->setDefaultErrorHandler(new \BO\Zmsapi\Helper\ErrorHandler());
 
 // DLDB data loader
-\BO\Zmsdb\Source\Dldb::$importPath = \App::APP_PATH . \App::$data;
+\BO\Zmsdb\Source\Dldb::$importPath = \App::APP_PATH . \App::$data  . \App::$current;
 
 // load routing
 \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');
