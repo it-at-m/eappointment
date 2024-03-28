@@ -2,8 +2,9 @@
 <?php
 require_once(__DIR__."/script_bootstrap.php");
 
-if (!\BO\Zmsdb\Source\Dldb::$importPath) {
+if (!\BO\Zmsdb\Source\Dldb::$importPath . '/current') {
     echo "MISSING dldb \data\current directory. Does a config.php exists?\n";
+    echo "Full path: " . $importPath . "\n";
     exit(1);
 }
 
