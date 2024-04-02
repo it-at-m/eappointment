@@ -15,6 +15,75 @@
         },
         "label": "Dienstleistungsdatenbank",
         "editable": "0",
-        "lastChange": 1542202014
+        "lastChange": 1542202014,
+        "providers": [
+            {
+                "id": "122210",
+                "link": "https://www.berlinonline.de",
+                "name": "Dienstleister",
+                "source": "dldb",
+                "data": {
+                    "json": "data"
+                },
+                "contact": {
+                    "city": "Berlin",
+                    "country": "Germany",
+                    "name": "Unittest Source Dienstleister",
+                    "postalCode": "10178",
+                    "region": "Berlin",
+                    "street": "Alte Jakobstraße",
+                    "streetNumber": "105"
+                }
+            }
+        ],
+        "requests": [
+            {
+                "id": "9999998",
+                "link": "https://www.berlinonline.de",
+                "name": "Dienstleistung A",
+                "group": "Unittests",
+                "source": "dldb",
+                "data": {
+                    "json": "data"
+                }
+            },
+            {
+                "id": "9999999",
+                "link": "https://www.berlinonline.de",
+                "name": "Dienstleistung B",
+                "group": "Unittests",
+                "source": "dldb",
+                "data": {
+                    "json": "data",
+                    "key": "value"
+                }
+            }
+        ],
+        "requestrelation": [
+            {
+                "provider": {
+                    "id": "122210",
+                    "source": "dldb"
+                },
+                "request": {
+                    "id": "9999998",
+                    "$ref": "/request/dldb/9999998/"
+                },
+                "source": "dldb",
+                "slots": "2"
+            },
+            {
+                "provider": {
+                    "id": "122210",
+                    "source": "dldb"
+                },
+                "request": {
+                    "id": "9999998",
+                    "$ref": "/request/dldb/9999998/"
+                },
+                "source": "dldb",
+                "slots": "1"
+            }
+        ]
     }
 }

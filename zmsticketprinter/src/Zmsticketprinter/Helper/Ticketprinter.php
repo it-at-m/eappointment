@@ -36,6 +36,7 @@ class Ticketprinter
         } else {
             $entity = $this->getByHash($hash, $entity);
         }
+
         $this->entity = \App::$http->readPostResult('/ticketprinter/', $entity)->getEntity();
     }
 
@@ -126,7 +127,7 @@ class Ticketprinter
         }
         $nextButton = array_shift($ticketprinter->buttons);
         while (! $organisation && $nextButton) {
-            if ('scope' == $nextButton['type']) {
+            if (in_array($nextButton['type'], ['scope', 'request'])) {
                 $organisation = \App::$http->readGetResult(
                     '/scope/'. $nextButton['scope']['id'] . '/organisation/',
                     ['resolveReferences' => 2]

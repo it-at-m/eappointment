@@ -7,7 +7,8 @@ use BO\Zmsdb\ProcessStatusArchived;
 class AnonymizeStatisticDataByCron
 {
     protected $verbose = false;
-    protected $timespan = '-2 days';
+
+    protected $timespan = '-90 days';
 
     public function __construct($verbose = false)
     {
