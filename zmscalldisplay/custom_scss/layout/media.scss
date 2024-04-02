@@ -206,7 +206,8 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         width:400px;
     }
     .aufrufanzeige .aufrufanzeige_main {
-        left:554px;
+        left:10%;
+        width: 80%;
         top:162px;
     }
     span.terminkundennummer, span.wartenummer {
@@ -252,7 +253,7 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         margin-left:-25px;
     }
     .aufrufanzeige table.zweispaltig {
-        width:440px;
+        width:100%;
     }
     .aufrufanzeige table.zweispaltig th.wartenummer {
         width:60%;
@@ -262,7 +263,12 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         border-right:6px solid #C8D5E6;
     }
     .zweispaltig span.terminkundennummer {
-        font-size:40px;
+        font-size:50px;
+    }
+    .zweispaltig span.terminkundennummer,
+    .zweispaltig span.terminkundennummer.abholeranzeige,
+    .zweispaltig span.terminkundennummer.smallerFont8Chars {
+        line-height: 120px;
     }
     .puffer {padding-left:40px;}
 }

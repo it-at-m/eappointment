@@ -14,13 +14,24 @@ const readPropsCluster = cluster => {
 }
 
 const readPropsScope = scope => {
-    const { shortName, contact, id } = scope
+    const { shortName, contact, id, services } = scope
 
     return {
         type: 's',
         id,
         shortName,
-        contact
+        contact,
+        services: services ? services.map(readPropsService) : []
+    }
+}
+
+const readPropsService = service => {
+    const { id, name } = service
+
+    return {
+        type: 'r',
+        id,
+        name
     }
 }
 
@@ -137,9 +148,22 @@ class TicketPrinterConfigView extends Component {
     renderScopes(scopes) {
         if (scopes.length > 0) {
             return (
+                <div>
+                    <fieldset key="scopeList">
+                        <legend className="label">Standorte</legend>
+                        {scopes.map(this.renderScope.bind(this))}
+                    </fieldset>
+                </div>
+            )
+        }
+    }
+
+    renderServices(services) {
+        if (services.length > 0) {
+            return (
                 <fieldset key="scopeList">
-                    <legend className="label">Standorte</legend>
-                    {scopes.map(this.renderItem.bind(this))}
+                    <legend className="label">Dienstleistungen</legend>
+                    {services.map(this.renderItem.bind(this))}
                 </fieldset>
             )
         }
@@ -154,6 +178,16 @@ class TicketPrinterConfigView extends Component {
                 </fieldset>
             )
         }
+    }
+
+    renderScope(scope) {
+        return (
+            <div key={scope.id}>
+                <h2 className="block__heading">{scope.shortName}</h2>
+                {[scope].map(this.renderItem.bind(this))}
+                {this.renderServices(scope.services)}
+            </div>
+        )
     }
 
     renderDepartment(department) {
