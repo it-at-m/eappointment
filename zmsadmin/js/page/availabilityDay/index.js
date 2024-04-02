@@ -85,7 +85,8 @@ class AvailabilityPage extends Component {
                 conflicts: data.conflicts,
                 availabilitylist: data.availabilityList,
                 busyslots: data.busySlotsForAvailabilities,
-                maxslots: data.maxSlotsForAvailabilities
+                maxslots: data.maxSlotsForAvailabilities,
+                slotbuckets: data.slotBuckets,
             }
             this.setState(Object.assign({}, getStateFromProps(Object.assign({}, this.props, newProps)), {
                 stateChanged: false
@@ -119,8 +120,8 @@ class AvailabilityPage extends Component {
                 method: 'POST',
                 data: JSON.stringify(sendData)
             }).done((success) => {
-                console.log('save success', success)
-                this.refreshData()
+                console.log('save success:', success)
+                this.refreshData();
                 this.setState({
                     lastSave: new Date().getTime(),
                 }, () => {
@@ -158,7 +159,6 @@ class AvailabilityPage extends Component {
     }
 
     onUpdateSingleAvailability(availability) {
-        console.log('Saving single availability', availability)
         showSpinner();
         const ok = confirm('Soll diese Öffnungszeit wirklich aktualisiert werden?')
         const id = availability.id
@@ -203,7 +203,6 @@ class AvailabilityPage extends Component {
     }
 
     onDeleteAvailability(availability) {
-        console.log('Deleting', availability)
         showSpinner();
         const ok = confirm('Soll diese Öffnungszeit wirklich gelöscht werden?')
         const id = availability.id
@@ -287,7 +286,6 @@ class AvailabilityPage extends Component {
     }
 
     onCreateExclusionForAvailability(availability) {
-        console.log('in onCreateExclusionForAvailability', this.state.availabilitylist);
         const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
         const yesterday = selectedDay.clone().subtract(1, 'days')
         const tomorrow = selectedDay.clone().add(1, 'days')
@@ -510,6 +508,7 @@ class AvailabilityPage extends Component {
             onSelect={onSelect}
             onDelete={onDelete}
             onAbort={this.onRevertUpdates.bind(this)}
+            slotBuckets={this.state.slotbuckets}
         />
     }
 
@@ -529,7 +528,7 @@ class AvailabilityPage extends Component {
             );
             this.setState({ 
                 availabilitylistslices: availabilityList,
-                maxWorkstationCount: responseData['maxWorkstationCount']
+                maxWorkstationCount: parseInt(responseData['maxWorkstationCount']),
             })
         }).fail((err) => {
             if (err.status === 404) {

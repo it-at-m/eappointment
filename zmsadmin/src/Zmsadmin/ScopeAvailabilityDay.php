@@ -38,6 +38,40 @@ class ScopeAvailabilityDay extends BaseController
         ])->getEntity();
     }
 
+    protected static function getSlotBuckets($availabilityList, $processList) {
+        // Initialize buckets from slots
+        $buckets = [];
+        foreach ($availabilityList->getSlotListByType('appointment') as $slot) {
+            $time = $slot->time; 
+            $buckets[$time] = [
+                'time' => $time,
+                'timeString' => $slot->getTimeString(),
+                'public' => $slot->public, 
+                'intern' => $slot->intern, 
+                'callcenter' => $slot->callcenter,
+                'occupiedCount' => 0, 
+            ];
+        }
+
+        foreach ($processList as $process) {
+            $startTime = $process->getAppointments()->getFirst()->getStartTime()->format('H:i');
+            $endTime = $process->getAppointments()->getFirst()->getEndTime()->format('H:i');
+
+            $startDateTime = new \DateTime($startTime);
+            $endDateTime = new \DateTime($endTime);
+            
+            foreach ($buckets as $time => $value) {
+                $slotDateTime = new \DateTime($time);
+                // Check if the appointment overlaps with the slot time
+                if ($slotDateTime >= $startDateTime && $slotDateTime < $endDateTime) {
+                    $buckets[$time]['occupiedCount']++;
+                }
+            }
+        }
+
+        return $buckets;
+    }
+
     protected static function getAvailabilityData($scopeId, $dateString)
     {
         $scope = static::getScope($scopeId);
@@ -60,6 +94,7 @@ class ScopeAvailabilityDay extends BaseController
         $busySlots = $availabilityList->getCalculatedSlotCount($processList);
 
         return [
+            'slotBuckets' => static::getSlotBuckets($availabilityList, $processList),
             'scope' => $scope,
             'availabilityList' => $availabilityList->getArrayCopy(),
             'conflicts' => ($conflictList) ? $conflictList
