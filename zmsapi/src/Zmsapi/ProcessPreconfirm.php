@@ -56,6 +56,11 @@ class ProcessPreconfirm extends BaseController
     protected function testProcessData($entity)
     {
         $authCheck = (new Process())->readAuthKeyByProcessId($entity->id);
+
+        if (! (new Process())->isAppointmentAllowedWithSameMail($entity)) {
+            throw new Exception\Process\MoreThanAllowedAppointmentsPerMail();
+        }
+
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
