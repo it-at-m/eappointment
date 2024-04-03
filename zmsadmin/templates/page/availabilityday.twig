@@ -32,6 +32,7 @@
         data-maxWorkstationCount="{{maxWorkstationCount}}"
         data-links="{{ links | json_encode }}"
         data-tabs="{{ tabs | json_encode }}"
+        data-slotbuckets={{ slotBuckets|json_encode }}
         data-maxslots="{{ maxSlotsForAvailabilities|json_encode }}"
         data-busyslots="{{ busySlotsForAvailabilities|json_encode }}" ></div>
 {% endblock %}
