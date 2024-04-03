@@ -1,5 +1,8 @@
 INSERT INTO `config` (`name`, `value`, `changeTimestamp`) VALUES
-('anonymization__anonymizeCitizenArchiveDataInDays', '2', '2024-02-20 00:00:00');
+('buergerarchiv__setRetentionPeriodDays', '2', '2024-02-20 00:00:00');
 
 INSERT INTO `config` (`name`, `value`, `changeTimestamp`) VALUES
-('backups__setDLDBMapperBackupDay', '0', '2024-02-20 00:00:00');
+('dldbBackup__setRollbackDay', '0', '2024-02-20 00:00:00');
+
+INSERT INTO `config` (`name`, `value`, `changeTimestamp`) VALUES
+('dldbBackup__setRetentionPeriodDays', '7', '2024-02-20 00:00:00');
