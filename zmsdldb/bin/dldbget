@@ -4,19 +4,20 @@ require 'vendor/autoload.php';
 
 use Garden\Cli\Cli;
 use Httpful\Request;
+use BO\Zmsdb\Config as ConfigRepository;
 
 // Assuming \App::$http->readGetResult returns an object with a getEntity() method that returns configuration settings
-$config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+$config = (new ConfigRepository())->readEntity();
 
 // Function to get the backup retention days
 function getBackupRetentionDays($config) {
-    $retentionSetting = explode(',', $config->getPreference('dldbBackup', 'setRetentionPeriodDays'));
+    $retentionSetting = getenv('ZMS_ENV'), explode(',', $config->getPreference('dldbBackup', 'setRetentionPeriodDays'));
     return !empty($retentionSetting) ? (int)reset($retentionSetting) : 7; // Default to 7 days if not set
 }
 
 // Function to determine if a rollback is requested
 function getRollbackDay($config) {
-    $rollbackDaySetting = explode(',', $config->getPreference('dldbBackup', 'setRollbackDay'));
+    $rollbackDaySetting = getenv('ZMS_ENV'), explode(',', $config->getPreference('dldbBackup', 'setRollbackDay'));
     return !empty($rollbackDaySetting) ? (int)reset($rollbackDaySetting) : 0; // Default to 0 (no rollback) if not set
 }
 
