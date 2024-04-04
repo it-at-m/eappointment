@@ -15,10 +15,12 @@ function getBackupRetentionDays($config) {
     if ($envValue !== false) {
         $retentionSetting = explode(',', $config->getPreference('dldbBackup', 'setRetentionPeriodDays'));
         // Check if the environment's value is within the retrieved settings
+        echo "Using rention period set in system config {$retentionSetting}.";
         if (in_array($envValue, $retentionSetting)) {
             return (int)reset($retentionSetting); // Cast the first element to int and return
         }
     }
+    echo "Using default rention period 7.";
     return 7; // Default to 7 days if not set or the environment variable does not match
 }
 
@@ -28,10 +30,12 @@ function getRollbackDay($config) {
     if ($envValue !== false) {
         $rollbackDaySetting = explode(',', $config->getPreference('dldbBackup', 'setRollbackDay'));
         // Check if the environment's value is within the retrieved settings
+        echo "Using rollback day set in system config {$rollbackDaySetting}.";
         if (in_array($envValue, $rollbackDaySetting)) {
             return (int)reset($rollbackDaySetting); // Cast the first element to int and return
         }
     }
+    echo "Using default 0 no rollback set.";
     return 0; // Default to 0 (no rollback) if not set or the environment variable does not match
 }
 
