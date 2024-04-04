@@ -3,6 +3,7 @@
 namespace BO\Zmsdb\Helper;
 
 use BO\Zmsdb\ProcessStatusArchived;
+use BO\Zmsdb\Config as ConfigRepository;
 
 class AnonymizeStatisticDataByCron
 {
@@ -14,15 +15,18 @@ class AnonymizeStatisticDataByCron
         $this->verbose = $verbose;
         
         // Fetching the configuration setting
-        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+        $config = (new ConfigRepository())->readEntity();
         
         // Extracting the retention setting and converting it to an integer
+        $envValue = getenv('ZMS_ENV');
         $retentionSetting = explode(',', $config->getPreference('buergerarchiv', 'setRetentionPeriodDays'));
         if (isset($retentionSetting[0]) && is_numeric($retentionSetting[0])) {
             // Ensure it's a positive integer and assign it to timespan
+            echo "Using retention period set in config {$retentionSetting[0]}.";
             $this->timespan = abs(intval($retentionSetting[0]));
         } else {
             // Default to 2 days if the setting is not set or not numeric
+            echo "Using default retention period 2.";
             $this->timespan = 2;
         }
     }
