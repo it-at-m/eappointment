@@ -6,7 +6,6 @@ use Garden\Cli\Cli;
 use Httpful\Request;
 use BO\Zmsdb\Config as ConfigRepository;
 
-// Assuming \App::$http->readGetResult returns an object with a getEntity() method that returns configuration settings
 $config = (new ConfigRepository())->readEntity();
 
 // Function to get the backup retention days
