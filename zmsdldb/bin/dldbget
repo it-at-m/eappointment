@@ -11,14 +11,29 @@ $config = (new ConfigRepository())->readEntity();
 
 // Function to get the backup retention days
 function getBackupRetentionDays($config) {
-    $retentionSetting = getenv('ZMS_ENV'), explode(',', $config->getPreference('dldbBackup', 'setRetentionPeriodDays'));
-    return !empty($retentionSetting) ? (int)reset($retentionSetting) : 7; // Default to 7 days if not set
+    // Corrected to use the environment variable value directly
+    $envValue = getenv('ZMS_ENV'); // Assuming this contains the value directly related to backup retention
+    if ($envValue !== false) {
+        $retentionSetting = explode(',', $config->getPreference('dldbBackup', 'setRetentionPeriodDays'));
+        // Check if the environment's value is within the retrieved settings
+        if (in_array($envValue, $retentionSetting)) {
+            return (int)reset($retentionSetting); // Cast the first element to int and return
+        }
+    }
+    return 7; // Default to 7 days if not set or the environment variable does not match
 }
 
 // Function to determine if a rollback is requested
 function getRollbackDay($config) {
-    $rollbackDaySetting = getenv('ZMS_ENV'), explode(',', $config->getPreference('dldbBackup', 'setRollbackDay'));
-    return !empty($rollbackDaySetting) ? (int)reset($rollbackDaySetting) : 0; // Default to 0 (no rollback) if not set
+    $envValue = getenv('ZMS_ENV'); // Assuming this contains the value directly related to rollback day
+    if ($envValue !== false) {
+        $rollbackDaySetting = explode(',', $config->getPreference('dldbBackup', 'setRollbackDay'));
+        // Check if the environment's value is within the retrieved settings
+        if (in_array($envValue, $rollbackDaySetting)) {
+            return (int)reset($rollbackDaySetting); // Cast the first element to int and return
+        }
+    }
+    return 0; // Default to 0 (no rollback) if not set or the environment variable does not match
 }
 
 $cli = new Cli();
