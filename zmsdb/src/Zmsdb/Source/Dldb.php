@@ -18,6 +18,10 @@ class Dldb extends \BO\Zmsdb\Base
         return $importPath;
     }
 
+    public static function setImportPath($path) {
+        self::$importPath = $path;
+    }
+
     public function startImport($verbose = true)
     {
         if (!static::$importPath) {
