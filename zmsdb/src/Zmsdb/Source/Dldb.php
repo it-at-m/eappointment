@@ -13,8 +13,7 @@ class Dldb extends \BO\Zmsdb\Base
 
     public static function getFixturesImportPath()
     {
-        $dir = dirname(__FILE__);
-        $importPath = realpath($dir.'/../../../tests/Zmsdb/fixtures/');
+        $importPath = realpath(__DIR__."/../../../tests/Zmsdb/fixtures/");
         return $importPath;
     }
 
@@ -32,7 +31,7 @@ class Dldb extends \BO\Zmsdb\Base
             echo "Use source-path for dldb: ". static::$importPath . "\n";
         }
         self::$repository = new \BO\Dldb\FileAccess();
-        self::$repository->loadFromPath(static::$importPath);
+        self::$repository->loadFromPath(static::getFixturesImportPath());
 
         \BO\Zmsdb\Connection\Select::setTransaction();
 
