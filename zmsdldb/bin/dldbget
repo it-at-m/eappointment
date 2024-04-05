@@ -77,7 +77,9 @@ Request::ini($client);
 
 
 $rollbackDay = getRollbackDay($config);
-
+print("***********");
+print($rollbackDay);
+print("***********");
 // If a rollback is requested, skip fetching new data and do not delete any backups
 if ($rollbackDay !== "none") {
     print("Rollback to day $rollbackDay is requested.\n\n");
