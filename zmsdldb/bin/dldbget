@@ -39,13 +39,10 @@ function getRollbackDay($config) {
     if ($envValue !== false) {
         $rollbackDaySetting = explode(',', $config->getPreference('dldbBackup', 'setRollbackDay'));
         // Check if the environment's value is within the retrieved settings
-        print("******************");
-        print_r($rollbackDaySetting);
-        print("******************");
-        print_r($rollbackDaySetting[0]);
-        print("******************");        
-        print( "Checking if rollback day set in system config {$rollbackDaySetting[0]}.");
-        if (in_array($envValue, $rollbackDaySetting[0])) {
+        print_r($rollbackDaySetting);     
+        print( "Checking if rollback day set in system config.");
+        if (in_array($envValue, $rollbackDaySetting)) {
+            print( "Rollback day is set in system config {$rollbackDaySetting[0]}.");
             return (int)reset($rollbackDaySetting[0]); // Cast the first element to int and return
         }
     }
