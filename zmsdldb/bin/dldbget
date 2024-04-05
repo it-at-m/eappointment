@@ -3,7 +3,9 @@
 
 // /var/www/html/zmsdldb/vendor/autoload.php
 
-require '/var/www/html/zmsdldb/vendor/autoload.php';
+require_once(__DIR__."/../vendor/autoload.php");
+
+require_once(__DIR__."/script_bootstrap.php");
 
 use Garden\Cli\Cli;
 use Httpful\Request;
@@ -18,12 +20,12 @@ function getBackupRetentionDays($config) {
     if ($envValue !== false) {
         $retentionSetting = explode(',', $config->getPreference('dldbBackup', 'setRetentionPeriodDays'));
         // Check if the environment's value is within the retrieved settings
-        echo "Using rention period set in system config {$retentionSetting}.";
+        print "Using rention period set in system config {$retentionSetting}.";
         if (in_array($envValue, $retentionSetting)) {
             return (int)reset($retentionSetting); // Cast the first element to int and return
         }
     }
-    echo "Using default rention period 7.";
+    print "Using default rention period 7.";
     return 7; // Default to 7 days if not set or the environment variable does not match
 }
 
@@ -33,12 +35,12 @@ function getRollbackDay($config) {
     if ($envValue !== false) {
         $rollbackDaySetting = explode(',', $config->getPreference('dldbBackup', 'setRollbackDay'));
         // Check if the environment's value is within the retrieved settings
-        echo "Using rollback day set in system config {$rollbackDaySetting}.";
+        print "Using rollback day set in system config {$rollbackDaySetting}.";
         if (in_array($envValue, $rollbackDaySetting)) {
             return (int)reset($rollbackDaySetting); // Cast the first element to int and return
         }
     }
-    echo "Using default 0 no rollback set.";
+    print "Using default 0 no rollback set.";
     return 0; // Default to 0 (no rollback) if not set or the environment variable does not match
 }
 
@@ -54,7 +56,7 @@ $backupPath = $destinationPath . '/backups';
 
 // Ensure the destination directory exists
 if (!is_dir($destinationPath) && !mkdir($destinationPath, 0777, true) && !is_dir($destinationPath)) {
-    echo $cli->red("Failed to create the destination directory at $destinationPath\n");
+    print $cli->red("Failed to create the destination directory at $destinationPath\n");
     exit(1);
 }
 
@@ -72,7 +74,7 @@ $rollbackDay = getRollbackDay($config);
 
 // If a rollback is requested, skip fetching new data and do not delete any backups
 if ($rollbackDay > 0) {
-    echo "Rollback to day $rollbackDay is requested. Preparing to rollback...\n";
+    print "Rollback to day $rollbackDay is requested. Preparing to rollback...\n";
 
     // Find the specified backup directory
     $backupDirectories = glob($backupPath . '/*', GLOB_ONLYDIR);
@@ -82,19 +84,19 @@ if ($rollbackDay > 0) {
 
     if (isset($backupDirectories[$rollbackDay - 1])) {
         $rollbackDir = $backupDirectories[$rollbackDay - 1];
-        echo "Rolling back using backup from: $rollbackDir\n";
+        print "Rolling back using backup from: $rollbackDir\n";
 
         // Copy .json files from the specified backup directory to the data directory
         foreach (glob($rollbackDir . '/*.json') as $file) {
             $destFile = $destinationPath . '/' . basename($file);
             if (!copy($file, $destFile)) {
-                echo $cli->red("Error: Failed to rollback $file to $destFile\n");
+                print $cli->red("Error: Failed to rollback $file to $destFile\n");
             } else {
-                echo "Rolled back $file to $destFile\n";
+                print "Rolled back $file to $destFile\n";
             }
         }
     } else {
-        echo $cli->red("Error: Specified rollback day $rollbackDay does not exist in backups.\n");
+        print $cli->red("Error: Specified rollback day $rollbackDay does not exist in backups.\n");
     }
 
 } else {
@@ -135,7 +137,7 @@ if ($rollbackDay > 0) {
         $request = Request::get($baseDomain . $download['url'])->send();
         
         if ($request->code !== 200 || (isset($request->body->error) && $request->body->error)) {
-            echo $cli->red("Error: Failed to download or validate {$download['file']}\n");
+            print $cli->red("Error: Failed to download or validate {$download['file']}\n");
             continue;
         }
     
@@ -152,13 +154,13 @@ if ($rollbackDay > 0) {
         $backupDir = $backupPath . '/' . $timestamp;
         
         if (!mkdir($backupDir, 0777, true) && !is_dir($backupDir)) {
-            echo $cli->red("Failed to create backup directory at $backupDir\n");
+            print $cli->red("Failed to create backup directory at $backupDir\n");
             exit(1);
         }
         
         foreach (glob($destinationPath . '/*.json') as $file) {
             if (!copy($file, $backupDir . '/' . basename($file))) {
-                echo $cli->red("Failed to backup $file\n");
+                print $cli->red("Failed to backup $file\n");
             }
         }
     }
@@ -176,10 +178,10 @@ if ($rollbackDay > 0) {
                 }
             }
             rmdir($dir);
-            echo "Deleted old backup: $dir\n";
+            print "Deleted old backup: $dir\n";
         }
     }
 
 }
 
-echo "Downloads and backups (if necessary) completed.\n";
+print "Downloads and backups (if necessary) completed.\n";

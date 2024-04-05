@@ -28,7 +28,7 @@ class Dldb extends \BO\Zmsdb\Base
             echo "Use source-path for dldb: ". static::$importPath . "\n";
         }
         self::$repository = new \BO\Dldb\FileAccess();
-        self::$repository->loadFromPath(static::$importPath);
+        self::$repository->loadFromPath(__DIR__."/../../../tests/Zmsdb/fixtures/");
 
         \BO\Zmsdb\Connection\Select::setTransaction();
 
