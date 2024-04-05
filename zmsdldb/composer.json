@@ -11,9 +11,6 @@
     "config": {
         "platform": {
             "php": "8.0"
-        },
-        "allow-plugins": {
-            "php-http/discovery": true
         }
     },
     "require-dev": {
@@ -31,13 +28,7 @@
         "ext-pcre": ">=0",
         "vanilla/garden-cli": "1.*",
         "nategood/httpful": "0.*",
-        "twig/twig": "3.*",
-        "eappointment/mellon": "@dev",
-        "eappointment/zmsentities": "@dev",
-        "eappointment/zmsdb": "@dev",
-        "eappointment/zmsslim": "@dev",
-        "eappointment/zmsclient": "@dev",
-        "eappointment/zmsapi": "@dev"
+        "twig/twig": "3.*"
     },
     "bin": [
         "bin/dldbget"
