@@ -34,6 +34,9 @@ class WarehouseReport extends BaseController
             return (new Download(\App::$slim->getContainer()))->readResponse($request, $response, $args);
         }
 
+        print_r($report);
+        die();
+
         return Render::withHtml(
             $response,
             'page/warehouseReport.twig',

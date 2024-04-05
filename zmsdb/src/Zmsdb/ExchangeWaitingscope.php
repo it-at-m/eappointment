@@ -39,7 +39,10 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
                     ]
                 );
 
+                //print_r($raw);
+                //die();
             foreach ($raw as $entry) {
+                error_log(print_r($entry, true));
                 foreach (range(0, 23) as $hour) {
                     $entity->addDataSet([
                         $subjectid,
