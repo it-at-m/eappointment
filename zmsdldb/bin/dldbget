@@ -24,7 +24,7 @@ function getBackupRetentionDays($config) {
         // Check if the environment's value is within the retrieved settings
         print("Checking if retention period is set in system config.\n\n");
         if ($retentionSetting[0] !== "none") {
-            print("Retention period is set in system config {$retentionSetting[0]}.\n\n");
+            print("Retention period is set in system config {$retentionSetting[0]} days.\n\n");
             return (int)$retentionSetting[0];
         }
     }
@@ -39,7 +39,7 @@ function getRollbackDay($config) {
         // Check if the environment's value is within the retrieved settings   
         print("Checking if rollback day set in system config.\n\n");
         if ($rollbackDaySetting[0] !== "none") {
-            print("Rollback day is set in system config {$rollbackDaySetting[0]} days.\n\n");
+            print("Rollback day is set in system config to day {$rollbackDaySetting[0]}.\n\n");
             return (int)$rollbackDaySetting[0]; // Directly cast the string to int and return
         }        
     }
