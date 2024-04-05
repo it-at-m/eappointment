@@ -1,18 +1,58 @@
 #!/usr/bin/env php
 <?php
-/**
- * Download and validate JSON files, and handle backups if changes are detected.
- */
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+
+// /var/www/html/zmsdldb/vendor/autoload.php
+
 require 'vendor/autoload.php';
+
+require_once(__DIR__."/script_bootstrap.php");
 
 use Garden\Cli\Cli;
 use Httpful\Request;
+use BO\Zmsdb\Config as ConfigRepository;
+
+$config = (new ConfigRepository())->readEntity();
+
+function getBackupRetentionDays($config) {
+    $envValue = getenv('ZMS_ENV'); // Assuming this contains the value directly related to backup retention
+    if ($envValue !== false) {
+        $retentionSetting = explode(',', $config->getPreference('dldbBackup', 'setRetentionPeriodDays'));
+        // Check if the environment's value is within the retrieved settings
+        print("Checking if retention period is set in system config.\n\n");
+        if ($retentionSetting[0] !== "none") {
+            print("Retention period is set in system config {$retentionSetting[0]}.\n\n");
+            return (int)$retentionSetting[0];
+        }
+    }
+    print("Using default rention period 7 days.\n\n");
+    return 7; // Default to 7 days if not set or the environment variable does not match
+}
+
+function getRollbackDay($config) {
+    $envValue = getenv('ZMS_ENV'); // Assuming this contains the value directly related to rollback day
+    if ($envValue !== false) {
+        $rollbackDaySetting = explode(',', $config->getPreference('dldbBackup', 'setRollbackDay'));
+        // Check if the environment's value is within the retrieved settings   
+        print("Checking if rollback day set in system config.\n\n");
+        if ($rollbackDaySetting[0] !== "none") {
+            print("Rollback day is set in system config {$rollbackDaySetting[0]}.\n\n");
+            return (int)$rollbackDaySetting[0]; // Directly cast the string to int and return
+        }        
+    }
+    print("Using default \"none\" no rollback set.\n\n");
+    return "none"; // Default to 0 (no rollback) if not set or the environment variable does not match
+}
 
 $cli = new Cli();
 $cli->description("Downloads JSON files from the official site, validates them, replaces the old files, and handles backups if changes are detected.")
     ->opt('output:o', 'Path to save files', true)
-    ->opt('proxy:p', 'Proxy server like \"proxy:3128\"', false)
-    ->opt('base:b', 'Base download url', true);
+    ->opt('proxy:p', 'Proxy server like "proxy:3128"', false)
+    ->opt('base:b', 'Base download url', true)
+    ->opt('query:q', 'Query or environment setting to use', false); 
 $args = $cli->parse($argv, true);
 
 $destinationPath = $args->getOpt('output');
@@ -20,7 +60,7 @@ $backupPath = $destinationPath . '/backups';
 
 // Ensure the destination directory exists
 if (!is_dir($destinationPath) && !mkdir($destinationPath, 0777, true) && !is_dir($destinationPath)) {
-    echo $cli->red("Failed to create the destination directory at $destinationPath\n");
+    print($cli->red("Failed to create the destination directory at $destinationPath\n\n"));
     exit(1);
 }
 
@@ -34,84 +74,126 @@ if ($proxy) {
 
 Request::ini($client);
 
-$downloads = [
-    [
-        'url' => '/export/standorte/json/',
-        'file' => 'locations_de.json',
-    ],
-    [
-        'url' => '/export/standorte/json/en/',
-        'file' => 'locations_en.json',
-    ],
-    [
-        'url' => '/export/dienstleistungen/json/',
-        'file' => 'services_de.json',
-    ],
-    [
-        'url' => '/export/dienstleistungen/json/en/',
-        'file' => 'services_en.json',
-    ],
-    [
-        'url' => '/export/themen/json/',
-        'file' => 'topic_de.json',
-    ],
-    [
-        'url' => '/export/behoerden/json/',
-        'file' => 'authority_de.json',
-    ],
-    [
-        'url' => '/export/settings/json/',
-        'file' => 'settings.json',
-    ],
-];
 
-// Backup logic
-$backupRequired = false;
-foreach ($downloads as $download) {
-    $destFile = $destinationPath . '/' . $download['file'];
-    $request = Request::get($baseDomain . $download['url'])->send();
-    
-    if ($request->code !== 200 || (isset($request->body->error) && $request->body->error)) {
-        echo $cli->red("Failed to download or validate {$download['file']}\n");
-        continue;
+
+$rollbackDay = getRollbackDay($config);
+print("***********");
+print($rollbackDay);
+print("***********");
+// If a rollback is requested, skip fetching new data and do not delete any backups
+if ($rollbackDay !== "none") {
+    print("Rollback to day $rollbackDay is requested.\n\n");
+
+    // Find the specified backup directory
+    $backupDirectories = glob($backupPath . '/*', GLOB_ONLYDIR);
+    usort($backupDirectories, function($a, $b) {
+        return filemtime($b) - filemtime($a);
+    });
+
+    if (isset($backupDirectories[$rollbackDay - 1])) {
+        $rollbackDir = $backupDirectories[$rollbackDay - 1];
+        print("Rolling back using backup from: $rollbackDir\n\n");
+
+        // Copy .json files from the specified backup directory to the data directory
+        foreach (glob($rollbackDir . '/*.json') as $file) {
+            $destFile = $destinationPath . '/' . basename($file);
+            if (!copy($file, $destFile)) {
+                print($cli->red("Error: Failed to rollback $file to $destFile\n\n"));
+            } else {
+                print("Rolled back $file to $destFile\n\n");
+            }
+        }
+    } else {
+        print($cli->red("Error: Specified rollback day $rollbackDay does not exist in backups.\n\n"));
     }
 
-    $newContent = $request->raw_body;
-    if (file_exists($destFile) && md5_file($destFile) !== md5($newContent)) {
-        $backupRequired = true;
+} else {
+    print("No rollback is requested fetching current...\n\n");
+    $downloads = [
+        [
+            'url' => '/export/standorte/json/',
+            'file' => 'locations_de.json',
+        ],
+        [
+            'url' => '/export/standorte/json/en/',
+            'file' => 'locations_en.json',
+        ],
+        [
+            'url' => '/export/dienstleistungen/json/',
+            'file' => 'services_de.json',
+        ],
+        [
+            'url' => '/export/dienstleistungen/json/en/',
+            'file' => 'services_en.json',
+        ],
+        [
+            'url' => '/export/themen/json/',
+            'file' => 'topic_de.json',
+        ],
+        [
+            'url' => '/export/behoerden/json/',
+            'file' => 'authority_de.json',
+        ],
+        [
+            'url' => '/export/settings/json/',
+            'file' => 'settings.json',
+        ],
+    ];
+    
+    print("Checking if backup is required.\n\n");
+    $backupRequired = false;
+    foreach ($downloads as $download) {
+        $destFile = $destinationPath . '/' . $download['file'];
+        $request = Request::get($baseDomain . $download['url'])->send();
+        
+        if ($request->code !== 200 || (isset($request->body->error) && $request->body->error)) {
+            print($cli->red("Error: Failed to download or validate {$download['file']}\n\n"));
+            continue;
+        }
+    
+        $newContent = $request->raw_body;
+        if (file_exists($destFile) && md5_file($destFile) !== md5($newContent)) {
+            $backupRequired = true;
+        }
+        print("Download $request to $destFile\n\n");
+        file_put_contents($destFile, $newContent);
     }
     
-    file_put_contents($destFile, $newContent);
-}
-
-// Perform backup if necessary
-if ($backupRequired) {
-    $timestamp = date('Y-m-d');
-    $backupDir = $backupPath . '/' . $timestamp;
-    
-    if (!mkdir($backupDir, 0777, true) && !is_dir($backupDir)) {
-        echo $cli->red("Failed to create backup directory at $backupDir\n");
-        exit(1);
-    }
-    
-    // Copy updated files to backup
-    foreach (glob($destinationPath . '/*.json') as $file) {
-        if (strpos($file, '/backups/') === false && !copy($file, $backupDir . '/' . basename($file))) {
-            echo $cli->red("Failed to backup $file\n");
+    if ($backupRequired) {
+        print("Backup is required.\n\n");
+        $timestamp = date('Y-m-d');
+        $backupDir = $backupPath . '/' . $timestamp;
+        
+        if (!mkdir($backupDir, 0777, true) && !is_dir($backupDir)) {
+            print($cli->red("Failed to create backup directory at $backupDir\n\n"));
+            exit(1);
+        }
+        
+        foreach (glob($destinationPath . '/*.json') as $file) {
+            if (!copy($file, $backupDir . '/' . basename($file))) {
+                print($cli->red("Failed to backup $file\n\n"));
+            }
         }
     }
-}
-
-// Logic to delete backups older than 7 days
-$sevenDaysAgo = time() - (7 * 24 * 60 * 60);
-foreach (glob($backupPath . '/*', GLOB_ONLYDIR) as $dir) {
-    if (filemtime($dir) < $sevenDaysAgo) {
-        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $item) {
-            $item->isDir() ? rmdir($item->getRealPath()) : unlink($item->getRealPath());
+    
+    // Deleting old backups according to retention settings
+    print("Fetching the backup retention period.\n\n");
+    $retentionDays = getBackupRetentionDays($config);
+    $limitDate = time() - ($retentionDays * 24 * 60 * 60);
+    foreach (glob($backupPath . '/*', GLOB_ONLYDIR) as $dir) {
+        if (filemtime($dir) < $limitDate) {
+            foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $item) {
+                if ($item->isDir()) {
+                    rmdir($item->getRealPath());
+                } else {
+                    unlink($item->getRealPath());
+                }
+            }
+            rmdir($dir);
+            print("Deleted old backup: $dir\n\n");
         }
-        rmdir($dir);
-        echo "Deleted old backup: $dir\n";
     }
+
 }
 
-echo "Downloads and backups (if necessary) completed.\n";
+print("Downloads and backups (if necessary) completed.\n\n");
