@@ -21,14 +21,13 @@ class AnonymizeStatisticDataByCron
         // Extracting the retention setting and converting it to an integer
         $envValue = getenv('ZMS_ENV');
         $retentionSetting = explode(',', $config->getPreference('buergerarchiv', 'setRetentionPeriodDays'));
-        print_r($retentionSetting);
         if ($retentionSetting[0] !== "none") {
             // Ensure it's a positive integer and assign it to timespan
-            print("Using retention period set in config {$retentionSetting[0]}.\n\n");
+            print("Using retention period set in config {$retentionSetting[0]} days.\n\n");
             $this->timespan = (int)$retentionSetting[0];
         } else {
             // Default to 90 days if the setting is not set or not numeric
-            print("Using default retention period 90.\n\n");
+            print("Using default retention period 90 days.\n\n");
             $this->timespan = 90;
         }
     }
@@ -37,18 +36,18 @@ class AnonymizeStatisticDataByCron
     {
         // Adjust the currentDate based on the numeric timespan
         $targetDate = $currentDate->modify("-{$this->timespan} days");
-        print("INFO: Beginning anonymization for entries older than {$targetDate->format('Y-m-d')}.\n\n");
+        print("Beginning anonymization for entries older than {$targetDate->format('Y-m-d')}.\n\n");
 
         if ($commit) {
             $processStatusArchived = new ProcessStatusArchived();
             $success = $processStatusArchived->anonymizeNames($targetDate);
             if ($success) {
-                print("INFO: Anonymization process completed successfully.\n\n");
+                print("Anonymization process completed successfully.\n\n");
             } else {
-                print("ERROR: An error occurred during the anonymization process.\n\n");
+                print("An error occurred during the anonymization process.\n\n");
             }
         } else {
-            print("INFO: Dry run mode - no changes have been made to the database.\n\n");
+            print("Dry run mode - no changes have been made to the database.\n\n");
         }
     }
 }
