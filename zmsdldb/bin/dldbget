@@ -152,7 +152,7 @@ if ($rollbackDay !== "none") {
         if (file_exists($destFile) && md5_file($destFile) !== md5($newContent)) {
             $backupRequired = true;
         }
-        print("Download {$baseDomain}{$download['url']} to $destinationPath\n\n");
+        print("Download {$baseDomain}{$download['url']} to $destFile\n\n");
         file_put_contents($destFile, $newContent);
     }
     
