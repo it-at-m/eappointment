@@ -8,7 +8,6 @@ use BO\Zmsdb\Config as ConfigRepository;
 class AnonymizeStatisticDataByCron
 {
     protected $verbose = false;
-    
     protected $timespan = '-90 days';
 
     public function __construct($verbose = false)
