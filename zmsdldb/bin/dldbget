@@ -1,6 +1,9 @@
 #!/usr/bin/env php
 <?php
-require 'vendor/autoload.php';
+
+// /var/www/html/zmsdldb/vendor/autoload.php
+
+require '/var/www/html/zmsdldb/vendor/autoload.php';
 
 use Garden\Cli\Cli;
 use Httpful\Request;

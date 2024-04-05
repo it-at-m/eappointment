@@ -28,7 +28,10 @@
         "ext-pcre": ">=0",
         "vanilla/garden-cli": "1.*",
         "nategood/httpful": "0.*",
-        "twig/twig": "3.*"
+        "twig/twig": "3.*",
+        "eappointment/mellon": "@dev",
+        "eappointment/zmsentities": "@dev",
+        "eappointment/zmsdb": "@dev"
     },
     "bin": [
         "bin/dldbget"
