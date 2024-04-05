@@ -24,12 +24,12 @@ function getBackupRetentionDays($config) {
     if ($envValue !== false) {
         $retentionSetting = explode(',', $config->getPreference('dldbBackup', 'setRetentionPeriodDays'));
         // Check if the environment's value is within the retrieved settings
-        print("Using rention period set in system config {$retentionSetting}.");
+        print("Using rention period set in system config {$retentionSetting}.\n\n");
         if (in_array($envValue, $retentionSetting)) {
             return (int)reset($retentionSetting); // Cast the first element to int and return
         }
     }
-    print( "Using default rention period 7.");
+    print("Using default rention period 7.\n\n");
     return 7; // Default to 7 days if not set or the environment variable does not match
 }
 
@@ -40,13 +40,13 @@ function getRollbackDay($config) {
         $rollbackDaySetting = explode(',', $config->getPreference('dldbBackup', 'setRollbackDay'));
         // Check if the environment's value is within the retrieved settings
         print_r($rollbackDaySetting);     
-        print( "Checking if rollback day set in system config.");
-        if (in_array($envValue, $rollbackDaySetting)) {
-            print( "Rollback day is set in system config {$rollbackDaySetting[0]}.");
+        print("Checking if rollback day set in system config.\n\n");
+        if ((int)reset($rollbackDaySetting[0]) > 0) {
+            print("Rollback day is set in system config {$rollbackDaySetting[0]}.");
             return (int)reset($rollbackDaySetting[0]); // Cast the first element to int and return
         }
     }
-    print( "Using default 0 no rollback set.");
+    print("Using default 0 no rollback set.\n\n");
     return 0; // Default to 0 (no rollback) if not set or the environment variable does not match
 }
 
@@ -64,7 +64,7 @@ $backupPath = $destinationPath . '/backups';
 
 // Ensure the destination directory exists
 if (!is_dir($destinationPath) && !mkdir($destinationPath, 0777, true) && !is_dir($destinationPath)) {
-    print( $cli->red("Failed to create the destination directory at $destinationPath\n"));
+    print($cli->red("Failed to create the destination directory at $destinationPath\n\n"));
     exit(1);
 }
 
@@ -84,7 +84,7 @@ $rollbackDay = getRollbackDay($config);
 
 // If a rollback is requested, skip fetching new data and do not delete any backups
 if ($rollbackDay > 0) {
-    print( "Rollback to day $rollbackDay is requested. Preparing to rollback...\n");
+    print("Rollback to day $rollbackDay is requested. Preparing to rollback...\n\n");
 
     // Find the specified backup directory
     $backupDirectories = glob($backupPath . '/*', GLOB_ONLYDIR);
@@ -94,23 +94,23 @@ if ($rollbackDay > 0) {
 
     if (isset($backupDirectories[$rollbackDay - 1])) {
         $rollbackDir = $backupDirectories[$rollbackDay - 1];
-        print( "Rolling back using backup from: $rollbackDir\n");
+        print("Rolling back using backup from: $rollbackDir\n\n");
 
         // Copy .json files from the specified backup directory to the data directory
         foreach (glob($rollbackDir . '/*.json') as $file) {
             $destFile = $destinationPath . '/' . basename($file);
             if (!copy($file, $destFile)) {
-                print( $cli->red("Error: Failed to rollback $file to $destFile\n"));
+                print($cli->red("Error: Failed to rollback $file to $destFile\n\n"));
             } else {
-                print( "Rolled back $file to $destFile\n");
+                print("Rolled back $file to $destFile\n\n");
             }
         }
     } else {
-        print( $cli->red("Error: Specified rollback day $rollbackDay does not exist in backups.\n"));
+        print($cli->red("Error: Specified rollback day $rollbackDay does not exist in backups.\n\n"));
     }
 
 } else {
-    print( "No rollback is requested fetching current...\n");
+    print("No rollback is requested fetching current...\n\n");
     $downloads = [
         [
             'url' => '/export/standorte/json/',
@@ -142,13 +142,14 @@ if ($rollbackDay > 0) {
         ],
     ];
     
+    print("Checking if backup is required.\n\n");
     $backupRequired = false;
     foreach ($downloads as $download) {
         $destFile = $destinationPath . '/' . $download['file'];
         $request = Request::get($baseDomain . $download['url'])->send();
         
         if ($request->code !== 200 || (isset($request->body->error) && $request->body->error)) {
-            print( $cli->red("Error: Failed to download or validate {$download['file']}\n"));
+            print($cli->red("Error: Failed to download or validate {$download['file']}\n\n"));
             continue;
         }
     
@@ -161,23 +162,26 @@ if ($rollbackDay > 0) {
     }
     
     if ($backupRequired) {
+        print("Backup is required.\n\n");
         $timestamp = date('Y-m-d');
         $backupDir = $backupPath . '/' . $timestamp;
         
         if (!mkdir($backupDir, 0777, true) && !is_dir($backupDir)) {
-            print( $cli->red("Failed to create backup directory at $backupDir\n"));
+            print($cli->red("Failed to create backup directory at $backupDir\n\n"));
             exit(1);
         }
         
         foreach (glob($destinationPath . '/*.json') as $file) {
             if (!copy($file, $backupDir . '/' . basename($file))) {
-                print( $cli->red("Failed to backup $file\n"));
+                print($cli->red("Failed to backup $file\n\n"));
             }
         }
     }
     
     // Deleting old backups according to retention settings
+    print("Fetching the backup retention period.\n\n");
     $retentionDays = getBackupRetentionDays($config);
+    print_r($retentionDays);t
     $limitDate = time() - ($retentionDays * 24 * 60 * 60);
     foreach (glob($backupPath . '/*', GLOB_ONLYDIR) as $dir) {
         if (filemtime($dir) < $limitDate) {
@@ -189,10 +193,10 @@ if ($rollbackDay > 0) {
                 }
             }
             rmdir($dir);
-            print( "Deleted old backup: $dir\n");
+            print("Deleted old backup: $dir\n\n");
         }
     }
 
 }
 
-print( "Downloads and backups (if necessary) completed.\n");
+print("Downloads and backups (if necessary) completed.\n\n");
