@@ -1,0 +1,678 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-06-26T10:54:41+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/organisation.json",
+        "departments": [
+            {
+                "id": "74",
+                "scopes": [
+                    {
+                        "id": "380",
+                        "hint": "Nr. wird zum Termin aufgerufen",
+                        "shortName": "",
+                        "contact": {
+                            "name": "Bürgeramt Halemweg (Außenstelle)",
+                            "street": "Halemweg 18, 13627 Berlin",
+                            "email": "",
+                            "country": "Germany"
+                        },
+                        "preferences": {
+                            "appointment": {
+                                "deallocationDuration": "60",
+                                "endInDaysDefault": "60",
+                                "multipleSlotsEnabled": "0",
+                                "reservationDuration": "60",
+                                "startInDaysDefault": "1",
+                                "notificationConfirmationEnabled": "1",
+                                "notificationHeadsUpEnabled": "1"
+                            },
+                            "client": {
+                                "alternateAppointmentUrl": "",
+                                "amendmentActivated": "0",
+                                "amendmentLabel": "",
+                                "emailRequired": "0",
+                                "adminMailOnAppointment": "0",
+                                "adminMailOnDeleted": "0",
+                                "telephoneActivated": "0",
+                                "telephoneRequired": "0"
+                            },
+                            "notifications": {
+                                "confirmationContent": "",
+                                "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+                                "headsUpTime": "30"
+                            },
+                            "pickup": {
+                                "alternateName": "Ausgabe",
+                                "isDefault": "0"
+                            },
+                            "queue": {
+                                "callCountMax": "2",
+                                "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                                "firstNumber": "1",
+                                "lastNumber": "799",
+                                "maxNumberContingent": "0",
+                                "processingTimeAverage": "15",
+                                "publishWaitingTimeEnabled": "0",
+                                "statisticsEnabled": "1"
+                            },
+                            "survey": {
+                                "emailContent": "",
+                                "enabled": "0",
+                                "label": ""
+                            },
+                            "ticketprinter": {
+                                "buttonName": "Bürgeramt Halemweg (Außenstelle)",
+                                "confirmationEnabled": "0",
+                                "deactivatedText": "",
+                                "notificationsAmendmentEnabled": "0",
+                                "notificationsEnabled": "1",
+                                "notificationsDelay": "0"
+                            },
+                            "workstation": {
+                                "emergencyEnabled": "0",
+                                "emergencyRefreshInterval": "5"
+                            }
+                        },
+                        "status": {
+                            "emergency": {
+                                "acceptedByWorkstation": "-1",
+                                "activated": "0",
+                                "calledByWorkstation": "-1"
+                            },
+                            "queue": {
+                                "ghostWorkstationCount": "-1",
+                                "givenNumberCount": "0",
+                                "lastGivenNumber": "1",
+                                "lastGivenNumberTimestamp": 1456873200
+                            },
+                            "ticketprinter": {
+                                "deactivated": "0"
+                            }
+                        },
+                        "provider": {
+                            "id": "122210",
+                            "contact": {
+                                "city": "Berlin",
+                                "country": "Germany",
+                                "name": "Bürgeramt Halemweg (Außenstelle)",
+                                "postalCode": "13627",
+                                "region": "Berlin",
+                                "street": "Halemweg",
+                                "streetNumber": "18"
+                            },
+                            "source": "dldb",
+                            "link": "https://service.berlin.de/standort/122210/",
+                            "name": "Bürgeramt Halemweg (Außenstelle)",
+                            "data": {
+                                "services": [
+                                    {
+                                        "service": "9999998"
+                                    },
+                                    {
+                                        "service": "9999999"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "id": "1",
+                        "hint": "Easteregg",
+                        "shortName": "",
+                        "contact": {
+                            "name": "Häschenschule",
+                            "street": "Hasenmark. 17",
+                            "email": "",
+                            "country": "Germany"
+                        },
+                        "preferences": {
+                            "appointment": {
+                                "deallocationDuration": "10",
+                                "endInDaysDefault": "60",
+                                "multipleSlotsEnabled": "0",
+                                "reservationDuration": "20",
+                                "startInDaysDefault": "0",
+                                "notificationConfirmationEnabled": "1",
+                                "notificationHeadsUpEnabled": "1"
+                            },
+                            "client": {
+                                "alternateAppointmentUrl": "",
+                                "amendmentActivated": "0",
+                                "amendmentLabel": "0",
+                                "emailRequired": "0",
+                                "adminMailOnAppointment": "0",
+                                "adminMailOnDeleted": "0",
+                                "telephoneActivated": "0",
+                                "telephoneRequired": "0"
+                            },
+                            "notifications": {
+                                "confirmationContent": "",
+                                "headsUpContent": "schaun sie mal wieder rein, denn etwas Schau muss sein",
+                                "headsUpTime": "30"
+                            },
+                            "pickup": {
+                                "alternateName": "Ausgabe",
+                                "isDefault": "0"
+                            },
+                            "queue": {
+                                "callCountMax": "0",
+                                "callDisplayText": "Jubel, Trubel, Heiterkeit,\nseid zur Heiterkeit bereit!\nMein Name ist Hase, ich weiß Bescheid.\nWer eine schöne Stunde verschenkt,\nweil er an Ärger von gestern denkt,\noder an Sorgen von morgen, der tut mir Leid,\nmein Name ist Hase, ich weiß Bescheid.",
+                                "firstNumber": "1",
+                                "lastNumber": "499",
+                                "maxNumberContingent": "0",
+                                "processingTimeAverage": "5",
+                                "publishWaitingTimeEnabled": "1",
+                                "statisticsEnabled": "1"
+                            },
+                            "survey": {
+                                "emailContent": "",
+                                "enabled": "0",
+                                "label": ""
+                            },
+                            "ticketprinter": {
+                                "buttonName": "Bürgeramt",
+                                "confirmationEnabled": "0",
+                                "deactivatedText": "0",
+                                "notificationsAmendmentEnabled": "0",
+                                "notificationsEnabled": "0",
+                                "notificationsDelay": "0"
+                            },
+                            "workstation": {
+                                "emergencyEnabled": "1",
+                                "emergencyRefreshInterval": "5"
+                            }
+                        },
+                        "status": {
+                            "emergency": {
+                                "acceptedByWorkstation": "-1",
+                                "activated": "0",
+                                "calledByWorkstation": "-1"
+                            },
+                            "queue": {
+                                "ghostWorkstationCount": "-1",
+                                "givenNumberCount": "46",
+                                "lastGivenNumber": "47",
+                                "lastGivenNumberTimestamp": 1458774000
+                            },
+                            "ticketprinter": {
+                                "deactivated": "0"
+                            }
+                        },
+                        "provider": {
+                            "id": "122217",
+                            "contact": {
+                                "city": "Berlin",
+                                "country": "Germany",
+                                "name": "Bürgeramt Heerstraße",
+                                "postalCode": "14052",
+                                "region": "Berlin",
+                                "street": "Heerstr.",
+                                "streetNumber": "12"
+                            },
+                            "source": "dldb",
+                            "link": "https://service.berlin.de/standort/122217/",
+                            "name": "Bürgeramt Heerstraße"
+                        }
+                    }
+                ],
+                "links": [
+                    {
+                        "name": "Bürgerämter Charlottenburg-Wilmersdorf",
+                        "url": "http://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                        "target": "1",
+                        "id": "72"
+                    }
+                ],
+                "dayoff": [
+                    {
+                        "date": 1478041200,
+                        "name": "Personalversammlung"
+                    }
+                ],
+                "email": "test@example.com",
+                "name": "Bürgeramt",
+                "contact": {
+                    "city": "Berlin",
+                    "street": "Otto-Suhr-Allee 100, 10585 Berlin",
+                    "country": "Germany",
+                    "name": ""
+                },
+                "preferences": {
+                    "notifications": {
+                        "enabled": "1",
+                        "identification": "test@example.com",
+                        "sendConfirmationEnabled": "1",
+                        "sendReminderEnabled": "1"
+                    }
+                },
+                "clusters": [
+                    {
+                        "scopes": [
+                            {
+                                "id": "140",
+                                "hint": "Vorgangsnr.aufruf im Warteraum",
+                                "shortName": "",
+                                "contact": {
+                                    "name": "Bürgeramt Hohenzollerndamm",
+                                    "street": "Hohenzollerndamm 177, 10713 Berlin",
+                                    "email": "",
+                                    "country": "Germany"
+                                },
+                                "preferences": {
+                                    "appointment": {
+                                        "deallocationDuration": "10",
+                                        "endInDaysDefault": "60",
+                                        "multipleSlotsEnabled": "0",
+                                        "reservationDuration": "20",
+                                        "startInDaysDefault": "0",
+                                        "notificationConfirmationEnabled": "1",
+                                        "notificationHeadsUpEnabled": "1"
+                                    },
+                                    "client": {
+                                        "alternateAppointmentUrl": "",
+                                        "amendmentActivated": "0",
+                                        "amendmentLabel": "",
+                                        "emailRequired": "0",
+                                        "adminMailOnAppointment": "0",
+                                        "adminMailOnDeleted": "0",
+                                        "telephoneActivated": "0",
+                                        "telephoneRequired": "0"
+                                    },
+                                    "notifications": {
+                                        "confirmationContent": "",
+                                        "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, an welchem Platz Sie erwartet werden. Wartenr",
+                                        "headsUpTime": "30"
+                                    },
+                                    "pickup": {
+                                        "alternateName": "Ausgabe",
+                                        "isDefault": "0"
+                                    },
+                                    "queue": {
+                                        "callCountMax": "0",
+                                        "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                                        "firstNumber": "1",
+                                        "lastNumber": "499",
+                                        "maxNumberContingent": "0",
+                                        "processingTimeAverage": "15",
+                                        "publishWaitingTimeEnabled": "1",
+                                        "statisticsEnabled": "1"
+                                    },
+                                    "survey": {
+                                        "emailContent": "",
+                                        "enabled": "0",
+                                        "label": ""
+                                    },
+                                    "ticketprinter": {
+                                        "buttonName": "Bürgeramt Hohenzollerndamm",
+                                        "confirmationEnabled": "0",
+                                        "deactivatedText": "",
+                                        "notificationsAmendmentEnabled": "0",
+                                        "notificationsEnabled": "1",
+                                        "notificationsDelay": "0"
+                                    },
+                                    "workstation": {
+                                        "emergencyEnabled": "1",
+                                        "emergencyRefreshInterval": "5"
+                                    }
+                                },
+                                "status": {
+                                    "emergency": {
+                                        "acceptedByWorkstation": "-1",
+                                        "activated": "0",
+                                        "calledByWorkstation": "-1"
+                                    },
+                                    "queue": {
+                                        "ghostWorkstationCount": "-1",
+                                        "givenNumberCount": "15",
+                                        "lastGivenNumber": "16",
+                                        "lastGivenNumberTimestamp": 1458774000
+                                    },
+                                    "ticketprinter": {
+                                        "deactivated": "0"
+                                    }
+                                },
+                                "provider": {
+                                    "id": "122219",
+                                    "$ref": "/provider/122219/"
+                                }
+                            }
+                        ],
+                        "id": "110",
+                        "name": "Bürgeramt Hohenzollerndamm",
+                        "hint": "",
+                        "shortNameEnabled": "1",
+                        "callDisplayText": ""
+                    },
+                    {
+                        "scopes": [
+                            {
+                                "id": "141",
+                                "hint": "Nr. wird zum Termin aufgerufen",
+                                "shortName": "",
+                                "contact": {
+                                    "name": "Bürgeramt Heerstraße",
+                                    "street": "Heerstr. 12, 14052 Berlin",
+                                    "email": "",
+                                    "country": "Germany"
+                                },
+                                "preferences": {
+                                    "appointment": {
+                                        "deallocationDuration": "10",
+                                        "endInDaysDefault": "60",
+                                        "multipleSlotsEnabled": "0",
+                                        "reservationDuration": "20",
+                                        "startInDaysDefault": "0",
+                                        "notificationConfirmationEnabled": "1",
+                                        "notificationHeadsUpEnabled": "1"
+                                    },
+                                    "client": {
+                                        "alternateAppointmentUrl": "",
+                                        "amendmentActivated": "0",
+                                        "amendmentLabel": "",
+                                        "emailRequired": "0",
+                                        "adminMailOnAppointment": "0",
+                                        "adminMailOnDeleted": "0",
+                                        "telephoneActivated": "0",
+                                        "telephoneRequired": "0"
+                                    },
+                                    "notifications": {
+                                        "confirmationContent": "",
+                                        "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+                                        "headsUpTime": "30"
+                                    },
+                                    "pickup": {
+                                        "alternateName": "Ausgabe",
+                                        "isDefault": "0"
+                                    },
+                                    "queue": {
+                                        "callCountMax": "0",
+                                        "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                                        "firstNumber": "1",
+                                        "lastNumber": "499",
+                                        "maxNumberContingent": "0",
+                                        "processingTimeAverage": "15",
+                                        "publishWaitingTimeEnabled": "1",
+                                        "statisticsEnabled": "1"
+                                    },
+                                    "survey": {
+                                        "emailContent": "",
+                                        "enabled": "0",
+                                        "label": ""
+                                    },
+                                    "ticketprinter": {
+                                        "buttonName": "Bürgeramt",
+                                        "confirmationEnabled": "0",
+                                        "deactivatedText": "",
+                                        "notificationsAmendmentEnabled": "0",
+                                        "notificationsEnabled": "1",
+                                        "notificationsDelay": "0"
+                                    },
+                                    "workstation": {
+                                        "emergencyEnabled": "1",
+                                        "emergencyRefreshInterval": "5"
+                                    }
+                                },
+                                "status": {
+                                    "emergency": {
+                                        "acceptedByWorkstation": "-1",
+                                        "activated": "0",
+                                        "calledByWorkstation": "-1"
+                                    },
+                                    "queue": {
+                                        "ghostWorkstationCount": "-1",
+                                        "givenNumberCount": "46",
+                                        "lastGivenNumber": "47",
+                                        "lastGivenNumberTimestamp": 1458774000
+                                    },
+                                    "ticketprinter": {
+                                        "deactivated": "0"
+                                    }
+                                },
+                                "provider": {
+                                    "id": "122217",
+                                    "$ref": "/provider/122217/"
+                                }
+                            }
+                        ],
+                        "id": "109",
+                        "name": "Bürgeramt Heerstraße",
+                        "hint": "",
+                        "shortNameEnabled": "1",
+                        "callDisplayText": ""
+                    },
+                    {
+                        "scopes": [
+                            {
+                                "id": "142",
+                                "hint": "in der 4. Etage",
+                                "shortName": "Etage 4",
+                                "contact": {
+                                    "name": "Bürgeramt Wilmersdorfer Straße",
+                                    "street": "Wilmersdorfer Straße 46, 10627 Berlin",
+                                    "email": "",
+                                    "country": "Germany"
+                                },
+                                "preferences": {
+                                    "appointment": {
+                                        "deallocationDuration": "10",
+                                        "endInDaysDefault": "60",
+                                        "multipleSlotsEnabled": "0",
+                                        "reservationDuration": "20",
+                                        "startInDaysDefault": "0",
+                                        "notificationConfirmationEnabled": "1",
+                                        "notificationHeadsUpEnabled": "1"
+                                    },
+                                    "client": {
+                                        "alternateAppointmentUrl": "",
+                                        "amendmentActivated": "0",
+                                        "amendmentLabel": "",
+                                        "emailRequired": "0",
+                                        "adminMailOnAppointment": "0",
+                                        "adminMailOnDeleted": "0",
+                                        "telephoneActivated": "0",
+                                        "telephoneRequired": "0"
+                                    },
+                                    "notifications": {
+                                        "confirmationContent": "",
+                                        "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+                                        "headsUpTime": "30"
+                                    },
+                                    "pickup": {
+                                        "alternateName": "Ausgabe",
+                                        "isDefault": "0"
+                                    },
+                                    "queue": {
+                                        "callCountMax": "0",
+                                        "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                                        "firstNumber": "1",
+                                        "lastNumber": "499",
+                                        "maxNumberContingent": "0",
+                                        "processingTimeAverage": "10",
+                                        "publishWaitingTimeEnabled": "1",
+                                        "statisticsEnabled": "1"
+                                    },
+                                    "survey": {
+                                        "emailContent": "",
+                                        "enabled": "0",
+                                        "label": ""
+                                    },
+                                    "ticketprinter": {
+                                        "buttonName": "Bürgeramt Wilmersdorfer Straße",
+                                        "confirmationEnabled": "0",
+                                        "deactivatedText": "",
+                                        "notificationsAmendmentEnabled": "0",
+                                        "notificationsEnabled": "1",
+                                        "notificationsDelay": "0"
+                                    },
+                                    "workstation": {
+                                        "emergencyEnabled": "1",
+                                        "emergencyRefreshInterval": "5"
+                                    }
+                                },
+                                "status": {
+                                    "emergency": {
+                                        "acceptedByWorkstation": "-1",
+                                        "activated": "0",
+                                        "calledByWorkstation": "-1"
+                                    },
+                                    "queue": {
+                                        "ghostWorkstationCount": "-1",
+                                        "givenNumberCount": "9",
+                                        "lastGivenNumber": "10",
+                                        "lastGivenNumberTimestamp": 1458774000
+                                    },
+                                    "ticketprinter": {
+                                        "deactivated": "0"
+                                    }
+                                },
+                                "provider": {
+                                    "id": "122227",
+                                    "$ref": "/provider/122227/"
+                                }
+                            }
+                        ],
+                        "id": "192",
+                        "name": "Bürgeramt Wilmersdorfer Str.",
+                        "hint": "",
+                        "shortNameEnabled": "1",
+                        "callDisplayText": ""
+                    }
+                ]
+            },
+            {
+                "id": "127",
+                "name": "Ordnungsamt",
+                "contact": {
+                    "city": "174/177",
+                    "street": "Hohenzollerndamm 174/177",
+                    "country": "Germany",
+                    "name": ""
+                },
+                "clusters": [
+                    {
+                        "scopes": [
+                            {
+                                "id": "615",
+                                "hint": "Bitte gehen Sie zum Raum 2001",
+                                "shortName": "",
+                                "contact": {
+                                    "name": "Ordnungsamt Charlottenburg-Wilmersdorf (Zentrale Anlauf- und Beratungsstelle)",
+                                    "street": "Hohenzollerndamm 174-177, 10713 Berlin",
+                                    "email": "",
+                                    "country": "Germany"
+                                },
+                                "preferences": {
+                                    "appointment": {
+                                        "deallocationDuration": "30",
+                                        "endInDaysDefault": "21",
+                                        "multipleSlotsEnabled": "0",
+                                        "reservationDuration": "20",
+                                        "startInDaysDefault": "2"
+                                    },
+                                    "client": {
+                                        "alternateAppointmentUrl": "",
+                                        "amendmentActivated": "1",
+                                        "amendmentLabel": "Anmerkung",
+                                        "emailRequired": "1",
+                                        "adminMailOnAppointment": "0",
+                                        "adminMailOnDeleted": "0",
+                                        "telephoneActivated": "0",
+                                        "telephoneRequired": "0"
+                                    },
+                                    "notifications": {
+                                        "confirmationContent": "",
+                                        "headsUpContent": "",
+                                        "headsUpTime": "0"
+                                    },
+                                    "pickup": {
+                                        "alternateName": "",
+                                        "isDefault": "0"
+                                    },
+                                    "queue": {
+                                        "callCountMax": "0",
+                                        "callDisplayText": "Antragstellung und Beratung für Gaststättenbetriebe mit Ausschank alkoholischer Getränke ist ab sofort nur mit Terminvereinbarung möglich!\r\n\r\nBitte vereinbaren Sie einen Termin per E-Mail",
+                                        "firstNumber": "1",
+                                        "lastNumber": "999",
+                                        "maxNumberContingent": "0",
+                                        "processingTimeAverage": "7",
+                                        "publishWaitingTimeEnabled": "0",
+                                        "statisticsEnabled": "0"
+                                    },
+                                    "survey": {
+                                        "emailContent": "",
+                                        "enabled": "0",
+                                        "label": ""
+                                    },
+                                    "ticketprinter": {
+                                        "buttonName": "Ordnungsamt",
+                                        "confirmationEnabled": "0",
+                                        "deactivatedText": "",
+                                        "notificationsAmendmentEnabled": "0",
+                                        "notificationsEnabled": "0",
+                                        "notificationsDelay": "0"
+                                    },
+                                    "workstation": {
+                                        "emergencyEnabled": "0",
+                                        "emergencyRefreshInterval": "5"
+                                    }
+                                },
+                                "status": {
+                                    "emergency": {
+                                        "acceptedByWorkstation": "-1",
+                                        "activated": "0",
+                                        "calledByWorkstation": "-1"
+                                    },
+                                    "queue": {
+                                        "ghostWorkstationCount": "-1",
+                                        "givenNumberCount": "30",
+                                        "lastGivenNumber": "31",
+                                        "lastGivenNumberTimestamp": 1477000800
+                                    },
+                                    "ticketprinter": {
+                                        "deactivated": "0"
+                                    }
+                                },
+                                "provider": {
+                                    "id": "122058",
+                                    "$ref": "/provider/122058/"
+                                }
+                            }
+                        ],
+                        "id": "290",
+                        "name": "Ordnungsamt -ZAB-",
+                        "hint": "",
+                        "shortNameEnabled": "1",
+                        "callDisplayText": ""
+                    }
+                ]
+            }
+        ],
+        "name": "Charlottenburg-Wilmersdorf",
+        "id": "71",
+        "contact": {
+            "city": "",
+            "street": "",
+            "country": "Germany",
+            "name": "Charlottenburg-Wilmersdorf"
+        },
+        "preferences": {
+            "ticketPrinterProtectionEnabled": "0"
+        },
+        "ticketprinters": [
+            {
+                "enabled": "1",
+                "reload": 30,
+                "hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
+                "id": "1",
+                "lastUpdate": "1477661416",
+                "name": "Test Ticketprinter"
+            }
+        ]
+    }
+}
