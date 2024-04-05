@@ -18,7 +18,6 @@ use BO\Zmsdb\Config as ConfigRepository;
 $config = (new ConfigRepository())->readEntity();
 
 function getBackupRetentionDays($config) {
-    // Corrected to use the environment variable value directly
     $envValue = getenv('ZMS_ENV'); // Assuming this contains the value directly related to backup retention
     if ($envValue !== false) {
         $retentionSetting = explode(',', $config->getPreference('dldbBackup', 'setRetentionPeriodDays'));

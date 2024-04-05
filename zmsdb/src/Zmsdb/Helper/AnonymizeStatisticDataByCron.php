@@ -37,18 +37,18 @@ class AnonymizeStatisticDataByCron
     {
         // Adjust the currentDate based on the numeric timespan
         $targetDate = $currentDate->modify("-{$this->timespan} days");
-        $this->print("INFO: Beginning anonymization for entries older than {$targetDate->format('Y-m-d')}.\n\n");
+        print("INFO: Beginning anonymization for entries older than {$targetDate->format('Y-m-d')}.\n\n");
 
         if ($commit) {
             $processStatusArchived = new ProcessStatusArchived();
             $success = $processStatusArchived->anonymizeNames($targetDate);
             if ($success) {
-                $this->print("INFO: Anonymization process completed successfully.\n\n");
+                print("INFO: Anonymization process completed successfully.\n\n");
             } else {
-                $this->print("ERROR: An error occurred during the anonymization process.\n\n");
+                print("ERROR: An error occurred during the anonymization process.\n\n");
             }
         } else {
-            $this->print("INFO: Dry run mode - no changes have been made to the database.\n\n");
+            print("INFO: Dry run mode - no changes have been made to the database.\n\n");
         }
     }
 }
