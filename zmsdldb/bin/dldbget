@@ -17,23 +17,22 @@ use BO\Zmsdb\Config as ConfigRepository;
 
 $config = (new ConfigRepository())->readEntity();
 
-// Function to get the backup retention days
 function getBackupRetentionDays($config) {
     // Corrected to use the environment variable value directly
     $envValue = getenv('ZMS_ENV'); // Assuming this contains the value directly related to backup retention
     if ($envValue !== false) {
         $retentionSetting = explode(',', $config->getPreference('dldbBackup', 'setRetentionPeriodDays'));
         // Check if the environment's value is within the retrieved settings
-        print("Using rention period set in system config {$retentionSetting}.\n\n");
-        if (in_array($envValue, $retentionSetting)) {
-            return (int)reset($retentionSetting); // Cast the first element to int and return
+        print("Checking if retention period is set in system config.\n\n");
+        if ($retentionSetting[0] !== "none") {
+            print("Retention period is set in system config {$retentionSetting[0]}.\n\n");
+            return (int)$retentionSetting[0];
         }
     }
-    print("Using default rention period 7.\n\n");
+    print("Using default rention period 7 days.\n\n");
     return 7; // Default to 7 days if not set or the environment variable does not match
 }
 
-// Function to determine if a rollback is requested
 function getRollbackDay($config) {
     $envValue = getenv('ZMS_ENV'); // Assuming this contains the value directly related to rollback day
     if ($envValue !== false) {
@@ -155,7 +154,7 @@ if ($rollbackDay !== "none") {
         if (file_exists($destFile) && md5_file($destFile) !== md5($newContent)) {
             $backupRequired = true;
         }
-        
+        print("Download $request to $destFile\n\n");
         file_put_contents($destFile, $newContent);
     }
     
@@ -179,7 +178,6 @@ if ($rollbackDay !== "none") {
     // Deleting old backups according to retention settings
     print("Fetching the backup retention period.\n\n");
     $retentionDays = getBackupRetentionDays($config);
-    print_r($retentionDays);
     $limitDate = time() - ($retentionDays * 24 * 60 * 60);
     foreach (glob($backupPath . '/*', GLOB_ONLYDIR) as $dir) {
         if (filemtime($dir) < $limitDate) {
