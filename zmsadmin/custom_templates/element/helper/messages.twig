@@ -263,7 +263,7 @@
 			{{ block('success_start') }}
 				Der Vorgang mit der Nummer {{ selectedprocess.queue.number }} wurde erfolgreich entfernt.
                 <div class="form-actions">
-                    <button type="button" data-action-ok class="button button-ok btn right">OK</button>
+                    <button type="button" onclick="location.href = '{{ includeUrl() }}/counter';" data-action-ok class="button button-ok btn right">OK</button>
                 </div>
 	        {{ block('success_end') }}
     	{% endblock %}
@@ -338,21 +338,22 @@
 {% endblock %}
 
 {% block error_start %}
-	<section class="dialog message message--error" role="alert">
-		<h2 class="message__heading title">{% trans %}Fehler{% endtrans %}: {{ errorTitle|default("Es ist ein Fehler aufgetreten")|trans }}</h2>
-		<div class="message__body">
+	<section tabindex="0" class="dialog message message--error" role="alert">
+		<h2 tabindex="0" class="message__heading title">{% trans %}Fehler{% endtrans %}: {{ errorTitle|default("Es ist ein Fehler aufgetreten")|trans }}</h2>
+		<div tabindex="0" class="message__body">
 {% endblock %}
 {% block error_end %}</div></section>{% endblock %}
 
 {% block success_start %}
-	<section class="dialog message message--success" role="alert">
-		<h2 class="message__heading title">{{ successTitle|default("Erfolgreiche Anfrage")|trans }}</h2>
-		<div class="message__body">
+	<section tabindex="0" class="dialog message message--success" role="alert">
+		<h2 tabindex="0" class="message__heading title">{{ successTitle|default("Erfolgreiche Anfrage")|trans }}</h2>
+
+		<div tabindex="0" class="message__body">
 {% endblock %}
 {% block success_start_keep %}
-	<section class="dialog message message--success message-keep" role="alert">
-		<h2 class="message__heading title">{{ successTitle|default("Erfolgreiche Anfrage")|trans }}</h2>
-		<div class="message__body">
+	<section tabindex="0" class="dialog message message--success message-keep" role="alert">
+		<h2 tabindex="0" class="message__heading title">{{ successTitle|default("Erfolgreiche Anfrage")|trans }}</h2>
+		<div tabindex="0" class="message__body">
 {% endblock %}
 {% block success_end %}</div></section>{% endblock %}
 

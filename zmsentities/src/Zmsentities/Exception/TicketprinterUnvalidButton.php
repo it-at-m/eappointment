@@ -9,5 +9,5 @@ class TicketprinterUnvalidButton extends \Exception
 {
     protected $code = 500;
 
-    protected $message = "Given type of button is not allowed, expected s, c or l";
+    protected $message = "Given type of button is not allowed, expected s, r, c or l";
 }

@@ -22,6 +22,7 @@ div.aufrufanzeige_anzeigebereich_zweizeilig
     left: 15%;
     position: absolute;
     top: 135px;
+    width: 70%;
 }
 
 .aufrufanzeige table.aufrufanzeige_aufruf
@@ -120,9 +121,10 @@ span.terminkundennummer.smallerFont8Chars {
 
 div.aber_zweispaltig {
     margin-left:0px;
+    width: 100%;
 }
 .aufrufanzeige table.zweispaltig {
-    width:500px;
+    width:100%;
 }
 .aufrufanzeige table.zweispaltig th.wartenummer {
     width:45%;
