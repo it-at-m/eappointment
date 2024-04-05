@@ -38,16 +38,15 @@ function getRollbackDay($config) {
     $envValue = getenv('ZMS_ENV'); // Assuming this contains the value directly related to rollback day
     if ($envValue !== false) {
         $rollbackDaySetting = explode(',', $config->getPreference('dldbBackup', 'setRollbackDay'));
-        // Check if the environment's value is within the retrieved settings
-        print_r($rollbackDaySetting);     
+        // Check if the environment's value is within the retrieved settings   
         print("Checking if rollback day set in system config.\n\n");
-        if ((int)$rollbackDaySetting[0] > 0) {
-            print("Rollback day is set in system config {$rollbackDaySetting[0]}.");
+        if ((int)$rollbackDaySetting[0] !== "none") {
+            print("Rollback day is set in system config {$rollbackDaySetting[0]}.\n\n");
             return (int)$rollbackDaySetting[0]; // Directly cast the string to int and return
         }        
     }
-    print("Using default 0 no rollback set.\n\n");
-    return 0; // Default to 0 (no rollback) if not set or the environment variable does not match
+    print("Using default \"none\" no rollback set.\n\n");
+    return "none"; // Default to 0 (no rollback) if not set or the environment variable does not match
 }
 
 $cli = new Cli();
@@ -56,7 +55,6 @@ $cli->description("Downloads JSON files from the official site, validates them, 
     ->opt('proxy:p', 'Proxy server like "proxy:3128"', false)
     ->opt('base:b', 'Base download url', true)
     ->opt('query:q', 'Query or environment setting to use', false); 
-print_r($argv);
 $args = $cli->parse($argv, true);
 
 $destinationPath = $args->getOpt('output');
@@ -83,8 +81,8 @@ Request::ini($client);
 $rollbackDay = getRollbackDay($config);
 
 // If a rollback is requested, skip fetching new data and do not delete any backups
-if ($rollbackDay > 0) {
-    print("Rollback to day $rollbackDay is requested. Preparing to rollback...\n\n");
+if ($rollbackDay !== "none") {
+    print("Rollback to day $rollbackDay is requested.\n\n");
 
     // Find the specified backup directory
     $backupDirectories = glob($backupPath . '/*', GLOB_ONLYDIR);
