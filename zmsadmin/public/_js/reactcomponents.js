@@ -29935,25 +29935,15 @@ const GraphBodyLayout = (props)=>{
                         className: "grid__item one-tenth",
                         children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                             className: "availability-timetable_legend",
-                            children: [
-                                props.showConflicts ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                    className: "legend__item legend_conflict",
-                                    children: "Konflikte"
-                                }, void 0, false, {
-                                    fileName: "js/page/availabilityDay/layouts/graphBody.js",
-                                    lineNumber: 47,
-                                    columnNumber: 48
-                                }, undefined) : null,
-                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                    className: "legend__item legend_opening",
-                                    children: "Spontan\xadkunden"
-                                }, void 0, false, {
-                                    fileName: "js/page/availabilityDay/layouts/graphBody.js",
-                                    lineNumber: 48,
-                                    columnNumber: 25
-                                }, undefined)
-                            ]
-                        }, void 0, true, {
+                            children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                className: "legend__item legend_opening",
+                                children: "Spontan\xadkunden"
+                            }, void 0, false, {
+                                fileName: "js/page/availabilityDay/layouts/graphBody.js",
+                                lineNumber: 47,
+                                columnNumber: 25
+                            }, undefined)
+                        }, void 0, false, {
                             fileName: "js/page/availabilityDay/layouts/graphBody.js",
                             lineNumber: 46,
                             columnNumber: 21
@@ -29975,29 +29965,28 @@ const GraphBodyLayout = (props)=>{
                                 className: "inner",
                                 children: [
                                     background(),
-                                    conflicts(props.showConflicts, props.conflicts),
                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                                         className: "bars opening-level",
                                         children: props.openings
                                     }, void 0, false, {
                                         fileName: "js/page/availabilityDay/layouts/graphBody.js",
-                                        lineNumber: 56,
+                                        lineNumber: 54,
                                         columnNumber: 29
                                     }, undefined)
                                 ]
                             }, void 0, true, {
                                 fileName: "js/page/availabilityDay/layouts/graphBody.js",
-                                lineNumber: 53,
+                                lineNumber: 52,
                                 columnNumber: 25
                             }, undefined)
                         }, void 0, false, {
                             fileName: "js/page/availabilityDay/layouts/graphBody.js",
-                            lineNumber: 52,
+                            lineNumber: 51,
                             columnNumber: 21
                         }, undefined)
                     }, void 0, false, {
                         fileName: "js/page/availabilityDay/layouts/graphBody.js",
-                        lineNumber: 51,
+                        lineNumber: 50,
                         columnNumber: 17
                     }, undefined)
                 ]

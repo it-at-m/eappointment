@@ -44,7 +44,6 @@ const GraphBodyLayout = (props) => {
             <div className="grid">
                 <div className="grid__item one-tenth">
                     <div className="availability-timetable_legend">
-                        {props.showConflicts ? <div className="legend__item legend_conflict">Konflikte</div> : null}
                         <div className="legend__item legend_opening">Spontan&shy;kunden</div>
                     </div>
                 </div>
@@ -52,7 +51,6 @@ const GraphBodyLayout = (props) => {
                     <div className="availability-timetable_container" ref={refScroll} style={{ fontSize: "70px" }} >
                         <div className="inner">
                             {background()}
-                            {conflicts(props.showConflicts, props.conflicts)}
                             <div className="bars opening-level">{props.openings}</div>
                         </div>
                     </div>
