@@ -3,9 +3,9 @@
 require_once(__DIR__."/script_bootstrap.php");
 
 if (!\BO\Zmsdb\Source\Dldb::$importPath) {
-    echo "MISSING dldb data directory. Does a config.php exists?\n";
-    exit(1);
+    echo "MISSING dldb \data directory. Does a config.php exists?\n";
 }
+
 if (isset($argv[1]) && $argv[1] == '--commit') {
     $importer = new \BO\Zmsdb\Source\Dldb();
     $importer->startImport(preg_grep('#--?v(erbose)?#', $argv));

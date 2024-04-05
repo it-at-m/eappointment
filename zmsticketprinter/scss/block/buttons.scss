@@ -26,7 +26,7 @@ div.warteschlangebutton_gross a.eintragen {
     background-size: cover;
     border: 0;
     color: #fff;
-    font-size: 42px;
+    font-size: 38px;
     font-family: Arial, sans-serif;
     font-weight: bold;
     height: 195px;
@@ -44,6 +44,7 @@ div.variablerwarteschlangebutton {
 div.variablerwarteschlangebutton button.eintragen,
 div.variablerwarteschlangebutton a.eintragen {
     background: url(img/multibutton.png) 0 24px no-repeat;
+    background-size: cover;
     border: 0;
     color: #fff;
     padding-bottom: 0px;
@@ -54,7 +55,7 @@ div.variablerwarteschlangebutton a.eintragen {
     font-weight: bold;
     height: 158px;
     padding-right: 10px;
-    width: 425px;
+    width: 455px;
     display:block;
 }
 
