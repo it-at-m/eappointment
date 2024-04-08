@@ -23,7 +23,7 @@ class AnonymizeStatisticDataByCron
         $retentionSetting = explode(',', $config->getPreference('buergerarchiv', 'setRetentionPeriodDays'));
         if ($retentionSetting[0] !== "none") {
             // Ensure it's a positive integer and assign it to timespan
-            print("Using retention period set in config {$retentionSetting[0]} days.\n\n");
+            print("Using retention period set in admin system config {$retentionSetting[0]} days.\n\n");
             $this->timespan = (int)$retentionSetting[0];
         } else {
             // Default to 90 days if the setting is not set or not numeric
