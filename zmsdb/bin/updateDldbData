@@ -3,12 +3,15 @@
 require_once(__DIR__."/script_bootstrap.php");
 
 if (!\BO\Zmsdb\Source\Dldb::$importPath) {
-    echo "MISSING dldb \data directory. Does a config.php exists?\n";
+    echo "MISSING dldb \data directory. Does a config.php exists?\n\n";
 }
 
 if (isset($argv[1]) && $argv[1] == '--commit') {
     $importer = new \BO\Zmsdb\Source\Dldb();
+    print("Starting services import.\n\n");
+    print($argv);
     $importer->startImport(preg_grep('#--?v(erbose)?#', $argv));
+    print("Finished services import.\n\n");
 } else {
     $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
     echo "Usage: {$argv[0]} --commit [--verbose]\n"
