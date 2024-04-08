@@ -24,7 +24,7 @@ class Dldb extends \BO\Zmsdb\Base
         }
         if ($verbose) {
             self::$verbose = $verbose;
-            echo "Use source-path for dldb: ". static::$importPath . "\n";
+            print("Use source-path for dldb: ". static::$importPath . "\n\n");
         }
         self::$repository = new \BO\Dldb\FileAccess();
         print("Import path: " . static::getFixturesImportPath());
@@ -32,13 +32,13 @@ class Dldb extends \BO\Zmsdb\Base
 
         \BO\Zmsdb\Connection\Select::setTransaction();
 
-        print("Writing request list.");
+        print("Writing request list.\n\n");
         $this->writeRequestList();
-        print("Writing provider list.");
+        print("Writing provider list.\n\n");
         $this->writeProviderList();
-        print("Writing request relation list.");
+        print("Writing request relation list.\n\n");
         $this->writeRequestRelationList();
-        print("Writing last update.");
+        print("Writing last update.\n\n");
         $this->writeLastUpdate($verbose);
 
         \BO\Zmsdb\Connection\Select::writeCommit();
@@ -56,7 +56,7 @@ class Dldb extends \BO\Zmsdb\Base
         }
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
-            print("Requests: Took $time seconds\n");
+            print("Requests: Took $time seconds.\n\n");
         }
     }
 
@@ -95,7 +95,7 @@ class Dldb extends \BO\Zmsdb\Base
         
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
-            print("Provider: Took $time seconds\n");
+            print("Provider: Took $time seconds.\n\n");
         }
     }
 
@@ -106,7 +106,7 @@ class Dldb extends \BO\Zmsdb\Base
         (new \BO\Zmsdb\RequestRelation())->writeImportList(self::$repository->fromLocation()->fetchList());
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
-            print("RequestRelation: Took $time seconds\n");
+            print("RequestRelation: Took $time seconds.\n\n");
         }
     }
 
@@ -116,7 +116,7 @@ class Dldb extends \BO\Zmsdb\Base
         (new \BO\Zmsdb\Config())->replaceProperty('sources_dldb_last', date('c'));
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
-            print("LastImportTimeToConfig: Took $time seconds\n");
+            print("LastImportTimeToConfig: Took $time seconds.\n\n");
         }
     }
 }
