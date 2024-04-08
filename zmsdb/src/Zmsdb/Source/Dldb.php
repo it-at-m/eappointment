@@ -27,13 +27,18 @@ class Dldb extends \BO\Zmsdb\Base
             echo "Use source-path for dldb: ". static::$importPath . "\n";
         }
         self::$repository = new \BO\Dldb\FileAccess();
+        print("Import path: " . static::getFixturesImportPath());
         self::$repository->loadFromPath(static::getFixturesImportPath());
 
         \BO\Zmsdb\Connection\Select::setTransaction();
 
+        print("Writing request list.");
         $this->writeRequestList();
+        print("Writing provider list.");
         $this->writeProviderList();
+        print("Writing request relation list.");
         $this->writeRequestRelationList();
+        print("Writing last update.");
         $this->writeLastUpdate($verbose);
 
         \BO\Zmsdb\Connection\Select::writeCommit();
@@ -51,7 +56,7 @@ class Dldb extends \BO\Zmsdb\Base
         }
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
-            echo "Requests: Took $time seconds\n";
+            print("Requests: Took $time seconds\n");
         }
     }
 
@@ -90,7 +95,7 @@ class Dldb extends \BO\Zmsdb\Base
         
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
-            echo "Provider: Took $time seconds\n";
+            print("Provider: Took $time seconds\n");
         }
     }
 
@@ -101,7 +106,7 @@ class Dldb extends \BO\Zmsdb\Base
         (new \BO\Zmsdb\RequestRelation())->writeImportList(self::$repository->fromLocation()->fetchList());
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
-            echo "RequestRelation: Took $time seconds\n";
+            print("RequestRelation: Took $time seconds\n");
         }
     }
 
@@ -111,7 +116,7 @@ class Dldb extends \BO\Zmsdb\Base
         (new \BO\Zmsdb\Config())->replaceProperty('sources_dldb_last', date('c'));
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
-            echo "LastImportTimeToConfig: Took $time seconds\n";
+            print("LastImportTimeToConfig: Took $time seconds\n");
         }
     }
 }
