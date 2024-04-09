@@ -25,7 +25,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $entity->addDictionaryEntry('waitingcalculated', 'number', 'calculated waitingtime for spontaneous clients');
         $entity->addDictionaryEntry('waitingcount_termin', 'number', 'amount of waiting clients with termin');
         $entity->addDictionaryEntry('waitingtime_termin', 'number', 'real waitingtime with termin');
-        $entity->addDictionaryEntry('wayTime_termin', 'number', 'real waytime with termin');
+        $entity->addDictionaryEntry('wayTime_termin', 'number', 'real waytime with appointment');
         $entity->addDictionaryEntry('waitingcalculated_termin', 'number', 'calculated waitingtime with termin');
         $subjectIdList = explode(',', $subjectid);
 
