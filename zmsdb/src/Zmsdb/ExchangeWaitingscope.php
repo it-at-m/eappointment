@@ -21,11 +21,11 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $entity->addDictionaryEntry('hour', 'string', 'hour of report entry');
         $entity->addDictionaryEntry('waitingcount', 'number', 'amount of waiting spontaneous clients');
         $entity->addDictionaryEntry('waitingtime', 'number', 'real waitingtime for spontaneous clients');
-        $entity->addDictionaryEntry('wayTime', 'number', 'real waytime for spontaneous clients');
+        $entity->addDictionaryEntry('waytime', 'number', 'real waytime for spontaneous clients');
         $entity->addDictionaryEntry('waitingcalculated', 'number', 'calculated waitingtime for spontaneous clients');
         $entity->addDictionaryEntry('waitingcount_termin', 'number', 'amount of waiting clients with termin');
         $entity->addDictionaryEntry('waitingtime_termin', 'number', 'real waitingtime with termin');
-        $entity->addDictionaryEntry('wayTime_termin', 'number', 'real waytime with appointment');
+        $entity->addDictionaryEntry('waytime_termin', 'number', 'real waytime with appointment');
         $entity->addDictionaryEntry('waitingcalculated_termin', 'number', 'calculated waitingtime with termin');
         $subjectIdList = explode(',', $subjectid);
 
@@ -180,7 +180,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
                 'waitingcalculated' => $waitingCalculated,
                 'waitingcount' => $waitingCount,
                 'waitingtime' => $existingEntry['waitingtime'],
-                'wayTime' => $existingEntry['wayTime'],
+                'waytime' => $existingEntry['waytime'],
                 'scopeid' => $scope->id,
                 'date' => $now->format('Y-m-d'),
                 'hour' => $now->format('H')
@@ -208,7 +208,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             $process->isWithAppointment()
         );
         $waitingTime = $existingEntry['waitingtime'] > $waitingTime ? $existingEntry['waitingtime'] : $waitingTime;
-        $wayTime = $existingEntry['wayTime'] > $wayTime ? $existingEntry['wayTime'] : $wayTime;
+        $wayTime = $existingEntry['waytime'] > $wayTime ? $existingEntry['waytime'] : $wayTime;
         $this->perform(
             Query\ExchangeWaitingscope::getQueryUpdateByDateTime(
                 $process->getArrivalTime($now),
@@ -218,7 +218,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
                 'waitingcalculated' => $existingEntry['waitingcalculated'],
                 'waitingcount' => $existingEntry['waitingcount'],
                 'waitingtime' => $waitingTime,
-                'wayTime' => $wayTime,                
+                'waytime' => $wayTime,                
                 'scopeid' => $process->scope->id,
                 'date' => $now->format('Y-m-d'),
                 'hour' => $now->format('H')
