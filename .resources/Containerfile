@@ -8,5 +8,6 @@ RUN make live
 
 ARG PHP_VERSION
 FROM registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-base
+RUN docker-apt-clean-install libfcgi-bin
 ARG MODULE
 COPY --from=build --chown=0:0 /build/${MODULE} /var/www/html
