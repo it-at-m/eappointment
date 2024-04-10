@@ -51,7 +51,7 @@ class ProcessLockTest extends Base
     public function writeDBLock()
     {
         $statement = $this->pdo
-            ->prepare("SELECT * FROM process_sequence  WHERE processId > 100000 AND processId < 101000 FOR UPDATE");
+            ->prepare("SELECT * FROM process_sequence  WHERE processId > 100000 AND processId < 102000 FOR UPDATE");
         $statement
             ->execute();
         $statement->fetchAll();

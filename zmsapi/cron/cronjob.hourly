@@ -7,6 +7,6 @@ set -a
 set +a
 
 if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
-    $BIN/dldbget -o $EXPORT -b $ZMS_SOURCE_DLDB
+    $BIN/dldbget -o $EXPORT -b $ZMS_SOURCE_DLDB -q "$ZMS_ENV"
     $BIN/updateDldbData --commit
 fi

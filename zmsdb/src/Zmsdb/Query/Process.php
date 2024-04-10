@@ -87,7 +87,7 @@ class Process extends Base implements MappingInterface
 
     public function getQueryNewProcessId()
     {
-        $random = rand(20, 100);
+        $random = rand(20, 999);
         return 'SELECT pseq.processId AS `nextid`
             FROM process_sequence pseq
             WHERE pseq.processId = (
