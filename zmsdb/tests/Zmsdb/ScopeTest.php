@@ -45,15 +45,14 @@ class ScopeTest extends Base
         $this->assertEquals(false, $entityList->hasEntity('153')); //Bürgeramt Rathaus Spandau does not exist
     }
 
-    // Todo fix test
-    /*public function testRequest()
+    public function testRequest()
     {
         $entityList = (new Query())->readByRequestId(120335, 'dldb', 1);
         $this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
 
         $this->assertEquals(true, $entityList->hasEntity('141')); //Herrstraße exists
         $this->assertEquals(true, $entityList->hasEntity('153')); //Bürgeramt Rathaus Spandau does not exist
-    }*/
+    }
 
     public function testDepartment()
     {
@@ -67,8 +66,6 @@ class ScopeTest extends Base
         $this->assertEquals(true, $entityList->hasEntity('153')); //Bürgeramt Rathaus Spandau exists
     }
 
-    // Todo fix test
-    /*
     public function testReadList()
     {
         $query = new Query();
@@ -78,7 +75,7 @@ class ScopeTest extends Base
         $this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
         $this->assertEquals(true, $entityList->hasEntity('141')); //Herrstraße exists
         $this->assertEquals(true, $entityList->hasEntity('123')); //Test Entity exists
-    }*/
+    }
 
     public function testReadWithWaitingTime()
     {
