@@ -573,7 +573,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $query
             ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
-            ->addConditionMail($mailAddress)
+            ->addConditionMail($mailAddress,true)
             ->addConditionIgnoreSlots()
             ->addLimit($limit);
 
