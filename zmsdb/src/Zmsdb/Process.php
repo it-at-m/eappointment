@@ -927,10 +927,11 @@ class Process extends Base implements Interfaces\ResolveReferences
         $activeAppointments = 0;
 
         foreach ($processes as $process) {
-            if (
-                in_array($process->getStatus(), ['preconfirmed', 'confirmed'])
-                && $entity->id !== $process->id
-            ) {
+            if ($entity->id !== $process->id) {
+                return true;
+            }
+
+            if (in_array($process->getStatus(), ['preconfirmed', 'confirmed'])) {
                 $activeAppointments++;
 
                 if ($activeAppointments >= $maxAppointmentsPerMail) {
