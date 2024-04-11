@@ -573,7 +573,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $query
             ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
-            ->addConditionMail($mailAddress)
+            ->addConditionMail($mailAddress, true)
             ->addConditionIgnoreSlots()
             ->addLimit($limit);
 
@@ -908,13 +908,18 @@ class Process extends Base implements Interfaces\ResolveReferences
             return true;
         }
 
+        $maxAppointmentsPerMail = $entity->scope->getAppointmentsPerMail();
+
+        if ($maxAppointmentsPerMail < 1) {
+            return true;
+        }
+
         $emailToCheck = $entity->getClients()->getFirst()->email;
 
         if ($this->isMailWhitelisted($emailToCheck, $entity->scope)) {
             return true;
         }
 
-        $maxAppointmentsPerMail = $entity->scope->getAppointmentsPerMail();
         $processes = $this->readProcessListByMailAddress(
             $entity->getClients()->getFirst()->email,
             $entity->scope->id
@@ -927,11 +932,11 @@ class Process extends Base implements Interfaces\ResolveReferences
                 && $entity->id !== $process->id
             ) {
                 $activeAppointments++;
-            }
-        }
 
-        if ($maxAppointmentsPerMail > 0 && $activeAppointments >= $maxAppointmentsPerMail) {
-            return false;
+                if ($activeAppointments >= $maxAppointmentsPerMail) {
+                    return false;
+                }
+            }
         }
 
         return true;
