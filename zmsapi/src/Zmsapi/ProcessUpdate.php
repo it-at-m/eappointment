@@ -36,7 +36,7 @@ class ProcessUpdate extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
         $entity->testValid();
-        $this->testProcessData($entity, $slotType !== 'intern');
+        $this->testProcessData($entity, ! $initiator);
 
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
 
