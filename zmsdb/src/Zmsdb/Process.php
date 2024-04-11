@@ -927,7 +927,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $activeAppointments = 0;
 
         foreach ($processes as $process) {
-            if ($entity->id !== $process->id) {
+            if ($entity->id == $process->id) {
                 return true;
             }
 
