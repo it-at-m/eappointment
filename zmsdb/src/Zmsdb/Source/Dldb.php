@@ -18,6 +18,10 @@ class Dldb extends \BO\Zmsdb\Base
         return $importPath;
     }
 
+    public static function setImportPath($path) {
+        self::$importPath = $path;
+    }
+
     public function startImport($verbose = true)
     {
         if (!static::$importPath) {
@@ -25,7 +29,7 @@ class Dldb extends \BO\Zmsdb\Base
         }
         if ($verbose) {
             self::$verbose = $verbose;
-            echo "Use source-path for dldb: ". static::$importPath . "\n";
+            print("Use source-path for dldb: ". static::$importPath . "\n\n");
         }
         self::$repository = new \BO\Dldb\FileAccess();
         self::$repository->loadFromPath(static::$importPath);
@@ -52,7 +56,7 @@ class Dldb extends \BO\Zmsdb\Base
         }
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
-            echo "Requests: Took $time seconds\n";
+            print("Requests: Took $time seconds\n\n");
         }
     }
 
@@ -91,7 +95,7 @@ class Dldb extends \BO\Zmsdb\Base
         
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
-            echo "Provider: Took $time seconds\n";
+            print("Provider: Took $time seconds\n\n");
         }
     }
 
@@ -102,7 +106,7 @@ class Dldb extends \BO\Zmsdb\Base
         (new \BO\Zmsdb\RequestRelation())->writeImportList(self::$repository->fromLocation()->fetchList());
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
-            echo "RequestRelation: Took $time seconds\n";
+            print("RequestRelation: Took $time seconds\n\n");
         }
     }
 
@@ -112,7 +116,7 @@ class Dldb extends \BO\Zmsdb\Base
         (new \BO\Zmsdb\Config())->replaceProperty('sources_dldb_last', date('c'));
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
-            echo "LastImportTimeToConfig: Took $time seconds\n";
+            print("LastImportTimeToConfig: Took $time seconds\n\n");
         }
     }
 }
