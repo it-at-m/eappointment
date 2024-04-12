@@ -1,3 +1,62 @@
+## Release Muc-8
+                       
+<h2>        Aufgabe
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1568'>ZMS-1568</a>] -         DLDB Mapper - Backup von importierten Dateien
+</li>
+</ul>
+    
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1767'>ZMS-1767</a>] -         Satzzeichen, Punkt fehlt und &quot;sie&quot; ist klein geschrieben
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1951'>ZMS-1951</a>] -         Datenanonymisierung funktioniert im buergerarchiv nicht mehr - Bug
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1955'>ZMS-1955</a>] -         Checkbox zu &quot;Datenschutzhinweise&quot; beim umbuchen mit Funktion
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1956'>ZMS-1956</a>] -         Termin vorgemerkt - Infotext - Bezeichnung &quot;Sofort&quot; ändern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1959'>ZMS-1959</a>] -         Fehlender Hinweis bei Sprachausgabe zur max. Länge/Anzahl der Zeichen in Feldern bei Terminbuchung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1960'>ZMS-1960</a>] -         Fehlender Hinweis bei Sprachausgabe zu den Pflichtfeldern bei der Terminbuchung und Cursorfokus zum Hinweistext
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2190'>ZMS-2190</a>] -         Fehler bei Kundensuche ohne Standortauswahl
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2193'>ZMS-2193</a>] -         Button &quot;Auswahl bestätigen&quot; als erste mögliche Auswahl (Reihenfolge)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2194'>ZMS-2194</a>] -         Cursor fokus ist in der Tresenansicht nicht Benutzerfreundlich gesetzt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2195'>ZMS-2195</a>] -         Bei Popups von Fehlermeldungen und Hinweisen ist der Cursor Fokus nicht automatisch gesetzt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2196'>ZMS-2196</a>] -         Nach der Kundensuche liegt der Cursor Fokus nicht auf die Überschrift der Suchergebnisse gesetzt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2204'>ZMS-2204</a>] -         URL für Aufrufanlage ist responsive
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2242'>ZMS-2242</a>] -         Fehlermeldung in ZMS-Admin bei maxAnzTermineProMail-Konfiguration für Standort
+</li>
+</ul>
+                                                                                                                                                                        
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1784'>ZMS-1784</a>] -         Beschränkung der Buchung auf eine Mailadresse
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1835'>ZMS-1835</a>] -         Whitelist für E-Mail-Adressen bei der Terminbuchung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1958'>ZMS-1958</a>] -         Erweiterung Tresenarbeitsplatz / Information um &quot;Anzahl Vorgänge in Arbeit&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1967'>ZMS-1967</a>] -         Anpassung Öffnungszeiten-Übersicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1974'>ZMS-1974</a>] -         Wunschbuttons eKiosk Layout
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2133'>ZMS-2133</a>] -         Erweiterung der möglichen Zeichen im Freitextfeld bei der Terminbuchung
+</li>
+</ul>
+                                                    
+
+
 ## Release Muc-7
 
 <h2>Bug
