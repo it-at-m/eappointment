@@ -41,6 +41,8 @@ class ScopeAvailabilityDay extends BaseController
     protected static function getSlotBuckets($availabilityList, $processList) {
         // Initialize buckets from slots
         $buckets = [];
+        $slotTimeInMinutes = $availabilityList[0]->getSlotTimeInMinutes();
+
         foreach ($availabilityList->getSlotListByType('appointment') as $slot) {
             $time = $slot->time; 
             $buckets[$time] = [
@@ -55,7 +57,7 @@ class ScopeAvailabilityDay extends BaseController
 
         foreach ($processList as $process) {
             $startTime = $process->getAppointments()->getFirst()->getStartTime()->format('H:i');
-            $endTime = $process->getAppointments()->getFirst()->getEndTime()->format('H:i');
+            $endTime = $process->getAppointments()->getFirst()->getEndTimeWithCustomSlotTime($slotTimeInMinutes)->format('H:i');
 
             $startDateTime = new \DateTime($startTime);
             $endDateTime = new \DateTime($endTime);
@@ -63,7 +65,7 @@ class ScopeAvailabilityDay extends BaseController
             foreach ($buckets as $time => $value) {
                 $slotDateTime = new \DateTime($time);
                 // Check if the appointment overlaps with the slot time
-                if ($slotDateTime > $startDateTime && $slotDateTime < $endDateTime) {
+                if ($slotDateTime >= $startDateTime && $slotDateTime < $endDateTime) {
                     $buckets[$time]['occupiedCount']++;
                 }
             }
