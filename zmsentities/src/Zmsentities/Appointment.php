@@ -129,6 +129,12 @@ class Appointment extends Schema\Entity
           : $time;
     }
 
+    public function getEndTimeWithCustomSlotTime($slotTimeInMinutes)
+    {
+        $time = $this->getStartTime();
+        return $time->modify('+' . ($slotTimeInMinutes * $this->slotCount) . ' minutes');
+    }
+
     public function setDateByString($dateString, $format = 'Y-m-d H:i')
     {
         $appointmentDateTime = \DateTimeImmutable::createFromFormat($format, $dateString);

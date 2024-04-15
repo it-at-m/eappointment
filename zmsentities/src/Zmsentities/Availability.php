@@ -423,6 +423,12 @@ class Availability extends Schema\Entity
         return $slotList;
     }
 
+    public function getSlotTimeInMinutes() 
+    {
+        return $this['slotTimeInMinutes'];
+    }
+
+
     /**
      * Check, if a day between two dates is included
      *
