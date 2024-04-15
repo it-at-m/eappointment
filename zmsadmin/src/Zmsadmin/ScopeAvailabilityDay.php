@@ -39,9 +39,15 @@ class ScopeAvailabilityDay extends BaseController
     }
 
     protected static function getSlotBuckets($availabilityList, $processList) {
-        // Initialize buckets from slots
+        $availability = $availabilityList->getFirst();
+
+        if (!$availability) {
+            return [];
+        }
+
         $buckets = [];
-        $slotTimeInMinutes = $availabilityList[0]->getSlotTimeInMinutes();
+
+        $slotTimeInMinutes = $availability->getSlotTimeInMinutes();
 
         foreach ($availabilityList->getSlotListByType('appointment') as $slot) {
             $time = $slot->time; 
