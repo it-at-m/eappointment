@@ -77,6 +77,10 @@ class ScopeAvailabilityDay extends BaseController
             }
         }
 
+        uksort($buckets, function ($time1, $time2) {
+            return strtotime($time1) <=> strtotime($time2);
+        });
+        
         return $buckets;
     }
 
