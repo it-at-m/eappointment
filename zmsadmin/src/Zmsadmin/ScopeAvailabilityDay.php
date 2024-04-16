@@ -39,8 +39,16 @@ class ScopeAvailabilityDay extends BaseController
     }
 
     protected static function getSlotBuckets($availabilityList, $processList) {
-        // Initialize buckets from slots
+        $availability = $availabilityList->getFirst();
+
+        if (!$availability) {
+            return [];
+        }
+
         $buckets = [];
+
+        $slotTimeInMinutes = $availability->getSlotTimeInMinutes();
+
         foreach ($availabilityList->getSlotListByType('appointment') as $slot) {
             $time = $slot->time; 
             $buckets[$time] = [
@@ -55,7 +63,7 @@ class ScopeAvailabilityDay extends BaseController
 
         foreach ($processList as $process) {
             $startTime = $process->getAppointments()->getFirst()->getStartTime()->format('H:i');
-            $endTime = $process->getAppointments()->getFirst()->getEndTime()->format('H:i');
+            $endTime = $process->getAppointments()->getFirst()->getEndTimeWithCustomSlotTime($slotTimeInMinutes)->format('H:i');
 
             $startDateTime = new \DateTime($startTime);
             $endDateTime = new \DateTime($endTime);
@@ -69,6 +77,10 @@ class ScopeAvailabilityDay extends BaseController
             }
         }
 
+        uksort($buckets, function ($time1, $time2) {
+            return strtotime($time1) <=> strtotime($time2);
+        });
+        
         return $buckets;
     }
 

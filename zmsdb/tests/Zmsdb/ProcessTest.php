@@ -655,6 +655,21 @@ class ProcessTest extends Base
     public function testAppointmentIsNotAllowedBecauseEMailLimitationIsReached()
     {
         $process = new Process();
+        $process->id = 123;
+        $scope = (new ScopeQuery())->readEntity(140);
+
+        $process->scope = $scope;
+        $client = new Client();
+        $client->email = 'testmail@mail.com';
+        $process->clients = new Collection([$client]);
+
+        $result = (new Query)->isAppointmentAllowedWithSameMail($process);
+        $this->assertFalse($result);
+    }
+
+    public function testAppointmentIsAllowedBecauseProcessWithSameIdAndMailExists()
+    {
+        $process = new Process();
         $scope = (new ScopeQuery())->readEntity(140);
 
         $process->scope = $scope;

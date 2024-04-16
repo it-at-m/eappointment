@@ -916,6 +916,10 @@ class Process extends Base implements Interfaces\ResolveReferences
 
         $emailToCheck = $entity->getClients()->getFirst()->email;
 
+        if ($maxAppointmentsPerMail < 1 || empty($emailToCheck)) {
+            return true;
+        }
+
         if ($this->isMailWhitelisted($emailToCheck, $entity->scope)) {
             return true;
         }
@@ -927,10 +931,11 @@ class Process extends Base implements Interfaces\ResolveReferences
         $activeAppointments = 0;
 
         foreach ($processes as $process) {
-            if (
-                in_array($process->getStatus(), ['preconfirmed', 'confirmed'])
-                && $entity->id !== $process->id
-            ) {
+            if ($entity->id == $process->id) {
+                return true;
+            }
+
+            if (in_array($process->getStatus(), ['preconfirmed', 'confirmed'])) {
                 $activeAppointments++;
 
                 if ($activeAppointments >= $maxAppointmentsPerMail) {
