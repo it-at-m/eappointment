@@ -33,8 +33,8 @@ class Index extends BaseController
             ->setDefault('default_platz')
             ->getValue();
 
-        if ($request->getParam('zoom')) {
-            $parameters['zoom'] = (float) $request->getParam('zoom');
+        if ($validator->getParameter('zoom')) {
+            $parameters['zoom'] = (float) $validator->getParameter('zoom');
         }
 
         $calldisplayHelper = (new Helper\Calldisplay($request));
