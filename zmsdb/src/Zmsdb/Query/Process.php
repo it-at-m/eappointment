@@ -156,6 +156,8 @@ class Process extends Base implements MappingInterface
                     THEN "reserved"
                 WHEN process.nicht_erschienen != 0
                     THEN "missed"
+                WHEN process.parked != 0
+                    THEN "parked"
                 WHEN process.Abholer != 0 AND process.AbholortID != 0 AND process.NutzerID = 0
                     THEN "pending"
                 WHEN process.AbholortID != 0 AND process.NutzerID != 0
@@ -467,6 +469,11 @@ class Process extends Base implements MappingInterface
                 $query->andWith('process.nicht_erschienen', '!=', 0)
                     ->andWith('process.StandortID', '!=', 0)
                     ;
+            }
+            if ('parked' == $status) {
+                $query
+                    ->andWith('process.parked', '!=', 0)
+                    ->andWith('process.StandortID', '!=', 0);
             }
             if ('pending' == $status) {
                 $query
