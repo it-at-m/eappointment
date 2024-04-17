@@ -32,7 +32,11 @@ class Index extends BaseController
             ->isPath()
             ->setDefault('default_platz')
             ->getValue();
-        
+
+        if ($request->getParam('zoom')) {
+            $parameters['zoom'] = (float) $request->getParam('zoom');
+        }
+
         $calldisplayHelper = (new Helper\Calldisplay($request));
         $parameters = $this->getDefaultParamters($request, $calldisplayHelper);
         if ($request->getParam('qrcode') && $request->getParam('qrcode') == 1) {
