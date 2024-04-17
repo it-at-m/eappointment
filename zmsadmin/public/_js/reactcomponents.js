@@ -54211,7 +54211,7 @@ var _toPrimitiveJs = require("./toPrimitive.js");
 var _toPrimitiveJsDefault = parcelHelpers.interopDefault(_toPrimitiveJs);
 function toPropertyKey(t) {
     var i = (0, _toPrimitiveJsDefault.default)(t, "string");
-    return "symbol" == (0, _typeofJsDefault.default)(i) ? i : String(i);
+    return "symbol" == (0, _typeofJsDefault.default)(i) ? i : i + "";
 }
 
 },{"./typeof.js":"i7HWY","./toPrimitive.js":"497Dv","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"497Dv":[function(require,module,exports) {
@@ -87326,7 +87326,7 @@ var hasDescriptors = require("6a9d2b46085df706")();
 var gOPD = require("2d412b0f532d1834");
 var $TypeError = require("4352c534d27fe477");
 var $floor = GetIntrinsic("%Math.floor%");
-/** @typedef {(...args: unknown[]) => unknown} Func */ /** @type {<T extends Func = Func>(fn: T, length: number, loose?: boolean) => T} */ module.exports = function setFunctionLength(fn, length) {
+/** @type {import('.')} */ module.exports = function setFunctionLength(fn, length) {
     if (typeof fn !== "function") throw new $TypeError("`fn` is not a function");
     if (typeof length !== "number" || length < 0 || length > 0xFFFFFFFF || $floor(length) !== length) throw new $TypeError("`length` must be a positive 32-bit integer");
     var loose = arguments.length > 2 && !!arguments[2];
@@ -87456,19 +87456,19 @@ var availableTypedArrays = require("beaf5502a5823cce");
 var callBind = require("e5d203a1b4c809f9");
 var callBound = require("83f633f9b335db8f");
 var gOPD = require("ce6b45c571ba4e3e");
-var $toString = callBound("Object.prototype.toString");
+/** @type {(O: object) => string} */ var $toString = callBound("Object.prototype.toString");
 var hasToStringTag = require("9e7ef6c88184c56")();
 var g = typeof globalThis === "undefined" ? global : globalThis;
 var typedArrays = availableTypedArrays();
 var $slice = callBound("String.prototype.slice");
 var getPrototypeOf = Object.getPrototypeOf; // require('getprototypeof');
-var $indexOf = callBound("Array.prototype.indexOf", true) || /** @type {(array: readonly unknown[], value: unknown) => keyof array} */ function indexOf(array, value) {
+/** @type {<T = unknown>(array: readonly T[], value: unknown) => number} */ var $indexOf = callBound("Array.prototype.indexOf", true) || function indexOf(array, value) {
     for(var i = 0; i < array.length; i += 1){
         if (array[i] === value) return i;
     }
     return -1;
 };
-/** @typedef {Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array | BigInt64Array | BigUint64Array} TypedArray */ /** @typedef {'Int8Array' | 'Uint8Array' | 'Uint8ClampedArray' | 'Int16Array' | 'Uint16Array' | 'Int32Array' | 'Uint32Array' | 'Float32Array' | 'Float64Array' | 'BigInt64Array' | 'BigUint64Array'} TypedArrayName */ /** @type {{ [k in `\$${TypedArrayName}`]?: (receiver: TypedArray) => string | typeof Uint8Array.prototype.slice.call | typeof Uint8Array.prototype.set.call } & { __proto__: null }} */ var cache = {
+/** @typedef {(receiver: import('.').TypedArray) => string | typeof Uint8Array.prototype.slice.call | typeof Uint8Array.prototype.set.call} Getter */ /** @type {{ [k in `\$${import('.').TypedArrayName}`]?: Getter } & { __proto__: null }} */ var cache = {
     __proto__: null
 };
 if (hasToStringTag && gOPD && getPrototypeOf) forEach(typedArrays, function(typedArray) {
@@ -87492,10 +87492,10 @@ else forEach(typedArrays, function(typedArray) {
     if (fn) // @ts-expect-error TODO: fix
     cache["$" + typedArray] = callBind(fn);
 });
-/** @type {import('.')} */ var tryTypedArrays = function tryAllTypedArrays(value) {
-    /** @type {ReturnType<tryAllTypedArrays>} */ var found = false;
+/** @type {(value: object) => false | import('.').TypedArrayName} */ var tryTypedArrays = function tryAllTypedArrays(value) {
+    /** @type {ReturnType<typeof tryAllTypedArrays>} */ var found = false;
     forEach(// eslint-disable-next-line no-extra-parens
-    /** @type {Record<`\$${TypedArrayName}`, typeof cache>} */ /** @type {any} */ cache, /** @type {(getter: typeof cache, name: `\$${TypedArrayName}`) => void} */ function(getter, typedArray) {
+    /** @type {Record<`\$${TypedArrayName}`, Getter>} */ /** @type {any} */ cache, /** @type {(getter: Getter, name: `\$${import('.').TypedArrayName}`) => void} */ function(getter, typedArray) {
         if (!found) try {
             // @ts-expect-error TODO: fix
             if ("$" + getter(value) === typedArray) found = $slice(typedArray, 1);
@@ -87503,10 +87503,10 @@ else forEach(typedArrays, function(typedArray) {
     });
     return found;
 };
-/** @type {import('.')} */ var trySlices = function tryAllSlices(value) {
-    /** @type {ReturnType<tryAllSlices>} */ var found = false;
+/** @type {(value: object) => false | import('.').TypedArrayName} */ var trySlices = function tryAllSlices(value) {
+    /** @type {ReturnType<typeof tryAllSlices>} */ var found = false;
     forEach(// eslint-disable-next-line no-extra-parens
-    /** @type {any} */ cache, /** @type {(getter: typeof cache, name: `\$${TypedArrayName}`) => void} */ function(getter, name) {
+    /** @type {Record<`\$${TypedArrayName}`, Getter>} */ /** @type {any} */ cache, /** @type {(getter: typeof cache, name: `\$${import('.').TypedArrayName}`) => void} */ function(getter, name) {
         if (!found) try {
             // @ts-expect-error TODO: fix
             getter(value);
@@ -87518,7 +87518,7 @@ else forEach(typedArrays, function(typedArray) {
 /** @type {import('.')} */ module.exports = function whichTypedArray(value) {
     if (!value || typeof value !== "object") return false;
     if (!hasToStringTag) {
-        var tag = $slice($toString(value), 8, -1);
+        /** @type {string} */ var tag = $slice($toString(value), 8, -1);
         if ($indexOf(typedArrays, tag) > -1) return tag;
         if (tag !== "Object") return false;
         // node < 0.6 hits here on real Typed Arrays
@@ -89308,10 +89308,13 @@ var defaultFormat = formats["default"];
 var defaults = {
     addQueryPrefix: false,
     allowDots: false,
+    allowEmptyArrays: false,
+    arrayFormat: "indices",
     charset: "utf-8",
     charsetSentinel: false,
     delimiter: "&",
     encode: true,
+    encodeDotInKeys: false,
     encoder: utils.encode,
     encodeValuesOnly: false,
     format: defaultFormat,
@@ -89328,7 +89331,7 @@ var isNonNullishPrimitive = function isNonNullishPrimitive(v) {
     return typeof v === "string" || typeof v === "number" || typeof v === "boolean" || typeof v === "symbol" || typeof v === "bigint";
 };
 var sentinel = {};
-var stringify = function stringify(object, prefix, generateArrayPrefix, commaRoundTrip, strictNullHandling, skipNulls, encoder, filter, sort, allowDots, serializeDate, format, formatter, encodeValuesOnly, charset, sideChannel) {
+var stringify = function stringify(object, prefix, generateArrayPrefix, commaRoundTrip, allowEmptyArrays, strictNullHandling, skipNulls, encodeDotInKeys, encoder, filter, sort, allowDots, serializeDate, format, formatter, encodeValuesOnly, charset, sideChannel) {
     var obj = object;
     var tmpSc = sideChannel;
     var step = 0;
@@ -89380,21 +89383,26 @@ var stringify = function stringify(object, prefix, generateArrayPrefix, commaRou
         var keys = Object.keys(obj);
         objKeys = sort ? keys.sort(sort) : keys;
     }
-    var adjustedPrefix = commaRoundTrip && isArray(obj) && obj.length === 1 ? prefix + "[]" : prefix;
+    var encodedPrefix = encodeDotInKeys ? prefix.replace(/\./g, "%2E") : prefix;
+    var adjustedPrefix = commaRoundTrip && isArray(obj) && obj.length === 1 ? encodedPrefix + "[]" : encodedPrefix;
+    if (allowEmptyArrays && isArray(obj) && obj.length === 0) return adjustedPrefix + "[]";
     for(var j = 0; j < objKeys.length; ++j){
         var key = objKeys[j];
         var value = typeof key === "object" && typeof key.value !== "undefined" ? key.value : obj[key];
         if (skipNulls && value === null) continue;
-        var keyPrefix = isArray(obj) ? typeof generateArrayPrefix === "function" ? generateArrayPrefix(adjustedPrefix, key) : adjustedPrefix : adjustedPrefix + (allowDots ? "." + key : "[" + key + "]");
+        var encodedKey = allowDots && encodeDotInKeys ? key.replace(/\./g, "%2E") : key;
+        var keyPrefix = isArray(obj) ? typeof generateArrayPrefix === "function" ? generateArrayPrefix(adjustedPrefix, encodedKey) : adjustedPrefix : adjustedPrefix + (allowDots ? "." + encodedKey : "[" + encodedKey + "]");
         sideChannel.set(object, step);
         var valueSideChannel = getSideChannel();
         valueSideChannel.set(sentinel, sideChannel);
-        pushToArray(values, stringify(value, keyPrefix, generateArrayPrefix, commaRoundTrip, strictNullHandling, skipNulls, generateArrayPrefix === "comma" && encodeValuesOnly && isArray(obj) ? null : encoder, filter, sort, allowDots, serializeDate, format, formatter, encodeValuesOnly, charset, valueSideChannel));
+        pushToArray(values, stringify(value, keyPrefix, generateArrayPrefix, commaRoundTrip, allowEmptyArrays, strictNullHandling, skipNulls, encodeDotInKeys, generateArrayPrefix === "comma" && encodeValuesOnly && isArray(obj) ? null : encoder, filter, sort, allowDots, serializeDate, format, formatter, encodeValuesOnly, charset, valueSideChannel));
     }
     return values;
 };
 var normalizeStringifyOptions = function normalizeStringifyOptions(opts) {
     if (!opts) return defaults;
+    if (typeof opts.allowEmptyArrays !== "undefined" && typeof opts.allowEmptyArrays !== "boolean") throw new TypeError("`allowEmptyArrays` option can only be `true` or `false`, when provided");
+    if (typeof opts.encodeDotInKeys !== "undefined" && typeof opts.encodeDotInKeys !== "boolean") throw new TypeError("`encodeDotInKeys` option can only be `true` or `false`, when provided");
     if (opts.encoder !== null && typeof opts.encoder !== "undefined" && typeof opts.encoder !== "function") throw new TypeError("Encoder has to be a function.");
     var charset = opts.charset || defaults.charset;
     if (typeof opts.charset !== "undefined" && opts.charset !== "utf-8" && opts.charset !== "iso-8859-1") throw new TypeError("The charset option must be either utf-8, iso-8859-1, or undefined");
@@ -89406,13 +89414,23 @@ var normalizeStringifyOptions = function normalizeStringifyOptions(opts) {
     var formatter = formats.formatters[format];
     var filter = defaults.filter;
     if (typeof opts.filter === "function" || isArray(opts.filter)) filter = opts.filter;
+    var arrayFormat;
+    if (opts.arrayFormat in arrayPrefixGenerators) arrayFormat = opts.arrayFormat;
+    else if ("indices" in opts) arrayFormat = opts.indices ? "indices" : "repeat";
+    else arrayFormat = defaults.arrayFormat;
+    if ("commaRoundTrip" in opts && typeof opts.commaRoundTrip !== "boolean") throw new TypeError("`commaRoundTrip` must be a boolean, or absent");
+    var allowDots = typeof opts.allowDots === "undefined" ? opts.encodeDotInKeys === true ? true : defaults.allowDots : !!opts.allowDots;
     return {
         addQueryPrefix: typeof opts.addQueryPrefix === "boolean" ? opts.addQueryPrefix : defaults.addQueryPrefix,
-        allowDots: typeof opts.allowDots === "undefined" ? defaults.allowDots : !!opts.allowDots,
+        allowDots: allowDots,
+        allowEmptyArrays: typeof opts.allowEmptyArrays === "boolean" ? !!opts.allowEmptyArrays : defaults.allowEmptyArrays,
+        arrayFormat: arrayFormat,
         charset: charset,
         charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults.charsetSentinel,
+        commaRoundTrip: opts.commaRoundTrip,
         delimiter: typeof opts.delimiter === "undefined" ? defaults.delimiter : opts.delimiter,
         encode: typeof opts.encode === "boolean" ? opts.encode : defaults.encode,
+        encodeDotInKeys: typeof opts.encodeDotInKeys === "boolean" ? opts.encodeDotInKeys : defaults.encodeDotInKeys,
         encoder: typeof opts.encoder === "function" ? opts.encoder : defaults.encoder,
         encodeValuesOnly: typeof opts.encodeValuesOnly === "boolean" ? opts.encodeValuesOnly : defaults.encodeValuesOnly,
         filter: filter,
@@ -89438,20 +89456,15 @@ module.exports = function(object, opts) {
     }
     var keys = [];
     if (typeof obj !== "object" || obj === null) return "";
-    var arrayFormat;
-    if (opts && opts.arrayFormat in arrayPrefixGenerators) arrayFormat = opts.arrayFormat;
-    else if (opts && "indices" in opts) arrayFormat = opts.indices ? "indices" : "repeat";
-    else arrayFormat = "indices";
-    var generateArrayPrefix = arrayPrefixGenerators[arrayFormat];
-    if (opts && "commaRoundTrip" in opts && typeof opts.commaRoundTrip !== "boolean") throw new TypeError("`commaRoundTrip` must be a boolean, or absent");
-    var commaRoundTrip = generateArrayPrefix === "comma" && opts && opts.commaRoundTrip;
+    var generateArrayPrefix = arrayPrefixGenerators[options.arrayFormat];
+    var commaRoundTrip = generateArrayPrefix === "comma" && options.commaRoundTrip;
     if (!objKeys) objKeys = Object.keys(obj);
     if (options.sort) objKeys.sort(options.sort);
     var sideChannel = getSideChannel();
     for(var i = 0; i < objKeys.length; ++i){
         var key = objKeys[i];
         if (options.skipNulls && obj[key] === null) continue;
-        pushToArray(keys, stringify(obj[key], key, generateArrayPrefix, commaRoundTrip, options.strictNullHandling, options.skipNulls, options.encode ? options.encoder : null, options.filter, options.sort, options.allowDots, options.serializeDate, options.format, options.formatter, options.encodeValuesOnly, options.charset, sideChannel));
+        pushToArray(keys, stringify(obj[key], key, generateArrayPrefix, commaRoundTrip, options.allowEmptyArrays, options.strictNullHandling, options.skipNulls, options.encodeDotInKeys, options.encode ? options.encoder : null, options.filter, options.sort, options.allowDots, options.serializeDate, options.format, options.formatter, options.encodeValuesOnly, options.charset, sideChannel));
     }
     var joined = keys.join(options.delimiter);
     var prefix = options.addQueryPrefix === true ? "?" : "";
@@ -89482,36 +89495,39 @@ var $mapHas = callBound("Map.prototype.has", true);
 * This function traverses the list returning the node corresponding to the given key.
 *
 * That node is also moved to the head of the list, so that if it's accessed again we don't need to traverse the whole list. By doing so, all the recently used nodes can be accessed relatively quickly.
-*/ var listGetNode = function(list, key) {
-    for(var prev = list, curr; (curr = prev.next) !== null; prev = curr)if (curr.key === key) {
+*/ /** @type {import('.').listGetNode} */ var listGetNode = function(list, key) {
+    /** @type {typeof list | NonNullable<(typeof list)['next']>} */ var prev = list;
+    /** @type {(typeof list)['next']} */ var curr;
+    for(; (curr = prev.next) !== null; prev = curr)if (curr.key === key) {
         prev.next = curr.next;
-        curr.next = list.next;
+        // eslint-disable-next-line no-extra-parens
+        curr.next = /** @type {NonNullable<typeof list.next>} */ list.next;
         list.next = curr; // eslint-disable-line no-param-reassign
         return curr;
     }
 };
-var listGet = function(objects, key) {
+/** @type {import('.').listGet} */ var listGet = function(objects, key) {
     var node = listGetNode(objects, key);
     return node && node.value;
 };
-var listSet = function(objects, key, value) {
+/** @type {import('.').listSet} */ var listSet = function(objects, key, value) {
     var node = listGetNode(objects, key);
     if (node) node.value = value;
     else // Prepend the new node to the beginning of the list
-    objects.next = {
+    objects.next = /** @type {import('.').ListNode<typeof value>} */ {
         key: key,
         next: objects.next,
         value: value
     };
 };
-var listHas = function(objects, key) {
+/** @type {import('.').listHas} */ var listHas = function(objects, key) {
     return !!listGetNode(objects, key);
 };
-module.exports = function getSideChannel() {
-    var $wm;
-    var $m;
-    var $o;
-    var channel = {
+/** @type {import('.')} */ module.exports = function getSideChannel() {
+    /** @type {WeakMap<object, unknown>} */ var $wm;
+    /** @type {Map<object, unknown>} */ var $m;
+    /** @type {import('.').RootNode<unknown>} */ var $o;
+    /** @type {import('.').Channel} */ var channel = {
         assert: function(key) {
             if (!channel.has(key)) throw new $TypeError("Side channel does not contain " + inspect(key));
         },
@@ -90020,7 +90036,8 @@ var decode = function(str, decoder, charset) {
         return strWithoutPlus;
     }
 };
-var encode = function encode(str, defaultEncoder, charset, kind, format) {
+var limit = 1024;
+/* eslint operator-linebreak: [2, "before"] */ var encode = function encode(str, defaultEncoder, charset, kind, format) {
     // This code was originally written by Brian White (mscdex) for the io.js core querystring library.
     // It has been adapted here for stricter adherence to RFC 3986
     if (str.length === 0) return str;
@@ -90031,35 +90048,40 @@ var encode = function encode(str, defaultEncoder, charset, kind, format) {
         return "%26%23" + parseInt($0.slice(2), 16) + "%3B";
     });
     var out = "";
-    for(var i = 0; i < string.length; ++i){
-        var c = string.charCodeAt(i);
-        if (c === 0x2D // -
-         || c === 0x2E // .
-         || c === 0x5F // _
-         || c === 0x7E // ~
-         || c >= 0x30 && c <= 0x39 // 0-9
-         || c >= 0x41 && c <= 0x5A // a-z
-         || c >= 0x61 && c <= 0x7A // A-Z
-         || format === formats.RFC1738 && (c === 0x28 || c === 0x29) // ( )
-        ) {
-            out += string.charAt(i);
-            continue;
+    for(var j = 0; j < string.length; j += limit){
+        var segment = string.length >= limit ? string.slice(j, j + limit) : string;
+        var arr = [];
+        for(var i = 0; i < segment.length; ++i){
+            var c = segment.charCodeAt(i);
+            if (c === 0x2D // -
+             || c === 0x2E // .
+             || c === 0x5F // _
+             || c === 0x7E // ~
+             || c >= 0x30 && c <= 0x39 // 0-9
+             || c >= 0x41 && c <= 0x5A // a-z
+             || c >= 0x61 && c <= 0x7A // A-Z
+             || format === formats.RFC1738 && (c === 0x28 || c === 0x29) // ( )
+            ) {
+                arr[arr.length] = segment.charAt(i);
+                continue;
+            }
+            if (c < 0x80) {
+                arr[arr.length] = hexTable[c];
+                continue;
+            }
+            if (c < 0x800) {
+                arr[arr.length] = hexTable[0xC0 | c >> 6] + hexTable[0x80 | c & 0x3F];
+                continue;
+            }
+            if (c < 0xD800 || c >= 0xE000) {
+                arr[arr.length] = hexTable[0xE0 | c >> 12] + hexTable[0x80 | c >> 6 & 0x3F] + hexTable[0x80 | c & 0x3F];
+                continue;
+            }
+            i += 1;
+            c = 0x10000 + ((c & 0x3FF) << 10 | segment.charCodeAt(i) & 0x3FF);
+            arr[arr.length] = hexTable[0xF0 | c >> 18] + hexTable[0x80 | c >> 12 & 0x3F] + hexTable[0x80 | c >> 6 & 0x3F] + hexTable[0x80 | c & 0x3F];
         }
-        if (c < 0x80) {
-            out = out + hexTable[c];
-            continue;
-        }
-        if (c < 0x800) {
-            out = out + (hexTable[0xC0 | c >> 6] + hexTable[0x80 | c & 0x3F]);
-            continue;
-        }
-        if (c < 0xD800 || c >= 0xE000) {
-            out = out + (hexTable[0xE0 | c >> 12] + hexTable[0x80 | c >> 6 & 0x3F] + hexTable[0x80 | c & 0x3F]);
-            continue;
-        }
-        i += 1;
-        c = 0x10000 + ((c & 0x3FF) << 10 | string.charCodeAt(i) & 0x3FF);
-        /* eslint operator-linebreak: [2, "before"] */ out += hexTable[0xF0 | c >> 18] + hexTable[0x80 | c >> 12 & 0x3F] + hexTable[0x80 | c >> 6 & 0x3F] + hexTable[0x80 | c & 0x3F];
+        out += arr.join("");
     }
     return out;
 };
@@ -90152,15 +90174,18 @@ var has = Object.prototype.hasOwnProperty;
 var isArray = Array.isArray;
 var defaults = {
     allowDots: false,
+    allowEmptyArrays: false,
     allowPrototypes: false,
     allowSparse: false,
     arrayLimit: 20,
     charset: "utf-8",
     charsetSentinel: false,
     comma: false,
+    decodeDotInKeys: false,
     decoder: utils.decode,
     delimiter: "&",
     depth: 5,
+    duplicates: "combine",
     ignoreQueryPrefix: false,
     interpretNumericEntities: false,
     parameterLimit: 1000,
@@ -90222,8 +90247,9 @@ var parseValues = function parseQueryStringValues(str, options) {
         if (part.indexOf("[]=") > -1) val = isArray(val) ? [
             val
         ] : val;
-        if (has.call(obj, key)) obj[key] = utils.combine(obj[key], val);
-        else obj[key] = val;
+        var existing = has.call(obj, key);
+        if (existing && options.duplicates === "combine") obj[key] = utils.combine(obj[key], val);
+        else if (!existing || options.duplicates === "last") obj[key] = val;
     }
     return obj;
 };
@@ -90232,18 +90258,19 @@ var parseObject = function(chain, val, options, valuesParsed) {
     for(var i = chain.length - 1; i >= 0; --i){
         var obj;
         var root = chain[i];
-        if (root === "[]" && options.parseArrays) obj = [].concat(leaf);
+        if (root === "[]" && options.parseArrays) obj = options.allowEmptyArrays && leaf === "" ? [] : [].concat(leaf);
         else {
             obj = options.plainObjects ? Object.create(null) : {};
             var cleanRoot = root.charAt(0) === "[" && root.charAt(root.length - 1) === "]" ? root.slice(1, -1) : root;
-            var index = parseInt(cleanRoot, 10);
-            if (!options.parseArrays && cleanRoot === "") obj = {
+            var decodedRoot = options.decodeDotInKeys ? cleanRoot.replace(/%2E/g, ".") : cleanRoot;
+            var index = parseInt(decodedRoot, 10);
+            if (!options.parseArrays && decodedRoot === "") obj = {
                 0: leaf
             };
-            else if (!isNaN(index) && root !== cleanRoot && String(index) === cleanRoot && index >= 0 && options.parseArrays && index <= options.arrayLimit) {
+            else if (!isNaN(index) && root !== decodedRoot && String(index) === decodedRoot && index >= 0 && options.parseArrays && index <= options.arrayLimit) {
                 obj = [];
                 obj[index] = leaf;
-            } else if (cleanRoot !== "__proto__") obj[cleanRoot] = leaf;
+            } else if (decodedRoot !== "__proto__") obj[decodedRoot] = leaf;
         }
         leaf = obj;
     }
@@ -90283,21 +90310,29 @@ var parseKeys = function parseQueryStringKeys(givenKey, val, options, valuesPars
 };
 var normalizeParseOptions = function normalizeParseOptions(opts) {
     if (!opts) return defaults;
-    if (opts.decoder !== null && opts.decoder !== undefined && typeof opts.decoder !== "function") throw new TypeError("Decoder has to be a function.");
+    if (typeof opts.allowEmptyArrays !== "undefined" && typeof opts.allowEmptyArrays !== "boolean") throw new TypeError("`allowEmptyArrays` option can only be `true` or `false`, when provided");
+    if (typeof opts.decodeDotInKeys !== "undefined" && typeof opts.decodeDotInKeys !== "boolean") throw new TypeError("`decodeDotInKeys` option can only be `true` or `false`, when provided");
+    if (opts.decoder !== null && typeof opts.decoder !== "undefined" && typeof opts.decoder !== "function") throw new TypeError("Decoder has to be a function.");
     if (typeof opts.charset !== "undefined" && opts.charset !== "utf-8" && opts.charset !== "iso-8859-1") throw new TypeError("The charset option must be either utf-8, iso-8859-1, or undefined");
     var charset = typeof opts.charset === "undefined" ? defaults.charset : opts.charset;
+    var duplicates = typeof opts.duplicates === "undefined" ? defaults.duplicates : opts.duplicates;
+    if (duplicates !== "combine" && duplicates !== "first" && duplicates !== "last") throw new TypeError("The duplicates option must be either combine, first, or last");
+    var allowDots = typeof opts.allowDots === "undefined" ? opts.decodeDotInKeys === true ? true : defaults.allowDots : !!opts.allowDots;
     return {
-        allowDots: typeof opts.allowDots === "undefined" ? defaults.allowDots : !!opts.allowDots,
+        allowDots: allowDots,
+        allowEmptyArrays: typeof opts.allowEmptyArrays === "boolean" ? !!opts.allowEmptyArrays : defaults.allowEmptyArrays,
         allowPrototypes: typeof opts.allowPrototypes === "boolean" ? opts.allowPrototypes : defaults.allowPrototypes,
         allowSparse: typeof opts.allowSparse === "boolean" ? opts.allowSparse : defaults.allowSparse,
         arrayLimit: typeof opts.arrayLimit === "number" ? opts.arrayLimit : defaults.arrayLimit,
         charset: charset,
         charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults.charsetSentinel,
         comma: typeof opts.comma === "boolean" ? opts.comma : defaults.comma,
+        decodeDotInKeys: typeof opts.decodeDotInKeys === "boolean" ? opts.decodeDotInKeys : defaults.decodeDotInKeys,
         decoder: typeof opts.decoder === "function" ? opts.decoder : defaults.decoder,
         delimiter: typeof opts.delimiter === "string" || utils.isRegExp(opts.delimiter) ? opts.delimiter : defaults.delimiter,
         // eslint-disable-next-line no-implicit-coercion, no-extra-parens
         depth: typeof opts.depth === "number" || opts.depth === false ? +opts.depth : defaults.depth,
+        duplicates: duplicates,
         ignoreQueryPrefix: opts.ignoreQueryPrefix === true,
         interpretNumericEntities: typeof opts.interpretNumericEntities === "boolean" ? opts.interpretNumericEntities : defaults.interpretNumericEntities,
         parameterLimit: typeof opts.parameterLimit === "number" ? opts.parameterLimit : defaults.parameterLimit,

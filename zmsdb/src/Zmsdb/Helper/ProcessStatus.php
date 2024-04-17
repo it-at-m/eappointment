@@ -67,6 +67,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
             'processing' => $this->isProcessingProcess($processData),
             'pending' => $this->isPendingProcess($processData),
             'missed' => $this->isMissedProcess($processData),
+            'parked' => $this->isParkedProcess($processData),
             'blocked' => $this->isBlockedProcess($processData),
             'deleted' => $this->isDeletedProcess($processData),
         ];
