@@ -219,6 +219,77 @@
             </table>
             </div>
             <div class="table-responsive-wrapper">
+                <h2>Geparkte Termine</h2>
+                {% if processListParked|length %}
+                    <div class="table-responsive-wrapper">
+                                    <table class="table--base queue-parked">
+                    <thead>
+                        <tr>
+                            <th>Lfdnr.</th>
+                            <th>Uhrzeit</th>
+                            <th>Name (Nummer)</th>
+                            <th>Dienstleistung</th>
+                            <th>Telefon</th>
+                            <th>Art</th>
+                            <th>Anmerkung</th>
+                            {% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
+                                <th>{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
+                            {% endif %}>
+                            <th>Aktion</th>
+                        </tr>
+                    </thead>
+                    {% set lfdnr = 0 %}
+                    {% for item in processListParked %}
+                        {% set lfdnr = lfdnr + 1 %}
+                        <tr class="parked">
+                            <td>
+                                {{ lfdnr }}.
+                            </td>
+                            <td>
+                                {% if item.queue.withAppointment %}
+                                    {{ item.appointments|first.date|date("H:i") }}
+                                {% else %}
+                                    {{ item.queue.arrivalTime|date("H:i") }}
+                                {% endif %}
+                            </td>
+                            <td>{% if item.clients|first.familyName %}{{ item.clients|first.familyName }}{% else %}Wartenummer {{ item.queue.number }} {% endif %} ({{ item.queue.number }})</td>
+                            <td title="{% for request in item.requests%}{{request.name}}{% if not loop.last %}; {% endif %}{% endfor %}">
+                                {{ item.requests|first.name }}
+                                {% if item.requests|length > 1 %}
+                                    +{{ (item.requests|length) - 1 }}
+                                {% endif %}
+                            </td>{#DL#}
+                            <td>{{ item.clients|first.telephone }}</td>
+                            <td>
+                                {% if item.queue.withAppointment %}
+                                    Termin
+                                    {% if 1 < item.appointments|first.slotCount %}
+                                        ({{ item.appointments|first.slotCount }})
+                                    {% endif %}
+                                {% else %}
+                                    Spontankunde
+                                {% endif %}
+                            </td>
+                            <td>Dieser Kunde ist nicht erschienen</td>
+                            {% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}                   
+                            <td>
+                                {{ item.customTextfield|decodeEntities|raw }}
+                            </td>   
+                            {% endif %}
+                            <td>
+                                <a href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                    </div>
+                {% else %}
+                    Keine Einträge gefunden.
+                {% endif %}
+                <br>
+                <br>
+            </div>
+            <div class="table-responsive-wrapper">
                 <h2>Verpasste Termine</h2>
                 {% if processListMissed|length %}
                     <div class="table-responsive-wrapper">
