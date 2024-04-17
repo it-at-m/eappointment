@@ -44,8 +44,8 @@ class CallDisplayConfigView extends Component {
                 }
             }),
             queueStatus: 'all',
-            template: 'defaultplatz',
-            webtemplate: 'defaultplatz',
+            template: 'default_counter',
+            webtemplate: 'default_counter',
             hmac: '',
             enableQrCode: false,
             twoDisplays: false,
