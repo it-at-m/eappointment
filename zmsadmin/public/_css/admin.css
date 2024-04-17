@@ -7594,6 +7594,15 @@ a.button--fullwidth, button.button--fullwidth {
   width: 100%;
 }
 
+.button--yellow {
+  background-color: #edc00f;
+  border-color: #edc00f !important;
+}
+
+.button--yellow:hover, .button--yellow:focus {
+  background-color: #FFDC00;
+}
+
 h1, h2, h3, h4, h5 {
   color: #000;
   border: 0;
