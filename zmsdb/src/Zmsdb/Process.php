@@ -910,10 +910,6 @@ class Process extends Base implements Interfaces\ResolveReferences
 
         $maxAppointmentsPerMail = $entity->scope->getAppointmentsPerMail();
 
-        if ($maxAppointmentsPerMail < 1) {
-            return true;
-        }
-
         $emailToCheck = $entity->getClients()->getFirst()->email;
 
         if ($maxAppointmentsPerMail < 1 || empty($emailToCheck)) {
