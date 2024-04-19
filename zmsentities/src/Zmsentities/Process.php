@@ -24,6 +24,7 @@ class Process extends Schema\Entity
     public const STATUS_PICKUP     = 'pickup';
     public const STATUS_FINISHED   = 'finished';
     public const STATUS_MISSED     = 'missed';
+    public const STATUS_PARKED     = 'parked';
     public const STATUS_ARCHIVED   = 'archived';
     public const STATUS_DELETED    = 'deleted';
     public const STATUS_ANONYMIZED = 'anonymized';
