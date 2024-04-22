@@ -23,9 +23,6 @@ class WorkstationProcess extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $template = ($workstation->process->hasId() && 'processing' == $workstation->process->status) ? 'info' : 'next';
-        error_log("********");
-        error_log($workstation->process->status);
-        error_log("********");
         if ($workstation->process->hasId() && 'called' == $workstation->process->getStatus()) {
             return \BO\Slim\Render::redirect(
                 'workstationProcessCalled',
@@ -34,8 +31,6 @@ class WorkstationProcess extends BaseController
                 )
             );
         }
-        error_log("hey");
-        error_log($template);
         return \BO\Slim\Render::withHtml(
             $response,
             'block/process/'. $template .'.twig',

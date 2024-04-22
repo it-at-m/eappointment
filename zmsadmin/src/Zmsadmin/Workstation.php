@@ -40,10 +40,6 @@ class Workstation extends BaseController
         $calledProcessId = $validator->getParameter('calledprocess')->isNumber()->getValue();
         $selectedScope = $validator->getParameter('selectedscope')->isNumber()->getValue();
 
-        error_log("----------------");
-        error_log($selectedProcessId);
-        error_log("----------------");
-
         return \BO\Slim\Render::withHtml(
             $response,
             'page/workstation.twig',
