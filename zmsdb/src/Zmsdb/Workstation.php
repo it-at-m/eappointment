@@ -222,6 +222,7 @@ class Workstation extends Base
      */
     public function writeRemovedProcess(\BO\Zmsentities\Workstation $workstation)
     {
+        error_log("yes");
         $process = new \BO\Zmsentities\Process($workstation->process);
         $query = new Query\Process(Query\Base::UPDATE);
         $query->addConditionProcessId($process->id);

@@ -25,7 +25,7 @@ class WorkstationProcessParked extends BaseController
         $validator = $request->getAttribute('validator');
         $noRedirect = $validator->getParameter('noredirect')->isNumber()->getValue();
         
-        $workstation->process->status = 'parked';
+        //$workstation->process->status = 'parked';
 
         if ($workstation->process['id']) {
             \App::$http->readDeleteResult('/workstation/process/')->getEntity();

@@ -757,6 +757,9 @@ class Process extends Base implements MappingInterface
         if ($process->status == 'missed') {
             $data['nicht_erschienen'] = 1;
         }
+        if ($process->status == 'parked') {
+            $data['parked'] = 1;
+        }
         if ($process->status == 'confirmed') {
             $data['bestaetigt'] = 1;
         }
