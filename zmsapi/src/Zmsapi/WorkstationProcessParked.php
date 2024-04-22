@@ -11,7 +11,7 @@ use \BO\Mellon\Validator;
 use \BO\Zmsdb\Workstation;
 use \BO\Zmsdb\Process as Query;
 
-class WorkstationProcessDelete extends BaseController
+class WorkstationProcessParked extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -29,10 +29,8 @@ class WorkstationProcessDelete extends BaseController
         }
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
         $process = (new Query())->updateEntity($process, \App::$now, 0, $process->status);
-        
-        //$workstation->process->setStatus("parked"); Works in here
-
-
+        $workstation->process->setStatus("parked");
+        error_log("correct");
         $workstation->process->setStatusBySettings();
         (new Workstation)->writeRemovedProcess($workstation);
         unset($workstation->process);

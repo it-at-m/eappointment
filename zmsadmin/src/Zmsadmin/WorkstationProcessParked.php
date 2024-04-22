@@ -5,6 +5,7 @@
  **/
 
 namespace BO\Zmsadmin;
+use \BO\Zmsentities\Process as Entity;
 
 /**
   * Init Controller to display next Button Template only
@@ -24,11 +25,18 @@ class WorkstationProcessParked extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $validator = $request->getAttribute('validator');
         $noRedirect = $validator->getParameter('noredirect')->isNumber()->getValue();
+
+        try {
+            $workstation->process->setStatus("parked");
+        } catch (\Exception $e) {
+            error_log('Error setting status: ' . $e->getMessage());
+        }
+
+        error_log($workstation->process->status);
         
-        //$workstation->process->status = 'parked';
 
         if ($workstation->process['id']) {
-            \App::$http->readDeleteResult('/workstation/process/')->getEntity();
+            \App::$http->readDeleteResult('/workstation/process/parked/')->getEntity();
         }
         if (1 == $noRedirect) {
             return $response;
