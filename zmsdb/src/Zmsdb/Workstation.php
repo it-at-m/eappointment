@@ -231,7 +231,8 @@ class Workstation extends Base
                 'aufrufzeit' => 0,
                 'NutzerID' => 0,
                 'AnzahlAufrufe' => $process->queue['callCount'],
-                'nicht_erschienen' => ('missed' == $process->status) ? 1 : 0
+                'nicht_erschienen' => ('missed' == $process->status) ? 1 : 0,
+                'parked' => ('parked' == $process->status) ? 1 : 0
             ]
         );
         Log::writeLogEntry("UPDATE (Workstation::writeRemovedProcess)", $process->id);
