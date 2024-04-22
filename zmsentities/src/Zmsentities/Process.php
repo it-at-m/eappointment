@@ -429,7 +429,7 @@ class Process extends Schema\Entity
         if ('called' == $this->status && $this->queue['callCount'] > $scope->getPreference('queue', 'callCountMax')) {
             error_log("Hello missed");
             $this->status = 'missed';
-        } elseif ('processing' == $this->status && $this->queue['callCount'] > $scope->getPreference('queue', 'callCountMax')) {
+        } elseif ('parked' == $this->status && $this->queue['callCount'] > $scope->getPreference('queue', 'callCountMax')) {
             error_log("Hello parked");
             $this->status = 'parked';
         } elseif ('pickup' == $this->status) {

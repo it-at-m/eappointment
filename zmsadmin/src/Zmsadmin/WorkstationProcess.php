@@ -31,6 +31,8 @@ class WorkstationProcess extends BaseController
                 )
             );
         }
+        error_log("hey");
+        error_log($template);
         return \BO\Slim\Render::withHtml(
             $response,
             'block/process/'. $template .'.twig',
