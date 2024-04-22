@@ -356,6 +356,7 @@
         "pickup",
         "finished",
         "missed",
+        "parked",
         "archived",
         "deleted",
         "anonymized",
