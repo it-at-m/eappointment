@@ -36,13 +36,25 @@ class ProcessQueued extends BaseController
         $process->queue['callCount'] = 0;
         $process->queue['lastCallTime'] = 0;
         $cluster = (new \BO\Zmsdb\Cluster)->readByScopeId($workstation->scope['id'], 1);
+
+        error_log("Previous status: " . $previousStatus);
+        error_log("New status: " . $process->status);
+
+        if( $previousStatus == "parked"){
+            $previousStatus == "missed";
+        }
+
+
         $workstation->testMatchingProcessScope($workstation->getScopeList($cluster), $process);
         $process = (new Query())->updateEntity($process, \App::$now, 0, $previousStatus);
+        error_log("*");
+        error_log("*");
         $message = Response\Message::create($request);
         $message->data = $process;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+
         return $response;
     }
 

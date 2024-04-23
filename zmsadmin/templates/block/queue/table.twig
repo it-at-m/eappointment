@@ -219,7 +219,7 @@
             </table>
             </div>
             <div class="table-responsive-wrapper">
-                <h2>Geparkte Termine</h2>
+                <h2><i class="fas fa-car" aria-hidden="true"></i> Geparkte Termine</h2>
                 {% if processListParked|length %}
                     <div class="table-responsive-wrapper">
                                     <table class="table--base queue-parked">
@@ -234,7 +234,7 @@
                             <th>Anmerkung</th>
                             {% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
                                 <th>{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
-                            {% endif %}>
+                            {% endif %}
                             <th>Aktion</th>
                         </tr>
                     </thead>
@@ -277,7 +277,7 @@
                             </td>   
                             {% endif %}
                             <td>
-                                <a href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a>
+                                <p><a href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a></p>
                             </td>
                         </tr>
                     {% endfor %}
@@ -290,7 +290,7 @@
                 <br>
             </div>
             <div class="table-responsive-wrapper">
-                <h2>Verpasste Termine</h2>
+                <h2><i class="fas fa-flag" aria-hidden="true"></i> <i class="mdi mdi-clock-remove-outline"></i>Verpasste Termine</h2>
                 {% if processListMissed|length %}
                     <div class="table-responsive-wrapper">
                                     <table class="table--base queue-missed">
@@ -305,7 +305,7 @@
                             <th>Anmerkung</th>
                             {% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
                                 <th>{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
-                            {% endif %}>
+                            {% endif %}
                             <th>Aktion</th>
                         </tr>
                     </thead>
@@ -348,7 +348,7 @@
                             </td>   
                             {% endif %}
                             <td>
-                                <a href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a>
+                                <p><a href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a></p>
                             </td>
                         </tr>
                     {% endfor %}

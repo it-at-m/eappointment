@@ -739,15 +739,18 @@ class Process extends Base implements MappingInterface
             $data['AbholortID'] = $process->scope['id'];
             $data['Abholer'] = 1;
             $data['nicht_erschienen'] = 0;
+            $data['parked'] = 0;
         }
         if ($process->status == 'pickup') {
             $data['AbholortID'] = $process->scope['id'];
             $data['Abholer'] = 1;
             $data['Timestamp'] = 0;
             $data['nicht_erschienen'] = 0;
+            $data['parked'] = 0;
         }
         if ($process->status == 'queued') {
             $data['nicht_erschienen'] = 0;
+            $data['parked'] = 0;
             if ($process->hasArrivalTime() &&
                 (isset($process->queue['withAppointment']) && $process->queue['withAppointment'])
             ) {
