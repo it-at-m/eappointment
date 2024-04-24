@@ -31,13 +31,13 @@
         {% set selected = 'selected' %}
     {% endif %}
     {% if cluster %}
-        {% if cluster.scopes|length >= 1 %}
+        {% if cluster.scopes|length > 1 %}
             {% set scopeDefault = [{ "value": "cluster", "name": "Alle Clusterstandorte anzeigen", "selected": selected }] %}
         {% endif %}
         {% for scope in cluster.scopes %}
             {% if workstation.scope.id == scope.id and workstation.queue.clusterEnabled != 1 %}
                 {% set selected = 'selected' %}
-                {% if cluster.scopes|length >= 1 %}
+                {% if cluster.scopes|length > 1 %}
                     {% set scopeDefault = [{ "value": "cluster", "name": "Alle Clusterstandorte anzeigen", "selected": '' }] %}
                 {% endif %}
             {% else %}
