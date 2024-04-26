@@ -1,7 +1,8 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'client-called'} %}
 {% from "element/helper/snippets.twig" import namelist %}
         {% block board_title %}
-            {% trans %}Kundeninformationen{% endtrans %}
+            {% trans %}<span class="color-blue"><i class="fas fa-info-circle" aria-hidden="true"></i></span> 
+ Kundeninformationen{% endtrans %}
         {% endblock %}
         {% block board_body %} 
             {% if error != "has_called_pickup" %}

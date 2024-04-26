@@ -1,7 +1,8 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'client-precall'} %}
 {% from "element/helper/snippets.twig" import namelist %}
         {% block board_title %}
-            Kundeninformationen
+            <span class="color-blue"><i class="fas fa-info-circle" aria-hidden="true"></i></span> 
+ Kundeninformationen
         {% endblock %}
         {% block board_body %}
             {% if error != "has_called_pickup" %}

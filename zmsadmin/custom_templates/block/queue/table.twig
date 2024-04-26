@@ -3,7 +3,7 @@
 {% use "block/workstation/scopeSwitch.twig" %}
         {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield %}
         {% block board_title %}
-            {% trans %}<i class="fas fa-users" aria-hidden="true"></i> Warteschlange{% endtrans %}
+            {% trans %}<span class="color-blue"><i class="fas fa-users" aria-hidden="true"></i></span> Warteschlange{% endtrans %}
             {% if clusterEnabled and cluster.scopes|length <= 1 %}
                 {{ scope.contact.name }} {{ scope.shortName }}
             {% elseif not clusterEnabled %}
