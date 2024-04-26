@@ -230,6 +230,21 @@ class ProcessStatus extends \BO\Zmsdb\Process
     }
 
     /**
+     * check if it is a missed appointment
+     *
+     * @return Bool
+     */
+    protected function isParkedProcess($process)
+    {
+        return ($process['Name'] != 'dereferenced'
+            && $process['vorlaeufigeBuchung'] == 0
+            && $process['StandortID'] != 0
+            && $process['parked'] != 0
+            && empty($process['istFolgeterminvon'])
+        );
+    }
+
+    /**
      * check if it is a deleted appointment
      *
      * @return Bool
