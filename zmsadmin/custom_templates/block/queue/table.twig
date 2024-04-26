@@ -219,7 +219,7 @@
             </table>
             </div>
             <div class="table-responsive-wrapper">
-                <h2><i class="far fa-stop-circle" aria-hidden="true"></i> Geparkte Termine</h2>
+                <h2><span class="color-yellow"><i class="fas fa-stop-circle" aria-hidden="true"></i></span> Geparkte Termine</h2>
                 {% if processListParked|length %}
                     <div class="table-responsive-wrapper">
                                     <table class="table--base queue-parked">
@@ -291,7 +291,7 @@
                 <br>
             </div>
             <div class="table-responsive-wrapper">
-                <h2><i class="far fa-times-circle" aria-hidden="true"></i> Verpasste Termine</h2>
+                <h2><span class="color-red"><i class="fas fa-times-circle" aria-hidden="true"></i></span> Verpasste Termine</h2>
                 {% if processListMissed|length %}
                     <div class="table-responsive-wrapper">
                                     <table class="table--base queue-missed">
@@ -363,7 +363,7 @@
             </div>
 
             <div class="table-responsive-wrapper">
-                <h2 id="finished-appointments-control"><i class="far fa-check-circle" aria-hidden="true"></i> Abgeschlossene Termine
+                <h2 id="finished-appointments-control"><span class="color-green"><i class="fas fa-check-circle" aria-hidden="true"></i></span> Abgeschlossene Termine
                     {% if processListFinished|length %}
                         <i class="fas fa-angle-down" aria-hidden="true"></i>
                         <i class="fas fa-angle-up hidden" aria-hidden="true"></i>
