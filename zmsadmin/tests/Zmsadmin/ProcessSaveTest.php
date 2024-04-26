@@ -48,9 +48,9 @@ class ProcessSaveTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/82252/12a2/',
                     'parameters' => [
-                        'initiator' => null,
+                        'initiator' => 'admin',
                         'slotType' => 'intern',
-                        'slotsRequired' => 0
+                        'slotsRequired' => 0,
                     ],
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ],
@@ -101,7 +101,7 @@ class ProcessSaveTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/82252/12a2/',
                     'parameters' => [
-                        'initiator' => null,
+                        'initiator' => 'admin',
                         'slotType' => 'intern',
                         'slotsRequired' => 0
                     ],
@@ -159,7 +159,7 @@ class ProcessSaveTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/82252/12a2/',
                     'parameters' => [
-                        'initiator' => null,
+                        'initiator' => 'admin',
                         'slotType' => 'intern',
                         'slotsRequired' => 0
                     ],
@@ -217,7 +217,7 @@ class ProcessSaveTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/100011/8d11/',
                     'parameters' => [
-                        'initiator' => null,
+                        'initiator' => 'admin',
                         'slotType' => 'intern',
                         'slotsRequired' => 0
                     ],
