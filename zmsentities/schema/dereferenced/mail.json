@@ -407,6 +407,10 @@
                     "type": "string",
                     "description": "unix timestamp of showing up after call"
                 },
+                "processingTime": {
+                    "type": "string",
+                    "description": "unix timestamp that cumulates time each time a processes is called"
+                  },
                 "timeoutTime": {
                     "type": "string",
                     "description": "unix timestamp of after a call is entered or re-entered into the queue"
