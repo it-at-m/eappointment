@@ -1,1 +1,9 @@
 $color-blue:                    #004376; // Main blue: Header,...
+.button--yellow {
+    background-color: #edc00f;
+    border-color: #edc00f !important;
+}
+
+    .button--yellow:hover, .button--yellow:focus {
+    background-color: #FFDC00;
+}
