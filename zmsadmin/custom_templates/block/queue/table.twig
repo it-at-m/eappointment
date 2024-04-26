@@ -3,7 +3,7 @@
 {% use "block/workstation/scopeSwitch.twig" %}
         {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield %}
         {% block board_title %}
-            {% trans %}Warteschlange{% endtrans %}
+            {% trans %}<i class="fas fa-users" aria-hidden="true"></i> Warteschlange{% endtrans %}
             {% if clusterEnabled and cluster.scopes|length <= 1 %}
                 {{ scope.contact.name }} {{ scope.shortName }}
             {% elseif not clusterEnabled %}
@@ -219,15 +219,15 @@
             </table>
             </div>
             <div class="table-responsive-wrapper">
-                <h2><i class="fas fa-car" aria-hidden="true"></i> Geparkte Termine</h2>
+                <h2><i class="far fa-stop-circle" aria-hidden="true"></i> Geparkte Termine</h2>
                 {% if processListParked|length %}
                     <div class="table-responsive-wrapper">
-                    <table class="table--base queue-parked">
+                                    <table class="table--base queue-parked">
                     <thead>
                         <tr>
                             <th>Lfdnr.</th>
                             <th>Uhrzeit</th>
-                            <th>Name (Nummer)</th>
+                            <th>Name (Nr.)</th>
                             <th>Dienstleistung</th>
                             <th>Telefon</th>
                             <th>Art</th>
@@ -235,7 +235,7 @@
                             {% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
                                 <th>{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
                             {% endif %}
-                            <th>Aktion</th>
+                            <th>Aktionen</th>
                         </tr>
                     </thead>
                     {% set lfdnr = 0 %}
@@ -270,14 +270,15 @@
                                     Spontankunde
                                 {% endif %}
                             </td>
-                            <td>Dieser Kunde ist nicht erschienen</td>
+                            <td>Dieser Kunde ist geparked</td>
                             {% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}                   
                             <td>
                                 {{ item.customTextfield|decodeEntities|raw }}
                             </td>   
                             {% endif %}
                             <td>
-                                <p><a href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a></p>
+                                <p><a title="{% trans %}wieder aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">wieder aufrufen</a> {{ callCount|raw }}</p>
+                                <p><a title="{% trans %}wieder aufnehmen{% endtrans %}" href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a></p>
                             </td>
                         </tr>
                     {% endfor %}
@@ -290,7 +291,7 @@
                 <br>
             </div>
             <div class="table-responsive-wrapper">
-                <h2><i class="fas fa-flag" aria-hidden="true"></i> <i class="mdi mdi-clock-remove-outline"></i>Verpasste Termine</h2>
+                <h2><i class="far fa-times-circle" aria-hidden="true"></i> Verpasste Termine</h2>
                 {% if processListMissed|length %}
                     <div class="table-responsive-wrapper">
                                     <table class="table--base queue-missed">
@@ -298,7 +299,7 @@
                         <tr>
                             <th>Lfdnr.</th>
                             <th>Uhrzeit</th>
-                            <th>Name (Nummer)</th>
+                            <th>Name (Nr.)</th>
                             <th>Dienstleistung</th>
                             <th>Telefon</th>
                             <th>Art</th>
@@ -348,7 +349,7 @@
                             </td>   
                             {% endif %}
                             <td>
-                                <p><a href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a></p>
+                                <p><a title="{% trans %}wieder aufnehmen{% endtrans %}" href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a></p>
                             </td>
                         </tr>
                     {% endfor %}
@@ -362,7 +363,7 @@
             </div>
 
             <div class="table-responsive-wrapper">
-                <h2 id="finished-appointments-control">Abgeschlossene Termine
+                <h2 id="finished-appointments-control"><i class="far fa-check-circle" aria-hidden="true"></i> Abgeschlossene Termine
                     {% if processListFinished|length %}
                         <i class="fas fa-angle-down" aria-hidden="true"></i>
                         <i class="fas fa-angle-up hidden" aria-hidden="true"></i>
