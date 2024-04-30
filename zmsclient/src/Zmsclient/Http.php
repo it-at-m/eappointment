@@ -223,8 +223,7 @@ class Http
         if (null !== $getParameters) {
             $uri = $uri->withQuery(http_build_query($getParameters));
         }
-        $request = self::createRequest('DELETE', $uri);
-        
+        $request = self::createRequest('DELETE', $uri);        
         return $this->readResult($request);
     }
 
