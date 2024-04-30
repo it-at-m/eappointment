@@ -220,11 +220,11 @@ class Http
     public function readDeleteResult($relativeUrl, array $getParameters = null)
     {
         $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
-        error_log($uri);
         if (null !== $getParameters) {
             $uri = $uri->withQuery(http_build_query($getParameters));
         }
         $request = self::createRequest('DELETE', $uri);
+        
         return $this->readResult($request);
     }
 
