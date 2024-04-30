@@ -118,19 +118,13 @@ class ProcessStatusArchived extends Base implements MappingInterface
     }
     public function addValuesNewArchive(\BO\Zmsentities\Process $process, \DateTimeInterface $now)
     {
-        // Get processing time or default to null if not set or empty
         $processingTimeStr = $process->getProcessingTime();
-        $bearbeitungszeit = null; // Default to null if not set
-    
+        $bearbeitungszeit = null;
         if (!empty($processingTimeStr)) {
-            // Assume the format is HH:MM:SS and parse it
             list($hours, $minutes, $seconds) = explode(':', $processingTimeStr);
-            // Convert hours and seconds to minutes and sum up to get total minutes as a double
             $totalMinutes = (double) ($hours * 60 + $minutes + $seconds / 60);
-            $bearbeitungszeit = $totalMinutes; // This is now stored as a double
+            $bearbeitungszeit = $totalMinutes;
         }
-    
-        // Populate the data array with values to be added
         $this->addValues([
             'StandortID' => $process->scope['id'],
             'name' => $process->getFirstClient()['familyName'],
