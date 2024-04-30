@@ -60,7 +60,7 @@
         },
         "name": {
             "type": "string",
-            "maxLength": 5,
+            "maxLength": 8,
             "description": "usually number of place or room where the workstation is located"
         },
         "process": {
