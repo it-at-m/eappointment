@@ -116,6 +116,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
         });
         return $this;
     }
+
     public function addValuesNewArchive(\BO\Zmsentities\Process $process, \DateTimeInterface $now)
     {
         $processingTimeStr = $process->getProcessingTime();
@@ -137,7 +138,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
             'bearbeitungszeit' => $bearbeitungszeit,
             'AnzahlPersonen' => $process->getClients()->count()
         ]);
-    }    
+    }
 
     public function postProcess($data)
     {

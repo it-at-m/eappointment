@@ -44,8 +44,8 @@ class CallDisplayConfigView extends Component {
                 }
             }),
             queueStatus: 'all',
-            template: 'defaultplatz',
-            webtemplate: 'defaultplatz',
+            template: 'default_counter',
+            webtemplate: 'default_counter',
             hmac: '',
             enableQrCode: false,
             twoDisplays: false,
@@ -333,18 +333,6 @@ class CallDisplayConfigView extends Component {
                         <Select
                             attributes={{ "id": "calldisplayLayout" }}
                             options={[
-                                { name: 'Uhrzeit, 4-8 Aufrufe, nur Zahlen | Tür', value: 'door4-8' },
-                                { name: 'Uhrzeit, 6-12 Aufrufe | Platz', value: 'defaultplatz' },
-                                { name: 'Uhrzeit, 6-12 Aufrufe | Raum', value: 'defaultraum' },
-                                { name: 'Uhrzeit, 6-12 Aufrufe | Tür', value: 'defaultdoor' },                             
-                                { name: 'Uhrzeit, 6 Aufrufe | Platz', value: 'clock5platz' },
-                                { name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe | Platz', value: 'clocknrplatz' },
-                                { name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe | Raum', value: 'clocknrraum' },
-                                { name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 6-12 Aufrufe | Platz', value: 'clocknrwaitplatz' },
-                                { name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 6-12 Aufrufe | Raum', value: 'clocknrwaitraum' },
-                                { name: '4-8 Aufrufe, nur Zahlen | Tür', value: 'rawdoor4-8' },
-                                { name: '6-18 Aufrufe | Tür', value: 'raw18door' },
-                                { name: '6-18 Aufrufe | Platz', value: 'raw18platz' },
                                 { name: '10 Aufrufe | Schalter (engl. counter)', value: 'default_counter' },
                                 { name: '10 Aufrufe | Platz (engl. site)', value: 'default_platz' },
                                 { name: '10 Aufrufe | Tür (engl. door)', value: 'default_tuer' },
