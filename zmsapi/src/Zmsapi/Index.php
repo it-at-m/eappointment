@@ -26,7 +26,6 @@ class Index extends BaseController
         array $args
     ) {
         $base = $request->getBaseUrl();
-        error_log($base);
         $schema = [
             '$schema' => "http://json-schema.org/draft-04/schema#",
             'meta' => [
