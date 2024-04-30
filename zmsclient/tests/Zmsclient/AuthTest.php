@@ -10,19 +10,27 @@ class AuthTest extends Base
     public function testBasic()
     {
         try {
-            error_log("Testing Auth::getKey() - Expecting null initially.");
+            error_log("Entering testBasic method.");
             $this->assertNull(\BO\Zmsclient\Auth::getKey(), "Initial key should be null");
-            error_log("Setting key to 123456.");
+            error_log("Key is initially null as expected.");
+
             \BO\Zmsclient\Auth::setKey(123456);
-            error_log("Testing Auth::getKey() - Expecting 123456.");
+            error_log("Key set to 123456.");
+
             $this->assertEquals(123456, \BO\Zmsclient\Auth::getKey(), "Key should be set to 123456");
-            error_log("Removing key.");
+            error_log("Key retrieval after set confirms correct value.");
+
             \BO\Zmsclient\Auth::removeKey();
-            error_log("Testing Auth::getKey() - Expecting empty string.");
+            error_log("Key removed.");
+
             $this->assertEquals("", \BO\Zmsclient\Auth::getKey(), "Key should be removed");
+            error_log("Key retrieval after removal confirms empty string.");
+
         } catch (\Exception $e) {
-            error_log("Exception caught in AuthTest::testBasic: " . $e->getMessage());
+            error_log("Exception caught in testBasic: " . $e->getMessage());
+            error_log("Stack Trace: " . $e->getTraceAsString());
             $this->fail("Exception caught in test: " . $e->getMessage());
         }
+        error_log("Exiting testBasic method.");
     }
 }
