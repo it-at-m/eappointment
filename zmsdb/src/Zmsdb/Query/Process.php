@@ -156,6 +156,8 @@ class Process extends Base implements MappingInterface
                     THEN "reserved"
                 WHEN process.nicht_erschienen != 0
                     THEN "missed"
+                WHEN process.parked != 0
+                    THEN "parked"
                 WHEN process.Abholer != 0 AND process.AbholortID != 0 AND process.NutzerID = 0
                     THEN "pending"
                 WHEN process.AbholortID != 0 AND process.NutzerID != 0
@@ -205,8 +207,9 @@ class Process extends Base implements MappingInterface
             'createTimestamp' => 'process.IPTimeStamp',
             'lastChange' => 'process.updateTimestamp',
             'showUpTime' => 'process.showUpTime',
+            'processingTime' => 'process.processingTime',
             'timeoutTime' => 'process.timeoutTime',
-            'finishTime' => 'process.finishTime',           
+            'finishTime' => 'process.finishTime',
             'status' => $status_expression,
             'queue__status' => $status_expression,
             'queue__arrivalTime' => self::expression(
@@ -338,8 +341,8 @@ class Process extends Base implements MappingInterface
                     ->andWith(
                         self::expression(
                             'DATE_SUB(CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`), INTERVAL '
-                            . 'IFNULL(scopemail.send_reminder_minutes_before, ' . $defaultReminderInMinutes
-                            . ') MINUTE)'
+                                . 'IFNULL(scopemail.send_reminder_minutes_before, ' . $defaultReminderInMinutes
+                                . ') MINUTE)'
                         ),
                         '<=',
                         $now->format('Y-m-d H:i:s')
@@ -466,8 +469,12 @@ class Process extends Base implements MappingInterface
             }
             if ('missed' == $status) {
                 $query->andWith('process.nicht_erschienen', '!=', 0)
-                    ->andWith('process.StandortID', '!=', 0)
-                    ;
+                    ->andWith('process.StandortID', '!=', 0);
+            }
+            if ('parked' == $status) {
+                $query
+                    ->andWith('process.parked', '!=', 0)
+                    ->andWith('process.StandortID', '!=', 0);
             }
             if ('pending' == $status) {
                 $query
@@ -506,8 +513,7 @@ class Process extends Base implements MappingInterface
             if ('queued' == $status) {
                 $query->andWith('process.Uhrzeit', '=', '00:00:00')
                     ->andWith('process.StandortID', '!=', 0)
-                    ->andWith('process.AbholortID', '=', 0);
-                    ;
+                    ->andWith('process.AbholortID', '=', 0);;
             }
             if ('confirmed' == $status) {
                 $query
@@ -734,20 +740,28 @@ class Process extends Base implements MappingInterface
         $data = array();
         $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
         $data['aufruferfolgreich'] = ($process['status'] == 'processing') ? 1 : 0;
+        if ($process->status == 'called') {
+            $data['parked'] = 0;
+            $data['nicht_erschienen'] = 0;
+        }
         if ($process->status == 'pending') {
             $data['AbholortID'] = $process->scope['id'];
             $data['Abholer'] = 1;
             $data['nicht_erschienen'] = 0;
+            $data['parked'] = 0;
         }
         if ($process->status == 'pickup') {
             $data['AbholortID'] = $process->scope['id'];
             $data['Abholer'] = 1;
             $data['Timestamp'] = 0;
             $data['nicht_erschienen'] = 0;
+            $data['parked'] = 0;
         }
         if ($process->status == 'queued') {
             $data['nicht_erschienen'] = 0;
-            if ($process->hasArrivalTime() &&
+            $data['parked'] = 0;
+            if (
+                $process->hasArrivalTime() &&
                 (isset($process->queue['withAppointment']) && $process->queue['withAppointment'])
             ) {
                 $data['wsm_aufnahmezeit'] = $dateTime->format('H:i:s');
@@ -756,13 +770,16 @@ class Process extends Base implements MappingInterface
         if ($process->status == 'missed') {
             $data['nicht_erschienen'] = 1;
         }
+        if ($process->status == 'parked') {
+            $data['parked'] = 1;
+        }
         if ($process->status == 'confirmed') {
             $data['bestaetigt'] = 1;
         }
         if ($process->status == 'preconfirmed') {
             $data['bestaetigt'] = 0;
         }
-        
+
         $this->addValues($data);
     }
 
@@ -801,25 +818,83 @@ class Process extends Base implements MappingInterface
     protected function addProcessingTimeData($process, \DateTimeInterface $dateTime, $previousStatus = null)
     {
         $data = array();
+        $timeoutTime = null;
+        $showUpTime = null;
+        $finishTime = null;
 
-        if (isset($previousStatus) && ($process->status == 'called' && $previousStatus == 'called')) {
-            $data['timeoutTime'] = $dateTime->format('Y-m-d H:i:s');
-        } else if (isset($previousStatus) && ($process->status == 'processing' && $previousStatus == 'processing')) {
-            $data['timeoutTime'] = $dateTime->format('Y-m-d H:i:s');
+        if (
+            isset($previousStatus) &&
+            (($process->status == 'called' && $previousStatus == 'called') ||
+                ($process->status == 'processing' && $previousStatus == 'processing'))
+        ) {
+            $timeoutTime = $dateTime->format('Y-m-d H:i:s');
+            $data['timeoutTime'] = $timeoutTime;
         } else if ($process->status == 'processing') {
-            $data['showUpTime'] = $dateTime->format('Y-m-d H:i:s');
+            $showUpTime = $dateTime->format('Y-m-d H:i:s');
+            $data['showUpTime'] = $showUpTime;
         } else if ($process->status == 'finished') {
-            $data['finishTime'] = $dateTime->format('Y-m-d H:i:s');
+            $finishTime = $dateTime->format('Y-m-d H:i:s');
+            $data['finishTime'] = $finishTime;
+        }
+
+
+        if (isset($finishTime) && isset($process->showUpTime)) {
+            $showUpDateTime = new \DateTime($process->showUpTime);
+            $finishTime = new \DateTime($finishTime);
+
+            $processingTimeStr = $process->getProcessingTime();
+            $previousProcessingTimeInSeconds = 0; // Default to 0 if not set
+            
+            if (!empty($processingTimeStr)) {
+                // Assume the format is HH:MM:SS and parse it
+                list($hours, $minutes, $seconds) = explode(':', $processingTimeStr);
+                // Convert hours, minutes, and seconds to total seconds
+                $previousProcessingTimeInSeconds = (int)$hours * 3600 + (int)$minutes * 60 + (int)$seconds;
+            }
+
+            $interval = $showUpDateTime->diff($finishTime);
+            $totalSeconds = ($interval->days * 24 * 60 * 60) + ($interval->h * 60 * 60) + ($interval->i * 60) + $interval->s;
+
+            $totalSeconds += $previousProcessingTimeInSeconds;
+        
+            $hours = intdiv($totalSeconds, 3600);
+            $minutes = intdiv($totalSeconds % 3600, 60);
+            $seconds = $totalSeconds % 60;
+        
+            $data['processingTime'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+        
+        } elseif (isset($timeoutTime) && isset($process->showUpTime)) {
+            $showUpDateTime = new \DateTime($process->showUpTime);
+            $timeoutDateTime = new \DateTime($timeoutTime);
+            $processingTimeStr = $process->getProcessingTime();
+            
+            $previousProcessingTimeInSeconds = 0; // Default to 0 if not set
+            if (!empty($processingTimeStr)) {
+                // Assume the format is HH:MM:SS and parse it
+                list($hours, $minutes, $seconds) = explode(':', $processingTimeStr);
+                // Convert hours, minutes, and seconds to total seconds
+                $previousProcessingTimeInSeconds = (int)$hours * 3600 + (int)$minutes * 60 + (int)$seconds;
+            }
+            $interval = $showUpDateTime->diff($timeoutDateTime);
+            $totalSeconds = ($interval->days * 24 * 60 * 60) + ($interval->h * 60 * 60) + ($interval->i * 60) + $interval->s;
+        
+            $totalSeconds += $previousProcessingTimeInSeconds;
+        
+            $hours = intdiv($totalSeconds, 3600);
+            $minutes = intdiv($totalSeconds % 3600, 60);
+            $seconds = $totalSeconds % 60;
+        
+            $data['processingTime'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         }
 
         $this->addValues($data);
     }
-    
+
 
     protected function addValuesQueueData($process)
     {
         $data = array();
-        $appointmentTime=$process->getFirstAppointment()->toDateTime()->format('H:i:s');
+        $appointmentTime = $process->getFirstAppointment()->toDateTime()->format('H:i:s');
 
         if (isset($process->queue['callCount']) && $process->queue['callCount']) {
             $data['AnzahlAufrufe'] = $process->queue['callCount'];
@@ -887,8 +962,10 @@ class Process extends Base implements MappingInterface
         }
         $data[$this->getPrefixed("queue__arrivalTime")] =
             strtotime($data[$this->getPrefixed("queue__arrivalTime")]);
-        if (isset($data[$this->getPrefixed('scope__provider__data')])
-            && $data[$this->getPrefixed('scope__provider__data')]) {
+        if (
+            isset($data[$this->getPrefixed('scope__provider__data')])
+            && $data[$this->getPrefixed('scope__provider__data')]
+        ) {
             $data[$this->getPrefixed('scope__provider__data')] =
                 json_decode($data[$this->getPrefixed('scope__provider__data')], true);
         }
@@ -901,7 +978,7 @@ class Process extends Base implements MappingInterface
         }
         $data[$this->getPrefixed("lastChange")] =
             (new \DateTimeImmutable($data[$this->getPrefixed("lastChange")] .
-            \BO\Zmsdb\Connection\Select::$connectionTimezone))->getTimestamp();
+                \BO\Zmsdb\Connection\Select::$connectionTimezone))->getTimestamp();
         return $data;
     }
 

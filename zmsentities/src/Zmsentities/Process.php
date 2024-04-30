@@ -24,6 +24,7 @@ class Process extends Schema\Entity
     public const STATUS_PICKUP     = 'pickup';
     public const STATUS_FINISHED   = 'finished';
     public const STATUS_MISSED     = 'missed';
+    public const STATUS_PARKED     = 'parked';
     public const STATUS_ARCHIVED   = 'archived';
     public const STATUS_DELETED    = 'deleted';
     public const STATUS_ANONYMIZED = 'anonymized';
@@ -347,6 +348,11 @@ class Process extends Schema\Entity
         return $showDateTime;
     }
 
+    public function getProcessingTime()
+    {
+        return $this->toProperty()->processingTime->get();
+    }
+
     public function getFinishTime()
     {
         return $this->toProperty()->finishTime->get();
@@ -432,6 +438,8 @@ class Process extends Schema\Entity
         $scope = new Scope($this->scope);
         if ('called' == $this->status && $this->queue['callCount'] > $scope->getPreference('queue', 'callCountMax')) {
             $this->status = 'missed';
+        } elseif ('parked' == $this->status) {
+            $this->status = 'parked';
         } elseif ('pickup' == $this->status) {
             $this->status = 'queued';
         } else {

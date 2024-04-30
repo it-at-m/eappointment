@@ -1,7 +1,8 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'client-info'} %}
 {% from "element/helper/snippets.twig" import namelist %}
         {% block board_title %}
-            Kundeninformationen
+            <span class="color-blue"><i class="fas fa-info-circle" aria-hidden="true"></i></span> 
+ Kundeninformationen
         {% endblock %}
         {% block board_body %}
             {% if error != "has_called_pickup" %}
@@ -67,7 +68,15 @@
             {% if workstation.process.withAppointment %}
                 <a class="button button--default button--fullwidth button-finish right" href="{{ urlGet("workstationProcessRedirect", {}, {}) }}" style="margin: 0.5em 0;">Weiterleiten</a>
             {% endif %}
-
+            <button 
+                type="button" 
+                class="button button--fullwidth client-called_button-parked left" 
+                style="margin: 0.5em 0; background-color: #edc00f; border-color: #edc00f !important;" 
+                onmouseover="this.style.backgroundColor='#FFDC00';" 
+                onmouseout="this.style.backgroundColor='#edc00f';"
+            >
+                Parken
+            </button>
             <button type="button" class="button button--destructive button--fullwidth button-cancel left" style="margin: 0.5em 0;">Abbruch</button>
             {% endif %}  
               
