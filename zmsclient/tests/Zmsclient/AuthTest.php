@@ -10,27 +10,20 @@ class AuthTest extends Base
     public function testBasic()
     {
         try {
-            error_log("Entering testBasic method.");
+            error_log("Current environment: " . json_encode($_ENV)); // Log environment variables
+            error_log("TestBasic method entered.");
             $this->assertNull(\BO\Zmsclient\Auth::getKey(), "Initial key should be null");
-            error_log("Key is initially null as expected.");
-
             \BO\Zmsclient\Auth::setKey(123456);
-            error_log("Key set to 123456.");
-
-            $this->assertEquals(123456, \BO\Zmsclient\Auth::getKey(), "Key should be set to 123456");
-            error_log("Key retrieval after set confirms correct value.");
-
+            $this->assertEquals(123456, \BO\Zmsclient\Auth::getKey());
             \BO\Zmsclient\Auth::removeKey();
-            error_log("Key removed.");
-
-            $this->assertEquals("", \BO\Zmsclient\Auth::getKey(), "Key should be removed");
-            error_log("Key retrieval after removal confirms empty string.");
-
+            $this->assertEquals("", \BO\Zmsclient\Auth::getKey());
+    
+            error_log("TestBasic method exiting.");
         } catch (\Exception $e) {
-            error_log("Exception caught in testBasic: " . $e->getMessage());
-            error_log("Stack Trace: " . $e->getTraceAsString());
+            error_log("Exception: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
             $this->fail("Exception caught in test: " . $e->getMessage());
         }
-        error_log("Exiting testBasic method.");
     }
+    
 }
