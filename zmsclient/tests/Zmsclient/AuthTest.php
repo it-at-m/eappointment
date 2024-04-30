@@ -9,10 +9,15 @@ class AuthTest extends Base
      */
     public function testBasic()
     {
-        $this->assertNull(\BO\Zmsclient\Auth::getKey());
-        \BO\Zmsclient\Auth::setKey(123456);
-        $this->assertEquals(123456, \BO\Zmsclient\Auth::getKey());
-        \BO\Zmsclient\Auth::removeKey();
-        $this->assertEquals("", \BO\Zmsclient\Auth::getKey());
+        try {
+            $this->assertNull(\BO\Zmsclient\Auth::getKey(), "Initial key should be null");
+            \BO\Zmsclient\Auth::setKey(123456);
+            $this->assertEquals(123456, \BO\Zmsclient\Auth::getKey(), "Key should be set to 123456");
+            \BO\Zmsclient\Auth::removeKey();
+            $this->assertEquals("", \BO\Zmsclient\Auth::getKey(), "Key should be removed");
+        } catch (\Exception $e) {
+            $this->fail("Exception caught in test: " . $e->getMessage());
+        }
     }
 }
+
