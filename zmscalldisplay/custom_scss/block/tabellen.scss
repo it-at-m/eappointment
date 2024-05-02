@@ -93,7 +93,13 @@ span.terminkundenanzeige
 {
 	font-weight: normal;
 	font-size: 30px;
-  line-height: 35px;
+    line-height: 35px;
+}
+span.terminkundenanzeige.hint-shown
+{
+  font-size: 25px;
+  margin-top: -10px;
+  display: block;
 }
 span.wartenummer
 {
@@ -104,6 +110,10 @@ span.terminkundennummer
 {
 	font-size: 60px;
   line-height: 60px;
+}
+span.terminkundennummer.hint-shown
+{
+  line-height: 30px !important;
 }
 span.terminkundennummer.abholeranzeige
 {
