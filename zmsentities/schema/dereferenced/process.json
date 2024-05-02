@@ -231,6 +231,10 @@
             "type": "string",
             "description": "unix timestamp of showing up after call"
         },
+        "processingTime": {
+            "type": "string",
+            "description": "unix timestamp that cumulates time each time a processes is called"
+          },
         "timeoutTime": {
             "type": "string",
             "description": "unix timestamp of after a call is entered or re-entered into the queue"
@@ -324,7 +328,8 @@
                         "pickup",
                         "finished",
                         "fake",
-                        "missed"
+                        "missed",
+                        "parked"
                     ],
                     "description": "Status of the process. The following values are possible:\n  * confirmed: confirmed appointment but not in queue\n * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * deleted: client is deleted\n  * processing: client appeared and gets service\n  * pending: client has to return for getting papers\n  * pickup: show pending on call display\n  * reserved: appointment is reserved\n  * finished: successfully processed\n  * fake: dummy entry for getting infos about queue\n  * missed: no client appeared\n"
                 }
@@ -1118,6 +1123,7 @@
                 "pickup",
                 "finished",
                 "missed",
+                "parked",
                 "archived",
                 "deleted",
                 "anonymized",
