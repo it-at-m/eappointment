@@ -14,7 +14,8 @@
         data-cluster-enabled="{{ workstation.queue.clusterEnabled }}"
         data-selected-scope="{% if workstation.queue.clusterEnabled == 0 %}{{ workstation.scope.id }}{% else %}{{ selectedScope }}{% endif %}"
         data-called-process="{{ calledProcess }}">
-        <div class="grid">
+        <div class="grid" style="
+    min-height: 850px;">
             <div class="grid__item three-twelfths" id="liveregionClientNext" data-client-next>
                 {% include "block/process/nextContainer.twig" %}
             </div>

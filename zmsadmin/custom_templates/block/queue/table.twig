@@ -71,7 +71,7 @@
 				Geparkte Termine</h2>
 			{% if processListParked|length %}
 				<div class="table-responsive-wrapper">
-					<table class="table--base compact">
+					<table id="table-parked-appointments" class="table--base compact">
 						<thead>
 							<tr>
 								<th>Lfdnr.</th>
@@ -137,7 +137,7 @@
 										Spontankunde
 									{% endif %}
 								</td>
-								<td>Dieser Kunde ist geparked</td>
+								<td>Dieser Kunde ist geparkt</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
 									<td>
 										{{ item.customTextfield|decodeEntities|raw }}
@@ -164,7 +164,7 @@
 				</span>
 				Warteschlange</h2>
 			{% if processList|length %}
-				<table class="table--base compact">
+				<table id="table-queued-appointments" class="table--base compact">
 					<thead>
 						<tr>
 							{#<th class="queue-status"></th>#}
@@ -362,7 +362,7 @@
 				Verpasste Termine</h2>
 			{% if processListMissed|length %}
 				<div class="table-responsive-wrapper">
-					<table class="table--base compact">
+					<table id="table-missed-appointments" class="table--base compact">
 						<thead>
 							<tr>
 								<th>Lfdnr.</th>
@@ -461,7 +461,7 @@
 			</h2>
 			{% if processListFinished|length %}
 				<div id="finished-appointments-content" class="hidden table-responsive-wrapper">
-					<table class="table--base compact">
+					<table id="table-finished-appointments" class="table--base compact">
 						<thead>
 							<tr>
 								<th>Lfdnr.</th>
