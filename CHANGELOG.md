@@ -1,3 +1,14 @@
+## Release Muc-8 Hotfix 3
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2345'>ZMS-2345</a>] -         Termine im CallDisplay werden nicht korrekt angezeigt 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2350'>ZMS-2350</a>] -         Layout Aufrufanlage - Bildschirm ist teilweise leer
+</li>
+</ul>
+
 ## Release Muc-8
                        
 <h2>        Aufgabe
