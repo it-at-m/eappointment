@@ -35,6 +35,12 @@ class Index extends BaseController
         
         $calldisplayHelper = (new Helper\Calldisplay($request));
         $parameters = $this->getDefaultParamters($request, $calldisplayHelper);
+
+        $zoom = $validator->getParameter('zoom')->isString()->getValue();
+        if ($zoom) {
+            $parameters['zoom'] = (float) $zoom;
+        }
+        
         if ($request->getParam('qrcode') && $request->getParam('qrcode') == 1) {
             $parameters['showQrCode'] = true;
             $parameters['webcalldisplay'] = $this->getWebcallDisplayUrl($request, $parameters);
