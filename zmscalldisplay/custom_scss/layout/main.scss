@@ -4,7 +4,7 @@
     margin:             0;
     max-width:          $pageMaxWidth;
     padding:            0;
-    background-color:   $white;
+    background-color:   $background;
 }
 
 html {
@@ -23,5 +23,5 @@ body {
     overflow: 		    hidden;
     margin:				0;
     padding:			0;
-    background: 		url(img/background_anzeige1.png) top left repeat-x $white;
+    background: 		url(img/background_anzeige1.png) top left repeat-x $background;
 }
