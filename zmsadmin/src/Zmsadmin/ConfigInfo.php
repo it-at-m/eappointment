@@ -21,7 +21,8 @@ class ConfigInfo extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $config = \App::$http->readGetResult('/config/')->getEntity();
-
+        print_r($config);
+        die();
         $mainProcessExample = ((new \BO\Zmsentities\Process)->getExample());
         $mainProcessExample->id = 987654;
         $dateTime = new \DateTimeImmutable("2015-10-23 08:00:00", new \DateTimeZone('Europe/Berlin'));
