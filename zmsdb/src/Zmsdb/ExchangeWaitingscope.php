@@ -212,6 +212,11 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         error_log("************");
         error_log("Original Waiting Time: " . $existingEntry['waitingtime']);
         error_log("************");
+
+
+        error_log("-------------");
+        error_log("Max Waiting Time: " . $waitingTime);
+        error_log("-------------");
     
     
         // Convert waiting time to TIME format (HH:MM:SS)
