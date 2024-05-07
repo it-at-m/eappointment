@@ -915,7 +915,7 @@ class Process extends Base implements MappingInterface
     protected function addValuesWaitingTimeData($process, $previousStatus = null)
     {
         $data = array();
-        if ($previousStatus == 'queued' && ($process['status'] == 'called' || $process['status'] == 'missed')) {
+        if (($previousStatus == 'queued' || $previousStatus == 'missed') && $process['status'] == 'called') {
             $wartezeit = $process->getWaitedMinutes();
             $data['wartezeit'] = $wartezeit > 0 ? $wartezeit : 0;
         }
