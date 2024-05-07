@@ -496,10 +496,15 @@
 										Spontankunde
 									{% endif %}
 								</td>
-								<td>{{ item.waitingTime|number_format(2, '.', ',') }}</td>
-								<td>{{ item.processingTime|number_format(2, '.', ',') }}</td>
+								{% set minutes = (item.waitingTime // 1) %}
+								{% set seconds = ((item.waitingTime - minutes) * 60) | round %}
+								<td>{{ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}</td>
+								{% set minutes = (item.processingTime // 1) %}
+								{% set seconds = ((item.processingTime - minutes) * 60) | round %}
+								<td>{{ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}</td>
 							</tr>
 						{% endfor %}
+						
 					</table>
 				</div>
 
