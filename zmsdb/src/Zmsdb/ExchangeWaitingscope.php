@@ -179,7 +179,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             [
                 'waitingcalculated' => $waitingCalculated,
                 'waitingcount' => $waitingCount,
-                'waitingtime' => $existingEntry['waitingtime'],
+                'waitingtime' => !empty($existingEntry['waitingtime']) ? $existingEntry['waitingtime'] : '00:00:00',
                 'scopeid' => $scope->id,
                 'date' => $now->format('Y-m-d'),
                 'hour' => $now->format('H')
