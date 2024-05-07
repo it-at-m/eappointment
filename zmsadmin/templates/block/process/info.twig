@@ -52,16 +52,11 @@
                 </dd>
                 {% endif %}    
                 <dt>
-                    Wartezeit
+                    Wartezeit (Std.:Min.:Sek.)
                 </dt>
                 <dd>
-                    {% if workstation.process.queue.waitingTime < 120 %}
-                        {{ workstation.process.queue.waitingTime }} {% trans %}Minuten{% endtrans %}
-                    {% else %}
-                    	{{ (workstation.process.queue.waitingTime / 60)|round(0, 'floor') }} {% trans %}Stunden{% endtrans %} und
-                        {{ (workstation.process.queue.waitingTime % 60) }} {% trans %}Minuten{% endtrans %}
-                    {% endif %}
-                </dd>
+                    {{ workstation.process.queue.waitingTime }}
+                </dd>  
             </dl>
             <a class="button button--positive button--fullwidth button-finish right" href="{{ urlGet("workstationProcessFinished", {}, {}) }}" style="margin: 0.5em 0;">Fertig stellen</a>
 

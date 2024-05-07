@@ -14,12 +14,14 @@
                 <dd>
                     {{ process.clients|first.familyName }} <br>(Wartenr. {{ process.queue.number }})
                 </dd>
+                {% if process.requests %}
                 <dt>
                     Anliegen
                 </dt>
                 <dd>
                     {{ namelist(process.requests) }}
                 </dd>
+                {% endif %}
                 {% if process.amendment %}
                 <dt>
                     Anmerkung
@@ -52,17 +54,20 @@
                     {{ process.customTextfield }}
                 </dd>
                 {% endif %}    
+                {% set currentTime = "now"|date("U") %}
+                {% set arrivalTime = process.queue.arrivalTime %}
+                {% set differenceInSeconds = currentTime - arrivalTime %}
+                
+                {% set hours = (differenceInSeconds // 3600) %}
+                {% set minutes = ((differenceInSeconds % 3600) // 60) %}
+                {% set seconds = (differenceInSeconds % 60) %}
                 <dt>
-                    Wartezeit
+                    Wartezeit (Std.:Min.:Sek.)
                 </dt>
                 <dd>
-                    {% if process.queue.waitingTime < 120 %}
-                        {{ process.queue.waitingTime }} {% trans %}Minuten{% endtrans %}
-                    {% else %}
-                    	{{ (process.queue.waitingTime / 60)|round(0, 'floor') }} {% trans %}Stunden{% endtrans %} und
-                        {{ (process.queue.waitingTime % 60) }} {% trans %}Minuten{% endtrans %}
-                    {% endif %}
+                    {{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}
                 </dd>
+                
             </dl> 
             <h4>Möchten Sie den Kunden aufrufen?</h4>
             <button type="button" class="button button--default button--fullwidth client-precall_button-success" data-processid="{{ process.id }}" data-exclude="{{ exclude }}">Ja, Kunden jetzt aufrufen</button>   
