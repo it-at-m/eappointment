@@ -202,10 +202,25 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             $process->isWithAppointment()
         );
         error_log("existing:" . $existingEntry['waitingtime']);
-
         error_log("current:" . $waitingTime);
 
-        $waitingTime = $existingEntry['waitingtime'] > $waitingTime ? $existingEntry['waitingtime'] : $waitingTime;
+        list($hours, $minutes, $seconds) = explode(':', $existingEntry['waitingtime']);
+        $existingTimeInSeconds = $hours * 3600 + $minutes * 60 + $seconds;
+        $currentWaitingTimeInSeconds = $waitingTime * 60;
+
+        if(isset($existingEntry['waitingtime'])){
+            $waitingTime = $existingTimeInSeconds > $currentWaitingTimeInSeconds ? $existingTimeInSeconds : $currentWaitingTimeInSeconds;
+        }
+
+        // Convert max waiting time back to TIME format (HH:MM:SS)
+        $hours = intdiv($waitingTime, 3600);
+        $minutes = intdiv($waitingTime % 3600, 60);
+        $seconds = $waitingTime % 60;
+        $waitingTime = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
+
+        error_log($waitingTime);
+
+        
         $this->perform(
             Query\ExchangeWaitingscope::getQueryUpdateByDateTime(
                 $process->getArrivalTime($now),
