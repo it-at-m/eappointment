@@ -206,19 +206,16 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             $process->isWithAppointment()
         );
         
-        // Parse existing 'waitingtime' if not blank, convert to total minutes
-        $existingMinutes = 0;
-        if ($existingEntry['waitingtime'] !== '') {
-            list($hours, $minutes, $seconds) = sscanf($existingEntry['waitingtime'], "%d:%d:%d");
-            $existingMinutes = $hours * 60 + $minutes + $seconds / 60;
-        }
-    
+        $existingEntry['waitingtime'] = !empty($existingEntry['waitingtime']) ? $existingEntry['waitingtime'] : '00:00:00';
+        list($hours, $minutes, $seconds) = explode(':', $existingEntry['waitingtime']);
+        $existingTimeInSeconds = $hours * 3600 + $minutes * 60 + $seconds;
+
         error_log("***********");
         error_log("Current: " . $waitingTime);
-        error_log("Existing: " . $existingEntry['waitingtime'] . " (" . $existingMinutes . " minutes)");
+        error_log("Existing: " . $existingEntry['waitingtime']);
         
         // Compare minutes and pick the maximum
-        $maxMinutes = max($existingMinutes, $waitingTime);
+        $maxMinutes = max($existingTimeInSeconds, $waitingTime * 60);
     
         // Convert max minutes back to TIME format (HH:MM:SS)
         $hours = intdiv($maxMinutes, 60);
