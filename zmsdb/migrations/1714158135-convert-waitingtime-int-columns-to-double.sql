@@ -65,6 +65,8 @@ ADD COLUMN `temp_22_termin` TIME DEFAULT NULL,
 ADD COLUMN `temp_23_spontan` TIME DEFAULT NULL,
 ADD COLUMN `temp_23_termin` TIME DEFAULT NULL;
 
+SHOW COLUMNS FROM `wartenrstatistik`;
+
 UPDATE `wartenrstatistik` SET
 `temp_00_spontan` = SEC_TO_TIME(`echte_zeit_ab_00_spontan` * 60),
 `temp_00_termin` = SEC_TO_TIME(`echte_zeit_ab_00_termin` * 60),
@@ -114,9 +116,6 @@ UPDATE `wartenrstatistik` SET
 `temp_22_termin` = SEC_TO_TIME(`echte_zeit_ab_22_termin` * 60),
 `temp_23_spontan` = SEC_TO_TIME(`echte_zeit_ab_23_spontan` * 60),
 `temp_23_termin` = SEC_TO_TIME(`echte_zeit_ab_23_termin` * 60);
-
-
-SHOW COLUMNS FROM `wartenrstatistik`;
 
 ALTER TABLE `wartenrstatistik`
 DROP COLUMN `echte_zeit_ab_00_spontan`,
