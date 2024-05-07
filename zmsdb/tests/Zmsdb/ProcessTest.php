@@ -286,6 +286,7 @@ class ProcessTest extends Base
         );
     }
 
+    //No Longer recalculated getWaitedMinutes and getWaitedSeconds into archive directly copied therefore can have discrepancy
     public function testUpdateProcessWithStatusProcessing()
     {
         $now = static::$now;
@@ -294,7 +295,8 @@ class ProcessTest extends Base
         $process = $query->writeEntityReserved($input, $now);
         $process->status = 'processing';
         $process->queue['callTime'] = $process->queue['arrivalTime'] + 3600;
-        $process = $query->updateEntity($process, $now);
+        $previousStatus = "queued";
+        $process = $query->updateEntity($process, $now, $previousStatus);
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
         $this->assertEquals(60, $process->queue['waitingTime']);
     }
