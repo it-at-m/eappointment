@@ -166,11 +166,6 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
     
         $waitingCount = max($existingEntry['waitingcount'], $waitingCount);
     
-        // Log the existing waiting time
-        error_log("------------");
-        error_log("Original Waiting Time: " . $existingEntry['waitingtime']);
-        error_log("------------");
-    
         // Convert existing waiting time to TIME format (HH:MM:SS)
         $waitingTimeMinutes = floatval($existingEntry['waitingtime']);
         $hours = intdiv($waitingTimeMinutes, 60);
@@ -212,6 +207,12 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
     
         // Choose the larger waiting time
         $waitingTime = max($existingEntry['waitingtime'], $waitingTime);
+
+
+        error_log("************");
+        error_log("Original Waiting Time: " . $existingEntry['waitingtime']);
+        error_log("************");
+    
     
         // Convert waiting time to TIME format (HH:MM:SS)
         $hours = intdiv($waitingTime, 60);
