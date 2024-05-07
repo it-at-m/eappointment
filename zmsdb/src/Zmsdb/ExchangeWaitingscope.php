@@ -202,6 +202,9 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             $process->isWithAppointment()
         );
 
+        error_log("current " . $waitingTime);
+        error_log("existing " . $existingEntry['waitingtime']);
+
         list($hours, $minutes, $seconds) = explode(':', $existingEntry['waitingtime']);
         $existingTimeInSeconds = $hours * 3600 + $minutes * 60 + $seconds;
         $currentWaitingTimeInSeconds = $waitingTime * 60;
