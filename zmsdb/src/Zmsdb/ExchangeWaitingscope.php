@@ -168,6 +168,10 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             }
         }
 
+        error_log("-----------");
+        error_log($existingEntry['waitingtime']);
+        error_log("-----------");
+
         $waitingCount = $existingEntry['waitingcount'] > $waitingCount ?
             $existingEntry['waitingcount'] : $waitingCount;
         $this->perform(
