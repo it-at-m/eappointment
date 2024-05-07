@@ -915,9 +915,20 @@ class Process extends Base implements MappingInterface
     protected function addValuesWaitingTimeData($process, $previousStatus = null)
     {
         $data = array();
-        if (($previousStatus == 'queued' || $previousStatus == 'missed') && $process['status'] == 'called') {
-            $wartezeit = $process->getWaitedMinutes();
-            $data['wartezeit'] = $wartezeit > 0 ? $wartezeit : 0;
+        if (($previousStatus == 'queued' || $previousStatus == 'missed' || $previousStatus == 'confirmed') && $process['status'] == 'called') {
+            // Retrieve waiting time in seconds
+            $wartezeitInSeconds = $process->getWaitedSeconds();
+
+            // Check if there is any waiting time; if not, default to 0 seconds
+            $wartezeitInSeconds = $wartezeitInSeconds > 0 ? $wartezeitInSeconds : 0;
+
+            // Convert total seconds into HH:MM:SS format
+            $hours = intdiv($wartezeitInSeconds, 3600);
+            $minutes = intdiv($wartezeitInSeconds % 3600, 60);
+            $seconds = $wartezeitInSeconds % 60;
+
+            // Format and store the time in HH:MM:SS
+            $data['wartezeit'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         }
         $this->addValues($data);
     }
