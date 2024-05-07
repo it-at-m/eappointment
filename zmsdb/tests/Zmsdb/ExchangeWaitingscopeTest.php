@@ -77,16 +77,16 @@ class ExchangeWaitingscopeTest extends Base
         $entry = $query->readByDateTime($scope, $now);
         $this->assertEquals(14, $entry['waitingcalculated']);
         $this->assertEquals(2, $entry['waitingcount']);
-        $this->assertEquals(6, $entry['waitingtime']);
+        $this->assertEquals('00:06:00', $entry['waitingtime']);
         // higher waitingtime
         $now =  new DateTime('2016-04-01 08:19:00');
         $query->writeWaitingTime($process, $now);
         $entry = $query->readByDateTime($scope, $now);
-        $this->assertEquals(8, $entry['waitingtime']);
+        $this->assertEquals('00:08:00', $entry['waitingtime']);
         // lower waitingtime should not decrease value
         $now =  new DateTime('2016-04-01 08:15:00');
         $query->writeWaitingTime($process, $now);
         $entry = $query->readByDateTime($scope, $now);
-        $this->assertEquals(8, $entry['waitingtime']);
+        $this->assertEquals('00:08:00', $entry['waitingtime']);
     }
 }

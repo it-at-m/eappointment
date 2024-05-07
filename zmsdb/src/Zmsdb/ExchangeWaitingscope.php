@@ -170,6 +170,9 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
 
         $waitingCount = $existingEntry['waitingcount'] > $waitingCount ?
             $existingEntry['waitingcount'] : $waitingCount;
+            error_log("------------");
+            error_log($existingEntry['waitingtime']);
+            error_log("------------");
         $this->perform(
             Query\ExchangeWaitingscope::getQueryUpdateByDateTime($now, $isWithAppointment),
             [
@@ -202,6 +205,9 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             $process->isWithAppointment()
         );
         $waitingTime = $existingEntry['waitingtime'] > $waitingTime ? $existingEntry['waitingtime'] : $waitingTime;
+        error_log("***********");
+        error_log($waitingTime);
+        error_log("***********");
         $this->perform(
             Query\ExchangeWaitingscope::getQueryUpdateByDateTime(
                 $process->getArrivalTime($now),
