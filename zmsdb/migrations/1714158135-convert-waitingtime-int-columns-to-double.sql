@@ -8,6 +8,9 @@ ALTER TABLE `buerger`
 DROP COLUMN `wartezeit`,
 CHANGE COLUMN `temp_wartezeit` `wartezeit` TIME DEFAULT NULL;
 
+
+
+
 ALTER TABLE `buergerarchiv`
 MODIFY COLUMN `wartezeit` DOUBLE DEFAULT NULL;
 
@@ -111,6 +114,9 @@ UPDATE `wartenrstatistik` SET
 `temp_22_termin` = SEC_TO_TIME(`echte_zeit_ab_22_termin` * 60),
 `temp_23_spontan` = SEC_TO_TIME(`echte_zeit_ab_23_spontan` * 60),
 `temp_23_termin` = SEC_TO_TIME(`echte_zeit_ab_23_termin` * 60);
+
+
+SHOW COLUMNS FROM `wartenrstatistik`;
 
 ALTER TABLE `wartenrstatistik`
 DROP COLUMN `echte_zeit_ab_00_spontan`,
