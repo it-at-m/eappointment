@@ -197,17 +197,29 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         if ($now > (new \DateTime())) {
             return $this;
         }
-
+    
         $waitingTime = $process->getWaitedMinutes($now);
         $existingEntry = $this->readByDateTime(
             $process->scope,
             $process->getArrivalTime($now),
             $process->isWithAppointment()
         );
-        $waitingTime = $existingEntry['waitingtime'] > $waitingTime ? $existingEntry['waitingtime'] : $waitingTime;
+    
+        // Choose the larger waiting time
+        $waitingTime = max($existingEntry['waitingtime'], $waitingTime);
+    
+        // Log the waiting time
         error_log("***********");
-        error_log($waitingTime);
+        error_log("Calculated Waiting Time: " . $waitingTime);
         error_log("***********");
+    
+        // Convert waiting time to TIME format (HH:MM:SS)
+        $hours = intdiv($waitingTime, 60);
+        $minutes = intdiv($waitingTime, 1) % 60;
+        $seconds = ($waitingTime - intdiv($waitingTime, 1)) * 60;
+        $timeFormat = sprintf("%02d:%02d:%02d", $hours, $minutes, round($seconds));
+    
+        // Perform database update
         $this->perform(
             Query\ExchangeWaitingscope::getQueryUpdateByDateTime(
                 $process->getArrivalTime($now),
@@ -216,12 +228,14 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             [
                 'waitingcalculated' => $existingEntry['waitingcalculated'],
                 'waitingcount' => $existingEntry['waitingcount'],
-                'waitingtime' => $waitingTime,
+                'waitingtime' => $timeFormat,
                 'scopeid' => $process->scope->id,
                 'date' => $now->format('Y-m-d'),
                 'hour' => $now->format('H')
             ]
         );
+    
         return $this;
     }
+        
 }
