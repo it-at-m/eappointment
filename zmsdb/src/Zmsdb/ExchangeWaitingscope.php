@@ -218,6 +218,8 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $minutes = intdiv($waitingTime, 1) % 60;
         $seconds = ($waitingTime - intdiv($waitingTime, 1)) * 60;
         $timeFormat = sprintf("%02d:%02d:%02d", $hours, $minutes, round($seconds));
+
+        error_log("Calculated Waiting Time formatted: " . $timeFormat);
     
         // Perform database update
         $this->perform(
@@ -237,5 +239,5 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
     
         return $this;
     }
-        
+
 }
