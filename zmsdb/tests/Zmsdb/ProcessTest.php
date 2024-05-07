@@ -296,7 +296,7 @@ class ProcessTest extends Base
         $process->status = 'processing';
         $process->queue['callTime'] = $process->queue['arrivalTime'] + 3600;
         $previousStatus = "queued";
-        $process = $query->updateEntity($process, $now, $previousStatus);
+        $process = $query->updateEntity($process, $now, 0, $previousStatus);
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
         $this->assertEquals(60, $process->queue['waitingTime']);
     }
