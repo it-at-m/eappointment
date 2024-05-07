@@ -168,10 +168,6 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             }
         }
 
-        error_log("-----------");
-        error_log($existingEntry['waitingtime']);
-        error_log("-----------");
-
         $waitingCount = $existingEntry['waitingcount'] > $waitingCount ?
             $existingEntry['waitingcount'] : $waitingCount;
         $this->perform(
@@ -209,10 +205,6 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $existingEntry['waitingtime'] = !empty($existingEntry['waitingtime']) ? $existingEntry['waitingtime'] : '00:00:00';
         list($hours, $minutes, $seconds) = explode(':', $existingEntry['waitingtime']);
         $existingTimeInSeconds = $hours * 3600 + $minutes * 60 + $seconds;
-
-        error_log("***********");
-        error_log("Current: " . $waitingTime);
-        error_log("Existing: " . $existingEntry['waitingtime']);
         
         // Compare minutes and pick the maximum
         $maxSeconds = max($existingTimeInSeconds, $waitingTime * 60);
@@ -222,9 +214,6 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $minutes = intdiv($maxSeconds % 3600, 60);
         $seconds = $maxSeconds % 60;
         $timeFormat = sprintf("%02d:%02d:%02d", $hours, $minutes, round($seconds));
-        
-        error_log("Formatted: " . $timeFormat);
-        error_log("***********");
     
         // Perform database update
         $this->perform(
