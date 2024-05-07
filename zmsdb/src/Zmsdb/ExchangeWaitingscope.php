@@ -198,31 +198,37 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             return $this;
         }
     
-        $waitingTime = $process->getWaitedMinutes($now);
+        $waitingTime = $process->getWaitedMinutes($now); // This returns minutes
         $existingEntry = $this->readByDateTime(
             $process->scope,
             $process->getArrivalTime($now),
             $process->isWithAppointment()
         );
     
-        // Convert waiting time to seconds
-        $newWaitingTimeSeconds = intval($waitingTime * 60);
-    
-        // Convert existing waiting time to seconds
+        // Convert existing waiting time from HH:MM:SS to total seconds for comparison
         list($hours, $minutes, $seconds) = explode(':', $existingEntry['waitingtime']);
-        $existingWaitingTimeSeconds = $hours * 3600 + $minutes * 60 + $seconds;
+        $existingTimeInSeconds = $hours * 3600 + $minutes * 60 + $seconds;
+    
+        // Convert current waiting time to seconds
+        $currentWaitingTimeInSeconds = $waitingTime * 60;
+    
+        // Log the original waiting times in seconds
+        error_log("************");
+        error_log("Original Waiting Time in seconds (current): " . $currentWaitingTimeInSeconds);
+        error_log("Original Waiting Time in seconds (existing): " . $existingTimeInSeconds);
+        error_log("************");
     
         // Choose the larger waiting time in seconds
-        $maxWaitingTimeSeconds = max($existingWaitingTimeSeconds, $newWaitingTimeSeconds);
+        $maxWaitingTimeInSeconds = max($existingTimeInSeconds, $currentWaitingTimeInSeconds);
     
         // Convert max waiting time back to TIME format (HH:MM:SS)
-        $hours = intdiv($maxWaitingTimeSeconds, 3600);
-        $minutes = intdiv($maxWaitingTimeSeconds % 3600, 60);
-        $seconds = $maxWaitingTimeSeconds % 60;
-        $maxWaitingTime = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
+        $hours = intdiv($maxWaitingTimeInSeconds, 3600);
+        $minutes = intdiv($maxWaitingTimeInSeconds % 3600, 60);
+        $seconds = $maxWaitingTimeInSeconds % 60;
+        $waitingTimeFormatted = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
     
-        error_log("************");
-        error_log("Computed Waiting Time: " . $maxWaitingTime);
+        // Log the max waiting time
+        error_log("Max Waiting Time (formatted): " . $waitingTimeFormatted);
         error_log("************");
     
         // Perform database update
@@ -234,7 +240,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             [
                 'waitingcalculated' => $existingEntry['waitingcalculated'],
                 'waitingcount' => $existingEntry['waitingcount'],
-                'waitingtime' => $maxWaitingTime,
+                'waitingtime' => $waitingTimeFormatted,
                 'scopeid' => $process->scope->id,
                 'date' => $now->format('Y-m-d'),
                 'hour' => $now->format('H')
@@ -242,6 +248,6 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         );
     
         return $this;
-    }
-    
+    }    
+
 }
