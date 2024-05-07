@@ -681,7 +681,7 @@ class Process extends Base implements MappingInterface
             $this->addValuesClientData($process);
             $this->addProcessingTimeData($process, $dateTime, $previousStatus);
             $this->addValuesQueueData($process);
-            $this->addValuesWaitingTimeData($process);
+            $this->addValuesWaitingTimeData($process, $previousStatus);
         }
         if ($process->isWithAppointment()) {
             $this->addValuesFollowingProcessData($process, $parentProcess);
@@ -912,10 +912,10 @@ class Process extends Base implements MappingInterface
         $this->addValues($data);
     }
 
-    protected function addValuesWaitingTimeData($process)
+    protected function addValuesWaitingTimeData($process, $previousStatus = null)
     {
         $data = array();
-        if ($process['status'] == 'processing') {
+        if ($previousStatus == 'queued' && ($process['status'] == 'called' || $process['status'] == 'missed')) {
             $wartezeit = $process->getWaitedMinutes();
             $data['wartezeit'] = $wartezeit > 0 ? $wartezeit : 0;
         }
