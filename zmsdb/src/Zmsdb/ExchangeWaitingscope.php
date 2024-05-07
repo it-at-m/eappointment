@@ -213,7 +213,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $seconds = $waitingTime % 60;
         $waitingTimeFormatted = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);   
         
-        error_log($waitingTimeFormatted);
+        error_log("Formatted: " . $waitingTimeFormatted);
 
         $this->perform(
             Query\ExchangeWaitingscope::getQueryUpdateByDateTime(
