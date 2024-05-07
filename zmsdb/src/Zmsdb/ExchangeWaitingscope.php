@@ -206,6 +206,9 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $existingTimeInSeconds = $hours * 3600 + $minutes * 60 + $seconds;
         $currentWaitingTimeInSeconds = $waitingTime * 60;
 
+        error_log("existingTimeInSeconds " . $existingTimeInSeconds);
+        error_log("currentWaitingTimeInSeconds " . $currentWaitingTimeInSeconds);
+
         $waitingTime = $existingTimeInSeconds > $currentWaitingTimeInSeconds ? $existingTimeInSeconds : $currentWaitingTimeInSeconds;
 
         $hours = intdiv($waitingTime, 3600);
