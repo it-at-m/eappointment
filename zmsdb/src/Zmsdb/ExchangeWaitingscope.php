@@ -147,38 +147,38 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         if ($now > (new \DateTime())) {
             return $this;
         }
-    
+
         $queueList = (new Scope())->readQueueListWithWaitingTime($scope, $now);
+        
         $existingEntry = $this->readByDateTime($scope, $now, $isWithAppointment);
         $queueEntry = $queueList->getFakeOrLastWaitingnumber();
-        $waitingCalculated = max($existingEntry['waitingcalculated'], $queueEntry['waitingTimeEstimate']);
-    
+        $waitingCalculated = $existingEntry['waitingcalculated'] > $queueEntry['waitingTimeEstimate'] ?
+            $existingEntry['waitingcalculated']
+            : $queueEntry['waitingTimeEstimate'];
+
         $waitingCount = 0;
         if (! $isWithAppointment) {
             $waitingCount = $queueList->withOutAppointment()->withoutStatus(['fake'])->count();
         } else {
-            foreach ($queueList->withAppointment()->withoutStatus(['fake']) as $queue) {
+            $queues = $queueList->withAppointment()->withoutStatus(['fake']);
+            foreach ($queues as $queue) {
                 if ($queue->waitingTime > 0) {
                     $waitingCount++;
                 }
             }
         }
-    
-        $waitingCount = max($existingEntry['waitingcount'], $waitingCount);
-    
-        // Convert existing waiting time to TIME format (HH:MM:SS)
-        $waitingTimeMinutes = floatval($existingEntry['waitingtime']);
-        $hours = intdiv($waitingTimeMinutes, 60);
-        $minutes = intdiv($waitingTimeMinutes, 1) % 60;
-        $seconds = ($waitingTimeMinutes - intdiv($waitingTimeMinutes, 1)) * 60;
-        $formattedWaitingTime = sprintf("%02d:%02d:%02d", $hours, $minutes, round($seconds));
-    
+
+        $waitingCount = $existingEntry['waitingcount'] > $waitingCount ?
+            $existingEntry['waitingcount'] : $waitingCount;
+            error_log("------------");
+            error_log($existingEntry['waitingtime']);
+            error_log("------------");
         $this->perform(
             Query\ExchangeWaitingscope::getQueryUpdateByDateTime($now, $isWithAppointment),
             [
                 'waitingcalculated' => $waitingCalculated,
                 'waitingcount' => $waitingCount,
-                'waitingtime' => $formattedWaitingTime, // Updated formatted time
+                'waitingtime' => $existingEntry['waitingtime'],
                 'scopeid' => $scope->id,
                 'date' => $now->format('Y-m-d'),
                 'hour' => $now->format('H')
@@ -205,23 +205,12 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             $process->isWithAppointment()
         );
 
-
-        // convert $existingEntry['waitingtime'] from hh:mm:ss to seconds
-
-
-
-        // Convert existing waiting time from HH:MM:SS to total seconds for comparison
         list($hours, $minutes, $seconds) = explode(':', $existingEntry['waitingtime']);
         $existingTimeInSeconds = $hours * 3600 + $minutes * 60 + $seconds;
-
-        // Convert current waiting time to seconds
         $currentWaitingTimeInSeconds = $waitingTime * 60;
-
 
         $waitingTime = max($existingTimeInSeconds, $currentWaitingTimeInSeconds);
 
-
-        // Convert waiting time to TIME format (HH:MM:SS)
         $hours = intdiv($waitingTime, 60);
         $minutes = intdiv($waitingTime, 1) % 60;
         $seconds = ($waitingTime - intdiv($waitingTime, 1)) * 60;
