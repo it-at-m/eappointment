@@ -56,7 +56,7 @@ class ExchangeWaitingscopeTest extends Base
         $entry = $query->readByDateTime($scope, $now);
         $this->assertEquals(7, $entry['waitingcalculated']);
         $this->assertEquals(1, $entry['waitingcount']);
-        $this->assertEquals(0, $entry['waitingtime']);
+        $this->assertEquals('00:00:00', $entry['waitingtime']);
         // raise values with later time
         $now =  new DateTime('2016-04-01 08:21:00');
         (new \BO\Zmsdb\ProcessStatusQueued())->writeNewFromTicketprinter($scope, $now);
@@ -64,14 +64,14 @@ class ExchangeWaitingscopeTest extends Base
         $entry = $query->readByDateTime($scope, $now);
         $this->assertEquals(14, $entry['waitingcalculated']);
         $this->assertEquals(2, $entry['waitingcount']);
-        $this->assertEquals(0, $entry['waitingtime']);
+        $this->assertEquals('00:00:00', $entry['waitingtime']);
         // highest values should not be decreased
         $now =  new DateTime('2016-04-01 08:17:00');
         $query->writeWaitingTimeCalculated($scope, $now);
         $entry = $query->readByDateTime($scope, $now);
         $this->assertEquals(14, $entry['waitingcalculated']);
         $this->assertEquals(2, $entry['waitingcount']);
-        $this->assertEquals(0, $entry['waitingtime']);
+        $this->assertEquals('00:00:00', $entry['waitingtime']);
         // set waitingtime
         $query->writeWaitingTime($process, $now);
         $entry = $query->readByDateTime($scope, $now);
