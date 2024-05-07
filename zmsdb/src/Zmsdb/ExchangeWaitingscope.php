@@ -204,19 +204,15 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             $process->getArrivalTime($now),
             $process->isWithAppointment()
         );
-    
+
+        error_log("************");
+        error_log("Original Waiting Time: " . $waitingTime);
+        error_log("Original Waiting Time: " . $existingEntry['waitingtime']);
         // Choose the larger waiting time
         $waitingTime = max($existingEntry['waitingtime'], $waitingTime);
 
 
-        error_log("************");
-        error_log("Original Waiting Time: " . $existingEntry['waitingtime']);
-        error_log("************");
-
-
-        error_log("-------------");
         error_log("Max Waiting Time: " . $waitingTime);
-        error_log("-------------");
     
     
         // Convert waiting time to TIME format (HH:MM:SS)
@@ -226,6 +222,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $timeFormat = sprintf("%02d:%02d:%02d", $hours, $minutes, round($seconds));
 
         error_log("Calculated Waiting Time formatted: " . $timeFormat);
+        error_log("************");
     
         // Perform database update
         $this->perform(
