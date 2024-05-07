@@ -215,12 +215,12 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         error_log("Existing: " . $existingEntry['waitingtime']);
         
         // Compare minutes and pick the maximum
-        $maxMinutes = max($existingTimeInSeconds, $waitingTime * 60);
+        $maxSeconds = max($existingTimeInSeconds, $waitingTime * 60);
     
         // Convert max minutes back to TIME format (HH:MM:SS)
-        $hours = intdiv($maxMinutes, 60);
-        $minutes = intdiv($maxMinutes, 1) % 60;
-        $seconds = ($maxMinutes - intdiv($maxMinutes, 1)) * 60;
+        $hours = intdiv($maxSeconds, 3600);
+        $minutes = intdiv($maxSeconds % 3600, 60);
+        $seconds = $maxSeconds % 60;
         $timeFormat = sprintf("%02d:%02d:%02d", $hours, $minutes, round($seconds));
         
         error_log("Formatted: " . $timeFormat);
