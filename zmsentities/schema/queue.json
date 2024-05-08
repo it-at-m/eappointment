@@ -8,7 +8,6 @@
         "lastCallTime": 0,
         "number": "123",
         "waitingTime": 2,
-        "wayTime": 2,
         "withAppointment": false,
         "status": "confirmed"
     },
@@ -52,11 +51,7 @@
         "waitingTime": {
             "type": "number",
             "description": "minutes since arrival of client"
-        },
-        "wayTime": {
-            "type": "number",
-            "description": "minutes since arrival of client"
-        },        
+        },       
         "waitingTimeEstimate": {
             "type": "number",
             "description": "estimated time in minutes to wait for a call"

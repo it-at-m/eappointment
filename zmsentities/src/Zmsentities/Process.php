@@ -333,19 +333,9 @@ class Process extends Schema\Entity
         return $this->toProperty()->amendment->get();
     }
 
-    /*public function getShowUpTime()
+    public function getShowUpTime()
     {
         return $this->toProperty()->showUpTime->get();
-    }*/
-
-    public function getShowUpTime($default = 'now', $timezone = null)
-    {
-        $showUpTime = $this->toProperty()->queue->showUpTime->get();
-        $showDateTime = Helper\DateTime::create($default, $timezone);
-        if ($showUpTime) {
-            $showDateTime = $showDateTime->setTimestamp($showUpTime);
-        }
-        return $showDateTime;
     }
 
     public function getWaitingTime()
@@ -560,7 +550,6 @@ class Process extends Schema\Entity
         $queue = new Queue($this->queue);
         $queue->withAppointment = ($this->getFirstAppointment()->hasTime()) ? true : false;
         $queue->waitingTime = ($queue->waitingTime) ? $queue->waitingTime : 0;
-        $queue->wayTime = ($queue->wayTime) ? $queue->wayTime : 0;
         if ($queue->withAppointment) {
             $queue->number = $this->id;
         } else {
@@ -601,33 +590,12 @@ class Process extends Schema\Entity
      */
     public function getWaitedSeconds($defaultTime = 'now')
     {
-        error_log("---------waited-----------");
-        error_log($this->getArrivalTime($defaultTime));
-        error_log($this->getCallTime($defaultTime));
-        error_log($this->getCallTime($defaultTime)->getTimestamp() - $this->getArrivalTime($defaultTime)->getTimestamp());
-        error_log("--------waited------------");
         return $this->getCallTime($defaultTime)->getTimestamp() - $this->getArrivalTime($defaultTime)->getTimestamp();
     }
 
     public function getWaitedMinutes($defaultTime = 'now')
     {
         return round($this->getWaitedSeconds($defaultTime) / 60, 0);
-    }
-
-    public function getWaySeconds($defaultTime = 'now')
-    {
-        error_log("----------way----------");
-        error_log($this->getShowUpTime($defaultTime));
-        error_log($this->getCallTime($defaultTime));
-        error_log($this->getShowUpTime($defaultTime)->getTimestamp() - $this->getCallTime($defaultTime)->getTimestamp());
-        error_log("----------way----------");
-        return $this->getShowUpTime($defaultTime)->getTimestamp() - $this->getCallTime($defaultTime)->getTimestamp();
-
-    }
-
-    public function getWayMinutes($defaultTime = 'now')
-    {
-        return round($this->getWaySeconds($defaultTime) / 60, 0);
     }
 
     public function toDerefencedAmendment()

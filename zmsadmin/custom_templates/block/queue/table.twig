@@ -469,13 +469,12 @@
 								<th>Name</th>
 								<th>Dienstleistung</th>
 								<th>Art</th>
-								<th>Wartezeit (Std.:Min.:Sek.)</th>
-								<th>Bearbeitungszeit (Std.:Min.:Sek.)</th>
+								<th>Wartezeit (Min.)</th>
+								<th>Bearbeitungszeit (Min.)</th>
 							</tr>
 						</thead>
 						{% set lfdnr = 0 %}
-						{% set lfdnr = 0 %}
-						{% for item in processListFinished|reverse %}
+						{% for item in processListFinished %}
 							{% set lfdnr = lfdnr + 1 %}
 							<tr class="missed">
 								<td>
@@ -497,18 +496,10 @@
 										Spontankunde
 									{% endif %}
 								</td>
-								{% set totalMinutes = item.waitingTime %}
-								{% set hours = (totalMinutes // 60) %}
-								{% set minutes = (totalMinutes % 60) // 1 %}
-								{% set seconds = ((totalMinutes - (hours * 60) - minutes) * 60) | round %}
-								<td>{{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}</td>
-								{% set totalMinutes = item.processingTime %}
-								{% set hours = (totalMinutes // 60) %}
-								{% set minutes = (totalMinutes % 60) // 1 %}
-								{% set seconds = ((totalMinutes - (hours * 60) - minutes) * 60) | round %}
-								<td>{{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}</td>
+								<td>{{ item.waitingTime|number_format(2, '.', ',') }}</td>
+								<td>{{ item.processingTime|number_format(2, '.', ',') }}</td>
 							</tr>
-						{% endfor %}						
+						{% endfor %}
 					</table>
 				</div>
 
