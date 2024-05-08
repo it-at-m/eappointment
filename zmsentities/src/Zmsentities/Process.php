@@ -348,6 +348,11 @@ class Process extends Schema\Entity
         return $showDateTime;
     }
 
+    public function getWaitingTime()
+    {
+        return $this->toProperty()->queue->waitingTime->get();
+    }
+
     public function getProcessingTime()
     {
         return $this->toProperty()->processingTime->get();
