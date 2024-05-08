@@ -1,26 +1,36 @@
 <?php
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\MailTemplate as MailTemplate;
+use \BO\Zmsentities\Mailtemplate as Mailtemplate;
 
 class MailTemplates extends Base
 {
     /**
      *
-     * @return \BO\Zmsentities\MailTemplate
+     * @return \BO\Zmsentities\Mailtemplate
      */
     public function readEntity()
     {
-        $query = Query\MailTemplates::QUERY_SELECT;
+        $query = Query\Mailtemplate::QUERY_SELECT;
         $config = $this->fetchData($query);
         return $config;
     }
+
+
+    public function readList()
+    {
+        $query = new Query\Mailtemplate(Query\Base::SELECT);
+        $query->addEntityMapping();
+        $logList = new \BO\Zmsentities\Collection\MailtemplateList($this->fetchList($query, new Mailtemplate()));
+        return $logList;
+    }
+
 
     public function updateEntity(MailTemplate $config)
     {
         $compareEntity = $this->readEntity();
         $result = false;
-        $query = new Query\MailTemplates(Query\Base::REPLACE);
+        $query = new Query\Mailtemplate(Query\Base::REPLACE);
         foreach ($config as $key => $item) {
             if (is_array($item)) {
                 foreach ($item as $itemName => $itemValue) {
@@ -47,7 +57,7 @@ class MailTemplates extends Base
 
     public function readProperty($property, $forUpdate = false)
     {
-        $sql = Query\MailTemplates::QUERY_SELECT_PROPERTY;
+        $sql = Query\Mailtemplate::QUERY_SELECT_PROPERTY;
         if ($forUpdate) {
             $sql .= " FOR UPDATE";
         }
@@ -56,7 +66,7 @@ class MailTemplates extends Base
 
     public function replaceProperty($property, $value)
     {
-        return $this->perform(Query\MailTemplates::QUERY_REPLACE_PROPERTY, [
+        return $this->perform(Query\Mailtemplate::QUERY_REPLACE_PROPERTY, [
             'property' => $property,
             'value' => $value,
         ]);
@@ -70,7 +80,7 @@ class MailTemplates extends Base
      */
     public function deleteProperty($property)
     {
-        $query = new Query\MailTemplates(Query\Base::DELETE);
+        $query = new Query\Mailtemplate(Query\Base::DELETE);
         $query->addConditionName($property);
         return $this->deleteItem($query);
     }
@@ -79,10 +89,15 @@ class MailTemplates extends Base
     {
         $splittedHash = array();
         $dataList = $this->getReader()->fetchAll($querySql);
+        print_r($dataList);
         foreach ($dataList as $data) {
             $splittedHash[$data['name']] = $data['value'];
         }
-        return new MailTemplate($splittedHash);
+        echo "<br/>";
+        print_r($splittedHash);
+        die('here');
+
+        return new Mailtemplate($splittedHash);
     }
 
     protected function getSpecifiedValue($value)

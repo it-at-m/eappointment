@@ -9,14 +9,37 @@
     {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless config-view', 'data': {'includeurl':includeUrl() }} %}
 
         {% block board_title %}
-            Konfiguration System
+            Mail Templates
         {% endblock %}
 
         {% block board_body %}
+
+{% for settings in mailtemplates %}
+    {% if settings|keys|length %}
+        <div style="display: flex; align-items: start; margin-bottom: 20px;">
+            <div style="flex: 3; width: 60%; padding: 24px; box-sizing: border-box; border: 1px solid #ccc;">
+                <div id="editor-{{ loop.index }}" style="width: 100%; height: 352px;"></div> <!-- Editor size adjusted for padding -->
+            </div>
+
+            <script id="mail-template-{{ loop.index }}" type="text/twig-template">
+                {{settings.value}}
+                Hello 
+                Hier noch weitere Testdaten
+            </script>
+
+            <div id="mail-preview-{{ loop.index }}" class="preview" style="flex: 2; width: 40%; height: 400px; background-color: #f0f0f0; border-left: 1px solid #ccc; padding: 24px; box-sizing: border-box;">
+                preview rendering...
+            </div>
+        </div>
+    {% endif %}
+{% endfor %}
+
             <p>
             Im Folgenden wird die aktuelle Konfiguration der vorliegenden ZMS-Instanz gezeigt. Diese Konfiguration ist nur von einem System-Administrator änderbar. Diese Seite dient lediglich dem Zweck, die Konfiguration zu prüfen.
             </p>
-         
+
+<div id="result"></div>
+
             {% for group, settings in config %}
                 {% if settings|keys|length %}
                 <div class="block">
@@ -251,5 +274,67 @@
         {% endblock %}
 
     {% endembed %}
+
+<script src="https://cdn.jsdelivr.net/npm/twig/twig.min.js"></script>
+
+
+    <!-- Load Require.js from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+    <script>
+        require.config({
+            paths: {
+                'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs',
+            }
+        });
+
+        function initializeEditor(elementId, defaultCode) {
+            require(['vs/editor/editor.main'], function() {
+                monaco.editor.create(document.getElementById(elementId), {
+                    value: defaultCode,
+                    language: 'javascript',
+                    theme: 'vs-dark'
+                });
+            });
+        }
+
+        function renderPreview(index) {
+            var templateContent = document.getElementById('mail-template-' + index ).innerHTML;
+            var template = Twig.twig({
+                data: templateContent
+            });
+
+            var output = template.render({ name: "World" });
+            document.getElementById('mail-preview-' + index).innerHTML = output;
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            {% for settings in mailtemplates %}
+                initializeEditor('editor-{{ loop.index }}', '{{ settings.value | escape('js') }}');
+                //renderPreview({{loop.index}});
+
+
+            {% endfor %}
+        });        
+
+    </script>
+    
+   <script id="template" type="text/twig-template">
+        Hello, {{ name }}!
+        Hier noch weitere Testdaten
+    </script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var templateContent = document.getElementById('template').innerHTML;
+        var template = Twig.twig({
+            data: templateContent
+        });
+
+        var output = template.render({ name: "World" });
+        document.getElementById('result').innerHTML = output;
+    });
+</script>
 
 {% endblock %}

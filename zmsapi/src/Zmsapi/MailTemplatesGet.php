@@ -31,8 +31,8 @@ class MailTemplatesGet extends BaseController
             }
         }
 
-        $config = (new MailTemplatesQuery())->readEntity();
-
+        $config = (new MailTemplatesQuery())->readList();
+        
         $message = Response\Message::create($request);
         $message->data = $config;
 
