@@ -79,7 +79,6 @@ class Queue extends Process implements MappingInterface
             ),
             'destinationHint' => 'processuser.aufrufzusatz',
             'waitingTime' => 'process.wartezeit',
-            'wayTime' => 'process.wegezeit',
             'withAppointment' => self::expression(
                 'IF(`process`.`wartenummer`,
                     "0",
@@ -112,9 +111,6 @@ class Queue extends Process implements MappingInterface
         }
         if (!$data[$this->getPrefixed("waitingTime")]) {
             $data[$this->getPrefixed("waitingTime")] = 0;
-        };
-        if (!$data[$this->getPrefixed("wayTime")]) {
-            $data[$this->getPrefixed("wayTime")] = 0;
         };
         $data[$this->getPrefixed("arrivalTime")] =
             strtotime($data[$this->getPrefixed("arrivalTime")]);
