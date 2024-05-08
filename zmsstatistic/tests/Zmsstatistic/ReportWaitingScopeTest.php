@@ -280,6 +280,6 @@ class ReportWaitingScopeTest extends Base
 
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
         $this->assertStringContainsString('"2016";"Januar";"Februar";"März"', (string) $response->getBody());
-        $this->assertStringContainsString('"Tagesmaximum Spontankunden";"532";"384";"506";"532"', (string) $response->getBody());
+        $this->assertStringContainsString('"Tagesmaximum Spontankunden der gemessenen Zeit";"532";"384";"506";"532"', (string) $response->getBody());
     }
 }
