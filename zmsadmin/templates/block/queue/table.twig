@@ -469,23 +469,23 @@
 								<th>Name</th>
 								<th>Dienstleistung</th>
 								<th>Art</th>
-								<th>Wartezeit (Std.:Min.:Sek.)</th>
-								<th>Bearbeitungszeit (Std.:Min.:Sek.)</th>
+								<th>Wartezeit (Std.:Min.:Sek.)</th> 
+								<th>Bearbeitungszeit (Std.:Min.:Sek.)</th> 
 							</tr>
 						</thead>
-						{% set lfdnr = 0 %}
-						{% set lfdnr = 0 %}
-						{% for item in processListFinished|reverse %}
+						{% set lfdnr = 0 %} 
+						{% set lfdnr = 0 %} 
+						{% for item in processListFinished|reverse %} 
 							{% set lfdnr = lfdnr + 1 %}
 							<tr class="missed">
 								<td>
 									{{ lfdnr }}.
 								</td>
 								<td>
-									{% if item.queue.withAppointment %}
-										{{ item.appointments|first.date|date("H:i") }}
-									{% else %}
-										{{ item.queue.arrivalTime|date("H:i") }}
+									{% if item.queue.withAppointment %} 
+										{{ item.appointments|first.date|date("H:i") }} 
+									{% else %} 
+										{{ item.queue.arrivalTime|date("H:i") }} 
 									{% endif %}
 								</td>
 								<td>{{ item.name }}</td>
@@ -497,18 +497,18 @@
 										Spontankunde
 									{% endif %}
 								</td>
-								{% set totalMinutes = item.waitingTime %}
-								{% set hours = (totalMinutes // 60) %}
-								{% set minutes = (totalMinutes % 60) // 1 %}
-								{% set seconds = ((totalMinutes - (hours * 60) - minutes) * 60) | round %}
-								<td>{{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}</td>
-								{% set totalMinutes = item.processingTime %}
-								{% set hours = (totalMinutes // 60) %}
-								{% set minutes = (totalMinutes % 60) // 1 %}
-								{% set seconds = ((totalMinutes - (hours * 60) - minutes) * 60) | round %}
-								<td>{{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}</td>
+								{% set totalMinutes = item.waitingTime %} 
+								{% set hours = (totalMinutes // 60) %} 
+								{% set minutes = (totalMinutes % 60) // 1 %} 
+								{% set seconds = ((totalMinutes - (hours * 60) - minutes) * 60) | round %} 
+								<td>{{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}</td> 
+								{% set totalMinutes = item.processingTime %} 
+								{% set hours = (totalMinutes // 60) %} 
+								{% set minutes = (totalMinutes % 60) // 1 %} 
+								{% set seconds = ((totalMinutes - (hours * 60) - minutes) * 60) | round %} 
+								<td>{{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}</td> 
 							</tr>
-						{% endfor %}						
+						{% endfor %}				
 					</table>
 				</div>
 				<script>
