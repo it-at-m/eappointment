@@ -175,7 +175,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             [
                 'waitingcalculated' => $waitingCalculated,
                 'waitingcount' => $waitingCount,
-                'waitingtime' => !empty($existingEntry['waitingtime']) ? $existingEntry['waitingtime'] : '00:00:00',
+                'waitingtime' => $existingEntry['waitingtime'],
                 'scopeid' => $scope->id,
                 'date' => $now->format('Y-m-d'),
                 'hour' => $now->format('H')
@@ -194,28 +194,14 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         if ($now > (new \DateTime())) {
             return $this;
         }
-    
+
         $waitingTime = $process->getWaitedMinutes($now);
         $existingEntry = $this->readByDateTime(
             $process->scope,
             $process->getArrivalTime($now),
             $process->isWithAppointment()
         );
-        
-        $existingEntry['waitingtime'] = !empty($existingEntry['waitingtime']) ? $existingEntry['waitingtime'] : '00:00:00';
-        list($hours, $minutes, $seconds) = explode(':', $existingEntry['waitingtime']);
-        $existingTimeInSeconds = $hours * 3600 + $minutes * 60 + $seconds;
-        
-        // Compare minutes and pick the maximum
-        $maxSeconds = max($existingTimeInSeconds, $waitingTime * 60);
-    
-        // Convert max minutes back to TIME format (HH:MM:SS)
-        $hours = intdiv($maxSeconds, 3600);
-        $minutes = intdiv($maxSeconds % 3600, 60);
-        $seconds = $maxSeconds % 60;
-        $timeFormat = sprintf("%02d:%02d:%02d", $hours, $minutes, round($seconds));
-    
-        // Perform database update
+        $waitingTime = $existingEntry['waitingtime'] > $waitingTime ? $existingEntry['waitingtime'] : $waitingTime;
         $this->perform(
             Query\ExchangeWaitingscope::getQueryUpdateByDateTime(
                 $process->getArrivalTime($now),
@@ -224,14 +210,12 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             [
                 'waitingcalculated' => $existingEntry['waitingcalculated'],
                 'waitingcount' => $existingEntry['waitingcount'],
-                'waitingtime' => $timeFormat,
+                'waitingtime' => $waitingTime,
                 'scopeid' => $process->scope->id,
                 'date' => $now->format('Y-m-d'),
                 'hour' => $now->format('H')
             ]
         );
-    
         return $this;
-    }    
-    
+    }
 }
