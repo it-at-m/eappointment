@@ -236,7 +236,6 @@ class Process extends Base implements MappingInterface
             ),
             'queue__destinationHint' => 'processuser.aufrufzusatz',
             'queue__waitingTime' => 'process.wartezeit',
-            'queue__wayTime' => 'process.wegezeit',
             'queue__withAppointment' => self::expression(
                 'IF(`process`.`wartenummer`,
                     "0",
@@ -676,18 +675,13 @@ class Process extends Base implements MappingInterface
         $parentProcess = 0,
         $previousStatus = null
     ) {
-        error_log("hey");
-        error_log("Previous Status: " . $previousStatus);
-        error_log("Current Status: " . $process->status);
         $this->addValuesIPAdress($process);
         $this->addValuesStatusData($process, $dateTime);
         if (0 === $parentProcess) {
             $this->addValuesClientData($process);
             $this->addProcessingTimeData($process, $dateTime, $previousStatus);
             $this->addValuesQueueData($process);
-            $this->addValuesWaitingTimeData($process);
-            $this->addValuesWayTimeData($process);
-            
+            $this->addValuesWaitingTimeData($process, $previousStatus);
         }
         if ($process->isWithAppointment()) {
             $this->addValuesFollowingProcessData($process, $parentProcess);
@@ -918,22 +912,23 @@ class Process extends Base implements MappingInterface
         $this->addValues($data);
     }
 
-    protected function addValuesWaitingTimeData($process)
+    protected function addValuesWaitingTimeData($process, $previousStatus = null)
     {
         $data = array();
-        if ($process['status'] == 'processing') {
-            $wartezeit = $process->getWaitedMinutes();
-            $data['wartezeit'] = $wartezeit > 0 ? $wartezeit : 0;
-        }
-        $this->addValues($data);
-    }
+        if (($previousStatus == 'queued' || $previousStatus == 'missed' || $previousStatus == 'confirmed') && $process['status'] == 'called') {
+            // Retrieve waiting time in seconds
+            $wartezeitInSeconds = $process->getWaitedSeconds();
 
-    protected function addValuesWayTimeData($process)
-    {
-        $data = array();
-        if ($process['status'] == 'processing') {
-            $wegezeit = $process->getWayMinutes();
-            $data['wegezeit'] = $wegezeit > 0 ? $wegezeit : 0;
+            // Check if there is any waiting time; if not, default to 0 seconds
+            $wartezeitInSeconds = $wartezeitInSeconds > 0 ? $wartezeitInSeconds : 0;
+
+            // Convert total seconds into HH:MM:SS format
+            $hours = intdiv($wartezeitInSeconds, 3600);
+            $minutes = intdiv($wartezeitInSeconds % 3600, 60);
+            $seconds = $wartezeitInSeconds % 60;
+
+            // Format and store the time in HH:MM:SS
+            $data['wartezeit'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         }
         $this->addValues($data);
     }
