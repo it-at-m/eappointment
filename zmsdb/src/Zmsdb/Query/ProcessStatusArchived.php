@@ -148,6 +148,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
             'bearbeitungszeit' => ($bearbeitungszeit > 0) ? $bearbeitungszeit : 0,
             'AnzahlPersonen' => $process->getClients()->count()
         ]);
+        
     }    
 
     public function postProcess($data)
