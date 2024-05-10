@@ -60,7 +60,7 @@
         },
         "name": {
             "type": "string",
-            "maxLength": 5,
+            "maxLength": 8,
             "description": "usually number of place or room where the workstation is located"
         },
         "process": {
@@ -291,6 +291,7 @@
                     "client": {
                         "alternateAppointmentUrl": "https:\/\/service.berlin.de",
                         "appointmentsPerMail": "",
+                        "slotsPerAppointment": "",
                         "whitelistedMails": "",
                         "amendmentLabel": "Zusatzinformationen zum Anliegen",
                         "customTextfieldLabel": "Zusatzfeld zum Anliegen",
@@ -472,6 +473,11 @@
                                 "appointmentsPerMail": {
                                     "type": "string",
                                     "description": "allowed appointments per e-mail address",
+                                    "default": ""
+                                },
+                                "slotsPerAppointment": {
+                                    "type": "string",
+                                    "description": "allowed slots per appointment",
                                     "default": ""
                                 },
                                 "whitelistedMails": {
