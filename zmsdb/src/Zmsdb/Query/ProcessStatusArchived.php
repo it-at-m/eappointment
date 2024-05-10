@@ -121,7 +121,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
         // Get processing time or default to null if not set or empty
         $processingTimeStr = $process->getProcessingTime();
         $bearbeitungszeit = null; // Default to null if not set
-
+    
         if (!empty($processingTimeStr)) {
             // Assume the format is HH:MM:SS and parse it
             list($hours, $minutes, $seconds) = explode(':', $processingTimeStr);
@@ -129,18 +129,8 @@ class ProcessStatusArchived extends Base implements MappingInterface
             $totalMinutes = (double) ($hours * 60 + $minutes + $seconds / 60);
             $bearbeitungszeit = $totalMinutes; // This is now stored as a double
         }
-
-        $waitingTimeStr = $process->getWaitingTime();
-        $warteZeit = null;
-
-        if (!empty($waitingTimeStr)) {
-            // Assume the format is HH:MM:SS and parse it
-            list($hours, $minutes, $seconds) = explode(':', $waitingTimeStr);
-            // Convert hours and seconds to minutes and sum up to get total minutes as a double
-            $totalMinutes = (double) ($hours * 60 + $minutes + $seconds / 60);
-            $warteZeit = $totalMinutes; // This is now stored as a double
-        }
     
+        // Populate the data array with values to be added
         $this->addValues([
             'StandortID' => $process->scope['id'],
             'name' => $process->getFirstClient()['familyName'],
@@ -149,8 +139,8 @@ class ProcessStatusArchived extends Base implements MappingInterface
             'mitTermin' => ($process->toQueue($now)->withAppointment) ? 1 : 0,
             'nicht_erschienen' => ('missed' == $process->queue['status']) ? 1 : 0,
             'Timestamp' => $process->getArrivalTime()->format('H:i:s'),
-            'wartezeit' => ($warteZeit > 0) ? $warteZeit : 0,
-            'bearbeitungszeit' => ($bearbeitungszeit > 0) ? $bearbeitungszeit : 0,
+            'wartezeit' => ($process->getWaitedSeconds() > 0) ? $process->getWaitedMinutes() : 0,
+            'bearbeitungszeit' => $bearbeitungszeit,
             'AnzahlPersonen' => $process->getClients()->count()
         ]);
     }    
