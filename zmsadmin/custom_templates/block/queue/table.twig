@@ -44,15 +44,18 @@
 		</a>
 	{% endblock %}
 	{% block board_title %}
-		{% trans %}<span class="color-blue">
-			<i class="fas fa-map-marker" aria-hidden="true"></i>
-		</span>
+		{% trans %}
+			<span class="color-blue">
+				<i class="fas fa-map-marker" aria-hidden="true"></i>
+			</span>
 		{% endtrans %}
 		{% if clusterEnabled and cluster.scopes|length <= 1 %}
-			{{ scope.contact.name }}
+			Standort - {{ scope.contact.name }}
 			{{ scope.shortName }}
+		{% elseif clusterEnabled %}
+			Cluster - {{cluster.name}}
 		{% elseif not clusterEnabled %}
-			{{ workstation.scope.contact.name }}
+			Standort - {{ workstation.scope.contact.name }}
 			{{ workstation.scope.shortName }}
 		{% endif %}
 	{% endblock %}
@@ -62,7 +65,6 @@
 	{% endblock %}
 
 	{% block board_body %}
-		{% set lfdnr = 0 %}
 		<div class="table-responsive-wrapper">
 			<h2>
 				<span class="color-yellow">
@@ -74,27 +76,33 @@
 					<table id="table-parked-appointments" class="table--base compact">
 						<thead>
 							<tr>
-								<th>Lfdnr.</th>
+								{#<th class="queue-status"></th>#}
+								{% if clusterEnabled %}
+									<th title="{% trans %}Standort im Cluster{% endtrans %}">Kürzel</th>
+								{% endif %}
 								<th>Uhrzeit</th>
-								<th>Name (Nr.)</th>
-								<th>Dienstleistung</th>
+								<th>Nr.</th>
+								<th>Name
+									<small>(Aufrufe)</small>
+								</th>
 								<th>Telefon</th>
-                                <th>Mail</th>
-								<th>Art</th>
+								<th>Mail</th>
+								<th>Dienstleistung</th>
 								<th>Anmerkung</th>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
 									<th>{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
 								{% endif %}
-								<th>Aktionen</th>
+								<th>Wartezeit</th>
+								<th>Aktion</th>
 							</tr>
 						</thead>
-						{% set lfdnr = 0 %}
 						{% for item in processListParked %}
-							{% set lfdnr = lfdnr + 1 %}
 							<tr class="parked">
+								{% if clusterEnabled %}
 								<td>
-									{{ lfdnr }}.
+									{{ item.scope.shortName }}
 								</td>
+								{% endif %}
 								<td>
 									{% if item.queue.withAppointment %}
 										{{ item.appointments|first.date|date("H:i") }}
@@ -103,18 +111,20 @@
 									{% endif %}
 								</td>
 								<td>
+									{% if item.queue.status != "reserved" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
+										<a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">
+											{{ item.queue.number }}
+										</a>
+									{% else %}
+										{{ item.queue.number }}
+									{% endif %}
+								</td>
+								<td>
 									{% if item.clients|first.familyName %}
 										{{ item.clients|first.familyName }}{% else %}Wartenummer
 										{{ item.queue.number }}
 									{% endif %}
-									({{ item.queue.number }})</td>
-								<td title="{% for request in item.requests%}{{request.name}}{% if not loop.last %}; {% endif %}{% endfor %}">
-									{{ item.requests|first.name }}
-									{% if item.requests|length > 1 %}
-										+{{ (item.requests|length) - 1 }}
-									{% endif %}
 								</td>
-								{#DL#}
 								<td>{{ item.clients|first.telephone }}</td>
                                 <td class="center nowrap">
                                     {% if item.clients|first.email and workstation.scope.preferences.client.emailFrom %}
@@ -126,23 +136,27 @@
                                             <span class="counter">{{ item.clients|first.emailSendCount }}</span>
                                         {% endif %}
                                     {% endif %}
-                                </td>                                
-								<td>
-									{% if item.queue.withAppointment %}
-										Termin
-										{% if 1 < item.appointments|first.slotCount %}
-											({{ item.appointments|first.slotCount }})
-										{% endif %}
-									{% else %}
-										Spontankunde
+                                </td> 
+								<td title="{% for request in item.requests%}{{request.name}}{% if not loop.last %}; {% endif %}{% endfor %}">
+									{{ item.requests|first.name }}
+									{% if item.requests|length > 1 %}
+										+{{ (item.requests|length) - 1 }}
 									{% endif %}
 								</td>
+								{#DL#}                               
 								<td>Dieser Kunde ist geparkt</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
 									<td>
 										{{ item.customTextfield|decodeEntities|raw }}
 									</td>
 								{% endif %}
+								<td class="nowrap">
+									{% if item.queue.withAppointment %}
+										Termin
+									{% else %}
+										Spontankunde
+									{% endif %}
+								</td>
 								<td>
 									<p>
 										<a title="{% trans %}wieder aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">wieder aufrufen</a>
@@ -170,8 +184,6 @@
 							{#<th class="queue-status"></th>#}
 							{% if clusterEnabled %}
 								<th title="{% trans %}Standort im Cluster{% endtrans %}">Kürzel</th>
-							{% else %}
-								<th title="{% trans %}Reihenfolge der Aufrufe{% endtrans %}">Lfdnr.</th>
 							{% endif %}
 							<th>Uhrzeit</th>
 							<th>Nr.</th>
@@ -192,7 +204,6 @@
 					</thead>
 					<tbody>
 						{% for item in processList %}
-							{% set lfdnr = lfdnr + 1 %}
 							{% set tense = "past" %}
 							{% set statusTitle = "Dieser Termin ist aktiv, liegt aber in der Vergangenheit" %}
 							{% set isToday = item.appointments|first.date|date('Y-m-d') == getNow()|date('Y-m-d') %}
@@ -208,13 +219,11 @@
 								<tr
 									class="{{ tense }} {{ item.queue.status }} {{ item.queue.status == 'preconfirmed' ? 'reserved' : '' }} " title="{% if item.queue.status == "reserved" or item.queue.status == "preconfirmed" %}{% trans %}Der Termin ist vorübergehend reserviert und wird ohne Bestätigung in wenigen Minuten gelöscht{% endtrans %}{% endif %}">
 									{#<td class="queue-status" title="{{ statusTitle }}"></td>#}
+									{% if clusterEnabled %}
 									<td>
-										{% if clusterEnabled %}
-											{{ item.scope.shortName }}
-										{% else %}
-											{{ lfdnr }}.
-										{% endif %}
+										{{ item.scope.shortName }}
 									</td>
+									{% endif %}
 									<td>
 										{% if item.queue.withAppointment or item.queue.status == "reserved" or item.queue.status == "preconfirmed" %}
 											{{ item.appointments|first.date|date("H:i") }}
@@ -365,27 +374,33 @@
 					<table id="table-missed-appointments" class="table--base compact">
 						<thead>
 							<tr>
-								<th>Lfdnr.</th>
+								{#<th class="queue-status"></th>#}
+								{% if clusterEnabled %}
+									<th title="{% trans %}Standort im Cluster{% endtrans %}">Kürzel</th>
+								{% endif %}
 								<th>Uhrzeit</th>
-								<th>Name (Nr.)</th>
-								<th>Dienstleistung</th>
+								<th>Nr.</th>
+								<th>Name
+									<small>(Aufrufe)</small>
+								</th>
 								<th>Telefon</th>
-                                <th>Mail</th>
-								<th>Art</th>
+								<th>Mail</th>
+								<th>Dienstleistung</th>
 								<th>Anmerkung</th>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
 									<th>{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
 								{% endif %}
+								<th>Wartezeit</th>
 								<th>Aktion</th>
 							</tr>
 						</thead>
-						{% set lfdnr = 0 %}
 						{% for item in processListMissed %}
-							{% set lfdnr = lfdnr + 1 %}
 							<tr class="missed">
+								{% if clusterEnabled %}
 								<td>
-									{{ lfdnr }}.
+									{{ item.scope.shortName }}
 								</td>
+								{% endif %}
 								<td>
 									{% if item.queue.withAppointment %}
 										{{ item.appointments|first.date|date("H:i") }}
@@ -394,18 +409,20 @@
 									{% endif %}
 								</td>
 								<td>
+									{% if item.queue.status != "reserved" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
+										<a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">
+											{{ item.queue.number }}
+										</a>
+									{% else %}
+										{{ item.queue.number }}
+									{% endif %}
+								</td>
+								<td>
 									{% if item.clients|first.familyName %}
 										{{ item.clients|first.familyName }}{% else %}Wartenummer
 										{{ item.queue.number }}
 									{% endif %}
-									({{ item.queue.number }})</td>
-								<td title="{% for request in item.requests%}{{request.name}}{% if not loop.last %}; {% endif %}{% endfor %}">
-									{{ item.requests|first.name }}
-									{% if item.requests|length > 1 %}
-										+{{ (item.requests|length) - 1 }}
-									{% endif %}
 								</td>
-								{#DL#}
 								<td>{{ item.clients|first.telephone }}</td>
                                 <td class="center nowrap">
                                     {% if item.clients|first.email and workstation.scope.preferences.client.emailFrom %}
@@ -418,22 +435,26 @@
                                         {% endif %}
                                     {% endif %}
                                 </td> 
-								<td>
-									{% if item.queue.withAppointment %}
-										Termin
-										{% if 1 < item.appointments|first.slotCount %}
-											({{ item.appointments|first.slotCount }})
-										{% endif %}
-									{% else %}
-										Spontankunde
+								<td title="{% for request in item.requests%}{{request.name}}{% if not loop.last %}; {% endif %}{% endfor %}">
+									{{ item.requests|first.name }}
+									{% if item.requests|length > 1 %}
+										+{{ (item.requests|length) - 1 }}
 									{% endif %}
 								</td>
+								{#DL#}
 								<td>Dieser Kunde ist nicht erschienen</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
 									<td>
 										{{ item.customTextfield|decodeEntities|raw }}
 									</td>
 								{% endif %}
+								<td class="nowrap">
+									{% if item.queue.withAppointment %}
+										Termin
+									{% else %}
+										Spontankunde
+									{% endif %}
+								</td>
 								<td>
 									<p>
 										<a title="{% trans %}wieder aufnehmen{% endtrans %}" href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a>
@@ -464,7 +485,6 @@
 					<table id="table-finished-appointments" class="table--base compact">
 						<thead>
 							<tr>
-								<th>Lfdnr.</th>
 								<th>Uhrzeit</th>
 								<th>Name</th>
 								<th>Dienstleistung</th>
@@ -473,14 +493,8 @@
 								<th>Bearbeitungszeit (Std.:Min.:Sek.)</th> 
 							</tr>
 						</thead>
-						{% set lfdnr = 0 %} 
-						{% set lfdnr = 0 %} 
 						{% for item in processListFinished|reverse %} 
-							{% set lfdnr = lfdnr + 1 %}
-							<tr class="missed">
-								<td>
-									{{ lfdnr }}.
-								</td>
+							<tr class="finished">
 								<td>
 									{% if item.queue.withAppointment %} 
 										{{ item.appointments|first.date|date("H:i") }} 
