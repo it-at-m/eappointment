@@ -116,16 +116,26 @@ class ProcessStatusArchived extends Base implements MappingInterface
         });
         return $this;
     }
-
     public function addValuesNewArchive(\BO\Zmsentities\Process $process, \DateTimeInterface $now)
     {
         $processingTimeStr = $process->getProcessingTime();
         $bearbeitungszeit = null;
+
         if (!empty($processingTimeStr)) {
             list($hours, $minutes, $seconds) = explode(':', $processingTimeStr);
             $totalMinutes = (double) ($hours * 60 + $minutes + $seconds / 60);
             $bearbeitungszeit = $totalMinutes;
         }
+
+        $waitingTimeStr = $process->getWaitingTime();
+        $warteZeit = null;
+
+        if (!empty($waitingTimeStr)) {
+            list($hours, $minutes, $seconds) = explode(':', $waitingTimeStr);
+            $totalMinutes = (double) ($hours * 60 + $minutes + $seconds / 60);
+            $warteZeit = $totalMinutes;
+        }
+    
         $this->addValues([
             'StandortID' => $process->scope['id'],
             'name' => $process->getFirstClient()['familyName'],
@@ -134,11 +144,11 @@ class ProcessStatusArchived extends Base implements MappingInterface
             'mitTermin' => ($process->toQueue($now)->withAppointment) ? 1 : 0,
             'nicht_erschienen' => ('missed' == $process->queue['status']) ? 1 : 0,
             'Timestamp' => $process->getArrivalTime()->format('H:i:s'),
-            'wartezeit' => ($process->getWaitedSeconds() > 0) ? $process->getWaitedMinutes() : 0,
-            'bearbeitungszeit' => $bearbeitungszeit,
+            'bearbeitungszeit' => ($bearbeitungszeit > 0) ? $bearbeitungszeit : 0,
+            'wartezeit' => ($warteZeit > 0) ? $warteZeit : 0,
             'AnzahlPersonen' => $process->getClients()->count()
         ]);
-    }
+    }    
 
     public function postProcess($data)
     {
