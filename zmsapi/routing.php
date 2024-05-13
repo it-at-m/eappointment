@@ -1115,6 +1115,13 @@ use \Psr\Http\Message\ResponseInterface;
     ->setName("MailTemplatesGet");
     
 
+\App::$slim->post(
+    '/mailtemplatesget/',
+    '\BO\Zmsapi\MailTemplatesUpdate'
+)
+    ->setName("MailTemplatesUpdate");
+        
+    
 
 
 

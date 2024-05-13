@@ -25,6 +25,25 @@ class MailTemplates extends Base
         return $logList;
     }
 
+    public function readTemplate($templateName) {
+        $query = new Query\Mailtemplate(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addConditionName($templateName);
+        return $this->fetchOne($query, new Mailtemplate());
+    }
+
+
+    public function updateTemplateContent($templateName, $templateContent)
+    {
+        $query = new Query\Mailtemplate(Query\Base::UPDATE);
+        $query->addConditionName($templateName);
+        $query->addTemplateContent($templateContent);
+        $this->writeItem($query);
+        return $this->readTemplate($templateName);
+        //return $this->readEntity($templateName, 1);
+    }
+
+
 
     public function updateEntity(MailTemplate $config)
     {
@@ -89,13 +108,9 @@ class MailTemplates extends Base
     {
         $splittedHash = array();
         $dataList = $this->getReader()->fetchAll($querySql);
-        print_r($dataList);
         foreach ($dataList as $data) {
             $splittedHash[$data['name']] = $data['value'];
         }
-        echo "<br/>";
-        print_r($splittedHash);
-        die('here');
 
         return new Mailtemplate($splittedHash);
     }

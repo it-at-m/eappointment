@@ -55,6 +55,15 @@ use Slim\Routing\RouteCollectorProxy;
  \App::$slim->map(['GET','POST'], '/config/', \BO\Zmsadmin\ConfigInfo::class)
      ->setName("configinfo");
 
+     
+ \App::$slim->get('/mailtemplates/', \BO\Zmsadmin\MailTemplates::class)
+     ->setName("mailtemplates");
+
+    
+ \App::$slim->post('/mailtemplates/', \BO\Zmsadmin\Helper\MailTemplateHandler::class)
+     ->setName("MailTemplateHandler");
+     
+
  /*
   * ---------------------------------------------------------------------------
   * Counter

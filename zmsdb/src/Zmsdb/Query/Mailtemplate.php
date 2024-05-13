@@ -35,6 +35,14 @@ class Mailtemplate extends Base
         return $this;
     }
 
+    public function addTemplateContent($templateContent)
+    {
+        $this->query->values(array(
+            'mailtemplate.value' => $templateContent
+        ));        
+        return $this;
+    }
+
     public function getEntityMapping()
     {
         return [

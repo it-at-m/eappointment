@@ -124,6 +124,11 @@
                 </li>
             {% endif %}
             {% if workstation.useraccount.rights.superuser == "1" %}
+                <li class="nav__link{{ menuActive == 'mailtemplates'? ' active' }}">
+                    <a {{ menuActive == 'mailtemplates'? ' aria-current="page"' }} href="{{ urlGet('mailtemplates', {}, {}) }}">Mailtemplates</a>
+                </li>
+            {% endif %}
+            {% if workstation.useraccount.rights.superuser == "1" %}
                 <li class="nav__link{{ menuActive == 'configinfo'? ' active' }}">
                     <a {{ menuActive == 'configinfo'? ' aria-current="page"' }} href="{{ urlGet('configinfo', {}, {}) }}">System&shy;konfiguration</a>
                 </li>
