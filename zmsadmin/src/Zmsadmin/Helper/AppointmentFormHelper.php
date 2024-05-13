@@ -8,6 +8,7 @@
 namespace BO\Zmsadmin\Helper;
 
 use \BO\Zmsentities\Collection\ScopeList;
+use BO\Zmsentities\Scope;
 
 /**
  * @SuppressWarnings(Complexity)
@@ -150,7 +151,7 @@ class AppointmentFormHelper
         return $slotType;
     }
 
-    protected static function setSlotsRequired($validator, \BO\Zmsentities\Scope $scope, $process)
+    protected static function setSlotsRequired($validator, ?Scope $scope, $process)
     {
         $slotsRequired = 0;
         if ($scope && $scope->getPreference('appointment', 'multipleSlotsEnabled')) {

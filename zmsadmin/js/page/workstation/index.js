@@ -115,7 +115,7 @@ class View extends BaseView {
     onDatePick(date) {
         this.selectedDate = date;
         this.loadCalendar();
-        this.loadClientNext();
+        this.loadClientNext(true, false);
         if ('counter' == this.page)
             this.loadQueueInfo();
         this.loadQueueTable();
@@ -173,9 +173,9 @@ class View extends BaseView {
         const sendData = $(event.currentTarget).closest('form').serializeArray();
         this.loadCall(`${this.includeUrl}/workstation/select/`, 'POST', sendData).then(() => {
             if (changeScope && this.selectedScope == 'cluster') {
-                location.reload();
+                window.location.href = `${this.includeUrl}/workstation/`
             } else if (changeScope && this.selectedScope != 'cluster') {
-                this.loadAllPartials();
+                this.loadAllPartials(false);
             } else {
                 return Promise.all([
                     this.loadQueueTable(),
@@ -404,7 +404,7 @@ class View extends BaseView {
     onCancelNextProcess() {
         //console.log('CANCEL');
         this.calledProcess = null;
-        this.loadClientNext();
+        this.loadClientNext(true, false);
     }
 
     onReloadQueueTable(event) {
@@ -482,13 +482,13 @@ class View extends BaseView {
         if (event.currentTarget.value > -1)
             ghostWorkstationCount = event.currentTarget.value;
         this.loadContent(`${this.includeUrl}/counter/queueInfo/?ghostworkstationcount=${ghostWorkstationCount}&selecteddate=${selectedDate}`, null, null, $container).then(() => {
-            this.loadAllPartials();
+            this.loadAllPartials(false);
         });
     }
 
-    loadAllPartials() {
+    loadAllPartials(callProcess = true) {
         return Promise.all([
-            this.loadClientNext(),
+            this.loadClientNext(true, callProcess),
             this.loadAppointmentForm(),
             this.loadCalendar(),
             this.loadQueueTable(),
@@ -525,11 +525,11 @@ class View extends BaseView {
         })
     }
 
-    loadClientNext(showLoader = true) {
+    loadClientNext(showLoader = true, loadProcess = true) {
         return new ClientNextView($.find('[data-client-next]'), {
             selectedDate: this.selectedDate,
             includeUrl: this.includeUrl,
-            calledProcess: this.calledProcess,
+            calledProcess: loadProcess ? this.calledProcess : null,
             onNextProcess: this.onNextProcess,
             onCallNextProcess: this.onCallNextProcess,
             onCancelNextProcess: this.onCancelNextProcess,
