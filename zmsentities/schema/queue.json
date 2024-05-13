@@ -51,7 +51,7 @@
         "waitingTime": {
             "type": "number",
             "description": "minutes since arrival of client"
-        },
+        },       
         "waitingTimeEstimate": {
             "type": "number",
             "description": "estimated time in minutes to wait for a call"

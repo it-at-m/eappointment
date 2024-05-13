@@ -28,10 +28,9 @@ class WorkstationProcessParked extends BaseController
             throw new Exception\Process\ProcessNotFound();
         }
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
-        $previousStatus = $process->status;
+        $process = (new Query())->updateEntity($process, \App::$now, 0, $process->status);
         $workstation->process->setStatus("parked");
         $workstation->process->setStatusBySettings();
-        $process = (new Query())->updateEntity($process, \App::$now, 0, $process->status, $previousStatus);
         (new Workstation)->writeRemovedProcess($workstation);
         unset($workstation->process);
 
