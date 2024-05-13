@@ -76,10 +76,11 @@
 					<table id="table-parked-appointments" class="table--base compact">
 						<thead>
 							<tr>
-								<th>Lfdnr.</th>
 								{#<th class="queue-status"></th>#}
 								{% if clusterEnabled %}
 									<th title="{% trans %}Standort im Cluster{% endtrans %}">Kürzel</th>
+								{% else %}
+									<th title="{% trans %}Reihenfolge der Aufrufe{% endtrans %}">Lfdnr.</th>
 								{% endif %}
 								<th>Uhrzeit</th>
 								<th>Nr.</th>
@@ -186,10 +187,11 @@
 				<table id="table-queued-appointments" class="table--base compact">
 					<thead>
 						<tr>
-							<th>Lfdnr.</th>
 							{#<th class="queue-status"></th>#}
 							{% if clusterEnabled %}
 								<th title="{% trans %}Standort im Cluster{% endtrans %}">Kürzel</th>
+							{% else %}
+								<th title="{% trans %}Reihenfolge der Aufrufe{% endtrans %}">Lfdnr.</th>
 							{% endif %}
 							<th>Uhrzeit</th>
 							<th>Nr.</th>
@@ -384,10 +386,11 @@
 					<table id="table-missed-appointments" class="table--base compact">
 						<thead>
 							<tr>
-								<th>Lfdnr.</th>
 								{#<th class="queue-status"></th>#}
 								{% if clusterEnabled %}
 									<th title="{% trans %}Standort im Cluster{% endtrans %}">Kürzel</th>
+								{% else %}
+									<th title="{% trans %}Reihenfolge der Aufrufe{% endtrans %}">Lfdnr.</th>
 								{% endif %}
 								<th>Uhrzeit</th>
 								<th>Nr.</th>
