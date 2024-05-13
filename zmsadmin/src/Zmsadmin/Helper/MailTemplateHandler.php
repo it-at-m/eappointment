@@ -22,38 +22,19 @@ class MailTemplateHandler extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        /*
-        \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $input = $validator->getInput()->isJson()->assertValid()->getValue();
-        $collection = (new Collection())->addData($input['availabilityList']);
-
-        $data['maxWorkstationCount'] = $collection->getMaxWorkstationCount();
-        $data['maxSlots'] = $collection->getSummerizedSlotCount();
-        $data['busySlots'] = $input['busySlots'];
-        */
-
 
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->getValue();
         
-        //\App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-
-        \App::$http->readPostResult('/mailtemplatesget/', array(
+        $template = \App::$http->readPostResult('/mailtemplates/', array(
             "templateName" => $input['templateName'],
             "templateContent" => $input['templateContent']
-        ));
+        ))->getEntity();
 
-        print_r($input);
-        die();
-
-        $data=array(
-            'some' => 'data',
-            'more' => 'data2',
-        );
 
         return \BO\Slim\Render::withJson(
             $response,
-            $data
+            $template
         );
     }
 }
