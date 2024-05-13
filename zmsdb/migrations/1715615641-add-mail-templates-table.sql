@@ -1,8 +1,10 @@
 CREATE TABLE `mailtemplate` (
   `name` varchar(250) NOT NULL,
-  `value` longtext NOT NULL,
-  `changeTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `value` longtext,
+  `changeTimestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 
 INSERT INTO `mailtemplate` (`name`, `value`, `changeTimestamp`) VALUES
@@ -21,5 +23,3 @@ INSERT INTO `mailtemplate` (`name`, `value`, `changeTimestamp`) VALUES
 ('notification_headsup.twig', '{% block german %}\r\n{% if process.scope.preferences.notifications.headsUpContent %}\r\n{{ process.scope.preferences.notifications.headsUpContent }} {{ process.queue.number }}\r\n{% else %}\r\n{{ config.notifications.headsUpContent }} {{ process.queue.number }}\r\n{% endif %}\r\n{% endblock %}', '2024-05-13 15:51:47'),
 ('notification_pickup.twig', '{% block german %}\r\nIhr Dokument ist fertig und liegt zur Abholung bereit, am Standort {{ process.scope.provider.contact.name }}\r\n{% endblock %}\r\n', '2024-05-13 15:52:04');
 
-ALTER TABLE `mailtemplate`
-  ADD PRIMARY KEY (`name`);
