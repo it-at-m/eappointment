@@ -76,6 +76,7 @@
 					<table id="table-parked-appointments" class="table--base compact">
 						<thead>
 							<tr>
+								<th>Lfdnr.</th>
 								{#<th class="queue-status"></th>#}
 								{% if clusterEnabled %}
 									<th title="{% trans %}Standort im Cluster{% endtrans %}">Kürzel</th>
@@ -96,11 +97,17 @@
 								<th>Aktion</th>
 							</tr>
 						</thead>
+						{% set lfdnr = 0 %}
 						{% for item in processListParked %}
+							{% set lfdnr = lfdnr + 1 %}
 							<tr class="parked">
 								{% if clusterEnabled %}
 								<td>
-									{{ item.scope.shortName }}
+									{% if clusterEnabled %}
+										{{ item.scope.shortName }}
+									{% else %}
+										{{ lfdnr }}.
+									{% endif %}
 								</td>
 								{% endif %}
 								<td>
@@ -181,6 +188,7 @@
 				<table id="table-queued-appointments" class="table--base compact">
 					<thead>
 						<tr>
+							<th>Lfdnr.</th>
 							{#<th class="queue-status"></th>#}
 							{% if clusterEnabled %}
 								<th title="{% trans %}Standort im Cluster{% endtrans %}">Kürzel</th>
@@ -203,7 +211,9 @@
 						</tr>
 					</thead>
 					<tbody>
+						{% set lfdnr = 0 %}
 						{% for item in processList %}
+							{% set lfdnr = lfdnr + 1 %}
 							{% set tense = "past" %}
 							{% set statusTitle = "Dieser Termin ist aktiv, liegt aber in der Vergangenheit" %}
 							{% set isToday = item.appointments|first.date|date('Y-m-d') == getNow()|date('Y-m-d') %}
@@ -221,7 +231,11 @@
 									{#<td class="queue-status" title="{{ statusTitle }}"></td>#}
 									{% if clusterEnabled %}
 									<td>
-										{{ item.scope.shortName }}
+										{% if clusterEnabled %}
+											{{ item.scope.shortName }}
+										{% else %}
+											{{ lfdnr }}.
+										{% endif %}
 									</td>
 									{% endif %}
 									<td>
@@ -374,6 +388,7 @@
 					<table id="table-missed-appointments" class="table--base compact">
 						<thead>
 							<tr>
+								<th>Lfdnr.</th>
 								{#<th class="queue-status"></th>#}
 								{% if clusterEnabled %}
 									<th title="{% trans %}Standort im Cluster{% endtrans %}">Kürzel</th>
@@ -394,11 +409,17 @@
 								<th>Aktion</th>
 							</tr>
 						</thead>
+						{% set lfdnr = 0 %}
 						{% for item in processListMissed %}
+							{% set lfdnr = lfdnr + 1 %}
 							<tr class="missed">
 								{% if clusterEnabled %}
 								<td>
-									{{ item.scope.shortName }}
+									{% if clusterEnabled %}
+										{{ item.scope.shortName }}
+									{% else %}
+										{{ lfdnr }}.
+									{% endif %}
 								</td>
 								{% endif %}
 								<td>
@@ -485,6 +506,7 @@
 					<table id="table-finished-appointments" class="table--base compact">
 						<thead>
 							<tr>
+								<th>Lfdnr.</th>
 								<th>Uhrzeit</th>
 								<th>Name</th>
 								<th>Dienstleistung</th>
@@ -493,8 +515,13 @@
 								<th>Bearbeitungszeit (Std.:Min.:Sek.)</th> 
 							</tr>
 						</thead>
-						{% for item in processListFinished|reverse %} 
+						{% set lfdnr = 0 %}
+						{% for item in processListFinished|reverse %}
+							{% set lfdnr = lfdnr + 1 %}
 							<tr class="finished">
+								<td>
+									{{ lfdnr }}.
+								</td>							
 								<td>
 									{% if item.queue.withAppointment %} 
 										{{ item.appointments|first.date|date("H:i") }} 
