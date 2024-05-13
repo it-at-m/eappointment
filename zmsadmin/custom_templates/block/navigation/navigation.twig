@@ -125,7 +125,7 @@
             {% endif %}
             {% if workstation.useraccount.rights.superuser == "1" %}
                 <li class="nav__link{{ menuActive == 'mailtemplates'? ' active' }}">
-                    <a {{ menuActive == 'mailtemplates'? ' aria-current="page"' }} href="{{ urlGet('mailtemplates', {}, {}) }}">Mailtemplates</a>
+                    <a {{ menuActive == 'mailtemplates'? ' aria-current="page"' }} href="{{ urlGet('mailtemplates', {}, {}) }}">Mail Templates</a>
                 </li>
             {% endif %}
             {% if workstation.useraccount.rights.superuser == "1" %}
