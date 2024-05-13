@@ -1,7 +1,7 @@
 {% extends "layout/main.twig" %}
 {% from 'element/helper/snippets.twig' import headline1 %}
 {% block headline %}
-    {{ headline1("Editor Mail Templates") }}
+    {{ headline1("Mail Templates") }}
 {% endblock %}
 
 {% block content %}
@@ -13,15 +13,16 @@
 
         {% block board_body %}
 
-            {% for settings in mailtemplates %}
-                <b>{{settings.name}}<b/>
-                <div style="width: 100%; margin-bottom:24px; padding: 24px; padding-bottom:0px; box-sizing: border-box; border: 1px solid #ccc;">
-                    <div id="editor-{{ loop.index }}" style="width: 100%; height: 352px;"></div> <!-- Editor size adjusted for padding -->
-                    <div style="display: flex; justify-content: flex-end;margin-top:12px;"> <!-- Flex container for the button -->
-                        <button class="button button-submit" onclick="saveMailTemplate('{{settings.name}}', 'editor-{{ loop.index }}')">{{ "%s"|format('Speichern')|trans }}</button>
-                    </div>
+        {% for settings in mailtemplates %}
+            <b>{{ settings.name }}</b>
+            <div id="save-indicator-editor-{{ loop.index }}" class="save-indicator" style="display: none; color: red; margin-left: 10px; inline;"></div>
+            <div style="width: 100%; margin-bottom: 24px; padding: 24px; padding-bottom: 0px; box-sizing: border-box; border: 1px solid #ccc;">
+                <div id="editor-{{ loop.index }}" style="width: 100%; height: 352px;"></div>
+                <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
+                    <button class="button button-submit" onclick="saveMailTemplate('{{ settings.name }}', 'editor-{{ loop.index }}')">Save</button>
                 </div>
-            {% endfor %}
+            </div>
+        {% endfor %}
 
         {% endblock %}
 
@@ -47,6 +48,15 @@
                     value: defaultCode,
                     language: 'javascript',
                     theme: 'vs-dark'
+                });
+
+                // Add a change listener to the editor
+                editors[elementId].onDidChangeModelContent(function() {
+                    var saveIndicator = document.getElementById('save-indicator-' + elementId);
+                    if (saveIndicator) {
+                        saveIndicator.style.display = 'inline'; // Show the save indicator when content is changed
+                        saveIndicator.textContent = 'Unsaved changes';
+                    }
                 });
             });
         }
@@ -84,7 +94,13 @@
                 body: JSON.stringify(data), 
             })
             .then(response => response.json())
-            .then(data => console.log('Success:', data))
+            .then(data => {
+                console.log('Success:', data);
+                var saveIndicator = document.getElementById('save-indicator-' + editorId);
+                if (saveIndicator) {
+                    saveIndicator.style.display = 'none'; // Hide the save indicator once changes are saved
+                }
+            })
             .catch((error) => console.error('Error:', error));
         }
 
