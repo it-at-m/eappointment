@@ -80,7 +80,8 @@ class ProcessUpdate extends BaseController
         $authCheck = (new Process())->readAuthKeyByProcessId($entity->id);
 
         if ($checkMailLimit && ! (new Process())->isAppointmentAllowedWithSameMail($entity)) {
-            throw new Exception\Process\MoreThanAllowedAppointmentsPerMail();
+            //TODO: confirm correctness of patch
+            //throw new Exception\Process\MoreThanAllowedAppointmentsPerMail();
         }
 
         if (! $authCheck) {

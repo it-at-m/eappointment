@@ -216,8 +216,17 @@
                         },
                         "appointmentsPerMail": {
                             "type": "string",
-                            "description": "allowed appointments per e-mail address",
-                            "default": ""
+                            "description": "Erlaubte Anzahl von Terminen pro E-Mail-Adresse, mindestens zwei",
+                            "default": "",
+                            "pattern": "^(0|[2-9]|[1-9]\\d|)$",
+                            "x-locale": {
+                                "de_DE": {
+                                    "pointer": "Maximales Terminlimit pro E-Mail",
+                                    "messages": {
+                                        "pattern": "Die minimale Anzahl von Terminen pro E-Mail-Adresse muss zwei sein. Werte von 0 oder mehr als 2 sind erlaubt. Die maximale Anzahl von Terminen pro Standort darf nicht 1 sein, da sonst Umbuchungen nicht möglich sind."
+                                    }
+                                }
+                            }
                         },
                         "whitelistedMails": {
                             "type": "string",
