@@ -65,7 +65,9 @@ class ProcessConfirm extends BaseController
                 ->setDefault("$authority API-User")
                 ->getValue();
             $config = (new Config())->readEntity();
-            $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, 'appointment', $initiator);
+            $mail = (new \BO\Zmsentities\Mail())
+            ->setTemplateProvider(new \BO\Zmsapi\Helper\MailTemplateProvider())
+            ->toResolvedEntity($process, $config, 'appointment', $initiator);
             (new Mail())->writeInQueueWithAdmin($mail, \App::$now);
         }
     }

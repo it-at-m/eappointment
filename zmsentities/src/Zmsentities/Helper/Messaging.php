@@ -117,11 +117,23 @@ class Messaging
         return $twig;
     }
 
+    protected static function dbTwigView($templateProvider) 
+    {
+        $loader = new \Twig\Loader\ArrayLoader($templateProvider->getTemplates());
+        $twig = new \Twig\Environment($loader);
+        $twig->addExtension(new TranslationExtension());
+        $twig->addExtension(new IntlExtension());
+        return $twig;
+
+    }
+
+
     public static function getMailContent(
         $processList,
         Config $config,
         $initiator = null,
-        $status = 'appointment'
+        $status = 'appointment',
+        $templateProvider = false
     ) {
         $collection = (new ProcessList)->testProcessListLength($processList, self::isEmptyProcessListAllowed($status));
         $mainProcess = $collection->getFirst();
@@ -170,7 +182,11 @@ class Messaging
             ]))
         ];
 
-        $message = self::twigView()->render('messaging/' . $template, $parameters);
+        if ($templateProvider) {
+            $message = self::dbTwigView($templateProvider)->render($template, $parameters);
+        } else {
+            $message = self::twigView()->render('messaging/' . $template, $parameters);
+        }
 
         return $message;
     }
@@ -221,6 +237,10 @@ class Messaging
             }
         }
 
+        /*
+
+        // temporarily disable until we have all the customized templates in the database
+
         if ($process) {
             $provider = $process->scope->provider;
             //error_log($provider);
@@ -233,6 +253,8 @@ class Messaging
                 return $providerTemplateFolder . $template;
             }
         }
+
+        */
 
         return $template;
     }

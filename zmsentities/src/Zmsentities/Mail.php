@@ -17,6 +17,8 @@ class Mail extends Schema\Entity
 
     public static $schema = "mail.json";
 
+    protected $templateProvider = false;
+
     public function getDefaults()
     {
         return [
@@ -162,7 +164,7 @@ class Mail extends Schema\Entity
         );
         $mainProcess = $collection->getFirst();
         $entity = clone $this;
-        $content = Messaging::getMailContent($collection, $config, $initiator, $status);
+        $content = Messaging::getMailContent($collection, $config, $initiator, $status, $this->templateProvider);
 
         $entity->process = ($mainProcess) ? ($mainProcess) : new Process();
         $entity->subject = ($mainProcess) ?
@@ -237,6 +239,12 @@ class Mail extends Schema\Entity
             throw new Exception\MailMissedAddress();
         }
         return $this['client']['email'];
+    }
+
+    public function setTemplateProvider($templateProvider)
+    {
+        $this->templateProvider = $templateProvider;
+        return $this;
     }
 
     public function __toString()
