@@ -67,6 +67,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
             'processing' => $this->isProcessingProcess($processData),
             'pending' => $this->isPendingProcess($processData),
             'missed' => $this->isMissedProcess($processData),
+            'parked' => $this->isParkedProcess($processData),
             'blocked' => $this->isBlockedProcess($processData),
             'deleted' => $this->isDeletedProcess($processData),
         ];
@@ -224,6 +225,21 @@ class ProcessStatus extends \BO\Zmsdb\Process
             && $process['vorlaeufigeBuchung'] == 0
             && $process['StandortID'] != 0
             && $process['nicht_erschienen'] != 0
+            && empty($process['istFolgeterminvon'])
+        );
+    }
+
+    /**
+     * check if it is a missed appointment
+     *
+     * @return Bool
+     */
+    protected function isParkedProcess($process)
+    {
+        return ($process['Name'] != 'dereferenced'
+            && $process['vorlaeufigeBuchung'] == 0
+            && $process['StandortID'] != 0
+            && $process['parked'] != 0
             && empty($process['istFolgeterminvon'])
         );
     }

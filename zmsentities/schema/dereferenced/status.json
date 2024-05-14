@@ -47,6 +47,10 @@
                     "type": "number",
                     "description": "Number of missed appointments in the database. Zeroed on daily basis in the night."
                 },
+                "parked": {
+                    "type": "number",
+                    "description": "Number of parked appointments in the database. Zeroed on daily basis in the night."
+                },
                 "outdated": {
                     "type": "number",
                     "description": "Number of slots, which might change on recalculation due to changed availabilities"

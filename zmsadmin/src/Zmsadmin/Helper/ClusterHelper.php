@@ -51,7 +51,7 @@ class ClusterHelper
     {
         $queueList = static::getProcessList(\App::$now->format('Y-m-d'))
             ->toQueueList(\App::$now)
-            ->withoutStatus(['fake','missed']);
+            ->withoutStatus(['fake','missed', 'parked']);
         $excludedIds = (0 < $queueList->count()) ? $excludedIds : '';
 
         if (1 > $queueList->count()) {
