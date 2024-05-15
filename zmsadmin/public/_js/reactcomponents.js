@@ -420,9 +420,9 @@ class AvailabilityPage extends (0, _react.Component) {
         let endDateTimestamp = parseInt(yesterday.unix(), 10) < availability.startDate ? parseInt(selectedDay.unix(), 10) : parseInt(yesterday.unix(), 10);
         const originAvailability = this.editExclusionAvailability(Object.assign({}, availability), null, endDateTimestamp, null, "origin");
         let exclusionAvailability = originAvailability;
-        if (originAvailability.startDate < selectedDay.unix()) exclusionAvailability = this.editExclusionAvailability(Object.assign({}, availability), parseInt(selectedDay.unix(), 10), parseInt(selectedDay.unix(), 10), `Ausnahme ${(0, _helpers.formatTimestampDate)(selectedDay)} (${availability.id})`, "exclusion");
+        if (originAvailability.startDate < selectedDay.unix()) exclusionAvailability = this.editExclusionAvailability(Object.assign({}, availability), parseInt(selectedDay.unix(), 10), parseInt(selectedDay.unix(), 10), `Ausnahme zu Terminserie ${availability.description}`, "exclusion");
         let futureAvailability = originAvailability;
-        if (parseInt(tomorrow.unix(), 10) < availability.endDate) futureAvailability = this.editExclusionAvailability(Object.assign({}, availability), parseInt(tomorrow.unix(), 10), null, `Fortf\xfchrung der Ausnahme ${(0, _helpers.formatTimestampDate)(selectedDay)} (${availability.id})`, "future");
+        if (parseInt(tomorrow.unix(), 10) < availability.endDate) futureAvailability = this.editExclusionAvailability(Object.assign({}, availability), parseInt(tomorrow.unix(), 10), null, `Fortf\xfchrung der Terminserie ${availability.description}`, "future");
         this.setState(Object.assign({}, (0, _helpers.mergeAvailabilityListIntoState)(this.state, [
             originAvailability,
             exclusionAvailability,
