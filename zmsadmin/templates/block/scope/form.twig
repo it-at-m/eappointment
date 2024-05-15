@@ -359,6 +359,20 @@
 
                         {{ formgroup(
                             {
+                                "label": "Anzahl an maximal buchbaren Slots pro Termin:"
+                            },
+                            [{
+                                "type":"input",
+                                "parameter": {
+                                    "name": "preferences[client][slotsPerAppointment]",
+                                    "value": scope.preferences.client.slotsPerAppointment,
+                                    "maxlength": 2
+                                }
+                            }]
+                        ) }}
+
+                        {{ formgroup(
+                            {
                                 "label": "Maximale Anzahl an Terminen pro E-Mail-Adresse:"
                             },
                             [{
