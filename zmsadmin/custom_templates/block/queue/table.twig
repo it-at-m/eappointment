@@ -76,10 +76,11 @@
 					<table id="table-parked-appointments" class="table--base compact">
 						<thead>
 							<tr>
-								<th>Lfdnr.</th>
 								{#<th class="queue-status"></th>#}
 								{% if clusterEnabled %}
 									<th title="{% trans %}Standort im Cluster{% endtrans %}">Kürzel</th>
+								{% else %}
+									<th title="{% trans %}Reihenfolge der Aufrufe{% endtrans %}">Lfdnr.</th>
 								{% endif %}
 								<th>Uhrzeit</th>
 								<th>Nr.</th>
@@ -101,7 +102,6 @@
 						{% for item in processListParked %}
 							{% set lfdnr = lfdnr + 1 %}
 							<tr class="parked">
-								{% if clusterEnabled %}
 								<td>
 									{% if clusterEnabled %}
 										{{ item.scope.shortName }}
@@ -109,7 +109,6 @@
 										{{ lfdnr }}.
 									{% endif %}
 								</td>
-								{% endif %}
 								<td>
 									{% if item.queue.withAppointment %}
 										{{ item.appointments|first.date|date("H:i") }}
@@ -188,10 +187,11 @@
 				<table id="table-queued-appointments" class="table--base compact">
 					<thead>
 						<tr>
-							<th>Lfdnr.</th>
 							{#<th class="queue-status"></th>#}
 							{% if clusterEnabled %}
 								<th title="{% trans %}Standort im Cluster{% endtrans %}">Kürzel</th>
+							{% else %}
+								<th title="{% trans %}Reihenfolge der Aufrufe{% endtrans %}">Lfdnr.</th>
 							{% endif %}
 							<th>Uhrzeit</th>
 							<th>Nr.</th>
@@ -229,7 +229,6 @@
 								<tr
 									class="{{ tense }} {{ item.queue.status }} {{ item.queue.status == 'preconfirmed' ? 'reserved' : '' }} " title="{% if item.queue.status == "reserved" or item.queue.status == "preconfirmed" %}{% trans %}Der Termin ist vorübergehend reserviert und wird ohne Bestätigung in wenigen Minuten gelöscht{% endtrans %}{% endif %}">
 									{#<td class="queue-status" title="{{ statusTitle }}"></td>#}
-									{% if clusterEnabled %}
 									<td>
 										{% if clusterEnabled %}
 											{{ item.scope.shortName }}
@@ -237,7 +236,6 @@
 											{{ lfdnr }}.
 										{% endif %}
 									</td>
-									{% endif %}
 									<td>
 										{% if item.queue.withAppointment or item.queue.status == "reserved" or item.queue.status == "preconfirmed" %}
 											{{ item.appointments|first.date|date("H:i") }}
@@ -388,10 +386,11 @@
 					<table id="table-missed-appointments" class="table--base compact">
 						<thead>
 							<tr>
-								<th>Lfdnr.</th>
 								{#<th class="queue-status"></th>#}
 								{% if clusterEnabled %}
 									<th title="{% trans %}Standort im Cluster{% endtrans %}">Kürzel</th>
+								{% else %}
+									<th title="{% trans %}Reihenfolge der Aufrufe{% endtrans %}">Lfdnr.</th>
 								{% endif %}
 								<th>Uhrzeit</th>
 								<th>Nr.</th>
@@ -413,7 +412,6 @@
 						{% for item in processListMissed %}
 							{% set lfdnr = lfdnr + 1 %}
 							<tr class="missed">
-								{% if clusterEnabled %}
 								<td>
 									{% if clusterEnabled %}
 										{{ item.scope.shortName }}
@@ -421,7 +419,6 @@
 										{{ lfdnr }}.
 									{% endif %}
 								</td>
-								{% endif %}
 								<td>
 									{% if item.queue.withAppointment %}
 										{{ item.appointments|first.date|date("H:i") }}
