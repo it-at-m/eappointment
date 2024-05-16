@@ -1,7 +1,8 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'client-called'} %}
 {% from "element/helper/snippets.twig" import namelist %}
         {% block board_title %}
-            {% trans %}Kundeninformationen{% endtrans %}
+            {% trans %}<span class="color-blue"><i class="fas fa-info-circle" aria-hidden="true"></i></span> 
+ Kundeninformationen{% endtrans %}
         {% endblock %}
         {% block board_body %} 
             {% if error != "has_called_pickup" %}
@@ -10,57 +11,54 @@
                     Name
                 </dt>
                 <dd>
-                    {{ process.clients|first.familyName }} <br>(Wartenr. {{ process.queue.number }})
+                    {{ workstation.process.clients|first.familyName }} <br>(Wartenr. {{ workstation.process.queue.number }})
                 </dd>
+                {% if process.requests %}
                 <dt>
                     Anliegen
                 </dt>
                 <dd>
                     {{ namelist(process.requests) }}
                 </dd>
-                {% if process.amendment %}
+                {% endif %}
+                {% if workstation.process.amendment %}
                 <dt>
                     Anmerkung
                 </dt>
                 <dd>
-                    {{ process.amendment }}
+                    {{ workstation.process.amendment }}
                 </dd>
                 {% endif %}
-                {% if process.clients|first.telephone %}
+                {% if workstation.process.clients|first.telephone %}
                 <dt>
                     Telefon
                 </dt>
                 <dd>
-                    {{ process.clients|first.telephone }}
+                    {{ workstation.process.clients|first.telephone }}
                 </dd>
                 {% endif %}
-                {% if process.clients|first.email %}
+                {% if workstation.process.clients|first.email %}
                 <dt>
                     E-Mail
                 </dt>
                 <dd>
-                    {{ process.clients|first.email }}
+                    {{ workstation.process.clients|first.email }}
                 </dd>
                 {% endif %}
-                {% if process.customTextfield %}
+                {% if workstation.process.customTextfield %}
                 <dt>
                     {{workstation.scope.preferences.client.customTextfieldLabel}}
                 </dt>
                 <dd>
-                    {{ process.customTextfield }}
+                    {{ workstation.process.customTextfield }}
                 </dd>
                 {% endif %}    
                 <dt>
-                    Wartezeit
+                    Wartezeit (Std.:Min.:Sek.)
                 </dt>
                 <dd>
-                    {% if process.queue.waitingTime < 120 %}
-                        {{ process.queue.waitingTime }} {% trans %}Minuten{% endtrans %}
-                    {% else %}
-                    	{{ (process.queue.waitingTime / 60)|round(0, 'floor') }} {% trans %}Stunden{% endtrans %} und
-                        {{ (process.queue.waitingTime % 60) }} {% trans %}Minuten{% endtrans %}
-                    {% endif %}
-                </dd>
+                    {{ workstation.process.queue.waitingTime }}
+                </dd>                
             </dl>  
             <h4>{% trans %}Zeit seit Kundenaufruf{% endtrans %}:</h4>
             <span id="clock" role="timer" class="clock" title="verstrichene Zeit seit dem Kundenaufruf" data-callTime={{ workstation.process.queue.callTime }} data-now={{ getNow()|date('U') }}></span>

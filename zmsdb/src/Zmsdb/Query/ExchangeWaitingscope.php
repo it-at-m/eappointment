@@ -156,13 +156,17 @@ class ExchangeWaitingscope extends Base
         MAX(wartende_ab_23_termin) as wartende_ab_23_termin
     ";
 
-    const QUERY_READ_DAY = '
-        SELECT *, datum as datum FROM ' . self::TABLE . '
-        WHERE `standortid` = :scopeid
-            AND `datum` BETWEEN :datestart AND :dateend
+    const QUERY_READ_DAY = "
+        SELECT
+            `datum` AS datum,
+            " . self::WAITING_VALUES . "
+        FROM " . self::TABLE . "
+        WHERE
+            `standortid` = :scopeid AND
+            `datum` BETWEEN :datestart AND :dateend
         GROUP BY `datum`
         ORDER BY `datum` ASC
-    ';
+    ";
 
     //PLEASE REMEMBER THE REALY COOL DYNAMIC VERSION
     const QUERY_READ_MONTH = "

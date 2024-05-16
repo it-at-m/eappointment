@@ -1,0 +1,45 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block headline %}
+    {{ headline1("Tresen") }}
+{% endblock %}
+
+{% block content %}
+<div class="counter-view" 
+    data-includeurl="{{ includeUrl() }}"
+    data-selected-date="{{ selectedDate }}"
+    data-selected-time="{{ selectedTime }}"
+    data-selected-process="{{ selectedProcess }}"
+    data-cluster-enabled="{{ workstation.queue.clusterEnabled }}"
+    data-selected-scope="{% if workstation.queue.clusterEnabled == 0 %}{{ workstation.scope.id }}{% else %}{{ selectedScope }}{% endif %}"
+    data-called-process="{{ calledProcess }}"
+    >
+        <div class="grid">
+            <div class="grid__item three-twelfths">
+                <div data-queue-info id="liveregionInfoContainer">
+                 {% include "block/queue/infoContainer.twig" %}
+                </div>
+                <div data-appointment-times aria-live="polite" id="liveregionTimes">
+                 {% include "block/appointment/times.twig" %}
+                </div>
+            </div>
+            <div class="grid__item six-twelfths" id="liveregionAppointmentForm" data-appointment-form>
+            {% include "block/appointment/formContainer.twig" %}
+            </div>
+            <div class="grid__item three-twelfths" aria-live="off" id="liveregionCalendarBox" data-calendar-box>
+                <div data-calendar>
+                    {% include "block/calendar/calendarContainer.twig" with {source: "counter"} %}
+                </div>
+                <div style="margin-top:-2em;">
+                    {% include "block/calendar/legend.twig" with {"view": "calendar"} %}
+                </div>
+            </div>
+        </div>
+        <div class="grid" style="width: 116.666% !important;position: relative;left: -16.666%;right: 0%;>
+            <div class="grid__item" aria-live="off" id="liveregionQueueTable" data-queue-table>
+                {% include "block/queue/queueContainer.twig" %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
