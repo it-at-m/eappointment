@@ -23,7 +23,7 @@ class ProcessListByClusterAndDate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('cluster');
+        (new Helper\User($request))->checkRights('basic');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
         $dateTime = $dateTime->modify(\App::$now->format('H:i'));
