@@ -45,7 +45,8 @@ class ReportWaitingIndex extends BaseController
             ->readGetResult('/warehouse/waitingscope/' . $this->workstation->scope['id'] . '/'. $args['period']. '/')
             ->getEntity()
             ->toGrouped($this->groupfields, $this->hashset)
-            ->withMaxByHour($this->hashset);
+            ->withMaxByHour($this->hashset)
+            ->withMaxAndAverageFromWaitingTime();
 
             $exchangeWaiting = $this->withMaxAndAverageFromWaitingTime($exchangeWaiting, 'waitingtime');
             $exchangeWaiting = $this->withMaxAndAverageFromWaitingTime($exchangeWaiting, 'waitingtime_termin');

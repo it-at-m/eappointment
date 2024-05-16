@@ -61,6 +61,12 @@ class View extends BaseView {
         return this.loadInto(url).then(() => this.onNextProcess());
     }
 
+    loadParked() {
+        this.cleanInstance();
+        const url = `${this.includeUrl}/workstation/process/parked/`
+        return this.loadInto(url).then(() => this.onNextProcess());
+    }
+
     // if process is called and button "nein, nächster Kunde bitte" is clicked, delete process from workstation and call next
     loadCancelClientNext() {
         this.cleanInstance();
@@ -109,6 +115,11 @@ class View extends BaseView {
             ev.stopPropagation();
             this.exclude = '';
             this.loadCancel();
+        }).on('click', '.client-called_button-parked, .client-precall_button-parked, .button-parked', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.exclude = '';
+            this.loadParked();
         })
     }
 

@@ -56,7 +56,8 @@ class WorkstationProcessTest extends Base
             ]
         );
         $response = $this->render($this->arguments, [$this->parameters], []);
-        $this->assertStringContainsString('Kundeninformationen', (string)$response->getBody());
+        $this->assertStringContainsString('<span class="color-blue"><i class="fas fa-info-circle" aria-hidden="true"></i></span> 
+ Kundeninformationen', (string)$response->getBody());
         $this->assertStringContainsString('Personalausweis beantragen', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
