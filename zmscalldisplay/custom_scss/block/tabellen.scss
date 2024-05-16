@@ -22,6 +22,7 @@ div.aufrufanzeige_anzeigebereich_zweizeilig
     left: 15%;
     position: absolute;
     top: 135px;
+    width: 70%;
 }
 
 .aufrufanzeige table.aufrufanzeige_aufruf
@@ -92,7 +93,13 @@ span.terminkundenanzeige
 {
 	font-weight: normal;
 	font-size: 30px;
-  line-height: 35px;
+    line-height: 35px;
+}
+span.terminkundenanzeige.hint-shown
+{
+  font-size: 25px;
+  margin-top: -10px;
+  display: block;
 }
 span.wartenummer
 {
@@ -103,6 +110,10 @@ span.terminkundennummer
 {
 	font-size: 60px;
   line-height: 60px;
+}
+span.terminkundennummer.hint-shown
+{
+  line-height: 30px !important;
 }
 span.terminkundennummer.abholeranzeige
 {
@@ -120,9 +131,10 @@ span.terminkundennummer.smallerFont8Chars {
 
 div.aber_zweispaltig {
     margin-left:0px;
+    width: 100%;
 }
 .aufrufanzeige table.zweispaltig {
-    width:500px;
+    width:100%;
 }
 .aufrufanzeige table.zweispaltig th.wartenummer {
     width:45%;
