@@ -6047,6 +6047,32 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("WorkstationProcessDelete");
 
+/**
+ *  @swagger
+ *  "/workstation/process/parked/":
+ *      delete:
+ *          summary: Park a process from workstation
+ *          tags:
+ *              - workstation
+ *              - process
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              404:
+ *                  description: "process does not exists"
+ */
+\App::$slim->delete(
+    '/workstation/process/parked/',
+    '\BO\Zmsapi\WorkstationProcessParked'
+)
+    ->setName("WorkstationProcessParked");
 
 /* ---------------------------------------------------------------------------
  * maintenance

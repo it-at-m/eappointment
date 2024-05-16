@@ -38,6 +38,52 @@ class ScopeAvailabilityDay extends BaseController
         ])->getEntity();
     }
 
+    protected static function getSlotBuckets($availabilityList, $processList) {
+        $availability = $availabilityList->getFirst();
+
+        if (!$availability) {
+            return [];
+        }
+
+        $buckets = [];
+
+        $slotTimeInMinutes = $availability->getSlotTimeInMinutes();
+
+        foreach ($availabilityList->getSlotListByType('appointment') as $slot) {
+            $time = $slot->time; 
+            $buckets[$time] = [
+                'time' => $time,
+                'timeString' => $slot->getTimeString(),
+                'public' => $slot->public, 
+                'intern' => $slot->intern, 
+                'callcenter' => $slot->callcenter,
+                'occupiedCount' => 0, 
+            ];
+        }
+
+        foreach ($processList as $process) {
+            $startTime = $process->getAppointments()->getFirst()->getStartTime()->format('H:i');
+            $endTime = $process->getAppointments()->getFirst()->getEndTimeWithCustomSlotTime($slotTimeInMinutes)->format('H:i');
+
+            $startDateTime = new \DateTime($startTime);
+            $endDateTime = new \DateTime($endTime);
+            
+            foreach ($buckets as $time => $value) {
+                $slotDateTime = new \DateTime($time);
+                // Check if the appointment overlaps with the slot time
+                if ($slotDateTime >= $startDateTime && $slotDateTime < $endDateTime) {
+                    $buckets[$time]['occupiedCount']++;
+                }
+            }
+        }
+
+        uksort($buckets, function ($time1, $time2) {
+            return strtotime($time1) <=> strtotime($time2);
+        });
+        
+        return $buckets;
+    }
+
     protected static function getAvailabilityData($scopeId, $dateString)
     {
         $scope = static::getScope($scopeId);
@@ -60,6 +106,7 @@ class ScopeAvailabilityDay extends BaseController
         $busySlots = $availabilityList->getCalculatedSlotCount($processList);
 
         return [
+            'slotBuckets' => static::getSlotBuckets($availabilityList, $processList),
             'scope' => $scope,
             'availabilityList' => $availabilityList->getArrayCopy(),
             'conflicts' => ($conflictList) ? $conflictList

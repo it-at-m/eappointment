@@ -9,8 +9,8 @@ div.wartebuttonbereich_zweizeilig
 {
 	position: absolute;
 	top:180px;
-	width:875px;
-	left:95px;
+	width:1005px;
+	left:35px;
 }
 
 div.wartebuttonbereich_zweizeilig_tief {
@@ -23,9 +23,10 @@ div.wartebuttonbereich_zweizeilig_tief {
 div.warteschlangebutton_gross button.eintragen,
 div.warteschlangebutton_gross a.eintragen {
     background: url(img/wartenummer_anfordern.png) 0 24px no-repeat;
+    background-size: cover;
     border: 0;
     color: #fff;
-    font-size: 42px;
+    font-size: 38px;
     font-family: Arial, sans-serif;
     font-weight: bold;
     height: 195px;
@@ -43,6 +44,7 @@ div.variablerwarteschlangebutton {
 div.variablerwarteschlangebutton button.eintragen,
 div.variablerwarteschlangebutton a.eintragen {
     background: url(img/multibutton.png) 0 24px no-repeat;
+    background-size: cover;
     border: 0;
     color: #fff;
     padding-bottom: 0px;
@@ -53,7 +55,7 @@ div.variablerwarteschlangebutton a.eintragen {
     font-weight: bold;
     height: 158px;
     padding-right: 10px;
-    width: 385px;
+    width: 455px;
     display:block;
 }
 
@@ -68,8 +70,9 @@ div.warteschlangebutton_gross a.eintragen {
 }
 
 div.variablerwarteschlangebutton button.disabled {
-	color:#999;
+	color:#fff;
 	background: url(img/multibutton_disabled.png) 0 24px no-repeat;
+    background-size: cover;
 }
 
 button.buttonTelefonnummernachtragen

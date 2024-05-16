@@ -573,7 +573,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $query
             ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
-            ->addConditionMail($mailAddress)
+            ->addConditionMail($mailAddress, true)
             ->addConditionIgnoreSlots()
             ->addLimit($limit);
 
@@ -908,13 +908,18 @@ class Process extends Base implements Interfaces\ResolveReferences
             return true;
         }
 
+        $maxAppointmentsPerMail = $entity->scope->getAppointmentsPerMail();
+
         $emailToCheck = $entity->getClients()->getFirst()->email;
+
+        if ($maxAppointmentsPerMail < 1 || empty($emailToCheck)) {
+            return true;
+        }
 
         if ($this->isMailWhitelisted($emailToCheck, $entity->scope)) {
             return true;
         }
 
-        $maxAppointmentsPerMail = $entity->scope->getAppointmentsPerMail();
         $processes = $this->readProcessListByMailAddress(
             $entity->getClients()->getFirst()->email,
             $entity->scope->id
@@ -922,16 +927,17 @@ class Process extends Base implements Interfaces\ResolveReferences
         $activeAppointments = 0;
 
         foreach ($processes as $process) {
-            if (
-                in_array($process->getStatus(), ['preconfirmed', 'confirmed'])
-                && $entity->id !== $process->id
-            ) {
-                $activeAppointments++;
+            if ($entity->id == $process->id) {
+                return true;
             }
-        }
 
-        if ($maxAppointmentsPerMail > 0 && $activeAppointments >= $maxAppointmentsPerMail) {
-            return false;
+            if (in_array($process->getStatus(), ['preconfirmed', 'confirmed'])) {
+                $activeAppointments++;
+
+                if ($activeAppointments >= $maxAppointmentsPerMail) {
+                    return false;
+                }
+            }
         }
 
         return true;

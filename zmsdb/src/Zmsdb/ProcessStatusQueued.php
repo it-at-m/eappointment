@@ -9,13 +9,21 @@ use \BO\Zmsentities\Collection\ProcessList as Collection;
  */
 class ProcessStatusQueued extends Process
 {
-    public function writeNewFromTicketprinter(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime)
-    {
+    public function writeNewFromTicketprinter(
+        \BO\Zmsentities\Scope $scope,
+        \DateTimeInterface $dateTime,
+        array $requestIds = []
+    ) {
         $process = Entity::createFromScope($scope, $dateTime);
         $process->setStatus('queued');
         $newQueueNumber = (new Scope())->readWaitingNumberUpdated($scope->id, $dateTime);
         $process->addQueue($newQueueNumber, $dateTime);
-        return $this->writeNewProcess($process, $dateTime);
+        $process = $this->writeNewProcess($process, $dateTime);
+
+        $process->updateRequests($scope->getSource(), implode(',', $requestIds));
+        $this->writeRequestsToDb($process);
+
+        return $process;
     }
 
     public function writeNewFromAdmin(Entity $process, \DateTimeInterface $dateTime)

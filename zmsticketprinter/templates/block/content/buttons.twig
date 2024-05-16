@@ -12,6 +12,7 @@
     		<form action="{{ urlGet('Process', {}, {}) }}" method="post">
                 {{ hiddenfield({ "name": "scopeId", "value": ticketprinter.buttons|first.scope.id }) }}
                 {{ hiddenfield({ "name": "clusterId", "value": ticketprinter.buttons|first.cluster.id }) }}
+				{{ hiddenfield({ "name": "requestId", "value": first.request.id }) }}
     			{% set label = buttonLabelPrefix ~ ticketprinter.buttons|first.name %}
                 {% if ticketprinter.buttons|first.type == "link" %}
     			{% set label = "Information" %}
@@ -40,6 +41,7 @@
     		<form action="{{ urlGet('Process', {}, {}) }}" method="post">
                 {{ hiddenfield({ "name": "scopeId", "value": button.scope.id }) }}
                 {{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
+                {{ hiddenfield({ "name": "requestId", "value": button.requestId }) }}
     			{% set label = buttonLabelPrefix ~ button.name %}
     			<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
                     {{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label":label|trans, "value": "Wartenummer anfordern", "disabled": disabled }) }}
@@ -62,9 +64,11 @@
                 {{ custombutton({ "name": "Eintragen", "label":label|trans, "target": button.url }) }}
             </div>
 		{% else %}
+
         	<form action="{{ urlGet('Process', {}, {}) }}" method="post">
                 {{ hiddenfield({ "name": "scopeId", "value": button.scope.id }) }}
                 {{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
+				{{ hiddenfield({ "name": "requestId", "value": button.requestId }) }}
         		{% set label = buttonLabelPrefix ~ button.name %}
         		<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
                     {{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label":label|trans, "value": "Wartenummer anfordern", "disabled": disabled  }) }}

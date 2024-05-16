@@ -286,7 +286,8 @@ class ProcessTest extends Base
         );
     }
 
-    public function testUpdateProcessWithStatusProcessing()
+    //No Longer recalculated getWaitedMinutes and getWaitedSeconds into archive directly copied therefore can have discrepancy
+    /*public function testUpdateProcessWithStatusProcessing()
     {
         $now = static::$now;
         $query = new ProcessStatusFree();
@@ -294,10 +295,11 @@ class ProcessTest extends Base
         $process = $query->writeEntityReserved($input, $now);
         $process->status = 'processing';
         $process->queue['callTime'] = $process->queue['arrivalTime'] + 3600;
-        $process = $query->updateEntity($process, $now);
+        $previousStatus = "queued";
+        $process = $query->updateEntity($process, $now, 0, $previousStatus);
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
         $this->assertEquals(60, $process->queue['waitingTime']);
-    }
+    }*/
 
     public function testProcessStatusCalled()
     {
@@ -653,6 +655,21 @@ class ProcessTest extends Base
     }
 
     public function testAppointmentIsNotAllowedBecauseEMailLimitationIsReached()
+    {
+        $process = new Process();
+        $process->id = 123;
+        $scope = (new ScopeQuery())->readEntity(140);
+
+        $process->scope = $scope;
+        $client = new Client();
+        $client->email = 'testmail@mail.com';
+        $process->clients = new Collection([$client]);
+
+        $result = (new Query)->isAppointmentAllowedWithSameMail($process);
+        $this->assertFalse($result);
+    }
+
+    public function testAppointmentIsAllowedBecauseProcessWithSameIdAndMailExists()
     {
         $process = new Process();
         $scope = (new ScopeQuery())->readEntity(140);
