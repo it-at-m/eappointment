@@ -24,7 +24,8 @@ class WorkstationProcessProcessing extends BaseController
         }
         $workstation->process = \App::$http->readPostResult(
             '/process/'. $workstation->process->id .'/'. $workstation->process->authKey .'/',
-            $workstation->process
+            $workstation->process,
+            ['initiator' => 'admin']
         )->getEntity();
 
         $validator = $request->getAttribute('validator');
