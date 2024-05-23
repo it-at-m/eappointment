@@ -43,6 +43,14 @@ class MailTemplates extends Base
         return $logList;
     }
 
+    public function readCustomizedListForProvider($providerId)
+    {
+        $generalTemplates = $this->readListWithoutProvider();
+        $customTemplates = $this->readListByProvider($providerId);
+        return $this->mergeMailTemplatesWithCustomizations($generalTemplates, $customTemplates);
+    }
+
+
     public function readTemplate($templateName) {
         $query = new Query\Mailtemplate(Query\Base::SELECT);
         $query->addEntityMapping()
@@ -175,4 +183,31 @@ class MailTemplates extends Base
         }
         return trim($value);
     }
+
+    function mergeMailTemplatesWithCustomizations($generalTemplates, $customTemplates) {
+
+        $customTemplatesByName = [];
+
+        if ($customTemplates) {
+            foreach ($customTemplates as $template) {
+                $customTemplatesByName[$template['name']] = $template;
+            }
+        }
+
+        $mergedTemplates = [];
+
+        if ($generalTemplates) {
+            foreach ($generalTemplates as $template) {
+                if (isset($customTemplatesByName[$template['name']])) {
+                    $mergedTemplates[] = $customTemplatesByName[$template['name']];
+                } else {
+                    $mergedTemplates[] = $template;
+                }
+            }
+        }
+
+        return $mergedTemplates;
+    }
+
+
 }

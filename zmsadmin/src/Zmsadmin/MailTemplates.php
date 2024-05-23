@@ -25,9 +25,15 @@ class MailTemplates extends BaseController
 
         $mailtemplates = \App::$http->readGetResult('/mailtemplates/')->getCollection();
         $customMailtemplates = \App::$http->readGetResult('/custom-mailtemplates/'.$providerId.'/')->getCollection();
+        $mergedMailTemplates = \App::$http->readGetResult('/merged-mailtemplates/'.$providerId.'/')->getCollection();
+        forEach($mergedMailTemplates as $template) {
+            if ($template['provider']) {
+                $template->isCustom = true;
+            }
+        }
         //echo $mailtemplates;
 
-        $mergedMailTemplates = $this->mergeMailTemplates($mailtemplates, $customMailtemplates);
+        //$mergedMailTemplates = $this->mergeMailTemplates($mailtemplates, $customMailtemplates);
 
         //print_r($mergedMailTemplates);
         //die();

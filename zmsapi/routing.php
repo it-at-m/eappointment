@@ -1132,7 +1132,13 @@ use \Psr\Http\Message\ResponseInterface;
         '\BO\Zmsapi\MailCustomTemplatesGet'
     )
         ->setName("MailCustomTemplatesGet");
-        
+
+\App::$slim->get(
+        '/merged-mailtemplates/{providerId}/',
+        '\BO\Zmsapi\MailMergedTemplatesGet'
+    )
+        ->setName("MailMergedTemplatesGet");
+            
 
 \App::$slim->delete(
         '/mailtemplates/{templateId}/',
