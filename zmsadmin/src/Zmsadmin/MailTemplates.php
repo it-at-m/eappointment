@@ -109,11 +109,13 @@ class MailTemplates extends BaseController
 
         $mergedTemplates = [];
 
-        foreach ($generalTemplates as $template) {
-            if (isset($customTemplatesByName[$template['name']])) {
-                $mergedTemplates[] = $customTemplatesByName[$template['name']];
-            } else {
-                $mergedTemplates[] = $template;
+        if ($generalTemplates) {
+            foreach ($generalTemplates as $template) {
+                if (isset($customTemplatesByName[$template['name']])) {
+                    $mergedTemplates[] = $customTemplatesByName[$template['name']];
+                } else {
+                    $mergedTemplates[] = $template;
+                }
             }
         }
 
