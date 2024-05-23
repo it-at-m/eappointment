@@ -27,7 +27,7 @@ class MailTemplateHandler extends BaseController
         $input = $validator->getInput()->isJson()->getValue();
         
         $template = \App::$http->readPostResult('/mailtemplates/', array(
-            "templateName" => $input['templateName'],
+            "templateId" => $input['templateId'],
             "templateContent" => $input['templateContent']
         ))->getEntity();
 

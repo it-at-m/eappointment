@@ -19,7 +19,7 @@
             <div style="width: 100%; margin-bottom: 24px; padding: 24px; padding-bottom: 0px; box-sizing: border-box; border: 1px solid #ccc;">
                 <div id="editor-{{ loop.index }}" style="width: 100%; height: 352px;"></div>
                 <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
-                    <button class="button button-submit" onclick="saveMailTemplate('{{ settings.name }}', 'editor-{{ loop.index }}')">Save</button>
+                    <button class="button button-submit" onclick="saveMailTemplate('{{ settings.id }}', 'editor-{{ loop.index }}')">Save</button>
                 </div>
             </div>
         {% endfor %}
@@ -79,10 +79,10 @@
         });        
 
 
-        function saveMailTemplate(templateName, editorId) {
+        function saveMailTemplate(templateId, editorId) {
             const url = '/terminvereinbarung/admin/mailtemplates/';
             const data = {
-                templateName: templateName,
+                templateId: templateId,
                 templateContent: getContentOfEditor(editorId)
             };
 

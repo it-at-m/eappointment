@@ -1122,6 +1122,12 @@ use \Psr\Http\Message\ResponseInterface;
     ->setName("MailTemplatesUpdate");
         
     
+    \App::$slim->get(
+        '/custom-mailtemplates/{providerId}/',
+        '\BO\Zmsapi\MailCustomTemplatesGet'
+    )
+        ->setName("MailCustomTemplatesGet");
+        
 
 
 

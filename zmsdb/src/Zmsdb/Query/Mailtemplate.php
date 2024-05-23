@@ -35,6 +35,24 @@ class Mailtemplate extends Base
         return $this;
     }
 
+    public function addConditionWithoutProvider()
+    {
+        $this->query->where(self::TABLE .'.provider', '=', '');
+        return $this;
+    }
+
+    public function addConditionProviderId($providerId)
+    {
+        $this->query->where(self::TABLE .'.provider', '=', $providerId);
+        return $this;
+    }
+
+    public function addConditionId($templateId)
+    {
+        $this->query->where(self::TABLE .'.id', '=', $templateId);
+        return $this;
+    }
+    
     public function addTemplateContent($templateContent)
     {
         $this->query->values(array(
@@ -46,8 +64,10 @@ class Mailtemplate extends Base
     public function getEntityMapping()
     {
         return [
+            'id' => 'mailtemplate.id',
             'name' => 'mailtemplate.name',
-            'value' => 'mailtemplate.value'
+            'value' => 'mailtemplate.value',
+            'provider' => 'mailtemplate.provider'
         ];
     }
 

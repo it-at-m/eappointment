@@ -20,13 +20,21 @@ class MailTemplates extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $providerId = $workstation->scope['provider']['id'];
         $config = \App::$http->readGetResult('/config/')->getEntity();
 
         $mailtemplates = \App::$http->readGetResult('/mailtemplates/')->getCollection();
+        $customMailtemplates = \App::$http->readGetResult('/custom-mailtemplates/'.$providerId.'/')->getCollection();
         //echo $mailtemplates;
 
+        $mergedMailTemplates = $this->mergeMailTemplates($mailtemplates, $customMailtemplates);
 
-        //die(print_r($mailtemplates, true));
+        //print_r($mergedMailTemplates);
+        //die();
+        //echo "here 098723098470987234<pre>";
+        //print_r($workstation);        
+        //echo "this is our provider id: ".$workstation->scope['provider']['id'];
+        //die();
 
 
 
@@ -76,9 +84,10 @@ class MailTemplates extends BaseController
             'page/mailtemplates.twig',
             array(
                 'title' => 'Konfiguration System',
+                'providerId' => $providerId,
                 'workstation' => $workstation,
                 'config' => $config,
-                'mailtemplates' => $mailtemplates,
+                'mailtemplates' => $mergedMailTemplates,
                 'processExample' => $mainProcessExample,
                 'processListExample' => $processListExample,
                 'menuActive' => 'mailtemplates',
@@ -86,4 +95,31 @@ class MailTemplates extends BaseController
             )
         );
     }
+
+
+    function mergeMailTemplates($generalTemplates, $customTemplates) {
+        // Create an associative array of custom templates indexed by the name property
+        $customTemplatesByName = [];
+        foreach ($customTemplates as $template) {
+            $template['isCustom'] = true; // Add isCustom property to custom templates
+            $customTemplatesByName[$template['name']] = $template;
+        }
+
+        // Final merged array
+        $mergedTemplates = [];
+
+        // Iterate over the general templates
+        foreach ($generalTemplates as $template) {
+            if (isset($customTemplatesByName[$template['name']])) {
+                // If a custom template exists, use it
+                $mergedTemplates[] = $customTemplatesByName[$template['name']];
+            } else {
+                // Otherwise, use the general template
+                $mergedTemplates[] = $template;
+            }
+        }
+
+        return $mergedTemplates;
+    }
+
 }

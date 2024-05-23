@@ -25,10 +25,35 @@ class MailTemplates extends Base
         return $logList;
     }
 
+    public function readListWithoutProvider()
+    {
+        $query = new Query\Mailtemplate(Query\Base::SELECT);
+        $query->addEntityMapping();
+        $query->addConditionWithoutProvider();
+        $logList = new \BO\Zmsentities\Collection\MailtemplateList($this->fetchList($query, new Mailtemplate()));
+        return $logList;
+    }
+
+    public function readListByProvider($providerId)
+    {
+        $query = new Query\Mailtemplate(Query\Base::SELECT);
+        $query->addEntityMapping();
+        $query->addConditionProviderId($providerId);
+        $logList = new \BO\Zmsentities\Collection\MailtemplateList($this->fetchList($query, new Mailtemplate()));
+        return $logList;
+    }
+
     public function readTemplate($templateName) {
         $query = new Query\Mailtemplate(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addConditionName($templateName);
+        return $this->fetchOne($query, new Mailtemplate());
+    }
+
+    public function readTemplateById($templateId) {
+        $query = new Query\Mailtemplate(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addConditionId($templateId);
         return $this->fetchOne($query, new Mailtemplate());
     }
 
@@ -40,6 +65,16 @@ class MailTemplates extends Base
         $query->addTemplateContent($templateContent);
         $this->writeItem($query);
         return $this->readTemplate($templateName);
+        //return $this->readEntity($templateName, 1);
+    }
+
+    public function updateTemplateContentById($templateId, $templateContent)
+    {
+        $query = new Query\Mailtemplate(Query\Base::UPDATE);
+        $query->addConditionId($templateId);
+        $query->addTemplateContent($templateContent);
+        $this->writeItem($query);
+        return $this->readTemplateById($templateId);
         //return $this->readEntity($templateName, 1);
     }
 
