@@ -57,6 +57,12 @@ class MailTemplates extends Base
         return $this->fetchOne($query, new Mailtemplate());
     }
 
+    public function deleteTemplateById($templateId)
+    {
+        $query = new Query\Mailtemplate(Query\Base::DELETE);
+        $query->addConditionId($templateId);
+        return $this->deleteItem($query);
+    }
 
     public function updateTemplateContent($templateName, $templateContent)
     {
@@ -79,6 +85,18 @@ class MailTemplates extends Base
     }
 
 
+    public function createCustomizationForProvider($providerId, $templateName, $templateContent)
+    {
+        $query = new Query\Mailtemplate(Query\Base::INSERT);
+        $query->addValues(array(
+            'name' => $templateName,
+            'value' => $templateContent,
+            'provider' => $providerId,
+            'changeTimestamp' => (new \DateTimeImmutable())->format('Y-m-d H:i:s')
+        ));
+        $this->writeItem($query);
+        return $this->readTemplate($templateName);
+    }
 
     public function updateEntity(MailTemplate $config)
     {

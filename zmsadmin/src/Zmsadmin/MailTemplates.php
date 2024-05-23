@@ -98,23 +98,21 @@ class MailTemplates extends BaseController
 
 
     function mergeMailTemplates($generalTemplates, $customTemplates) {
-        // Create an associative array of custom templates indexed by the name property
         $customTemplatesByName = [];
-        foreach ($customTemplates as $template) {
-            $template['isCustom'] = true; // Add isCustom property to custom templates
-            $customTemplatesByName[$template['name']] = $template;
+
+        if ($customTemplates) {
+            foreach ($customTemplates as $template) {
+                $template['isCustom'] = true; // Add isCustom property to custom templates
+                $customTemplatesByName[$template['name']] = $template;
+            }
         }
 
-        // Final merged array
         $mergedTemplates = [];
 
-        // Iterate over the general templates
         foreach ($generalTemplates as $template) {
             if (isset($customTemplatesByName[$template['name']])) {
-                // If a custom template exists, use it
                 $mergedTemplates[] = $customTemplatesByName[$template['name']];
             } else {
-                // Otherwise, use the general template
                 $mergedTemplates[] = $template;
             }
         }

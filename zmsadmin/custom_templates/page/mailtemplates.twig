@@ -15,10 +15,20 @@
 
         {% for settings in mailtemplates %}
             <b>{{ settings.name }}</b>
+
+            {% if settings.isCustom %}
+                (customized)
+            {% endif %}
+
             <div id="save-indicator-editor-{{ loop.index }}" class="save-indicator" style="display: none; color: red; margin-left: 10px; inline;"></div>
             <div style="width: 100%; margin-bottom: 24px; padding: 24px; padding-bottom: 0px; box-sizing: border-box; border: 1px solid #ccc;">
                 <div id="editor-{{ loop.index }}" style="width: 100%; height: 352px;"></div>
-                <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
+                <div style="display: flex; justify-content: flex-end; margin-top: 12px; gap:12px">
+                    {% if settings.isCustom %}
+                        <button class="button button--destructive" onclick="deleteCustomization('{{ settings.id }}', 'editor-{{ loop.index }}')">Delete Customization</button>
+                    {% else %}
+                        <button class="button button--positive" onclick="createCustomization('{{ settings.name }}', 'editor-{{ loop.index }}')">Create Customization</button>
+                    {% endif %}
                     <button class="button button-submit" onclick="saveMailTemplate('{{ settings.id }}', 'editor-{{ loop.index }}')">Save</button>
                 </div>
             </div>
@@ -100,6 +110,49 @@
                 if (saveIndicator) {
                     saveIndicator.style.display = 'none'; // Hide the save indicator once changes are saved
                 }
+            })
+            .catch((error) => console.error('Error:', error));
+        }
+
+        function deleteCustomization(templateId, editorId) {
+            const url = '/terminvereinbarung/admin/mailtemplates/deleteCustomization/';
+            const data = {
+                templateId: templateId
+            };
+
+            fetch(url, {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data), 
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Customization deleted:', data);
+                location.reload(); // Reload the page to refresh the templates
+            })
+            .catch((error) => console.error('Error:', error));
+        }
+
+        function createCustomization(templateName, editorId) {
+            const url = '/terminvereinbarung/admin/mailtemplates/createCustomization/';
+            const data = {
+                templateName: templateName,
+                templateContent: getContentOfEditor(editorId)
+            };
+
+            fetch(url, {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data), 
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Customization created:', data);
+                location.reload(); // Reload the page to refresh the templates
             })
             .catch((error) => console.error('Error:', error));
         }
