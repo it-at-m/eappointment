@@ -7,6 +7,14 @@ class MailTemplateProvider
 {
     protected $templates = false;
 
+    public function __construct($process) {
+        $this->process = $process;
+    }
+
+    protected function getProviderId() {
+        return $this->process->scope->provider['id'];
+    }
+
     public function getTemplate($templateName) {
         if (!$this->templates) {
             $this->loadTemplates();
@@ -48,7 +56,7 @@ class MailTemplateProvider
         );
 
 
-        $result = (new \BO\Zmsdb\MailTemplates())->readList();
+        $result = (new \BO\Zmsdb\MailTemplates())->readCustomizedListForProvider($this->getProviderId());
         foreach($result as $templateObject) {
             $this->templates[$templateObject['name']] = $templateObject['value'];
         }
