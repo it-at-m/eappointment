@@ -37,7 +37,7 @@ class Mailtemplate extends Base
 
     public function addConditionWithoutProvider()
     {
-        $this->query->where(self::TABLE .'.provider', '=', '');
+        $this->query->where(self::TABLE .'.provider', '=', '')->orWhere(self::TABLE .'.provider', 'IS', null);
         return $this;
     }
 
@@ -52,7 +52,7 @@ class Mailtemplate extends Base
         $this->query->where(self::TABLE .'.id', '=', $templateId);
         return $this;
     }
-    
+
     public function addTemplateContent($templateContent)
     {
         $this->query->values(array(
