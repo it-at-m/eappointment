@@ -307,11 +307,12 @@ class Messaging
         Config $config,
         $status = 'appointment',
         $initiator = null,
-        $now = false
+        $now = false,
+        $templateProvider = false
     ) {
         $ics = new \BO\Zmsentities\Ics();
         $template = self::getTemplate('ics', $status);
-        $message = self::getMailContent($process, $config, $initiator, $status);
+        $message = self::getMailContent($process, $config, $initiator, $status, $templateProvider);
         $plainContent = self::getPlainText($message, "\\n");
         $appointment = $process->getFirstAppointment();
         $currentYear = $appointment->getStartTime()->format('Y');

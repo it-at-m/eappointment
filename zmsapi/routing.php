@@ -1121,8 +1121,31 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("MailTemplatesUpdate");
         
-    
+\App::$slim->post(
+        '/mailtemplates-create-customization/',
+        '\BO\Zmsapi\MailTemplatesCreateCustomization'
+    )
+        ->setName("MailTemplatesCreateCustomization");
 
+\App::$slim->get(
+        '/custom-mailtemplates/{providerId}/',
+        '\BO\Zmsapi\MailCustomTemplatesGet'
+    )
+        ->setName("MailCustomTemplatesGet");
+
+\App::$slim->get(
+        '/merged-mailtemplates/{providerId}/',
+        '\BO\Zmsapi\MailMergedTemplatesGet'
+    )
+        ->setName("MailMergedTemplatesGet");
+            
+
+\App::$slim->delete(
+        '/mailtemplates/{templateId}/',
+        '\BO\Zmsapi\MailTemplatesDelete'
+    )
+        ->setName("MailTemplatesDelete");
+        
 
 
 

@@ -25,6 +25,32 @@ class MailTemplates extends Base
         return $logList;
     }
 
+    public function readListWithoutProvider()
+    {
+        $query = new Query\Mailtemplate(Query\Base::SELECT);
+        $query->addEntityMapping();
+        $query->addConditionWithoutProvider();
+        $logList = new \BO\Zmsentities\Collection\MailtemplateList($this->fetchList($query, new Mailtemplate()));
+        return $logList;
+    }
+
+    public function readListByProvider($providerId)
+    {
+        $query = new Query\Mailtemplate(Query\Base::SELECT);
+        $query->addEntityMapping();
+        $query->addConditionProviderId($providerId);
+        $logList = new \BO\Zmsentities\Collection\MailtemplateList($this->fetchList($query, new Mailtemplate()));
+        return $logList;
+    }
+
+    public function readCustomizedListForProvider($providerId)
+    {
+        $generalTemplates = $this->readListWithoutProvider();
+        $customTemplates = $this->readListByProvider($providerId);
+        return $this->mergeMailTemplatesWithCustomizations($generalTemplates, $customTemplates);
+    }
+
+
     public function readTemplate($templateName) {
         $query = new Query\Mailtemplate(Query\Base::SELECT);
         $query->addEntityMapping()
@@ -32,6 +58,19 @@ class MailTemplates extends Base
         return $this->fetchOne($query, new Mailtemplate());
     }
 
+    public function readTemplateById($templateId) {
+        $query = new Query\Mailtemplate(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addConditionId($templateId);
+        return $this->fetchOne($query, new Mailtemplate());
+    }
+
+    public function deleteTemplateById($templateId)
+    {
+        $query = new Query\Mailtemplate(Query\Base::DELETE);
+        $query->addConditionId($templateId);
+        return $this->deleteItem($query);
+    }
 
     public function updateTemplateContent($templateName, $templateContent)
     {
@@ -43,7 +82,29 @@ class MailTemplates extends Base
         //return $this->readEntity($templateName, 1);
     }
 
+    public function updateTemplateContentById($templateId, $templateContent)
+    {
+        $query = new Query\Mailtemplate(Query\Base::UPDATE);
+        $query->addConditionId($templateId);
+        $query->addTemplateContent($templateContent);
+        $this->writeItem($query);
+        return $this->readTemplateById($templateId);
+        //return $this->readEntity($templateName, 1);
+    }
 
+
+    public function createCustomizationForProvider($providerId, $templateName, $templateContent)
+    {
+        $query = new Query\Mailtemplate(Query\Base::INSERT);
+        $query->addValues(array(
+            'name' => $templateName,
+            'value' => $templateContent,
+            'provider' => $providerId,
+            'changeTimestamp' => (new \DateTimeImmutable())->format('Y-m-d H:i:s')
+        ));
+        $this->writeItem($query);
+        return $this->readTemplate($templateName);
+    }
 
     public function updateEntity(MailTemplate $config)
     {
@@ -122,4 +183,31 @@ class MailTemplates extends Base
         }
         return trim($value);
     }
+
+    function mergeMailTemplatesWithCustomizations($generalTemplates, $customTemplates) {
+
+        $customTemplatesByName = [];
+
+        if ($customTemplates) {
+            foreach ($customTemplates as $template) {
+                $customTemplatesByName[$template['name']] = $template;
+            }
+        }
+
+        $mergedTemplates = [];
+
+        if ($generalTemplates) {
+            foreach ($generalTemplates as $template) {
+                if (isset($customTemplatesByName[$template['name']])) {
+                    $mergedTemplates[] = $customTemplatesByName[$template['name']];
+                } else {
+                    $mergedTemplates[] = $template;
+                }
+            }
+        }
+
+        return $mergedTemplates;
+    }
+
+
 }

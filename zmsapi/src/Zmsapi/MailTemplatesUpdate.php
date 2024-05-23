@@ -22,7 +22,7 @@ class MailTemplatesUpdate extends BaseController
         $input = Validator::input()->isJson()->getValue();
 
         $message = Response\Message::create($request);
-        $message->data = (new \BO\Zmsdb\MailTemplates())->updateTemplateContent($input['templateName'], $input['templateContent']);
+        $message->data = (new \BO\Zmsdb\MailTemplates())->updateTemplateContentById($input['templateId'], $input['templateContent']);
         
         //print_r($message->data);
 

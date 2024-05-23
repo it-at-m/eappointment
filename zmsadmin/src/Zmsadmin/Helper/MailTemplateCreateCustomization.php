@@ -11,7 +11,7 @@ use BO\Zmsentities\Availability as Entity;
 use BO\Zmsentities\Collection\AvailabilityList as Collection;
 use BO\Zmsentities\Collection\ProcessList;
 
-class MailTemplateHandler extends BaseController
+class MailTemplateCreateCustomization extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -26,11 +26,14 @@ class MailTemplateHandler extends BaseController
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->getValue();
         
-        $template = \App::$http->readPostResult('/mailtemplates/', array(
-            "templateId" => $input['templateId'],
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $providerId = $workstation->scope['provider']['id'];
+
+        $template = \App::$http->readPostResult('/mailtemplates-create-customization/', array(
+            "providerId" => $providerId,
+            "templateName" => $input['templateName'],
             "templateContent" => $input['templateContent']
         ))->getEntity();
-
 
         return \BO\Slim\Render::withJson(
             $response,

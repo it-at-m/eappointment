@@ -189,7 +189,7 @@ class Mail extends Schema\Entity
         ) {
             $entity->multipart[] = new Mimepart(array(
                 'mime' => 'text/calendar',
-                'content' => Messaging::getMailIcs($mainProcess, $config, $status, $initiator)->getContent(),
+                'content' => Messaging::getMailIcs($mainProcess, $config, $status, $initiator, false, $this->templateProvider)->getContent(),
                 'base64' => false
             ));
         }

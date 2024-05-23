@@ -11,7 +11,7 @@ use \BO\Mellon\Validator;
 use \BO\Zmsdb\MailTemplates as MailTemplatesQuery;
 use \BO\Zmsapi\Helper\User;
 
-class MailTemplatesGet extends BaseController
+class MailCustomTemplatesGet extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -31,7 +31,9 @@ class MailTemplatesGet extends BaseController
             }
         }
 
-        $config = (new MailTemplatesQuery())->readListWithoutProvider();
+        $providerId = $args['providerId'];
+        
+        $config = (new MailTemplatesQuery())->readListByProvider($providerId);
         
         $message = Response\Message::create($request);
         $message->data = $config;

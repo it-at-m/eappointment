@@ -63,6 +63,13 @@ use Slim\Routing\RouteCollectorProxy;
  \App::$slim->post('/mailtemplates/', \BO\Zmsadmin\Helper\MailTemplateHandler::class)
      ->setName("MailTemplateHandler");
      
+ \App::$slim->post('/mailtemplates/deleteCustomization/', \BO\Zmsadmin\Helper\MailTemplateDeleteCustomization::class)
+     ->setName("MailTemplateDeleteCustomization");
+
+ \App::$slim->post('/mailtemplates/createCustomization/', \BO\Zmsadmin\Helper\MailTemplateCreateCustomization::class)
+     ->setName("MailTemplateCreateCustomization");
+
+     
 
  /*
   * ---------------------------------------------------------------------------

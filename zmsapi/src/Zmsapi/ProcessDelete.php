@@ -60,7 +60,7 @@ class ProcessDelete extends BaseController
                 ->getValue();
             $config = (new Config())->readEntity();
             $mail = (new \BO\Zmsentities\Mail())
-                    ->setTemplateProvider(new \BO\Zmsapi\Helper\MailTemplateProvider())
+                    ->setTemplateProvider(new \BO\Zmsapi\Helper\MailTemplateProvider($process))
                     ->toResolvedEntity($process, $config, 'deleted', $initiator);
             (new Mail())->writeInQueueWithAdmin($mail, \App::$now);
         }
