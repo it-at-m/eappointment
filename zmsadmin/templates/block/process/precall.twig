@@ -54,18 +54,11 @@
                     {{ process.customTextfield }}
                 </dd>
                 {% endif %}    
-                {% set currentTime = "now"|date("U") %}
-                {% set arrivalTime = process.queue.arrivalTime %}
-                {% set differenceInSeconds = currentTime - arrivalTime %}
-                
-                {% set hours = (differenceInSeconds // 3600) %}
-                {% set minutes = ((differenceInSeconds % 3600) // 60) %}
-                {% set seconds = (differenceInSeconds % 60) %}
                 <dt>
                     Wartezeit (Std.:Min.:Sek.)
                 </dt>
                 <dd>
-                    {{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) ~ ':' ~ "%02d"|format(seconds) }}
+                    {{ timeDifference }}
                 </dd>
                 
             </dl> 

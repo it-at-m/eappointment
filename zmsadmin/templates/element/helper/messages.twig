@@ -263,7 +263,7 @@
 			{{ block('success_start') }}
 				Der Vorgang mit der Nummer {{ selectedprocess.queue.number }} wurde erfolgreich entfernt.
                 <div class="form-actions">
-                    <button type="button" data-action-ok class="button button-ok btn right">OK</button>
+                    <button type="button" onclick="location.href = '{{ includeUrl() }}/counter';" data-action-ok class="button button-ok btn right">OK</button>
                 </div>
 	        {{ block('success_end') }}
     	{% endblock %}
@@ -347,6 +347,7 @@
 {% block success_start %}
 	<section tabindex="0" class="dialog message message--success" role="alert">
 		<h2 tabindex="0" class="message__heading title">{{ successTitle|default("Erfolgreiche Anfrage")|trans }}</h2>
+
 		<div tabindex="0" class="message__body">
 {% endblock %}
 {% block success_start_keep %}
