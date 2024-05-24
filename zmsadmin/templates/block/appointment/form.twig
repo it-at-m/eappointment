@@ -4,10 +4,17 @@
 
     {% block board_title %}
         {% if selectedProcess %}
-        Terminvereinbarung Aktualisieren
+            <span id="appointment-edit-title" tabindex="0">Terminvereinbarung Aktualisieren</span>
         {% else %}
-        Terminvereinbarung Neu
+            Terminvereinbarung Neu
         {% endif %}
+
+        <script>
+            if (document.getElementById('appointment-edit-title')) {
+                document.querySelector('.board.appointment-form').focus();
+                document.getElementById('appointment-edit-title').focus();
+            }
+        </script>
     {% endblock %}
 
     {% block board_body %}
