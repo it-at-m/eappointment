@@ -40,5 +40,19 @@
             </div>
         {% endif %}
 
+        {% if zoom %}
+            <script>
+                document.body.style.zoom = {{ zoom }}
+            </script>
+
+            <style>
+            @-moz-document url-prefix() {
+                #aufrufanzeige {
+                    transform: scale({{ zoom }});
+                    margin: {{ zoom * 100 }}px auto;
+                }
+            }
+            </style>
+        {% endif %}
     </body>
 </html>
