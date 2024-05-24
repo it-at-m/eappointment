@@ -1,3 +1,56 @@
+## Release Muc-9
+                        
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1861'>ZMS-1861</a>] -         Aufrufanlage- alte Layouts werden angezeigt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2227'>ZMS-2227</a>] -         Rolle Sachbearbeitung: Fehlermeldung bei Terminlöschung +  Bildschirmaktualisierung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2242'>ZMS-2242</a>] -         Fehlermeldung in ZMS-Admin bei maxAnzTermineProMail-Konfiguration für Standort
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2257'>ZMS-2257</a>] -         zmsproxymuc Pod Absturzbug
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2314'>ZMS-2314</a>] -         Anzeigen von DL im e-Kiosk führt zu Slim Application Error
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2328'>ZMS-2328</a>] -         eKiosk druckt mehrere Zettel
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2329'>ZMS-2329</a>] -         Ticketprinterkonfigurationsmenü öffnet falsche URL
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2411'>ZMS-2411</a>] -         unbeabsichtigter Aufruf von geparkten und verpassten Terminen bei Standortwechsel
+</li>
+</ul>
+    
+<h2>        Aufgabe
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1905'>ZMS-1905</a>] -         Last- &amp; Performance Test zu Bürgeransicht Szenario 5
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2321'>ZMS-2321</a>] -         eKiosk Nightly Reboot
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2326'>ZMS-2326</a>] -         eKioks Reboot Tabelle
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2327'>ZMS-2327</a>] -         Hostnames für eKioske
+</li>
+</ul>
+                                                                                                                                                                        
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1803'>ZMS-1803</a>] -         &quot;Alle Clusterstandorte&quot; auch für Sachbearbeitung ermöglichen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1966'>ZMS-1966</a>] -         Parken aufgerufener Termine
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2217'>ZMS-2217</a>] -         Anpassung Anmeldung ZMS - max. Zeichen bei Platz-Nr. erweitern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2368'>ZMS-2368</a>] -         abweichende ZMS Dauer je Standort berücksichtigen
+</li>
+</ul>
+                                                    
+
+
+
+
 ## Release Muc-8
                        
 <h2>        Aufgabe
