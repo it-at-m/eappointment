@@ -97,7 +97,7 @@ class ProcessSave extends BaseController
             '/process/'. $process->id .'/'. $process->authKey .'/',
             $process,
             [
-                'initiator' => $initiator,
+                'initiator' => $initiator ?? 'admin',
                 'slotType' => 'intern',
                 'slotsRequired' => (isset($input['slotCount']) && 1 < $input['slotCount']) ? $input['slotCount'] : 0
             ]
