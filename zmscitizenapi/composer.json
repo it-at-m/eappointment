@@ -24,7 +24,8 @@
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
         "phpunit/phpunit": "^9.5.4",
-        "helmich/phpunit-psr7-assert": "^4.3.0"
+        "helmich/phpunit-psr7-assert": "^4.3.0",
+        "phpspec/prophecy-phpunit": "^2.0.0"
     },
     "require": {
         "eappointment/mellon": "@dev",
