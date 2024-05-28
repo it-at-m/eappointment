@@ -8,6 +8,8 @@
             "email": "mathias.fischer@berlinonline.de"
         }
     ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "repositories": [
         {
             "type": "path",
@@ -20,6 +22,9 @@
     "config": {
         "platform": {
             "php": "8.0"
+        },
+        "allow-plugins": {
+            "php-http/discovery": true
         }
     },
     "require": {

@@ -8,11 +8,11 @@
     "packages": [
         {
             "name": "eappointment/mellon",
-            "version": "dev-main",
+            "version": "dev-ZMS-update-composer",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "d21de3c9581297103197e344622cddab34b6bb5d"
+                "reference": "3a5cab54d46a42c8d7fc91ea714824d15fb12e24"
             },
             "require": {
                 "ext-json": ">=0",

@@ -21,7 +21,7 @@
     },
     "require": {
         "phpmailer/phpmailer": "^6.4",
-        "monolog/monolog": "1.*",
+        "monolog/monolog": "2.*",
         "eappointment/mellon": "@dev",
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsentities": "@dev",
