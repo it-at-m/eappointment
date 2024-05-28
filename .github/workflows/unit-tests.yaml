@@ -37,6 +37,8 @@ jobs:
             php_version: "8.0"
           - module: zmsstatistic
             php_version: "8.0"
+          - module: zmsclient
+            php_version: "8.0"
 
 
   zmsapi-test:
