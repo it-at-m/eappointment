@@ -60,7 +60,7 @@
         },
         "name": {
             "type": "string",
-            "maxLength": 5,
+            "maxLength": 8,
             "description": "usually number of place or room where the workstation is located"
         },
         "process": {
@@ -165,6 +165,10 @@
                     "type": "string",
                     "description": "unix timestamp of showing up after call"
                 },
+                "processingTime": {
+                    "type": "string",
+                    "description": "unix timestamp that cumulates time each time a processes is called"
+                },
                 "timeoutTime": {
                     "type": "string",
                     "description": "unix timestamp of after a call is entered or re-entered into the queue"
@@ -225,6 +229,7 @@
                         "pickup",
                         "finished",
                         "missed",
+                        "parked",
                         "archived",
                         "deleted",
                         "anonymized",
