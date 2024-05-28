@@ -343,6 +343,7 @@
                         "client": {
                             "alternateAppointmentUrl": "https:\/\/service.berlin.de",
                             "appointmentsPerMail": "",
+                            "slotsPerAppointment": "",
                             "whitelistedMails": "",
                             "amendmentLabel": "Zusatzinformationen zum Anliegen",
                             "customTextfieldLabel": "Zusatzfeld zum Anliegen",
@@ -524,6 +525,11 @@
                                     "appointmentsPerMail": {
                                         "type": "string",
                                         "description": "allowed appointments per e-mail address",
+                                        "default": ""
+                                    },
+                                    "slotsPerAppointment": {
+                                        "type": "string",
+                                        "description": "allowed slots per appointment",
                                         "default": ""
                                     },
                                     "whitelistedMails": {
