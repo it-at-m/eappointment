@@ -122,6 +122,13 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return ($appointmentsPerMail) ? $appointmentsPerMail : null;
     }
 
+    public function getSlotsPerAppointment()
+    {
+        $slotsPerAppointment = $this->toProperty()->preferences->client->slotsPerAppointment->get();
+
+        return ($slotsPerAppointment) ? $slotsPerAppointment : null;
+    }
+
     public function getWhitelistedMails()
     {
         $emails = $this->toProperty()->preferences->client->whitelistedMails->get();
