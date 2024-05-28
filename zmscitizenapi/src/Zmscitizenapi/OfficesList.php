@@ -10,6 +10,20 @@ class OfficesList extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
-        return Render::withJson($response, []);
+        $sources = \App::$http->readGetResult('/source/'.\App::$source_name.'/', [
+            'resolveReferences' => 2,
+        ])->getEntity();
+
+        $providerProjectionList = [];
+        foreach ($sources->getProviderList() as $provider) {
+            $providerProjectionList[] = [
+                "id" => $provider->id,
+                "name" => $provider->displayName ?? $provider->name,
+            ];
+        }
+
+        return Render::withJson($response, [
+            "offices" => $providerProjectionList,
+        ]);
     }
 }
