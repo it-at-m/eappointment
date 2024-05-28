@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "878caac59a8fd82f523b3fb0db03fd59",
+    "content-hash": "2903138a91264b314d19179a9c6528dd",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -126,7 +126,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "3a5cab54d46a42c8d7fc91ea714824d15fb12e24"
+                "reference": "d69c16fe56f3e2fee9d08191f295759fe541f196"
             },
             "require": {
                 "ext-json": ">=0",
@@ -174,7 +174,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "3a5cab54d46a42c8d7fc91ea714824d15fb12e24"
+                "reference": "d69c16fe56f3e2fee9d08191f295759fe541f196"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -232,7 +232,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "3a5cab54d46a42c8d7fc91ea714824d15fb12e24"
+                "reference": "d69c16fe56f3e2fee9d08191f295759fe541f196"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -6730,7 +6730,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.3.0",
+        "php": ">=8.0",
         "ext-curl": ">=0",
         "ext-mbstring": ">=0",
         "ext-json": ">=1.0",
