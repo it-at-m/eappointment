@@ -144,6 +144,8 @@ jobs:
 
   zmsclient-test:
     runs-on: ubuntu-latest
+    container:
+      image: "registry.gitlab.com/eappointment/php-base:8.0-dev"
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
