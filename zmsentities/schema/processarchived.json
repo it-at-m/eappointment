@@ -206,6 +206,7 @@
         "client": {
             "alternateAppointmentUrl": "https://service.berlin.de",
             "appointmentsPerMail": "",
+            "slotsPerAppointment": "",
             "whitelistedMails": "",
             "amendmentLabel": "Zusatzinformationen zum Anliegen",
             "customTextfieldLabel": "Zusatzfeld zum Anliegen",
@@ -318,6 +319,10 @@
       "type": "string",
       "description": "unix timestamp of showing up after call"
     },
+    "processingTime": {
+      "type": "string",
+      "description": "unix timestamp that cumulates time each time a processes is called"
+    },
     "finishTime": {
         "type": "string",
         "description": "unix timestamp og time when process has been finished"
@@ -352,6 +357,7 @@
         "pickup",
         "finished",
         "missed",
+        "parked",
         "archived",
         "deleted",
         "anonymized",

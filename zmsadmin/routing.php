@@ -397,6 +397,9 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->get('/workstation/call/{id:\d+}/', \BO\Zmsadmin\WorkstationProcessCall::class)
     ->setName("workstationProcessCall");
 
+\App::$slim->get('/workstation/process/parked/', \BO\Zmsadmin\WorkstationProcessParked::class)
+    ->setName("workstationProcessParked");
+
 \App::$slim->get('/workstation/process/cancel/', \BO\Zmsadmin\WorkstationProcessCancel::class)
     ->setName("workstationProcessCancel");
 
