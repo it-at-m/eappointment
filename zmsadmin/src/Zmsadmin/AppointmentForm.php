@@ -31,7 +31,7 @@ class AppointmentForm extends BaseController
             $workstation
                 ->testMatchingProcessScope((new Helper\ClusterHelper($workstation))->getScopeList(), $selectedProcess);
         }
-        
+
         $selectedDate = ($selectedProcess && $selectedProcess->hasId())
             ? $selectedProcess->getFirstAppointment()->toDateTime()->format('Y-m-d')
             : $validator->getParameter('selecteddate')->isString()->getValue();
@@ -45,7 +45,7 @@ class AppointmentForm extends BaseController
         $requestList = ($selectedScope && $selectedScope->hasId())
             ? Helper\AppointmentFormHelper::readRequestList($request, $workstation, $selectedScope)
             : null;
-        
+
         $freeProcessList = ($selectedScope)
             ? Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation, 2)
             : null;
@@ -56,6 +56,28 @@ class AppointmentForm extends BaseController
         } else if ($selectedScope) {
             $provider = $selectedScope->getProvider();
             $slotTimeInMinutes = $provider->getSlotTimeInMinutes();
+        }
+
+        $selectedRequestCounts = [];
+
+        if ($selectedProcess) {
+            foreach ($selectedProcess->requests as $request) {
+                if (! isset($selectedRequestCounts[$request->id])) {
+                    $selectedRequestCounts[$request->id] = 0;
+                }
+
+                $selectedRequestCounts[$request->id]++;
+            }
+        }
+
+        $requestsByCount = [];
+        foreach ($requestList as $request) {
+            if (! isset($requestsByCount[$request->id])) {
+                $requestsByCount[$request->id] = [
+                    'count' => $selectedRequestCounts[$request->id] ?? 1,
+                    'request' => $request
+                ];
+            }
         }
 
         return \BO\Slim\Render::withHtml(
@@ -74,6 +96,7 @@ class AppointmentForm extends BaseController
                 'selectedTime' => $selectedTime,
                 'freeProcessList' => $freeProcessList,
                 'requestList' => $requestList,
+                'requestsByCount' => $requestsByCount,
                 'slotTimeInMinutes' => $slotTimeInMinutes,
             )
         );
