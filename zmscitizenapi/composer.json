@@ -33,7 +33,11 @@
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsentities": "@dev"
     },
-    "scripts": {},
+    "scripts": {
+        "post-install-cmd": [
+            "@php -r \"file_exists('config.php') || copy('config.example.php', 'config.php');\""
+        ]
+    },
     "bin": [],
     "autoload": {
         "psr-4": {
