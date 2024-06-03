@@ -126,7 +126,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "f3373a659ddf1906afeffb72d5d2870eee59bca5"
+                "reference": "77fe7faf83d12812e4033339c59d3ab0156d00fd"
             },
             "require": {
                 "ext-json": ">=0",
@@ -179,7 +179,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "f3373a659ddf1906afeffb72d5d2870eee59bca5"
+                "reference": "77fe7faf83d12812e4033339c59d3ab0156d00fd"
             },
             "require": {
                 "eappointment/mellon": "*@dev",
@@ -199,10 +199,17 @@
             "require-dev": {
                 "helmich/phpunit-psr7-assert": "~4.3.0",
                 "league/json-reference": "~1.1.0",
-                "phpmd/phpmd": "@stable",
+                "phpmd/phpmd": "~2.15.0",
                 "phpunit/phpunit": "~9.6.0",
+                "psr/log": "1.1.4",
                 "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "~3.7.0",
+                "symfony/config": "5.4.26",
+                "symfony/console": "5.4.28",
+                "symfony/dependency-injection": "5.4.29",
+                "symfony/deprecation-contracts": "2.5.2",
+                "symfony/filesystem": "5.4.25",
+                "symfony/string": "5.4.29",
                 "yuloh/json-guard-cli": "~0.3.0"
             },
             "type": "library",
@@ -238,7 +245,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "f3373a659ddf1906afeffb72d5d2870eee59bca5"
+                "reference": "77fe7faf83d12812e4033339c59d3ab0156d00fd"
             },
             "require": {
                 "eappointment/mellon": "~1.0.0",
