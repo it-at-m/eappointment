@@ -14,7 +14,7 @@ services:
   test:
     depends_on:
       - mockup
-    image: registry.gitlab.com/eappointment/php-base:7.3-base
+    image: registry.gitlab.com/eappointment/php-base:8.1-base
     volumes:
       - type: bind
         source: "."
