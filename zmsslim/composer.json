@@ -24,13 +24,13 @@
         "symfony/twig-bridge": "~5.4.40",
         "stevenmaguire/oauth2-keycloak": "~4.0.0",
         "slim/psr7": "~1.6.0",
-        "tracy/tracy": "~2.10.7"
+        "tracy/tracy": "~2.9.7"
     },
     "require-dev": {
         "phpmd/phpmd": "~2.15.0",
         "squizlabs/php_codesniffer": "~3.10.0",
         "phpunit/phpunit": "~9.6.0",
-        "helmich/phpunit-psr7-assert": "~4.4.1"
+        "helmich/phpunit-psr7-assert": "~4.3.0"
     },
     "scripts": {
         "command": "bin/configure"

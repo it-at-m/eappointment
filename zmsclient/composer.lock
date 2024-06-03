@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6d318b6adda9ee9eac16c779f3abed64",
+    "content-hash": "acbf0d8a3884f48ea26c841a928aea81",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -126,7 +126,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "77fe7faf83d12812e4033339c59d3ab0156d00fd"
+                "reference": "b63e19b6df96fbdf7c8307681aba22bdfd19d0e9"
             },
             "require": {
                 "ext-json": ">=0",
@@ -179,7 +179,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "77fe7faf83d12812e4033339c59d3ab0156d00fd"
+                "reference": "b63e19b6df96fbdf7c8307681aba22bdfd19d0e9"
             },
             "require": {
                 "eappointment/mellon": "*@dev",
@@ -245,7 +245,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "77fe7faf83d12812e4033339c59d3ab0156d00fd"
+                "reference": "b63e19b6df96fbdf7c8307681aba22bdfd19d0e9"
             },
             "require": {
                 "eappointment/mellon": "~1.0.0",
@@ -260,14 +260,14 @@
                 "stevenmaguire/oauth2-keycloak": "~4.0.0",
                 "symfony/translation": "~5.4.40",
                 "symfony/twig-bridge": "~5.4.40",
-                "tracy/tracy": "~2.10.7",
+                "tracy/tracy": "~2.9.7",
                 "twig/twig": "~3.10.3"
             },
             "provide": {
                 "psr/container-implementation": "2.0"
             },
             "require-dev": {
-                "helmich/phpunit-psr7-assert": "~4.4.1",
+                "helmich/phpunit-psr7-assert": "~4.3.0",
                 "phpmd/phpmd": "~2.15.0",
                 "phpunit/phpunit": "~9.6.0",
                 "squizlabs/php_codesniffer": "~3.10.0"
@@ -3627,22 +3627,22 @@
         },
         {
             "name": "tracy/tracy",
-            "version": "v2.10.7",
+            "version": "v2.9.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/tracy.git",
-                "reference": "7e7b25ba103968d5318d37db330b2e9c755dc765"
+                "reference": "d84fb3ca4e9fa5a9352e6d18f0b8cd767f25901e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/tracy/zipball/7e7b25ba103968d5318d37db330b2e9c755dc765",
-                "reference": "7e7b25ba103968d5318d37db330b2e9c755dc765",
+                "url": "https://api.github.com/repos/nette/tracy/zipball/d84fb3ca4e9fa5a9352e6d18f0b8cd767f25901e",
+                "reference": "d84fb3ca4e9fa5a9352e6d18f0b8cd767f25901e",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "ext-session": "*",
-                "php": ">=8.0 <8.4"
+                "php": ">=7.2 <8.3"
             },
             "conflict": {
                 "nette/di": "<3.0"
@@ -3650,7 +3650,6 @@
             "require-dev": {
                 "latte/latte": "^2.5",
                 "nette/di": "^3.0",
-                "nette/http": "^3.0",
                 "nette/mail": "^3.0",
                 "nette/tester": "^2.2",
                 "nette/utils": "^3.0",
@@ -3660,7 +3659,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.10-dev"
+                    "dev-master": "2.9-dev"
                 }
             },
             "autoload": {
@@ -3696,9 +3695,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/tracy/issues",
-                "source": "https://github.com/nette/tracy/tree/v2.10.7"
+                "source": "https://github.com/nette/tracy/tree/v2.9.8"
             },
-            "time": "2024-04-29T11:44:00+00:00"
+            "time": "2023-09-25T10:36:51+00:00"
         },
         {
             "name": "twig/intl-extra",
@@ -4159,30 +4158,29 @@
         },
         {
             "name": "helmich/phpunit-psr7-assert",
-            "version": "v4.4.1",
+            "version": "v4.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/martin-helmich/phpunit-psr7-assert.git",
-                "reference": "f35fa69e07cc16977b52805d3abd873cc16747fd"
+                "reference": "dfe594a09f55ea7f87120363d6720ca1a94c0878"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/martin-helmich/phpunit-psr7-assert/zipball/f35fa69e07cc16977b52805d3abd873cc16747fd",
-                "reference": "f35fa69e07cc16977b52805d3abd873cc16747fd",
+                "url": "https://api.github.com/repos/martin-helmich/phpunit-psr7-assert/zipball/dfe594a09f55ea7f87120363d6720ca1a94c0878",
+                "reference": "dfe594a09f55ea7f87120363d6720ca1a94c0878",
                 "shasum": ""
             },
             "require": {
                 "helmich/phpunit-json-assert": "^3.4",
-                "php": "^8.0",
-                "psr/http-message": "^1.1 || ^2.0"
+                "php": "^7.2 || ^8.0",
+                "psr/http-message": "^1.0"
             },
             "conflict": {
-                "phpunit/phpunit": "<8.0 || >= 11.0"
+                "phpunit/phpunit": "<8.0 || >= 10.0"
             },
             "require-dev": {
-                "guzzlehttp/psr7": "^2.4",
-                "mockery/mockery": "^1.4.1",
-                "phpunit/phpunit": "^8.0 || ^9.0 || ^10.0"
+                "guzzlehttp/psr7": "^1.2",
+                "phpunit/phpunit": "^8.0 || ^9.0"
             },
             "type": "library",
             "autoload": {
@@ -4203,7 +4201,7 @@
             "description": "PHPUnit assertions for testing PSR7-compliant applications",
             "support": {
                 "issues": "https://github.com/martin-helmich/phpunit-psr7-assert/issues",
-                "source": "https://github.com/martin-helmich/phpunit-psr7-assert/tree/v4.4.1"
+                "source": "https://github.com/martin-helmich/phpunit-psr7-assert/tree/v4.3.0"
             },
             "funding": [
                 {
@@ -4215,7 +4213,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-07-26T19:04:29+00:00"
+            "time": "2020-12-22T06:27:54+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
