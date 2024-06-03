@@ -126,7 +126,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "8c140627ff43b3ebcd3c492b0c3356ddeb249530"
+                "reference": "f3373a659ddf1906afeffb72d5d2870eee59bca5"
             },
             "require": {
                 "ext-json": ">=0",
@@ -136,6 +136,7 @@
             "require-dev": {
                 "phpmd/phpmd": "~2.15.0",
                 "phpunit/phpunit": "~9.6.0",
+                "psr/log": "1.1.4",
                 "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "~3.10.0",
                 "symfony/config": "5.4.26",
@@ -178,7 +179,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "8c140627ff43b3ebcd3c492b0c3356ddeb249530"
+                "reference": "f3373a659ddf1906afeffb72d5d2870eee59bca5"
             },
             "require": {
                 "eappointment/mellon": "*@dev",
@@ -237,7 +238,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "8c140627ff43b3ebcd3c492b0c3356ddeb249530"
+                "reference": "f3373a659ddf1906afeffb72d5d2870eee59bca5"
             },
             "require": {
                 "eappointment/mellon": "~1.0.0",
