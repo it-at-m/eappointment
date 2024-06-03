@@ -303,12 +303,15 @@ class AvailabilityPage extends Component {
         )
 
         let exclusionAvailability = originAvailability;
+        let name = availability.description;
+        name = name.replaceAll('Ausnahme zu Terminserie ', '');
+        name = name.replaceAll('Fortführung der Terminserie ', '');
         if (originAvailability.startDate < selectedDay.unix()) {
             exclusionAvailability = this.editExclusionAvailability(
                 Object.assign({}, availability),
                 parseInt(selectedDay.unix(), 10), 
                 parseInt(selectedDay.unix(), 10),
-                `Ausnahme ${formatTimestampDate(selectedDay)} (${availability.id})`,
+                `Ausnahme zu Terminserie ` + name,
                 'exclusion'
             )
         }
@@ -320,7 +323,7 @@ class AvailabilityPage extends Component {
                 Object.assign({}, availability),
                 parseInt(tomorrow.unix(), 10),
                 null,
-                `Fortführung der Ausnahme ${formatTimestampDate(selectedDay)} (${availability.id})`,
+                `Fortführung der Terminserie ` + name,
                 'future'
             )
         }
