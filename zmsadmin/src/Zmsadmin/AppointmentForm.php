@@ -71,12 +71,14 @@ class AppointmentForm extends BaseController
         }
 
         $requestsByCount = [];
-        foreach ($requestList as $request) {
-            if (! isset($requestsByCount[$request->id])) {
-                $requestsByCount[$request->id] = [
-                    'count' => $selectedRequestCounts[$request->id] ?? 1,
-                    'request' => $request
-                ];
+        if ($requestList) {
+            foreach ($requestList as $request) {
+                if (! isset($requestsByCount[$request->id])) {
+                    $requestsByCount[$request->id] = [
+                        'count' => $selectedRequestCounts[$request->id] ?? 1,
+                        'request' => $request
+                    ];
+                }
             }
         }
 
