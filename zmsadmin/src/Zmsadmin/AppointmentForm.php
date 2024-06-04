@@ -60,7 +60,7 @@ class AppointmentForm extends BaseController
 
         $selectedRequestCounts = [];
 
-        if ($selectedProcess) {
+        if ($selectedProcess && $selectedProcess->requests) {
             foreach ($selectedProcess->requests as $request) {
                 if (! isset($selectedRequestCounts[$request->id])) {
                     $selectedRequestCounts[$request->id] = 0;
