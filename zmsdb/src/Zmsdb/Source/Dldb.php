@@ -50,10 +50,8 @@ class Dldb extends \BO\Zmsdb\Base
         $requestQuery = (new \BO\Zmsdb\Request());
         $requestQuery->writeDeleteListBySource('dldb');
         foreach (self::$repository->fromService()->fetchList() as $request) {
-            if (isset($request['relation']) && isset($request['relation']['root_topic'])) {
-                $topic = self::$repository->fromTopic()->fetchId($request['relation']['root_topic']);
-                $request['group'] = $topic['name'];
-            }
+            $topic = self::$repository->fromTopic()->fetchId($request['relation']['root_topic']);
+            $request['group'] = $topic['name'];
             $requestQuery->writeImportEntity($request);
         }
         $time = round(microtime(true) - $startTime, 3);

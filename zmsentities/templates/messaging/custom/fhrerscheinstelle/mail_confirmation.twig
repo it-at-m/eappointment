@@ -15,6 +15,8 @@
         #}
         Datum:<strong> {{ (date|default(getNow))|format_date(locale="de", pattern="EEEE, dd. MMMM y") }} </strong><br>
         Uhrzeit: <strong>{{ (date|default(getNow))|date("H:i") }} {% trans %}Uhr{% endtrans %}</strong><br />
+        <br>
+        <b>Ihre Terminnummer und weitere Informationen erhalten Sie 24 Stunden vor Ihrem Termin.</b>
         <br><br>
         {#Ihre Vorgangsnummer ist die <strong>"{{ process.id }}"</strong><br />
         <br />#}

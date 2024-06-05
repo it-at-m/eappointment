@@ -206,7 +206,6 @@
         "client": {
             "alternateAppointmentUrl": "https://service.berlin.de",
             "appointmentsPerMail": "",
-            "slotsPerAppointment": "",
             "whitelistedMails": "",
             "amendmentLabel": "Zusatzinformationen zum Anliegen",
             "customTextfieldLabel": "Zusatzfeld zum Anliegen",
