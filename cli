@@ -107,7 +107,11 @@ def cli_modules_check_upgrade(php_version):
         # Save the current PHP version
         current_php_version = composer_content.get("config", {}).get("platform", {}).get("php")
         
-        print(module + ": " + current_php_version + "->" + php_version)
+        if current_php_version is None:
+            print_info(f"{module}: current PHP version is not set, skipping...")
+            continue  # Skip this module if PHP version is not set
+
+        print_info(f"{module}: {current_php_version} -> {php_version}")
 
         # Update PHP version in composer.json
         if "config" not in composer_content:
@@ -127,7 +131,6 @@ def cli_modules_check_upgrade(php_version):
         composer_content["config"]["platform"]["php"] = current_php_version
         with open(composer_file_path, "w") as f:
             json.dump(composer_content, f, indent=4)
-
 
 @cli.group("clean")
 def cli_clean():
