@@ -9,7 +9,7 @@
 - `ddev exec zmsapi/vendor/bin/migrate --update`
 
 ## Dependency Check for PHP Upgrades
-Pass the PHP version that you would want to upgrade to.
+Pass the PHP version that you would want to upgrade to and recieve information about dependency changes patch, minor, or major for each module.
 e.g.
 - `ddev exec ./cli modules check-upgrade 8.1`
 - `ddev exec ./cli modules check-upgrade 8.2`
