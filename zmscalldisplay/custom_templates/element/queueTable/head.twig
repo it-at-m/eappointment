@@ -1,16 +1,20 @@
 <thead>
-    <tr>
-        <th class="wartenummer">
-            <div class="description_de">{{ leftHead }}</div>
-            {% if leftHeadEn is defined %}
-                <div class="description_eng">{{ leftHeadEn }}</div>
-            {% endif %}
-        </th>
-        <th class="platznummer">
-            <div class="description_de">{{ rightHead }}</div>
-            {% if rightHeadEn is defined %}
-                <div class="description_eng">{{ rightHeadEn }}</div>
-            {% endif %}
-        </th>
-    </tr>
+<tr>
+    <th class="wartenummer">
+            <span class="description_de">{{ leftHead }}
+                {% if leftHeadEn is defined %}
+                    <span class="description_eng">/ {{ leftHeadEn }}</span>
+                {% endif %}
+            </span>
+
+    </th>
+    <th class="platznummer">
+            <span class="description_de">{{ rightHead }}
+                {% if rightHeadEn is defined %}
+                    <span class="description_eng">/ {{ rightHeadEn }}</span>
+                {% endif %}
+            </span>
+
+    </th>
+</tr>
 </thead>
