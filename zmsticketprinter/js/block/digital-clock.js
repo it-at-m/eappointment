@@ -1,29 +1,30 @@
 import BaseView from '../lib/baseview';
 import $ from "jquery";
 
-class View extends BaseView {
+class DigitalTime extends BaseView {
 
-    constructor (element) {
+    constructor(element) {
         super(element);
-        this.bindPublicMethods('initClock', 'setInterval');
-        console.log("Found digital clock");
-        $(function() {this.setInterval});
+        this.element = element;
+        this.initClock = this.initClock.bind(this);
+        this.startClock();
     }
 
-    initClock () {
-        var time=new Date();
-        var hour=time.getHours();
-        var minute=time.getMinutes();
-        var second=time.getSeconds();
-        var temp=hour;
-        if (second%2) temp+=((minute<10)? ":0" : ":")+minute;
-        else temp+=((minute<10)? ":0" : " ")+minute;
-        this.$.text(temp);
+    initClock() {
+        var time = new Date();
+        var hour = time.getHours();
+        var minute = time.getMinutes();
+        var second = time.getSeconds();
+        var temp = hour < 10 ? '0' + hour : hour;
+        temp += (second % 2 === 0 ? ":" : " ");
+        temp += minute < 10 ? '0' + minute : minute;
+        $(this.element).text(temp);
     }
 
-    setInterval () {
-	setInterval(this.initClock, 1000);
+    startClock() {
+        this.initClock();
+        setInterval(this.initClock, 1);
     }
 }
 
-export default View;
+export default DigitalTime;
