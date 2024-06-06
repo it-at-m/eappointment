@@ -92,6 +92,46 @@ def cli_modules_loop(commands):
     os.system(" ".join(commands))
 
 
+@cli_modules.command("check-upgrade")
+@click.argument("php_version")
+def cli_modules_check_upgrade(php_version):
+    """Check dependencies for upgrade to specified PHP version without actually upgrading."""
+    for module in modules:
+        print_info(f"Checking module: {module}")
+        composer_file_path = os.path.join(repo_dir, module, "composer.json")
+
+        # Load composer.json
+        with open(composer_file_path, "r") as f:
+            composer_content = json.load(f)
+
+        # Save the current PHP version
+        current_php_version = composer_content.get("config", {}).get("platform", {}).get("php")
+        
+        if current_php_version is None:
+            print_info(f"{module}: current PHP version is not set, skipping...")
+            continue  # Skip this module if PHP version is not set
+
+        print_info(f"{module}: {current_php_version} -> {php_version}")
+
+        # Update PHP version in composer.json
+        if "config" not in composer_content:
+            composer_content["config"] = {}
+        if "platform" not in composer_content["config"]:
+            composer_content["config"]["platform"] = {}
+        composer_content["config"]["platform"]["php"] = php_version
+
+        # Save modified composer.json
+        with open(composer_file_path, "w") as f:
+            json.dump(composer_content, f, indent=4)
+
+        # Run composer outdated to check for potential updates
+        os.system(f"cd {os.path.join(repo_dir, module)} && composer outdated")
+
+        # Revert changes to composer.json
+        composer_content["config"]["platform"]["php"] = current_php_version
+        with open(composer_file_path, "w") as f:
+            json.dump(composer_content, f, indent=4)
+
 @cli.group("clean")
 def cli_clean():
   pass
