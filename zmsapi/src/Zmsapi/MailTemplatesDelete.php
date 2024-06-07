@@ -19,6 +19,8 @@ class MailTemplatesDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        (new Helper\User($request))->checkRights('superuser');
+
         $tamplateId = $args['templateId'];
 
         $message = Response\Message::create($request);

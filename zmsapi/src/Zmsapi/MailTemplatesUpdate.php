@@ -19,16 +19,12 @@ class MailTemplatesUpdate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        (new Helper\User($request))->checkRights('superuser');
+
         $input = Validator::input()->isJson()->getValue();
 
         $message = Response\Message::create($request);
         $message->data = (new \BO\Zmsdb\MailTemplates())->updateTemplateContentById($input['templateId'], $input['templateContent']);
-        
-        //print_r($message->data);
-
-        //$message->data=array('something' => 'else');
-
-
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, $message->getStatuscode());

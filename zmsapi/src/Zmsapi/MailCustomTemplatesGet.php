@@ -22,14 +22,7 @@ class MailCustomTemplatesGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        try {
-            (new Helper\User($request))->checkRights('basic');
-        } catch (\Exception $exception) {
-            $token = $request->getHeader('X-Token');
-            if (\App::SECURE_TOKEN != current($token)) {
-                throw new Exception\Config\ConfigAuthentificationFailed();
-            }
-        }
+        (new Helper\User($request))->checkRights('superuser');
 
         $providerId = $args['providerId'];
         
