@@ -19,6 +19,8 @@ class MailTemplatesCreateCustomization extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        (new Helper\User($request))->checkRights('superuser');
+
         $input = Validator::input()->isJson()->getValue();
 
         $message = Response\Message::create($request);
