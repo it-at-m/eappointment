@@ -140,10 +140,6 @@ class View extends RequestView {
             this.onRemoveRequest(event);
         }).on('click', '.clear-list', () => {
             this.onClearRequestList();
-        }).on('click', '.plus', (event) => {
-            this.onAddRequestCount(event);
-        }).on('click', '.minus', (event) => {
-            this.onRemoveRequestCount(event);
         }).on('change', '#appointmentForm_slotCount', (event) => {
             this.onChangeSlotCount(event);
         }).on('change', '.appointment-form .switchcluster select', (event) => {
@@ -183,33 +179,6 @@ class View extends RequestView {
         this.removeServiceFromList($(event.currentTarget), 'serviceList');
         this.updateLists(true);
         this.auralMessage(this.auralMessages.add + ': ' + $(event.currentTarget).parent().find('span').text());
-    }
-
-    onAddRequestCount(event) {
-        $(event.currentTarget).parent().find('.hidden-inputs input:first-child').clone().insertAfter($(event.currentTarget).parent().find('.hidden-inputs input:first-child'));
-        $(event.currentTarget).parent().find('.request-count').text(parseInt($(event.currentTarget).parent().find('.request-count').text()) + 1);
-
-        this.addServiceToList($(event.currentTarget), 'serviceListSelected');
-        this.removeServiceFromList($(event.currentTarget), 'serviceList');
-        this.updateLists(true);
-        this.auralMessage(this.auralMessages.add + ': ' + $(event.currentTarget).parent().find('span').text());
-    }
-
-    onRemoveRequestCount(event) {
-        let input = $(event.currentTarget).parent().find('.hidden-inputs input:first-child')
-        let count = parseInt($(event.currentTarget).parent().find('.request-count').text());
-
-        if (parseInt($(event.currentTarget).parent().find('.request-count').text()) === 1) {
-            this.removeServiceFromList(input, 'serviceListSelected');
-            this.addServiceToList(input, 'serviceList');
-            this.updateLists(true);
-            this.auralMessage(this.auralMessages.remove + ': ' + input.parent().find('span').text());
-        }
-
-        if (count > 1) {
-            $(event.currentTarget).parent().find('.request-count').text(count - 1);
-            input.remove();
-        }
     }
 
     onRemoveRequest(event) {
