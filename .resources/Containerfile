@@ -10,7 +10,7 @@ FROM php:${PHP_VERSION} AS base
 # Bash as default shell should exit on non-zero exit-codes in piped commands
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-COPY scripts/docker-apt-clean-install /usr/local/sbin/
+COPY .resources/scripts/docker-apt-clean-install /usr/local/sbin/
 ENV PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -63,7 +63,7 @@ RUN docker-php-ext-configure calendar \
 
 FROM base as dev
 
-COPY scripts/ /usr/local/sbin/
+COPY .resources/scripts/ /usr/local/sbin/
 
 # Install xdebug – it is not enabled by default though, you need to add the following line to your php.ini file:
 # zend_extension="/usr/local/php/modules/xdebug.so"
