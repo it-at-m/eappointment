@@ -13,7 +13,6 @@ vendor.update
 VERSION
 public/_tests
 public/_js/
-public/_css/
 public/_libs/
 .cache
 .phpunit.*
