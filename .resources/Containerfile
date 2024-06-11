@@ -63,6 +63,8 @@ RUN docker-php-ext-configure calendar \
 
 FROM base as dev
 
+COPY scripts/ /usr/local/sbin/
+
 # Install xdebug – it is not enabled by default though, you need to add the following line to your php.ini file:
 # zend_extension="/usr/local/php/modules/xdebug.so"
 ARG XDEBUG_VERSION="xdebug"
