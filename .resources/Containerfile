@@ -1,5 +1,6 @@
 ARG PHP_VERSION
 FROM registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-dev as build
+RUN chown -R 1000:1000 "/.npm"
 COPY --chown=1000:1000 . /build
 ARG MODULE
 WORKDIR /build/${MODULE}
