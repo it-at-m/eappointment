@@ -202,14 +202,15 @@ class View extends RequestView {
         if (parseInt($(event.currentTarget).parent().find('.request-count').text()) === 1) {
             this.removeServiceFromList(input, 'serviceListSelected');
             this.addServiceToList(input, 'serviceList');
-            this.updateLists(true);
-            this.auralMessage(this.auralMessages.remove + ': ' + input.parent().find('span').text());
         }
 
         if (count > 1) {
             $(event.currentTarget).parent().find('.request-count').text(count - 1);
             input.remove();
         }
+
+        this.auralMessage(this.auralMessages.remove + ': ' + input.parent().find('span').text());
+        this.updateLists(true);
     }
 
     onRemoveRequest(event) {
