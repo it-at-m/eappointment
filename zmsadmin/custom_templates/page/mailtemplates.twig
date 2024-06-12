@@ -41,13 +41,13 @@
 
 
     <!-- Load Require.js from CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+    <script src="{{ includeUrl() }}/_libs/requirejs/require.js"></script>
     <script>
         var editors = {};
 
         require.config({
             paths: {
-                'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs',
+                'vs': '{{ includeUrl() }}/_libs/monaco-editor/min/vs',
             }
         });
 
@@ -90,7 +90,7 @@
 
 
         function saveMailTemplate(templateId, editorId) {
-            const url = '/terminvereinbarung/admin/mailtemplates/';
+            const url = '{{ includeUrl() }}/mailtemplates/';
             const data = {
                 templateId: templateId,
                 templateContent: getContentOfEditor(editorId)
@@ -115,7 +115,7 @@
         }
 
         function deleteCustomization(templateId, editorId) {
-            const url = '/terminvereinbarung/admin/mailtemplates/deleteCustomization/';
+            const url = '{{ includeUrl() }}/mailtemplates/deleteCustomization/';
             const data = {
                 templateId: templateId
             };
@@ -136,7 +136,7 @@
         }
 
         function createCustomization(templateName, editorId) {
-            const url = '/terminvereinbarung/admin/mailtemplates/createCustomization/';
+            const url = '{{ includeUrl() }}/mailtemplates/createCustomization/';
             const data = {
                 templateName: templateName,
                 templateContent: getContentOfEditor(editorId)
