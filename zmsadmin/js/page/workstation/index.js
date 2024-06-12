@@ -36,6 +36,7 @@ class View extends BaseView {
             'onCancelAppointmentForm',
             'onChangeScope',
             'onPrintWaitingNumber',
+            'onPrintProcessMail',
             'onDatePick',
             'onDateToday',
             'addFocusTrap',
@@ -63,7 +64,7 @@ class View extends BaseView {
             this.setLastReload();
             this.setReloadTimer();
         });
-        $.ajaxSetup({ 
+        $.ajaxSetup({
             cache: false
         });
         this.loadAllPartials().then(() => {
@@ -164,7 +165,7 @@ class View extends BaseView {
         } else {
             this.loadCalendar();
             this.loadAppointmentForm();
-        }   
+        }
     }
 
     onChangeTableView(event, changeScope = false) {
@@ -194,7 +195,7 @@ class View extends BaseView {
         stopEvent(event);
         showSpinner(scope.$main);
         const sendData = scope.$main.find('form').serializeArray();
-        if (this.selectedProcess && !isCopy) { 
+        if (this.selectedProcess && !isCopy) {
             sendData.push({ name: 'selectedprocess', value: this.selectedProcess });
         }
         this.loadCall(`${this.includeUrl}/process/queue/`, 'POST', sendData, false, scope.$main).then((response) => {
@@ -421,6 +422,15 @@ class View extends BaseView {
         this.loadAppointmentForm();
     }
 
+    onPrintProcessMail(event) {
+        stopEvent(event);
+        this.selectedProcess = $(event.currentTarget).data('id');
+        $(event.currentTarget).closest('.message').fadeOut().remove();
+        window.open(`${this.includeUrl}/process/queue/?print=1&printType=mail&selectedprocess=${this.selectedProcess}`)
+        this.selectedProcess = null;
+        this.loadAppointmentForm();
+    }
+
     onSendCustomMail($container, event) {
         stopEvent(event);
         const processId = $(event.currentTarget).data('process');
@@ -563,6 +573,7 @@ class View extends BaseView {
             onAbortProcess: this.onAbortProcess,
             onCancelAppointmentForm: this.onCancelAppointmentForm,
             onPrintWaitingNumber: this.onPrintWaitingNumber,
+            onPrintProcessMail: this.onPrintProcessMail,
             onAbortMessage: this.onAbortMessage,
             onChangeSlotCount: this.onChangeSlotCount,
             onConfirm: this.onConfirm,
