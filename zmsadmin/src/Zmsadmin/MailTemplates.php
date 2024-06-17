@@ -8,7 +8,7 @@ namespace BO\Zmsadmin;
 
 use \BO\Zmsentities\Config as Entity;
 
-class ConfigInfo extends BaseController
+class MailTemplates extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -20,13 +20,27 @@ class ConfigInfo extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $providerId = $workstation->scope['provider']['id'];
         $config = \App::$http->readGetResult('/config/')->getEntity();
 
         $mailtemplates = \App::$http->readGetResult('/mailtemplates/')->getCollection();
+        $customMailtemplates = \App::$http->readGetResult('/custom-mailtemplates/'.$providerId.'/')->getCollection();
+        $mergedMailTemplates = \App::$http->readGetResult('/merged-mailtemplates/'.$providerId.'/')->getCollection();
+        forEach($mergedMailTemplates as $template) {
+            if ($template['provider']) {
+                $template->isCustom = true;
+            }
+        }
         //echo $mailtemplates;
 
+        //$mergedMailTemplates = $this->mergeMailTemplates($mailtemplates, $customMailtemplates);
 
-        //die(print_r($mailtemplates, true));
+        //print_r($mergedMailTemplates);
+        //die();
+        //echo "here 098723098470987234<pre>";
+        //print_r($workstation);        
+        //echo "this is our provider id: ".$workstation->scope['provider']['id'];
+        //die();
 
 
 
@@ -73,17 +87,45 @@ class ConfigInfo extends BaseController
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/configinfo.twig',
+            'page/mailtemplates.twig',
             array(
                 'title' => 'Konfiguration System',
+                'providerId' => $providerId,
                 'workstation' => $workstation,
                 'config' => $config,
-                'mailtemplates' => $mailtemplates,
+                'mailtemplates' => $mergedMailTemplates,
                 'processExample' => $mainProcessExample,
                 'processListExample' => $processListExample,
-                'menuActive' => 'configinfo',
+                'menuActive' => 'mailtemplates',
                 'success' => $success
             )
         );
     }
+
+
+    function mergeMailTemplates($generalTemplates, $customTemplates) {
+        $customTemplatesByName = [];
+
+        if ($customTemplates) {
+            foreach ($customTemplates as $template) {
+                $template['isCustom'] = true; // Add isCustom property to custom templates
+                $customTemplatesByName[$template['name']] = $template;
+            }
+        }
+
+        $mergedTemplates = [];
+
+        if ($generalTemplates) {
+            foreach ($generalTemplates as $template) {
+                if (isset($customTemplatesByName[$template['name']])) {
+                    $mergedTemplates[] = $customTemplatesByName[$template['name']];
+                } else {
+                    $mergedTemplates[] = $template;
+                }
+            }
+        }
+
+        return $mergedTemplates;
+    }
+
 }
