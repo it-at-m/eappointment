@@ -164,6 +164,7 @@ class Scope extends Base implements MappingInterface
             'preferences__client__customTextfieldActivated' => 'scope.custom_text_field_active',
             'preferences__client__customTextfieldRequired' => 'scope.custom_text_field_required',
             'preferences__client__customTextfieldLabel' => 'scope.custom_text_field_label',
+            'preferences__client__captchaActiveRequired' => 'scope.captcha_active_required',
             'preferences__client__adminMailOnAppointment' => 'scope.admin_mail_on_appointment',
             'preferences__client__adminMailOnDeleted' => 'scope.admin_mail_on_deleted',
             'preferences__client__adminMailOnUpdated' => 'scope.admin_mail_on_updated',
@@ -301,6 +302,7 @@ class Scope extends Base implements MappingInterface
         $data['custom_text_field_active'] = $entity->getPreference('client', 'customTextfieldActivated', true);
         $data['custom_text_field_required'] = $entity->getPreference('client', 'customTextfieldRequired', true);
         $data['custom_text_field_label'] = $entity->getPreference('client', 'customTextfieldLabel');
+        $data['captcha_active_required'] = $entity->getPreference('client', 'captchaActiveRequired');
         $data['appointments_per_mail'] = (int) $entity->getPreference('client', 'appointmentsPerMail');
         $data['slots_per_appointment'] = (int) $entity->getPreference('client', 'slotsPerAppointment');
         $data['whitelisted_mails'] = $entity->getPreference('client', 'whitelistedMails');
