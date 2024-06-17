@@ -302,7 +302,7 @@ class Scope extends Base implements MappingInterface
         $data['custom_text_field_active'] = $entity->getPreference('client', 'customTextfieldActivated', true);
         $data['custom_text_field_required'] = $entity->getPreference('client', 'customTextfieldRequired', true);
         $data['custom_text_field_label'] = $entity->getPreference('client', 'customTextfieldLabel');
-        $data['captcha_active_required'] = $entity->getPreference('client', 'captchaActiveRequired');
+        $data['captcha_active_required'] = $entity->getPreference('client', 'captchaActivatedRequired');
         $data['appointments_per_mail'] = (int) $entity->getPreference('client', 'appointmentsPerMail');
         $data['slots_per_appointment'] = (int) $entity->getPreference('client', 'slotsPerAppointment');
         $data['whitelisted_mails'] = $entity->getPreference('client', 'whitelistedMails');

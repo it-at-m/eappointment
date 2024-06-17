@@ -264,7 +264,7 @@
                             "description": "true if client is required to enter a custom text field address",
                             "default": false
                         },
-                        "captchaActiveRequired": {
+                        "captchaActivatedRequired": {
                             "type": [
                                 "boolean",
                                 "number"
