@@ -44,18 +44,17 @@ class Queue extends BaseController
         }
 
         $displayInfo = null;
+        $callDisplayInfo = $calldisplay->getEntity(true);
 
-        $calldisplayInfo = $calldisplay->getEntity(true);
-
-        if ($calldisplayInfo->getClusterList()->count() > 0 && $calldisplayInfo->getClusterList()->getFirst()->callDisplayText) {
-            $displayInfo = $calldisplayInfo->getClusterList()->getFirst()->callDisplayText;
-        }
-
-        if (
-            $calldisplayInfo->getScopeList()->count() > 0
-            && $calldisplayInfo->getScopeList()->getFirst()->preferences['queue']['callDisplayText']
-        ) {
-            $displayInfo = $calldisplayInfo->getScopeList()->getFirst()->preferences['queue']['callDisplayText'];
+        if ($callDisplayInfo) {
+            if ($callDisplayInfo->getClusterList()->count() > 0 && $callDisplayInfo->getClusterList()->getFirst()->callDisplayText) {
+                $displayInfo = $callDisplayInfo->getClusterList()->getFirst()->callDisplayText;
+            } else if (
+                $callDisplayInfo->getScopeList()->count() > 0
+                && $callDisplayInfo->getScopeList()->getFirst()->preferences['queue']['callDisplayText']
+            ) {
+                $displayInfo = $callDisplayInfo->getScopeList()->getFirst()->preferences['queue']['callDisplayText'];
+            }
         }
 
         return Render::withHtml(
