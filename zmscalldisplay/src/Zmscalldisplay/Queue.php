@@ -43,6 +43,21 @@ class Queue extends BaseController
             $queueList = $queueList->chunk(10)[1] ?? new \BO\Zmsentities\Collection\QueueList();
         }
 
+        $displayInfo = null;
+
+        $calldisplayInfo = $calldisplay->getEntity(true);
+
+        if ($calldisplayInfo->getClusterList()->count() > 0 && $calldisplayInfo->getClusterList()->getFirst()->callDisplayText) {
+            $displayInfo = $calldisplayInfo->getClusterList()->getFirst()->callDisplayText;
+        }
+
+        if (
+            $calldisplayInfo->getScopeList()->count() > 0
+            && $calldisplayInfo->getScopeList()->getFirst()->preferences['queue']['callDisplayText']
+        ) {
+            $displayInfo = $calldisplayInfo->getScopeList()->getFirst()->preferences['queue']['callDisplayText'];
+        }
+
         return Render::withHtml(
             $response,
             'block/queue/queueTable.twig',
@@ -51,7 +66,8 @@ class Queue extends BaseController
                 'tableSettings' => $validator->getParameter('tableLayout')->isArray()->getValue(),
                 'calldisplay' => $calldisplay->getEntity(false),
                 'scope' => $calldisplay->getSingleScope(),
-                'queueList' => $queueList
+                'queueList' => $queueList,
+                'displayInfo' => $displayInfo
             )
         );
     }
