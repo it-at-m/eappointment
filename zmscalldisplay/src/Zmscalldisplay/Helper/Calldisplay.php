@@ -52,7 +52,7 @@ class Calldisplay
     {
         if (!$this->isEntityResolved && $resolveEntity) {
             $callDisplay = \App::$http->readPostResult('/calldisplay/', $this->entity);
-            $this->entity = $callDisplay ? $callDisplay->getEntity() : null;
+            $this->entity = $callDisplay ? $callDisplay->getEntity() : new \BO\Zmsentities\Calldisplay();
             $this->isEntityResolved = true;
         }
 
