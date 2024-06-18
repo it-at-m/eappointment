@@ -9,6 +9,7 @@ import {weekDayList, repeat} from '../helpers'
 import * as Inputs from '../../../lib/inputs'
 const { Label, Description } = Inputs
 import de from 'date-fns/locale/de';
+import { ReadOnlyInput } from './readOnlyInput';
 //import {formatTimestampDate} from "../helpers"
 registerLocale('de', de)
 
@@ -341,6 +342,8 @@ class AvailabilityDatePicker extends Component
                                 strictParsing={true}
                                 open={this.state.timePickerIsOpen}
                                 ref={(timepicker) => { this.timepicker = timepicker }} 
+                                // customInput={<ReadOnlyInput />}
+
                             />
                             <a href="#" aria-describedby={"help_" + this.props.attributes.id + "_time"} aria-label="Uhrzeitauswahl öffnen" className="calendar-placement icon" title={"startDate" == this.props.name ? "Uhrzeit von wählen" : "Uhrzeit bis wählen"} onClick={this.handleClockIcon} onKeyDown={this.tpKeyDownHandler}>
                                 <i className="far fa-clock" aria-hidden="true" />
