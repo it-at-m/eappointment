@@ -22,7 +22,7 @@ class ProcessQueueTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
