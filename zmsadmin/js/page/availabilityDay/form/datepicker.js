@@ -342,14 +342,14 @@ class AvailabilityDatePicker extends Component
                                 strictParsing={true}
                                 open={this.state.timePickerIsOpen}
                                 ref={(timepicker) => { this.timepicker = timepicker }} 
-                                // customInput={<ReadOnlyInput />}
+                                customInput={<ReadOnlyInput />}
 
                             />
                             <a href="#" aria-describedby={"help_" + this.props.attributes.id + "_time"} aria-label="Uhrzeitauswahl öffnen" className="calendar-placement icon" title={"startDate" == this.props.name ? "Uhrzeit von wählen" : "Uhrzeit bis wählen"} onClick={this.handleClockIcon} onKeyDown={this.tpKeyDownHandler}>
                                 <i className="far fa-clock" aria-hidden="true" />
                             </a>
                         </div>
-                        <Description attributes={{ "id": "help_" + this.props.attributes.id + "_time" }} value="Eingabe der Uhrzeit im Format HH:MM"></Description>
+                        <Description attributes={{ "id": "help_" + this.props.attributes.id + "_time" }} value="Eingabe über Dropdown"></Description>
                     </div>
                 </div>
             </div>
