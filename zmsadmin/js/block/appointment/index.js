@@ -59,6 +59,7 @@ class View extends RequestView {
         this.onDatePick = this.options.onDatePick;
         this.onAbortMessage = this.options.onAbortMessage;
         this.onPrintWaitingNumber = this.options.onPrintWaitingNumber;
+        this.onPrintProcessMail = this.options.onPrintProcessMail;
         this.onChangeSlotCountCallback = this.options.onChangeSlotCount;
     }
 
@@ -158,6 +159,8 @@ class View extends RequestView {
             this.onSaveProcess(this, event);
         }).on('click', '.form-actions button.process-edit', (event) => {
             this.onEditProcess(this, event);
+        }).on('click', '.form-actions button.process-print-mail', (event) => {
+            this.onPrintProcessMail(event);
         }).on('click', '.form-actions button.process-print', (event) => {
             this.onPrintWaitingNumber(event);
         }).on('click', '.form-actions button.process-queue', (event) => {

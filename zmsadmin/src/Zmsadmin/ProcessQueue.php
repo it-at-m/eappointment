@@ -10,9 +10,13 @@ namespace BO\Zmsadmin;
 
 use BO\Mellon\Condition;
 use BO\Slim\Render;
+use BO\Zmsentities\Config;
+use BO\Zmsentities\Helper\Messaging;
 use BO\Zmsentities\Validator\ProcessValidator;
 use BO\Zmsentities\Process as Entity;
 use BO\Zmsadmin\Helper\AppointmentFormHelper;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Queue a process from appointment formular without appointment
@@ -25,25 +29,23 @@ class ProcessQueue extends BaseController
      * @return String
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
 
         $validator = $request->getAttribute('validator');
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         
         if ($selectedProcessId) {
             $process = $this->readSelectedProcessWithWaitingnumber($selectedProcessId);
+
             if ($process && $validator->getParameter('print')->isNumber()->getValue()) {
-                return \BO\Slim\Render::withHtml(
+                return $this->printProcessResponse(
                     $response,
-                    'page/printWaitingNumber.twig',
-                    array(
-                        'title' => ($process->isWithAppointment()) ? 'Vorgangsnummer drucken' : 'Wartenummer drucken',
-                        'process' => $process
-                    )
+                    $process,
+                    $validator->getParameter('printType')->isString()->getValue()
                 );
             }
         }
@@ -162,5 +164,33 @@ class ProcessQueue extends BaseController
             }
         }
         return $isOpened;
+    }
+
+    private function printProcessResponse(
+        ResponseInterface $response,
+        Entity $process,
+        ?string $printType = null
+    ): ResponseInterface
+    {
+        if ($printType === 'mail') {
+            $content = Messaging::getMailContent($process, new Config(), null, 'appointment', null);
+
+            return \BO\Slim\Render::withHtml(
+                $response,
+                'page/printAppointmentMail.twig',
+                [
+                    'render' => $content
+                ]
+            );
+        }
+
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'page/printWaitingNumber.twig',
+            array(
+                'title' => ($process->isWithAppointment()) ? 'Vorgangsnummer drucken' : 'Wartenummer drucken',
+                'process' => $process
+            )
+        );
     }
 }
