@@ -31,18 +31,6 @@ class MailTemplates extends BaseController
                 $template->isCustom = true;
             }
         }
-        //echo $mailtemplates;
-
-        //$mergedMailTemplates = $this->mergeMailTemplates($mailtemplates, $customMailtemplates);
-
-        //print_r($mergedMailTemplates);
-        //die();
-        //echo "here 098723098470987234<pre>";
-        //print_r($workstation);        
-        //echo "this is our provider id: ".$workstation->scope['provider']['id'];
-        //die();
-
-
 
         $mainProcessExample = ((new \BO\Zmsentities\Process)->getExample());
         $mainProcessExample->id = 987654;
