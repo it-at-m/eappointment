@@ -28,127 +28,124 @@
     {% block board_body %}
     {% endblock %}
 {% endembed %#}
-    <section class="block scope-form">
+<section class="block scope-form">
 
-        <div class="block__header">
-            <h2 class="block__heading">
-                {{ organisation.name }} -
-                {% if scope %}
-                    {{ scope.contact.name }}
-                {% else %}
-                    {% trans %}Neuen Standort hinzufügen{% endtrans %}
-                {% endif %}
-            </h2>
-            {% if scope %}
-            <a class="aside" href="{{ urlGet('scopeAvailabilityMonth', {'id': scope.id}, {}) }}" title="Öffnungszeiten">
-                (Öffnungszeiten bearbeiten <i class="fas fa-edit" aria-hidden="true"></i>)
-            </a>
-            {% endif %}
-        </div>
+	<div class="block__header">
+		<h2 class="block__heading">
+			{{ organisation.name }}
+			-
+			{% if scope %}
+				{{ scope.contact.name }}
+			{% else %}
+				{% trans %}Neuen Standort hinzufügen{% endtrans %}
+			{% endif %}
+		</h2>
+		{% if scope %}
+			<a class="aside" href="{{ urlGet('scopeAvailabilityMonth', {'id': scope.id}, {}) }}" title="Öffnungszeiten">
+				(Öffnungszeiten bearbeiten
+				<i class="fas fa-edit" aria-hidden="true"></i>)
+			</a>
+		{% endif %}
+	</div>
 
-        <form method="post" action="./" enctype="multipart/form-data" class="form--base">
-            <div class="scope-form-update">
-                <div class="scope-form-sources" 
-                    data-scopestate={{ scopeState|json_encode|e('html_attr') }}
-                    data-labels={{ dataLabels|json_encode|e('html_attr') }}
-                    data-includeurl="{{ includeUrl() }}"    
-                >
-                </div>
-               {#
-                <fieldset>
-                    <div class="panel--heavy">
-                        {{ inputfield({ "name": "id", "type":"hidden", "value":scope.id }) }}
-
-                        {% set sourceOptions = [{ "value": "0", "name": "bitte wählen Sie aus", "selected": 0 }]  %}
-                        {% for source in sourceList %}
-                            {% if source.source == scope.source %}
-                                {% set selected = 1 %}
-                            {% else %}
-                                {% set selected = 0 %}
-                            {% endif %}
-                            {% set sourceOptions = sourceOptions|merge([{ "value": source.source, "name": source.label|default("- Keinen Namen angegeben -")|trans, "selected": selected }]) %}
-                        {% endfor %}
-
-                        {{ formgroup(
-                            {"label": "Quelle der Standortdaten:"},
-                            [{
-                                "type":"select",
-                                "parameter": {
-                                    "name": "provider[source]",
-                                    "id": "provider__source",
-                                    "options": sourceOptions
-                                }
-                            }]
-                        ) }}
-
-                        {% set providerOptionsGroup = [{'name': "Nicht zugeordnet", 'options': [{ "value": "", "name": "bitte wählen Sie aus", "selected": 0}] }] %}
-                        {% for type, optGroup in providerList %}
-                            {% set providerOptions = [] %}
-                            {% for provider in optGroup %}
-                                {% if provider.id == scope.provider.id %}
-                                    {% set selected = 1 %}
-                                {% else %}
-                                    {% set selected = 0 %}
-                                {% endif %}
-                                {% set optionName = provider.name ~" | "~ provider.contact.street ~" "~ provider.contact.streetNumber %}
-                                {% set providerOptions = providerOptions|merge([{ "value": provider.id, "name": optionName, "selected": selected, "data": {"contact": provider.contact|json_encode()} }]) %}
-                            {% endfor %}
-                            {% if type == 'assigned' %}
-                                {% set isAssigned = 'Bereits einem Standort zugewiesen' %}
-                            {% else %}
-                                {% set isAssigned = 'Keinem Standort zugewiesen' %}
-                            {% endif %}
-                            {% set providerOptionsGroup = providerOptionsGroup|merge([{ 'name' : isAssigned , 'options' : providerOptions }]) %}
-                        {% endfor %}
-
-                        {{ formgroup(
-                            {"label": "Standortdaten:"},
-                            [{
-                                "type":"select",
-                                "parameter": {
-                                    "name": "provider[id]",
-                                    "id": "provider__id",
-                                    "options": providerOptionsGroup
-                                }
-                            }]
-                        ) }}
-
-                        {% set readOnly = 1 %}
-
-                        {{ formgroup(
-                            {"label": "Name:"},
-                            [{
-                                "type":"input",
-                                "parameter": {
-                                    "name": "contact[name]",
-                                    "value": scope.provider.contact.name,
-                                    "maxlength": 40,
-                                    "readonly": readOnly,
-                                }
-                            }]
-                        ) }}
-
-                        {{ inputfield({ "name": "provider[name]", "type":"hidden", "value":scope.provider.name }) }}
-
-                        {{ formgroup(
-                            {"label": "Anschrift:"},
-                            [{
-                                "type":"input",
-                                "parameter": {
-                                    "name": "contact[street]",
-                                    "value": scope.provider.contact.street ~" "~ scope.provider.contact.streetNumber,
-                                    "maxlength": 70,
-                                    "readonly": readOnly,
-                                }
-                            }]
-                        ) }}
-                        </div>
-                    </fieldset>
-                #}
-                <fieldset>
-                    <legend>Standortdaten</legend>
-                    <div class="panel--heavy">
-                    {{ formgroup(
+	<form method="post" action="./" enctype="multipart/form-data" class="form--base">
+		<div class="scope-form-update">
+			<div class="scope-form-sources" data-scopestate={{ scopeState|json_encode|e('html_attr') }} data-labels={{ dataLabels|json_encode|e('html_attr') }} data-includeurl="{{ includeUrl() }}"></div>
+			{#
+						                <fieldset>
+						                    <div class="panel--heavy">
+						                        {{ inputfield({ "name": "id", "type":"hidden", "value":scope.id }) }}
+						
+						                        {% set sourceOptions = [{ "value": "0", "name": "bitte wählen Sie aus", "selected": 0 }]  %}
+						                        {% for source in sourceList %}
+						                            {% if source.source == scope.source %}
+						                                {% set selected = 1 %}
+						                            {% else %}
+						                                {% set selected = 0 %}
+						                            {% endif %}
+						                            {% set sourceOptions = sourceOptions|merge([{ "value": source.source, "name": source.label|default("- Keinen Namen angegeben -")|trans, "selected": selected }]) %}
+						                        {% endfor %}
+						
+						                        {{ formgroup(
+						                            {"label": "Quelle der Standortdaten:"},
+						                            [{
+						                                "type":"select",
+						                                "parameter": {
+						                                    "name": "provider[source]",
+						                                    "id": "provider__source",
+						                                    "options": sourceOptions
+						                                }
+						                            }]
+						                        ) }}
+						
+						                        {% set providerOptionsGroup = [{'name': "Nicht zugeordnet", 'options': [{ "value": "", "name": "bitte wählen Sie aus", "selected": 0}] }] %}
+						                        {% for type, optGroup in providerList %}
+						                            {% set providerOptions = [] %}
+						                            {% for provider in optGroup %}
+						                                {% if provider.id == scope.provider.id %}
+						                                    {% set selected = 1 %}
+						                                {% else %}
+						                                    {% set selected = 0 %}
+						                                {% endif %}
+						                                {% set optionName = provider.name ~" | "~ provider.contact.street ~" "~ provider.contact.streetNumber %}
+						                                {% set providerOptions = providerOptions|merge([{ "value": provider.id, "name": optionName, "selected": selected, "data": {"contact": provider.contact|json_encode()} }]) %}
+						                            {% endfor %}
+						                            {% if type == 'assigned' %}
+						                                {% set isAssigned = 'Bereits einem Standort zugewiesen' %}
+						                            {% else %}
+						                                {% set isAssigned = 'Keinem Standort zugewiesen' %}
+						                            {% endif %}
+						                            {% set providerOptionsGroup = providerOptionsGroup|merge([{ 'name' : isAssigned , 'options' : providerOptions }]) %}
+						                        {% endfor %}
+						
+						                        {{ formgroup(
+						                            {"label": "Standortdaten:"},
+						                            [{
+						                                "type":"select",
+						                                "parameter": {
+						                                    "name": "provider[id]",
+						                                    "id": "provider__id",
+						                                    "options": providerOptionsGroup
+						                                }
+						                            }]
+						                        ) }}
+						
+						                        {% set readOnly = 1 %}
+						
+						                        {{ formgroup(
+						                            {"label": "Name:"},
+						                            [{
+						                                "type":"input",
+						                                "parameter": {
+						                                    "name": "contact[name]",
+						                                    "value": scope.provider.contact.name,
+						                                    "maxlength": 40,
+						                                    "readonly": readOnly,
+						                                }
+						                            }]
+						                        ) }}
+						
+						                        {{ inputfield({ "name": "provider[name]", "type":"hidden", "value":scope.provider.name }) }}
+						
+						                        {{ formgroup(
+						                            {"label": "Anschrift:"},
+						                            [{
+						                                "type":"input",
+						                                "parameter": {
+						                                    "name": "contact[street]",
+						                                    "value": scope.provider.contact.street ~" "~ scope.provider.contact.streetNumber,
+						                                    "maxlength": 70,
+						                                    "readonly": readOnly,
+						                                }
+						                            }]
+						                        ) }}
+						                        </div>
+						                    </fieldset>
+						                #}
+			<fieldset>
+				<legend>Standortdaten</legend>
+				<div class="panel--heavy">
+					{{ formgroup(
                         {"label": "Kürzel:", "description": "Diese Angaben sind bei der Clusterung von Standorten relevant und dienen der Unterscheidung identischer Dienstleister."},
                         [{
                             "type":"input",
@@ -161,7 +158,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {"label": "Kundenhinweis:", "description": "Dieser Hinweis wird bei der Bestätigung eines Termins bei den Standortdaten angezeigt sowie an eine Bestätigungs-SMS angehängt. (Sollte die maximale SMS-Zeichenanzahl von 160 überschritten sein, werden 2 SMS versendet.)"},
                         [{
                             "type":"input",
@@ -173,7 +170,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {
                             "label": "E-Mail Standortadmin:",
                             "description": "E-Mail-Adresse für E-Mail-Benachrichtigungen bei Terminbestätigungen, -absagen oder -änderungen.",
@@ -189,7 +186,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {
                             
                             "groupTag": "fieldset"
@@ -222,14 +219,14 @@
                                 "checked": scope.preferences.client.adminMailOnUpdated|default(0),
                             }
                         }]
-                    ) }}                     
-                    </div>
-                </fieldset>
+                    ) }}
+				</div>
+			</fieldset>
 
-                <fieldset>
-                    <legend>Terminbuchung</legend>
-                    <div class="panel--heavy">
-                    {{ formgroup(
+			<fieldset>
+				<legend>Terminbuchung</legend>
+				<div class="panel--heavy">
+					{{ formgroup(
                         {
                             "legend": "Mehrfachtermine:",
                             "groupTag": "fieldset"
@@ -246,7 +243,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {"label": "Terminvergabe ab:", "description": "Tage im Voraus"},
                         [{
                             "type":"input",
@@ -259,7 +256,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {"label": "Terminvergabe bis:", "description": "Tage im Voraus"},
                         [{
                             "type":"input",
@@ -272,7 +269,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {"label": "Reservierungsdauer:", "description": "In Minuten. Mindestens 5 Minuten, nach Ablauf dieser Zeit werden reservierte, aber noch nicht gebuchte Termine wieder freigegeben."},
                         [{
                             "type":"input",
@@ -285,7 +282,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {"label": "Aktivierungsdauer:", "description": "In Minuten. Mindestens 15 Minuten, nach Ablauf dieser Zeit werden nicht aktivierte Termine wieder freigegeben."},
                         [{
                             "type":"input",
@@ -298,7 +295,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {"label": "Löschverzögerung:", "description": "In Minuten. Nach Ablauf dieser Zeit werden abgesagte Termine freigegeben."},
                         [{
                             "type":"input",
@@ -310,13 +307,31 @@
                             }
                         }]
                     ) }}
-                    </div>
-                </fieldset>
+				</div>
+			</fieldset>
 
-                <fieldset>
-                    <legend>Internetbuchung</legend>
-                    <div class="panel--heavy">
-                    {{ formgroup(
+			<fieldset>
+				<legend>Internetbuchung</legend>
+				<div class="panel--heavy">
+					{{ formgroup(
+                            {
+                                "legend": "Captcha:",
+                                "groupTag": "fieldset"
+                            },
+                            [
+                            {
+                                "type":"checkbox",
+                                "parameter": {
+                                    "label": "bei der Internetbuchung und ist Pflichtfeld",
+                                    "name": "preferences[client][captchaActivatedRequired]",
+                                    "id": "customTextfield",
+                                    "value": 1,
+                                    "checked": scope.preferences.client.captchaActivatedRequired|default(0),
+                                }
+                            }]
+                        ) }}
+
+					{{ formgroup(
                         {
                             "legend": "Telefoneingabefeld:",
                             "groupTag": "fieldset"
@@ -339,9 +354,9 @@
                                 "checked": scope.preferences.client.telephoneRequired|default(0),
                             }
                         }]
-                    ) }}                    
+                    ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {
                             "legend": "E-Mail ist Pflichtfeld:",
                             "groupTag": "fieldset"
@@ -357,7 +372,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {
                             "label": "Anzahl an maximal buchbaren Slots pro Termin:"
                         },
@@ -371,7 +386,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {
                             "label": "Maximale Anzahl an Terminen pro E-Mail-Adresse:"
                         },
@@ -385,7 +400,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {
                             "label": "E-Mail-Adressen, die unbegrenzt Termine buchen können:",
                             "description": "Durch Kommas getrennte E-Mail-Adressen (ganze Domänen kann man mit beispielsweise @muenchen.de erlauben)"
@@ -400,7 +415,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {
                             "legend": "Freitextfeld:",
                             "groupTag": "fieldset"
@@ -423,9 +438,9 @@
                                 "checked": scope.preferences.client.customTextfieldRequired|default(0),
                             }
                         }]
-                    ) }}    
+                    ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {
                             "label": "Freitextfeldlabel:"
                         },
@@ -437,9 +452,9 @@
                                 "maxlength": 100
                             }
                         }]
-                    ) }}                    
+                    ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {"label": "URL für qualifizierte Terminvereinbarung:", "description": "Diese URL wird für Internetkunden automatisch verwendet.<br> Buchungen per Telefon oder über den Tresen umgehen die hier angegebene qualifizierte Terminvereinbarung."},
                         [{
                             "type":"input",
@@ -450,14 +465,14 @@
                             }
                         }]
                     ) }}
-                    </div>
-                </fieldset>
+				</div>
+			</fieldset>
 
-                <fieldset>
-                    <legend>SMS Einstellungen</legend>
-                    <div class="panel--heavy">
-                    {% if department.preferences.notifications.enabled %}
-                        {{ formgroup(
+			<fieldset>
+				<legend>SMS Einstellungen</legend>
+				<div class="panel--heavy">
+					{% if department.preferences.notifications.enabled %}
+						{{ formgroup(
                             {
                                 "legend": "SMS-Bestätigung:",
                                 "groupTag": "fieldset",
@@ -475,7 +490,7 @@
                             }]
                         ) }}
 
-                        {{ formgroup(
+						{{ formgroup(
                             {
                                 "legend": "SMS-Erinnerung:",
                                 "groupTag": "fieldset",
@@ -493,7 +508,7 @@
                             }]
                         ) }}
 
-                        {{ formgroup(
+						{{ formgroup(
                             {"label": "SMS-Aufruf:", "description": "In Minuten errechnete Wartezeit. Der Kunde erhält eine SMS mit dem Hinweis, dass er jeden Moment aufgerufen wird."},
                             [{
                                 "type":"input",
@@ -506,7 +521,7 @@
                             }]
                         ) }}
 
-                        {{ formgroup(
+						{{ formgroup(
                             {"label": "SMS-Aufruftext:", "description": "Die Eingabe ist auf 150 Zeichen beschränkt und die Wartenummer wird ans Textende angehängt."},
                             [{
                                 "type":"textarea",
@@ -519,18 +534,18 @@
                                 }
                             }]
                         ) }}
-                        {% else %}
-                            <p>
-                                {% trans %}Aktivieren Sie SMS in den Behördeneinstellungen um Einstellungen für diesen Standort vornehmen zu können.{% endtrans %}
-                            </p>
-                        {% endif %}
-                    </div>
-                </fieldset>
+					{% else %}
+						<p>
+							{% trans %}Aktivieren Sie SMS in den Behördeneinstellungen um Einstellungen für diesen Standort vornehmen zu können.{% endtrans %}
+						</p>
+					{% endif %}
+				</div>
+			</fieldset>
 
-                <fieldset>
-                    <legend>Kundenbefragung</legend>
-                    <div class="panel--heavy">
-                    {{ formgroup(
+			<fieldset>
+				<legend>Kundenbefragung</legend>
+				<div class="panel--heavy">
+					{{ formgroup(
                         {
                             "legend": "Kundenbefragung aktivieren:",
                             "groupTag": "fieldset"
@@ -546,7 +561,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {"label": "Zustimmung zur Kundenbefragung:", "description": "Dieser Text wird über den Nutzungsbedingungen neben einer Checkbox angezeigt. Bitte machen Sie hier deutlich, dass es sich bei der Zustimmung um eine Kundenbefragung handelt."},
                         [{
                             "type":"input",
@@ -558,7 +573,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {"label": "E-Mail-Text zur Kundenbefragung:", "description": "Dieser Text wird dem Kunden nach der Inanspruchnahme des Termins per E-Mail zugestellt."},
                         [{
                             "type":"textarea",
@@ -569,13 +584,13 @@
                             }
                         }]
                     ) }}
-                    </div>
-                </fieldset>
+				</div>
+			</fieldset>
 
-                <fieldset>
-                    <legend>Notruf</legend>
-                    <div class="panel--heavy">
-                    {{ formgroup(
+			<fieldset>
+				<legend>Notruf</legend>
+				<div class="panel--heavy">
+					{{ formgroup(
                         {
                             "label": null
                         },
@@ -589,14 +604,14 @@
                             }
                         }]
                     ) }}
-                    </div>
-                </fieldset>
+				</div>
+			</fieldset>
 
-                
-                <fieldset>
-                    <legend>Abholer</legend>
-                    <div class="panel--heavy">
-                    {{ formgroup(
+
+			<fieldset>
+				<legend>Abholer</legend>
+				<div class="panel--heavy">
+					{{ formgroup(
                         {"label": "Ausgabeschaltername:", "description": "Dieser Name erscheint auf dem Display, falls ein Abholer aufgerufen wird."},
                         [{
                             "type":"input",
@@ -608,7 +623,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {
                             "legend": "Abholerstandort:",
                             "groupTag": "fieldset",
@@ -624,13 +639,13 @@
                             }
                         }]
                     ) }}
-                    </div>
-                </fieldset>
+				</div>
+			</fieldset>
 
-                <fieldset>
-                    <legend>Wartenummern-Kiosk</legend>
-                    <div class="panel--heavy">
-                    {{ formgroup(
+			<fieldset>
+				<legend>Wartenummern-Kiosk</legend>
+				<div class="panel--heavy">
+					{{ formgroup(
                         {"label": "Button-Name:", "description": "Diese Angabe dient der Unterscheidung identischer Dienstleister und erscheint auf dem Wartenummernkiosk."},
                         [{
                             "type":"input",
@@ -643,9 +658,9 @@
                         }]
                     ) }}
 
-                    {% if department.preferences.notifications.enabled %}
+					{% if department.preferences.notifications.enabled %}
 
-                    {{ formgroup(
+						{{ formgroup(
                         {
                             "legend": "SMS-Eintrag:", 
                             "groupTag": "fieldset",
@@ -662,7 +677,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+						{{ formgroup(
                         {
                             "legend": "SMS-Nachtrag:", 
                             "groupTag": "fieldset", 
@@ -679,7 +694,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+						{{ formgroup(
                         {
                             "legend": "SMS-Bestätigung:", 
                             "groupTag": "fieldset", 
@@ -696,7 +711,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+						{{ formgroup(
                         {
                             "label": "SMS-Angebotsfrist:", 
                             "description": "In Minuten errechnete Wartezeit. Wartezeit, ab der am Kiosk die SMS-Option angeboten wird, bei 0 wird der Systemdefaultwert verwendet."
@@ -712,7 +727,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+						{{ formgroup(
                         {"label": "SMS-Bestätigungstext für Spontankunden:", "description": "Die Eingabe ist auf 150 Zeichen beschränkt und die Wartenummer wird ans Textende angehängt."},
                         [{
                             "type":"textarea",
@@ -725,22 +740,22 @@
                             }
                         }]
                     ) }}
-                    {% else %}
-                        <p>
-                            {% trans %}Aktivieren Sie SMS in den Behördeneinstellungen um Einstellungen für diesen Standort vornehmen zu können.{% endtrans %}
-                        </p>
-                    {% endif %}
-                    </div>
-                </fieldset>
+					{% else %}
+						<p>
+							{% trans %}Aktivieren Sie SMS in den Behördeneinstellungen um Einstellungen für diesen Standort vornehmen zu können.{% endtrans %}
+						</p>
+					{% endif %}
+				</div>
+			</fieldset>
 
-                <fieldset>
-                    <legend>Warteschlangenmanagement</legend>
-                    <div class="panel--heavy">
-                    {% set statisticDisabled = 1 %}
-                    {% if scope.preferences.queue.statisticsEnabled %}
-                        {% set statisticDisabled = 0 %}
-                    {% endif %}
-                    {{ formgroup(
+			<fieldset>
+				<legend>Warteschlangenmanagement</legend>
+				<div class="panel--heavy">
+					{% set statisticDisabled = 1 %}
+					{% if scope.preferences.queue.statisticsEnabled %}
+						{% set statisticDisabled = 0 %}
+					{% endif %}
+					{{ formgroup(
                         {
                             "legend": "Ohne Statistik:", 
                             "groupTag": "fieldset", 
@@ -757,7 +772,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {"label": "Wiederholungsaufrufe:", "description": "So oft wird ein nicht erschienener Kunde aufgerufen"},
                         [{
                             "type":"input",
@@ -770,12 +785,12 @@
                         }]
                     ) }}
 
-                    <fieldset>
-                        <legend class="label">Wartenummernkreis</legend>
-                        <p>Achten Sie darauf, dass sich der Wartenummernkreis nicht mit denen in Standorten im selben Cluster überschneidet</p>
-                        <div class="grid">
-                            <div class="grid__item one-fourth">
-                            {{ formgroup(
+					<fieldset>
+						<legend class="label">Wartenummernkreis</legend>
+						<p>Achten Sie darauf, dass sich der Wartenummernkreis nicht mit denen in Standorten im selben Cluster überschneidet</p>
+						<div class="grid">
+							<div class="grid__item one-fourth">
+								{{ formgroup(
                                 {"label": "Wartenummern von"},
                                 [{
                                     "type":"input",
@@ -787,9 +802,9 @@
                                     }
                                 }]
                             ) }}
-                            </div>
-                            <div class="grid__item one-fourth">
-                            {{ formgroup(
+							</div>
+							<div class="grid__item one-fourth">
+								{{ formgroup(
                                 {"label": "Wartenummern bis"},
                                 [{
                                     "type":"input",
@@ -801,11 +816,11 @@
                                     }
                                 }]
                             ) }}
-                            </div>
-                        </div>
-                    </fieldset>
+							</div>
+						</div>
+					</fieldset>
 
-                    {{ formgroup(
+					{{ formgroup(
                         {"label": "Wartenummernkontingent:", "description": "Anzahl ausgegebenener Wartenummern, nach denen die Ausgabe gestoppt wird. (0 = keine Beschränkung)"},
                         [{
                             "type":"input",
@@ -818,7 +833,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {"label": "Durchschnittliche Bearbeitungszeit:", "description": "In Minuten. Wird nur für die Wartezeitberechnung verwendet (1-59). Empfehlenswert ist eine Bearbeitungszeit kleiner als die durchschnittliche Dauer eines Termins, prozentual reduziert um die Quote der Nichtkommer."},
                         [{
                             "type":"input",
@@ -831,7 +846,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {
                             "legend": "Wartezeit publizieren:", 
                             "groupTag": "fieldset", 
@@ -848,7 +863,7 @@
                         }]
                     ) }}
 
-                    {{ formgroup(
+					{{ formgroup(
                         {"label": "Text für die Aufrufanzeige:", "description": "Dieser Text erscheint rechts in der Aufrufanzeige."},
                         [{
                             "type":"textarea",
@@ -861,9 +876,9 @@
                         }]
                     ) }}
 
-                        <fieldset>
-                            <legend class="label">Bild für Aufrufanlage:</legend>
-                            {{ formgroup(
+					<fieldset>
+						<legend class="label">Bild für Aufrufanlage:</legend>
+						{{ formgroup(
                                 {
                                     "label": null
                                 },
@@ -877,8 +892,8 @@
                                         }
                                     }
                                 ]
-                            ) }}        
-                            {{ formgroup(
+                            ) }}
+						{{ formgroup(
                             {
                                 "label": "Bild auswählen", 
                                 "labelClass": "aural", 
@@ -897,22 +912,22 @@
                                     }
                                 }
                             ]
-                        ) }}             
-                        </fieldset>
+                        ) }}
+					</fieldset>
 
-                    </div>
-                </fieldset>
-                
-                <div class="form-actions">
+				</div>
+			</fieldset>
 
-                    <div class="controls">
-                        {% if action != "add" %}
-                        {{ custombutton({ "type":"delete", "class": "button button--destructive", "target": urlGet("scopeDelete", {"id": scope.id}, {}), "label":"Löschen" }) }}
-                        {% endif %}
-                        {{ formbutton({ "type":"save", "class": "button button--positive", "name": "save", "label":"Speichern", "value": "save" }) }}
-                    </div>
-                </div>
-            </div>
-        </form>
+			<div class="form-actions">
 
-    </section>
+				<div class="controls">
+					{% if action != "add" %}
+						{{ custombutton({ "type":"delete", "class": "button button--destructive", "target": urlGet("scopeDelete", {"id": scope.id}, {}), "label":"Löschen" }) }}
+					{% endif %}
+					{{ formbutton({ "type":"save", "class": "button button--positive", "name": "save", "label":"Speichern", "value": "save" }) }}
+				</div>
+			</div>
+		</div>
+	</form>
+
+</section>
