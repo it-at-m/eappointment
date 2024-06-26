@@ -14,7 +14,7 @@
         {% if selectedProcess and not isNewAppointment %}
             <button class="button button-submit process-abort">{{ "%s"|format(abortButtonText)|trans }}</button>
             <button data-id="{{ selectedProcess.id }}" class="button button--destructive button-submit process-delete" data-name="{{ selectedProcess.queue.withAppointment ? selectedProcess.clients|first.familyName|raw : ('Wartenummer ' ~ selectedProcess.queue.number) }}">Löschen</button>
-            <button data-id="{{ selectedProcess.id }}" class="button button-submit process-print" autofocus>{{ "%s"|format("Wartenr. drucken")|trans }}</button>
+            <button data-id="{{ selectedProcess.id }}" class="button button-submit process-print-mail" autofocus>{{ "%s"|format("Termin drucken")|trans }}</button>
             <button data-id="{{ selectedProcess.id }}" class="button button-submit process-copy">{{ "%s"|format("Als neu hinzufügen")|trans }}</button>
             <button data-id="{{ selectedProcess.id }}" class="button button--positive button-submit process-save">{{ "%s"|format("Speichern")|trans }}</button>
         {% else %}
