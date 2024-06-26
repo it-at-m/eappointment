@@ -155,3 +155,25 @@ function validateSlotTime (data) {
 }
 
 export default validate;
+
+export function hasSlotCountError(dataObject) {
+    const errorList = dataObject?.errorList;
+
+    for (let key in errorList) {
+        if (errorList.hasOwnProperty(key)) {
+            const error = errorList[key];
+            if (error && Array.isArray(error.itemList)) {
+                for (let sublist of error.itemList) {
+                    if (Array.isArray(sublist)) {
+                        for (let item of sublist) {
+                            if (item && item.type === 'slotCount') {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
