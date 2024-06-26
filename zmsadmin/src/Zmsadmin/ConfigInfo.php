@@ -23,12 +23,6 @@ class ConfigInfo extends BaseController
         $config = \App::$http->readGetResult('/config/')->getEntity();
 
         $mailtemplates = \App::$http->readGetResult('/mailtemplates/')->getCollection();
-        //echo $mailtemplates;
-
-
-        //die(print_r($mailtemplates, true));
-
-
 
         $mainProcessExample = ((new \BO\Zmsentities\Process)->getExample());
         $mainProcessExample->id = 987654;
