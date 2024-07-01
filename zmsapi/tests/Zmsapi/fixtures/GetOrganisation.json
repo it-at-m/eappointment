@@ -70,7 +70,7 @@
                         "ticketprinter": {
                             "buttonName": "Bürgeramt Karow / Buch",
                             "confirmationEnabled": "0",
-                            "deactivatedText": "aus Kapazitätsgründen\r\nkönnen heute im Bürgeramt\r\nKarow/Buch keine Wartenummern\r\nmehr vergeben werden. In dringenden Fällen und für Terminvergaben melden Sie sich bitte an der Kasse.           \r\n",
+                            "deactivatedText": "",
                             "notificationsAmendmentEnabled": "0",
                             "notificationsEnabled": "0",
                             "notificationsDelay": "0"
@@ -167,7 +167,7 @@
                         "ticketprinter": {
                             "buttonName": "Bürgeramt Pankow",
                             "confirmationEnabled": "0",
-                            "deactivatedText": "Streik in den Pankower Bürgerämtern am Donnerstag, den 26.03.2015\r\n- Terminkunden werden bearbeitet (bitte im Wartebereich Platz nehmen)\r\n- Die Dokumentenausgabe ist geöffnet.\r\n- Der Informationstresen (Schnellschalter) ist geschlossen.",
+                            "deactivatedText": "",
                             "notificationsAmendmentEnabled": "0",
                             "notificationsEnabled": "0",
                             "notificationsDelay": "0"
@@ -286,7 +286,7 @@
                                 "ticketprinter": {
                                     "buttonName": "Bürgeramt",
                                     "confirmationEnabled": "0",
-                                    "deactivatedText": "Achtung: Ab 07. Juli bieten wir unsere Sprechstunde von Montags bis Freitags ausschließlich Terminkunden an. Fertiggestellte Dokumente können Sie direkt am Platz 8 abholen.\r\nIn Notfällen können Sie sich zu den Sprechzeiten an die Information gegenüber wenden. \r\n",
+                                    "deactivatedText": "",
                                     "notificationsAmendmentEnabled": "0",
                                     "notificationsEnabled": "0",
                                     "notificationsDelay": "0"
@@ -381,7 +381,7 @@
                                 "ticketprinter": {
                                     "buttonName": "Bürgeramt Weißensee",
                                     "confirmationEnabled": "0",
-                                    "deactivatedText": "In den Pankower Bürgerämtern werden nur Terminkunden bedient. In dringenden Angelegenheiten und zur Terminvereinbarung wenden Sie sich bitte an die Information.",
+                                    "deactivatedText": "",
                                     "notificationsAmendmentEnabled": "0",
                                     "notificationsEnabled": "0",
                                     "notificationsDelay": "0"
@@ -425,7 +425,7 @@
     "ticketprinters": [
         {
             "enabled": "1",
-            "hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
+            "hash": "54abcdefghijklmnopqrstuvwxyz",
             "id": "1",
             "lastUpdate": "1477661416",
             "name": "Test Ticketprinter"
