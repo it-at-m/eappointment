@@ -54,6 +54,7 @@ class OrganisationTest extends Base
     {
         $query = new Query();
         $entity = $query->readByHash('1abcdefghijklmnopqrstuvwxyz'); //Test Ticketprinter
+        error_log(json_encode($entity));
         $this->assertEntity("\\BO\\Zmsentities\\Organisation", $entity);
         $this->assertEquals('Charlottenburg-Wilmersdorf', $entity->name);
     }
