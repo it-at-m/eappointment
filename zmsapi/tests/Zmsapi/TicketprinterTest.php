@@ -11,8 +11,8 @@ class TicketprinterTest extends Base
         $response = $this->render([], [
             '__body' => '{
                 "enabled": true,
-                "hash": "456abcdefghijklmnopqrstuvwxyz",
-                "id": 456,
+                "hash": "54abcdefghijklmnopqrstuvwxyz",
+                "id": 4,
                 "lastUpdate": 1447925326000,
                 "name": "Eingangsbereich links",
                 "buttons": [
@@ -20,10 +20,10 @@ class TicketprinterTest extends Base
                         "type": "scope",
                         "url": "/scope/101/",
                         "scope": {
-                            "id": 141
+                            "id": 381
                         },
                         "enabled": true,
-                        "name": "Bürgeramt Heerstraße"
+                        "name": "Bürgeramt Karow / Buch"
                     },
                     {
                         "type": "cluster",
@@ -54,10 +54,10 @@ class TicketprinterTest extends Base
     {
         $response = $this->render([], [
             '__body' => '{
-                "buttonlist": "s141,l[http://www.berlin.de/|Portal+Berlin.de]",
+                "buttonlist": "s381,l[http://www.berlin.de/|Portal+Berlin.de]",
                 "enabled": true,
-                "hash": "456abcdefghijklmnopqrstuvwxyz",
-                "id": 456,
+                "hash": "54abcdefghijklmnopqrstuvwxyz",
+                "id": 4,
                 "lastUpdate": 1447925326000,
                 "name": "Eingangsbereich links"
             }'
@@ -102,10 +102,10 @@ class TicketprinterTest extends Base
     {
         $response = $this->render([], [
             '__body' => '{
-                "buttonlist": "s141",
+                "buttonlist": "s381",
                 "enabled": true,
-                "hash": "456abcdefghijklmnopqrstuvwxyz",
-                "id": 456,
+                "hash": "54abcdefghijklmnopqrstuvwxyz",
+                "id": 4,
                 "lastUpdate": 1447925326000,
                 "name": "Eingangsbereich links"
             }'
