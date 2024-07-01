@@ -56,7 +56,7 @@ class TicketprinterTest extends Base
             '__body' => '{
                 "buttonlist": "s141,l[http://www.berlin.de/|Portal+Berlin.de]",
                 "enabled": true,
-                "hash": "54abcdefghijklmnopqrstuvwxyz",
+                "hash": "1abcdefghijklmnopqrstuvwxyz",
                 "id": 1,
                 "lastUpdate": 1447925326000,
                 "name": "Eingangsbereich links"
@@ -74,7 +74,7 @@ class TicketprinterTest extends Base
             '__body' => '{
                 "buttonlist": "s139",
                 "enabled": true,
-                "hash": "54abcdefghijklmnopqrstuvwxyz",
+                "hash": "2abcdefghijklmnopqrstuvwxyz",
                 "id": 1,
                 "lastUpdate": 1447925326000,
                 "name": "Eingangsbereich links"
@@ -90,7 +90,7 @@ class TicketprinterTest extends Base
             '__body' => '{
                 "buttonlist": "s106",
                 "enabled": true,
-                "hash": "54abcdefghijklmnopqrstuvwxyz",
+                "hash": "2abcdefghijklmnopqrstuvwxyz",
                 "id": 1,
                 "lastUpdate": 1447925326000,
                 "name": "Eingangsbereich links"
@@ -104,7 +104,7 @@ class TicketprinterTest extends Base
             '__body' => '{
                 "buttonlist": "s141",
                 "enabled": true,
-                "hash": "54abcdefghijklmnopqrstuvwxyz",
+                "hash": "2abcdefghijklmnopqrstuvwxyz",
                 "id": 2,
                 "lastUpdate": 1447925326000,
                 "name": "Eingangsbereich links"
@@ -131,7 +131,7 @@ class TicketprinterTest extends Base
         $this->render([], [
             '__body' => '{
                 "buttonlist": "s141,l[http://www.berlin.de/|Portal+Berlin.de]",
-                "hash": "54abcdefghijklmnopqrstuvwxyz",
+                "hash": "1abcdefghijklmnopqrstuvwxyz",
                 "id": 1234
             }'
         ], []);
