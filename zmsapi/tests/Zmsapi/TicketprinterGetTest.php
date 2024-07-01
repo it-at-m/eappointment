@@ -8,7 +8,7 @@ class TicketprinterGetTest extends Base
 
     public function testRendering()
     {
-        $response = $this->render(['hash' => 'ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2'], [], []);
+        $response = $this->render(['hash' => '1abcdefghijklmnopqrstuvwxyz'], [], []);
         $this->assertStringContainsString('ticketprinter.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
