@@ -11,7 +11,7 @@ class TicketprinterTest extends Base
         $response = $this->render([], [
             '__body' => '{
                 "enabled": true,
-                "hash": "54abcdefghijklmnopqrstuvwxyz",
+                "hash": "1abcdefghijklmnopqrstuvwxyz",
                 "id": 1,
                 "lastUpdate": 1447925326000,
                 "name": "Eingangsbereich links",
