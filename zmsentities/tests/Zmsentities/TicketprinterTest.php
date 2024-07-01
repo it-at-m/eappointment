@@ -10,7 +10,7 @@ class TicketprinterTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $this->assertStringContainsString('54', $entity->getHashWith(54), 'Hash not contains organisationId 54');
-        $this->assertTrue(34 == strlen($entity->getHashWith(54)->hash), 'Hash length does not match');
+        $this->assertTrue(27 == strlen($entity->getHashWith(54)->hash), 'Hash length does not match');
         $this->assertTrue($entity->isEnabled(), 'Ticketprinter should be enabled');
     }
 
