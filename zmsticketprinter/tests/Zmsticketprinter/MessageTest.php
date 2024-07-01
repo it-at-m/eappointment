@@ -21,7 +21,7 @@ class MessageTest extends Base
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/ticketprinter/71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2/',
+                'url' => '/ticketprinter/711abcdefghijklmnopqrstuvwxyz/',
                 'response' => $this->readFixture("GET_ticketprinter.json"),
             ],
             [
@@ -38,7 +38,7 @@ class MessageTest extends Base
           'status' => 'process_success',
         ], [
             '__cookie' => [
-                'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
+                'Ticketprinter' => '711abcdefghijklmnopqrstuvwxyz',
             ],
             'scopeId' => 141
         ], [ ]);

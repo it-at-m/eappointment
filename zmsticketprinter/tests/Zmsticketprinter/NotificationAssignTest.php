@@ -40,7 +40,7 @@ class NotificationAssignTest extends Base
     {
         $response = $this->render([], [
             '__cookie' => [
-                'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
+                'Ticketprinter' => '711abcdefghijklmnopqrstuvwxyz',
             ],
             'processId' => 100044,
             'authKey' => '57c2',
