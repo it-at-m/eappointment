@@ -154,6 +154,7 @@ class Mail extends BaseController
         $this->log("Build Mailer: new PHPMailer() - ". \App::$now->format('c'));
         $mailer = new PHPMailer(true);
         $mailer->CharSet = 'UTF-8';
+        $mailer->SMTPDebug = true;
         $mailer->SetLanguage("de");
         $mailer->Encoding = $encoding;
         $mailer->IsHTML(true);
