@@ -11,8 +11,8 @@ class TicketprinterTest extends Base
         $response = $this->render([], [
             '__body' => '{
                 "enabled": true,
-                "hash": "54abcdefghijklmnopqrstuvwxyz",
-                "id": 4,
+                "hash": "456abcdefghijklmnopqrstuvwxyz",
+                "id": 456,
                 "lastUpdate": 1447925326000,
                 "name": "Eingangsbereich links",
                 "buttons": [
@@ -56,8 +56,8 @@ class TicketprinterTest extends Base
             '__body' => '{
                 "buttonlist": "s141,l[http://www.berlin.de/|Portal+Berlin.de]",
                 "enabled": true,
-                "hash": "54abcdefghijklmnopqrstuvwxyz",
-                "id": 4,
+                "hash": "456abcdefghijklmnopqrstuvwxyz",
+                "id": 456,
                 "lastUpdate": 1447925326000,
                 "name": "Eingangsbereich links"
             }'
@@ -104,8 +104,8 @@ class TicketprinterTest extends Base
             '__body' => '{
                 "buttonlist": "s141",
                 "enabled": true,
-                "hash": "54abcdefghijklmnopqrstuvwxyz",
-                "id": 4,
+                "hash": "456abcdefghijklmnopqrstuvwxyz",
+                "id": 456,
                 "lastUpdate": 1447925326000,
                 "name": "Eingangsbereich links"
             }'
