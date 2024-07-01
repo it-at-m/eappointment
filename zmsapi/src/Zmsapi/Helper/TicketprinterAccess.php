@@ -55,6 +55,7 @@ class TicketprinterAccess
     public static function testTicketprinterValidHash($entity)
     {
         error_log($entity->id);
+        error_log($entity->hash);
         if (isset($entity->id) &&
             $entity->id &&
             (new \BO\Zmsdb\Ticketprinter)->readByHash($entity->hash)->id != $entity->id) {
