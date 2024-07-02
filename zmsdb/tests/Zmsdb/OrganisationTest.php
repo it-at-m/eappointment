@@ -55,7 +55,7 @@ class OrganisationTest extends Base
         $query = new Query();
         $entity = $query->readByHash('71abcdefghijklmnopqrstuvwxyz'); //Test Ticketprinter
         $this->assertEntity("\\BO\\Zmsentities\\Organisation", $entity);
-        $this->assertEquals('Pankow', $entity->name);
+        $this->assertEquals('Charlottenburg-Wilmersdorf', $entity->name);
     }
 
     public function testReadByClusterIdFailed()
