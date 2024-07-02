@@ -30,11 +30,14 @@ class Ticketprinter
         $this->organisation = $this->readOrganisation();
         $entity = $this->getAssembledEntity();
 
-        $hash = static::getHashFromRequest($request);
-        if ('' === $hash) {
-            $entity = $this->writeNewWithHash($request, $entity);
-        } else {
+        //$hash = static::getHashFromRequest($request);
+        $hash = $this->organisation->id . 'abcdefghijklmnopqrstuvwxyz';
+
+        try {
             $entity = $this->getByHash($hash, $entity);
+        } catch (\Exception $e) {
+            error_log('Error in getByHash creating new organisation hash: ' . $e->getMessage());
+            $entity = $this->writeNewWithHash($request, $entity);
         }
 
         $this->entity = \App::$http->readPostResult('/ticketprinter/', $entity)->getEntity();
