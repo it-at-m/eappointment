@@ -12,7 +12,7 @@ class TicketprinterTest extends Base
             '__body' => '{
                 "enabled": true,
                 "hash": "71abcdefghijklmnopqrstuvwxyz",
-                "id": 1,
+                "id": 8,
                 "lastUpdate": 1447925326000,
                 "name": "Eingangsbereich links",
                 "buttons": [
@@ -57,7 +57,7 @@ class TicketprinterTest extends Base
                 "buttonlist": "s141,l[http://www.berlin.de/|Portal+Berlin.de]",
                 "enabled": true,
                 "hash": "71abcdefghijklmnopqrstuvwxyz",
-                "id": 1,
+                "id": 8,
                 "lastUpdate": 1447925326000,
                 "name": "Eingangsbereich links"
             }'
@@ -91,7 +91,7 @@ class TicketprinterTest extends Base
                 "buttonlist": "s106",
                 "enabled": true,
                 "hash": "71abcdefghijklmnopqrstuvwxyz",
-                "id": 1,
+                "id": 8,
                 "lastUpdate": 1447925326000,
                 "name": "Eingangsbereich links"
             }'
@@ -104,8 +104,8 @@ class TicketprinterTest extends Base
             '__body' => '{
                 "buttonlist": "s141",
                 "enabled": true,
-                "hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f3",
-                "id": 2,
+                "hash": "71abcdefghijklmnopqrstuvwxyz",
+                "id": 8,
                 "lastUpdate": 1447925326000,
                 "name": "Eingangsbereich links"
             }'

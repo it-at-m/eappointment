@@ -1,7 +1,7 @@
 {
     "$schema": "https://schema.berlin.de/queuemanagement/organisation.json",
     "name": "Pankow",
-    "id": "71",
+    "id": "54",
     "contact": {
         "city": "",
         "street": "",
@@ -27,7 +27,7 @@
     "ticketprinters": [
         {
             "enabled": "1",
-            "hash": "71abcdefghijklmnopqrstuvwxyz",
+            "hash": "54abcdefghijklmnopqrstuvwxyz",
             "id": "1",
             "lastUpdate": "1477661416",
             "name": "Test Ticketprinter"
