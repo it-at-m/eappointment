@@ -28,7 +28,7 @@ class TicketprinterByScopeWithoutHashTest extends Base
             [
                 'function' => 'readPostResult',
                 'url' => '/ticketprinter/',
-                'response' => $this->readFixture("GET_ticketprinter_buttonlist_services_2.json"),
+                'response' => $this->readFixture("GET_ticketprinter_buttonlist_2.json"),
             ],
             [
                 'function' => 'readGetResult',
@@ -57,7 +57,7 @@ class TicketprinterByScopeWithoutHashTest extends Base
                 'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
             ],
             'ticketprinter' => [
-                'buttonlist' => 'r141-111,r141-223'
+                'buttonlist' => 's141'
             ]
         ], [ ]);
         $this->assertTrue('71abcdefghijklmnopqrstuvwxyz' == $_COOKIE['Ticketprinter']);
