@@ -37,6 +37,8 @@ jobs:
             php_version: "8.0"
           - module: zmsstatistic
             php_version: "8.0"
+          - module: zmsticketprinter
+            php_version: "8.0"
 
 
   zmsapi-test:
