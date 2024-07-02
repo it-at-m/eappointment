@@ -80,9 +80,6 @@ class Ticketprinter
 
     protected function getByHash(string $hash, Entity $entity): Entity
     {
-        error_log($hash);
-        error_log($entity);
-        error_log("***************************************************************");
         $entityWithHash = \App::$http->readGetResult('/ticketprinter/'. $hash . '/')->getEntity();
         $entity->hash = $entityWithHash->hash;
         $entity->enabled = $entityWithHash->enabled;
