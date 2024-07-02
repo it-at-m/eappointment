@@ -21,7 +21,7 @@ class IndexTest extends Base
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/ticketprinter/711abcdefghijklmnopqrstuvwxyz/',
+                'url' => '/ticketprinter/71abcdefghijklmnopqrstuvwxyz/',
                 'response' => $this->readFixture("GET_ticketprinter.json"),
             ],
             [
@@ -48,7 +48,7 @@ class IndexTest extends Base
     {
         $response = $this->render([ ], [
             '__cookie' => [
-                'Ticketprinter' => '711abcdefghijklmnopqrstuvwxyz',
+                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
             ],
             'ticketprinter' => [
                 'buttonlist' => 's141,l[http://www.berlin.de/|Portal berlin.de]'

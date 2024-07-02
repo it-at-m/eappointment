@@ -25,7 +25,7 @@ class NotificationAssignFailedTest extends Base
     {
         $response = $this->render([], [
             '__cookie' => [
-                'Ticketprinter' => '711abcdefghijklmnopqrstuvwxyz',
+                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
             ],
             'processId' => 100044,
             'authKey' => '57c2',

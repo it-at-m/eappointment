@@ -15,7 +15,7 @@ class ProcessByScopeTest extends Base
         return [
             [
                 'function' => 'readGetResult',
-                'url' => '/ticketprinter/711abcdefghijklmnopqrstuvwxyz/',
+                'url' => '/ticketprinter/71abcdefghijklmnopqrstuvwxyz/',
                 'response' => $this->readFixture("GET_ticketprinter.json"),
             ],
             [
@@ -30,7 +30,7 @@ class ProcessByScopeTest extends Base
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/scope/141/waitingnumber/711abcdefghijklmnopqrstuvwxyz/',
+                'url' => '/scope/141/waitingnumber/71abcdefghijklmnopqrstuvwxyz/',
                 'response' => $this->readFixture("GET_process_100044_57c2.json"),
             ],
             [
@@ -58,7 +58,7 @@ class ProcessByScopeTest extends Base
     {
         $response = $this->render([], [
             '__cookie' => [
-                'Ticketprinter' => '711abcdefghijklmnopqrstuvwxyz',
+                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
             ],
             'scopeId' => 141,
         ], [ ]);

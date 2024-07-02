@@ -17,7 +17,7 @@ class ProcessByScopeWithNotificationTest extends Base
             [
                 [
                     'function' => 'readGetResult',
-                    'url' => '/ticketprinter/711abcdefghijklmnopqrstuvwxyz/',
+                    'url' => '/ticketprinter/71abcdefghijklmnopqrstuvwxyz/',
                     'response' => $this->readFixture("GET_ticketprinter_buttonlist_single_notification.json"),
                 ],
                 [
@@ -32,7 +32,7 @@ class ProcessByScopeWithNotificationTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/waitingnumber/711abcdefghijklmnopqrstuvwxyz/',
+                    'url' => '/scope/141/waitingnumber/71abcdefghijklmnopqrstuvwxyz/',
                     'response' => $this->readFixture("GET_process_100044_57c2_with_notifications.json"),
                 ],
                 [
@@ -57,7 +57,7 @@ class ProcessByScopeWithNotificationTest extends Base
         );
         $response = $this->render([], [
             '__cookie' => [
-                'Ticketprinter' => '711abcdefghijklmnopqrstuvwxyz',
+                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
             ],
             'scopeId' => 141,
         ], [ ]);
@@ -71,7 +71,7 @@ class ProcessByScopeWithNotificationTest extends Base
             [
                 [
                     'function' => 'readGetResult',
-                    'url' => '/ticketprinter/711abcdefghijklmnopqrstuvwxyz/',
+                    'url' => '/ticketprinter/71abcdefghijklmnopqrstuvwxyz/',
                     'response' => $this->readFixture("GET_ticketprinter_buttonlist_single_notification.json"),
                 ],
                 [
@@ -86,7 +86,7 @@ class ProcessByScopeWithNotificationTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/waitingnumber/711abcdefghijklmnopqrstuvwxyz/',
+                    'url' => '/scope/141/waitingnumber/71abcdefghijklmnopqrstuvwxyz/',
                     'response' => $this->readFixture("GET_process_100044_57c2_with_notifications.json"),
                 ],
                 [
@@ -111,7 +111,7 @@ class ProcessByScopeWithNotificationTest extends Base
         );
         $response = $this->render([], [
             '__cookie' => [
-                'Ticketprinter' => '711abcdefghijklmnopqrstuvwxyz',
+                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
             ],
             'scopeId' => 141,
         ], [ ]);

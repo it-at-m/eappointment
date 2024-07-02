@@ -21,7 +21,7 @@ class TicketprinterByScopeTest extends Base
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/ticketprinter/711abcdefghijklmnopqrstuvwxyz/',
+                'url' => '/ticketprinter/71abcdefghijklmnopqrstuvwxyz/',
                 'response' => $this->readFixture("GET_ticketprinter.json"),
             ],
             [
@@ -55,7 +55,7 @@ class TicketprinterByScopeTest extends Base
             'scopeId' => 312
         ], [
             '__cookie' => [
-                'Ticketprinter' => '711abcdefghijklmnopqrstuvwxyz',
+                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
             ]
         ], [ ]);
         $this->assertStringContainsString('Wartenummer für', (string) $response->getBody());
