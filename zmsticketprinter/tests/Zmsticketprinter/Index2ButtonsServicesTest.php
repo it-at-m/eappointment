@@ -55,7 +55,7 @@ class Index2ButtonsServicesTest extends Base
             ]
         ], [ ]);
 
-        $this->assertStringContainsString('wartebuttonbereich_zweizeilig_tief', (string) $response->getBody());
+        $this->assertStringContainsString('Apparat-Id: 71abcdefghijklmnopqrstuvwxyz\n', (string) $response->getBody());
         $this->assertStringContainsString('Request 1</button>', (string) $response->getBody());
         $this->assertStringContainsString('Request 2</button>', (string) $response->getBody());
     }
