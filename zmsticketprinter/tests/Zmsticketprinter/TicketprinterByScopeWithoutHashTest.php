@@ -15,13 +15,13 @@ class TicketprinterByScopeWithoutHashTest extends Base
         return [
             [
                 'function' => 'readGetResult',
-                'url' => '/scope/312/organisation/',
+                'url' => '/scope/141/organisation/',
                 'parameters' => ['resolveReferences' => 2],
-                'response' => $this->readFixture("GET_organisation_78.json"),
+                'response' => $this->readFixture("GET_organisation_71.json"),
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/organisation/78/hash/',
+                'url' => '/organisation/71/hash/',
                 'parameters' => ['name' => ''],
                 'response' => $this->readFixture("GET_ticketprinter.json"),
             ],
@@ -32,13 +32,13 @@ class TicketprinterByScopeWithoutHashTest extends Base
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/scope/312/department/',
-                'response' => $this->readFixture("GET_department_127.json"),
+                'url' => '/scope/141/department/',
+                'response' => $this->readFixture("GET_department_74.json"),
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/scope/312/queue/',
-                'response' => $this->readFixture("GET_queuelist_312.json"),
+                'url' => '/scope/141/queue/',
+                'response' => $this->readFixture("GET_queuelist_141.json"),
             ],
             [
                 'function' => 'readGetResult',
@@ -53,8 +53,8 @@ class TicketprinterByScopeWithoutHashTest extends Base
     public function testRendering()
     {
         $this->render([
-            'scopeId' => 312
+            'scopeId' => 141
         ], [ ], [ ]);
-        $this->assertTrue('78abcdefghijklmnopqrstuvwxyz' == $_COOKIE['Ticketprinter']);
+        $this->assertTrue('71abcdefghijklmnopqrstuvwxyz' == $_COOKIE['Ticketprinter']);
     }
 }
