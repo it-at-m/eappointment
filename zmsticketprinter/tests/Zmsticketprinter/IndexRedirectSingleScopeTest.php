@@ -48,7 +48,7 @@ class IndexRedirectSingleScopeTest extends Base
     {
         $response = $this->render([ ], [
             '__cookie' => [
-                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
+                'Ticketprinter' => '78abcdefghijklmnopqrstuvwxyz',
             ],
             'ticketprinter' => [
                 'buttonlist' => 's312'

@@ -55,7 +55,7 @@ class TicketprinterByScopeTest extends Base
             'scopeId' => 312
         ], [
             '__cookie' => [
-                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
+                'Ticketprinter' => '78abcdefghijklmnopqrstuvwxyz',
             ]
         ], [ ]);
         $this->assertStringContainsString('Wartenummer für', (string) $response->getBody());

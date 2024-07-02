@@ -48,7 +48,7 @@ class IndexCustomizedByDepartmentTest extends Base
     {
         $response = $this->render([ ], [
             '__cookie' => [
-                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
+                'Ticketprinter' => '70abcdefghijklmnopqrstuvwxyz',
             ],
             'ticketprinter' => [
                 'buttonlist' => 's637'
