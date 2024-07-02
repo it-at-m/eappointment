@@ -9,7 +9,7 @@
   "data": {
 	"$schema": "https:\/\/schema.berlin.de\/queuemanagement\/ticketprinter.json",
 	"enabled": "1",
-	"hash": "711abcdefghijklmnopqrstuvwxyz",
+	"hash": "71abcdefghijklmnopqrstuvwxyz",
 	"id": "1",
 	"lastUpdate": "1477661416",
 	"name": "Test Ticketprinter",
