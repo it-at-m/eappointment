@@ -17,6 +17,7 @@ define('ZMS_MESSAGING_SMTP_AUTH_METHOD', getenv('ZMS_MESSAGING_SMTP_AUTH_METHOD'
 define('ZMS_MESSAGING_SMTP_USERNAME', getenv('ZMS_MESSAGING_SMTP_USERNAME'));
 define('ZMS_MESSAGING_SMTP_PASSWORD', getenv('ZMS_MESSAGING_SMTP_PASSWORD'));
 define('ZMS_MESSAGING_SMTP_SKIP_TLS_VERIFY', getenv('ZMS_MESSAGING_SMTP_SKIP_TLS_VERIFY') !== false);
+define('ZMS_MESSAGING_SMTP_DEBUG', getenv('ZMS_MESSAGING_SMTP_DEBUG') !== false);
 
 class App extends \BO\Zmsmessaging\Application
 {
@@ -54,6 +55,7 @@ class App extends \BO\Zmsmessaging\Application
     public static $smtp_username = ZMS_MESSAGING_SMTP_USERNAME;
     public static $smtp_password = ZMS_MESSAGING_SMTP_PASSWORD;
     public static $smtp_skip_tls_verify = ZMS_MESSAGING_SMTP_SKIP_TLS_VERIFY;
+    public static $smtp_debug = ZMS_MESSAGING_SMTP_DEBUG;
 }
 
 // uncomment for testing
