@@ -21,8 +21,7 @@ class TicketprinterByScopeWithoutHashTest extends Base
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/organisation/71/hash/',
-                'parameters' => ['name' => ''],
+                'url' => '/ticketprinter/71abcdefghijklmnopqrstuvwxyz/',
                 'response' => $this->readFixture("GET_ticketprinter.json"),
             ],
             [
