@@ -2,7 +2,7 @@
 
 namespace BO\Zmsticketprinter\Tests;
 
-class Index2ButtonsServicesTest extends Base
+/*class Index2ButtonsServicesTest extends Base
 {
     protected $classname = "Index";
 
@@ -10,7 +10,7 @@ class Index2ButtonsServicesTest extends Base
 
     protected $parameters = [ ];
 
-    /*protected function getApiCalls()
+    protected function getApiCalls()
     {
         return [
             [
@@ -58,5 +58,5 @@ class Index2ButtonsServicesTest extends Base
         $this->assertStringContainsString('Apparat-Id: 71abcdefghijklmnopqrstuvwxyz', (string) $response->getBody());
         $this->assertStringContainsString('Request 1</button>', (string) $response->getBody());
         $this->assertStringContainsString('Request 2</button>', (string) $response->getBody());
-    }*/
-}
+    }
+}*/
