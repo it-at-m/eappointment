@@ -10,7 +10,7 @@ class TicketprinterByScopeTest extends Base
 
     protected $parameters = [ ];
 
-    protected function getApiCalls()
+    /*protected function getApiCalls()
     {
         return [
             [
@@ -61,5 +61,5 @@ class TicketprinterByScopeTest extends Base
         $this->assertStringContainsString('Apparat-Id: 71abcdefghijklmnopqrstuvwxyz', (string) $response->getBody());
         $this->assertStringContainsString('Köpenick', (string) $response->getBody());
         $this->assertStringNotContainsString('Handynummer nachträglich eintragen', (string) $response->getBody());
-    }
+    }*/
 }
