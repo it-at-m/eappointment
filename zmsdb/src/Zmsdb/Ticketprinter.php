@@ -122,7 +122,7 @@ class Ticketprinter extends Base
             throw new Exception\Scope\GivenNumberCountExceeded();
         }
         if ($scope && $scope->getStatus('ticketprinter', 'deactivated')) {
-            error_log(json_encode($scope));
+            error_log(json_encode($ticketprinter));
             throw new Exception\Ticketprinter\DisabledByScope(
                 $scope->getPreference('ticketprinter', 'deactivatedText')
             );

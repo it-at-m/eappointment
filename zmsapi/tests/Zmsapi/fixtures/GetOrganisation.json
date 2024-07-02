@@ -77,7 +77,7 @@
                             "notificationsDelay": "0"
                         },
                         "workstation": {
-                            "emergencyEnabled": "1",
+                            "emergencyEnabled": "0",
                             "emergencyRefreshInterval": "5"
                         }
                     },
@@ -94,7 +94,7 @@
                             "lastGivenNumberTimestamp": 1458774000
                         },
                         "ticketprinter": {
-                            "deactivated": false
+                            "deactivated": "0"
                         }
                     },
                     "provider": {
@@ -191,7 +191,7 @@
                             "lastGivenNumberTimestamp": 1458774000
                         },
                         "ticketprinter": {
-                            "deactivated": false
+                            "deactivated": "0"
                         }
                     },
                     "provider": {
@@ -310,7 +310,7 @@
                                     "lastGivenNumberTimestamp": 1458774000
                                 },
                                 "ticketprinter": {
-                                    "deactivated": false
+                                    "deactivated": "0"
                                 }
                             },
                             "provider": {
@@ -405,7 +405,7 @@
                                     "lastGivenNumberTimestamp": 1458774000
                                 },
                                 "ticketprinter": {
-                                    "deactivated": false
+                                    "deactivated": "0"
                                 }
                             },
                             "provider": {
