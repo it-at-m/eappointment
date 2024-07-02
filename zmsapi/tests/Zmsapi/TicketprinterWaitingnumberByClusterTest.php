@@ -9,7 +9,7 @@ class TicketprinterWaitingnumberByClusterTest extends Base
     public function testRendering()
     {
         //Schöneberg with test scope ghostWorkstationCount of 3
-        $response = $this->render(['id' => 4, 'hash' => 'ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2'], [], []);
+        $response = $this->render(['id' => 4, 'hash' => '1abcdefghijklmnopqrstuvwxyz'], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertStringContainsString('"id":"146"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -19,13 +19,13 @@ class TicketprinterWaitingnumberByClusterTest extends Base
     {
         $this->expectException('BO\Zmsapi\Exception\Cluster\ClusterNotFound');
         $this->expectExceptionCode(404);
-        $this->render(['id' => 999, 'hash' => 'ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2'], [], []);
+        $this->render(['id' => 999, 'hash' => '1abcdefghijklmnopqrstuvwxyz'], [], []);
     }
 
     public function testProcessReserveFailed()
     {
         $this->expectException('BO\Zmsdb\Exception\Cluster\ScopesWithoutWorkstationCount');
         $this->expectExceptionCode(404);
-        $this->render(['id' => 76, 'hash' => 'ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2'], [], []);
+        $this->render(['id' => 76, 'hash' => '1abcdefghijklmnopqrstuvwxyz'], [], []);
     }
 }

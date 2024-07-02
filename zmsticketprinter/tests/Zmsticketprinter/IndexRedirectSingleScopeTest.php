@@ -21,7 +21,7 @@ class IndexRedirectSingleScopeTest extends Base
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/ticketprinter/71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2/',
+                'url' => '/ticketprinter/78abcdefghijklmnopqrstuvwxyz/',
                 'response' => $this->readFixture("GET_ticketprinter.json"),
             ],
             [
@@ -48,7 +48,7 @@ class IndexRedirectSingleScopeTest extends Base
     {
         $response = $this->render([ ], [
             '__cookie' => [
-                'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
+                'Ticketprinter' => '78abcdefghijklmnopqrstuvwxyz',
             ],
             'ticketprinter' => [
                 'buttonlist' => 's312'

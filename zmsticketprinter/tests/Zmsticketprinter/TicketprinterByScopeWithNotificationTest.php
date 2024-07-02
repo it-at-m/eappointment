@@ -21,7 +21,7 @@ class TicketprinterByScopeWithNotificationTest extends Base
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/ticketprinter/71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2/',
+                'url' => '/ticketprinter/71abcdefghijklmnopqrstuvwxyz/',
                 'response' => $this->readFixture("GET_ticketprinter.json"),
             ],
             [
@@ -55,11 +55,11 @@ class TicketprinterByScopeWithNotificationTest extends Base
             'scopeId' => 141
         ], [
             '__cookie' => [
-                'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
+                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
             ]
         ], [ ]);
-        $this->assertStringContainsString('Wartenummer für', (string) $response->getBody());
-        $this->assertStringContainsString('Heerstraße', (string) $response->getBody());
+        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        $this->assertStringContainsString('buttonTelefonnummernachtragen', (string) $response->getBody());
         $this->assertStringContainsString('Handynummer nachträglich eintragen', (string) $response->getBody());
     }
 }
