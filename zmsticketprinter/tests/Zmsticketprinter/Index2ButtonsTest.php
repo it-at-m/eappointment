@@ -54,6 +54,6 @@ class Index2ButtonsTest extends Base
                 'buttonlist' => 's141'
             ]
         ], [ ]);
-        $this->assertStringContainsString('Apparat-Id: 71abcdefghijklmnopqrstuvwxyz\n', (string) $response->getBody());
+        $this->assertStringContainsString('Apparat-Id: 71abcdefghijklmnopqrstuvwxyz', (string) $response->getBody());
     }
 }
