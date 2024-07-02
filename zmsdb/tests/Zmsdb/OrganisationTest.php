@@ -53,7 +53,7 @@ class OrganisationTest extends Base
     public function testReadByTicketprinterHash()
     {
         $query = new Query();
-        $entity = $query->readByHash('54abcdefghijklmnopqrstuvwxyz'); //Test Ticketprinter
+        $entity = $query->readByHash('71abcdefghijklmnopqrstuvwxyz'); //Test Ticketprinter
         $this->assertEntity("\\BO\\Zmsentities\\Organisation", $entity);
         $this->assertEquals('Pankow', $entity->name);
     }
