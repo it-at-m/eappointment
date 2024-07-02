@@ -21,7 +21,7 @@ class IndexRedirectSingleScopeTest extends Base
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/ticketprinter/71abcdefghijklmnopqrstuvwxyz/',
+                'url' => '/ticketprinter/78abcdefghijklmnopqrstuvwxyz/',
                 'response' => $this->readFixture("GET_ticketprinter.json"),
             ],
             [

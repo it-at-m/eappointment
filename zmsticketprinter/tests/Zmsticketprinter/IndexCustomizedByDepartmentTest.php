@@ -21,7 +21,7 @@ class IndexCustomizedByDepartmentTest extends Base
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/ticketprinter/71abcdefghijklmnopqrstuvwxyz/',
+                'url' => '/ticketprinter/70abcdefghijklmnopqrstuvwxyz/',
                 'response' => $this->readFixture("GET_ticketprinter.json"),
             ],
             [
