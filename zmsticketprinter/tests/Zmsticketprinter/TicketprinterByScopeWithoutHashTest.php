@@ -53,6 +53,9 @@ class TicketprinterByScopeWithoutHashTest extends Base
     public function testRendering()
     {
         $this->render([
+            '__cookie' => [
+                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
+            ],
             'scopeId' => 141
         ], [ ], [ ]);
         $this->assertTrue('71abcdefghijklmnopqrstuvwxyz' == $_COOKIE['Ticketprinter']);
