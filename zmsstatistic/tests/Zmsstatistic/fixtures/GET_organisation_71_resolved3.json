@@ -646,7 +646,7 @@
             {
                 "enabled": "1",
                 "reload": 30,
-                "hash": "1abcdefghijklmnopqrstuvwxyz",
+                "hash": "71abcdefghijklmnopqrstuvwxyz",
                 "id": "1",
                 "lastUpdate": "1477661416",
                 "name": "Test Ticketprinter"
