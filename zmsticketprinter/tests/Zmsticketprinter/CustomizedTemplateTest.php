@@ -21,7 +21,7 @@ class CustomizedTemplateTest extends Base
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/ticketprinter/710caa9f2e7547a52106d6b00868c5cf3a/',
+                'url' => '/ticketprinter/71abcdefghijklmnopqrstuvwxyz/',
                 'response' => $this->readFixture("GET_ticketprinter.json"),
             ],
             [
@@ -55,7 +55,7 @@ class CustomizedTemplateTest extends Base
             'scopeId' => 615
         ], [
             '__cookie' => [
-                'Ticketprinter' => '710caa9f2e7547a52106d6b00868c5cf3a',
+                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
             ]
         ], [ ]);
         $this->assertEquals('200', $response->getStatusCode());
@@ -71,7 +71,7 @@ class CustomizedTemplateTest extends Base
             'scopeId' => 615
         ], [
             '__cookie' => [
-                'Ticketprinter' => '710caa9f2e7547a52106d6b00868c5cf3a',
+                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
             ],
             'template' => 'notfound'
         ], [ ]);
