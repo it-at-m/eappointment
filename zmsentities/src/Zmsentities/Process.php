@@ -162,6 +162,11 @@ class Process extends Schema\Entity
         return (bool)((int)$this->toProperty()->scope->preferences->client->adminMailOnUpdated->get());
     }
 
+    public function shouldSendAdminMailOnClerkMail()
+    {
+        return (bool)((int)$this->toProperty()->scope->preferences->client->adminMailOnMailSent->get());
+    }
+
     public function withUpdatedData($requestData, \DateTimeInterface $dateTime, $scope = null, $notice = '')
     {
         $this->scope = ($scope) ? $scope : $this->scope;

@@ -168,6 +168,7 @@ class Scope extends Base implements MappingInterface
             'preferences__client__adminMailOnAppointment' => 'scope.admin_mail_on_appointment',
             'preferences__client__adminMailOnDeleted' => 'scope.admin_mail_on_deleted',
             'preferences__client__adminMailOnUpdated' => 'scope.admin_mail_on_updated',
+            'preferences__client__adminMailOnMailSent' => 'scope.admin_mail_on_mail_sent',
             'preferences__notifications__confirmationContent' => 'scope.smsbestaetigungstext',
             'preferences__notifications__headsUpContent' => 'scope.smsbenachrichtigungstext',
             'preferences__notifications__headsUpTime' => 'scope.smsbenachrichtigungsfrist',
@@ -309,6 +310,7 @@ class Scope extends Base implements MappingInterface
         $data['admin_mail_on_appointment'] = $entity->getPreference('client', 'adminMailOnAppointment', true);
         $data['admin_mail_on_deleted'] = $entity->getPreference('client', 'adminMailOnDeleted');
         $data['admin_mail_on_updated'] = $entity->getPreference('client', 'adminMailOnUpdated', true);
+        $data['admin_mail_on_mail_sent'] = $entity->getPreference('client', 'adminMailOnMailSent', true);
         $data['smsbestaetigungstext'] = $entity->getPreference('notifications', 'confirmationContent');
         $data['smsbenachrichtigungstext'] = $entity->getPreference('notifications', 'headsUpContent');
         $data['smsbenachrichtigungsfrist'] = $entity->getPreference('notifications', 'headsUpTime');
@@ -380,6 +382,7 @@ class Scope extends Base implements MappingInterface
             $data[$this->getPrefixed("preferences__client__adminMailOnAppointment")] = 0;
             $data[$this->getPrefixed("preferences__client__adminMailOnDeleted")] = 0;
             $data[$this->getPrefixed("preferences__client__adminMailOnUpdated")] = 0;            
+            $data[$this->getPrefixed("preferences__client__adminMailOnMailSent")] = 0;            
         }
         if (!$data[$this->getPrefixed('preferences__client__customTextfieldActivated')]) {
             $data[$this->getPrefixed("preferences__client__customTextfieldRequired")] = 0;

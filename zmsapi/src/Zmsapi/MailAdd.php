@@ -26,9 +26,16 @@ class MailAdd extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Mail($input);
         $entity->testValid();
+
+        $process = new \BO\Zmsentities\Process($entity->process);
+
         $mail = (new Query())->writeInQueue($entity, \App::$now);
         $message = Response\Message::create($request);
         $message->data = $mail;
+
+        if ($process->shouldSendAdminMailOnClerkMail()) {
+            (new \BO\Zmsdb\Mail())->writeInQueueWithAdmin($entity);
+        }
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
