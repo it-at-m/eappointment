@@ -52,7 +52,8 @@ class IndexCustomizedByDepartmentTest extends Base
             ],
             'ticketprinter' => [
                 'buttonlist' => 's637'
-            ]
+            ],
+            'scopeId' => 637
         ], [ ]);
         $this->assertStringContainsString('customized', (string) $response->getBody());
     }

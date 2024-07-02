@@ -52,7 +52,8 @@ class IndexRedirectSingleScopeTest extends Base
             ],
             'ticketprinter' => [
                 'buttonlist' => 's312'
-            ]
+            ],
+            'scopeId' => 312
         ], [ ]);
         $this->assertRedirect($response, '/scope/312/');
     }
