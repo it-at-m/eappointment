@@ -218,6 +218,15 @@
                                 "value": 1,
                                 "checked": scope.preferences.client.adminMailOnUpdated|default(0),
                             }
+                        },{
+                            "type":"checkbox",
+                            "parameter": {
+                                "label": "bei E-Mail Versand durch Sachbearbeiter*in (Betreff: Information zu Ihrer Wartenummer)",
+                                "name": "preferences[client][adminMailOnMailSent]",
+                                "id": "adminMailOnMailSent",
+                                "value": 1,
+                                "checked": scope.preferences.client.adminMailOnMailSent|default(0),
+                            }
                         }]
                     ) }}
 				</div>
