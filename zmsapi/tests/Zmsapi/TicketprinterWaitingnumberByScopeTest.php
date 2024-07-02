@@ -9,7 +9,7 @@ class TicketprinterWaitingnumberByScopeTest extends Base
     public function testRendering()
     {
         //Schöneberg with test scope ghostWorkstationCount of 3
-        $response = $this->render(['id' => 146, 'hash' => 'ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2'], [], []);
+        $response = $this->render(['id' => 146, 'hash' => '1abcdefghijklmnopqrstuvwxyz'], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertStringContainsString('"id":"146"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -19,6 +19,6 @@ class TicketprinterWaitingnumberByScopeTest extends Base
     {
         $this->expectException('BO\Zmsapi\Exception\Scope\ScopeNotFound');
         $this->expectExceptionCode(404);
-        $this->render(['id' => 999, 'hash' => 'ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2'], [], []);
+        $this->render(['id' => 999, 'hash' => '1abcdefghijklmnopqrstuvwxyz'], [], []);
     }
 }

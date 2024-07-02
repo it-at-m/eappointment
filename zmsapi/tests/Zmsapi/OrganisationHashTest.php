@@ -16,8 +16,8 @@ class OrganisationHashTest extends Base
 
     public function testWithName()
     {
-        $response = $this->render(['id' => 54], ['name' => 'unittest'], []); //Pankow
-        $this->assertStringContainsString('"name":"unittest"', (string)$response->getBody());
+        $response = $this->render(['id' => 54], ['name' => ''], []); //Pankow
+        $this->assertStringContainsString('"name":"Ticket Printer for Pankow"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

@@ -15,7 +15,7 @@ class NotificationByScopeTest extends Base
         return [
             [
                 'function' => 'readGetResult',
-                'url' => '/ticketprinter/71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2/',
+                'url' => '/ticketprinter/71abcdefghijklmnopqrstuvwxyz/',
                 'response' => $this->readFixture("GET_ticketprinter.json"),
             ],
             [
@@ -41,7 +41,7 @@ class NotificationByScopeTest extends Base
     {
         $response = $this->render([], [
             '__cookie' => [
-                'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
+                'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
             ],
             'scopeId' => 141,
             'waitingNumber' => 2
