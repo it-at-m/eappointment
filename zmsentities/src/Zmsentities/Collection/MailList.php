@@ -1,7 +1,7 @@
 <?php
 namespace BO\Zmsentities\Collection;
 
-class MailList extends Base implements \IteratorAggregate
+class MailList extends Base
 {
     const ENTITY_CLASS = '\BO\Zmsentities\Mail';
 
@@ -14,20 +14,5 @@ class MailList extends Base implements \IteratorAggregate
             }
         }
         return $list;
-    }
-
-    public function toArray()
-    {
-        $array = [];
-        foreach ($this as $mail) {
-            $array[] = $mail;
-        }
-        return $array;
-    }
-
-    // Implementing IteratorAggregate to make MailList iterable
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->items);
     }
 }
