@@ -31,8 +31,12 @@ class Mail extends BaseController
     public function initQueueTransmission($action = false)
     {
         $resultList = [];
+    
+        // Ensure $this->messagesQueue is an array
+        $mailQueueArray = $this->messagesQueue->toArray();
+    
         $chunkSize = 5; // Define the chunk size as needed
-        $chunks = array_chunk($this->messagesQueue, $chunkSize);
+        $chunks = array_chunk($mailQueueArray, $chunkSize);
     
         foreach ($chunks as $chunk) {
             if ($this->maxRunTime < $this->getSpendTime()) {
