@@ -94,8 +94,6 @@ class Mail extends BaseController
         return new Promise(function ($resolve, $reject) use ($entity) {
             $this->readMailerAsync($entity)
                 ->then(function ($mailer) use ($entity, $resolve, $reject) {
-                    $message = '';
-                    $messageId = $entity['id'];
                     if (!$mailer) {
                         throw new \Exception("No valid mailer");
                     }
