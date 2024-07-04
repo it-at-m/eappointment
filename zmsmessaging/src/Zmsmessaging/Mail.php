@@ -11,6 +11,7 @@ use \PHPMailer\PHPMailer\PHPMailer;
 use \PHPMailer\PHPMailer\Exception as PHPMailerException;
 use React\EventLoop\Factory;
 use React\Promise\Promise;
+use React\Promise\Deferred;
 
 class Mail extends BaseController
 {
@@ -47,6 +48,9 @@ class Mail extends BaseController
 
             \React\Promise\all($promises)->then(function ($results) use (&$resultList) {
                 $resultList = $results;
+            })->then(function () {
+                // Run any cleanup tasks
+                $this->loop->stop();
             });
 
             $this->loop->run();
@@ -61,64 +65,58 @@ class Mail extends BaseController
     protected function sendQueueItemAsync($action, $item)
     {
         return new Promise(function ($resolve, $reject) use ($action, $item) {
-            $result = [];
-            $entity = new \BO\Zmsentities\Mail($item);
-            try {
-                $mailer = $this->getValidMailer($entity);
-                if (!$mailer) {
-                    throw new \Exception("No valid mailer");
-                }
-                $result = $this->sendMailer($entity, $mailer, $action);
-                if ($result instanceof PHPMailer) {
-                    $result = array(
-                        'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
-                        'recipients' => $result->getAllRecipientAddresses(),
-                        'mime' => $result->getMailMIME(),
-                        'attachments' => $result->getAttachments(),
-                        'customHeaders' => $result->getCustomHeaders(),
-                    );
-                    if ($action) {
-                        $this->deleteEntityFromQueue($entity);
+            $this->getValidMailerAsync(new \BO\Zmsentities\Mail($item))
+                ->then(function ($mailer) use ($action, $item, $resolve, $reject) {
+                    if (!$mailer) {
+                        throw new \Exception("No valid mailer");
                     }
-                } else {
-                    $result = array(
-                        'errorInfo' => $result->ErrorInfo
-                    );
-                }
-                $resolve($result);
-            } catch (\Exception $exception) {
-                $log = new Mimepart(['mime' => 'text/plain']);
-                $log->content = $exception->getMessage();
-                if (isset($item['process']) && isset($item['process']['id'])) {
-                    $this->log("Init Queue Exception message: ". $log->content .' - '. \App::$now->format('c'));
-                    $this->log("Init Queue Exception log readPostResult start - ". \App::$now->format('c'));
-                    \App::$http->readPostResult('/log/process/'. $item['process']['id'] .'/', $log, ['error' => 1]);
-                    $this->log("Init Queue Exception log readPostResult finished - ". \App::$now->format('c'));
-                }
-                $reject($exception);
-            }
+                    return $this->sendMailerAsync($item, $mailer, $action);
+                })
+                ->then(function ($result) use ($item, $resolve) {
+                    $resolve($result);
+                })
+                ->otherwise(function ($exception) use ($item, $reject) {
+                    $log = new Mimepart(['mime' => 'text/plain']);
+                    $log->content = $exception->getMessage();
+                    if (isset($item['process']) && isset($item['process']['id'])) {
+                        $this->log("Init Queue Exception message: ". $log->content .' - '. \App::$now->format('c'));
+                        $this->log("Init Queue Exception log readPostResult start - ". \App::$now->format('c'));
+                        \App::$http->readPostResult('/log/process/'. $item['process']['id'] .'/', $log, ['error' => 1]);
+                        $this->log("Init Queue Exception log readPostResult finished - ". \App::$now->format('c'));
+                    }
+                    $reject($exception);
+                });
         });
     }
 
-    protected function getValidMailer(\BO\Zmsentities\Mail $entity)
+    protected function getValidMailerAsync(\BO\Zmsentities\Mail $entity)
     {
+        $deferred = new Deferred();
+
         $message = '';
         $messageId = $entity['id'];
         try {
             $mailer = $this->readMailer($entity);
+            $deferred->resolve($mailer);
         } catch (PHPMailerException $exception) {
             $message = "Message #$messageId PHPMailer Failure: ". $exception->getMessage();
             $code = $exception->getCode();
             \App::$log->warning($message, []);
+            $deferred->reject($exception);
         } catch (\Exception $exception) {
             $message = "Message #$messageId Exception Failure: ". $exception->getMessage();
             $code = $exception->getCode();
             \App::$log->warning($message, []);
+            $deferred->reject($exception);
         }
+
         if ($message) {
             if (428 == $code || 422 == $code) {
                 $this->log("Build Mailer Failure ". $code .": deleteEntityFromQueue() - ". \App::$now->format('c'));
-                $this->deleteEntityFromQueue($entity);
+                $this->deleteEntityFromQueueAsync($entity)
+                    ->then(function () use ($deferred) {
+                        $deferred->resolve(false);
+                    });
             } else {
                 $this->log(
                     "Build Mailer Failure ". $code .": removeEntityOlderThanOneHour() - ". \App::$now->format('c')
@@ -132,10 +130,54 @@ class Mail extends BaseController
             $this->log("Build Mailer Exception log readPostResult start - ". \App::$now->format('c'));
             \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $log, ['error' => 1]);
             $this->log("Build Mailer Exception log readPostResult finished - ". \App::$now->format('c'));
-            return false;
+            $deferred->resolve(false);
         }
 
-        return $mailer;
+        return $deferred->promise();
+    }
+
+    protected function deleteEntityFromQueueAsync(\BO\Zmsentities\Mail $entity)
+    {
+        return new Promise(function ($resolve, $reject) use ($entity) {
+            try {
+                // Simulate an asynchronous delete operation
+                $this->deleteEntityFromQueue($entity);
+                $resolve();
+            } catch (\Exception $exception) {
+                $reject($exception);
+            }
+        });
+    }
+
+    protected function sendMailerAsync($entity, $mailer, $action)
+    {
+        return new Promise(function ($resolve, $reject) use ($entity, $mailer, $action) {
+            try {
+                $result = $this->sendMailer($entity, $mailer, $action);
+                if ($result instanceof PHPMailer) {
+                    $result = array(
+                        'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
+                        'recipients' => $result->getAllRecipientAddresses(),
+                        'mime' => $result->getMailMIME(),
+                        'attachments' => $result->getAttachments(),
+                        'customHeaders' => $result->getCustomHeaders(),
+                    );
+                    if ($action) {
+                        $this->deleteEntityFromQueueAsync($entity)
+                            ->then(function () use ($result, $resolve) {
+                                $resolve($result);
+                            });
+                    } else {
+                        $resolve($result);
+                    }
+                } else {
+                    $result = array('errorInfo' => $result->ErrorInfo);
+                    $resolve($result);
+                }
+            } catch (\Exception $exception) {
+                $reject($exception);
+            }
+        });
     }
 
     protected function readMailer(\BO\Zmsentities\Mail $entity)
