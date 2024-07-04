@@ -66,13 +66,13 @@ class Mail extends BaseController
     {
         return new Promise(function ($resolve, $reject) use ($action, $item) {
             $this->getValidMailerAsync(new \BO\Zmsentities\Mail($item))
-                ->then(function ($mailer) use ($action, $item, $resolve, $reject) {
+                ->then(function ($mailer) use ($action, $item) {
                     if (!$mailer) {
                         throw new \Exception("No valid mailer");
                     }
                     return $this->sendMailerAsync($item, $mailer, $action);
                 })
-                ->then(function ($result) use ($item, $resolve) {
+                ->then(function ($result) use ($resolve) {
                     $resolve($result);
                 })
                 ->otherwise(function ($exception) use ($item, $reject) {
@@ -93,7 +93,7 @@ class Mail extends BaseController
     {
         return new Promise(function ($resolve, $reject) use ($entity) {
             $this->readMailerAsync($entity)
-                ->then(function ($mailer) use ($entity, $resolve, $reject) {
+                ->then(function ($mailer) use ($resolve) {
                     if (!$mailer) {
                         throw new \Exception("No valid mailer");
                     }
@@ -128,114 +128,122 @@ class Mail extends BaseController
     protected function deleteEntityFromQueueAsync(\BO\Zmsentities\Mail $entity)
     {
         return new Promise(function ($resolve, $reject) use ($entity) {
-            try {
-                // Simulate an asynchronous delete operation
-                $this->deleteEntityFromQueue($entity);
-                $resolve();
-            } catch (\Exception $exception) {
-                $reject($exception);
-            }
+            // Ensure this is run asynchronously
+            $this->loop->futureTick(function () use ($entity, $resolve, $reject) {
+                try {
+                    $this->deleteEntityFromQueue($entity);
+                    $resolve();
+                } catch (\Exception $exception) {
+                    $reject($exception);
+                }
+            });
         });
     }
 
     protected function sendMailerAsync($entity, $mailer, $action)
     {
         return new Promise(function ($resolve, $reject) use ($entity, $mailer, $action) {
-            try {
-                $result = $this->sendMailer($entity, $mailer, $action);
-                if ($result instanceof PHPMailer) {
-                    $result = array(
-                        'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
-                        'recipients' => $result->getAllRecipientAddresses(),
-                        'mime' => $result->getMailMIME(),
-                        'attachments' => $result->getAttachments(),
-                        'customHeaders' => $result->getCustomHeaders(),
-                    );
-                    if ($action) {
-                        $this->deleteEntityFromQueueAsync($entity)
-                            ->then(function () use ($result, $resolve) {
-                                $resolve($result);
-                            });
+            // Ensure this is run asynchronously
+            $this->loop->futureTick(function () use ($entity, $mailer, $action, $resolve, $reject) {
+                try {
+                    $result = $this->sendMailer($entity, $mailer, $action);
+                    if ($result instanceof PHPMailer) {
+                        $result = array(
+                            'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
+                            'recipients' => $result->getAllRecipientAddresses(),
+                            'mime' => $result->getMailMIME(),
+                            'attachments' => $result->getAttachments(),
+                            'customHeaders' => $result->getCustomHeaders(),
+                        );
+                        if ($action) {
+                            $this->deleteEntityFromQueueAsync($entity)
+                                ->then(function () use ($result, $resolve) {
+                                    $resolve($result);
+                                });
+                        } else {
+                            $resolve($result);
+                        }
                     } else {
+                        $result = array('errorInfo' => $result->ErrorInfo);
                         $resolve($result);
                     }
-                } else {
-                    $result = array('errorInfo' => $result->ErrorInfo);
-                    $resolve($result);
+                } catch (\Exception $exception) {
+                    $reject($exception);
                 }
-            } catch (\Exception $exception) {
-                $reject($exception);
-            }
+            });
         });
     }
 
     protected function readMailerAsync(\BO\Zmsentities\Mail $entity)
     {
         return new Promise(function ($resolve, $reject) use ($entity) {
-            try {
-                $this->log("Build Mailer: testEntity() - ". \App::$now->format('c'));
-                $this->testEntity($entity);
-                $encoding = 'base64';
-                foreach ($entity->multipart as $part) {
-                    $mimepart = new Mimepart($part);
-                    if ($mimepart->isText()) {
-                        $textPart = $mimepart->getContent();
+            // Ensure this is run asynchronously
+            $this->loop->futureTick(function () use ($entity, $resolve, $reject) {
+                try {
+                    $this->log("Build Mailer: testEntity() - ". \App::$now->format('c'));
+                    $this->testEntity($entity);
+                    $encoding = 'base64';
+                    foreach ($entity->multipart as $part) {
+                        $mimepart = new Mimepart($part);
+                        if ($mimepart->isText()) {
+                            $textPart = $mimepart->getContent();
+                        }
+                        if ($mimepart->isHtml()) {
+                            $htmlPart = $mimepart->getContent();
+                        }
+                        if ($mimepart->isIcs()) {
+                            $icsPart = $mimepart->getContent();
+                        }
                     }
-                    if ($mimepart->isHtml()) {
-                        $htmlPart = $mimepart->getContent();
+
+                    $this->log("Build Mailer: new PHPMailer() - ". \App::$now->format('c'));
+                    $mailer = new PHPMailer(true);
+                    $mailer->CharSet = 'UTF-8';
+                    $mailer->SMTPDebug = \App::$smtp_debug;
+                    $mailer->SetLanguage("de");
+                    $mailer->Encoding = $encoding;
+                    $mailer->IsHTML(true);
+                    $mailer->XMailer = \App::IDENTIFIER;
+                    $mailer->Subject = $entity['subject'];
+                    $mailer->AltBody = (isset($textPart)) ? $textPart : '';
+                    $mailer->Body = (isset($htmlPart)) ? $htmlPart : '';
+                    $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
+                    $this->log("Build Mailer: addAddress() - ". \App::$now->format('c') . " arguments: "
+                        . $entity->getRecipient() . ' - ' . $entity->client['familyName']);
+                    $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
+
+                    if (null !== $entity->getIcsPart()) {
+                        $this->log("Build Mailer: AddStringAttachment() - ". \App::$now->format('c'));
+                        $mailer->AddStringAttachment(
+                            $icsPart,
+                            "Termin.ics",
+                            $encoding,
+                            "text/calendar; charset=utf-8; method=REQUEST"
+                        );
                     }
-                    if ($mimepart->isIcs()) {
-                        $icsPart = $mimepart->getContent();
+
+                    if (\App::$smtp_enabled) {
+                        $mailer->IsSMTP();
+                        $mailer->SMTPAuth = \App::$smtp_auth_enabled;
+                        $mailer->SMTPSecure = \App::$smtp_auth_method;
+                        $mailer->Port = \App::$smtp_port;
+                        $mailer->Host = \App::$smtp_host;
+                        $mailer->Username = \App::$smtp_username;
+                        $mailer->Password = \App::$smtp_password;
+                        if (\App::$smtp_skip_tls_verify) {
+                            $mailer->SMTPOptions['ssl'] = [
+                                'verify_peer' => false,
+                                'verify_peer_name' => false,
+                                'allow_self_signed' => true,
+                            ];
+                        }
                     }
+
+                    $resolve($mailer);
+                } catch (\Exception $exception) {
+                    $reject($exception);
                 }
-
-                $this->log("Build Mailer: new PHPMailer() - ". \App::$now->format('c'));
-                $mailer = new PHPMailer(true);
-                $mailer->CharSet = 'UTF-8';
-                $mailer->SMTPDebug = \App::$smtp_debug;
-                $mailer->SetLanguage("de");
-                $mailer->Encoding = $encoding;
-                $mailer->IsHTML(true);
-                $mailer->XMailer = \App::IDENTIFIER;
-                $mailer->Subject = $entity['subject'];
-                $mailer->AltBody = (isset($textPart)) ? $textPart : '';
-                $mailer->Body = (isset($htmlPart)) ? $htmlPart : '';
-                $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
-                $this->log("Build Mailer: addAddress() - ". \App::$now->format('c') . " arguments: "
-                    . $entity->getRecipient() . ' - ' . $entity->client['familyName']);
-                $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
-
-                if (null !== $entity->getIcsPart()) {
-                    $this->log("Build Mailer: AddStringAttachment() - ". \App::$now->format('c'));
-                    $mailer->AddStringAttachment(
-                        $icsPart,
-                        "Termin.ics",
-                        $encoding,
-                        "text/calendar; charset=utf-8; method=REQUEST"
-                    );
-                }
-
-                if (\App::$smtp_enabled) {
-                    $mailer->IsSMTP();
-                    $mailer->SMTPAuth = \App::$smtp_auth_enabled;
-                    $mailer->SMTPSecure = \App::$smtp_auth_method;
-                    $mailer->Port = \App::$smtp_port;
-                    $mailer->Host = \App::$smtp_host;
-                    $mailer->Username = \App::$smtp_username;
-                    $mailer->Password = \App::$smtp_password;
-                    if (\App::$smtp_skip_tls_verify) {
-                        $mailer->SMTPOptions['ssl'] = [
-                            'verify_peer' => false,
-                            'verify_peer_name' => false,
-                            'allow_self_signed' => true,
-                        ];
-                    }
-                }
-
-                $resolve($mailer);
-            } catch (\Exception $exception) {
-                $reject($exception);
-            }
+            });
         });
     }
 }
