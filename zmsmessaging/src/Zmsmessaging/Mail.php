@@ -48,11 +48,11 @@ class Mail extends BaseController
             $chunkJson = escapeshellarg(json_encode($chunk));
     
             // Execute the process_chunk.php script with the chunk JSON as an argument
-            exec("php mail_process_chunk.php $chunkJson > /dev/null 2>&1 &");
+            exec("php process_chunk.php $chunkJson > /dev/null 2>&1 &");
         }
     
         return $resultList;
-    }
+    }    
     
     public function sendQueueItem($action, $item)
     {
