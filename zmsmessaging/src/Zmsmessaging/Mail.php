@@ -1,3 +1,9 @@
+<?php
+/**
+ *
+ * @package Zmsmessaging
+ *
+ */
 namespace BO\Zmsmessaging;
 
 use \BO\Zmsentities\Mimepart;
