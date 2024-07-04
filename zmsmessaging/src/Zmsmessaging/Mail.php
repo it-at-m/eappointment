@@ -1,22 +1,26 @@
 <?php
 /**
  *
-* @package Zmsmessaging
-*
-*/
+ * @package Zmsmessaging
+ *
+ */
 namespace BO\Zmsmessaging;
 
 use \BO\Zmsentities\Mimepart;
 use \PHPMailer\PHPMailer\PHPMailer;
 use \PHPMailer\PHPMailer\Exception as PHPMailerException;
+use React\EventLoop\Factory;
+use React\Promise\Promise;
 
 class Mail extends BaseController
 {
     protected $messagesQueue = null;
+    protected $loop;
 
     public function __construct($verbose = false, $maxRunTime = 50)
     {
         parent::__construct($verbose, $maxRunTime);
+        $this->loop = Factory::create();
         $this->log("Read Mail QueueList start with limit ". \App::$mails_per_minute ." - ". \App::$now->format('c'));
         $queueList = \App::$http->readGetResult('/mails/', [
             'resolveReferences' => 2,
@@ -31,57 +35,69 @@ class Mail extends BaseController
     public function initQueueTransmission($action = false)
     {
         $resultList = [];
-    
-        // Ensure $this->messagesQueue is an array
-        $mailQueueArray = $this->messagesQueue->toArray();
-    
-        $chunkSize = 5; // Define the chunk size as needed
-        $chunks = array_chunk($mailQueueArray, $chunkSize);
-    
-        foreach ($chunks as $chunk) {
-            if ($this->maxRunTime < $this->getSpendTime()) {
-                $this->log("Max Runtime exceeded - " . \App::$now->format('c'));
-                break;
+        if ($this->messagesQueue && count($this->messagesQueue)) {
+            $promises = [];
+            foreach ($this->messagesQueue as $item) {
+                if ($this->maxRunTime < $this->getSpendTime()) {
+                    $this->log("Max Runtime exceeded - ". \App::$now->format('c'));
+                    break;
+                }
+                $promises[] = $this->sendQueueItemAsync($action, $item);
             }
-    
-            // Serialize the chunk to a JSON string
-            $chunkJson = escapeshellarg(json_encode($chunk));
-    
-            // Execute the process_chunk.php script with the chunk JSON as an argument
-            exec("php process_chunk.php $chunkJson > /dev/null 2>&1 &");
-        }
-    
-        return $resultList;
-    }    
-    
-    public function sendQueueItem($action, $item)
-    {
-        $result = [];
-        $entity = new \BO\Zmsentities\Mail($item);
-        $mailer = $this->getValidMailer($entity);
-        if (! $mailer) {
-            throw new \Exception("No valid mailer");
-        }
-        $result = $this->sendMailer($entity, $mailer, $action);
-        if ($result instanceof PHPMailer) {
-            $result = array(
-                'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
-                'recipients' => $result->getAllRecipientAddresses(),
-                'mime' => $result->getMailMIME(),
-                'attachments' => $result->getAttachments(),
-                'customHeaders' => $result->getCustomHeaders(),
-            );
-            if ($action) {
-                $this->deleteEntityFromQueue($entity);
-            }
+
+            \React\Promise\all($promises)->then(function ($results) use (&$resultList) {
+                $resultList = $results;
+            });
+
+            $this->loop->run();
         } else {
-            // @codeCoverageIgnoreStart
-            $result = array(
-                'errorInfo' => $result->ErrorInfo
+            $resultList[] = array(
+                'errorInfo' => 'No mail entry found in Database...'
             );
-            // @codeCoverageIgnoreEnd
         }
-        return $result;
+        return $resultList;
+    }
+
+    protected function sendQueueItemAsync($action, $item)
+    {
+        return new Promise(function ($resolve, $reject) use ($action, $item) {
+            $result = [];
+            $entity = new \BO\Zmsentities\Mail($item);
+            try {
+                $mailer = $this->getValidMailer($entity);
+                if (!$mailer) {
+                    throw new \Exception("No valid mailer");
+                }
+                $result = $this->sendMailer($entity, $mailer, $action);
+                if ($result instanceof PHPMailer) {
+                    $result = array(
+                        'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
+                        'recipients' => $result->getAllRecipientAddresses(),
+                        'mime' => $result->getMailMIME(),
+                        'attachments' => $result->getAttachments(),
+                        'customHeaders' => $result->getCustomHeaders(),
+                    );
+                    if ($action) {
+                        $this->deleteEntityFromQueue($entity);
+                    }
+                } else {
+                    $result = array(
+                        'errorInfo' => $result->ErrorInfo
+                    );
+                }
+                $resolve($result);
+            } catch (\Exception $exception) {
+                $log = new Mimepart(['mime' => 'text/plain']);
+                $log->content = $exception->getMessage();
+                if (isset($item['process']) && isset($item['process']['id'])) {
+                    $this->log("Init Queue Exception message: ". $log->content .' - '. \App::$now->format('c'));
+                    $this->log("Init Queue Exception log readPostResult start - ". \App::$now->format('c'));
+                    \App::$http->readPostResult('/log/process/'. $item['process']['id'] .'/', $log, ['error' => 1]);
+                    $this->log("Init Queue Exception log readPostResult finished - ". \App::$now->format('c'));
+                }
+                $reject($exception);
+            }
+        });
     }
 
     protected function getValidMailer(\BO\Zmsentities\Mail $entity)
@@ -90,7 +106,6 @@ class Mail extends BaseController
         $messageId = $entity['id'];
         try {
             $mailer = $this->readMailer($entity);
-        // @codeCoverageIgnoreStart
         } catch (PHPMailerException $exception) {
             $message = "Message #$messageId PHPMailer Failure: ". $exception->getMessage();
             $code = $exception->getCode();
@@ -110,7 +125,7 @@ class Mail extends BaseController
                 );
                 $this->removeEntityOlderThanOneHour($entity);
             }
-           
+
             $log = new Mimepart(['mime' => 'text/plain']);
             $log->content = $message;
             $this->log("Build Mailer Exception log message: ". $message);
@@ -120,14 +135,9 @@ class Mail extends BaseController
             return false;
         }
 
-        // @codeCoverageIgnoreEnd
         return $mailer;
     }
 
-    /**
-     * @SuppressWarnings("CyclomaticComplexity")
-     * @SuppressWarnings("NPathComplexity")
-     */
     protected function readMailer(\BO\Zmsentities\Mail $entity)
     {
         $this->log("Build Mailer: testEntity() - ". \App::$now->format('c'));
