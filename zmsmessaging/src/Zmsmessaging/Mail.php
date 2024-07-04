@@ -31,33 +31,54 @@ class Mail extends BaseController
     public function initQueueTransmission($action = false)
     {
         $resultList = [];
+        $childPids = [];
+    
         if ($this->messagesQueue && count($this->messagesQueue)) {
             foreach ($this->messagesQueue as $item) {
                 if ($this->maxRunTime < $this->getSpendTime()) {
-                    $this->log("Max Runtime exceeded - ". \App::$now->format('c'));
+                    $this->log("Max Runtime exceeded - " . \App::$now->format('c'));
                     break;
                 }
-                try {
-                    $resultList[] = $this->sendQueueItem($action, $item);
-                } catch (\Exception $exception) {
-                    $log = new Mimepart(['mime' => 'text/plain']);
-                    $log->content = $exception->getMessage();
-                    if (isset($item['process']) && isset($item['process']['id'])) {
-                        $this->log("Init Queue Exception message: ". $log->content .' - '. \App::$now->format('c'));
-                        $this->log("Init Queue Exception log readPostResult start - ". \App::$now->format('c'));
-                        \App::$http->readPostResult('/log/process/'. $item['process']['id'] .'/', $log, ['error' => 1]);
-                        $this->log("Init Queue Exception log readPostResult finished - ". \App::$now->format('c'));
+                
+                $pid = pcntl_fork();
+                if ($pid == -1) {
+                    // Fork failed
+                    $this->log("Fork failed - " . \App::$now->format('c'));
+                    continue;
+                } elseif ($pid) {
+                    // Parent process
+                    $childPids[] = $pid;
+                } else {
+                    // Child process
+                    try {
+                        $result = $this->sendQueueItem($action, $item);
+                        exit(0); // Exit the child process successfully
+                    } catch (\Exception $exception) {
+                        $log = new Mimepart(['mime' => 'text/plain']);
+                        $log->content = $exception->getMessage();
+                        if (isset($item['process']) && isset($item['process']['id'])) {
+                            $this->log("Init Queue Exception message: " . $log->content . ' - ' . \App::$now->format('c'));
+                            $this->log("Init Queue Exception log readPostResult start - " . \App::$now->format('c'));
+                            \App::$http->readPostResult('/log/process/' . $item['process']['id'] . '/', $log, ['error' => 1]);
+                            $this->log("Init Queue Exception log readPostResult finished - " . \App::$now->format('c'));
+                        }
+                        exit(1); // Exit the child process with error
                     }
-                    //\App::$log->error($log->content);
                 }
+            }
+            
+            // Wait for all child processes to finish
+            foreach ($childPids as $pid) {
+                pcntl_waitpid($pid, $status);
             }
         } else {
             $resultList[] = array(
                 'errorInfo' => 'No mail entry found in Database...'
             );
         }
+    
         return $resultList;
-    }
+    }    
 
     public function sendQueueItem($action, $item)
     {
