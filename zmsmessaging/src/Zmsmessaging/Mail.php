@@ -1,9 +1,3 @@
-<?php
-/**
- *
- * @package Zmsmessaging
- *
- */
 namespace BO\Zmsmessaging;
 
 use \BO\Zmsentities\Mimepart;
@@ -66,13 +60,13 @@ class Mail extends BaseController
     {
         return new Promise(function ($resolve, $reject) use ($action, $item) {
             $this->getValidMailerAsync(new \BO\Zmsentities\Mail($item))
-                ->then(function ($mailer) use ($action, $item) {
+                ->then(function ($mailer) use ($action, $item, $resolve, $reject) {
                     if (!$mailer) {
                         throw new \Exception("No valid mailer");
                     }
                     return $this->sendMailerAsync($item, $mailer, $action);
                 })
-                ->then(function ($result) use ($resolve) {
+                ->then(function ($result) use ($item, $resolve) {
                     $resolve($result);
                 })
                 ->otherwise(function ($exception) use ($item, $reject) {
@@ -131,7 +125,7 @@ class Mail extends BaseController
             try {
                 // Simulate an asynchronous delete operation
                 $this->deleteEntityFromQueue($entity);
-                $resolve(true);
+                $resolve();
             } catch (\Exception $exception) {
                 $reject($exception);
             }
@@ -205,20 +199,7 @@ class Mail extends BaseController
                     . $entity->getRecipient() . ' - ' . $entity->client['familyName']);
                 $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
 
-                if (null !== $entity->attach) {
-                    foreach ($entity->attach as $attach) {
-                        $this->log("Build Mailer: Add Attachment() - ". \App::$now->format('c'));
-                        $attachment = new \BO\Zmsentities\Attachment($attach);
-                        $mailer->AddAttachment(
-                            $attachment->getFilePath(),
-                            $attachment->getFileName(),
-                            $encoding,
-                            $attachment->getFileType()
-                        );
-                    }
-                }
-
-                if (isset($icsPart)) {
+                if (null !== $entity->getIcsPart()) {
                     $this->log("Build Mailer: AddStringAttachment() - ". \App::$now->format('c'));
                     $mailer->AddStringAttachment(
                         $icsPart,
