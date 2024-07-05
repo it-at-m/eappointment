@@ -1,3 +1,43 @@
+## Release Muc-11
+
+<h2>        Aufgabe
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2160'>ZMS-2160</a>] -         E-Mail Templates in die Datenbank verlegen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2221'>ZMS-2221</a>] -         friendlyCaptcha in ZMS
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2342'>ZMS-2342</a>] -         ♻️ Composer Update
+</li>
+</ul>
+    
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2344'>ZMS-2344</a>] -         ZMS-Admin: Falsche Öffnungszeiten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2405'>ZMS-2405</a>] -         Text für Aufrufanzeige aus Standort-Konfiguration wird nicht angezeigt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2694'>ZMS-2694</a>] -         Umbuchen eines Termins nicht möglich - Kalender wird ohne freie Slots angezeigt, obwohl diese verfügbar sind
+</li>
+</ul>
+                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2161'>ZMS-2161</a>] -         Benutzerdefinierte Standort E-Mail Templates
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2275'>ZMS-2275</a>] -         friendlyCaptcha je Standort konfigurierbar
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2406'>ZMS-2406</a>] -         Aufrufsystem - Name der Behörde wird nicht angezeigt, wenn mehr als 1 Standort ausgewählt ist
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2424'>ZMS-2424</a>] -         Termin ausdrucken
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2426'>ZMS-2426</a>] -         Mehrfachauswahl von Dienstleistungen bei Buchung über ZMS Admin
+</li>
+</ul>
+                                                    
+
 ## Release Muc-10
     
 <h2>        Aufgabe
