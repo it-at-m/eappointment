@@ -11,23 +11,6 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
-      - name: Set up PHP with ZTS (zmsmessaging only)
-        if: ${{ matrix.module == 'zmsmessaging' }}
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.0"
-          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
-          coverage: none
-          tools: pecl
-          ini-values: |
-            opcache.enable_cli=1
-            apc.enable_cli=1
-          zts: true
-      - name: Install pthreads Extension (zmsmessaging only)
-        if: ${{ matrix.module == 'zmsmessaging' }}
-        run: |
-          pecl install parallel
-          echo "extension=parallel.so" >> "$(php -r 'echo php_ini_loaded_file();')"
       - name: Install Composer Dependencies
         run: |
           cd "${{ matrix.module }}"
