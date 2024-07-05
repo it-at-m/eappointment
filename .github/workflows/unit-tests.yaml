@@ -11,6 +11,12 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
+      - name: Install pthreads Extension (zmsmessaging only)
+        if: ${{ matrix.module == 'zmsmessaging' }}
+        run: |
+          apt-get update && apt-get install -y libpcre3-dev gcc make
+          pecl install pthreads
+          echo "extension=pthreads.so" >> "$(php -r 'echo php_ini_loaded_file();')"
       - name: Install Composer Dependencies
         run: |
           cd "${{ matrix.module }}"
