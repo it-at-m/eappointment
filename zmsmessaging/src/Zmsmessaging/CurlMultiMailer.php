@@ -1,4 +1,10 @@
 <?php
+/**
+ *
+ * @package Zmsmessaging
+ *
+ */
+namespace BO\Zmsmessaging;
 
 class CurlMultiMailer
 {
