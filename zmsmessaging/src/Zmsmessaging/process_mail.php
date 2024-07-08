@@ -1,69 +1,78 @@
 <?php
-/**
- *
- * @package Zmsmessaging
- *
- */
-namespace BO\Zmsmessaging;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
+use BO\Zmsmessaging\BaseController;
 
 require 'vendor/autoload.php';
 
-function sendAndDeleteEmail($mailId)
+class MailProcessor extends BaseController
 {
-    // Fetch the email data from the API based on the mail ID
-    $mailData = getMailById($mailId); // Implement this function to fetch email data
+    public function __construct($verbose = false, $maxRunTime = 50)
+    {
+        parent::__construct($verbose, $maxRunTime);
+    }
 
-    if ($mailData) {
-        $entity = new \BO\Zmsentities\Mail($mailData);
-        $mailer = new PHPMailer(true);
+    public function sendAndDeleteEmail($itemId)
+    {
+        // Fetch the email data from the API based on the mail ID
+        $mailData = $this->getMailById($itemId); // Implement this function to fetch email data
 
-        try {
-            $mailer->isSMTP();
-            $mailer->Host = \App::$smtp_host;
-            $mailer->SMTPAuth = \App::$smtp_auth_enabled;
-            $mailer->Username = \App::$smtp_username;
-            $mailer->Password = \App::$smtp_password;
-            $mailer->SMTPSecure = \App::$smtp_auth_method;
-            $mailer->Port = \App::$smtp_port;
+        if ($mailData) {
+            $entity = new \BO\Zmsentities\Mail($mailData);
+            $mailer = new PHPMailer(true);
 
-            $mailer->setFrom($entity['department']['email'], $entity['department']['name']);
-            $mailer->addAddress($entity->getRecipient(), $entity->client['familyName']);
-            $mailer->isHTML(true);
-            $mailer->Subject = $entity['subject'];
-            $mailer->Body = $entity->htmlPart;
-            $mailer->AltBody = $entity->textPart;
+            try {
+                $mailer->isSMTP();
+                $mailer->Host = \App::$smtp_host;
+                $mailer->SMTPAuth = \App::$smtp_auth_enabled;
+                $mailer->Username = \App::$smtp_username;
+                $mailer->Password = \App::$smtp_password;
+                $mailer->SMTPSecure = \App::$smtp_auth_method;
+                $mailer->Port = \App::$smtp_port;
 
-            if (null !== $entity->getIcsPart()) {
-                $mailer->addStringAttachment(
-                    $entity->getIcsPart(),
-                    "Termin.ics",
-                    'base64',
-                    "text/calendar; charset=utf-8; method=REQUEST"
-                );
+                $mailer->setFrom($entity['department']['email'], $entity['department']['name']);
+                $mailer->addAddress($entity->getRecipient(), $entity->client['familyName']);
+                $mailer->isHTML(true);
+                $mailer->Subject = $entity['subject'];
+                $mailer->Body = $entity->htmlPart;
+                $mailer->AltBody = $entity->textPart;
+
+                if (null !== $entity->getIcsPart()) {
+                    $mailer->addStringAttachment(
+                        $entity->getIcsPart(),
+                        "Termin.ics",
+                        'base64',
+                        "text/calendar; charset=utf-8; method=REQUEST"
+                    );
+                }
+
+                $mailer->send();
+                $this->deleteEntityFromQueue($entity);
+
+                echo "Mail sent and deleted successfully for ID: $itemId\n";
+            } catch (PHPMailerException $e) {
+                echo "Mail could not be sent. PHPMailer Error: {$mailer->ErrorInfo}\n";
+            } catch (Exception $e) {
+                echo "Mail could not be sent. General Error: {$e->getMessage()}\n";
             }
-
-            $mailer->send();
-
-            // Delete the email from the queue after sending
-            deleteMailById($mailId); // Implement this function to delete email data
-
-            echo "Mail sent and deleted successfully for ID: $mailId\n";
-        } catch (PHPMailerException $e) {
-            echo "Mail could not be sent. PHPMailer Error: {$mailer->ErrorInfo}\n";
-        } catch (Exception $e) {
-            echo "Mail could not be sent. General Error: {$e->getMessage()}\n";
+        } else {
+            echo "Mail data not found for ID: $itemId\n";
         }
-    } else {
-        echo "Mail data not found for ID: $mailId\n";
+    }
+
+    private function getMailById($itemId)
+    {
+        // Implement the function to fetch email data by ID
+        $response = \App::$http->readGetResult('/mails/'.$itemId.'/')->getEntity();
+        return $response;
     }
 }
 
 if ($argc > 1) {
     $mailIds = explode(',', $argv[1]);
+    $processor = new MailProcessor();
     foreach ($mailIds as $mailId) {
-        sendAndDeleteEmail($mailId);
+        $processor->sendAndDeleteEmail($mailId);
     }
 }

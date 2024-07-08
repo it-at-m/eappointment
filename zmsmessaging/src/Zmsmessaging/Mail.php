@@ -7,8 +7,6 @@
 namespace BO\Zmsmessaging;
 
 use \BO\Zmsentities\Mimepart;
-use \PHPMailer\PHPMailer\PHPMailer;
-use \PHPMailer\PHPMailer\Exception as PHPMailerException;
 
 class Mail extends BaseController
 {
@@ -17,14 +15,14 @@ class Mail extends BaseController
     public function __construct($verbose = false, $maxRunTime = 50)
     {
         parent::__construct($verbose, $maxRunTime);
-        $this->log("Read Mail QueueList start with limit ". \App::$mails_per_minute ." - ". \App::$now->format('c'));
+        $this->log("Read Mail QueueList start with limit " . \App::$mails_per_minute . " - " . \App::$now->format('c'));
         $queueList = \App::$http->readGetResult('/mails/', [
             'resolveReferences' => 2,
             'limit' => \App::$mails_per_minute
         ])->getCollection();
         if (null !== $queueList) {
             $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
-            $this->log("QueueList sorted by createTimestamp - ". \App::$now->format('c'));
+            $this->log("QueueList sorted by createTimestamp - " . \App::$now->format('c'));
         }
     }
 
@@ -39,7 +37,7 @@ class Mail extends BaseController
             foreach ($batches as $batch) {
                 $mailIds = array_map(fn($item) => $item['id'], $batch);
                 $encodedMailIds = implode(',', $mailIds);
-                $processHandles[] = exec("php process_mail.php " . escapeshellarg($encodedMailIds) . " > /dev/null 2>&1 &");
+                $processHandles[] = $this->startProcess("php process_mail.php " . escapeshellarg($encodedMailIds));
             }
 
             $this->waitForAllProcesses($processHandles);
@@ -51,16 +49,23 @@ class Mail extends BaseController
         return $resultList;
     }
 
+    private function startProcess($command)
+    {
+        $descriptorSpec = [
+            0 => ["pipe", "r"], // stdin
+            1 => ["pipe", "w"], // stdout
+            2 => ["pipe", "w"]  // stderr
+        ];
+
+        $process = proc_open($command, $descriptorSpec, $pipes);
+        return $process;
+    }
+
     private function waitForAllProcesses($processHandles)
     {
         foreach ($processHandles as $handle) {
-            while (true) {
-                $status = proc_get_status($handle);
-                if (!$status['running']) {
-                    proc_close($handle);
-                    break;
-                }
-                sleep(1);
+            if (is_resource($handle)) {
+                proc_close($handle);
             }
         }
     }
