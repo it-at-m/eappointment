@@ -51,9 +51,6 @@ class Mail extends BaseController
                     //\App::$log->error($log->content);
                 }
             }
-
-            // Clear the queue after processing all items
-            $this->messagesQueue = null;
         } else {
             $resultList[] = array(
                 'errorInfo' => 'No mail entry found in Database...'

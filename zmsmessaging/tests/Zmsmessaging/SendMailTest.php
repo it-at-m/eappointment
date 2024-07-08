@@ -13,12 +13,7 @@ class SendMailTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/log/process/123456/',
-                    'response' => $this->readFixture("POST_log.json"),
-                    'parameters' => [
-                        'error' => 1,
-                        'mime' => 'text/plain',
-                        'content' => 'Example Mail'
-                    ]
+                    'response' => $this->readFixture("POST_log.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -88,11 +83,7 @@ class SendMailTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/log/process/123456/',
                     'response' => $this->readFixture("POST_log.json"),
-                    'parameters' => [
-                        'error' => 1,
-                        'mime' => 'text/plain',
-                        'content' => 'Example Mail'
-                    ]
+                    'parameters' => ['error' => 1]
                 ]
             ]
         );
