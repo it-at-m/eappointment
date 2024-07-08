@@ -2,6 +2,8 @@
 
 namespace BO\Zmsmessaging;
 
+use \PHPMailer\PHPMailer\PHPMailer;
+
 class CurlMultiMailer
 {
     private $handlers = [];
@@ -12,13 +14,13 @@ class CurlMultiMailer
         $this->multiHandle = curl_multi_init();
     }
 
-    public function addEmail($url, $postData)
+    public function addEmail(PHPMailer $mailer)
     {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_URL, $mailer->getSMTPHost());
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $mailer->getMessageBody());
         $this->handlers[] = $ch;
         curl_multi_add_handle($this->multiHandle, $ch);
     }
