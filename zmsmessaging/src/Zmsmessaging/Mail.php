@@ -50,10 +50,10 @@ class Mail extends BaseController
                     $log = new Mimepart(['mime' => 'text/plain']);
                     $log->content = $exception->getMessage();
                     if (isset($item['process']) && isset($item['process']['id'])) {
-                        $this->log("Init Queue Exception message: " . $log->content . ' - ' . \App::$now->format('c'));
-                        $this->log("Init Queue Exception log readPostResult start - " . \App::$now->format('c'));
-                        \App::$http->readPostResult('/log/process/' . $item['process']['id'] . '/', $log, ['error' => 1]);
-                        $this->log("Init Queue Exception log readPostResult finished - " . \App::$now->format('c'));
+                        $this->log("Init Queue Exception message: ". $log->content .' - '. \App::$now->format('c'));
+                        $this->log("Init Queue Exception log readPostResult start - ". \App::$now->format('c'));
+                        \App::$http->readPostResult('/log/process/'. $item['process']['id'] .'/', $log, ['error' => 1]);
+                        $this->log("Init Queue Exception log readPostResult finished - ". \App::$now->format('c'));
                     }
                 }
             }
