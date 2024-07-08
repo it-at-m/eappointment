@@ -37,20 +37,23 @@ class Mail extends BaseController
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
-            $threads = [];
+            $promises = [];
             foreach ($this->messagesQueue as $item) {
                 if ($this->maxRunTime < $this->getSpendTime()) {
                     $this->log("Max Runtime exceeded - ". \App::$now->format('c'));
                     break;
                 }
-                $thread = new MailThread($this, $action, $item);
-                $thread->start();
-                $threads[] = $thread;
+                $promises[] = $this->sendQueueItemAsync($action, $item);
             }
 
-            foreach ($threads as $thread) {
-                $thread->join();
-            }
+            \React\Promise\all($promises)->then(function ($results) use (&$resultList) {
+                $resultList = $results;
+            })->then(function () {
+                // Run any cleanup tasks
+                $this->loop->stop();
+            });
+
+            $this->loop->run();
         } else {
             $resultList[] = array(
                 'errorInfo' => 'No mail entry found in Database...'
@@ -59,32 +62,31 @@ class Mail extends BaseController
         return $resultList;
     }
 
-    public function processQueueItem($action, $item)
+    protected function sendQueueItemAsync($action, $item)
     {
-        try {
+        return new Promise(function ($resolve, $reject) use ($action, $item) {
             $this->getValidMailerAsync(new \BO\Zmsentities\Mail($item))
-                ->then(function ($mailer) use ($action, $item) {
+                ->then(function ($mailer) use ($action, $item, $resolve, $reject) {
                     if (!$mailer) {
                         throw new \Exception("No valid mailer");
                     }
                     return $this->sendMailerAsync($item, $mailer, $action);
                 })
-                ->then(function ($result) use ($item) {
-                    // Handle success if needed
+                ->then(function ($result) use ($item, $resolve) {
+                    $resolve($result);
                 })
-                ->otherwise(function ($exception) use ($item) {
+                ->otherwise(function ($exception) use ($item, $reject) {
                     $log = new Mimepart(['mime' => 'text/plain']);
                     $log->content = $exception->getMessage();
                     if (isset($item['process']) && isset($item['process']['id'])) {
-                        $this->log("Process Queue Item Exception message: ". $log->content .' - '. \App::$now->format('c'));
-                        $this->log("Process Queue Item Exception log readPostResult start - ". \App::$now->format('c'));
+                        $this->log("Init Queue Exception message: ". $log->content .' - '. \App::$now->format('c'));
+                        $this->log("Init Queue Exception log readPostResult start - ". \App::$now->format('c'));
                         \App::$http->readPostResult('/log/process/'. $item['process']['id'] .'/', $log, ['error' => 1]);
-                        $this->log("Process Queue Item Exception log readPostResult finished - ". \App::$now->format('c'));
+                        $this->log("Init Queue Exception log readPostResult finished - ". \App::$now->format('c'));
                     }
+                    $reject($exception);
                 });
-        } catch (\Exception $e) {
-            $this->log("Exception in processQueueItem: " . $e->getMessage());
-        }
+        });
     }
 
     protected function getValidMailerAsync(\BO\Zmsentities\Mail $entity)
