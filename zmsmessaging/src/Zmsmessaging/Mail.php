@@ -58,7 +58,7 @@ class Mail extends BaseController
                 }
             }
 
-            $multiMailer.sendAll();
+            $multiMailer->sendAll();
         } else {
             $resultList[] = array(
                 'errorInfo' => 'No mail entry found in Database...'
