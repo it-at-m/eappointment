@@ -13,6 +13,10 @@ jobs:
         uses: actions/checkout@main
       - name: Install Composer Dependencies
         run: |
+          apt-get update
+          apt-get install -y libpthread-stubs0-dev
+          pecl install parallel
+          docker-php-ext-enable parallel
           cd "${{ matrix.module }}"
           composer install --no-progress --prefer-dist --optimize-autoloader
       - name: Run Unit Tests
@@ -39,6 +43,7 @@ jobs:
             php_version: "8.0"
           - module: zmsticketprinter
             php_version: "8.0"
+
 
 
   zmsapi-test:
