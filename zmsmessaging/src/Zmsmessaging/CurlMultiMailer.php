@@ -3,6 +3,7 @@
 namespace BO\Zmsmessaging;
 
 use \PHPMailer\PHPMailer\PHPMailer;
+use \PHPMailer\PHPMailer\Exception as PHPMailerException;
 
 class CurlMultiMailer
 {
@@ -17,10 +18,31 @@ class CurlMultiMailer
     public function addEmail(PHPMailer $mailer)
     {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $mailer->getSMTPHost());
+
+        // Set the cURL options for SMTP
+        $smtpHost = $mailer->Host;
+        $smtpPort = $mailer->Port;
+        $smtpUsername = $mailer->Username;
+        $smtpPassword = $mailer->Password;
+        $from = $mailer->From;
+        $to = $mailer->getToAddresses();
+        $subject = $mailer->Subject;
+        $body = $mailer->Body;
+
+        $smtpUrl = "smtp://$smtpHost:$smtpPort";
+        
+        curl_setopt($ch, CURLOPT_URL, $smtpUrl);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $mailer->getMessageBody());
+        curl_setopt($ch, CURLOPT_POSTFIELDS, [
+            'username' => $smtpUsername,
+            'password' => $smtpPassword,
+            'from' => $from,
+            'to' => $to,
+            'subject' => $subject,
+            'body' => $body
+        ]);
+
         $this->handlers[] = $ch;
         curl_multi_add_handle($this->multiHandle, $ch);
     }
