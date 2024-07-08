@@ -45,7 +45,7 @@ class Mail extends BaseController
                     if (!$mailer) {
                         throw new \Exception("No valid mailer");
                     }
-                    $multiMailer.addEmail($mailer);
+                    $multiMailer->addEmail($mailer);
                 } catch (\Exception $exception) {
                     $log = new Mimepart(['mime' => 'text/plain']);
                     $log->content = $exception->getMessage();
