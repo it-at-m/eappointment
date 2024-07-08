@@ -23,7 +23,9 @@ jobs:
             pkg-config \
             libssl-dev \
             libsqlite3-dev \
-            libreadline-dev
+            libreadline-dev \
+            bison \
+            re2c
 
       - name: Configure and Install PHP with ZTS
         run: |
@@ -79,6 +81,7 @@ jobs:
             php_version: "8.0"
           - module: zmsticketprinter
             php_version: "8.0"
+
 
 
 
