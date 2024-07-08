@@ -32,25 +32,43 @@ class Mail extends BaseController
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
-            $pool = new Pool(8);
-            $pool->start();
+            $multiMailer = new CurlMultiMailer();
 
             foreach ($this->messagesQueue as $item) {
                 if ($this->maxRunTime < $this->getSpendTime()) {
                     $this->log("Max Runtime exceeded - " . \App::$now->format('c'));
                     break;
                 }
-                $task = new MailTask($item, $action, $this);
-                $pool->submit($task);
+                $postData = $this->prepareEmailData($item, $action);
+                $multiMailer->addEmail('http://your-email-api-endpoint.com/send', $postData);
             }
 
-            $pool->shutdown();
+            $multiMailer->sendAll();
         } else {
             $resultList[] = array(
                 'errorInfo' => 'No mail entry found in Database...'
             );
         }
         return $resultList;
+    }
+
+    private function prepareEmailData($item, $action)
+    {
+        $entity = new \BO\Zmsentities\Mail($item);
+        $mailer = $this->getValidMailer($entity);
+        if (!$mailer) {
+            throw new \Exception("No valid mailer");
+        }
+
+        $data = [
+            'subject' => $entity['subject'],
+            'from' => $entity['department']['email'],
+            'to' => $entity->getRecipient(),
+            'body' => $entity->getMimeBody(),
+            'action' => $action
+        ];
+
+        return $data;
     }
 
     public function sendQueueItem($action, $item)
