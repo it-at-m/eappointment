@@ -19,13 +19,19 @@ class CurlMultiMailer
     {
         $ch = curl_init();
 
+        $toAddresses = $mailer->getToAddresses();
+        $to = [];
+        foreach ($toAddresses as $address) {
+            $to[] = $address[0]; // Extracting the email address part
+        }
+        $to = implode(',', $to);
+
         // Set the cURL options for SMTP
         $smtpHost = $mailer->Host;
         $smtpPort = $mailer->Port;
         $smtpUsername = $mailer->Username;
         $smtpPassword = $mailer->Password;
         $from = $mailer->From;
-        $to = $mailer->getToAddresses();
         $subject = $mailer->Subject;
         $body = $mailer->Body;
 
@@ -34,14 +40,14 @@ class CurlMultiMailer
         curl_setopt($ch, CURLOPT_URL, $smtpUrl);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, [
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
             'username' => $smtpUsername,
             'password' => $smtpPassword,
             'from' => $from,
             'to' => $to,
             'subject' => $subject,
             'body' => $body
-        ]);
+        ]));
 
         $this->handlers[] = $ch;
         curl_multi_add_handle($this->multiHandle, $ch);

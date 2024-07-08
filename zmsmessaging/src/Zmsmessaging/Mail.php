@@ -45,20 +45,20 @@ class Mail extends BaseController
                     if (!$mailer) {
                         throw new \Exception("No valid mailer");
                     }
-                    $multiMailer->addEmail($mailer);
+                    $multiMailer.addEmail($mailer);
                 } catch (\Exception $exception) {
                     $log = new Mimepart(['mime' => 'text/plain']);
                     $log->content = $exception->getMessage();
                     if (isset($item['process']) && isset($item['process']['id'])) {
-                        $this->log("Init Queue Exception message: ". $log->content .' - '. \App::$now->format('c'));
-                        $this->log("Init Queue Exception log readPostResult start - ". \App::$now->format('c'));
-                        \App::$http->readPostResult('/log/process/'. $item['process']['id'] .'/', $log, ['error' => 1]);
-                        $this->log("Init Queue Exception log readPostResult finished - ". \App::$now->format('c'));
+                        $this->log("Init Queue Exception message: " . $log->content . ' - ' . \App::$now->format('c'));
+                        $this->log("Init Queue Exception log readPostResult start - " . \App::$now->format('c'));
+                        \App::$http->readPostResult('/log/process/' . $item['process']['id'] . '/', $log, ['error' => 1]);
+                        $this->log("Init Queue Exception log readPostResult finished - " . \App::$now->format('c'));
                     }
                 }
             }
 
-            $multiMailer->sendAll();
+            $multiMailer.sendAll();
         } else {
             $resultList[] = array(
                 'errorInfo' => 'No mail entry found in Database...'
