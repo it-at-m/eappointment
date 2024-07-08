@@ -6,58 +6,19 @@ on:
 jobs:
   module-test:
     runs-on: ubuntu-latest
+    container:
+      image: "registry.gitlab.com/eappointment/php-base:${{ matrix.php_version }}-dev"
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
-
-      - name: Install Dependencies
+      - name: Install Parallel Extension and Composer Dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libpthread-stubs0-dev \
-            autoconf \
-            build-essential \
-            libxml2-dev \
-            libonig-dev \
-            libcurl4-openssl-dev \
-            pkg-config \
-            libssl1.1=1.1.1f-1ubuntu2.16 \
-            libssl-dev=1.1.1f-1ubuntu2.16 \
-            libsqlite3-dev \
-            libreadline-dev \
-            bison \
-            re2c
-
-      - name: Configure and Install PHP with ZTS
-        run: |
-          mkdir php-src
-          cd php-src
-          curl -L https://github.com/php/php-src/archive/refs/tags/php-8.0.30.tar.gz | tar xz --strip-components=1
-          ./buildconf --force
-          ./configure --enable-maintainer-zts \
-                      --with-curl \
-                      --with-openssl \
-                      --with-zlib \
-                      --enable-mbstring \
-                      --with-readline \
-                      --enable-sockets \
-                      --with-pdo-mysql \
-                      --with-libdir=/lib/x86_64-linux-gnu
-          make -j$(nproc)
-          sudo make install
-          cd ..
-          rm -rf php-src
-
-      - name: Install PHP Extensions
-        run: |
-          sudo pecl install parallel
-          echo "extension=parallel.so" | sudo tee -a /usr/local/lib/php.ini
-
-      - name: Install Composer Dependencies
-        run: |
+          apt-get update
+          apt-get install -y libpthread-stubs0-dev
+          pecl install parallel
+          docker-php-ext-enable parallel
           cd "${{ matrix.module }}"
           composer install --no-progress --prefer-dist --optimize-autoloader
-
       - name: Run Unit Tests
         run: |
           cd "${{ matrix.module }}"
@@ -82,8 +43,6 @@ jobs:
             php_version: "8.0"
           - module: zmsticketprinter
             php_version: "8.0"
-
-
   zmsapi-test:
     runs-on: ubuntu-latest
     container:
@@ -110,10 +69,12 @@ jobs:
         run: |
           apt update
           apt install -y python3 python3-click python3-git
-      - name: Referencing local Modules and Libraries
-        run: python3 ./cli modules reference-libraries --no-symlink
-      - name: Install Composer Dependencies
+      - name: Install Parallel Extension and Composer Dependencies
         run: |
+          apt-get update
+          apt-get install -y libpthread-stubs0-dev
+          pecl install parallel
+          docker-php-ext-enable parallel
           modules=('zmsapi' 'zmsdb')
           for module in "${modules[@]}"; do
             echo "Installing Composer dependencies for $module"
@@ -135,7 +96,6 @@ jobs:
           php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit \
             -v --colors=never --coverage-text --coverage-html public/_tests/coverage/ --log-junit \
             public/_tests/junit.xml
-
   zmsdb-test:
     runs-on: ubuntu-latest
     container:
@@ -162,10 +122,12 @@ jobs:
         run: |
           apt update
           apt install -y python3 python3-click python3-git
-      - name: Referencing local Modules and Libraries
-        run: python3 ./cli modules reference-libraries --no-symlink
-      - name: Install Composer Dependencies
+      - name: Install Parallel Extension and Composer Dependencies
         run: |
+          apt-get update
+          apt-get install -y libpthread-stubs0-dev
+          pecl install parallel
+          docker-php-ext-enable parallel
           modules=('zmsdb')
           for module in "${modules[@]}"; do
             echo "Installing Composer dependencies for $module"
@@ -183,23 +145,17 @@ jobs:
           php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit \
             -v --colors=never --coverage-text --coverage-html public/_tests/coverage/ --log-junit \
             public/_tests/junit.xml
-
-
-
-
   zmsclient-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
-
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.0"
-          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, parallel
           coverage: xdebug
-
       - name: Install Composer Dependencies
         run: |
           modules=('zmsclient')
@@ -207,7 +163,6 @@ jobs:
             echo "Installing Composer dependencies for $module"
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
-
       - name: Run Unit Tests
         run: |
           /bin/bash -c "cd ./zmsclient && docker-compose up -d && docker-compose exec -T test ./vendor/bin/phpunit"
