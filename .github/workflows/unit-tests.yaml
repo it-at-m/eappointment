@@ -21,7 +21,8 @@ jobs:
             libonig-dev \
             libcurl4-openssl-dev \
             pkg-config \
-            libssl-dev \
+            libssl1.1=1.1.1f-1ubuntu2.16 \
+            libssl-dev=1.1.1f-1ubuntu2.16 \
             libsqlite3-dev \
             libreadline-dev \
             bison \
@@ -81,8 +82,6 @@ jobs:
             php_version: "8.0"
           - module: zmsticketprinter
             php_version: "8.0"
-
-
 
 
   zmsapi-test:
