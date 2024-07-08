@@ -9,6 +9,7 @@ namespace BO\Zmsmessaging;
 use \BO\Zmsentities\Mimepart;
 use \PHPMailer\PHPMailer\PHPMailer;
 use \PHPMailer\PHPMailer\Exception as PHPMailerException;
+use \parallel\Runtime;
 
 class Mail extends BaseController
 {
@@ -32,13 +33,25 @@ class Mail extends BaseController
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
+            $runtimes = [];
             foreach ($this->messagesQueue as $item) {
                 if ($this->maxRunTime < $this->getSpendTime()) {
                     $this->log("Max Runtime exceeded - ". \App::$now->format('c'));
                     break;
                 }
+                $runtimes[] = new Runtime();
+            }
+
+            $futures = [];
+            foreach ($runtimes as $index => $runtime) {
+                $futures[] = $runtime->run(function($action, $item) {
+                    return $this->sendQueueItem($action, $item);
+                }, [$action, $this->messagesQueue[$index]]);
+            }
+
+            foreach ($futures as $future) {
                 try {
-                    $resultList[] = $this->sendQueueItem($action, $item);
+                    $resultList[] = $future->value();
                 } catch (\Exception $exception) {
                     $log = new Mimepart(['mime' => 'text/plain']);
                     $log->content = $exception->getMessage();
@@ -48,7 +61,6 @@ class Mail extends BaseController
                         \App::$http->readPostResult('/log/process/'. $item['process']['id'] .'/', $log, ['error' => 1]);
                         $this->log("Init Queue Exception log readPostResult finished - ". \App::$now->format('c'));
                     }
-                    //\App::$log->error($log->content);
                 }
             }
         } else {
@@ -80,11 +92,9 @@ class Mail extends BaseController
                 $this->deleteEntityFromQueue($entity);
             }
         } else {
-            // @codeCoverageIgnoreStart
             $result = array(
                 'errorInfo' => $result->ErrorInfo
             );
-            // @codeCoverageIgnoreEnd
         }
         return $result;
     }
@@ -95,7 +105,6 @@ class Mail extends BaseController
         $messageId = $entity['id'];
         try {
             $mailer = $this->readMailer($entity);
-        // @codeCoverageIgnoreStart
         } catch (PHPMailerException $exception) {
             $message = "Message #$messageId PHPMailer Failure: ". $exception->getMessage();
             $code = $exception->getCode();
@@ -115,7 +124,7 @@ class Mail extends BaseController
                 );
                 $this->removeEntityOlderThanOneHour($entity);
             }
-           
+
             $log = new Mimepart(['mime' => 'text/plain']);
             $log->content = $message;
             $this->log("Build Mailer Exception log message: ". $message);
@@ -125,14 +134,9 @@ class Mail extends BaseController
             return false;
         }
 
-        // @codeCoverageIgnoreEnd
         return $mailer;
     }
 
-    /**
-     * @SuppressWarnings("CyclomaticComplexity")
-     * @SuppressWarnings("NPathComplexity")
-     */
     protected function readMailer(\BO\Zmsentities\Mail $entity)
     {
         $this->log("Build Mailer: testEntity() - ". \App::$now->format('c'));
@@ -164,7 +168,7 @@ class Mail extends BaseController
         $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
         $this->log("Build Mailer: addAddress() - ". \App::$now->format('c'));
         $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
-            
+
         if (null !== $entity->getIcsPart()) {
             $this->log("Build Mailer: AddStringAttachment() - ". \App::$now->format('c'));
             $mailer->AddStringAttachment(
