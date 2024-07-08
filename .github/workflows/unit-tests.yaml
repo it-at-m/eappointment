@@ -6,19 +6,55 @@ on:
 jobs:
   module-test:
     runs-on: ubuntu-latest
-    container:
-      image: "registry.gitlab.com/eappointment/php-base:${{ matrix.php_version }}-dev"
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libpthread-stubs0-dev \
+            autoconf \
+            build-essential \
+            libxml2-dev \
+            libonig-dev \
+            libcurl4-openssl-dev \
+            pkg-config \
+            libssl-dev \
+            libsqlite3-dev \
+            libreadline-dev
+
+      - name: Configure and Install PHP with ZTS
+        run: |
+          mkdir php-src
+          cd php-src
+          curl -L https://github.com/php/php-src/archive/refs/tags/php-8.0.30.tar.gz | tar xz --strip-components=1
+          ./buildconf --force
+          ./configure --enable-maintainer-zts \
+                      --with-curl \
+                      --with-openssl \
+                      --with-zlib \
+                      --enable-mbstring \
+                      --with-readline \
+                      --enable-sockets \
+                      --with-pdo-mysql \
+                      --with-libdir=/lib/x86_64-linux-gnu
+          make -j$(nproc)
+          sudo make install
+          cd ..
+          rm -rf php-src
+
+      - name: Install PHP Extensions
+        run: |
+          sudo pecl install parallel
+          echo "extension=parallel.so" | sudo tee -a /usr/local/lib/php.ini
+
       - name: Install Composer Dependencies
         run: |
-          apt-get update
-          apt-get install -y libpthread-stubs0-dev
-          pecl install parallel
-          docker-php-ext-enable parallel
           cd "${{ matrix.module }}"
           composer install --no-progress --prefer-dist --optimize-autoloader
+
       - name: Run Unit Tests
         run: |
           cd "${{ matrix.module }}"
