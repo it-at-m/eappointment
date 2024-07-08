@@ -60,9 +60,13 @@ class Mail extends BaseController
     private function prepareEmailData($item, $action)
     {
         $entity = new \BO\Zmsentities\Mail($item);
+        if (empty($entity['department']['email'])) {
+            throw new \Exception("Missing department email for item ID " . $entity['id']);
+        }
+
         $mailer = $this->getValidMailer($entity);
         if (!$mailer) {
-            throw new \Exception("No valid mailer");
+            throw new \Exception("No valid mailer for item ID " . $entity['id']);
         }
 
         $data = [
@@ -82,7 +86,7 @@ class Mail extends BaseController
         $entity = new \BO\Zmsentities\Mail($item);
         $mailer = $this->getValidMailer($entity);
         if (!$mailer) {
-            throw new \Exception("No valid mailer");
+            throw new \Exception("No valid mailer for item ID " . $entity['id']);
         }
         $result = $this->sendMailer($entity, $mailer, $action);
         if ($result instanceof PHPMailer) {
@@ -169,7 +173,7 @@ class Mail extends BaseController
         }
 
         if (empty($entity['department']['email'])) {
-            throw new \Exception("Invalid From address");
+            throw new \Exception("Invalid From address for item ID " . $entity['id']);
         }
 
         $this->log("Build Mailer: new PHPMailer() - " . \App::$now->format('c'));
