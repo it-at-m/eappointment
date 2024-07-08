@@ -39,8 +39,13 @@ class Mail extends BaseController
                     $this->log("Max Runtime exceeded - " . \App::$now->format('c'));
                     break;
                 }
-                $postData = $this->prepareEmailData($item, $action);
-                $multiMailer->addEmail('http://your-email-api-endpoint.com/send', $postData);
+                try {
+                    $postData = $this->prepareEmailData($item, $action);
+                    $multiMailer->addEmail('http://your-email-api-endpoint.com/send', $postData);
+                } catch (\Exception $e) {
+                    $this->log("Error preparing email data: " . $e->getMessage());
+                    $resultList[] = ['errorInfo' => $e->getMessage()];
+                }
             }
 
             $multiMailer->sendAll();
@@ -161,6 +166,10 @@ class Mail extends BaseController
             if ($mimepart->isIcs()) {
                 $icsPart = $mimepart->getContent();
             }
+        }
+
+        if (empty($entity['department']['email'])) {
+            throw new \Exception("Invalid From address");
         }
 
         $this->log("Build Mailer: new PHPMailer() - " . \App::$now->format('c'));
