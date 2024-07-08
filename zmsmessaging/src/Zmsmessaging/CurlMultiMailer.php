@@ -1,9 +1,5 @@
 <?php
-/**
- *
- * @package Zmsmessaging
- *
- */
+
 namespace BO\Zmsmessaging;
 
 class CurlMultiMailer
@@ -42,7 +38,7 @@ class CurlMultiMailer
             }
         }
 
-        foreach ($this->handlers as $ch) {
+        foreach ($handlers as $ch) {
             curl_multi_remove_handle($this->multiHandle, $ch);
             curl_close($ch);
         }

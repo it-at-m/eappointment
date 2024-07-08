@@ -40,11 +40,21 @@ class Mail extends BaseController
                     break;
                 }
                 try {
-                    $postData = $this->prepareEmailData($item, $action);
-                    $multiMailer->addEmail('http://your-email-api-endpoint.com/send', $postData);
-                } catch (\Exception $e) {
-                    $this->log("Error preparing email data: " . $e->getMessage());
-                    $resultList[] = ['errorInfo' => $e->getMessage()];
+                    $entity = new \BO\Zmsentities\Mail($item);
+                    $mailer = $this->getValidMailer($entity);
+                    if (!$mailer) {
+                        throw new \Exception("No valid mailer");
+                    }
+                    $multiMailer->addEmail($mailer->getURL(), $mailer->getPostData());
+                } catch (\Exception $exception) {
+                    $log = new Mimepart(['mime' => 'text/plain']);
+                    $log->content = $exception->getMessage();
+                    if (isset($item['process']) && isset($item['process']['id'])) {
+                        $this->log("Init Queue Exception message: " . $log->content . ' - ' . \App::$now->format('c'));
+                        $this->log("Init Queue Exception log readPostResult start - " . \App::$now->format('c'));
+                        \App::$http->readPostResult('/log/process/' . $item['process']['id'] . '/', $log, ['error' => 1]);
+                        $this->log("Init Queue Exception log readPostResult finished - " . \App::$now->format('c'));
+                    }
                 }
             }
 
@@ -57,36 +67,13 @@ class Mail extends BaseController
         return $resultList;
     }
 
-    private function prepareEmailData($item, $action)
-    {
-        $entity = new \BO\Zmsentities\Mail($item);
-        if (empty($entity['department']['email'])) {
-            throw new \Exception("Missing department email for item ID " . $entity['id']);
-        }
-
-        $mailer = $this->getValidMailer($entity);
-        if (!$mailer) {
-            throw new \Exception("No valid mailer for item ID " . $entity['id']);
-        }
-
-        $data = [
-            'subject' => $entity['subject'],
-            'from' => $entity['department']['email'],
-            'to' => $entity->getRecipient(),
-            'body' => $entity->getMimeBody(),
-            'action' => $action
-        ];
-
-        return $data;
-    }
-
     public function sendQueueItem($action, $item)
     {
         $result = [];
         $entity = new \BO\Zmsentities\Mail($item);
         $mailer = $this->getValidMailer($entity);
         if (!$mailer) {
-            throw new \Exception("No valid mailer for item ID " . $entity['id']);
+            throw new \Exception("No valid mailer");
         }
         $result = $this->sendMailer($entity, $mailer, $action);
         if ($result instanceof PHPMailer) {
@@ -170,10 +157,6 @@ class Mail extends BaseController
             if ($mimepart->isIcs()) {
                 $icsPart = $mimepart->getContent();
             }
-        }
-
-        if (empty($entity['department']['email'])) {
-            throw new \Exception("Invalid From address for item ID " . $entity['id']);
         }
 
         $this->log("Build Mailer: new PHPMailer() - " . \App::$now->format('c'));
