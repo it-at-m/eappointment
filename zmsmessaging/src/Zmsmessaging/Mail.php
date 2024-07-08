@@ -1,9 +1,9 @@
 <?php
 /**
  *
- * @package Zmsmessaging
- *
- */
+* @package Zmsmessaging
+*
+*/
 namespace BO\Zmsmessaging;
 
 use \BO\Zmsentities\Mimepart;
@@ -17,14 +17,14 @@ class Mail extends BaseController
     public function __construct($verbose = false, $maxRunTime = 50)
     {
         parent::__construct($verbose, $maxRunTime);
-        $this->log("Read Mail QueueList start with limit " . \App::$mails_per_minute . " - " . \App::$now->format('c'));
+        $this->log("Read Mail QueueList start with limit ". \App::$mails_per_minute ." - ". \App::$now->format('c'));
         $queueList = \App::$http->readGetResult('/mails/', [
             'resolveReferences' => 2,
             'limit' => \App::$mails_per_minute
         ])->getCollection();
         if (null !== $queueList) {
             $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
-            $this->log("QueueList sorted by createTimestamp - " . \App::$now->format('c'));
+            $this->log("QueueList sorted by createTimestamp - ". \App::$now->format('c'));
         }
     }
 
@@ -32,33 +32,28 @@ class Mail extends BaseController
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
-            $multiMailer = new CurlMultiMailer();
-
             foreach ($this->messagesQueue as $item) {
                 if ($this->maxRunTime < $this->getSpendTime()) {
-                    $this->log("Max Runtime exceeded - " . \App::$now->format('c'));
+                    $this->log("Max Runtime exceeded - ". \App::$now->format('c'));
                     break;
                 }
                 try {
-                    $entity = new \BO\Zmsentities\Mail($item);
-                    $mailer = $this->getValidMailer($entity);
-                    if (!$mailer) {
-                        throw new \Exception("No valid mailer");
-                    }
-                    $multiMailer->addEmail($mailer);
+                    $resultList[] = $this->sendQueueItem($action, $item);
                 } catch (\Exception $exception) {
                     $log = new Mimepart(['mime' => 'text/plain']);
                     $log->content = $exception->getMessage();
                     if (isset($item['process']) && isset($item['process']['id'])) {
-                        $this->log("Init Queue Exception message: " . $log->content . ' - ' . \App::$now->format('c'));
-                        $this->log("Init Queue Exception log readPostResult start - " . \App::$now->format('c'));
-                        \App::$http->readPostResult('/log/process/' . $item['process']['id'] . '/', $log, ['error' => 1]);
-                        $this->log("Init Queue Exception log readPostResult finished - " . \App::$now->format('c'));
+                        $this->log("Init Queue Exception message: ". $log->content .' - '. \App::$now->format('c'));
+                        $this->log("Init Queue Exception log readPostResult start - ". \App::$now->format('c'));
+                        \App::$http->readPostResult('/log/process/'. $item['process']['id'] .'/', $log, ['error' => 1]);
+                        $this->log("Init Queue Exception log readPostResult finished - ". \App::$now->format('c'));
                     }
+                    //\App::$log->error($log->content);
                 }
             }
 
-            $multiMailer->sendAll();
+            // Clear the queue after processing all items
+            $this->messagesQueue = null;
         } else {
             $resultList[] = array(
                 'errorInfo' => 'No mail entry found in Database...'
@@ -72,7 +67,7 @@ class Mail extends BaseController
         $result = [];
         $entity = new \BO\Zmsentities\Mail($item);
         $mailer = $this->getValidMailer($entity);
-        if (!$mailer) {
+        if (! $mailer) {
             throw new \Exception("No valid mailer");
         }
         $result = $this->sendMailer($entity, $mailer, $action);
@@ -105,31 +100,31 @@ class Mail extends BaseController
             $mailer = $this->readMailer($entity);
         // @codeCoverageIgnoreStart
         } catch (PHPMailerException $exception) {
-            $message = "Message #$messageId PHPMailer Failure: " . $exception->getMessage();
+            $message = "Message #$messageId PHPMailer Failure: ". $exception->getMessage();
             $code = $exception->getCode();
             \App::$log->warning($message, []);
         } catch (\Exception $exception) {
-            $message = "Message #$messageId Exception Failure: " . $exception->getMessage();
+            $message = "Message #$messageId Exception Failure: ". $exception->getMessage();
             $code = $exception->getCode();
             \App::$log->warning($message, []);
         }
         if ($message) {
             if (428 == $code || 422 == $code) {
-                $this->log("Build Mailer Failure " . $code . ": deleteEntityFromQueue() - " . \App::$now->format('c'));
+                $this->log("Build Mailer Failure ". $code .": deleteEntityFromQueue() - ". \App::$now->format('c'));
                 $this->deleteEntityFromQueue($entity);
             } else {
                 $this->log(
-                    "Build Mailer Failure " . $code . ": removeEntityOlderThanOneHour() - " . \App::$now->format('c')
+                    "Build Mailer Failure ". $code .": removeEntityOlderThanOneHour() - ". \App::$now->format('c')
                 );
                 $this->removeEntityOlderThanOneHour($entity);
             }
-
+           
             $log = new Mimepart(['mime' => 'text/plain']);
             $log->content = $message;
-            $this->log("Build Mailer Exception log message: " . $message);
-            $this->log("Build Mailer Exception log readPostResult start - " . \App::$now->format('c'));
-            \App::$http->readPostResult('/log/process/' . $entity->process['id'] . '/', $log, ['error' => 1]);
-            $this->log("Build Mailer Exception log readPostResult finished - " . \App::$now->format('c'));
+            $this->log("Build Mailer Exception log message: ". $message);
+            $this->log("Build Mailer Exception log readPostResult start - ". \App::$now->format('c'));
+            \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $log, ['error' => 1]);
+            $this->log("Build Mailer Exception log readPostResult finished - ". \App::$now->format('c'));
             return false;
         }
 
@@ -143,7 +138,7 @@ class Mail extends BaseController
      */
     protected function readMailer(\BO\Zmsentities\Mail $entity)
     {
-        $this->log("Build Mailer: testEntity() - " . \App::$now->format('c'));
+        $this->log("Build Mailer: testEntity() - ". \App::$now->format('c'));
         $this->testEntity($entity);
         $encoding = 'base64';
         foreach ($entity->multipart as $part) {
@@ -159,7 +154,7 @@ class Mail extends BaseController
             }
         }
 
-        $this->log("Build Mailer: new PHPMailer() - " . \App::$now->format('c'));
+        $this->log("Build Mailer: new PHPMailer() - ". \App::$now->format('c'));
         $mailer = new PHPMailer(true);
         $mailer->CharSet = 'UTF-8';
         $mailer->SetLanguage("de");
@@ -170,11 +165,11 @@ class Mail extends BaseController
         $mailer->AltBody = (isset($textPart)) ? $textPart : '';
         $mailer->Body = (isset($htmlPart)) ? $htmlPart : '';
         $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
-        $this->log("Build Mailer: addAddress() - " . \App::$now->format('c'));
+        $this->log("Build Mailer: addAddress() - ". \App::$now->format('c'));
         $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
-
+            
         if (null !== $entity->getIcsPart()) {
-            $this->log("Build Mailer: AddStringAttachment() - " . \App::$now->format('c'));
+            $this->log("Build Mailer: AddStringAttachment() - ". \App::$now->format('c'));
             $mailer->AddStringAttachment(
                 $icsPart,
                 "Termin.ics",
