@@ -38,7 +38,7 @@ class CurlMultiMailer
             }
         }
 
-        foreach ($handlers as $ch) {
+        foreach ($this->handlers as $ch) {
             curl_multi_remove_handle($this->multiHandle, $ch);
             curl_close($ch);
         }
