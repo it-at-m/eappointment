@@ -31,6 +31,7 @@ class Mail extends BaseController
     public function initQueueTransmission($action = false)
     {
         $resultList = [];
+        $sentEntities = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
             foreach ($this->messagesQueue as $item) {
                 if ($this->maxRunTime < $this->getSpendTime()) {
@@ -38,7 +39,11 @@ class Mail extends BaseController
                     break;
                 }
                 try {
-                    $resultList[] = $this->sendQueueItem($action, $item);
+                    $result = $this->sendQueueItem($action, $item);
+                    $resultList[] = $result;
+                    if (!isset($result['errorInfo'])) {
+                        $sentEntities[] = $item;
+                    }
                 } catch (\Exception $exception) {
                     $log = new Mimepart(['mime' => 'text/plain']);
                     $log->content = $exception->getMessage();
@@ -48,8 +53,11 @@ class Mail extends BaseController
                         \App::$http->readPostResult('/log/process/'. $item['process']['id'] .'/', $log, ['error' => 1]);
                         $this->log("Init Queue Exception log readPostResult finished - ". \App::$now->format('c'));
                     }
-                    //\App::$log->error($log->content);
                 }
+            }
+            // After sending all mails, delete the sent entries
+            foreach ($sentEntities as $entity) {
+                $this->deleteEntityFromQueue(new \BO\Zmsentities\Mail($entity));
             }
         } else {
             $resultList[] = array(
@@ -76,15 +84,10 @@ class Mail extends BaseController
                 'attachments' => $result->getAttachments(),
                 'customHeaders' => $result->getCustomHeaders(),
             );
-            if ($action) {
-                $this->deleteEntityFromQueue($entity);
-            }
         } else {
-            // @codeCoverageIgnoreStart
             $result = array(
                 'errorInfo' => $result->ErrorInfo
             );
-            // @codeCoverageIgnoreEnd
         }
         return $result;
     }
@@ -95,7 +98,6 @@ class Mail extends BaseController
         $messageId = $entity['id'];
         try {
             $mailer = $this->readMailer($entity);
-        // @codeCoverageIgnoreStart
         } catch (PHPMailerException $exception) {
             $message = "Message #$messageId PHPMailer Failure: ". $exception->getMessage();
             $code = $exception->getCode();
@@ -125,7 +127,6 @@ class Mail extends BaseController
             return false;
         }
 
-        // @codeCoverageIgnoreEnd
         return $mailer;
     }
 
