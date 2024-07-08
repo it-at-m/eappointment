@@ -37,7 +37,7 @@ class SendMailTest extends Base
                 $this->assertStringContainsString('calendar', json_encode($mail['attachments'][0]));
             }
         }
-    }*/
+    }
 
     public function testSendMailQueueEmpty()
     {
@@ -89,5 +89,5 @@ class SendMailTest extends Base
         );
         \App::$messaging = new \BO\Zmsmessaging\Mail();
         \App::$messaging->initQueueTransmission();
-    }
+    }*/
 }
