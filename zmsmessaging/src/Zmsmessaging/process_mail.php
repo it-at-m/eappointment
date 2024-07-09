@@ -56,7 +56,7 @@ class MailProcessor extends BaseController
             $entity = new \BO\Zmsentities\Mail($mailData);
 
             $this->log("Build Mailer: testEntity() - ". \App::$now->format('c'));
-            echo "Build Mailer: testEntity() - ". \App::$now->format('c') "\n\n";
+            echo "Build Mailer: testEntity() - ". \App::$now->format('c') . "\n\n";
             $this->testEntity($entity);
             $encoding = 'base64';
             foreach ($entity->multipart as $part) {
