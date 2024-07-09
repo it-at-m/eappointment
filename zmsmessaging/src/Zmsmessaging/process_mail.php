@@ -51,12 +51,12 @@ class MailProcessor extends BaseController
         //echo "Mail data: " . print_r($mailData, true) . "\n\n";
 
         if ($mailData) {
-            $this->log("Mail data found for ID: $itemId\n\n");
-            echo "Mail data found for ID: $itemId\n\n";
+            //$this->log("Mail data found for ID: $itemId\n\n");
+            //echo "Mail data found for ID: $itemId\n\n";
             $entity = new \BO\Zmsentities\Mail($mailData);
 
-            $this->log("Build Mailer: testEntity() - " . \App::$now->format('c'));
-            echo "Build Mailer: testEntity() - " . \App::$now->format('c') . "\n\n";
+            //$this->log("Build Mailer: testEntity() - " . \App::$now->format('c'));
+            //echo "Build Mailer: testEntity() - " . \App::$now->format('c') . "\n\n";
             $this->testEntity($entity);
             $encoding = 'base64';
 
@@ -70,8 +70,8 @@ class MailProcessor extends BaseController
                 }
             }
 
-            $this->log("Build Mailer: new PHPMailer() - " . \App::$now->format('c'));
-            echo "Build Mailer: new PHPMailer() - " . \App::$now->format('c') . "\n\n";
+            //$this->log("Build Mailer: new PHPMailer() - " . \App::$now->format('c'));
+            //echo "Build Mailer: new PHPMailer() - " . \App::$now->format('c') . "\n\n";
 
             try {
                 $mailer = new PHPMailer(true);
@@ -84,13 +84,13 @@ class MailProcessor extends BaseController
                 $mailer->AltBody = (isset($textPart)) ? $textPart : '';
                 $mailer->Body = (isset($htmlPart)) ? $htmlPart : '';
                 $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
-                $this->log("Build Mailer: addAddress() - " . \App::$now->format('c'));
-                echo "Build Mailer: addAddress() - " . \App::$now->format('c') . "\n\n";
+                //$this->log("Build Mailer: addAddress() - " . \App::$now->format('c'));
+                //echo "Build Mailer: addAddress() - " . \App::$now->format('c') . "\n\n";
                 $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
 
                 if (null !== $entity->getIcsPart()) {
-                    $this->log("Build Mailer: AddStringAttachment() - " . \App::$now->format('c'));
-                    echo "Build Mailer: AddStringAttachment() - " . \App::$now->format('c') . "\n\n";
+                    //$this->log("Build Mailer: AddStringAttachment() - " . \App::$now->format('c'));
+                    //echo "Build Mailer: AddStringAttachment() - " . \App::$now->format('c') . "\n\n";
                     $mailer->AddStringAttachment(
                         $icsPart,
                         "Termin.ics",
