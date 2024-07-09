@@ -16,7 +16,8 @@ class Mail extends BaseController
     public function __construct($verbose = false, $maxRunTime = 50, $processMailScript = __DIR__ . '/process_mail.php')
     {
         parent::__construct($verbose, $maxRunTime);
-        $this->processMailScript = $processMailScript;
+        $this->processMailScript = $this->findProcessMailScript($processMailScript);
+        $this->log("process_mail.php path: " . $this->processMailScript); // Log the path
         $this->log("Read Mail QueueList start with limit " . \App::$mails_per_minute . " - " . \App::$now->format('c'));
         $queueList = \App::$http->readGetResult('/mails/', [
             'resolveReferences' => 2,
@@ -26,6 +27,40 @@ class Mail extends BaseController
             $this->messagesQueue = $this->convertCollectionToArray($queueList->sortByCustomKey('createTimestamp'));
             $this->log("QueueList sorted by createTimestamp - " . \App::$now->format('c'));
         }
+    }
+
+    private function findProcessMailScript($path)
+    {
+        if (file_exists($path)) {
+            return realpath($path);
+        } else {
+            $this->log("process_mail.php not found at $path. Searching for file...");
+            $files = $this->searchFile(__DIR__, 'process_mail.php');
+            if (!empty($files)) {
+                $this->log("process_mail.php found at " . $files[0]);
+                return realpath($files[0]);
+            } else {
+                $this->log("process_mail.php could not be found.");
+                throw new \Exception("process_mail.php could not be found.");
+            }
+        }
+    }
+
+    private function searchFile($directory, $filename)
+    {
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($directory),
+            \RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        $files = [];
+        foreach ($iterator as $file) {
+            if ($file->getFilename() === $filename) {
+                $files[] = $file->getPathname();
+            }
+        }
+
+        return $files;
     }
 
     private function convertCollectionToArray($collection)
