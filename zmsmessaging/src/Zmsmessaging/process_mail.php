@@ -18,8 +18,8 @@ class MailProcessor extends BaseController
     private function getMailById($itemId)
     {
         $endpoint = '/mails/' . $itemId . '/';
-        $this->log("Fetching mail data from API endpoint: $endpoint\n\n");
-        echo "Fetching mail data from API endpoint: $endpoint\n\n";
+        //$this->log("Fetching mail data from API endpoint: $endpoint\n\n");
+        //echo "Fetching mail data from API endpoint: $endpoint\n\n";
 
         try {
             $response = \App::$http->readGetResult($endpoint);
@@ -115,19 +115,6 @@ class MailProcessor extends BaseController
                         ];
                     }
                 }
-
-                $this->log("SMTP Configuration: ");
-                echo "SMTP Configuration: \n";
-                $this->log("Host: " . \App::$smtp_host);
-                echo "Host: " . \App::$smtp_host . "\n";
-                $this->log("Port: " . \App::$smtp_port);
-                echo "Port: " . \App::$smtp_port . "\n";
-                $this->log("SMTPAuth: " . (\App::$smtp_auth_enabled ? 'true' : 'false'));
-                echo "SMTPAuth: " . (\App::$smtp_auth_enabled ? 'true' : 'false') . "\n";
-                $this->log("SMTPSecure: " . \App::$smtp_auth_method);
-                echo "SMTPSecure: " . \App::$smtp_auth_method . "\n";
-                $this->log("Username: " . \App::$smtp_username);
-                echo "Username: " . \App::$smtp_username . "\n";
 
                 // Use the sendMailer method
                 $result = $this->sendMailer($entity, $mailer, true);
