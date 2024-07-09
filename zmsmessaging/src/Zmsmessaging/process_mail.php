@@ -44,7 +44,7 @@ class MailProcessor extends BaseController
                 if (empty($mailer->Body) && empty($mailer->AltBody)) {
                     $this->log("Both HTML and Text parts are missing for mail ID: $itemId");
                     echo "Both HTML and Text parts are missing for mail ID: $itemId\n";
-                    return;
+                    //return;
                 }
 
                 $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
