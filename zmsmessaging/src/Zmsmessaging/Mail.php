@@ -1,153 +1,175 @@
 <?php
-/**
- *
- * @package Zmsmessaging
- *
- */
-namespace BO\Zmsmessaging;
 
-use \BO\Zmsentities\Mimepart;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception as PHPMailerException;
+use BO\Zmsmessaging\BaseController;
 
-class Mail extends BaseController
+// Ensure autoloader is included
+require __DIR__ . '/../../vendor/autoload.php'; // Adjust path as necessary
+require __DIR__ . '/../../bootstrap.php'; // Adjust path as necessary
+
+class MailProcessor extends BaseController
 {
-    protected $messagesQueue = null;
-    private $processMailScript;
-
-    public function __construct($verbose = false, $maxRunTime = 50, $processMailScript = __DIR__ . '/process_mail.php')
+    public function __construct($verbose = false, $maxRunTime = 50)
     {
         parent::__construct($verbose, $maxRunTime);
-        $this->processMailScript = $this->findProcessMailScript($processMailScript);
-        $this->log("process_mail.php path: " . $this->processMailScript); // Log the path
-        $this->log("Read Mail QueueList start with limit " . \App::$mails_per_minute . " - " . \App::$now->format('c'));
-        $queueList = \App::$http->readGetResult('/mails/', [
-            'resolveReferences' => 2,
-            'limit' => \App::$mails_per_minute
-        ])->getCollection();
-        if (null !== $queueList) {
-            $this->messagesQueue = $this->convertCollectionToArray($queueList->sortByCustomKey('createTimestamp'));
-            $this->log("QueueList sorted by createTimestamp - " . \App::$now->format('c'));
+    }
+
+    private function getMailById($itemId)
+    {
+        $endpoint = '/mails/' . $itemId . '/';
+        $this->log("Fetching mail data from API endpoint: $endpoint\n\n");
+        echo "Fetching mail data from API endpoint: $endpoint\n\n";
+
+        try {
+            $response = \App::$http->readGetResult($endpoint);
+            $this->log("API Response: " . print_r($response, true) . "\n\n");
+            echo "API Response: " . print_r($response, true) . "\n\n";
+            return $response->getEntity();
+        } catch (\Exception $e) {
+            $this->log("Error fetching mail data: " . $e->getMessage() . "\n\n");
+            echo "Error fetching mail data: " . $e->getMessage() . "\n\n";
+            return null;
         }
     }
 
-    private function findProcessMailScript($path)
+    public function sendAndDeleteEmail($itemId)
     {
-        if (file_exists($path)) {
-            return realpath($path);
+        $this->log("Fetching mail data for ID: $itemId");
+        echo "Fetching mail data for ID: $itemId\n\n";
+
+        // Fetch the email data from the API based on the mail ID
+        $mailData = $this->getMailById($itemId);
+
+        if (empty($mailData)) {
+            $this->log("No mail data for mail ID: $itemId\n\n");
+            echo "No mail data for mail ID: $itemId\n\n";
+            return;
+        }
+
+        $this->log("Mail data: " . print_r($mailData, true));
+        echo "Mail data: " . print_r($mailData, true) . "\n\n";
+
+        if ($mailData) {
+            $this->log("Mail data found for ID: $itemId\n\n");
+            echo "Mail data found for ID: $itemId\n\n";
+            $entity = new \BO\Zmsentities\Mail($mailData);
+
+            $this->log("Build Mailer: testEntity() - " . \App::$now->format('c'));
+            echo "Build Mailer: testEntity() - " . \App::$now->format('c') . "\n\n";
+            $this->testEntity($entity);
+            $encoding = 'base64';
+
+            $htmlPart = '';
+            $textPart = '';
+            foreach ($entity->multipart as $part) {
+                if ($part['mime'] == 'text/html') {
+                    $htmlPart = $part['content'];
+                } elseif ($part['mime'] == 'text/plain') {
+                    $textPart = $part['content'];
+                }
+            }
+
+            $this->log("Build Mailer: new PHPMailer() - " . \App::$now->format('c'));
+            echo "Build Mailer: new PHPMailer() - " . \App::$now->format('c') . "\n\n";
+
+            try {
+                $mailer = new PHPMailer(true);
+                $mailer->CharSet = 'UTF-8';
+                $mailer->SetLanguage("de");
+                $mailer->Encoding = $encoding;
+                $mailer->IsHTML(true);
+                $mailer->XMailer = \App::IDENTIFIER;
+                $mailer->Subject = $entity['subject'];
+                $mailer->AltBody = (isset($textPart)) ? $textPart : '';
+                $mailer->Body = (isset($htmlPart)) ? $htmlPart : '';
+                $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
+                $this->log("Build Mailer: addAddress() - " . \App::$now->format('c'));
+                echo "Build Mailer: addAddress() - " . \App::$now->format('c') . "\n\n";
+                $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
+
+                if (null !== $entity->getIcsPart()) {
+                    $this->log("Build Mailer: AddStringAttachment() - " . \App::$now->format('c'));
+                    echo "Build Mailer: AddStringAttachment() - " . \App::$now->format('c') . "\n\n";
+                    $mailer->AddStringAttachment(
+                        $icsPart,
+                        "Termin.ics",
+                        $encoding,
+                        "text/calendar; charset=utf-8; method=REQUEST"
+                    );
+                }
+
+                if (\App::$smtp_enabled) {
+                    $mailer->IsSMTP();
+                    $mailer->SMTPAuth = \App::$smtp_auth_enabled;
+                    $mailer->SMTPSecure = \App::$smtp_auth_method;
+                    $mailer->Port = \App::$smtp_port;
+                    $mailer->Host = \App::$smtp_host;
+                    $mailer->Username = \App::$smtp_username;
+                    $mailer->Password = \App::$smtp_password;
+                    if (\App::$smtp_skip_tls_verify) {
+                        $mailer->SMTPOptions['ssl'] = [
+                            'verify_peer' => false,
+                            'verify_peer_name' => false,
+                            'allow_self_signed' => true,
+                        ];
+                    }
+                }
+
+                $this->log("SMTP Configuration: ");
+                echo "SMTP Configuration: \n";
+                $this->log("Host: " . \App::$smtp_host);
+                echo "Host: " . \App::$smtp_host . "\n";
+                $this->log("Port: " . \App::$smtp_port);
+                echo "Port: " . \App::$smtp_port . "\n";
+                $this->log("SMTPAuth: " . (\App::$smtp_auth_enabled ? 'true' : 'false'));
+                echo "SMTPAuth: " . (\App::$smtp_auth_enabled ? 'true' : 'false') . "\n";
+                $this->log("SMTPSecure: " . \App::$smtp_auth_method);
+                echo "SMTPSecure: " . \App::$smtp_auth_method . "\n";
+                $this->log("Username: " . \App::$smtp_username);
+                echo "Username: " . \App::$smtp_username . "\n";
+
+                // Use the sendMailer method
+                $result = $this->sendMailer($entity, $mailer, true);
+
+                if ($result instanceof PHPMailer) {
+                    $result = array(
+                        'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
+                        'recipients' => $result->getAllRecipientAddresses(),
+                        'mime' => $result->getMailMIME(),
+                        'attachments' => $result->getAttachments(),
+                        'customHeaders' => $result->getCustomHeaders(),
+                    );
+                    $this->deleteEntityFromQueue($entity);
+                    $this->log("Mail sent and deleted successfully for ID: $itemId" . "\n\n");
+                    echo "Mail sent and deleted successfully for ID: $itemId\n\n";
+                } else {
+                    $result = array(
+                        'errorInfo' => $result->ErrorInfo
+                    );
+                    $this->log("Mail could not be sent. PHPMailer Error: {$result['errorInfo']}\n\n");
+                    echo "Mail could not be sent. PHPMailer Error: {$result['errorInfo']}\n\n";
+                }
+
+            } catch (PHPMailerException $e) {
+                $this->log("Mail could not be sent. PHPMailer Error: {$e->getMessage()}\n\n");
+                echo "Mail could not be sent. PHPMailer Error: {$e->getMessage()}\n\n";
+            } catch (Exception $e) {
+                $this->log("Mail could not be sent. General Error: {$e->getMessage()}\n\n");
+                echo "Mail could not be sent. General Error: {$e->getMessage()}\n\n";
+            }
+
         } else {
-            $this->log("process_mail.php not found at $path. Searching for file...");
-            $files = $this->searchFile(__DIR__, 'process_mail.php');
-            if (!empty($files)) {
-                $this->log("process_mail.php found at " . $files[0]);
-                return realpath($files[0]);
-            } else {
-                $this->log("process_mail.php could not be found.");
-                throw new \Exception("process_mail.php could not be found.");
-            }
+            $this->log("Mail data not found for ID: $itemId\n\n");
+            echo "Mail data not found for ID: $itemId\n\n";
         }
     }
+}
 
-    private function searchFile($directory, $filename)
-    {
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($directory),
-            \RecursiveIteratorIterator::SELF_FIRST
-        );
-
-        $files = [];
-        foreach ($iterator as $file) {
-            if ($file->getFilename() === $filename) {
-                $files[] = $file->getPathname();
-            }
-        }
-
-        return $files;
-    }
-
-    private function convertCollectionToArray($collection)
-    {
-        $array = [];
-        foreach ($collection as $item) {
-            $array[] = $item;
-        }
-        return $array;
-    }
-
-    public function initQueueTransmission($action = false)
-    {
-        $resultList = [];
-        if ($this->messagesQueue && count($this->messagesQueue)) {
-            $batchSize = 1;
-            $batches = array_chunk($this->messagesQueue, $batchSize);
-            $processHandles = [];
-
-            foreach ($batches as $batch) {
-                $mailIds = array_map(fn($item) => $item['id'], $batch);
-                $encodedMailIds = implode(',', $mailIds);
-                $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds);
-                $this->log("Starting process with command: $command");
-                $processHandles[] = $this->startProcess($command);
-            }
-
-            $this->waitForAllProcesses($processHandles);
-        } else {
-            $resultList[] = array(
-                'errorInfo' => 'No mail entry found in Database...'
-            );
-        }
-        return $resultList;
-    }
-
-    private function startProcess($command)
-    {
-        $descriptorSpec = [
-            0 => ["pipe", "r"], // stdin
-            1 => ["pipe", "w"], // stdout
-            2 => ["pipe", "w"]  // stderr
-        ];
-
-        $process = proc_open($command, $descriptorSpec, $pipes);
-        if (is_resource($process)) {
-            $this->log("Process started successfully: $command");
-            $output = stream_get_contents($pipes[1]);
-            $error = stream_get_contents($pipes[2]);
-
-            fclose($pipes[1]);
-            fclose($pipes[2]);
-
-            $this->log("Process output: $output");
-            $this->log("Process error: $error");
-        } else {
-            $this->log("Failed to start process: $command");
-        }
-        return $process;
-    }
-
-    private function waitForAllProcesses($processHandles)
-    {
-        foreach ($processHandles as $handle) {
-            if (is_resource($handle)) {
-                $this->log("Waiting for process to finish...");
-                proc_close($handle);
-                $this->log("Process finished.");
-            }
-        }
-    }
-
-    // Override log method to handle array messages
-    public function log($message)
-    {
-        if (is_array($message)) {
-            $message = print_r($message, true);
-        }
-        
-        $time = $this->getSpendTime();
-        $memory = memory_get_usage()/(1024*1024);
-        $text = sprintf("[Init Messaging log %07.3fs %07.1fmb] %s", $time, $memory, $message);
-        static::$logList[] = $text;
-        if ($this->verbose) {
-            error_log('verbose is: ' . $this->verbose);
-            error_log($text);
-        }
-        return $this;
+if ($argc > 1) {
+    $mailIds = explode(',', $argv[1]);
+    $processor = new MailProcessor();
+    foreach ($mailIds as $mailId) {
+        $processor->sendAndDeleteEmail($mailId);
     }
 }
