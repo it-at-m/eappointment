@@ -92,7 +92,7 @@ class MailProcessor extends BaseController
                     
                 if (null !== $entity->getIcsPart()) {
                     $this->log("Build Mailer: AddStringAttachment() - ". \App::$now->format('c'));
-                    echo "Build Mailer: AddStringAttachment() - ". \App::$now->format('c') "\n\n";
+                    echo "Build Mailer: AddStringAttachment() - ". \App::$now->format('c') . "\n\n";
                     $mailer->AddStringAttachment(
                         $icsPart,
                         "Termin.ics",
