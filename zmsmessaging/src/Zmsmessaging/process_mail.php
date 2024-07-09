@@ -20,7 +20,9 @@ class MailProcessor extends BaseController
         $this->log("Fetching mail data for ID: $itemId");
 
         // Fetch the email data from the API based on the mail ID
-        $mailData = $this->getMailById($itemId);
+        $this->$mailData = $this->getMailById($itemId);
+
+        log(json_encode($mailData));
 
         if ($mailData) {
             $this->log("Mail data found for ID: $itemId");
