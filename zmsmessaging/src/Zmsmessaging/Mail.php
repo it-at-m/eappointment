@@ -114,8 +114,8 @@ class Mail extends BaseController
             fclose($pipes[1]);
             fclose($pipes[2]);
 
-            $this->log("Process output: $output");
-            $this->log("Process error: $error");
+            $this->log("Process output: $output\n\n");
+            $this->log("Process error: $error\n\n");
         } else {
             $this->log("Failed to start process: $command");
         }

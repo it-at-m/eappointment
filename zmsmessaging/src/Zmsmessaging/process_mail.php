@@ -36,7 +36,7 @@ class MailProcessor extends BaseController
     public function sendAndDeleteEmail($itemId)
     {
         $this->log("Fetching mail data for ID: $itemId");
-        echo "Fetching mail data for ID: $itemId\n\n";
+        echo "\nFetching mail data for ID: $itemId\n";
 
         // Fetch the email data from the API based on the mail ID
         $mailData = $this->getMailById($itemId);
