@@ -23,8 +23,8 @@ class MailProcessor extends BaseController
 
         try {
             $response = \App::$http->readGetResult($endpoint);
-            $this->log("API Response: " . print_r($response, true) . "\n\n");
-            echo "API Response: " . print_r($response, true) . "\n\n";
+            //$this->log("API Response: " . print_r($response, true) . "\n\n");
+            //echo "API Response: " . print_r($response, true) . "\n\n";
             return $response->getEntity();
         } catch (\Exception $e) {
             $this->log("Error fetching mail data: " . $e->getMessage() . "\n\n");
@@ -47,12 +47,12 @@ class MailProcessor extends BaseController
             return;
         }
 
-        $this->log("Mail data: " . print_r($mailData, true));
-        echo "Mail data: " . print_r($mailData, true) . "\n\n";
+        //$this->log("Mail data: " . print_r($mailData, true));
+        //echo "Mail data: " . print_r($mailData, true) . "\n\n";
 
         if ($mailData) {
-            $this->log("Mail data found for ID: $itemId\n\n");
-            echo "Mail data found for ID: $itemId\n\n";
+            //$this->log("Mail data found for ID: $itemId\n\n");
+            //echo "Mail data found for ID: $itemId\n\n";
             $entity = new \BO\Zmsentities\Mail($mailData);
 
             // Extract HTML and text parts from the multipart array
@@ -67,10 +67,10 @@ class MailProcessor extends BaseController
             }
 
             // Debug logs for parts
-            $this->log("htmlPart: " . ($htmlPart ?: 'not set') . "\n\n");
-            $this->log("textPart: " . ($textPart ?: 'not set') . "\n\n");
-            echo "htmlPart: " . ($htmlPart ?: 'not set') . "\n\n";
-            echo "textPart: " . ($textPart ?: 'not set') . "\n\n";
+            //$this->log("htmlPart: " . ($htmlPart ?: 'not set') . "\n\n");
+            //$this->log("textPart: " . ($textPart ?: 'not set') . "\n\n");
+            //echo "htmlPart: " . ($htmlPart ?: 'not set') . "\n\n";
+            //echo "textPart: " . ($textPart ?: 'not set') . "\n\n";
 
             $mailer = new PHPMailer(true);
 
@@ -82,15 +82,6 @@ class MailProcessor extends BaseController
                 $mailer->Encoding = 'base64';
                 $mailer->IsHTML(true);
                 $mailer->XMailer = \App::IDENTIFIER;
-
-                // SMTP configuration
-                $mailer->isSMTP();
-                $mailer->Host = 'smtp.example.com'; // Replace with your SMTP server
-                $mailer->SMTPAuth = true;
-                $mailer->Username = 'your_username@example.com'; // Replace with your SMTP username
-                $mailer->Password = 'your_password'; // Replace with your SMTP password
-                $mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                $mailer->Port = 587; // Replace with your SMTP port
 
                 $mailer->Subject = $entity['subject'];
                 $mailer->AltBody = $textPart ?: '';
