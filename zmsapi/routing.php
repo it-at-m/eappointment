@@ -1825,6 +1825,35 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("MailDelete");
 
+/**
+ *  @swagger
+ *  "/mails/{id}/":
+ *      get:
+ *          summary: get a mail by ID
+ *          tags:
+ *              - mail
+ *          parameters:
+ *              -   name: id
+ *                  description: mail ID
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: successfully retrieved
+ *              404:
+ *                  description: "could not find mail"
+ */
+\App::$slim->get(
+    '/mails/{id:\d{1,11}}/',
+    '\BO\Zmsapi\MailGet'
+)
+    ->setName("MailGet");
 
 /**
  *  @swagger

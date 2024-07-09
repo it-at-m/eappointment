@@ -74,11 +74,17 @@ class MailProcessor extends BaseController
     private function getMailById($itemId)
     {
         $this->log("Fetching mail data from API for ID: $itemId");
-
-        // Implement the function to fetch email data by ID
-        $response = \App::$http->readGetResult('/mails/'.$itemId.'/')->getEntity();
-        return $response;
+    
+        try {
+            $response = \App::$http->readGetResult('/mails/' . $itemId . '/');
+            $this->log("API Response: " . print_r($response, true));
+            return $response->getEntity();
+        } catch (\Exception $e) {
+            $this->log("Error fetching mail data: " . $e->getMessage());
+            return null;
+        }
     }
+    
 }
 
 if ($argc > 1) {
