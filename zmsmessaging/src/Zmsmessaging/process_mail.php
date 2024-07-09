@@ -15,6 +15,20 @@ class MailProcessor extends BaseController
         parent::__construct($verbose, $maxRunTime);
     }
 
+    private function getMailById($itemId)
+    {
+        $this->log("Fetching mail data from API for ID: $itemId");
+
+        try {
+            $response = \App::$http->readGetResult('/mails/' . $itemId . '/');
+            $this->log("API Response: " . print_r($response, true));
+            return $response->getEntity();
+        } catch (\Exception $e) {
+            $this->log("Error fetching mail data: " . $e->getMessage());
+            return null;
+        }
+    }
+
     public function sendAndDeleteEmail($itemId)
     {
         $this->log("Fetching mail data for ID: $itemId");
@@ -86,19 +100,6 @@ class MailProcessor extends BaseController
         }
     }
 
-    private function getMailById($itemId)
-    {
-        $this->log("Fetching mail data from API for ID: $itemId");
-
-        try {
-            $response = \App::$http->readGetResult('/mails/' . $itemId . '/');
-            $this->log("API Response: " . print_r($response, true));
-            return $response->getEntity();
-        } catch (\Exception $e) {
-            $this->log("Error fetching mail data: " . $e->getMessage());
-            return null;
-        }
-    }
 }
 
 if ($argc > 1) {
