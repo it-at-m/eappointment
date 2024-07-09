@@ -11,10 +11,12 @@ use \BO\Zmsentities\Mimepart;
 class Mail extends BaseController
 {
     protected $messagesQueue = null;
+    private $processMailScript;
 
-    public function __construct($verbose = false, $maxRunTime = 50)
+    public function __construct($verbose = false, $maxRunTime = 50, $processMailScript = __DIR__ . '/process_mail.php')
     {
         parent::__construct($verbose, $maxRunTime);
+        $this->processMailScript = $processMailScript;
         $this->log("Read Mail QueueList start with limit " . \App::$mails_per_minute . " - " . \App::$now->format('c'));
         $queueList = \App::$http->readGetResult('/mails/', [
             'resolveReferences' => 2,
@@ -39,14 +41,14 @@ class Mail extends BaseController
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
-            $batchSize = 1;
+            $batchSize = 5;
             $batches = array_chunk($this->messagesQueue, $batchSize);
             $processHandles = [];
 
             foreach ($batches as $batch) {
                 $mailIds = array_map(fn($item) => $item['id'], $batch);
                 $encodedMailIds = implode(',', $mailIds);
-                $command = "php process_mail.php " . escapeshellarg($encodedMailIds);
+                $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds);
                 $this->log("Starting process with command: $command");
                 $processHandles[] = $this->startProcess($command);
             }
