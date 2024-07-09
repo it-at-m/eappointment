@@ -21,9 +21,18 @@ class Mail extends BaseController
             'limit' => \App::$mails_per_minute
         ])->getCollection();
         if (null !== $queueList) {
-            $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp')->toArray();
+            $this->messagesQueue = $this->convertCollectionToArray($queueList->sortByCustomKey('createTimestamp'));
             $this->log("QueueList sorted by createTimestamp - " . \App::$now->format('c'));
         }
+    }
+
+    private function convertCollectionToArray($collection)
+    {
+        $array = [];
+        foreach ($collection as $item) {
+            $array[] = $item;
+        }
+        return $array;
     }
 
     public function initQueueTransmission($action = false)
