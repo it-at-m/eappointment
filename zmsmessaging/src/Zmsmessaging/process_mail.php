@@ -51,101 +51,73 @@ class MailProcessor extends BaseController
         //echo "Mail data: " . print_r($mailData, true) . "\n\n";
 
         if ($mailData) {
-            $this->log("Mail data found for ID: $itemId\n\n");
-            echo "Mail data found for ID: $itemId\n\n";
+            //$this->log("Mail data found for ID: $itemId\n\n");
+            //echo "Mail data found for ID: $itemId\n\n";
             $entity = new \BO\Zmsentities\Mail($mailData);
 
-            // Extract HTML and text parts from the multipart array
-            $htmlPart = '';
-            $textPart = '';
+            $this->log("Build Mailer: testEntity() - ". \App::$now->format('c'));
+            echo "Build Mailer: testEntity() - ". \App::$now->format('c') "\n\n";
+            $this->testEntity($entity);
+            $encoding = 'base64';
             foreach ($entity->multipart as $part) {
-                if ($part['mime'] == 'text/html') {
-                    $htmlPart = $part['content'];
-                } elseif ($part['mime'] == 'text/plain') {
-                    $textPart = $part['content'];
+                $mimepart = new Mimepart($part);
+                if ($mimepart->isText()) {
+                    $textPart = $mimepart->getContent();
+                }
+                if ($mimepart->isHtml()) {
+                    $htmlPart = $mimepart->getContent();
+                }
+                if ($mimepart->isIcs()) {
+                    $icsPart = $mimepart->getContent();
                 }
             }
-
-            // Debug logs for parts
-            //$this->log("htmlPart: " . ($htmlPart ?: 'not set') . "\n\n");
-            //$this->log("textPart: " . ($textPart ?: 'not set') . "\n\n");
-            //echo "htmlPart: " . ($htmlPart ?: 'not set') . "\n\n";
-            //echo "textPart: " . ($textPart ?: 'not set') . "\n\n";
-
-            $mailer = new PHPMailer(true);
+    
+            $this->log("Build Mailer: new PHPMailer() - ". \App::$now->format('c'));
+            echo "Build Mailer: new PHPMailer() - ". \App::$now->format('c') . "\n\n";
 
             try {
-                $this->log("Build Mailer: new PHPMailer() - " . \App::$now->format('c') . "\n\n");
-                echo "Build Mailer: new PHPMailer() - " . \App::$now->format('c') . "\n\n";
+                $mailer = new PHPMailer(true);
                 $mailer->CharSet = 'UTF-8';
                 $mailer->SetLanguage("de");
-                $mailer->Encoding = 'base64';
+                $mailer->Encoding = $encoding;
                 $mailer->IsHTML(true);
                 $mailer->XMailer = \App::IDENTIFIER;
-
-                // SMTP configuration
-                $mailer->isSMTP();
-                $mailer->Host = $mailData['serverParams']['ZMS_MESSAGING_SMTP_HOST'];
-                $mailer->SMTPAuth = $mailData['serverParams']['ZMS_MESSAGING_SMTP_AUTH_ENABLED'] == 1;
-                $mailer->Username = $mailData['serverParams']['ZMS_MESSAGING_SMTP_USERNAME'];
-                $mailer->Password = $mailData['serverParams']['ZMS_MESSAGING_SMTP_PASSWORD'];
-                $mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                $mailer->Port = $mailData['serverParams']['ZMS_MESSAGING_SMTP_PORT'];
-                $mailer->SMTPOptions = array(
-                    'ssl' => array(
-                        'verify_peer' => $mailData['serverParams']['ZMS_MESSAGING_SMTP_SKIP_TLS_VERIFY'] == 1 ? false : true,
-                        'verify_peer_name' => $mailData['serverParams']['ZMS_MESSAGING_SMTP_SKIP_TLS_VERIFY'] == 1 ? false : true,
-                        'allow_self_signed' => $mailData['serverParams']['ZMS_MESSAGING_SMTP_SKIP_TLS_VERIFY'] == 1 ? true : false
-                    )
-                );
-
                 $mailer->Subject = $entity['subject'];
-                $mailer->AltBody = $textPart ?: '';
-                $mailer->Body = $htmlPart ?: '';
-
-                if (empty($mailer->Body) && empty($mailer->AltBody)) {
-                    $this->log("Both HTML and Text parts are missing for mail ID: $itemId\n\n");
-                    echo "Both HTML and Text parts are missing for mail ID: $itemId\n\n";
-                    return;
-                }
-
+                $mailer->AltBody = (isset($textPart)) ? $textPart : '';
+                $mailer->Body = (isset($htmlPart)) ? $htmlPart : '';
                 $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
-                $this->log("Build Mailer: addAddress() - " . \App::$now->format('c'));
-                echo "Build Mailer: addAddress() - " . \App::$now->format('c') . "\n\n";
+                $this->log("Build Mailer: addAddress() - ". \App::$now->format('c'));
+                echo "Build Mailer: addAddress() - ". \App::$now->format('c') . "\n\n";
                 $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
-
+                    
                 if (null !== $entity->getIcsPart()) {
-                    $this->log("Build Mailer: AddStringAttachment() - " . \App::$now->format('c') . "\n\n");
-                    echo "Build Mailer: AddStringAttachment() - " . \App::$now->format('c') . "\n\n";
+                    $this->log("Build Mailer: AddStringAttachment() - ". \App::$now->format('c'));
+                    echo "Build Mailer: AddStringAttachment() - ". \App::$now->format('c') "\n\n";
                     $mailer->AddStringAttachment(
-                        $entity->getIcsPart(),
+                        $icsPart,
                         "Termin.ics",
-                        'base64',
+                        $encoding,
                         "text/calendar; charset=utf-8; method=REQUEST"
                     );
                 }
-
-                // Use the sendMailer method
-                $result = $this->sendMailer($entity, $mailer, true);
-
-                if ($result instanceof PHPMailer) {
-                    $result = array(
-                        'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
-                        'recipients' => $result->getAllRecipientAddresses(),
-                        'mime' => $result->getMailMIME(),
-                        'attachments' => $result->getAttachments(),
-                        'customHeaders' => $result->getCustomHeaders(),
-                    );
-                    $this->deleteEntityFromQueue($entity);
-                    $this->log("Mail sent and deleted successfully for ID: $itemId" . "\n\n");
-                    echo "Mail sent and deleted successfully for ID: $itemId\n\n";
-                } else {
-                    $result = array(
-                        'errorInfo' => $result->ErrorInfo
-                    );
-                    $this->log("Mail could not be sent. PHPMailer Error: {$result['errorInfo']}\n\n");
-                    echo "Mail could not be sent. PHPMailer Error: {$result['errorInfo']}\n\n";
+        
+                if (\App::$smtp_enabled) {
+                    $mailer->IsSMTP();
+                    $mailer->SMTPAuth = \App::$smtp_auth_enabled;
+                    $mailer->SMTPSecure = \App::$smtp_auth_method;
+                    $mailer->Port = \App::$smtp_port;
+                    $mailer->Host = \App::$smtp_host;
+                    $mailer->Username = \App::$smtp_username;
+                    $mailer->Password = \App::$smtp_password;
+                    if (\App::$smtp_skip_tls_verify) {
+                        $mailer->SMTPOptions['ssl'] = [
+                            'verify_peer' => false,
+                            'verify_peer_name' => false,
+                            'allow_self_signed' => true,
+                        ];
+                    }
                 }
+                return $mailer;
 
             } catch (PHPMailerException $e) {
                 $this->log("Mail could not be sent. PHPMailer Error: {$e->getMessage()}\n\n");
@@ -154,6 +126,7 @@ class MailProcessor extends BaseController
                 $this->log("Mail could not be sent. General Error: {$e->getMessage()}\n\n");
                 echo "Mail could not be sent. General Error: {$e->getMessage()}\n\n";
             }
+
         } else {
             $this->log("Mail data not found for ID: $itemId\n\n");
             echo "Mail data not found for ID: $itemId\n\n";
