@@ -23,8 +23,8 @@ class MailProcessor extends BaseController
 
         try {
             $response = \App::$http->readGetResult($endpoint);
-            //$this->log("API Response: " . print_r($response, true) . "\n\n");
-            //echo "API Response: " . print_r($response, true) . "\n\n";
+            $this->log("API Response: " . print_r($response, true) . "\n\n");
+            echo "API Response: " . print_r($response, true) . "\n\n";
             return $response->getEntity();
         } catch (\Exception $e) {
             $this->log("Error fetching mail data: " . $e->getMessage() . "\n\n");
@@ -47,12 +47,12 @@ class MailProcessor extends BaseController
             return;
         }
 
-        //$this->log("Mail data: " . print_r($mailData, true));
-        //echo "Mail data: " . print_r($mailData, true) . "\n\n";
+        $this->log("Mail data: " . print_r($mailData, true));
+        echo "Mail data: " . print_r($mailData, true) . "\n\n";
 
         if ($mailData) {
-            //$this->log("Mail data found for ID: $itemId\n\n");
-            //echo "Mail data found for ID: $itemId\n\n";
+            $this->log("Mail data found for ID: $itemId\n\n");
+            echo "Mail data found for ID: $itemId\n\n";
             $entity = new \BO\Zmsentities\Mail($mailData);
 
             // Extract HTML and text parts from the multipart array
@@ -67,10 +67,10 @@ class MailProcessor extends BaseController
             }
 
             // Debug logs for parts
-            //$this->log("htmlPart: " . ($htmlPart ?: 'not set') . "\n\n");
-            //$this->log("textPart: " . ($textPart ?: 'not set') . "\n\n");
-            //echo "htmlPart: " . ($htmlPart ?: 'not set') . "\n\n";
-            //echo "textPart: " . ($textPart ?: 'not set') . "\n\n";
+            $this->log("htmlPart: " . ($htmlPart ?: 'not set') . "\n\n");
+            $this->log("textPart: " . ($textPart ?: 'not set') . "\n\n");
+            echo "htmlPart: " . ($htmlPart ?: 'not set') . "\n\n";
+            echo "textPart: " . ($textPart ?: 'not set') . "\n\n";
 
             $mailer = new PHPMailer(true);
 
@@ -82,6 +82,22 @@ class MailProcessor extends BaseController
                 $mailer->Encoding = 'base64';
                 $mailer->IsHTML(true);
                 $mailer->XMailer = \App::IDENTIFIER;
+
+                // SMTP configuration
+                $mailer->isSMTP();
+                $mailer->Host = $mailData['serverParams']['ZMS_MESSAGING_SMTP_HOST'];
+                $mailer->SMTPAuth = $mailData['serverParams']['ZMS_MESSAGING_SMTP_AUTH_ENABLED'] == 1;
+                $mailer->Username = $mailData['serverParams']['ZMS_MESSAGING_SMTP_USERNAME'];
+                $mailer->Password = $mailData['serverParams']['ZMS_MESSAGING_SMTP_PASSWORD'];
+                $mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                $mailer->Port = $mailData['serverParams']['ZMS_MESSAGING_SMTP_PORT'];
+                $mailer->SMTPOptions = array(
+                    'ssl' => array(
+                        'verify_peer' => $mailData['serverParams']['ZMS_MESSAGING_SMTP_SKIP_TLS_VERIFY'] == 1 ? false : true,
+                        'verify_peer_name' => $mailData['serverParams']['ZMS_MESSAGING_SMTP_SKIP_TLS_VERIFY'] == 1 ? false : true,
+                        'allow_self_signed' => $mailData['serverParams']['ZMS_MESSAGING_SMTP_SKIP_TLS_VERIFY'] == 1 ? true : false
+                    )
+                );
 
                 $mailer->Subject = $entity['subject'];
                 $mailer->AltBody = $textPart ?: '';
