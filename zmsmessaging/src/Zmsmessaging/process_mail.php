@@ -75,11 +75,24 @@ class MailProcessor extends BaseController
         $this->log("Fetched mail data: " . print_r($response, true));
         return $response;
     }
+
+    public function log($message)
+    {
+        if (is_array($message)) {
+            $message = print_r($message, true);
+        }
+
+        $time = $this->getSpendTime();
+        $memory = memory_get_usage()/(1024*1024);
+        $text = sprintf("[Process Mail log %07.3fs %07.1fmb] %s", $time, $memory, $message);
+        error_log($text);
+        return $this;
+    }
 }
 
 if ($argc > 1) {
     $mailIds = explode(',', $argv[1]);
-    $processor = new MailProcessor();
+    $processor = new MailProcessor(true);
     foreach ($mailIds as $mailId) {
         $processor->sendAndDeleteEmail($mailId);
     }

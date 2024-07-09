@@ -71,6 +71,14 @@ class Mail extends BaseController
         $process = proc_open($command, $descriptorSpec, $pipes);
         if (is_resource($process)) {
             $this->log("Process started successfully: $command");
+            $output = stream_get_contents($pipes[1]);
+            $error = stream_get_contents($pipes[2]);
+
+            fclose($pipes[1]);
+            fclose($pipes[2]);
+
+            $this->log("Process output: $output");
+            $this->log("Process error: $error");
         } else {
             $this->log("Failed to start process: $command");
         }
