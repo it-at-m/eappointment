@@ -4,7 +4,10 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
 use BO\Zmsmessaging\BaseController;
 
-require 'vendor/autoload.php';
+// Ensure autoloader is included
+// Ensure autoloader and App initialization is included
+require __DIR__ . '/../../vendor/autoload.php'; // Adjust path as necessary
+require __DIR__ . '/../../bootstrap.php'; // Adjust path as necessary
 
 class MailProcessor extends BaseController
 {
@@ -16,14 +19,16 @@ class MailProcessor extends BaseController
     public function sendAndDeleteEmail($itemId)
     {
         $this->log("Fetching mail data for ID: $itemId");
+
+        // Fetch the email data from the API based on the mail ID
         $mailData = $this->getMailById($itemId);
 
         if ($mailData) {
+            $this->log("Mail data found for ID: $itemId");
             $entity = new \BO\Zmsentities\Mail($mailData);
             $mailer = new PHPMailer(true);
 
             try {
-                $this->log("Setting up PHPMailer for ID: $itemId");
                 $mailer->isSMTP();
                 $mailer->Host = \App::$smtp_host;
                 $mailer->SMTPAuth = \App::$smtp_auth_enabled;
@@ -48,18 +53,16 @@ class MailProcessor extends BaseController
                     );
                 }
 
-                $this->log("Sending email for ID: $itemId");
                 $mailer->send();
-                $this->log("Email sent successfully for ID: $itemId");
                 $this->deleteEntityFromQueue($entity);
-                $this->log("Email deleted from queue for ID: $itemId");
+                $this->log("Mail sent and deleted successfully for ID: $itemId");
 
                 echo "Mail sent and deleted successfully for ID: $itemId\n";
             } catch (PHPMailerException $e) {
-                $this->log("PHPMailer Error for ID $itemId: {$mailer->ErrorInfo}");
+                $this->log("Mail could not be sent. PHPMailer Error: {$mailer->ErrorInfo}");
                 echo "Mail could not be sent. PHPMailer Error: {$mailer->ErrorInfo}\n";
             } catch (Exception $e) {
-                $this->log("General Error for ID $itemId: {$e->getMessage()}");
+                $this->log("Mail could not be sent. General Error: {$e->getMessage()}");
                 echo "Mail could not be sent. General Error: {$e->getMessage()}\n";
             }
         } else {
@@ -71,28 +74,16 @@ class MailProcessor extends BaseController
     private function getMailById($itemId)
     {
         $this->log("Fetching mail data from API for ID: $itemId");
+
+        // Implement the function to fetch email data by ID
         $response = \App::$http->readGetResult('/mails/'.$itemId.'/')->getEntity();
-        $this->log("Fetched mail data: " . print_r($response, true));
         return $response;
-    }
-
-    public function log($message)
-    {
-        if (is_array($message)) {
-            $message = print_r($message, true);
-        }
-
-        $time = $this->getSpendTime();
-        $memory = memory_get_usage()/(1024*1024);
-        $text = sprintf("[Process Mail log %07.3fs %07.1fmb] %s", $time, $memory, $message);
-        error_log($text);
-        return $this;
     }
 }
 
 if ($argc > 1) {
     $mailIds = explode(',', $argv[1]);
-    $processor = new MailProcessor(true);
+    $processor = new MailProcessor();
     foreach ($mailIds as $mailId) {
         $processor->sendAndDeleteEmail($mailId);
     }
