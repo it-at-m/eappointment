@@ -22,6 +22,15 @@ class MailProcessor extends BaseController
         // Fetch the email data from the API based on the mail ID
         $mailData = $this->getMailById($itemId);
 
+        if (empty($mailData)) {
+            $this->log("No mail data for mail ID: $itemId");
+            echo "No mail data for mail ID: $itemId\n";
+            //return;
+        } else {
+            $this->log("Mail data for mail ID: $mailData");
+            echo "Mail data for mail ID: $mailData\n";
+        }
+
         if ($mailData) {
             $this->log("Mail data found for ID: $itemId");
             $entity = new \BO\Zmsentities\Mail($mailData);
