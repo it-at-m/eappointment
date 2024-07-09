@@ -5,7 +5,6 @@ use PHPMailer\PHPMailer\Exception as PHPMailerException;
 use BO\Zmsmessaging\BaseController;
 
 // Ensure autoloader is included
-// Ensure autoloader and App initialization is included
 require __DIR__ . '/../../vendor/autoload.php'; // Adjust path as necessary
 require __DIR__ . '/../../bootstrap.php'; // Adjust path as necessary
 
@@ -29,23 +28,30 @@ class MailProcessor extends BaseController
             $mailer = new PHPMailer(true);
 
             try {
-                $mailer->isSMTP();
-                $mailer->Host = \App::$smtp_host;
-                $mailer->SMTPAuth = \App::$smtp_auth_enabled;
-                $mailer->Username = \App::$smtp_username;
-                $mailer->Password = \App::$smtp_password;
-                $mailer->SMTPSecure = \App::$smtp_auth_method;
-                $mailer->Port = \App::$smtp_port;
+                $this->log("Build Mailer: new PHPMailer() - ". \App::$now->format('c'));
+                $mailer->CharSet = 'UTF-8';
+                $mailer->SetLanguage("de");
+                $mailer->Encoding = 'base64';
+                $mailer->IsHTML(true);
+                $mailer->XMailer = \App::IDENTIFIER;
 
-                $mailer->setFrom($entity['department']['email'], $entity['department']['name']);
-                $mailer->addAddress($entity->getRecipient(), $entity->client['familyName']);
-                $mailer->isHTML(true);
                 $mailer->Subject = $entity['subject'];
-                $mailer->Body = $entity->htmlPart;
-                $mailer->AltBody = $entity->textPart;
+                $mailer->AltBody = (isset($entity->textPart)) ? $entity->textPart : '';
+                $mailer->Body = (isset($entity->htmlPart)) ? $entity->htmlPart : '';
+
+                if (empty($mailer->Body) && empty($mailer->AltBody)) {
+                    $this->log("Both HTML and Text parts are missing for mail ID: $itemId");
+                    echo "Both HTML and Text parts are missing for mail ID: $itemId\n";
+                    return;
+                }
+
+                $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
+                $this->log("Build Mailer: addAddress() - ". \App::$now->format('c'));
+                $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
 
                 if (null !== $entity->getIcsPart()) {
-                    $mailer->addStringAttachment(
+                    $this->log("Build Mailer: AddStringAttachment() - ". \App::$now->format('c'));
+                    $mailer->AddStringAttachment(
                         $entity->getIcsPart(),
                         "Termin.ics",
                         'base64',
@@ -74,7 +80,7 @@ class MailProcessor extends BaseController
     private function getMailById($itemId)
     {
         $this->log("Fetching mail data from API for ID: $itemId");
-    
+
         try {
             $response = \App::$http->readGetResult('/mails/' . $itemId . '/');
             $this->log("API Response: " . print_r($response, true));
@@ -84,7 +90,6 @@ class MailProcessor extends BaseController
             return null;
         }
     }
-    
 }
 
 if ($argc > 1) {
