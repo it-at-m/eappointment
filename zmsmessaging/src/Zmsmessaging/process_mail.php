@@ -59,16 +59,15 @@ class MailProcessor extends BaseController
             echo "Build Mailer: testEntity() - ". \App::$now->format('c') . "\n\n";
             $this->testEntity($entity);
             $encoding = 'base64';
+
+            
+            $htmlPart = '';
+            $textPart = '';
             foreach ($entity->multipart as $part) {
-                $mimepart = new Mimepart($part);
-                if ($mimepart->isText()) {
-                    $textPart = $mimepart->getContent();
-                }
-                if ($mimepart->isHtml()) {
-                    $htmlPart = $mimepart->getContent();
-                }
-                if ($mimepart->isIcs()) {
-                    $icsPart = $mimepart->getContent();
+                if ($part['mime'] == 'text/html') {
+                    $htmlPart = $part['content'];
+                } elseif ($part['mime'] == 'text/plain') {
+                    $textPart = $part['content'];
                 }
             }
     
