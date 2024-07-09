@@ -23,8 +23,8 @@ class MailProcessor extends BaseController
 
         try {
             $response = \App::$http->readGetResult($endpoint);
-            //$this->log("API Response: " . print_r($response, true) . "\n\n");
-            //echo "API Response: " . print_r($response, true) . "\n\n";
+            $this->log("API Response: " . print_r($response, true) . "\n\n");
+            echo "API Response: " . print_r($response, true) . "\n\n";
             return $response->getEntity();
         } catch (\Exception $e) {
             $this->log("Error fetching mail data: " . $e->getMessage() . "\n\n");
@@ -47,20 +47,19 @@ class MailProcessor extends BaseController
             return;
         }
 
-        //$this->log("Mail data: " . print_r($mailData, true));
-        //echo "Mail data: " . print_r($mailData, true) . "\n\n";
+        $this->log("Mail data: " . print_r($mailData, true));
+        echo "Mail data: " . print_r($mailData, true) . "\n\n";
 
         if ($mailData) {
-            //$this->log("Mail data found for ID: $itemId\n\n");
-            //echo "Mail data found for ID: $itemId\n\n";
+            $this->log("Mail data found for ID: $itemId\n\n");
+            echo "Mail data found for ID: $itemId\n\n";
             $entity = new \BO\Zmsentities\Mail($mailData);
 
-            $this->log("Build Mailer: testEntity() - ". \App::$now->format('c'));
-            echo "Build Mailer: testEntity() - ". \App::$now->format('c') . "\n\n";
+            $this->log("Build Mailer: testEntity() - " . \App::$now->format('c'));
+            echo "Build Mailer: testEntity() - " . \App::$now->format('c') . "\n\n";
             $this->testEntity($entity);
             $encoding = 'base64';
 
-            
             $htmlPart = '';
             $textPart = '';
             foreach ($entity->multipart as $part) {
@@ -70,9 +69,9 @@ class MailProcessor extends BaseController
                     $textPart = $part['content'];
                 }
             }
-    
-            $this->log("Build Mailer: new PHPMailer() - ". \App::$now->format('c'));
-            echo "Build Mailer: new PHPMailer() - ". \App::$now->format('c') . "\n\n";
+
+            $this->log("Build Mailer: new PHPMailer() - " . \App::$now->format('c'));
+            echo "Build Mailer: new PHPMailer() - " . \App::$now->format('c') . "\n\n";
 
             try {
                 $mailer = new PHPMailer(true);
@@ -85,13 +84,13 @@ class MailProcessor extends BaseController
                 $mailer->AltBody = (isset($textPart)) ? $textPart : '';
                 $mailer->Body = (isset($htmlPart)) ? $htmlPart : '';
                 $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
-                $this->log("Build Mailer: addAddress() - ". \App::$now->format('c'));
-                echo "Build Mailer: addAddress() - ". \App::$now->format('c') . "\n\n";
+                $this->log("Build Mailer: addAddress() - " . \App::$now->format('c'));
+                echo "Build Mailer: addAddress() - " . \App::$now->format('c') . "\n\n";
                 $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
-                    
+
                 if (null !== $entity->getIcsPart()) {
-                    $this->log("Build Mailer: AddStringAttachment() - ". \App::$now->format('c'));
-                    echo "Build Mailer: AddStringAttachment() - ". \App::$now->format('c') . "\n\n";
+                    $this->log("Build Mailer: AddStringAttachment() - " . \App::$now->format('c'));
+                    echo "Build Mailer: AddStringAttachment() - " . \App::$now->format('c') . "\n\n";
                     $mailer->AddStringAttachment(
                         $icsPart,
                         "Termin.ics",
@@ -99,7 +98,7 @@ class MailProcessor extends BaseController
                         "text/calendar; charset=utf-8; method=REQUEST"
                     );
                 }
-        
+
                 if (\App::$smtp_enabled) {
                     $mailer->IsSMTP();
                     $mailer->SMTPAuth = \App::$smtp_auth_enabled;
@@ -116,7 +115,41 @@ class MailProcessor extends BaseController
                         ];
                     }
                 }
-                return $mailer;
+
+                $this->log("SMTP Configuration: ");
+                echo "SMTP Configuration: \n";
+                $this->log("Host: " . \App::$smtp_host);
+                echo "Host: " . \App::$smtp_host . "\n";
+                $this->log("Port: " . \App::$smtp_port);
+                echo "Port: " . \App::$smtp_port . "\n";
+                $this->log("SMTPAuth: " . (\App::$smtp_auth_enabled ? 'true' : 'false'));
+                echo "SMTPAuth: " . (\App::$smtp_auth_enabled ? 'true' : 'false') . "\n";
+                $this->log("SMTPSecure: " . \App::$smtp_auth_method);
+                echo "SMTPSecure: " . \App::$smtp_auth_method . "\n";
+                $this->log("Username: " . \App::$smtp_username);
+                echo "Username: " . \App::$smtp_username . "\n";
+
+                // Use the sendMailer method
+                $result = $this->sendMailer($entity, $mailer, true);
+
+                if ($result instanceof PHPMailer) {
+                    $result = array(
+                        'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
+                        'recipients' => $result->getAllRecipientAddresses(),
+                        'mime' => $result->getMailMIME(),
+                        'attachments' => $result->getAttachments(),
+                        'customHeaders' => $result->getCustomHeaders(),
+                    );
+                    $this->deleteEntityFromQueue($entity);
+                    $this->log("Mail sent and deleted successfully for ID: $itemId" . "\n\n");
+                    echo "Mail sent and deleted successfully for ID: $itemId\n\n";
+                } else {
+                    $result = array(
+                        'errorInfo' => $result->ErrorInfo
+                    );
+                    $this->log("Mail could not be sent. PHPMailer Error: {$result['errorInfo']}\n\n");
+                    echo "Mail could not be sent. PHPMailer Error: {$result['errorInfo']}\n\n";
+                }
 
             } catch (PHPMailerException $e) {
                 $this->log("Mail could not be sent. PHPMailer Error: {$e->getMessage()}\n\n");
