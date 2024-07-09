@@ -46,7 +46,9 @@ class Mail extends BaseController
             foreach ($batches as $batch) {
                 $mailIds = array_map(fn($item) => $item['id'], $batch);
                 $encodedMailIds = implode(',', $mailIds);
-                $processHandles[] = $this->startProcess("php process_mail.php " . escapeshellarg($encodedMailIds));
+                $command = "php process_mail.php " . escapeshellarg($encodedMailIds);
+                $this->log("Starting process with command: $command");
+                $processHandles[] = $this->startProcess($command);
             }
 
             $this->waitForAllProcesses($processHandles);
@@ -67,6 +69,11 @@ class Mail extends BaseController
         ];
 
         $process = proc_open($command, $descriptorSpec, $pipes);
+        if (is_resource($process)) {
+            $this->log("Process started successfully: $command");
+        } else {
+            $this->log("Failed to start process: $command");
+        }
         return $process;
     }
 
@@ -74,7 +81,9 @@ class Mail extends BaseController
     {
         foreach ($processHandles as $handle) {
             if (is_resource($handle)) {
+                $this->log("Waiting for process to finish...");
                 proc_close($handle);
+                $this->log("Process finished.");
             }
         }
     }
@@ -88,10 +97,10 @@ class Mail extends BaseController
         
         $time = $this->getSpendTime();
         $memory = memory_get_usage()/(1024*1024);
-        $text = sprintf("[Init Messaging log %07.3fs %07.1fmb] %s", "$time", $memory, $message);
+        $text = sprintf("[Init Messaging log %07.3fs %07.1fmb] %s", $time, $memory, $message);
         static::$logList[] = $text;
         if ($this->verbose) {
-            error_log('verbose is: '. $this->verbose);
+            error_log('verbose is: ' . $this->verbose);
             error_log($text);
         }
         return $this;

@@ -15,7 +15,7 @@ class MailProcessor extends BaseController
 
     public function sendAndDeleteEmail($itemId)
     {
-        // Fetch the email data from the API based on the mail ID
+        $this->log("Fetching mail data for ID: $itemId");
         $mailData = $this->getMailById($itemId);
 
         if ($mailData) {
@@ -23,6 +23,7 @@ class MailProcessor extends BaseController
             $mailer = new PHPMailer(true);
 
             try {
+                $this->log("Setting up PHPMailer for ID: $itemId");
                 $mailer->isSMTP();
                 $mailer->Host = \App::$smtp_host;
                 $mailer->SMTPAuth = \App::$smtp_auth_enabled;
@@ -47,24 +48,31 @@ class MailProcessor extends BaseController
                     );
                 }
 
+                $this->log("Sending email for ID: $itemId");
                 $mailer->send();
+                $this->log("Email sent successfully for ID: $itemId");
                 $this->deleteEntityFromQueue($entity);
+                $this->log("Email deleted from queue for ID: $itemId");
 
                 echo "Mail sent and deleted successfully for ID: $itemId\n";
             } catch (PHPMailerException $e) {
+                $this->log("PHPMailer Error for ID $itemId: {$mailer->ErrorInfo}");
                 echo "Mail could not be sent. PHPMailer Error: {$mailer->ErrorInfo}\n";
             } catch (Exception $e) {
+                $this->log("General Error for ID $itemId: {$e->getMessage()}");
                 echo "Mail could not be sent. General Error: {$e->getMessage()}\n";
             }
         } else {
+            $this->log("Mail data not found for ID: $itemId");
             echo "Mail data not found for ID: $itemId\n";
         }
     }
 
     private function getMailById($itemId)
     {
-        // Implement the function to fetch email data by ID
+        $this->log("Fetching mail data from API for ID: $itemId");
         $response = \App::$http->readGetResult('/mails/'.$itemId.'/')->getEntity();
+        $this->log("Fetched mail data: " . print_r($response, true));
         return $response;
     }
 }
