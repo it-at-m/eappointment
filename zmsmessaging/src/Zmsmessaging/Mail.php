@@ -76,7 +76,7 @@ class Mail extends BaseController
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
-            $batchSize = 1;
+            $batchSize = 5;
             $batches = array_chunk($this->messagesQueue, $batchSize);
             $processHandles = [];
 
