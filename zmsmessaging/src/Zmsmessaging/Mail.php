@@ -78,4 +78,22 @@ class Mail extends BaseController
             }
         }
     }
+
+    // Override log method to handle array messages
+    public function log($message)
+    {
+        if (is_array($message)) {
+            $message = print_r($message, true);
+        }
+        
+        $time = $this->getSpendTime();
+        $memory = memory_get_usage()/(1024*1024);
+        $text = sprintf("[Init Messaging log %07.3fs %07.1fmb] %s", "$time", $memory, $message);
+        static::$logList[] = $text;
+        if ($this->verbose) {
+            error_log('verbose is: '. $this->verbose);
+            error_log($text);
+        }
+        return $this;
+    }
 }

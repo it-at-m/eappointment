@@ -16,7 +16,7 @@ class MailProcessor extends BaseController
     public function sendAndDeleteEmail($itemId)
     {
         // Fetch the email data from the API based on the mail ID
-        $mailData = $this->getMailById($itemId); // Implement this function to fetch email data
+        $mailData = $this->getMailById($itemId);
 
         if ($mailData) {
             $entity = new \BO\Zmsentities\Mail($mailData);
