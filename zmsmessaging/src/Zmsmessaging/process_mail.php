@@ -29,7 +29,7 @@ class MailProcessor extends BaseController
         } catch (\Exception $e) {
             $this->log("Error fetching mail data: " . $e->getMessage() . "\n\n");
             echo "Error fetching mail data: " . $e->getMessage() . "\n\n";
-            //return null;
+            return null;
         }
     }
 
@@ -44,7 +44,7 @@ class MailProcessor extends BaseController
         if (empty($mailData)) {
             $this->log("No mail data for mail ID: $itemId\n\n");
             echo "No mail data for mail ID: $itemId\n\n";
-            //return;
+            return;
         }
 
         $this->log("Mail data: " . print_r($mailData, true));
@@ -55,17 +55,28 @@ class MailProcessor extends BaseController
             echo "Mail data found for ID: $itemId\n\n";
             $entity = new \BO\Zmsentities\Mail($mailData);
 
+            // Extract HTML and text parts from the multipart array
+            $htmlPart = '';
+            $textPart = '';
+            foreach ($entity->multipart as $part) {
+                if ($part['mime'] == 'text/html') {
+                    $htmlPart = $part['content'];
+                } elseif ($part['mime'] == 'text/plain') {
+                    $textPart = $part['content'];
+                }
+            }
+
             // Debug logs for parts
-            $this->log("htmlPart: " . (isset($entity->htmlPart) ? $entity->htmlPart : 'not set') . "\n\n");
-            $this->log("textPart: " . (isset($entity->textPart) ? $entity->textPart : 'not set') . "\n\n");
-            echo "htmlPart: " . (isset($entity->htmlPart) ? $entity->htmlPart : 'not set') . "\n\n";
-            echo "textPart: " . (isset($entity->textPart) ? $entity->textPart : 'not set') . "\n\n";
+            $this->log("htmlPart: " . ($htmlPart ?: 'not set') . "\n\n");
+            $this->log("textPart: " . ($textPart ?: 'not set') . "\n\n");
+            echo "htmlPart: " . ($htmlPart ?: 'not set') . "\n\n";
+            echo "textPart: " . ($textPart ?: 'not set') . "\n\n";
 
             $mailer = new PHPMailer(true);
 
             try {
-                $this->log("Build Mailer: new PHPMailer() - ". \App::$now->format('c') . "\n\n");
-                echo "Build Mailer: new PHPMailer() - ". \App::$now->format('c') . "\n\n";
+                $this->log("Build Mailer: new PHPMailer() - " . \App::$now->format('c') . "\n\n");
+                echo "Build Mailer: new PHPMailer() - " . \App::$now->format('c') . "\n\n";
                 $mailer->CharSet = 'UTF-8';
                 $mailer->SetLanguage("de");
                 $mailer->Encoding = 'base64';
@@ -73,23 +84,23 @@ class MailProcessor extends BaseController
                 $mailer->XMailer = \App::IDENTIFIER;
 
                 $mailer->Subject = $entity['subject'];
-                $mailer->AltBody = (isset($entity->textPart)) ? $entity->textPart : '';
-                $mailer->Body = (isset($entity->htmlPart)) ? $entity->htmlPart : '';
+                $mailer->AltBody = $textPart ?: '';
+                $mailer->Body = $htmlPart ?: '';
 
                 if (empty($mailer->Body) && empty($mailer->AltBody)) {
                     $this->log("Both HTML and Text parts are missing for mail ID: $itemId\n\n");
                     echo "Both HTML and Text parts are missing for mail ID: $itemId\n\n";
-                    //return;
+                    return;
                 }
 
                 $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
-                $this->log("Build Mailer: addAddress() - ". \App::$now->format('c'));
-                echo "Build Mailer: addAddress() - ". \App::$now->format('c') . "\n\n";
+                $this->log("Build Mailer: addAddress() - " . \App::$now->format('c'));
+                echo "Build Mailer: addAddress() - " . \App::$now->format('c') . "\n\n";
                 $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
 
                 if (null !== $entity->getIcsPart()) {
-                    $this->log("Build Mailer: AddStringAttachment() - ". \App::$now->format('c') . "\n\n");
-                    echo "Build Mailer: AddStringAttachment() - ". \App::$now->format('c') . "\n\n";
+                    $this->log("Build Mailer: AddStringAttachment() - " . \App::$now->format('c') . "\n\n");
+                    echo "Build Mailer: AddStringAttachment() - " . \App::$now->format('c') . "\n\n";
                     $mailer->AddStringAttachment(
                         $entity->getIcsPart(),
                         "Termin.ics",
@@ -98,9 +109,7 @@ class MailProcessor extends BaseController
                     );
                 }
 
-                // Use the inherited sendMailer method
-                $this->log("Mail sending for ID: $itemId" . "\n\n");
-                echo "Mail sending for ID: $itemId\n\n";                
+                // Use the sendMailer method
                 $result = $this->sendMailer($entity, $mailer, true);
 
                 if ($result instanceof PHPMailer) {
