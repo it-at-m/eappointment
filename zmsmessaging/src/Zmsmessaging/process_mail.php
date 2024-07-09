@@ -17,11 +17,12 @@ class MailProcessor extends BaseController
 
     private function getMailById($itemId)
     {
-        $this->log("Fetching mail data from API for ID: $itemId\n");
-        echo "Fetching mail data from API for ID: $itemId\n";
+        $endpoint = '/mails/' . $itemId . '/';
+        $this->log("Fetching mail data from API endpoint: $endpoint\n");
+        echo "Fetching mail data from API endpoint: $endpoint\n";
 
         try {
-            $response = \App::$http->readGetResult('/mails/' . $itemId . '/');
+            $response = \App::$http->readGetResult($endpoint);
             $this->log("API Response: " . print_r($response, true) . "\n");
             echo "API Response: " . print_r($response, true) . "\n";
             return $response->getEntity();
@@ -43,16 +44,23 @@ class MailProcessor extends BaseController
         if (empty($mailData)) {
             $this->log("No mail data for mail ID: $itemId\n");
             echo "No mail data for mail ID: $itemId\n";
-            //return;
-        } else {
-            $this->log("Mail data for mail ID: $mailData\n");
-            echo "Mail data for mail ID: $mailData\n";
+            return;
         }
+
+        $this->log("Mail data: " . print_r($mailData, true));
+        echo "Mail data: " . print_r($mailData, true) . "\n";
 
         if ($mailData) {
             $this->log("Mail data found for ID: $itemId\n");
             echo "Mail data found for ID: $itemId\n";
             $entity = new \BO\Zmsentities\Mail($mailData);
+
+            // Debug logs for parts
+            $this->log("htmlPart: " . (isset($entity->htmlPart) ? $entity->htmlPart : 'not set') . "\n");
+            $this->log("textPart: " . (isset($entity->textPart) ? $entity->textPart : 'not set') . "\n");
+            echo "htmlPart: " . (isset($entity->htmlPart) ? $entity->htmlPart : 'not set') . "\n";
+            echo "textPart: " . (isset($entity->textPart) ? $entity->textPart : 'not set') . "\n";
+
             $mailer = new PHPMailer(true);
 
             try {
@@ -71,7 +79,7 @@ class MailProcessor extends BaseController
                 if (empty($mailer->Body) && empty($mailer->AltBody)) {
                     $this->log("Both HTML and Text parts are missing for mail ID: $itemId\n");
                     echo "Both HTML and Text parts are missing for mail ID: $itemId\n";
-                    //return;
+                    return;
                 }
 
                 $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
@@ -107,7 +115,6 @@ class MailProcessor extends BaseController
             echo "Mail data not found for ID: $itemId\n";
         }
     }
-
 }
 
 if ($argc > 1) {
