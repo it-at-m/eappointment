@@ -18,54 +18,54 @@ class MailProcessor extends BaseController
     private function getMailById($itemId)
     {
         $endpoint = '/mails/' . $itemId . '/';
-        $this->log("Fetching mail data from API endpoint: $endpoint\n");
-        echo "Fetching mail data from API endpoint: $endpoint\n";
+        $this->log("Fetching mail data from API endpoint: $endpoint\n\n");
+        echo "Fetching mail data from API endpoint: $endpoint\n\n";
 
         try {
             $response = \App::$http->readGetResult($endpoint);
-            $this->log("API Response: " . print_r($response, true) . "\n");
-            echo "API Response: " . print_r($response, true) . "\n";
+            $this->log("API Response: " . print_r($response, true) . "\n\n");
+            echo "API Response: " . print_r($response, true) . "\n\n";
             return $response->getEntity();
         } catch (\Exception $e) {
-            $this->log("Error fetching mail data: " . $e->getMessage() . "\n");
-            echo "Error fetching mail data: " . $e->getMessage() . "\n";
-            return null;
+            $this->log("Error fetching mail data: " . $e->getMessage() . "\n\n");
+            echo "Error fetching mail data: " . $e->getMessage() . "\n\n";
+            //return null;
         }
     }
 
     public function sendAndDeleteEmail($itemId)
     {
         $this->log("Fetching mail data for ID: $itemId");
-        echo "Fetching mail data for ID: $itemId\n";
+        echo "Fetching mail data for ID: $itemId\n\n";
 
         // Fetch the email data from the API based on the mail ID
         $mailData = $this->getMailById($itemId);
 
         if (empty($mailData)) {
-            $this->log("No mail data for mail ID: $itemId\n");
-            echo "No mail data for mail ID: $itemId\n";
-            return;
+            $this->log("No mail data for mail ID: $itemId\n\n");
+            echo "No mail data for mail ID: $itemId\n\n";
+            //return;
         }
 
         $this->log("Mail data: " . print_r($mailData, true));
-        echo "Mail data: " . print_r($mailData, true) . "\n";
+        echo "Mail data: " . print_r($mailData, true) . "\n\n";
 
         if ($mailData) {
-            $this->log("Mail data found for ID: $itemId\n");
-            echo "Mail data found for ID: $itemId\n";
+            $this->log("Mail data found for ID: $itemId\n\n");
+            echo "Mail data found for ID: $itemId\n\n";
             $entity = new \BO\Zmsentities\Mail($mailData);
 
             // Debug logs for parts
-            $this->log("htmlPart: " . (isset($entity->htmlPart) ? $entity->htmlPart : 'not set') . "\n");
-            $this->log("textPart: " . (isset($entity->textPart) ? $entity->textPart : 'not set') . "\n");
-            echo "htmlPart: " . (isset($entity->htmlPart) ? $entity->htmlPart : 'not set') . "\n";
-            echo "textPart: " . (isset($entity->textPart) ? $entity->textPart : 'not set') . "\n";
+            $this->log("htmlPart: " . (isset($entity->htmlPart) ? $entity->htmlPart : 'not set') . "\n\n");
+            $this->log("textPart: " . (isset($entity->textPart) ? $entity->textPart : 'not set') . "\n\n");
+            echo "htmlPart: " . (isset($entity->htmlPart) ? $entity->htmlPart : 'not set') . "\n\n";
+            echo "textPart: " . (isset($entity->textPart) ? $entity->textPart : 'not set') . "\n\n";
 
             $mailer = new PHPMailer(true);
 
             try {
-                $this->log("Build Mailer: new PHPMailer() - ". \App::$now->format('c') . "\n");
-                echo "Build Mailer: new PHPMailer() - ". \App::$now->format('c') . "\n";
+                $this->log("Build Mailer: new PHPMailer() - ". \App::$now->format('c') . "\n\n");
+                echo "Build Mailer: new PHPMailer() - ". \App::$now->format('c') . "\n\n";
                 $mailer->CharSet = 'UTF-8';
                 $mailer->SetLanguage("de");
                 $mailer->Encoding = 'base64';
@@ -77,19 +77,19 @@ class MailProcessor extends BaseController
                 $mailer->Body = (isset($entity->htmlPart)) ? $entity->htmlPart : '';
 
                 if (empty($mailer->Body) && empty($mailer->AltBody)) {
-                    $this->log("Both HTML and Text parts are missing for mail ID: $itemId\n");
-                    echo "Both HTML and Text parts are missing for mail ID: $itemId\n";
-                    return;
+                    $this->log("Both HTML and Text parts are missing for mail ID: $itemId\n\n");
+                    echo "Both HTML and Text parts are missing for mail ID: $itemId\n\n";
+                    //return;
                 }
 
                 $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
                 $this->log("Build Mailer: addAddress() - ". \App::$now->format('c'));
-                echo "Build Mailer: addAddress() - ". \App::$now->format('c') . "\n";
+                echo "Build Mailer: addAddress() - ". \App::$now->format('c') . "\n\n";
                 $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
 
                 if (null !== $entity->getIcsPart()) {
-                    $this->log("Build Mailer: AddStringAttachment() - ". \App::$now->format('c') . "\n");
-                    echo "Build Mailer: AddStringAttachment() - ". \App::$now->format('c') . "\n";
+                    $this->log("Build Mailer: AddStringAttachment() - ". \App::$now->format('c') . "\n\n");
+                    echo "Build Mailer: AddStringAttachment() - ". \App::$now->format('c') . "\n\n";
                     $mailer->AddStringAttachment(
                         $entity->getIcsPart(),
                         "Termin.ics",
@@ -100,19 +100,19 @@ class MailProcessor extends BaseController
 
                 $mailer->send();
                 $this->deleteEntityFromQueue($entity);
-                $this->log("Mail sent and deleted successfully for ID: $itemId" . "\n");
-                echo "Mail sent and deleted successfully for ID: $itemId\n";
+                $this->log("Mail sent and deleted successfully for ID: $itemId" . "\n\n");
+                echo "Mail sent and deleted successfully for ID: $itemId\n\n";
 
             } catch (PHPMailerException $e) {
-                $this->log("Mail could not be sent. PHPMailer Error: {$mailer->ErrorInfo}\n");
-                echo "Mail could not be sent. PHPMailer Error: {$mailer->ErrorInfo}\n";
+                $this->log("Mail could not be sent. PHPMailer Error: {$mailer->ErrorInfo}\n\n");
+                echo "Mail could not be sent. PHPMailer Error: {$mailer->ErrorInfo}\n\n";
             } catch (Exception $e) {
-                $this->log("Mail could not be sent. General Error: {$e->getMessage()}\n");
-                echo "Mail could not be sent. General Error: {$e->getMessage()}\n";
+                $this->log("Mail could not be sent. General Error: {$e->getMessage()}\n\n");
+                echo "Mail could not be sent. General Error: {$e->getMessage()}\n\n";
             }
         } else {
-            $this->log("Mail data not found for ID: $itemId\n");
-            echo "Mail data not found for ID: $itemId\n";
+            $this->log("Mail data not found for ID: $itemId\n\n");
+            echo "Mail data not found for ID: $itemId\n\n";
         }
     }
 }
