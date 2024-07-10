@@ -78,7 +78,7 @@ class Mail extends BaseController
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
-            $batchSize = 2;
+            $batchSize = 3;
             $batches = array_chunk($this->messagesQueue, $batchSize);
             $processHandles = [];
 
@@ -86,7 +86,7 @@ class Mail extends BaseController
                 $mailIds = array_map(fn($item) => $item['id'], $batch);
                 $encodedMailIds = implode(',', $mailIds);
                 $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds);
-                //$this->log("Starting process with command: $command");
+                //$this->log("Starting process");
                 $processHandles[] = $this->startProcess($command);
             }
 
@@ -109,7 +109,7 @@ class Mail extends BaseController
 
         $process = proc_open($command, $descriptorSpec, $pipes);
         if (is_resource($process)) {
-            //$this->log("Process started successfully: $command");
+            //$this->log("Process started successfully");
         } else {
             $this->log("Failed to start process: $command");
         }
@@ -131,7 +131,7 @@ class Mail extends BaseController
                     if ($status['running']) {
                         $running = true;
                     } else {
-                        $this->log("Process finished with command: " . $status['command']);
+                        $this->log("Process finished");
                         proc_close($handle['process']);
                         $handle['process'] = null;
                     }
