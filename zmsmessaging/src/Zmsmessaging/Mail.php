@@ -14,7 +14,7 @@ class Mail extends BaseController
     private $processMailScript;
     protected $startTime;
 
-    public function __construct($verbose = false, $maxRunTime = 60, $processMailScript = __DIR__ . '/process_mail.php')
+    public function __construct($verbose = false, $maxRunTime = 50, $processMailScript = __DIR__ . '/process_mail.php')
     {
         $this->startTime = microtime(true);
         parent::__construct($verbose, $maxRunTime);
@@ -78,7 +78,7 @@ class Mail extends BaseController
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
-            $batchSize = 3;
+            $batchSize = 2;
             $batches = array_chunk($this->messagesQueue, $batchSize);
             $processHandles = [];
 
