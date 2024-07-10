@@ -12,7 +12,7 @@ class Mail extends BaseController
 {
     protected $messagesQueue = null;
     private $processMailScript;
-    protected $startTime;
+    private $startTime;
 
     public function __construct($verbose = false, $maxRunTime = 50, $processMailScript = __DIR__ . '/process_mail.php')
     {
@@ -78,7 +78,7 @@ class Mail extends BaseController
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
-            $batchSize = 2;
+            $batchSize = 3;
             $batches = array_chunk($this->messagesQueue, $batchSize);
             $processHandles = [];
 
@@ -109,7 +109,7 @@ class Mail extends BaseController
 
         $process = proc_open($command, $descriptorSpec, $pipes);
         if (is_resource($process)) {
-            $this->log("Process started successfully: $command");
+            //$this->log("Process started successfully: $command");
         } else {
             $this->log("Failed to start process: $command");
         }
