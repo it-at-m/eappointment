@@ -1,9 +1,4 @@
 <?php
-/**
- *
- * @package Zmsmessaging
- *
- */
 namespace BO\Zmsmessaging;
 
 use \BO\Zmsentities\Mimepart;
@@ -17,7 +12,7 @@ class Mail extends BaseController
     {
         parent::__construct($verbose, $maxRunTime);
         $this->processMailScript = $this->findProcessMailScript($processMailScript);
-        $this->log("process_mail.php path: " . $this->processMailScript); // Log the path
+        $this->log("process_mail.php path: " . $this->processMailScript);
         $this->log("Read Mail QueueList start with limit " . \App::$mails_per_minute . " - " . \App::$now->format('c'));
         $queueList = \App::$http->readGetResult('/mails/', [
             'resolveReferences' => 2,
@@ -83,12 +78,15 @@ class Mail extends BaseController
             foreach ($batches as $batch) {
                 $mailIds = array_map(fn($item) => $item['id'], $batch);
                 $encodedMailIds = implode(',', $mailIds);
-                $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds);
+                $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds) . " > /dev/null &";
                 $this->log("Starting process with command: $command");
                 $processHandles[] = $this->startProcess($command);
             }
 
-            $this->waitForAllProcesses($processHandles);
+            $this->log("All processes started. Monitoring their status...");
+
+            // Monitor the processes without blocking
+            $this->monitorProcesses($processHandles);
         } else {
             $resultList[] = array(
                 'errorInfo' => 'No mail entry found in Database...'
@@ -108,38 +106,43 @@ class Mail extends BaseController
         $process = proc_open($command, $descriptorSpec, $pipes);
         if (is_resource($process)) {
             $this->log("Process started successfully: $command");
-            $output = stream_get_contents($pipes[1]);
-            $error = stream_get_contents($pipes[2]);
-
+            fclose($pipes[0]);
             fclose($pipes[1]);
             fclose($pipes[2]);
-
-            $this->log("Process output: $output\n\n");
-            $this->log("Process error: $error\n\n");
         } else {
             $this->log("Failed to start process: $command");
         }
         return $process;
     }
 
-    private function waitForAllProcesses($processHandles)
+    private function monitorProcesses($processHandles)
     {
-        foreach ($processHandles as $handle) {
-            if (is_resource($handle)) {
-                $this->log("Waiting for process to finish...");
-                proc_close($handle);
-                $this->log("Process finished.");
+        $running = true;
+        while ($running) {
+            $running = false;
+            foreach ($processHandles as $index => $handle) {
+                if (is_resource($handle)) {
+                    $status = proc_get_status($handle);
+                    if ($status['running']) {
+                        $running = true;
+                    } else {
+                        proc_close($handle);
+                        unset($processHandles[$index]);
+                        $this->log("Process finished.");
+                    }
+                }
             }
+            // Sleep for a short time to prevent CPU overuse
+            usleep(500000); // 0.5 seconds
         }
     }
 
-    // Override log method to handle array messages
     public function log($message)
     {
         if (is_array($message)) {
             $message = print_r($message, true);
         }
-        
+
         $time = $this->getSpendTime();
         $memory = memory_get_usage()/(1024*1024);
         $text = sprintf("[Init Messaging log %07.3fs %07.1fmb] %s", $time, $memory, $message);
