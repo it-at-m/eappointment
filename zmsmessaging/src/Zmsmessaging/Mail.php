@@ -86,6 +86,7 @@ class Mail extends BaseController
                 $mailIds = array_map(fn($item) => $item['id'], $batch);
                 $encodedMailIds = implode(',', $mailIds);
                 $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds);
+                //$this->log("Starting process with command: $command");
                 $processHandles[] = $this->startProcess($command);
             }
 
@@ -108,14 +109,14 @@ class Mail extends BaseController
 
         $process = proc_open($command, $descriptorSpec, $pipes);
         if (is_resource($process)) {
-            return [
-                'process' => $process,
-                'pipes' => $pipes
-            ];
+            //$this->log("Process started successfully: $command");
         } else {
             $this->log("Failed to start process: $command");
-            return null;
         }
+        return [
+            'process' => $process,
+            'pipes' => $pipes
+        ];
     }
 
     private function monitorProcesses($processHandles)
@@ -136,9 +137,9 @@ class Mail extends BaseController
                     }
                 }
             }
-            usleep(500000); // Sleep for 0.5 seconds before checking again
+            usleep(500000);
         }
-        $this->logTotalExecutionTime(); // Log total execution time at the end
+        $this->logTotalExecutionTime();
     }
 
     private function logTotalExecutionTime()
