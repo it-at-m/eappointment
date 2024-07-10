@@ -12,11 +12,11 @@ class Mail extends BaseController
 {
     protected $messagesQueue = null;
     private $processMailScript;
-    protected $startTime;
+    private $startTime;
 
     public function __construct($verbose = false, $maxRunTime = 50, $processMailScript = __DIR__ . '/process_mail.php')
     {
-        $this->startTime = microtime(true);
+        $this->startTime = microtime(true); // Record start time
         parent::__construct($verbose, $maxRunTime);
         $this->processMailScript = $this->findProcessMailScript($processMailScript);
         $this->log("process_mail.php path: " . $this->processMailScript); // Log the path
@@ -78,7 +78,7 @@ class Mail extends BaseController
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
-            $batchSize = 3;
+            $batchSize = 2;
             $batches = array_chunk($this->messagesQueue, $batchSize);
             $processHandles = [];
 
@@ -109,7 +109,7 @@ class Mail extends BaseController
 
         $process = proc_open($command, $descriptorSpec, $pipes);
         if (is_resource($process)) {
-            //$this->log("Process started successfully: $command");
+            $this->log("Process started successfully: $command");
         } else {
             $this->log("Failed to start process: $command");
         }
@@ -137,9 +137,9 @@ class Mail extends BaseController
                     }
                 }
             }
-            usleep(500000);
+            usleep(500000); // Sleep for 0.5 seconds before checking again
         }
-        $this->logTotalExecutionTime();
+        $this->logTotalExecutionTime(); // Log total execution time at the end
     }
 
     private function logTotalExecutionTime()
@@ -147,8 +147,9 @@ class Mail extends BaseController
         $endTime = microtime(true);
         $executionTime = $endTime - $this->startTime;
         $this->log(sprintf("Total execution time: %07.3f seconds", $executionTime));
-    }    
+    }
 
+    // Override log method to handle array messages
     public function log($message)
     {
         if (is_array($message)) {
