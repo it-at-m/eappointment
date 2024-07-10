@@ -12,9 +12,11 @@ class Mail extends BaseController
 {
     protected $messagesQueue = null;
     private $processMailScript;
+    private $startTime;
 
     public function __construct($verbose = false, $maxRunTime = 50, $processMailScript = __DIR__ . '/process_mail.php')
     {
+        $this->startTime = microtime(true);
         parent::__construct($verbose, $maxRunTime);
         $this->processMailScript = $this->findProcessMailScript($processMailScript);
         $this->log("process_mail.php path: " . $this->processMailScript); // Log the path
@@ -76,7 +78,7 @@ class Mail extends BaseController
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
-            $batchSize = 1;
+            $batchSize = 10;
             $batches = array_chunk($this->messagesQueue, $batchSize);
             $processHandles = [];
 
@@ -84,7 +86,7 @@ class Mail extends BaseController
                 $mailIds = array_map(fn($item) => $item['id'], $batch);
                 $encodedMailIds = implode(',', $mailIds);
                 $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds);
-                $this->log("Starting process with command: $command");
+                //$this->log("Starting process with command: $command");
                 $processHandles[] = $this->startProcess($command);
             }
 
@@ -135,11 +137,18 @@ class Mail extends BaseController
                     }
                 }
             }
-            usleep(500000); // Sleep for 0.5 seconds before checking again
+            usleep(500000);
         }
+        $this->logTotalExecutionTime();
     }
 
-    // Override log method to handle array messages
+    private function logTotalExecutionTime()
+    {
+        $endTime = microtime(true);
+        $executionTime = $endTime - $this->startTime;
+        $this->log(sprintf("Total execution time: %07.3f seconds", $executionTime));
+    }    
+
     public function log($message)
     {
         if (is_array($message)) {

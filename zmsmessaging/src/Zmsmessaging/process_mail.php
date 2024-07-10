@@ -4,9 +4,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
 use BO\Zmsmessaging\BaseController;
 
-// Ensure autoloader is included
-require __DIR__ . '/../../vendor/autoload.php'; // Adjust path as necessary
-require __DIR__ . '/../../bootstrap.php'; // Adjust path as necessary
+require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../../bootstrap.php';
 
 class MailProcessor extends BaseController
 {
@@ -38,7 +37,6 @@ class MailProcessor extends BaseController
         $this->log("Fetching mail data for ID: $itemId");
         echo "\nFetching mail data for ID: $itemId\n";
 
-        // Fetch the email data from the API based on the mail ID
         $mailData = $this->getMailById($itemId);
 
         if (empty($mailData)) {
@@ -116,7 +114,6 @@ class MailProcessor extends BaseController
                     }
                 }
 
-                // Use the sendMailer method
                 $result = $this->sendMailer($entity, $mailer, true);
 
                 if ($result instanceof PHPMailer) {
