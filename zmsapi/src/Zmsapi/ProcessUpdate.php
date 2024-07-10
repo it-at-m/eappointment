@@ -36,7 +36,7 @@ class ProcessUpdate extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
         $entity->testValid();
-        $this->testProcessData($entity);
+        $this->testProcessData($entity, ! $initiator);
 
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
 
@@ -64,19 +64,27 @@ class ProcessUpdate extends BaseController
        
         if ($initiator && $process->hasScopeAdmin() && $process->sendAdminMailOnUpdated()) {
             $config = (new Config())->readEntity();
-            $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, 'updated', $initiator);
+            $mail = (new \BO\Zmsentities\Mail())
+                    ->setTemplateProvider(new \BO\Zmsapi\Helper\MailTemplateProvider($process))
+                    ->toResolvedEntity($process, $config, 'updated', $initiator);
             (new Mail())->writeInQueueWithAdmin($mail);
         }
         $message = Response\Message::create($request);
         $message->data = $process;
         
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
-        return $response;
+
+        return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }
-    protected function testProcessData($entity)
+
+    protected function testProcessData($entity, bool $checkMailLimit = true)
     {
         $authCheck = (new Process())->readAuthKeyByProcessId($entity->id);
+
+        if ($checkMailLimit && ! (new Process())->isAppointmentAllowedWithSameMail($entity)) {
+            throw new Exception\Process\MoreThanAllowedAppointmentsPerMail();
+        }
+
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {

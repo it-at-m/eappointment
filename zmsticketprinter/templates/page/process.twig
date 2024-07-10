@@ -85,6 +85,12 @@
         {% set label = "OK" %}
 			{{ custombutton({ "type":"submit", "href":urlGet('Home', {}, {}), "class": "button ja_nein", "name": "submit_ok", "label":label|trans, "value": label|trans }) }}
     	{% endif %}
+
+		<script>
+			window.setTimeout(function(){
+				window.location.href = "{{ urlGet('Home', {}, {}) }}";
+			}, 10000);
+		</script>
     </div>
 </div>
 {% endblock %}

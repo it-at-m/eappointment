@@ -36,6 +36,7 @@ class View extends BaseView {
             'onCancelAppointmentForm',
             'onChangeScope',
             'onPrintWaitingNumber',
+            'onPrintProcessMail',
             'onDatePick',
             'onDateToday',
             'addFocusTrap',
@@ -63,7 +64,7 @@ class View extends BaseView {
             this.setLastReload();
             this.setReloadTimer();
         });
-        $.ajaxSetup({ 
+        $.ajaxSetup({
             cache: false
         });
         this.loadAllPartials().then(() => {
@@ -115,7 +116,7 @@ class View extends BaseView {
     onDatePick(date) {
         this.selectedDate = date;
         this.loadCalendar();
-        this.loadClientNext();
+        this.loadClientNext(true, false);
         if ('counter' == this.page)
             this.loadQueueInfo();
         this.loadQueueTable();
@@ -164,7 +165,7 @@ class View extends BaseView {
         } else {
             this.loadCalendar();
             this.loadAppointmentForm();
-        }   
+        }
     }
 
     onChangeTableView(event, changeScope = false) {
@@ -173,9 +174,9 @@ class View extends BaseView {
         const sendData = $(event.currentTarget).closest('form').serializeArray();
         this.loadCall(`${this.includeUrl}/workstation/select/`, 'POST', sendData).then(() => {
             if (changeScope && this.selectedScope == 'cluster') {
-                location.reload();
+                window.location.href = `${this.includeUrl}/workstation/`
             } else if (changeScope && this.selectedScope != 'cluster') {
-                this.loadAllPartials();
+                this.loadAllPartials(false);
             } else {
                 return Promise.all([
                     this.loadQueueTable(),
@@ -194,7 +195,7 @@ class View extends BaseView {
         stopEvent(event);
         showSpinner(scope.$main);
         const sendData = scope.$main.find('form').serializeArray();
-        if (this.selectedProcess && !isCopy) { 
+        if (this.selectedProcess && !isCopy) {
             sendData.push({ name: 'selectedprocess', value: this.selectedProcess });
         }
         this.loadCall(`${this.includeUrl}/process/queue/`, 'POST', sendData, false, scope.$main).then((response) => {
@@ -364,6 +365,9 @@ class View extends BaseView {
         }
         this.loadCall(url).then((response) => {
             this.loadDialog(response, callback, abortCallback, event.currentTarget);
+
+            const dialog = document.getElementsByClassName('dialog')[0]
+            dialog.focus();
         })
     }
 
@@ -401,7 +405,7 @@ class View extends BaseView {
     onCancelNextProcess() {
         //console.log('CANCEL');
         this.calledProcess = null;
-        this.loadClientNext();
+        this.loadClientNext(true, false);
     }
 
     onReloadQueueTable(event) {
@@ -414,6 +418,15 @@ class View extends BaseView {
         this.selectedProcess = $(event.currentTarget).data('id');
         $(event.currentTarget).closest('.message').fadeOut().remove();
         window.open(`${this.includeUrl}/process/queue/?print=1&selectedprocess=${this.selectedProcess}`)
+        this.selectedProcess = null;
+        this.loadAppointmentForm();
+    }
+
+    onPrintProcessMail(event) {
+        stopEvent(event);
+        this.selectedProcess = $(event.currentTarget).data('id');
+        $(event.currentTarget).closest('.message').fadeOut().remove();
+        window.open(`${this.includeUrl}/process/queue/?print=1&printType=mail&selectedprocess=${this.selectedProcess}`)
         this.selectedProcess = null;
         this.loadAppointmentForm();
     }
@@ -479,13 +492,13 @@ class View extends BaseView {
         if (event.currentTarget.value > -1)
             ghostWorkstationCount = event.currentTarget.value;
         this.loadContent(`${this.includeUrl}/counter/queueInfo/?ghostworkstationcount=${ghostWorkstationCount}&selecteddate=${selectedDate}`, null, null, $container).then(() => {
-            this.loadAllPartials();
+            this.loadAllPartials(false);
         });
     }
 
-    loadAllPartials() {
+    loadAllPartials(callProcess = true) {
         return Promise.all([
-            this.loadClientNext(),
+            this.loadClientNext(true, callProcess),
             this.loadAppointmentForm(),
             this.loadCalendar(),
             this.loadQueueTable(),
@@ -522,11 +535,11 @@ class View extends BaseView {
         })
     }
 
-    loadClientNext(showLoader = true) {
+    loadClientNext(showLoader = true, loadProcess = true) {
         return new ClientNextView($.find('[data-client-next]'), {
             selectedDate: this.selectedDate,
             includeUrl: this.includeUrl,
-            calledProcess: this.calledProcess,
+            calledProcess: loadProcess ? this.calledProcess : null,
             onNextProcess: this.onNextProcess,
             onCallNextProcess: this.onCallNextProcess,
             onCancelNextProcess: this.onCancelNextProcess,
@@ -560,6 +573,7 @@ class View extends BaseView {
             onAbortProcess: this.onAbortProcess,
             onCancelAppointmentForm: this.onCancelAppointmentForm,
             onPrintWaitingNumber: this.onPrintWaitingNumber,
+            onPrintProcessMail: this.onPrintProcessMail,
             onAbortMessage: this.onAbortMessage,
             onChangeSlotCount: this.onChangeSlotCount,
             onConfirm: this.onConfirm,

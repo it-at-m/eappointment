@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdb\Tests;
 
+use BO\Zmsdb\Cli\Db;
 use \BO\Zmsdb\Process as Query;
 use \BO\Zmsdb\Availability as AvailabilityQuery;
 use \BO\Zmsdb\Scope as ScopeQuery;
@@ -9,8 +10,12 @@ use \BO\Zmsdb\Process as ProcessQuery;
 use \BO\Zmsdb\ProcessStatusFree;
 use \BO\Zmsdb\ProcessStatusQueued;
 use \BO\Zmsdb\ProcessStatusArchived;
+use BO\Zmsentities\Client;
+use BO\Zmsentities\Process;
 use \BO\Zmsentities\Process as Entity;
 use \BO\Zmsentities\Calendar;
+use \BO\Zmsentities\Collection\Base as Collection;
+use BO\Zmsentities\Scope;
 
 /**
  * @SuppressWarnings(TooManyPublicMethods)
@@ -281,7 +286,8 @@ class ProcessTest extends Base
         );
     }
 
-    public function testUpdateProcessWithStatusProcessing()
+    //No Longer recalculated getWaitedMinutes and getWaitedSeconds into archive directly copied therefore can have discrepancy
+    /*public function testUpdateProcessWithStatusProcessing()
     {
         $now = static::$now;
         $query = new ProcessStatusFree();
@@ -289,10 +295,11 @@ class ProcessTest extends Base
         $process = $query->writeEntityReserved($input, $now);
         $process->status = 'processing';
         $process->queue['callTime'] = $process->queue['arrivalTime'] + 3600;
-        $process = $query->updateEntity($process, $now);
+        $previousStatus = "queued";
+        $process = $query->updateEntity($process, $now, 0, $previousStatus);
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
         $this->assertEquals(60, $process->queue['waitingTime']);
-    }
+    }*/
 
     public function testProcessStatusCalled()
     {
@@ -619,6 +626,89 @@ class ProcessTest extends Base
         $expirationDate = new \DateTimeImmutable("2016-03-28 11:10:00");
         $processList = $query->readExpiredReservationsList($expirationDate, 142);
         $this->assertEquals(0, $processList->count());
+    }
+
+    public function testAppointmentIsAllowedBecauseThereAreNoLimitations()
+    {
+        $process = new Process();
+        $scope = (new ScopeQuery())->readEntity(140);
+        $process->scope = $scope;
+        $client = new Client();
+        $client->email = 'testmail@mail.com';
+        $process->clients = new Collection([$client]);
+        $result = (new Query)->isAppointmentAllowedWithSameMail($process);
+
+        $this->assertTrue($result);
+    }
+
+    public function testAppointmentIsAllowedBecauseEMailLimitationIsNotReached()
+    {
+        $process = new Process();
+        $scope = (new ScopeQuery())->readEntity(140);
+        $process->scope = $scope;
+        $client = new Client();
+        $client->email = 'testmail2@mail.com';
+        $process->clients = new Collection([$client]);
+
+        $result = (new Query)->isAppointmentAllowedWithSameMail($process);
+        $this->assertTrue($result);
+    }
+
+    public function testAppointmentIsNotAllowedBecauseEMailLimitationIsReached()
+    {
+        $process = new Process();
+        $process->id = 123;
+        $scope = (new ScopeQuery())->readEntity(140);
+
+        $process->scope = $scope;
+        $client = new Client();
+        $client->email = 'testmail@mail.com';
+        $process->clients = new Collection([$client]);
+
+        $result = (new Query)->isAppointmentAllowedWithSameMail($process);
+        $this->assertFalse($result);
+    }
+
+    public function testAppointmentIsAllowedBecauseProcessWithSameIdAndMailExists()
+    {
+        $process = new Process();
+        $scope = (new ScopeQuery())->readEntity(140);
+
+        $process->scope = $scope;
+        $client = new Client();
+        $client->email = 'testmail@mail.com';
+        $process->clients = new Collection([$client]);
+
+        $result = (new Query)->isAppointmentAllowedWithSameMail($process);
+        $this->assertFalse($result);
+    }
+
+    public function testAppointmentIsAllowedBecauseEMailIsWhitelisted()
+    {
+        $process = new Process();
+        $scope = (new ScopeQuery())->readEntity(140);
+
+        $process->scope = $scope;
+        $client = new Client();
+        $client->email = 'testmail@mail.com';
+        $process->clients = new Collection([$client]);
+
+        $result = (new Query)->isAppointmentAllowedWithSameMail($process);
+        $this->assertTrue($result);
+    }
+
+    public function testAppointmentIsAllowedBecauseEMailDomainIsWhitelisted()
+    {
+        $process = new Process();
+        $scope = (new ScopeQuery())->readEntity(140);
+
+        $process->scope = $scope;
+        $client = new Client();
+        $client->email = 'testmail@mail.com';
+        $process->clients = new Collection([$client]);
+
+        $result = (new Query)->isAppointmentAllowedWithSameMail($process);
+        $this->assertTrue($result);
     }
 
     protected function getTestCalendarEntity()

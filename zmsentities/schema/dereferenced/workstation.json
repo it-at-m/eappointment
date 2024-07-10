@@ -60,7 +60,7 @@
         },
         "name": {
             "type": "string",
-            "maxLength": 5,
+            "maxLength": 8,
             "description": "usually number of place or room where the workstation is located"
         },
         "process": {
@@ -166,6 +166,10 @@
                     "type": "string",
                     "description": "unix timestamp of showing up after call"
                 },
+                "processingTime": {
+                    "type": "string",
+                    "description": "unix timestamp that cumulates time each time a processes is called"
+                },
                 "timeoutTime": {
                     "type": "string",
                     "description": "unix timestamp of after a call is entered or re-entered into the queue"
@@ -226,6 +230,7 @@
                         "pickup",
                         "finished",
                         "missed",
+                        "parked",
                         "archived",
                         "deleted",
                         "anonymized",
@@ -286,6 +291,9 @@
                     },
                     "client": {
                         "alternateAppointmentUrl": "https:\/\/service.berlin.de",
+                        "appointmentsPerMail": "",
+                        "slotsPerAppointment": "",
+                        "whitelistedMails": "",
                         "amendmentLabel": "Zusatzinformationen zum Anliegen",
                         "customTextfieldLabel": "Zusatzfeld zum Anliegen",
                         "emailRequired": false,
@@ -461,6 +469,21 @@
                                 "alternateAppointmentUrl": {
                                     "type": "string",
                                     "description": "redirect url if client should book appointments over a specialised application",
+                                    "default": ""
+                                },
+                                "appointmentsPerMail": {
+                                    "type": "string",
+                                    "description": "allowed appointments per e-mail address",
+                                    "default": ""
+                                },
+                                "slotsPerAppointment": {
+                                    "type": "string",
+                                    "description": "allowed slots per appointment",
+                                    "default": ""
+                                },
+                                "whitelistedMails": {
+                                    "type": "string",
+                                    "description": "e-mail addresses that have no limitation on appointments count",
                                     "default": ""
                                 },
                                 "amendmentLabel": {

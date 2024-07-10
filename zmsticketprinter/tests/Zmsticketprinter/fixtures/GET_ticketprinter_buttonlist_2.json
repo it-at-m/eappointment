@@ -9,28 +9,30 @@
   "data": {
 	"$schema": "https://schema.berlin.de/queuemanagement/ticketprinter.json",
 	"enabled": "1",
-	"hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
+	"hash": "71abcdefghijklmnopqrstuvwxyz",
 	"id": "1",
 	"lastUpdate": "1477661416",
 	"name": "Test Ticketprinter",
 	"buttonlist": "s141",
-	"buttons": [{
-		"type": "scope",
-		"url": "/scope/141/",
-		"scope": {
-			"id": 141
+	"buttons": [
+		{
+			"type": "scope",
+			"url": "/scope/141/",
+			"scope": {
+				"id": 141
+			},
+			"enabled": true,
+			"name": "Bürgeramt Heerstraße"
 		},
-		"enabled": true,
-		"name": "Bürgeramt Heerstraße"
-	},
-	{
-		"type": "cluster",
-		"url": "/cluster/110/",
-		"cluster": {
-			"id": 110
-		},
-		"enabled": true,
-		"name": "Bürgeramt Hohenzollerndamm"
-	}]
+		{
+			"type": "cluster",
+			"url": "/cluster/110/",
+			"cluster": {
+				"id": 110
+			},
+			"enabled": true,
+			"name": "Bürgeramt Hohenzollerndamm"
+		}
+	]
 }
 }

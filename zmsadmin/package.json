@@ -16,7 +16,8 @@
     "csswatch": "parcel watch scss/admin.scss --log-level verbose  --target css",
     "jswatch": "parcel watch js/index.js --log-level verbose --no-hmr --target js",
     "reactwatch": "parcel watch js/reactcomponents.js --log-level verbose --no-hmr --target js",
-    "watch": "npm run jswatch & npm run csswatch &"
+    "watch": "npm run jswatch & npm run csswatch &",
+    "build": "npm run js && npm run css && npm run reactjs"
   },
   "targets": {
     "js": {
@@ -59,8 +60,10 @@
     "util": "^0.12.5"
   },
   "dependencies": {
-    "bo-layout-admin-scss": "https://gitlab.com/eappointment/includes/layout-admin-scss.git#muc-main",
     "bo-layout-admin-js": "https://gitlab.com/eappointment/includes/layout-admin-js.git#2.24.14",
-    "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities.git#2.24.14"
+    "bo-layout-admin-scss": "https://gitlab.com/eappointment/includes/layout-admin-scss.git#muc-main",
+    "bo-zmsentities": "https://gitlab.com/eappointment/zmsentities.git#2.24.14",
+    "chart.js": "^4.4.2",
+    "react-chartjs-2": "^5.2.0"
   }
 }

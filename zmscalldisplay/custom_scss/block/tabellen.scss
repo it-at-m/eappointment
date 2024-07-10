@@ -19,9 +19,9 @@ div.aufrufanzeige_anzeigebereich_zweizeilig
 
 .aufrufanzeige .aufrufanzeige_main
 {
-    left: 15%;
     position: absolute;
     top: 135px;
+    width: 100%;
 }
 
 .aufrufanzeige table.aufrufanzeige_aufruf
@@ -41,7 +41,7 @@ div.aufrufanzeige_anzeigebereich_zweizeilig
     font-family: Roboto Condensed, Arial, sans-serif;
     font-weight: bold;
     line-height: 45px;
-    text-align:center;
+    text-align: left;
 }
 .aufrufanzeige table.aufrufanzeige_aufruf th.wartenummer {
     width:50%;
@@ -67,19 +67,18 @@ div.aufrufanzeige_anzeigebereich_zweizeilig
 }
 
 .description_de {
-  font-size: 18px;
+  font-size: 32px;
   font-weight: bold;
   text-align: left;
   line-height: 18px;
-  padding: 8px 8px 4px 16px;
+  padding: 8px 16px;
 }
 
 .description_eng {
-  font-size: 18px;
+  font-size: 28px;
   font-weight: normal;
   text-align: left;
   line-height: 18px;
-  padding: 4px 8px 8px 16px;
 }
 
 .aufrufanzeige table.aufrufanzeige_aufruf td div.highlight {
@@ -92,7 +91,13 @@ span.terminkundenanzeige
 {
 	font-weight: normal;
 	font-size: 30px;
-  line-height: 35px;
+    line-height: 35px;
+}
+span.terminkundenanzeige.hint-shown
+{
+  font-size: 25px;
+  margin-top: -10px;
+  display: block;
 }
 span.wartenummer
 {
@@ -103,6 +108,10 @@ span.terminkundennummer
 {
 	font-size: 60px;
   line-height: 60px;
+}
+span.terminkundennummer.hint-shown
+{
+  line-height: 30px !important;
 }
 span.terminkundennummer.abholeranzeige
 {
@@ -120,9 +129,10 @@ span.terminkundennummer.smallerFont8Chars {
 
 div.aber_zweispaltig {
     margin-left:0px;
+    width: 100%;
 }
 .aufrufanzeige table.zweispaltig {
-    width:500px;
+    width:100%;
 }
 .aufrufanzeige table.zweispaltig th.wartenummer {
     width:45%;
@@ -134,6 +144,14 @@ div.aber_zweispaltig {
 .zweispaltig span.terminkundennummer {
   font-size: 50px;
   line-height: 72px;
+}
+.zweispaltig span.in-column4 {
+  font-size: 60px;
+  line-height: 92px;
+}
+.zweispaltig span.in-column3 {
+  font-size: 70px;
+  line-height: 112px;
 }
 .zweispaltig span.terminkundennummer.abholeranzeige
 {

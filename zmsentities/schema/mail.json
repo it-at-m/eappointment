@@ -59,6 +59,9 @@
                     },
                     "client": {
                         "alternateAppointmentUrl": "",
+                        "appointmentsPerMail": "",
+                        "slotsPerAppointment": "",
+                        "whitelistedMails": "",
                         "amendmentActivated": "0",
                         "amendmentLabel": "",
                         "customTextActivated": "0",

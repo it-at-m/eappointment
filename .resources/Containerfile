@@ -1,12 +1,15 @@
 ARG PHP_VERSION
 FROM registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-dev as build
-COPY --chown=1000:1000 . /build
+RUN useradd --shell /bin/bash --create-home build
+COPY --chown=build:build . /build
 ARG MODULE
 WORKDIR /build/${MODULE}
-USER 1000:1000
+USER build:build
 RUN make live
 
 ARG PHP_VERSION
 FROM registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-base
+RUN docker-apt-clean-install libfcgi-bin
 ARG MODULE
 COPY --from=build --chown=0:0 /build/${MODULE} /var/www/html
+ 

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2016-04-29T11:53:31+02:00",
+    "server": "Zmsapi-unconfigured"
+  },
+  "data": {
+	"$schema": "https://schema.berlin.de/queuemanagement/ticketprinter.json",
+	"enabled": "1",
+	"hash": "71abcdefghijklmnopqrstuvwxyz",
+	"id": "1",
+	"lastUpdate": "1477661416",
+	"name": "Test Ticketprinter",
+	"buttonlist": "s141",
+	"buttons": [
+		{
+			"type": "request",
+			"url": "/request/141-111/",
+			"requestId": "111",
+			"scope": {
+				"id": 141
+			},
+			"enabled": true,
+			"name": "Request 1"
+		},
+		{
+			"type": "request",
+			"url": "/request/141-222/",
+			"requestId": "222",
+			"scope": {
+				"id": 141
+			},
+			"enabled": true,
+			"name": "Request 2"
+		}
+	]
+}
+}

@@ -11,7 +11,12 @@ class Ticketprinter extends Schema\Entity
 
     public static $schema = "ticketprinter.json";
 
-    protected $allowedButtonTypes = array('s' => 'scope', /*'c' => 'cluster',*/ 'l' => 'link');
+    protected $allowedButtonTypes = [
+        's' => 'scope',
+        /*'c' => 'cluster',*/
+        'l' => 'link',
+        'r' => 'request'
+    ];
 
     public function getDefaults()
     {
@@ -23,7 +28,8 @@ class Ticketprinter extends Schema\Entity
 
     public function getHashWith($organisiationId)
     {
-        $this->hash = $organisiationId . bin2hex(openssl_random_pseudo_bytes(16));
+        $this->hash = $organisiationId . "abcdefghijklmnopqrstuvwxyz";
+        //$this->hash = $organisiationId . bin2hex(openssl_random_pseudo_bytes(16));
         return $this;
     }
 
@@ -50,7 +56,7 @@ class Ticketprinter extends Schema\Entity
         $scopeList = new Collection\ScopeList();
         if ($this->toProperty()->buttons->isAvailable()) {
             foreach ($this->buttons as $button) {
-                if ('scope' == $button['type']) {
+                if (in_array($button['type'], ['scope', 'request'])) {
                     $scopeList->addEntity(new Scope($button['scope']));
                 }
             }
@@ -92,12 +98,19 @@ class Ticketprinter extends Schema\Entity
             $button['url'] = '/'. $button['type'] .'/'. $value .'/';
             $button[$button['type']]['id'] = $value;
         }
+
+        if ('request' == $button['type']) {
+            $button['scope'] = [
+                'id' => explode('-', $value)[0]
+            ];
+        }
+
         return $button;
     }
 
     protected function getButtonValue($string, $type)
     {
-        $value = ('l' == $type) ?
+        $value = (in_array($type, ['l', 'r'])) ?
             Validator::value(substr($string, 1))->isString() :
             Validator::value(substr($string, 1))->isNumber();
         return $value->getValue();

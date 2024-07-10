@@ -32,7 +32,8 @@
             "enum": [
               "cluster",
               "link",
-              "scope"
+              "scope",
+              "request"
             ],
             "description": "Type of the button, for complement links"
           },
