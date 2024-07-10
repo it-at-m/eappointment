@@ -14,9 +14,9 @@ class Mail extends BaseController
     private $processMailScript;
     protected $startTime;
 
-    public function __construct($verbose = false, $maxRunTime = 50, $processMailScript = __DIR__ . '/process_mail.php')
+    public function __construct($verbose = false, $maxRunTime = 60, $processMailScript = __DIR__ . '/process_mail.php')
     {
-        $this->startTime = microtime(true); // Record start time
+        $this->startTime = microtime(true);
         parent::__construct($verbose, $maxRunTime);
         $this->processMailScript = $this->findProcessMailScript($processMailScript);
         $this->log("process_mail.php path: " . $this->processMailScript); // Log the path
@@ -86,7 +86,6 @@ class Mail extends BaseController
                 $mailIds = array_map(fn($item) => $item['id'], $batch);
                 $encodedMailIds = implode(',', $mailIds);
                 $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds);
-                //$this->log("Starting process with command: $command");
                 $processHandles[] = $this->startProcess($command);
             }
 
@@ -109,14 +108,14 @@ class Mail extends BaseController
 
         $process = proc_open($command, $descriptorSpec, $pipes);
         if (is_resource($process)) {
-            //$this->log("Process started successfully: $command");
+            return [
+                'process' => $process,
+                'pipes' => $pipes
+            ];
         } else {
             $this->log("Failed to start process: $command");
+            return null;
         }
-        return [
-            'process' => $process,
-            'pipes' => $pipes
-        ];
     }
 
     private function monitorProcesses($processHandles)
@@ -147,9 +146,8 @@ class Mail extends BaseController
         $endTime = microtime(true);
         $executionTime = $endTime - $this->startTime;
         $this->log(sprintf("Total execution time: %07.3f seconds", $executionTime));
-    }
+    }    
 
-    // Override log method to handle array messages
     public function log($message)
     {
         if (is_array($message)) {
