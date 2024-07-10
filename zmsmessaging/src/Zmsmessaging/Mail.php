@@ -12,7 +12,7 @@ class Mail extends BaseController
 {
     protected $messagesQueue = null;
     private $processMailScript;
-    private $startTime;
+    protected $startTime;
 
     public function __construct($verbose = false, $maxRunTime = 50, $processMailScript = __DIR__ . '/process_mail.php')
     {
