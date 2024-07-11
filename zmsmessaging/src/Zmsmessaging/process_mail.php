@@ -124,7 +124,7 @@ class MailProcessor extends BaseController
                         'attachments' => $result->getAttachments(),
                         'customHeaders' => $result->getCustomHeaders(),
                     );
-                    //$this->deleteEntityFromQueue($entity);
+                    $this->deleteEntityFromQueue($entity);
                     $this->log("Mail sent and deleted successfully for ID: $itemId" . "\n\n");
                     echo "Mail sent and deleted successfully for ID: $itemId\n\n";
                 } else {
