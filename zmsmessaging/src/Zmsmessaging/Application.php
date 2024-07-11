@@ -61,7 +61,7 @@ class Application
      * -----------------------------------------------------------------------
      * Mail settings
      */
-    public static $mails_per_minute = 500;
+    public static $mails_per_minute = 50;
 
     /*
      * -----------------------------------------------------------------------
