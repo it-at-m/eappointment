@@ -12,7 +12,7 @@ class DeleteFromQueueTest extends Base
                 'url' => '/mails/',
                 'parameters' => [
                     'resolveReferences' => 2,
-                    'limit' => 300
+                    'limit' => 500
                 ],
                 'response' => $this->readFixture("GET_mails_queue.json"),
             ],
