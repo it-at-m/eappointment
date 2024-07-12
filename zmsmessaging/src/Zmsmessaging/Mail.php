@@ -186,32 +186,47 @@ class Mail extends BaseController
         $cpuUsage = $this->getCpuUsage();
         $memoryUsage = $this->getMemoryUsage();
 
-        $cpuLimitPercent = ($cpuUsage / $this->cpuLimit) * 100;
+        $cpuLimit = $this->getCpuLimit();
         $memoryLimitPercent = ($memoryUsage / $this->ramLimit) * 100;
 
-        $this->log(sprintf("Current CPU usage: %07.2f%% of %d limit", $cpuLimitPercent, $this->cpuLimit));
-        $this->log(sprintf("Current Memory usage: %07.2f%% of %dMB limit", $memoryLimitPercent, $this->ramLimit));
+        $correctedRamUsage = floatval($ramUsage);
+        $this->log(sprintf("Current Memory usage: %.2f%% of %dMB limit", $correctedRamUsage, $this->ramLimit));
+
+        if ($cpuLimit !== null && $cpuLimit > 0) {
+            $cpuLimitPercent = ($cpuUsage / $cpuLimit) * 100;
+            $this->log(sprintf("Current CPU usage: %.2f%% of %.2f%% limit", $cpuLimitPercent, $cpuLimit));
+        } else {
+            $this->log(sprintf("Current CPU usage: %.2f ms", $cpuUsage));
+        }
     }
 
     private function getCpuLimit()
     {
         $cpuLimitFile = '/sys/fs/cgroup/cpu/cpu.cfs_quota_us';
-        if (file_exists($cpuLimitFile)) {
-            $cpuLimit = intval(file_get_contents($cpuLimitFile)) / 1000; // Convert to ms
-            return $cpuLimit > 0 ? $cpuLimit : null;
+        $cpuPeriodFile = '/sys/fs/cgroup/cpu/cpu.cfs_period_us';
+        if (file_exists($cpuLimitFile) && file_exists($cpuPeriodFile)) {
+            $cpuQuota = intval(file_get_contents($cpuLimitFile));
+            $cpuPeriod = intval(file_get_contents($cpuPeriodFile));
+            
+            if ($cpuQuota > 0 && $cpuPeriod > 0) {
+                $cpuLimit = ($cpuQuota / $cpuPeriod) * 100; // Calculate percentage of a CPU core
+                return $cpuLimit;
+            }
         }
         return null;
     }
+    
 
     private function getCpuUsage()
     {
         $cpuUsageFile = '/sys/fs/cgroup/cpu/cpuacct.usage';
         if (file_exists($cpuUsageFile)) {
-            $cpuUsage = intval(file_get_contents($cpuUsageFile)) / 1000000; // Convert to ms
+            $cpuUsage = intval(file_get_contents($cpuUsageFile)) / 1000000; // Convert nanoseconds to milliseconds
             return $cpuUsage;
         }
         return null;
     }
+    
 
     private function getMemoryLimit()
     {
