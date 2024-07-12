@@ -102,7 +102,7 @@ class Mail extends BaseController
                 $mailIds = array_map(fn($item) => $item['id'], $batch);
                 $encodedMailIds = implode(',', $mailIds);
                 $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds);
-                $processHandles[] = $this->startProcess($command);
+                $processHandles[] = $this->startProcess($command, $batchIndex);
                 $this->log("Started process for batch #$batchIndex with command: $command");
             }
 
@@ -116,9 +116,9 @@ class Mail extends BaseController
         return $resultList;
     }
 
-    private function startProcess($command)
+    private function startProcess($command, $batchIndex)
     {
-        $this->log("Starting process with command: $command");
+        $this->log("Starting process batch #$batchIndex with command: $command");
         $descriptorSpec = [
             0 => ["pipe", "r"], // stdin
             1 => ["pipe", "w"], // stdout
@@ -127,20 +127,20 @@ class Mail extends BaseController
 
         $process = proc_open($command, $descriptorSpec, $pipes);
         if (is_resource($process)) {
-            $this->log("Process started successfully");
+            $this->log("Process batch #$batchIndex started successfully");
             return [
                 'process' => $process,
                 'pipes' => $pipes
             ];
         } else {
-            $this->log("Failed to start process: $command");
+            $this->log("Failed to start process batch #$batchIndex: $command");
             return null;
         }
     }
 
     private function monitorProcesses($processHandles)
     {
-        $this->log("Monitoring processes");
+        //$this->log("Monitoring processes");
         $running = true;
 
         while ($running) {
