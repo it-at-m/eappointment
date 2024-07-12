@@ -13,13 +13,17 @@ class Mail extends BaseController
     protected $messagesQueue = null;
     private $processMailScript;
     protected $startTime;
+    private $cpuLimit;
+    private $ramLimit;
 
     public function __construct($verbose = false, $maxRunTime = 50, $processMailScript = __DIR__ . '/process_mail.php')
     {
         $this->startTime = microtime(true);
         parent::__construct($verbose, $maxRunTime);
         $this->processMailScript = $this->findProcessMailScript($processMailScript);
-        $this->log("process_mail.php path: " . $this->processMailScript); // Log the path
+        $this->cpuLimit = $this->getCpuLimit();
+        $this->ramLimit = $this->getMemoryLimit();
+        $this->log("process_mail.php path: " . $this->processMailScript);
         $this->log("Read Mail QueueList start with limit " . \App::$mails_per_minute . " - " . \App::$now->format('c'));
         $queueList = \App::$http->readGetResult('/mails/', [
             'resolveReferences' => 2,
@@ -80,7 +84,6 @@ class Mail extends BaseController
         $this->log("Converting collection to array");
         $array = [];
         foreach ($collection as $item) {
-            //$this->log("Processing item: " . print_r($item, true));
             $array[] = $item;
         }
         $this->log("Conversion complete, array size: " . count($array));
@@ -97,7 +100,7 @@ class Mail extends BaseController
             $batches = array_chunk($this->messagesQueue, $batchSize);
             $this->log("Messages divided into " . count($batches) . " batches.");
             $commands = [];
-    
+
             foreach ($batches as $index => $batch) {
                 $mailIds = array_map(fn($item) => $item['id'], $batch);
                 $encodedMailIds = implode(',', $mailIds);
@@ -105,7 +108,7 @@ class Mail extends BaseController
                 $this->log("Prepared command for batch #$index: $command");
                 $commands[] = $command;
             }
-    
+
             $this->executeCommandsSimultaneously($commands);
         } else {
             $this->log("Messages queue is empty.");
@@ -116,19 +119,19 @@ class Mail extends BaseController
         $this->log("Queue transmission initialization complete.");
         return $resultList;
     }
-    
+
     private function executeCommandsSimultaneously($commands)
     {
         $this->log("Executing commands simultaneously...");
         $processHandles = [];
-    
+
         foreach ($commands as $index => $command) {
             $this->log("Starting process for batch #$index with command: $command");
             $processHandles[] = $this->startProcess($command, $index);
         }
-    
+
         $this->monitorProcesses($processHandles);
-    }    
+    }
 
     private function startProcess($command, $batchIndex)
     {
@@ -154,7 +157,7 @@ class Mail extends BaseController
 
     private function monitorProcesses($processHandles)
     {
-        //$this->log("Monitoring processes");
+        $this->log("Monitoring processes");
         $running = true;
 
         while ($running) {
@@ -162,8 +165,8 @@ class Mail extends BaseController
             foreach ($processHandles as &$handle) {
                 if (is_resource($handle['process'])) {
                     $status = proc_get_status($handle['process']);
-                    //$this->log("Process status: " . print_r($status, true));
                     if ($status['running']) {
+                        $this->logResourceUsage();
                         $running = true;
                     } else {
                         $this->log("Process finished with command: " . $status['command']);
@@ -172,10 +175,62 @@ class Mail extends BaseController
                     }
                 }
             }
-            usleep(500000); // Sleep for 0.5 seconds before checking again
+            usleep(100000); // Sleep for 0.1 seconds before checking again
         }
         $this->log("All processes have finished");
         $this->logTotalExecutionTime(); // Log total execution time at the end
+    }
+
+    private function logResourceUsage()
+    {
+        $cpuUsage = $this->getCpuUsage();
+        $memoryUsage = $this->getMemoryUsage();
+
+        $cpuLimitPercent = ($cpuUsage / $this->cpuLimit) * 100;
+        $memoryLimitPercent = ($memoryUsage / $this->ramLimit) * 100;
+
+        $this->log(sprintf("Current CPU usage: %07.2f%% of %d limit", $cpuLimitPercent, $this->cpuLimit));
+        $this->log(sprintf("Current Memory usage: %07.2f%% of %dMB limit", $memoryLimitPercent, $this->ramLimit));
+    }
+
+    private function getCpuLimit()
+    {
+        $cpuLimitFile = '/sys/fs/cgroup/cpu/cpu.cfs_quota_us';
+        if (file_exists($cpuLimitFile)) {
+            $cpuLimit = intval(file_get_contents($cpuLimitFile)) / 1000; // Convert to ms
+            return $cpuLimit > 0 ? $cpuLimit : null;
+        }
+        return null;
+    }
+
+    private function getCpuUsage()
+    {
+        $cpuUsageFile = '/sys/fs/cgroup/cpu/cpuacct.usage';
+        if (file_exists($cpuUsageFile)) {
+            $cpuUsage = intval(file_get_contents($cpuUsageFile)) / 1000000; // Convert to ms
+            return $cpuUsage;
+        }
+        return null;
+    }
+
+    private function getMemoryLimit()
+    {
+        $memLimitFile = '/sys/fs/cgroup/memory/memory.limit_in_bytes';
+        if (file_exists($memLimitFile)) {
+            $memLimit = intval(file_get_contents($memLimitFile)) / (1024 * 1024); // Convert to MB
+            return $memLimit > 0 ? $memLimit : null;
+        }
+        return null;
+    }
+
+    private function getMemoryUsage()
+    {
+        $memUsageFile = '/sys/fs/cgroup/memory/memory.usage_in_bytes';
+        if (file_exists($memUsageFile)) {
+            $memUsage = intval(file_get_contents($memUsageFile)) / (1024 * 1024); // Convert to MB
+            return $memUsage;
+        }
+        return null;
     }
 
     private function logTotalExecutionTime()
