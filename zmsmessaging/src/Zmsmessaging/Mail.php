@@ -80,7 +80,6 @@ class Mail extends BaseController
         $this->log("Converting collection to array");
         $array = [];
         foreach ($collection as $item) {
-            $this->log("Processing item: " . print_r($item, true));
             $array[] = $item;
         }
         $this->log("Conversion complete, array size: " . count($array));
