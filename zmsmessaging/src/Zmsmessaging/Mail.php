@@ -124,7 +124,7 @@ class Mail extends BaseController
     
         foreach ($commands as $index => $command) {
             $this->log("Starting process for batch #$index with command: $command");
-            $processHandles[] = $this->startProcess($command);
+            $processHandles[] = $this->startProcess($command, $index);
         }
     
         $this->monitorProcesses($processHandles);
