@@ -175,7 +175,7 @@ class Mail extends BaseController
                     }
                 }
             }
-            usleep(500000); // Sleep for 0.1 seconds before checking again
+            usleep(1000000); // Sleep for 0.1 seconds before checking again
         }
         $this->log("All processes have finished");
         $this->logTotalExecutionTime(); // Log total execution time at the end
