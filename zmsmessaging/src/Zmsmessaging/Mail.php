@@ -96,7 +96,7 @@ class Mail extends BaseController
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
             $this->log("Messages queue is not empty, processing batches...");
-            $batchSize = 5;
+            $batchSize = 10;
             $batches = array_chunk($this->messagesQueue, $batchSize);
             $this->log("Messages divided into " . count($batches) . " batches.");
             $commands = [];
@@ -175,7 +175,7 @@ class Mail extends BaseController
                     }
                 }
             }
-            usleep(1000000);
+            usleep(10000000);
         }
         $this->log("All processes have finished");
         $this->logTotalExecutionTime();
