@@ -148,7 +148,7 @@ class Mail extends BaseController
             foreach ($processHandles as &$handle) {
                 if (is_resource($handle['process'])) {
                     $status = proc_get_status($handle['process']);
-                    $this->log("Process status: " . print_r($status, true));
+                    //$this->log("Process status: " . print_r($status, true));
                     if ($status['running']) {
                         $running = true;
                     } else {
