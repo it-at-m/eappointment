@@ -89,32 +89,46 @@ class Mail extends BaseController
 
     public function initQueueTransmission($action = false)
     {
-        $this->log("Initializing queue transmission");
+        $this->log("Initializing queue transmission...");
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
-            $this->log("Messages found in queue, count: " . count($this->messagesQueue));
-            $batchSize = 5;
+            $this->log("Messages queue is not empty, processing batches...");
+            $batchSize = 50;
             $batches = array_chunk($this->messagesQueue, $batchSize);
-            $processHandles = [];
-
-            foreach ($batches as $batchIndex => $batch) {
-                $this->log("Processing batch #$batchIndex with size: " . count($batch));
+            $this->log("Messages divided into " . count($batches) . " batches.");
+            $commands = [];
+    
+            foreach ($batches as $index => $batch) {
                 $mailIds = array_map(fn($item) => $item['id'], $batch);
                 $encodedMailIds = implode(',', $mailIds);
                 $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds);
-                $processHandles[] = $this->startProcess($command, $batchIndex);
-                $this->log("Started process for batch #$batchIndex with command: $command");
+                $this->log("Prepared command for batch #$index: $command");
+                $commands[] = $command;
             }
-
-            $this->monitorProcesses($processHandles);
+    
+            $this->executeCommandsSimultaneously($commands);
         } else {
-            $this->log("No messages in queue");
+            $this->log("Messages queue is empty.");
             $resultList[] = array(
                 'errorInfo' => 'No mail entry found in Database...'
             );
         }
+        $this->log("Queue transmission initialization complete.");
         return $resultList;
     }
+    
+    private function executeCommandsSimultaneously($commands)
+    {
+        $this->log("Executing commands simultaneously...");
+        $processHandles = [];
+    
+        foreach ($commands as $index => $command) {
+            $this->log("Starting process for batch #$index with command: $command");
+            $processHandles[] = $this->startProcess($command);
+        }
+    
+        $this->monitorProcesses($processHandles);
+    }    
 
     private function startProcess($command, $batchIndex)
     {
