@@ -214,8 +214,7 @@ class Mail extends BaseController
             $period = intval(file_get_contents($periodFile));
     
             if ($quota > 0 && $period > 0) {
-                // Return the CPU limit in seconds
-                return $quota / 1e6; // Convert microseconds to seconds
+                return $quota / 1000; // Convert microseconds to milliseconds
             }
         }
     
@@ -227,7 +226,7 @@ class Mail extends BaseController
         $usageFile = '/sys/fs/cgroup/cpu/cpuacct.usage';
         if (file_exists($usageFile)) {
             $usage = intval(file_get_contents($usageFile));
-            return $usage / 1e9; // Convert nanoseconds to seconds
+            return $usage / 1e6; // Convert nanoseconds to milliseconds
         }
         return 0;
     }
