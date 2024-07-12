@@ -184,49 +184,52 @@ class Mail extends BaseController
     private function logResourceUsage()
     {
         $cpuUsage = $this->getCpuUsage();
-        $memoryUsage = $this->getMemoryUsage();
-
         $cpuLimit = $this->getCpuLimit();
-        $memoryLimitPercent = ($memoryUsage / $this->ramLimit) * 100;
-
-        $correctedRamUsage = floatval($ramUsage);
-        $this->log(sprintf("Current Memory usage: %.2f%% of %dMB limit", $correctedRamUsage, $this->ramLimit));
-
-        if ($cpuLimit !== null && $cpuLimit > 0) {
+        $memoryUsage = $this->getMemoryUsage();
+        $memoryLimit = $this->getMemoryLimit();
+    
+        if ($cpuLimit !== null) {
             $cpuLimitPercent = ($cpuUsage / $cpuLimit) * 100;
-            $this->log(sprintf("Current CPU usage: %.2f%% of %.2f%% limit", $cpuLimitPercent, $cpuLimit));
         } else {
-            $this->log(sprintf("Current CPU usage: %.2f ms", $cpuUsage));
+            $cpuLimitPercent = 0; // handle the case where cpu limit is not available
         }
+    
+        if ($memoryLimit !== null) {
+            $memoryLimitPercent = ($memoryUsage / $memoryLimit) * 100;
+        } else {
+            $memoryLimitPercent = 0; // handle the case where memory limit is not available
+        }
+    
+        $this->log(sprintf("Current CPU usage: %07.2f%% of %d limit", $cpuLimitPercent, $cpuLimit ?? 0));
+        $this->log(sprintf("Current Memory usage: %07.2f%% of %dMB limit", $memoryLimitPercent, $memoryLimit ?? 0));
     }
-
+    
     private function getCpuLimit()
     {
-        $cpuLimitFile = '/sys/fs/cgroup/cpu/cpu.cfs_quota_us';
-        $cpuPeriodFile = '/sys/fs/cgroup/cpu/cpu.cfs_period_us';
-        if (file_exists($cpuLimitFile) && file_exists($cpuPeriodFile)) {
-            $cpuQuota = intval(file_get_contents($cpuLimitFile));
-            $cpuPeriod = intval(file_get_contents($cpuPeriodFile));
-            
-            if ($cpuQuota > 0 && $cpuPeriod > 0) {
-                $cpuLimit = ($cpuQuota / $cpuPeriod) * 100; // Calculate percentage of a CPU core
-                return $cpuLimit;
+        $quotaFile = '/sys/fs/cgroup/cpu/cpu.cfs_quota_us';
+        $periodFile = '/sys/fs/cgroup/cpu/cpu.cfs_period_us';
+    
+        if (file_exists($quotaFile) && file_exists($periodFile)) {
+            $quota = intval(file_get_contents($quotaFile));
+            $period = intval(file_get_contents($periodFile));
+    
+            if ($quota > 0 && $period > 0) {
+                return $quota / $period;
             }
         }
+    
         return null;
     }
     
-
     private function getCpuUsage()
     {
-        $cpuUsageFile = '/sys/fs/cgroup/cpu/cpuacct.usage';
-        if (file_exists($cpuUsageFile)) {
-            $cpuUsage = intval(file_get_contents($cpuUsageFile)) / 1000000; // Convert nanoseconds to milliseconds
-            return $cpuUsage;
+        $usageFile = '/sys/fs/cgroup/cpu/cpuacct.usage';
+        if (file_exists($usageFile)) {
+            $usage = intval(file_get_contents($usageFile));
+            return $usage / 1e9; // Convert nanoseconds to seconds
         }
-        return null;
+        return 0;
     }
-    
 
     private function getMemoryLimit()
     {
