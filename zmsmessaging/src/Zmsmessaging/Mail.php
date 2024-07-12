@@ -175,10 +175,10 @@ class Mail extends BaseController
                     }
                 }
             }
-            usleep(1000000); // Sleep for 0.1 seconds before checking again
+            usleep(1000000);
         }
         $this->log("All processes have finished");
-        $this->logTotalExecutionTime(); // Log total execution time at the end
+        $this->logTotalExecutionTime();
     }
 
     private function logResourceUsage()
@@ -214,7 +214,7 @@ class Mail extends BaseController
             $period = intval(file_get_contents($periodFile));
     
             if ($quota > 0 && $period > 0) {
-                return $quota / 1000; // Convert microseconds to milliseconds
+                return $quota / 1000;
             }
         }
     
@@ -226,7 +226,7 @@ class Mail extends BaseController
         $usageFile = '/sys/fs/cgroup/cpu/cpuacct.usage';
         if (file_exists($usageFile)) {
             $usage = intval(file_get_contents($usageFile));
-            return $usage / 1e6; // Convert nanoseconds to milliseconds
+            return $usage / 1e6;
         }
         return 0;
     }
@@ -235,7 +235,7 @@ class Mail extends BaseController
     {
         $memLimitFile = '/sys/fs/cgroup/memory/memory.limit_in_bytes';
         if (file_exists($memLimitFile)) {
-            $memLimit = intval(file_get_contents($memLimitFile)) / (1024 * 1024); // Convert to MB
+            $memLimit = intval(file_get_contents($memLimitFile)) / (1024 * 1024);
             return $memLimit > 0 ? $memLimit : null;
         }
         return null;
@@ -245,7 +245,7 @@ class Mail extends BaseController
     {
         $memUsageFile = '/sys/fs/cgroup/memory/memory.usage_in_bytes';
         if (file_exists($memUsageFile)) {
-            $memUsage = intval(file_get_contents($memUsageFile)) / (1024 * 1024); // Convert to MB
+            $memUsage = intval(file_get_contents($memUsageFile)) / (1024 * 1024);
             return $memUsage;
         }
         return null;
