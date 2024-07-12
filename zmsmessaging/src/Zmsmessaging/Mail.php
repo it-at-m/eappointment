@@ -96,7 +96,7 @@ class Mail extends BaseController
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
             $this->log("Messages queue is not empty, processing batches...");
-            $batchSize = 10;
+            $batchSize = 5;
             $batches = array_chunk($this->messagesQueue, $batchSize);
             $this->log("Messages divided into " . count($batches) . " batches.");
             $commands = [];
@@ -214,7 +214,7 @@ class Mail extends BaseController
             $period = intval(file_get_contents($periodFile));
     
             if ($quota > 0 && $period > 0) {
-                return $quota / 1000;
+                return $quota / 100;
             }
         }
     
