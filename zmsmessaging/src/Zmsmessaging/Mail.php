@@ -200,7 +200,7 @@ class Mail extends BaseController
             $memoryLimitPercent = 0; // handle the case where memory limit is not available
         }
     
-        $this->log(sprintf("Current CPU usage: %07.2f%% of %d limit", $cpuLimitPercent, $cpuLimit ?? 0));
+        $this->log(sprintf("Current CPU usage: %07.2f%% of %.2f limit", $cpuLimitPercent, $cpuLimit ?? 0));
         $this->log(sprintf("Current Memory usage: %07.2f%% of %dMB limit", $memoryLimitPercent, $memoryLimit ?? 0));
     }
     
@@ -214,7 +214,8 @@ class Mail extends BaseController
             $period = intval(file_get_contents($periodFile));
     
             if ($quota > 0 && $period > 0) {
-                return $quota / $period;
+                // Return the CPU limit in seconds
+                return $quota / 1e6; // Convert microseconds to seconds
             }
         }
     
