@@ -79,9 +79,9 @@ class Mail extends BaseController
         if ($this->messagesQueue && count($this->messagesQueue)) {
             $this->log("Messages queue is not empty, processing...");
 
-            if (count($this->messagesQueue) < 10) {
+            if (count($this->messagesQueue) =< 10) {
                 $this->log("Messages queue has 10 or more items, processing in batches of 1...");
-                $batchSize = 1;
+                $batchSize = count($this->messagesQueue);
                 $batches = array_chunk($this->messagesQueue, $batchSize);
                 $this->log("Messages divided into " . count($batches) . " batches.");
                 $commands = [];
@@ -95,7 +95,7 @@ class Mail extends BaseController
                 }
 
                 $this->executeCommandsSimultaneously($commands);
-            } else if (count($this->messagesQueue) < 50) {
+            } else if (count($this->messagesQueue) < 100) {
                 $this->log("Messages queue has 10 or more items, processing in batches of 5...");
                 $batchSize = 5;
                 $batches = array_chunk($this->messagesQueue, $batchSize);
@@ -112,7 +112,7 @@ class Mail extends BaseController
 
                 $this->executeCommandsSimultaneously($commands);
             } else {
-                $this->log("Messages queue has 50 or more items, processing in batches of 10...");
+                $this->log("Messages queue has 100 or more items, processing in batches of 10...");
                 $batchSize = 10;
                 $batches = array_chunk($this->messagesQueue, $batchSize);
                 $this->log("Messages divided into " . count($batches) . " batches.");
