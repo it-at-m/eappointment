@@ -17,6 +17,11 @@ if ($argc > 1) {
     $mailIds = explode(',', $argv[1]);
     $processor = new MailProcessor();
     foreach ($mailIds as $mailId) {
+        $processor->log("Processing mail ID: $mailId");
+        echo "Processing mail ID: $mailId";
         $processor->sendAndDeleteEmail($mailId);
     }
+} else {
+    error_log("No mail IDs provided to process_mail.php");
+    echo "No mail IDs provided to process_mail.php";
 }
