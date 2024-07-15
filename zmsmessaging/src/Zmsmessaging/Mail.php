@@ -1,14 +1,7 @@
 <?php
-/**
- *
- * @package Zmsmessaging
- *
- */
 namespace BO\Zmsmessaging;
 
-use \BO\Zmsentities\Mimepart;
-
-class Mail extends BaseController
+class Mail extends MailProcessorBase
 {
     protected $messagesQueue = null;
     private $processMailScript;
@@ -79,37 +72,36 @@ class Mail extends BaseController
         return $files;
     }
 
-    private function convertCollectionToArray($collection)
-    {
-        $this->log("Converting collection to array");
-        $array = [];
-        foreach ($collection as $item) {
-            $array[] = $item;
-        }
-        $this->log("Conversion complete, array size: " . count($array));
-        return $array;
-    }
-
     public function initQueueTransmission($action = false)
     {
         $this->log("Initializing queue transmission...");
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
-            $this->log("Messages queue is not empty, processing batches...");
-            $batchSize = 10;
-            $batches = array_chunk($this->messagesQueue, $batchSize);
-            $this->log("Messages divided into " . count($batches) . " batches.");
-            $commands = [];
+            $this->log("Messages queue is not empty, processing...");
 
-            foreach ($batches as $index => $batch) {
-                $mailIds = array_map(fn($item) => $item['id'], $batch);
-                $encodedMailIds = implode(',', $mailIds);
-                $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds);
-                $this->log("Prepared command for batch #$index: $command");
-                $commands[] = $command;
+            if (count($this->messagesQueue) < 10) {
+                $this->log("Messages queue has less than 10 items, sending immediately...");
+                foreach ($this->messagesQueue as $message) {
+                    $mailId = $message['id'];
+                    $this->sendAndDeleteEmail($mailId);
+                }
+            } else {
+                $this->log("Messages queue has 10 or more items, processing in batches...");
+                $batchSize = 10;
+                $batches = array_chunk($this->messagesQueue, $batchSize);
+                $this->log("Messages divided into " . count($batches) . " batches.");
+                $commands = [];
+
+                foreach ($batches as $index => $batch) {
+                    $mailIds = array_map(fn($item) => $item['id'], $batch);
+                    $encodedMailIds = implode(',', $mailIds);
+                    $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds);
+                    $this->log("Prepared command for batch #$index: $command");
+                    $commands[] = $command;
+                }
+
+                $this->executeCommandsSimultaneously($commands);
             }
-
-            $this->executeCommandsSimultaneously($commands);
         } else {
             $this->log("Messages queue is empty.");
             $resultList[] = array(
@@ -153,125 +145,5 @@ class Mail extends BaseController
             $this->log("Failed to start process batch #$batchIndex: $command");
             return null;
         }
-    }
-
-    private function monitorProcesses($processHandles)
-    {
-        $this->log("Monitoring processes");
-        $running = true;
-
-        while ($running) {
-            $running = false;
-            foreach ($processHandles as &$handle) {
-                if (is_resource($handle['process'])) {
-                    $status = proc_get_status($handle['process']);
-                    if ($status['running']) {
-                        $this->logResourceUsage();
-                        $running = true;
-                    } else {
-                        $this->log("Process finished with command: " . $status['command']);
-                        proc_close($handle['process']);
-                        $handle['process'] = null;
-                    }
-                }
-            }
-            usleep(10000000);
-        }
-        $this->log("All processes have finished");
-        $this->logTotalExecutionTime();
-    }
-
-    private function logResourceUsage()
-    {
-        $cpuUsage = $this->getCpuUsage();
-        $cpuLimit = $this->getCpuLimit();
-        $memoryUsage = $this->getMemoryUsage();
-        $memoryLimit = $this->getMemoryLimit();
-    
-        if ($cpuLimit !== null) {
-            $cpuLimitPercent = ($cpuUsage / $cpuLimit) * 100;
-        } else {
-            $cpuLimitPercent = 0;
-        }
-    
-        if ($memoryLimit !== null) {
-            $memoryLimitPercent = ($memoryUsage / $memoryLimit) * 100;
-        } else {
-            $memoryLimitPercent = 0;
-        }
-    
-        $this->log(sprintf("Current CPU usage: %07.2f%% of %.2f limit", $cpuLimitPercent, $cpuLimit ?? 0));
-        $this->log(sprintf("Current Memory usage: %07.2f%% of %dMB limit", $memoryLimitPercent, $memoryLimit ?? 0));
-    }
-    
-    private function getCpuLimit()
-    {
-        $quotaFile = '/sys/fs/cgroup/cpu/cpu.cfs_quota_us';
-        $periodFile = '/sys/fs/cgroup/cpu/cpu.cfs_period_us';
-    
-        if (file_exists($quotaFile) && file_exists($periodFile)) {
-            $quota = intval(file_get_contents($quotaFile));
-            $period = intval(file_get_contents($periodFile));
-    
-            if ($quota > 0 && $period > 0) {
-                return $quota / 100;
-            }
-        }
-    
-        return null;
-    }
-    
-    private function getCpuUsage()
-    {
-        $usageFile = '/sys/fs/cgroup/cpu/cpuacct.usage';
-        if (file_exists($usageFile)) {
-            $usage = intval(file_get_contents($usageFile));
-            return $usage / 1e6;
-        }
-        return 0;
-    }
-
-    private function getMemoryLimit()
-    {
-        $memLimitFile = '/sys/fs/cgroup/memory/memory.limit_in_bytes';
-        if (file_exists($memLimitFile)) {
-            $memLimit = intval(file_get_contents($memLimitFile)) / (1024 * 1024);
-            return $memLimit > 0 ? $memLimit : null;
-        }
-        return null;
-    }
-
-    private function getMemoryUsage()
-    {
-        $memUsageFile = '/sys/fs/cgroup/memory/memory.usage_in_bytes';
-        if (file_exists($memUsageFile)) {
-            $memUsage = intval(file_get_contents($memUsageFile)) / (1024 * 1024);
-            return $memUsage;
-        }
-        return null;
-    }
-
-    private function logTotalExecutionTime()
-    {
-        $endTime = microtime(true);
-        $executionTime = $endTime - $this->startTime;
-        $this->log(sprintf("Total execution time: %07.3f seconds", $executionTime));
-    }
-
-    public function log($message)
-    {
-        if (is_array($message)) {
-            $message = print_r($message, true);
-        }
-
-        $time = $this->getSpendTime();
-        $memory = memory_get_usage() / (1024 * 1024);
-        $text = sprintf("[Init Messaging log %07.3fs %07.1fmb] %s", $time, $memory, $message);
-        static::$logList[] = $text;
-        if ($this->verbose) {
-            error_log('verbose is: ' . $this->verbose);
-            error_log($text);
-        }
-        return $this;
     }
 }
