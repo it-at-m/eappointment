@@ -26,19 +26,6 @@ class BaseController
         $this->maxRunTime = $maxRunTime;
     }
 
-    public function log($message)
-    {
-        $time = $this->getSpendTime();
-        $memory = memory_get_usage()/(1024*1024);
-        $text = sprintf("[Init Messaging log %07.3fs %07.1fmb] %s", "$time", $memory, $message);
-        static::$logList[] = $text;
-        if ($this->verbose) {
-            error_log('verbose is: '. $this->verbose);
-            error_log($text);
-        }
-        return $this;
-    }
-
     public static function getLogList()
     {
         return static::$logList;
