@@ -18,7 +18,9 @@ class ReportWaitingDepartment extends BaseController
         'waitingcalculated',
         'waitingcount_termin',
         'waitingtime_termin',
-        'waitingcalculated_termin'
+        'waitingcalculated_termin',
+        'waytime',
+        'waytime_termin',        
     ];
 
     protected $groupfields = [
@@ -50,6 +52,8 @@ class ReportWaitingDepartment extends BaseController
 
             $exchangeWaiting = $this->withMaxAndAverageFromWaitingTime($exchangeWaiting, 'waitingtime');
             $exchangeWaiting = $this->withMaxAndAverageFromWaitingTime($exchangeWaiting, 'waitingtime_termin');
+            $exchangeWaiting = $this->withMaxAndAverageFromWaitingTime($exchangeWaiting, 'waytime');
+            $exchangeWaiting = $this->withMaxAndAverageFromWaitingTime($exchangeWaiting, 'waytime_termin');            
         }
 
         $type = $validator->getParameter('type')->isString()->getValue();
