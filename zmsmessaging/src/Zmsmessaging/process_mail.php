@@ -2,12 +2,12 @@
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
-use BO\Zmsmessaging\MailProcessorBase;
+use BO\Zmsmessaging\BaseController;
 
 require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../../bootstrap.php';
 
-class MailProcessor extends MailProcessorBase
+class MailProcessor extends BaseController
 {
     public function __construct($verbose = false, $maxRunTime = 50)
     {
