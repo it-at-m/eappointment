@@ -19,7 +19,7 @@ class Mail extends BaseController
         $this->log("process_mail.php path: " . $this->processMailScript);
         $this->log("Read Mail QueueList start with limit " . \App::$mails_per_minute . " - " . \App::$now->format('c'));
         $queueList = \App::$http->readGetResult('/mails/', [
-            'resolveReferences' => 2,
+            'resolveReferences' => 1,
             'limit' => \App::$mails_per_minute
         ])->getCollection();
         if (null !== $queueList) {
