@@ -191,13 +191,13 @@ class Mail extends BaseController
         if ($cpuLimit !== null) {
             $cpuLimitPercent = ($cpuUsage / $cpuLimit) * 100;
         } else {
-            $cpuLimitPercent = 0; // handle the case where cpu limit is not available
+            $cpuLimitPercent = 0;
         }
     
         if ($memoryLimit !== null) {
             $memoryLimitPercent = ($memoryUsage / $memoryLimit) * 100;
         } else {
-            $memoryLimitPercent = 0; // handle the case where memory limit is not available
+            $memoryLimitPercent = 0;
         }
     
         $this->log(sprintf("Current CPU usage: %07.2f%% of %.2f limit", $cpuLimitPercent, $cpuLimit ?? 0));
