@@ -10,8 +10,6 @@ use \BO\Zmsentities\Mail;
 use \BO\Zmsentities\Notification;
 use \BO\Zmsentities\Mimepart;
 use \BO\Mellon\Validator;
-use \PHPMailer\PHPMailer\PHPMailer;
-use \PHPMailer\PHPMailer\Exception as PHPMailerException;
 
 class BaseController
 {
