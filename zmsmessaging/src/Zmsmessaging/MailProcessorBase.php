@@ -31,7 +31,7 @@ class MailProcessorBase extends BaseController
                     }
                 }
             }
-            usleep(10000000);
+            usleep(20000000);
         }
         $this->log("All processes have finished");
         $this->logTotalExecutionTime();
@@ -145,11 +145,15 @@ class MailProcessorBase extends BaseController
 
     protected function sendAndDeleteEmail($itemId)
     {
-        $this->log("Fetching mail data for ID: $itemId");
+        $this->log("Fetching mail data for ID: $itemId\n\n");
+        echo "Fetching mail data for ID: $itemId\n\n";
+
+
         $mailData = $this->getMailById($itemId);
 
         if (empty($mailData)) {
             $this->log("No mail data for mail ID: $itemId\n\n");
+            echo "No mail data for mail ID: $itemId\n\n";
             return;
         }
 
