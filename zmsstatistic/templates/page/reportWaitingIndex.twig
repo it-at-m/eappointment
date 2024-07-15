@@ -71,7 +71,8 @@
                             <tr>
                                 <th class="statistik">
                                     <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesmaximum der<br>gemessenen Zeit in Min.:{% endtrans %}</p><br>
-                                    <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesdurchschnitt der<br>gemessenen Zeit in Min.:{% endtrans %}</p>
+                                    <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesdurchschnitt der<br>gemessenen Zeit in Min.:{% endtrans %}</p><br>
+                                    <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesdurchschnitt der<br>gemessenen Wegezeit in Min.:{% endtrans %}</p>
                                 </th>
                                 <td class="statistik" style="text-align: right;">
                                     <br>
@@ -81,6 +82,10 @@
                                     <br><br><br>
                                     <span class="{% if not exchangeWaiting.data.max.average_waitingtime %}ausgegraut{% endif %}">
                                         {{ exchangeWaiting.data.max.average_waitingtime ? exchangeWaiting.data.max.average_waitingtime|number_format(2, ',', '.') : '-' }}
+                                    </span>
+                                    <br><br><br>
+                                    <span class="{% if not exchangeWaiting.data.max.average_waytime %}ausgegraut{% endif %}">
+                                        {{ exchangeWaiting.data.max.average_waytime ? exchangeWaiting.data.max.average_waytime|number_format(2, ',', '.') : '-' }}
                                     </span>
                                 </td>
                                 {% for date in dateRange %}
@@ -97,6 +102,10 @@
                                         <br><br><br>
                                         <span class="{% if not exchangeWaiting.data[date].average_waitingtime %}ausgegraut{% endif %}">
                                           {{ exchangeWaiting.data[date].average_waitingtime ? exchangeWaiting.data[date].average_waitingtime|number_format(2, ',', '.') : '-' }}
+                                        </span>
+                                        <br><br><br>
+                                        <span class="{% if not exchangeWaiting.data[date].average_waytime %}ausgegraut{% endif %}">
+                                          {{ exchangeWaiting.data[date].average_waytime ? exchangeWaiting.data[date].average_waytime|number_format(2, ',', '.') : '-' }}
                                         </span>
                                     </td>
                                 {% endfor %}
@@ -182,6 +191,8 @@
                                     <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesmaximum der<br>gemessenen Zeit in Min.:{% endtrans %}</p>
                                     <br>
                                     <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesdurchschnitt der<br>gemessenen Zeit in Min.:{% endtrans %}</p>
+                                    <br>
+                                    <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesdurchschnitt der<br>gemessenen Wegezeit in Min.:{% endtrans %}</p>
                                 </th>
                                 <td class="statistik" style="text-align: right;">
                                     <br>
@@ -191,6 +202,10 @@
                                     <br><br><br>
                                     <span class="{% if not exchangeWaiting.data.max.average_waitingtime_termin %}ausgegraut{% endif %}">
                                         {{ exchangeWaiting.data.max.average_waitingtime_termin ? exchangeWaiting.data.max.average_waitingtime_termin|number_format(2, ',', '.') : '-' }}
+                                    </span>
+                                    <br><br><br>
+                                    <span class="{% if not exchangeWaiting.data.max.average_waitingtime_termin %}ausgegraut{% endif %}">
+                                        {{ exchangeWaiting.data.max.average_waytime_termin ? exchangeWaiting.data.max.average_waytime_termin|number_format(2, ',', '.') : '-' }}
                                     </span>
                                 </td>
                                 {% for date in dateRange %}
@@ -207,6 +222,10 @@
                                         <br><br><br>
                                         <span class="{% if not exchangeWaiting.data[date].average_waitingtime_termin %}ausgegraut{% endif %}">
                                           {{ exchangeWaiting.data[date].average_waitingtime_termin ? exchangeWaiting.data[date].average_waitingtime_termin|number_format(2, ',', '.') : '-' }}
+                                        </span>
+                                        <br><br><br>
+                                        <span class="{% if not exchangeWaiting.data[date].average_waytime_termin %}ausgegraut{% endif %}">
+                                          {{ exchangeWaiting.data[date].average_waytime_termin ? exchangeWaiting.data[date].average_waytime_termin|number_format(2, ',', '.') : '-' }}
                                         </span>
                                     </td>
                                 {% endfor %}
