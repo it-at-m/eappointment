@@ -80,11 +80,21 @@ class Mail extends BaseController
             $this->log("Messages queue is not empty, processing...");
 
             if (count($this->messagesQueue) < 10) {
-                $this->log("Messages queue has less than 10 items, sending immediately...");
-                foreach ($this->messagesQueue as $message) {
-                    $mailId = $message['id'];
-                    $this->sendAndDeleteEmail($mailId);
+                $this->log("Messages queue has 10 or more items, processing in batches of 1...");
+                $batchSize = 1;
+                $batches = array_chunk($this->messagesQueue, $batchSize);
+                $this->log("Messages divided into " . count($batches) . " batches.");
+                $commands = [];
+
+                foreach ($batches as $index => $batch) {
+                    $mailIds = array_map(fn($item) => $item['id'], $batch);
+                    $encodedMailIds = implode(',', $mailIds);
+                    $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds);
+                    $this->log("Prepared command for batch #$index: $command");
+                    $commands[] = $command;
                 }
+
+                $this->executeCommandsSimultaneously($commands);
             } else if (count($this->messagesQueue) < 50) {
                 $this->log("Messages queue has 10 or more items, processing in batches of 5...");
                 $batchSize = 5;
