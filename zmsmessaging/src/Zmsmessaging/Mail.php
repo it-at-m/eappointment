@@ -83,7 +83,7 @@ class Mail extends MailProcessorBase
                 $this->log("Messages queue has less than 10 items, sending immediately...");
                 foreach ($this->messagesQueue as $message) {
                     $mailId = $message['id'];
-                    $this->sendAndDeleteEmail($mailId);
+                    //$this->sendAndDeleteEmail($mailId);
                 }
             } else if (count($this->messagesQueue) < 50) {
                 $this->log("Messages queue has 10 or more items, processing in batches of 5...");

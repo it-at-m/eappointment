@@ -17,6 +17,6 @@ if ($argc > 1) {
     $mailIds = explode(',', $argv[1]);
     $processor = new MailProcessor();
     foreach ($mailIds as $mailId) {
-        $processor->sendAndDeleteEmail($mailId);
+        //$processor->sendAndDeleteEmail($mailId);
     }
 }
