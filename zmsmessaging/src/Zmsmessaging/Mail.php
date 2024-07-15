@@ -1,7 +1,7 @@
 <?php
 namespace BO\Zmsmessaging;
 
-class Mail extends MailProcessorBase
+class Mail extends BaseController
 {
     protected $messagesQueue = null;
     private $processMailScript;
