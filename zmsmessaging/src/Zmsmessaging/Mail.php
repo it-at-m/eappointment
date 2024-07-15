@@ -83,10 +83,26 @@ class Mail extends MailProcessorBase
                 $this->log("Messages queue has less than 10 items, sending immediately...");
                 foreach ($this->messagesQueue as $message) {
                     $mailId = $message['id'];
-                    $this->sendAndDeleteEmail($mailId);
+                    //$this->sendAndDeleteEmail($mailId);
                 }
+            } else if (count($this->messagesQueue) < 50) {
+                $this->log("Messages queue has 10 or more items, processing in batches of 5...");
+                $batchSize = 5;
+                $batches = array_chunk($this->messagesQueue, $batchSize);
+                $this->log("Messages divided into " . count($batches) . " batches.");
+                $commands = [];
+
+                foreach ($batches as $index => $batch) {
+                    $mailIds = array_map(fn($item) => $item['id'], $batch);
+                    $encodedMailIds = implode(',', $mailIds);
+                    $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds);
+                    $this->log("Prepared command for batch #$index: $command");
+                    $commands[] = $command;
+                }
+
+                $this->executeCommandsSimultaneously($commands);
             } else {
-                $this->log("Messages queue has 10 or more items, processing in batches...");
+                $this->log("Messages queue has 50 or more items, processing in batches of 10...");
                 $batchSize = 10;
                 $batches = array_chunk($this->messagesQueue, $batchSize);
                 $this->log("Messages divided into " . count($batches) . " batches.");
