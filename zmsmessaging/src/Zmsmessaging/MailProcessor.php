@@ -30,6 +30,7 @@ if ($argc > 1) {
 
     $processor = new MailProcessor();
     foreach ($mailDataArray as $mailData) {
+        error_log($mailData);
         $processor->sendAndDeleteEmail($mailData['id'], $mailData);
     }
 }
