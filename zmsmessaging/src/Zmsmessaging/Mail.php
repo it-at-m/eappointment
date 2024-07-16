@@ -1,5 +1,12 @@
 <?php
+/**
+ *
+* @package Zmsmessaging
+*
+*/
 namespace BO\Zmsmessaging;
+
+use BO\Zmsmessaging\BaseController;
 
 class Mail extends BaseController
 {
