@@ -79,7 +79,7 @@ class Mail extends BaseController
         if ($this->messagesQueue && count($this->messagesQueue)) {
             $this->log("Messages queue is not empty, processing...");
 
-            if (count($this->messagesQueue) =< 10) {
+            if (count($this->messagesQueue) < 10) {
                 $this->log("Messages queue has 10 or more items, processing in batches of 1...");
                 $batchSize = count($this->messagesQueue);
                 $batches = array_chunk($this->messagesQueue, $batchSize);
