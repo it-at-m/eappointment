@@ -17,8 +17,6 @@ class MailProcessor extends BaseController
     {
         parent::__construct($verbose, $maxRunTime);
     }
-
-
 }
 
 if ($argc > 1) {

@@ -9,14 +9,14 @@ class Mail extends BaseController
     private $cpuLimit;
     private $ramLimit;
 
-    public function __construct($verbose = false, $maxRunTime = 50, $processMailScript = __DIR__ . '/process_mail.php')
+    public function __construct($verbose = false, $maxRunTime = 50, $processMailScript = __DIR__ . '/MailProcessor.php')
     {
         $this->startTime = microtime(true);
         parent::__construct($verbose, $maxRunTime);
         $this->processMailScript = $this->findProcessMailScript($processMailScript);
         $this->cpuLimit = $this->getCpuLimit();
         $this->ramLimit = $this->getMemoryLimit();
-        $this->log("process_mail.php path: " . $this->processMailScript);
+        $this->log("MailProcessor.php path: " . $this->processMailScript);
         $this->log("Read Mail QueueList start with limit " . \App::$mails_per_minute . " - " . \App::$now->format('c'));
         $queueList = \App::$http->readGetResult('/mails/', [
             'resolveReferences' => 2,
@@ -32,19 +32,19 @@ class Mail extends BaseController
 
     private function findProcessMailScript($path)
     {
-        $this->log("Searching for process_mail.php at $path");
+        $this->log("Searching for MailProcessor.php at $path");
         if (file_exists($path)) {
-            $this->log("process_mail.php found at $path");
+            $this->log("MailProcessor.php found at $path");
             return realpath($path);
         } else {
-            $this->log("process_mail.php not found at $path. Searching for file...");
-            $files = $this->searchFile(__DIR__, 'process_mail.php');
+            $this->log("MailProcessor.php not found at $path. Searching for file...");
+            $files = $this->searchFile(__DIR__, 'MailProcessor.php');
             if (!empty($files)) {
-                $this->log("process_mail.php found at " . $files[0]);
+                $this->log("MailProcessor.php found at " . $files[0]);
                 return realpath($files[0]);
             } else {
-                $this->log("process_mail.php could not be found.");
-                throw new \Exception("process_mail.php could not be found.");
+                $this->log("MailProcessor.php could not be found.");
+                throw new \Exception("MailProcessor.php could not be found.");
             }
         }
     }
