@@ -20,9 +20,16 @@ class MailProcessor extends BaseController
 }
 
 if ($argc > 1) {
-    $mailIds = explode(',', $argv[1]);
+    $mailDataJson = $argv[1];
+    $mailDataArray = json_decode($mailDataJson, true);
+
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        error_log("Error decoding JSON: " . json_last_error_msg());
+        exit(1);
+    }
+
     $processor = new MailProcessor();
-    foreach ($mailIds as $mailId) {
-        $processor->sendAndDeleteEmail($mailId);
+    foreach ($mailDataArray as $mailData) {
+        $processor->sendAndDeleteEmail($mailData['id'], $mailData);
     }
 }
