@@ -268,6 +268,7 @@ class BaseController
             //$this->log("API Response: " . print_r($response, true) . "\n\n");
             //echo "API Response: " . print_r($response, true) . "\n\n";
             error_log("\n\n*******************************\n\n");
+            error_log($endpoint);
             error_log($response);
             error_log("\n\n*******************************\n\n");
             return $response->getEntity();
