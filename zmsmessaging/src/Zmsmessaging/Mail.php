@@ -110,7 +110,7 @@ class Mail extends BaseController
                 $this->executeCommandsSimultaneously($commands);
             } else {
                 $this->log("Messages queue has 100 or more items, processing in batches of 10...");
-                $batchSize = 5;
+                $batchSize = 12;
                 $batches = array_chunk($this->messagesQueue, $batchSize);
                 $this->log("Messages divided into " . count($batches) . " batches.");
                 $commands = [];
