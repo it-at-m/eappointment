@@ -287,6 +287,8 @@ class BaseController
         // Check if mail data is already provided
         if ($mailData === null) {
             $mailData = $this->getMailById($itemId);
+        } else {
+            error_log($mailData);
         }
 
         if (empty($mailData)) {
