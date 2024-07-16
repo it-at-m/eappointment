@@ -90,6 +90,7 @@ class Mail extends BaseController
                 $this->log("Messages queue has less than or 10 items, sending immediately...");
                 foreach ($this->messagesQueue as $message) {
                     $mailId = $message['id'];
+                    error_log(json_encode($message));
                     $this->sendAndDeleteEmail($mailId);
                 }
             } else if (count($this->messagesQueue) <= 100) {
