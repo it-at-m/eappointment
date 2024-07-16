@@ -267,10 +267,10 @@ class BaseController
             $response = \App::$http->readGetResult($endpoint);
             //$this->log("API Response: " . print_r($response, true) . "\n\n");
             //echo "API Response: " . print_r($response, true) . "\n\n";
-            /*error_log("\n\n*******************************\n\n");
+            error_log("\n\n*******************************\n\n");
             error_log($endpoint);
             error_log($response);
-            error_log("\n\n*******************************\n\n");*/
+            error_log("\n\n*******************************\n\n");
             return $response->getEntity();
         } catch (\Exception $e) {
             $this->log("Error fetching mail data: " . $e->getMessage() . "\n\n");
@@ -279,7 +279,7 @@ class BaseController
         }
     }
 
-    public function sendAndDeleteEmail($itemId, $mailData = null)
+    public function sendAndDeleteEmail($itemId)
     {
         $this->log("Fetching mail data for ID: $itemId");
         echo "\nFetching mail data for ID: $itemId\n";
@@ -287,8 +287,6 @@ class BaseController
         // Check if mail data is already provided
         if ($mailData === null) {
             $mailData = $this->getMailById($itemId);
-        } else {
-            error_log($mailData);
         }
 
         if (empty($mailData)) {
