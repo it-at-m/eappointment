@@ -279,12 +279,15 @@ class BaseController
         }
     }
 
-    public function sendAndDeleteEmail($itemId)
+    public function sendAndDeleteEmail($itemId, $mailData = null)
     {
         $this->log("Fetching mail data for ID: $itemId");
         echo "\nFetching mail data for ID: $itemId\n";
 
-        $mailData = $this->getMailById($itemId);
+        // Check if mail data is already provided
+        if ($mailData === null) {
+            $mailData = $this->getMailById($itemId);
+        }
 
         if (empty($mailData)) {
             $this->log("No mail data for mail ID: $itemId\n\n");
