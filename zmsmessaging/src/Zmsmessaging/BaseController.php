@@ -284,10 +284,7 @@ class BaseController
         $this->log("Fetching mail data for ID: $itemId");
         echo "\nFetching mail data for ID: $itemId\n";
 
-        // Check if mail data is already provided
-        if ($mailData === null) {
-            $mailData = $this->getMailById($itemId);
-        }
+        $mailData = $this->getMailById($itemId);
 
         if (empty($mailData)) {
             $this->log("No mail data for mail ID: $itemId\n\n");
