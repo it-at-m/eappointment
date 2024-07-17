@@ -183,7 +183,16 @@
                     {% set accessDeniedTitle = "Dieser Nutzer ist der Behörde noch nicht zugeordnet" %}
                 {% endif %}
 
-                {{ custombutton({ "type":"delete" ,"class": "button button--destructive", "target": urlGet("departmentDelete", {"id": department.id}, {}), "label":"Löschen" }) }}
+                {{ custombutton({
+                    "type":"delete",
+                    "class": "button button--destructive confirm-before",
+                    "target": urlGet("departmentDelete", {"id": department.id}, {}),
+                    "label": "Löschen",
+                    "data": {
+                        "confirm-before-description": "Die Behörde wird gelöscht. Soll die Behörde wirklich gelöscht werden?",
+                        "confirm-before-yes-button": "Behörde löschen"
+                    }
+                }) }}
 
                 <a class="button button-default" href="{{ urlGet('useraccountByDepartment', {'id':department.id}, {}) }}">Nutzer</a>
                 {#{ inputsubmit({"type": "new", "name": "neuer_nutzer", "value": "Nutzer hinzufügen" }) }#}
@@ -195,7 +204,5 @@
             {{ formbutton({ "type":"save", "class": "button button--positive", "name": "save", "label":"Speichern", "value": "save" }) }}
         </div>
     </div>
-
-    
 
 </form>

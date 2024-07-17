@@ -914,7 +914,6 @@
                         ]
                     ) }}
                 </fieldset>
-
             </div>
         </fieldset>
 
@@ -922,7 +921,16 @@
 
             <div class="controls">
                 {% if action != "add" %}
-                    {{ custombutton({ "type":"delete", "class": "button button--destructive", "target": urlGet("scopeDelete", {"id": scope.id}, {}), "label":"Löschen" }) }}
+                    {{ custombutton({
+                        "type":"delete",
+                        "class": "button button--destructive confirm-before",
+                        "target": urlGet("scopeDelete", {"id": scope.id}, {}),
+                        "label": "Löschen",
+                        "data": {
+                            "confirm-before-description": "-Der Standort wird gelöscht. Soll der Standort wirklich gelöscht werden?",
+                            "confirm-before-yes-button": "Standort löschen"
+                        }
+                    }) }}
                 {% endif %}
                 {{ formbutton({ "type":"save", "class": "button button--positive", "name": "save", "label":"Speichern", "value": "save" }) }}
             </div>
