@@ -5,6 +5,7 @@ import TicketPrinterConfigView from './block/ticketprinter/config'
 import CallDisplayConfigView from './block/calldisplay/config'
 import SourceView from './page/sourceEdit'
 import ScopeView from './page/scopeEdit'
+import './block/confirm-popup.js'
 import bindReact from './lib/bindReact.js'
 
 bindReact('.availabilityDayRoot', AvailabilityDayPage)
