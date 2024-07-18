@@ -885,6 +885,18 @@
                         }]
                     ) }}
 
+					{{ formgroup(
+						{"label": "Information zu Terminbuchung im Bürgerfrontend:", "description": "Dieser Text erscheint im Bürgerfrontend."},
+						[{
+							"type":"textarea",
+							"parameter": {
+								"name": "preferences[appointment][infoForAppointment]",
+								"maxlength": 5000,
+								"value": scope.preferences.appointment.infoForAppointment|default(''),
+							}
+						}]
+					) }}
+
 					<fieldset>
 						<legend class="label">Bild für Aufrufanlage:</legend>
 						{{ formgroup(
