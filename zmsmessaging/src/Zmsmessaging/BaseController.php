@@ -271,7 +271,7 @@ class BaseController
         }
     }
 
-    public function sendAndDeleteEmail($itemId)
+    public function sendAndDeleteEmail($itemId, $action = false)
     {
         $this->log("Fetching mail data for ID: $itemId");
         echo "\nFetching mail data for ID: $itemId\n";
@@ -359,7 +359,7 @@ class BaseController
                     }
                 }
 
-                $result = $this->sendMailer($entity, $mailer, true);
+                $result = $this->sendMailer($entity, $mailer, $action);
 
                 if ($result instanceof PHPMailer) {
                     $result = array(
@@ -369,9 +369,11 @@ class BaseController
                         'attachments' => $result->getAttachments(),
                         'customHeaders' => $result->getCustomHeaders(),
                     );
-                    $this->deleteEntityFromQueue($entity);
-                    $this->log("Mail sent and deleted successfully for ID: $itemId" . "\n\n");
-                    echo "Mail sent and deleted successfully for ID: $itemId\n\n";
+                    if ($action) {
+                        $this->deleteEntityFromQueue($entity);
+                        $this->log("Mail sent and deleted successfully for ID: $itemId" . "\n\n");
+                        echo "Mail sent and deleted successfully for ID: $itemId\n\n";
+                    }
                 } else {
                     $result = array(
                         'errorInfo' => $result->ErrorInfo
