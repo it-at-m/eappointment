@@ -6,8 +6,6 @@
  */
 namespace BO\Zmsmessaging;
 
-use PHPMailer\PHPMailer\Exception as PHPMailerException;
-use PHPMailer\PHPMailer\PHPMailer;
 use \BO\Mellon\Validator;
 use \BO\Zmsentities\Mail;
 use \BO\Zmsentities\Mimepart;

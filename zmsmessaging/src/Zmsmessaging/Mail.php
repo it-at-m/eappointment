@@ -7,6 +7,8 @@
 namespace BO\Zmsmessaging;
 
 use BO\Zmsmessaging\BaseController;
+use PHPMailer\PHPMailer\Exception as PHPMailerException;
+use PHPMailer\PHPMailer\PHPMailer;
 
 class Mail extends BaseController
 {
