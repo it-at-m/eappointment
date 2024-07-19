@@ -299,11 +299,24 @@ class BaseController
 
             $htmlPart = '';
             $textPart = '';
-            foreach ($entity->multipart as $part) {
+            /*foreach ($entity->multipart as $part) {
                 if ($part['mime'] == 'text/html') {
                     $htmlPart = $part['content'];
                 } elseif ($part['mime'] == 'text/plain') {
                     $textPart = $part['content'];
+                }
+            }*/
+
+            foreach ($entity->multipart as $part) {
+                $mimepart = new Mimepart($part);
+                if ($mimepart->isText()) {
+                    $textPart = $mimepart->getContent();
+                }
+                if ($mimepart->isHtml()) {
+                    $htmlPart = $mimepart->getContent();
+                }
+                if ($mimepart->isIcs()) {
+                    $icsPart = $mimepart->getContent();
                 }
             }
 
