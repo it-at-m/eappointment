@@ -28,6 +28,11 @@ class SendMailTest extends Base
                     'function' => 'readDeleteResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
+                ],
+                [
+                    'function' => 'getMailById',
+                    'url' => '/mails/1234/',
+                    'response' => $this->readFixture("GET_mail.json")
                 ]
             ]
         );
@@ -83,6 +88,11 @@ class SendMailTest extends Base
                     'function' => 'readDeleteResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail_no_content.json")
+                ],
+                [
+                    'function' => 'getMailById',
+                    'url' => '/mails/1234/',
+                    'response' => $this->readFixture("GET_mail.json")
                 ],
                 [
                     'function' => 'readPostResult',
