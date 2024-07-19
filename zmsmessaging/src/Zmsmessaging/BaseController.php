@@ -275,31 +275,23 @@ class BaseController
     {
         $this->log("Fetching mail data for ID: $itemId");
         echo "\nFetching mail data for ID: $itemId\n";
-
+    
         $mailData = $this->getMailById($itemId);
-
+    
         if (empty($mailData)) {
             $this->log("No mail data for mail ID: $itemId\n\n");
             echo "No mail data for mail ID: $itemId\n\n";
             return;
         }
-
-        //$this->log("Mail data: " . print_r($mailData, true));
-        //echo "Mail data: " . print_r($mailData, true) . "\n\n";
-
+    
         if ($mailData) {
-            //$this->log("Mail data found for ID: $itemId\n\n");
-            //echo "Mail data found for ID: $itemId\n\n";
             $entity = new \BO\Zmsentities\Mail($mailData);
-
-            //$this->log("Build Mailer: testEntity() - " . \App::$now->format('c'));
-            //echo "Build Mailer: testEntity() - " . \App::$now->format('c') . "\n\n";
             $this->testEntity($entity);
             $encoding = 'base64';
-
+    
             $htmlPart = '';
             $textPart = '';
-
+    
             foreach ($entity->multipart as $part) {
                 $mimepart = new Mimepart($part);
                 if ($mimepart->isText()) {
@@ -312,10 +304,7 @@ class BaseController
                     $icsPart = $mimepart->getContent();
                 }
             }
-
-            //$this->log("Build Mailer: new PHPMailer() - " . \App::$now->format('c'));
-            //echo "Build Mailer: new PHPMailer() - " . \App::$now->format('c') . "\n\n";
-
+    
             try {
                 $mailer = new PHPMailer(true);
                 $mailer->CharSet = 'UTF-8';
@@ -327,13 +316,9 @@ class BaseController
                 $mailer->AltBody = (isset($textPart)) ? $textPart : '';
                 $mailer->Body = (isset($htmlPart)) ? $htmlPart : '';
                 $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
-                //$this->log("Build Mailer: addAddress() - " . \App::$now->format('c'));
-                //echo "Build Mailer: addAddress() - " . \App::$now->format('c') . "\n\n";
                 $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
-
+    
                 if (null !== $entity->getIcsPart()) {
-                    //$this->log("Build Mailer: AddStringAttachment() - " . \App::$now->format('c'));
-                    //echo "Build Mailer: AddStringAttachment() - " . \App::$now->format('c') . "\n\n";
                     $mailer->AddStringAttachment(
                         $icsPart,
                         "Termin.ics",
@@ -341,7 +326,7 @@ class BaseController
                         "text/calendar; charset=utf-8; method=REQUEST"
                     );
                 }
-
+    
                 if (\App::$smtp_enabled) {
                     $mailer->IsSMTP();
                     $mailer->SMTPAuth = \App::$smtp_auth_enabled;
@@ -358,9 +343,9 @@ class BaseController
                         ];
                     }
                 }
-
+    
                 $result = $this->sendMailer($entity, $mailer, $action);
-
+    
                 if ($result instanceof PHPMailer) {
                     $result = array(
                         'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
@@ -381,7 +366,7 @@ class BaseController
                     $this->log("Mail could not be sent. PHPMailer Error: {$result['errorInfo']}\n\n");
                     echo "Mail could not be sent. PHPMailer Error: {$result['errorInfo']}\n\n";
                 }
-
+    
             } catch (PHPMailerException $e) {
                 $this->log("Mail could not be sent. PHPMailer Error: {$e->getMessage()}\n\n");
                 echo "Mail could not be sent. PHPMailer Error: {$e->getMessage()}\n\n";
@@ -389,10 +374,10 @@ class BaseController
                 $this->log("Mail could not be sent. General Error: {$e->getMessage()}\n\n");
                 echo "Mail could not be sent. General Error: {$e->getMessage()}\n\n";
             }
-
+    
         } else {
             $this->log("Mail data not found for ID: $itemId\n\n");
             echo "Mail data not found for ID: $itemId\n\n";
         }
-    }
+    }    
 }

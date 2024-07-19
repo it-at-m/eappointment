@@ -19,10 +19,11 @@ class MailProcessor extends BaseController
     }
 }
 
-if ($argc > 1) {
+if ($argc > 2) {
     $mailIds = explode(',', $argv[1]);
+    $action = filter_var($argv[2], FILTER_VALIDATE_BOOLEAN);
     $processor = new MailProcessor();
     foreach ($mailIds as $mailId) {
-        $processor->sendAndDeleteEmail($mailId);
+        $processor->sendAndDeleteEmail($mailId, $action);
     }
 }

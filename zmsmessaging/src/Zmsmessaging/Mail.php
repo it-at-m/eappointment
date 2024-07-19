@@ -85,7 +85,7 @@ class Mail extends BaseController
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
             $this->log("Messages queue is not empty, processing...");
-
+    
             if (count($this->messagesQueue) <= 10) {
                 $this->log("Messages queue has less than or 10 items, sending immediately...");
                 foreach ($this->messagesQueue as $message) {
@@ -98,15 +98,15 @@ class Mail extends BaseController
                 $batches = array_chunk($this->messagesQueue, $batchSize);
                 $this->log("Messages divided into " . count($batches) . " batches.");
                 $commands = [];
-
+    
                 foreach ($batches as $index => $batch) {
                     $mailIds = array_map(fn($item) => $item['id'], $batch);
                     $encodedMailIds = implode(',', $mailIds);
-                    $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds);
+                    $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds) . " " . escapeshellarg($action);
                     $this->log("Prepared command for batch #$index: $command");
                     $commands[] = $command;
                 }
-
+    
                 $this->executeCommandsSimultaneously($commands);
             } else {
                 $this->log("Messages queue has 100 or more items, processing in batches of 10...");
@@ -114,15 +114,15 @@ class Mail extends BaseController
                 $batches = array_chunk($this->messagesQueue, $batchSize);
                 $this->log("Messages divided into " . count($batches) . " batches.");
                 $commands = [];
-
+    
                 foreach ($batches as $index => $batch) {
                     $mailIds = array_map(fn($item) => $item['id'], $batch);
                     $encodedMailIds = implode(',', $mailIds);
-                    $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds);
+                    $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds) . " " . escapeshellarg($action);
                     $this->log("Prepared command for batch #$index: $command");
                     $commands[] = $command;
                 }
-
+    
                 $this->executeCommandsSimultaneously($commands);
             }
         } else {
@@ -134,6 +134,7 @@ class Mail extends BaseController
         $this->log("Queue transmission initialization complete.");
         return $resultList;
     }
+    
 
     private function executeCommandsSimultaneously($commands)
     {
