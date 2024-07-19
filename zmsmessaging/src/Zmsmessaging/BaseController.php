@@ -260,13 +260,13 @@ class BaseController
     private function getMailById($itemId)
     {
         $endpoint = '/mails/' . $itemId . '/';
-        //$this->log("Fetching mail data from API endpoint: $endpoint\n\n");
-        //echo "Fetching mail data from API endpoint: $endpoint\n\n";
+        $this->log("Fetching mail data from API endpoint: $endpoint\n\n");
+        echo "Fetching mail data from API endpoint: $endpoint\n\n";
 
         try {
             $response = \App::$http->readGetResult($endpoint);
-            //$this->log("API Response: " . print_r($response, true) . "\n\n");
-            //echo "API Response: " . print_r($response, true) . "\n\n";
+            $this->log("API Response: " . print_r($response, true) . "\n\n");
+            echo "API Response: " . print_r($response, true) . "\n\n";
             return $response->getEntity();
         } catch (\Exception $e) {
             $this->log("Error fetching mail data: " . $e->getMessage() . "\n\n");
