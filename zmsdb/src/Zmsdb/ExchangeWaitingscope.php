@@ -49,12 +49,12 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
                         $hour,
                         $entry[sprintf('wartende_ab_%02s_spontan', $hour)],
                         $entry[sprintf('echte_zeit_ab_%02s_spontan', $hour)],
-                        $entry[sprintf('zeit_ab_%02s_spontan', $hour)],
                         $entry[sprintf('wegezeit_ab_%02s_spontan', $hour)],
+                        $entry[sprintf('zeit_ab_%02s_spontan', $hour)],
                         $entry[sprintf('wartende_ab_%02s_termin', $hour)],
                         $entry[sprintf('echte_zeit_ab_%02s_termin', $hour)],
-                        $entry[sprintf('zeit_ab_%02s_termin', $hour)],
                         $entry[sprintf('wegezeit_ab_%02s_termin', $hour)],
+                        $entry[sprintf('zeit_ab_%02s_termin', $hour)],
                     ]);
                 }
             }
