@@ -206,7 +206,9 @@ class Mail extends BaseController
         try {
 
             $mailer = $this->getValidMailer($entity);
-
+            if (! $mailer) {
+                throw new \Exception("No valid mailer");
+            }
             $result = $this->sendMailer($entity, $mailer, $action);
 
             if ($result instanceof PHPMailer) {
@@ -308,33 +310,33 @@ class Mail extends BaseController
         $messageId = $entity['id'];
         try {
             $mailer = $this->readMailer($entity);
-            // @codeCoverageIgnoreStart
+        // @codeCoverageIgnoreStart
         } catch (PHPMailerException $exception) {
-            $message = "Message #$messageId PHPMailer Failure: " . $exception->getMessage();
+            $message = "Message #$messageId PHPMailer Failure: ". $exception->getMessage();
             $code = $exception->getCode();
             \App::$log->warning($message, []);
         } catch (\Exception $exception) {
-            $message = "Message #$messageId Exception Failure: " . $exception->getMessage();
+            $message = "Message #$messageId Exception Failure: ". $exception->getMessage();
             $code = $exception->getCode();
             \App::$log->warning($message, []);
         }
         if ($message) {
             if (428 == $code || 422 == $code) {
-                $this->log("Build Mailer Failure " . $code . ": deleteEntityFromQueue() - " . \App::$now->format('c'));
+                $this->log("Build Mailer Failure ". $code .": deleteEntityFromQueue() - ". \App::$now->format('c'));
                 $this->deleteEntityFromQueue($entity);
             } else {
                 $this->log(
-                    "Build Mailer Failure " . $code . ": removeEntityOlderThanOneHour() - " . \App::$now->format('c')
+                    "Build Mailer Failure ". $code .": removeEntityOlderThanOneHour() - ". \App::$now->format('c')
                 );
                 $this->removeEntityOlderThanOneHour($entity);
             }
-
+           
             $log = new Mimepart(['mime' => 'text/plain']);
             $log->content = $message;
-            $this->log("Build Mailer Exception log message: " . $message);
-            $this->log("Build Mailer Exception log readPostResult start - " . \App::$now->format('c'));
-            \App::$http->readPostResult('/log/process/' . $entity->process['id'] . '/', $log, ['error' => 1]);
-            $this->log("Build Mailer Exception log readPostResult finished - " . \App::$now->format('c'));
+            $this->log("Build Mailer Exception log message: ". $message);
+            $this->log("Build Mailer Exception log readPostResult start - ". \App::$now->format('c'));
+            \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $log, ['error' => 1]);
+            $this->log("Build Mailer Exception log readPostResult finished - ". \App::$now->format('c'));
             return false;
         }
 
