@@ -309,6 +309,7 @@ class BaseController
 
             foreach ($entity->multipart as $part) {
                 $mimepart = new Mimepart($part);
+                error_log($mimepart );
                 if ($mimepart->isText()) {
                     $textPart = $mimepart->getContent();
                 }
