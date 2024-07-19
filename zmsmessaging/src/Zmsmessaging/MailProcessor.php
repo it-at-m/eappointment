@@ -11,7 +11,7 @@ use BO\Zmsmessaging\BaseController;
 require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../../bootstrap.php';
 
-class MailProcessor extends BaseController
+class MailProcessor extends Mail
 {
     public function __construct($verbose = false, $maxRunTime = 50)
     {
