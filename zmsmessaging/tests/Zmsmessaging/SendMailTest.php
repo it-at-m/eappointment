@@ -98,12 +98,16 @@ class SendMailTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/log/process/123456/',
-                    'response' => $this->readFixture("POST_log.json"),
-                    'parameters' => ['error' => 1]
+                    'parameters' => [
+                        new \BO\Zmsentities\Mimepart(['mime' => 'text/plain', 'content' => 'Example Mail']),
+                        ['error' => 1]
+                    ],
+                    'response' => $this->readFixture("POST_log.json")
                 ]
             ]
         );
         \App::$messaging = new \BO\Zmsmessaging\Mail();
-        \App::$messaging->initQueueTransmission();
+        \App::$messaging->initQueueTransmission(false);
     }
+    
 }
