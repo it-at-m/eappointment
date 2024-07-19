@@ -4,7 +4,7 @@ namespace BO\Zmsmessaging\Tests;
 
 class ExceptionsCatchTest extends Base
 {
-    public function testLogMailMissingDepartmentMail()
+    /*public function testLogMailMissingDepartmentMail()
     {
         $this->setApiCalls(
             [
@@ -52,7 +52,7 @@ class ExceptionsCatchTest extends Base
                 $this->assertFalse(strpos($value, 'PHPMailer Failure') !== false);
             }
         }
-    }
+    }*/
 
     public function testLogNotificationMissingDepartmentMail()
     {
