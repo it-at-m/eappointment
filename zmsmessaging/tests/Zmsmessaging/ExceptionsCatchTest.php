@@ -27,6 +27,11 @@ class ExceptionsCatchTest extends Base
                     'function' => 'readDeleteResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/mails/1234/',
+                    'response' => $this->readFixture("GET_mail.json")
                 ]
             ]
         );
@@ -109,6 +114,11 @@ class ExceptionsCatchTest extends Base
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
                 ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/mails/1234/',
+                    'response' => $this->readFixture("GET_mail.json")
+                ]
             ]
         );
 

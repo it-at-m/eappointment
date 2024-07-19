@@ -94,6 +94,11 @@ class SendMailTest extends Base
                     'url' => '/log/process/123456/',
                     'response' => $this->readFixture("POST_log.json"),
                     'parameters' => ['error' => 1]
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/mails/1234/',
+                    'response' => $this->readFixture("GET_mail.json")
                 ]
             ]
         );
