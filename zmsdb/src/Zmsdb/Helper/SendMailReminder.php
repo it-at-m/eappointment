@@ -121,7 +121,11 @@ class SendMailReminder
         if ($process->getFirstClient()->hasEmail() && $department->hasMail()) {
             $config = (new ConfigRepository)->readEntity();
             $collection = $this->getProcessListOverview($process, $config);
-            $entity = (new Mail)->toResolvedEntity($collection, $config, 'reminder');
+            
+            $entity = (new Mail())
+            ->setTemplateProvider(new \BO\Zmsdb\Helper\MailTemplateProvider($process))
+            ->toResolvedEntity($collection, $config, 'reminder');
+            
             $this->log(
                 "INFO: $processCount. Create mail with process ". $process->getId() .
                 " - ". $entity->subject ." for ". $process->getFirstAppointment()
