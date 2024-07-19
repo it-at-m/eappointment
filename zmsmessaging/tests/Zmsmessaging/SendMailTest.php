@@ -38,9 +38,8 @@ class SendMailTest extends Base
         );
 
         \App::$messaging = new \BO\Zmsmessaging\Mail();
-        $resultList = \App::$messaging->initQueueTransmission(false);
+        $resultList = \App::$messaging->initQueueTransmission();
         foreach ($resultList as $mail) {
-            \App::$messaging->sendAndDeleteEmail($mail['id'], $mockMailer->reveal());
             if (isset($mail['errorInfo'])) {
                 echo "ERROR OCCURED: ". $mail['errorInfo'] ."\n";
             } else {
@@ -98,16 +97,12 @@ class SendMailTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/log/process/123456/',
-                    'parameters' => [
-                        new \BO\Zmsentities\Mimepart(['mime' => 'text/plain', 'content' => 'Example Mail']),
-                        ['error' => 1]
-                    ],
-                    'response' => $this->readFixture("POST_log.json")
+                    'response' => $this->readFixture("POST_log.json"),
+                    'parameters' => ['error' => 1]
                 ]
             ]
         );
         \App::$messaging = new \BO\Zmsmessaging\Mail();
-        \App::$messaging->initQueueTransmission(false);
+        \App::$messaging->initQueueTransmission();
     }
-    
 }

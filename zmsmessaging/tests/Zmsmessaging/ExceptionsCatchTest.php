@@ -11,11 +11,8 @@ class ExceptionsCatchTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/log/process/123456/',
-                    'parameters' => [
-                        new \BO\Zmsentities\Mimepart(['mime' => 'text/plain', 'content' => 'Example Mail']),
-                        ['error' => 1]
-                    ],
-                    'response' => $this->readFixture("POST_log.json")
+                    'response' => $this->readFixture("POST_log.json"),
+                    'parameters' => ['error' => 1]
                 ],
                 [
                     'function' => 'readGetResult',
@@ -32,15 +29,15 @@ class ExceptionsCatchTest extends Base
                     'response' => $this->readFixture("GET_mail.json")
                 ],
                 [
-                    'function' => 'getMailById',
+                    'function' => 'readGetResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
                 ]
             ]
         );
-    
+
         \App::$messaging = new \BO\Zmsmessaging\Mail();
-        $resultList = \App::$messaging->initQueueTransmission(false);
+        $resultList = \App::$messaging->initQueueTransmission();
         $this->assertEquals(0, count($resultList));
         foreach (\BO\Zmsmessaging\BaseController::getLogList() as $key => $value) {
             if (strpos($value, 'PHPMailer Failure') !== false) {
@@ -56,7 +53,6 @@ class ExceptionsCatchTest extends Base
             }
         }
     }
-    
 
     public function testLogNotificationMissingDepartmentMail()
     {
@@ -101,11 +97,8 @@ class ExceptionsCatchTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/log/process/123456/',
-                    'parameters' => [
-                        new \BO\Zmsentities\Mimepart(['mime' => 'text/plain', 'content' => 'Example Mail']),
-                        ['error' => 1]
-                    ],
-                    'response' => $this->readFixture("POST_log.json")
+                    'response' => $this->readFixture("POST_log.json"),
+                    'parameters' => ['error' => 1]
                 ],
                 [
                     'function' => 'readGetResult',
@@ -117,21 +110,21 @@ class ExceptionsCatchTest extends Base
                     'response' => $this->readFixture("GET_mails_queue_old.json")
                 ],
                 [
-                    'function' => 'readDeleteResult',
+                    'function' => 'readGetResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
                 ],
                 [
-                    'function' => 'getMailById',
+                    'function' => 'readDeleteResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
                 ]
             ]
         );
-    
+
         \App::$messaging = new \BO\Zmsmessaging\Mail();
-        $resultList = \App::$messaging->initQueueTransmission(false);
-        $this->assertEquals(0, count($resultList));
+        $resultList = \App::$messaging->initQueueTransmission();
+        $this->assertTrue(0 == count($resultList));
         foreach (\BO\Zmsmessaging\BaseController::getLogList() as $key => $value) {
             if (strpos($value, 'Zmsmessaging Failure') !== false) {
                 $this->assertStringContainsString('Queue entry older than 1 hour has been removed', $value);
@@ -140,7 +133,6 @@ class ExceptionsCatchTest extends Base
             }
         }
     }
-    
 
     public function testLogNotificationOlderThanOneHour()
     {
