@@ -6,7 +6,7 @@ use \BO\Mellon\Validator;
 
 class SendMailTest extends Base
 {
-    /*public function testSendMailQueue()
+    public function testSendMailQueue()
     {
         $this->setApiCalls(
             [
@@ -28,8 +28,12 @@ class SendMailTest extends Base
                     'function' => 'readDeleteResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/mails/1234/',
+                    'response' => $this->readFixture("GET_mail.json")
                 ]
-                
             ]
         );
 
@@ -43,7 +47,7 @@ class SendMailTest extends Base
                 $this->assertStringContainsString('calendar', json_encode($mail['attachments'][0]));
             }
         }
-    }*/
+    }
 
     public function testSendMailQueueEmpty()
     {
@@ -67,7 +71,7 @@ class SendMailTest extends Base
         }
     }
 
-    /*public function testSendMailWithoutContent()
+    public function testSendMailWithoutContent()
     {
         $this->setApiCalls(
             [
@@ -86,11 +90,6 @@ class SendMailTest extends Base
                     'response' => $this->readFixture("GET_mail_no_content.json")
                 ],
                 [
-                    'function' => 'readGetResult',
-                    'url' => '/mails/1234/',
-                    'response' => $this->readFixture("GET_mail.json")
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/log/process/123456/',
                     'response' => $this->readFixture("POST_log.json"),
@@ -100,5 +99,5 @@ class SendMailTest extends Base
         );
         \App::$messaging = new \BO\Zmsmessaging\Mail();
         \App::$messaging->initQueueTransmission();
-    }*/
+    }
 }
