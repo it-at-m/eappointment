@@ -29,7 +29,7 @@ class ExceptionsCatchTest extends Base
                     'response' => $this->readFixture("GET_mail.json")
                 ],
                 [
-                    'function' => 'getMailById',
+                    'function' => 'readGetResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
                 ]
@@ -115,7 +115,7 @@ class ExceptionsCatchTest extends Base
                     'response' => $this->readFixture("GET_mail.json")
                 ],
                 [
-                    'function' => 'getMailById',
+                    'function' => 'readGetResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
                 ]

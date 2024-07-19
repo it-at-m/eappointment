@@ -30,7 +30,7 @@ class SendMailTest extends Base
                     'response' => $this->readFixture("GET_mail.json")
                 ],
                 [
-                    'function' => 'getMailById',
+                    'function' => 'readGetResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
                 ]
@@ -90,7 +90,7 @@ class SendMailTest extends Base
                     'response' => $this->readFixture("GET_mail_no_content.json")
                 ],
                 [
-                    'function' => 'getMailById',
+                    'function' => 'readGetResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
                 ],
