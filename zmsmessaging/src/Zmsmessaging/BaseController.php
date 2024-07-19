@@ -61,7 +61,9 @@ class BaseController
 
     protected function removeEntityOlderThanOneHour($entity)
     {
+        error_log("hey");
         if (3600 < \App::$now->getTimestamp() - $entity->createTimestamp) {
+            error_log("what");
             $this->log("Delete Entity: removeEntityOlderThanOneHour start - " . \App::$now->format('c'));
             $this->deleteEntityFromQueue($entity);
             $this->log("Delete Entity: removeEntityOlderThanOneHour finished - " . \App::$now->format('c'));
