@@ -40,6 +40,7 @@ class SendMailTest extends Base
         \App::$messaging = new \BO\Zmsmessaging\Mail();
         $resultList = \App::$messaging->initQueueTransmission();
         foreach ($resultList as $mail) {
+            \App::$messaging->sendAndDeleteEmail($mail['id'], $mockMailer->reveal());
             if (isset($mail['errorInfo'])) {
                 echo "ERROR OCCURED: ". $mail['errorInfo'] ."\n";
             } else {
