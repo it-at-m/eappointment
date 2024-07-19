@@ -122,6 +122,8 @@ class ExceptionsCatchTest extends Base
             ]
         );
 
+        error_log("test");
+
         \App::$messaging = new \BO\Zmsmessaging\Mail();
         $resultList = \App::$messaging->initQueueTransmission();
         $this->assertTrue(0 == count($resultList));
