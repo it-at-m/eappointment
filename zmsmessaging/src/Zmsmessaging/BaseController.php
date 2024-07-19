@@ -8,6 +8,7 @@ namespace BO\Zmsmessaging;
 
 use \BO\Mellon\Validator;
 use \BO\Zmsentities\Mail;
+use \BO\Zmsentities\Mimepart;
 
 class BaseController
 {
