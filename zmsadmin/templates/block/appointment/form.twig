@@ -20,9 +20,9 @@
     {% block board_body %}
         {% include "element/helper/messageHandler.twig" %}
 
-        {% set addRequestAuralMessage = "Die folgende Dientsleistung wurde zur Liste der ausgewählten Dienstleistungen hinzugefügt" %}
-        {% set cleanupRequestAuralMessage = "Die Auswahl der Dientsleistungen wurde zurückgesetzt" %}
-        {% set removeRequestAuralMessage = "Die folgende Dientsleistung ist nicht mehr ausgewählt" %}
+        {% set addRequestAuralMessage = "Die folgende Dienstleistung wurde zur Liste der ausgewählten Dienstleistungen hinzugefügt" %}
+        {% set cleanupRequestAuralMessage = "Die Auswahl der Dienstleistungen wurde zurückgesetzt" %}
+        {% set removeRequestAuralMessage = "Die folgende Dienstleistung ist nicht mehr ausgewählt" %}
         {% set chooseRequestFirst = "Wählen Sie bitte zuerst die Dienstleistungen und die Anzahl der Slots aus bevor Sie das Datum (Zugriffschlüssel m) und die Uhrzeit (Zugriffschlüssel z) auswählen." %}
 
         <form data-formData="{{ formData|json_encode }}" data-saved-process="{{ selectedProcess.id }}">
@@ -354,9 +354,9 @@
                                                     <li style="display: none;">
                                                         <div class="form-check" style="padding-left: unset">
                                                             <label>
-                                                                <input class="minus" type="button" value="-" />
+                                                                <input class="minus" type="button" value="-" aria-label="Anzahl der Dienstleistung verringern auf {{ option.data.count - 1 }}" />
                                                                 <span class="request-count">{{ option.data.count }}</span>
-                                                                <input class="plus" type="button" value="+" />
+                                                                <input class="plus" type="button" value="+" aria-label="Anzahl der Dienstleistung erhöhen auf {{ option.data.count + 1 }}" />
 
                                                                 <span class="hidden-inputs">
                                                                 {% for i in 1..option.data.count %}
