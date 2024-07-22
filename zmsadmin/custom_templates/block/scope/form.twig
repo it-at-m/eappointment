@@ -55,7 +55,7 @@
 						                <fieldset>
 						                    <div class="panel--heavy">
 						                        {{ inputfield({ "name": "id", "type":"hidden", "value":scope.id }) }}
-						
+
 						                        {% set sourceOptions = [{ "value": "0", "name": "bitte wählen Sie aus", "selected": 0 }]  %}
 						                        {% for source in sourceList %}
 						                            {% if source.source == scope.source %}
@@ -65,7 +65,7 @@
 						                            {% endif %}
 						                            {% set sourceOptions = sourceOptions|merge([{ "value": source.source, "name": source.label|default("- Keinen Namen angegeben -")|trans, "selected": selected }]) %}
 						                        {% endfor %}
-						
+
 						                        {{ formgroup(
 						                            {"label": "Quelle der Standortdaten:"},
 						                            [{
@@ -77,7 +77,7 @@
 						                                }
 						                            }]
 						                        ) }}
-						
+
 						                        {% set providerOptionsGroup = [{'name': "Nicht zugeordnet", 'options': [{ "value": "", "name": "bitte wählen Sie aus", "selected": 0}] }] %}
 						                        {% for type, optGroup in providerList %}
 						                            {% set providerOptions = [] %}
@@ -97,7 +97,7 @@
 						                            {% endif %}
 						                            {% set providerOptionsGroup = providerOptionsGroup|merge([{ 'name' : isAssigned , 'options' : providerOptions }]) %}
 						                        {% endfor %}
-						
+
 						                        {{ formgroup(
 						                            {"label": "Standortdaten:"},
 						                            [{
@@ -109,9 +109,9 @@
 						                                }
 						                            }]
 						                        ) }}
-						
+
 						                        {% set readOnly = 1 %}
-						
+
 						                        {{ formgroup(
 						                            {"label": "Name:"},
 						                            [{
@@ -124,9 +124,9 @@
 						                                }
 						                            }]
 						                        ) }}
-						
+
 						                        {{ inputfield({ "name": "provider[name]", "type":"hidden", "value":scope.provider.name }) }}
-						
+
 						                        {{ formgroup(
 						                            {"label": "Anschrift:"},
 						                            [{
