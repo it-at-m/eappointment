@@ -2,7 +2,7 @@
 
 {% from 'element/helper/form.twig' import formgroup %}
 
-<section class="block panel--heavy" style="margin-bottom:0px;">
+<section role="search" class="block panel--heavy" style="margin-bottom:0px;">
     {% if workstation.scope.id %}
         <h3 class="aural">Kundensuche</h3>
         <form method="GET" action="{{ urlGet('search', {}, {}) }}" class="form--base">
