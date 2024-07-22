@@ -50,12 +50,12 @@
 			</span>
 		{% endtrans %}
 		{% if clusterEnabled and cluster.scopes|length <= 1 %}
-			Standort - {{ scope.contact.name }}
+			Terminübersicht - Standort {{ scope.contact.name }}
 			{{ scope.shortName }}
 		{% elseif clusterEnabled %}
 			Cluster - {{cluster.name}}
 		{% elseif not clusterEnabled %}
-			Standort - {{ workstation.scope.contact.name }}
+			Terminübersicht - Standort {{ workstation.scope.contact.name }}
 			{{ workstation.scope.shortName }}
 		{% endif %}
 	{% endblock %}
