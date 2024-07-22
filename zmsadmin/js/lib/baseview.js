@@ -159,12 +159,12 @@ class BaseView extends ErrorHandler {
             callback: () => {
                 callback();
                 destroyLightbox();
-                returnTarget.focus();
+                returnTarget && returnTarget.focus();
             },
             abortCallback: () => {
                 (abortCallback) ? abortCallback() : () => { }
                 destroyLightbox();
-                returnTarget.focus();
+                returnTarget && returnTarget.focus();
             },
             parent: parent,
             returnTarget: returnTarget,

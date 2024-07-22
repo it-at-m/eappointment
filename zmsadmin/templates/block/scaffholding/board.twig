@@ -8,15 +8,16 @@
 
 <!-- start: board {{ class }} -->
 {% set blockTag = (block('board_title') is not empty)? 'section' : 'div' %}
+{% set blockTitleId = 'region-title-' ~ random(1, 100000) %}
 {% if ("exception" in class) %}
-    <{{ blockTag }} class="board {{ class }}" role="alert" data-exception-errorlist="{{ data|json_encode() }}">
+    <{{ blockTag }} role="region" aria-labelledby="{{ blockTitleId }}" class="board {{ class }}" role="alert" data-exception-errorlist="{{ data|json_encode() }}">
 {% else %}
-    <{{ blockTag }} tabindex="0" class="board {{ class }}" data-reload="{% if reload %}{{ reload }}{% endif %}" {% for key, value in data %}data-{{ key }}="{{ value }}"{% endfor %}>
+    <{{ blockTag }} role="region" aria-labelledby="{{ blockTitleId }}" tabindex="0" class="board {{ class }}" data-reload="{% if reload %}{{ reload }}{% endif %}" {% for key, value in data %}data-{{ key }}="{{ value }}"{% endfor %}>
 {% endif %}
 
     {% if block('board_title') is not empty %}
     <div class="header board__header">
-        <{{ headingWeight|default('h2') }} tabindex="0" class="{{ ("exception" in class)? 'message__heading' : 'board__heading' }}">
+        <{{ headingWeight|default('h2') }} id="{{ blockTitleId }}" tabindex="0" class="{{ ("exception" in class)? 'message__heading' : 'board__heading' }}">
             {% block board_title -%}{%- endblock %}
         </{{ headingWeight|default('h2') }}>
     </div>
