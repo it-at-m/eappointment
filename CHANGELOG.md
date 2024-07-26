@@ -1,3 +1,36 @@
+## Release Muc-12
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1150'>ZMS-1150</a>] -         Wert der &quot;Aktivierungsdauer&quot; für den Standort in Aktivierungsmail nicht korrekt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1957'>ZMS-1957</a>] -         Ausgabe im Screenreader stimmt nicht mit aktuellem Zustand der Checkbox überein (Datenschutz)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2198'>ZMS-2198</a>] -         Die Seitenregionen sind nicht aufeinander abgestimmt 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2363'>ZMS-2363</a>] -         E-Mails nach extern kommen sehr spät oder gar nicht an
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2596'>ZMS-2596</a>] -         Zurückbutton enthält ein Pfeil &quot;vorwärts&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2614'>ZMS-2614</a>] -         Terminlöschung Cluster
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2667'>ZMS-2667</a>] -         Passworthash vom Sachbearbeiter ist Sichtbar
+</li>
+</ul>
+                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1837'>ZMS-1837</a>] -         Löschen von Behörden und Standorte mit Bestätigung hinterlegen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2423'>ZMS-2423</a>] -         Erweiterung E-Mail-Standortadmin
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2532'>ZMS-2532</a>] -         Zusätzliche Layouts für Aufrufanlage
+</li>
+</ul>
+
+
 ## Release Muc-11
 
 <h2>        Aufgabe
