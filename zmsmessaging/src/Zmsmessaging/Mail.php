@@ -62,15 +62,20 @@ class Mail extends BaseController
                         $this->log("Messages divided into " . count($batches) . " batches.");
                         $commands = [];
                         foreach ($batches as $index => $batch) {
+                            $this->log("Type of \$batch before encoding: " . gettype($batch));
+
                             $jsonBatch = json_encode($batch);
+                            $this->log("Type of \$jsonBatch after json_encode: " . gettype($jsonBatch));
                             if (!is_string($jsonBatch)) {
                                 throw new \Exception("Expected json_encode to return a string");
                             }
+
                             $encodedBatch = base64_encode($jsonBatch);
+                            $this->log("Type of \$encodedBatch after base64_encode: " . gettype($encodedBatch));
                             if (!is_string($encodedBatch)) {
                                 throw new \Exception("Expected base64_encode to return a string");
                             }
-    
+
                             $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedBatch) . " " . escapeshellarg($action);
                             $this->log("Prepared command for batch #$index: $command");
                             $commands[] = $command;
