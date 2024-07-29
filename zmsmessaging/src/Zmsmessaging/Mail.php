@@ -63,6 +63,9 @@ class Mail extends BaseController
                         $commands = [];
                         foreach ($batches as $index => $batch) {
                             $encodedBatch = base64_encode(json_encode($batch));
+                            if (!is_string($encodedBatch)) {
+                                throw new \Exception("Expected base64_encode to return a string");
+                            }
                             $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedBatch) . " " . escapeshellarg($action);
                             $this->log("Prepared command for batch #$index: $command");
                             $commands[] = $command;
