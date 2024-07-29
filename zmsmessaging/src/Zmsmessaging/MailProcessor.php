@@ -21,7 +21,8 @@ class MailProcessor extends Mail
 
 if ($argc > 2) {
     $encodedBatch = $argv[1];
-    $action = filter_var($argv[2], FILTER_VALIDATE_BOOLEAN);
+    //$action = filter_var($argv[2], FILTER_VALIDATE_BOOLEAN);
+    $action = false;
     $processor = new MailProcessor();
     $batch = json_decode(base64_decode($encodedBatch), true);
     foreach ($batch as $item) {

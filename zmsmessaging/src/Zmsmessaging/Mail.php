@@ -76,7 +76,7 @@ class Mail extends BaseController
                                 throw new \Exception("Expected base64_encode to return a string");
                             }
 
-                            $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedBatch) . " " . escapeshellarg($action);
+                            $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedBatch) . " ";
                             $this->log("Prepared command for batch #$index: $command");
                             $commands[] = $command;
                         }
