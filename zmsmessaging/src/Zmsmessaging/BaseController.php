@@ -129,7 +129,7 @@ class BaseController
     {
         $this->log("Monitoring processes");
         $running = true;
-
+    
         while ($running) {
             $running = false;
             foreach ($processHandles as &$handle) {
@@ -139,18 +139,18 @@ class BaseController
                         $this->logResourceUsage();
                         $running = true;
                     } else {
-                        $this->log("Process finished with command: " . $status['command']);
+                        $this->log("Process finished for IDs: " . $handle['ids']);
                         proc_close($handle['process']);
                         $handle['process'] = null;
                     }
                 }
             }
-            usleep(50000000);
+            usleep(500000);
         }
         $this->log("All processes have finished");
         $this->logTotalExecutionTime();
     }
-
+    
     protected function logResourceUsage()
     {
         $cpuUsage = $this->getCpuUsage();

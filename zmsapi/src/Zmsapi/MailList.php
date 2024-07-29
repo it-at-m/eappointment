@@ -33,4 +33,5 @@ class MailList extends BaseController
         $response = Render::withJson($response, $message, 200);
         return $response;
     }
+    
 }

@@ -52,7 +52,6 @@ class Mail extends BaseController
                     if (count($this->messagesQueue) <= 10) {
                         $this->log("Messages queue has less than or 10 items, sending immediately...");
                         foreach ($this->messagesQueue as $message) {
-                            $mailId = $message['id'];
                             $this->sendQueueItem($action, $item);
                         }
                     } else {
@@ -62,25 +61,20 @@ class Mail extends BaseController
                         $this->log("Messages divided into " . count($batches) . " batches.");
                         $commands = [];
                         foreach ($batches as $index => $batch) {
-                            $this->log("Type of \$batch before encoding: " . gettype($batch));
-
-                            $jsonBatch = json_encode($batch);
-                            $this->log("Type of \$jsonBatch after json_encode: " . gettype($jsonBatch));
-                            if (!is_string($jsonBatch)) {
-                                throw new \Exception("Expected json_encode to return a string");
-                            }
-
-                            $encodedBatch = base64_encode($jsonBatch);
-                            $this->log("Type of \$encodedBatch after base64_encode: " . gettype($encodedBatch));
-                            if (!is_string($encodedBatch)) {
-                                throw new \Exception("Expected base64_encode to return a string");
-                            }
-
-                            $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedBatch) . " ";
-                            $this->log("Prepared command for batch #$index:");
-                            $commands[] = $command;
+                            $encodedBatch = base64_encode(json_encode($batch));
+                            $action = $action === false ? '' : (string) $action;
+    
+                            // Extract IDs for logging
+                            $ids = array_map(function($message) {
+                                return $message['id'];
+                            }, $batch);
+                            $idsStr = implode(', ', $ids);
+    
+                            $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedBatch) . " " . escapeshellarg($action);
+                            $this->log("Prepared command for batch #$index with IDs: $idsStr");
+                            $commandsWithIds[] = ['command' => $command, 'ids' => $idsStr];
                         }
-                        $this->executeCommandsSimultaneously($commands);
+                        $this->executeCommandsSimultaneously($commandsWithIds);
                     }
   
                 } catch (\Exception $exception) {
@@ -283,20 +277,22 @@ class Mail extends BaseController
         return $files;
     }
 
-    private function executeCommandsSimultaneously($commands)
+    private function executeCommandsSimultaneously($commandsWithIds)
     {
         $this->log("Executing commands simultaneously...");
         $processHandles = [];
-
-        foreach ($commands as $index => $command) {
-            $this->log("Starting process for batch #$index with command: $command");
-            $processHandles[] = $this->startProcess($command, $index);
+    
+        foreach ($commandsWithIds as $index => $commandWithIds) {
+            $command = $commandWithIds['command'];
+            $ids = $commandWithIds['ids'];
+            $this->log("Starting process for batch #$index with IDs: $ids");
+            $processHandles[] = $this->startProcess($command, $index, $ids);
         }
-
+    
         $this->monitorProcesses($processHandles);
     }
-
-    private function startProcess($command, $batchIndex)
+    
+    private function startProcess($command, $batchIndex, $ids)
     {
         $this->log("Starting process batch #$batchIndex with command: $command");
         $descriptorSpec = [
@@ -304,19 +300,20 @@ class Mail extends BaseController
             1 => ["pipe", "w"], // stdout
             2 => ["pipe", "w"]  // stderr
         ];
-
+    
         $process = proc_open($command, $descriptorSpec, $pipes);
         if (is_resource($process)) {
             $this->log("Process batch #$batchIndex started successfully");
             return [
                 'process' => $process,
-                'pipes' => $pipes
+                'pipes' => $pipes,
+                'ids' => $ids,  // Include IDs in the handle
             ];
         } else {
             $this->log("Failed to start process batch #$batchIndex: $command");
             return null;
         }
-    }
+    }      
 
     private function getMailById($itemId)
     {

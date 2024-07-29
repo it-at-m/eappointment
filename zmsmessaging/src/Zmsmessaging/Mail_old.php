@@ -106,7 +106,7 @@ class Mail extends BaseController
                     $mailIds = array_map(fn($item) => $item['id'], $batch);
                     $encodedMailIds = implode(',', $mailIds);
                     $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds) . " " . escapeshellarg($action);
-                    $this->log("Prepared command for batch #$index: $command");
+                    $this->log("Prepared command for batch #$index");
                     $commands[] = $command;
                 }
     
