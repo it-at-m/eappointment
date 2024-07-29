@@ -137,42 +137,44 @@ class Mail extends BaseController
         $this->log("Queue transmission initialization complete.");
         return $resultList;
     }
-    
 
-    private function executeCommandsSimultaneously($commands)
+    private function executeCommandsSimultaneously($commandsWithIds)
     {
         $this->log("Executing commands simultaneously...");
         $processHandles = [];
-
-        foreach ($commands as $index => $command) {
-            $this->log("Starting process for batch #$index with command: $command");
-            $processHandles[] = $this->startProcess($command, $index);
+    
+        foreach ($commandsWithIds as $index => $commandWithIds) {
+            $command = $commandWithIds['command'];
+            $ids = $commandWithIds['ids'];
+            $this->log("Starting process for batch #$index with IDs: $ids");
+            $processHandles[] = $this->startProcess($command, $index, $ids);
         }
-
+    
         $this->monitorProcesses($processHandles);
-    }
+    }    
 
-    private function startProcess($command, $batchIndex)
+    private function startProcess($command, $batchIndex, $ids)
     {
-        $this->log("Starting process batch #$batchIndex with command: $command");
+        $this->log("Starting process batch #$batchIndex with IDs: $ids");
         $descriptorSpec = [
             0 => ["pipe", "r"], // stdin
             1 => ["pipe", "w"], // stdout
             2 => ["pipe", "w"]  // stderr
         ];
-
+    
         $process = proc_open($command, $descriptorSpec, $pipes);
         if (is_resource($process)) {
-            $this->log("Process batch #$batchIndex started successfully");
+            $this->log("Process batch #$batchIndex started successfully for IDs: $ids");
             return [
                 'process' => $process,
-                'pipes' => $pipes
+                'pipes' => $pipes,
+                'ids' => $ids  // Include IDs in the handle
             ];
         } else {
-            $this->log("Failed to start process batch #$batchIndex: $command");
+            $this->log("Failed to start process batch #$batchIndex for IDs: $ids");
             return null;
         }
-    }
+    }    
 
     private function getMailById($itemId)
     {

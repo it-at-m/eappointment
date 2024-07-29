@@ -294,7 +294,7 @@ class Mail extends BaseController
     
     private function startProcess($command, $batchIndex, $ids)
     {
-        $this->log("Starting process batch #$batchIndex with command: $command");
+        $this->log("Starting process batch #$batchIndex with IDs: $ids");
         $descriptorSpec = [
             0 => ["pipe", "r"], // stdin
             1 => ["pipe", "w"], // stdout
@@ -303,17 +303,17 @@ class Mail extends BaseController
     
         $process = proc_open($command, $descriptorSpec, $pipes);
         if (is_resource($process)) {
-            $this->log("Process batch #$batchIndex started successfully");
+            $this->log("Process batch #$batchIndex started successfully for IDs: $ids");
             return [
                 'process' => $process,
                 'pipes' => $pipes,
-                'ids' => $ids,  // Include IDs in the handle
+                'ids' => $ids  // Include IDs in the handle
             ];
         } else {
-            $this->log("Failed to start process batch #$batchIndex: $command");
+            $this->log("Failed to start process batch #$batchIndex for IDs: $ids");
             return null;
         }
-    }      
+    }         
 
     private function getMailById($itemId)
     {
