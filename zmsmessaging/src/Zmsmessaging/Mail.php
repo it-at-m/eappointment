@@ -58,7 +58,7 @@ class Mail extends BaseController
                     } else {
                         $batchSize = (count($this->messagesQueue) <= 100) ? 5 : 12;
                         $this->log("Messages queue has more than 10 items, processing in batches of $batchSize...");
-                        $batches = array_chunk($this->messagesQueue->toArray(), $batchSize);
+                        $batches = array_chunk(iterator_to_array($this->messagesQueue), $batchSize);
                         $this->log("Messages divided into " . count($batches) . " batches.");
                         $commands = [];
                         foreach ($batches as $index => $batch) {
