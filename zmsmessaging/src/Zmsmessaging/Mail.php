@@ -77,7 +77,7 @@ class Mail extends BaseController
                             }
 
                             $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedBatch) . " ";
-                            $this->log("Prepared command for batch #$index: $command");
+                            $this->log("Prepared command for batch #$index:");
                             $commands[] = $command;
                         }
                         $this->executeCommandsSimultaneously($commands);
