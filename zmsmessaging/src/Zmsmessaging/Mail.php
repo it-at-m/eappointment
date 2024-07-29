@@ -285,7 +285,6 @@ class Mail extends BaseController
         foreach ($commandsWithIds as $index => $commandWithIds) {
             $command = $commandWithIds['command'];
             $ids = $commandWithIds['ids'];
-            $this->log("Starting process for batch #$index with IDs: $ids");
             $processHandles[] = $this->startProcess($command, $index, $ids);
         }
     
@@ -294,7 +293,7 @@ class Mail extends BaseController
     
     private function startProcess($command, $batchIndex, $ids)
     {
-        $this->log("Starting process batch #$batchIndex with IDs: $ids");
+        //$this->log("Starting process batch #$batchIndex with IDs: $ids");
         $descriptorSpec = [
             0 => ["pipe", "r"], // stdin
             1 => ["pipe", "w"], // stdout
