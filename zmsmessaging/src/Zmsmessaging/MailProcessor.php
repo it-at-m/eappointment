@@ -20,10 +20,12 @@ class MailProcessor extends Mail
 }
 
 if ($argc > 2) {
-    $mailIds = explode(',', $argv[1]);
+    $encodedBatch = $argv[1];
     $action = filter_var($argv[2], FILTER_VALIDATE_BOOLEAN);
     $processor = new MailProcessor();
-    foreach ($mailIds as $mailId) {
-        $processor->sendQueueItemMultiProcessing($mailId, $action);
+    $batch = json_decode(base64_decode($encodedBatch), true);
+    foreach ($batch as $item) {
+        $processor->sendQueueItem($action, $item);
     }
 }
+

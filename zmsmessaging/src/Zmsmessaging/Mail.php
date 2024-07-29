@@ -22,7 +22,7 @@ class Mail extends BaseController
     {
         parent::__construct($verbose, $maxRunTime);
         $this->processMailScript = $this->findProcessMailScript($processMailScript);
-        $this->cpuLimit = $this->getCpuLimit();
+        //$this->cpuLimit = $this->getCpuLimit();
         $this->ramLimit = $this->getMemoryLimit();
         $this->log("MailProcessor.php path: " . $this->processMailScript);
         $this->log("Read Mail QueueList start with limit ". \App::$mails_per_minute ." - ". \App::$now->format('c'));
@@ -55,37 +55,18 @@ class Mail extends BaseController
                             $mailId = $message['id'];
                             $this->sendQueueItem($action, $item);
                         }
-                    } else if (count($this->messagesQueue) <= 100) {
-                        $this->log("Messages queue has more than 10 items, processing in batches of 5...");
-                        $batchSize = 5;
-                        $batches = array_chunk($this->messagesQueue, $batchSize);
-                        $this->log("Messages divided into " . count($batches) . " batches.");
-                        $commands = [];
-            
-                        foreach ($batches as $index => $batch) {
-                            $mailIds = array_map(fn($item) => $item['id'], $batch);
-                            $encodedMailIds = implode(',', $mailIds);
-                            $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds) . " " . escapeshellarg($action);
-                            $this->log("Prepared command for batch #$index: $command");
-                            $commands[] = $command;
-                        }
-            
-                        $this->executeCommandsSimultaneously($commands);
                     } else {
-                        $this->log("Messages queue has 100 or more items, processing in batches of 10...");
-                        $batchSize = 12;
+                        $batchSize = (count($this->messagesQueue) <= 100) ? 5 : 12;
+                        $this->log("Messages queue has more than 10 items, processing in batches of $batchSize...");
                         $batches = array_chunk($this->messagesQueue, $batchSize);
                         $this->log("Messages divided into " . count($batches) . " batches.");
                         $commands = [];
-            
                         foreach ($batches as $index => $batch) {
-                            $mailIds = array_map(fn($item) => $item['id'], $batch);
-                            $encodedMailIds = implode(',', $mailIds);
-                            $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedMailIds) . " " . escapeshellarg($action);
+                            $encodedBatch = base64_encode(json_encode($batch));
+                            $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedBatch) . " " . escapeshellarg($action);
                             $this->log("Prepared command for batch #$index: $command");
                             $commands[] = $command;
                         }
-            
                         $this->executeCommandsSimultaneously($commands);
                     }
   
@@ -335,59 +316,6 @@ class Mail extends BaseController
             $this->log("Error fetching mail data: " . $e->getMessage() . "\n\n");
             echo "Error fetching mail data: " . $e->getMessage() . "\n\n";
             return null;
-        }
-    }
-
-    public function sendQueueItemMultiProcessing($itemId, $action = false)
-    {
-        $this->log("Fetching mail data for ID: $itemId");
-        echo "\nFetching mail data for ID: $itemId\n";
-
-        $item = $this->getMailById($itemId);
-
-        if (empty($item)) {
-            $this->log("No mail data for mail ID: $itemId\n\n");
-            echo "No mail data for mail ID: $itemId\n\n";
-            return;
-        }
-
-        $entity = new \BO\Zmsentities\Mail($item);
-
-        try {
-
-            $mailer = $this->getValidMailer($entity);
-            if (! $mailer) {
-                throw new \Exception("No valid mailer");
-            }
-            $result = $this->sendMailer($entity, $mailer, $action);
-
-            if ($result instanceof PHPMailer) {
-                $result = array(
-                    'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
-                    'recipients' => $result->getAllRecipientAddresses(),
-                    'mime' => $result->getMailMIME(),
-                    'attachments' => $result->getAttachments(),
-                    'customHeaders' => $result->getCustomHeaders(),
-                );
-                if ($action) {
-                    $this->deleteEntityFromQueue($entity);
-                    $this->log("Mail sent and deleted successfully for ID: $itemId" . "\n\n");
-                    echo "Mail sent and deleted successfully for ID: $itemId\n\n";
-                }
-            } else {
-                $result = array(
-                    'errorInfo' => $result->ErrorInfo,
-                );
-                $this->log("Mail could not be sent. PHPMailer Error: {$result['errorInfo']}\n\n");
-                echo "Mail could not be sent. PHPMailer Error: {$result['errorInfo']}\n\n";
-            }
-
-        } catch (PHPMailerException $e) {
-            $this->log("Mail could not be sent. PHPMailer Error: {$e->getMessage()}\n\n");
-            echo "Mail could not be sent. PHPMailer Error: {$e->getMessage()}\n\n";
-        } catch (Exception $e) {
-            $this->log("Mail could not be sent. General Error: {$e->getMessage()}\n\n");
-            echo "Mail could not be sent. General Error: {$e->getMessage()}\n\n";
         }
     }
 
