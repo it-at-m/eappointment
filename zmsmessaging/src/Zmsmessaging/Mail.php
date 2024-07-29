@@ -42,52 +42,40 @@ class Mail extends BaseController
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
-            foreach ($this->messagesQueue as $item) {
-                if ($this->maxRunTime < $this->getSpendTime()) {
-                    $this->log("Max Runtime exceeded - ". \App::$now->format('c'));
-                    break;
-                }
-                try {
-
-                    if (count($this->messagesQueue) <= 10) {
-                        $this->log("Messages queue has less than or 10 items, sending immediately...");
-                        foreach ($this->messagesQueue as $message) {
-                            $this->sendQueueItem($action, $item);
-                        }
-                    } else {
-                        $batchSize = (count($this->messagesQueue) <= 100) ? 5 : 12;
-                        $this->log("Messages queue has more than 10 items, processing in batches of $batchSize...");
-                        $batches = array_chunk(iterator_to_array($this->messagesQueue), $batchSize);
-                        $this->log("Messages divided into " . count($batches) . " batches.");
-                        $commands = [];
-                        foreach ($batches as $index => $batch) {
-                            $encodedBatch = base64_encode(json_encode($batch));
-                            $action = $action === false ? '' : (string) $action;
-    
-                            // Extract IDs for logging
-                            $ids = array_map(function($message) {
-                                return $message['id'];
-                            }, $batch);
-                            $idsStr = implode(', ', $ids);
-    
-                            $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedBatch) . " " . escapeshellarg($action);
-                            //$this->log("Prepared command for batch #$index with IDs: $idsStr");
-                            $commandsWithIds[] = ['command' => $command, 'ids' => $idsStr];
-                        }
-                        $this->executeCommandsSimultaneously($commandsWithIds);
+            if (count($this->messagesQueue) <= 10) {
+                $this->log("Messages queue has less than or 10 items, sending immediately...");
+                foreach ($this->messagesQueue as $item) {
+                    if ($this->maxRunTime < $this->getSpendTime()) {
+                        $this->log("Max Runtime exceeded - ". \App::$now->format('c'));
+                        break;
                     }
-  
-                } catch (\Exception $exception) {
-                    $log = new Mimepart(['mime' => 'text/plain']);
-                    $log->content = $exception->getMessage();
-                    if (isset($item['process']) && isset($item['process']['id'])) {
-                        $this->log("Init Queue Exception message: ". $log->content .' - '. \App::$now->format('c'));
-                        $this->log("Init Queue Exception log readPostResult start - ". \App::$now->format('c'));
-                        \App::$http->readPostResult('/log/process/'. $item['process']['id'] .'/', $log, ['error' => 1]);
-                        $this->log("Init Queue Exception log readPostResult finished - ". \App::$now->format('c'));
+                    try {
+                        $this->sendQueueItem($action, $item);
+                    } catch (\Exception $exception) {
+                        $this->handleException($exception, $item);
                     }
-                    //\App::$log->error($log->content);
                 }
+            } else {
+                $batchSize = (count($this->messagesQueue) <= 100) ? 5 : 12;
+                $this->log("Messages queue has more than 10 items, processing in batches of $batchSize...");
+                $batches = array_chunk(iterator_to_array($this->messagesQueue), $batchSize);
+                $this->log("Messages divided into " . count($batches) . " batches.");
+                $commandsWithIds = [];
+                foreach ($batches as $index => $batch) {
+                    $encodedBatch = base64_encode(json_encode($batch));
+                    $actionStr = $action === false ? 'false' : (string) $action;
+    
+                    // Extract IDs for logging
+                    $ids = array_map(function($message) {
+                        return $message['id'];
+                    }, $batch);
+                    $idsStr = implode(', ', $ids);
+    
+                    $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedBatch) . " " . escapeshellarg($actionStr);
+                    $this->log("Prepared command for batch #$index with IDs: $idsStr");
+                    $commandsWithIds[] = ['command' => $command, 'ids' => $idsStr];
+                }
+                $this->executeCommandsSimultaneously($commandsWithIds);
             }
         } else {
             $resultList[] = array(
