@@ -71,7 +71,7 @@ class Mail extends BaseController
                             $idsStr = implode(', ', $ids);
     
                             $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedBatch) . " " . escapeshellarg($action);
-                            $this->log("Prepared command for batch #$index with IDs: $idsStr");
+                            //$this->log("Prepared command for batch #$index with IDs: $idsStr");
                             $commandsWithIds[] = ['command' => $command, 'ids' => $idsStr];
                         }
                         $this->executeCommandsSimultaneously($commandsWithIds);
