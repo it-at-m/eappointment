@@ -71,7 +71,7 @@ class Mail extends BaseController
                 $commandsWithIds = [];
                 foreach ($batches as $index => $batch) {
                     $encodedBatch = base64_encode(json_encode($batch));
-                    $actionStr = $action === false ? 'false' : (string) $action;
+                    $actionStr = $action === false ? 'false' : ($action === true ? 'true' : (string) $action);
     
                     $ids = array_map(function($message) {
                         return $message['id'];
