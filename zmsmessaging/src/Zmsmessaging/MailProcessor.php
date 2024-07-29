@@ -22,7 +22,12 @@ class MailProcessor extends Mail
 if ($argc > 2) {
     $encodedBatch = $argv[1];
     $action = $argv[2];
-    $action = $action === 'false' ? false : ($action === 'true' ? true : $action);
+    $decodedAction = json_decode($action, true);
+    if (json_last_error() === JSON_ERROR_NONE) {
+        $action = $decodedAction;
+    } else {
+        $action = $action === 'false' ? false : ($action === 'true' ? true : $action);
+    }
     $processor = new MailProcessor();
     $batch = json_decode(base64_decode($encodedBatch), true);
     foreach ($batch as $item) {
