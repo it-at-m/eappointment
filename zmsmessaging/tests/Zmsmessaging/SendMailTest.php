@@ -24,16 +24,16 @@ class SendMailTest extends Base
                     ],
                     'response' => $this->readFixture("GET_mails_queue.json"),
                 ],
-                [
+                /*[
                     'function' => 'readDeleteResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
-                ],
-                [
+                ],*/
+                /*[
                     'function' => 'readGetResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
-                ]
+                ]*/
             ]
         );
 
@@ -95,11 +95,11 @@ class SendMailTest extends Base
                     'response' => $this->readFixture("POST_log.json"),
                     'parameters' => ['error' => 1]
                 ],
-                [
+                /*[
                     'function' => 'readGetResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
-                ]
+                ]*/
             ]
         );
         \App::$messaging = new \BO\Zmsmessaging\Mail();

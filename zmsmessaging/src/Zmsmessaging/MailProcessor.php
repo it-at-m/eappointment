@@ -24,6 +24,6 @@ if ($argc > 2) {
     $action = filter_var($argv[2], FILTER_VALIDATE_BOOLEAN);
     $processor = new MailProcessor();
     foreach ($mailIds as $mailId) {
-        $processor->sendAndDeleteEmail($mailId, $action);
+        $processor->sendQueueItemMultiProcessing($mailId, $action);
     }
 }
