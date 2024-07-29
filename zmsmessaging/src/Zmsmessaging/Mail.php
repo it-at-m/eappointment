@@ -97,31 +97,40 @@ class Mail extends BaseController
         $result = [];
         $entity = new \BO\Zmsentities\Mail($item);
         $mailer = $this->getValidMailer($entity);
-        if (! $mailer) {
+        if (!$mailer) {
             throw new \Exception("No valid mailer");
         }
-        $result = $this->sendMailer($entity, $mailer, $action);
-        if ($result instanceof PHPMailer) {
-            $result = array(
-                'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
-                'recipients' => $result->getAllRecipientAddresses(),
-                'mime' => $result->getMailMIME(),
-                'attachments' => $result->getAttachments(),
-                'customHeaders' => $result->getCustomHeaders(),
-            );
-            if ($action) {
-                $this->deleteEntityFromQueue($entity);
+    
+        try {
+            $result = $this->sendMailer($entity, $mailer, $action);
+            if ($result instanceof PHPMailer) {
+                $result = array(
+                    'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
+                    'recipients' => $result->getAllRecipientAddresses(),
+                    'mime' => $result->getMailMIME(),
+                    'attachments' => $result->getAttachments(),
+                    'customHeaders' => $result->getCustomHeaders(),
+                );
+                $this->log("Mail sent successfully with ID: " . $result['id']);
+                if ($action) {
+                    $this->deleteEntityFromQueue($entity);
+                    $this->log("Mail deleted from queue with ID: " . $result['id']);
+                }
+            } else {
+                $result = array(
+                    'errorInfo' => $result->ErrorInfo
+                );
+                $this->log("Mail send failed with error: " . $result['errorInfo']);
             }
-        } else {
-            // @codeCoverageIgnoreStart
+        } catch (\Exception $e) {
+            $this->log("Exception while sending mail: " . $e->getMessage());
             $result = array(
-                'errorInfo' => $result->ErrorInfo
+                'errorInfo' => $e->getMessage()
             );
-            // @codeCoverageIgnoreEnd
         }
         return $result;
     }
-
+    
     protected function getValidMailer(\BO\Zmsentities\Mail $entity)
     {
         $message = '';
