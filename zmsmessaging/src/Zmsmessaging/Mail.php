@@ -68,21 +68,20 @@ class Mail extends BaseController
                 $this->log("Messages queue " . count($this->messagesQueue) . " items has more than 10 items, processing in batches of $batchSize...");
                 $batches = array_chunk(iterator_to_array($this->messagesQueue), $batchSize);
                 $this->log("Messages divided into " . count($batches) . " batches.");
-                $commandsWithIds = [];
+                $processHandles = [];
                 foreach ($batches as $index => $batch) {
                     $encodedBatch = base64_encode(json_encode($batch));
-                    $actionStr = is_array($action) ? json_encode($action) : ($action === false ? 'false' : ($action === true ? 'true' : (string) $action));
+                    $actionStr = is_array($action) ? json_encode($action) : ($action === false ? 'false' : ($action === true ? 'true' : (string)$action));
     
-                    $ids = array_map(function($message) {
+                    $ids = array_map(function ($message) {
                         return $message['id'];
                     }, $batch);
                     $idsStr = implode(', ', $ids);
     
                     $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedBatch) . " " . escapeshellarg($actionStr);
-                    //$this->log("Prepared command for batch #$index with IDs: $idsStr");
-                    $commandsWithIds[] = ['command' => $command, 'ids' => $idsStr];
-                    $this->startProcess($command, $index, $idsStr);
+                    $processHandles[] = $this->startProcess($command, $index, $idsStr);
                 }
+                $this->monitorProcesses($processHandles);
             }
         } else {
             $resultList[] = array(
