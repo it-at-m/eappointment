@@ -21,6 +21,11 @@ class DeleteFromQueueTest extends Base
                 'url' => '/mails/1234/',
                 'response' => $this->readFixture("GET_mail.json"),
             ],
+            [
+                'function' => 'readPostResult',
+                'url' => '/log/process/123456/',
+                'response' => null,
+            ],
         ];
     }
 

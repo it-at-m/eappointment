@@ -18,21 +18,41 @@ class Mail extends BaseController
     private $cpuLimit;
     private $ramLimit;
 
-    public function __construct($verbose = false, $maxRunTime = 50, $processMailScript = __DIR__ . '/MailProcessor.php')
+    protected $maxRunTime;
+    protected $maxLoops;
+
+    public function __construct($verbose = false, $maxRunTime = 50, $maxLoops = 6, $processMailScript = __DIR__ . '/MailProcessor.php')
     {
         parent::__construct($verbose, $maxRunTime);
         $this->processMailScript = $this->findProcessMailScript($processMailScript);
-        //$this->cpuLimit = $this->getCpuLimit();
         $this->ramLimit = $this->getMemoryLimit();
+        $this->maxRunTime = $maxRunTime;
+        $this->maxLoops = $maxLoops;
+
         $this->log("MailProcessor.php path: " . $this->processMailScript);
+        
+        // Loop until maxRunTime or maxLoops is reached
+        $loops = 0;
+        while ($this->getSpendTime() < $this->maxRunTime && $loops < $this->maxLoops) {
+            $this->processMailQueue();
+            $loops++;
+        }
+        
+        $this->log("Max Run Time of $maxRunTime seconds or $maxLoops loops reached - ". \App::$now->format('c'));
+    }
+
+    private function processMailQueue()
+    {
         $this->log("Read Mail QueueList start with limit ". \App::$mails_per_minute ." - ". \App::$now->format('c'));
         $queueList = \App::$http->readGetResult('/mails/', [
             'resolveReferences' => 2,
             'limit' => \App::$mails_per_minute
         ])->getCollection();
+
         if (null !== $queueList) {
             $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
             $this->log("QueueList sorted by createTimestamp - ". \App::$now->format('c'));
+            $this->initQueueTransmission();
         } else {
             $this->log("QueueList is null - " . \App::$now->format('c'));
         }
