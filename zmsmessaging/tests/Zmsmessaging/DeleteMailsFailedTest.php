@@ -14,7 +14,7 @@ class DeleteMailsFailedTest extends Base
                 'url' => '/mails/',
                 'parameters' => [
                     'resolveReferences' => 2,
-                    'limit' => 300
+                    'limit' => 200
                 ],
                 'response' => $this->readFixture("GET_mails_queue.json"),
             ],
