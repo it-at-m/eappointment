@@ -24,7 +24,7 @@ class Mail extends BaseController
         $this->processMailScript = $this->findProcessMailScript($processMailScript);
         //$this->cpuLimit = $this->getCpuLimit();
         $this->ramLimit = $this->getMemoryLimit();
-        $this->log("MailProcessor.php path: " . $this->processMailScript);
+        //$this->log("MailProcessor.php path: " . $this->processMailScript);
         $this->log("Read Mail QueueList start with limit ". \App::$mails_per_minute ." - ". \App::$now->format('c'));
         $queueList = \App::$http->readGetResult('/mails/', [
             'resolveReferences' => 2,
@@ -65,7 +65,7 @@ class Mail extends BaseController
                 }
             } else {
                 $batchSize = min(count($this->messagesQueue), max(1, ceil(count($this->messagesQueue) / 12)));
-                $this->log("Messages queue has more than 10 items, processing in batches of $batchSize...");
+                $this->log("Messages queue" . count($this->messagesQueue) . " has more than 10 items, processing in batches of $batchSize...");
                 $batches = array_chunk(iterator_to_array($this->messagesQueue), $batchSize);
                 $this->log("Messages divided into " . count($batches) . " batches.");
                 $commandsWithIds = [];
@@ -241,9 +241,9 @@ class Mail extends BaseController
 
     private function findProcessMailScript($path)
     {
-        $this->log("Searching for MailProcessor.php at $path");
+        //$this->log("Searching for MailProcessor.php at $path");
         if (file_exists($path)) {
-            $this->log("MailProcessor.php found at $path");
+            //$this->log("MailProcessor.php found at $path");
             return realpath($path);
         } else {
             $this->log("MailProcessor.php not found at $path. Searching for file...");
@@ -283,7 +283,7 @@ class Mail extends BaseController
 
     private function executeCommandsSimultaneously($commandsWithIds)
     {
-        $this->log("Executing commands simultaneously...");
+        //$this->log("Executing commands simultaneously...");
         $processHandles = [];
     
         foreach ($commandsWithIds as $index => $commandWithIds) {
@@ -306,7 +306,7 @@ class Mail extends BaseController
     
         $process = proc_open($command, $descriptorSpec, $pipes);
         if (is_resource($process)) {
-            $this->log("Process batch #$batchIndex started successfully for IDs: $ids");
+            //$this->log("Process batch #$batchIndex started successfully for IDs: $ids");
             return [
                 'process' => $process,
                 'pipes' => $pipes,
