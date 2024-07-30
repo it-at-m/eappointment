@@ -18,7 +18,7 @@ class Mail extends BaseController
     private $cpuLimit;
     private $ramLimit;
 
-    public function __construct($verbose = false, $maxRunTime = 50, $processMailScript = __DIR__ . '/MailProcessor.php')
+    public function __construct($verbose = false, $maxRunTime = 100, $processMailScript = __DIR__ . '/MailProcessor.php')
     {
         parent::__construct($verbose, $maxRunTime);
         $this->processMailScript = $this->findProcessMailScript($processMailScript);
@@ -42,7 +42,7 @@ class Mail extends BaseController
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
-            if (count($this->messagesQueue) <= 10) {
+            if (count($this->messagesQueue) <= 20) {
                 $this->log("Messages queue has less than or 10 items, sending immediately...");
                 foreach ($this->messagesQueue as $item) {
                     if ($this->maxRunTime < $this->getSpendTime()) {

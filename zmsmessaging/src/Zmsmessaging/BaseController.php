@@ -16,9 +16,9 @@ class BaseController
     protected static $logList = [];
     protected $workstation = null;
     protected $startTime;
-    protected $maxRunTime = 50;
+    protected $maxRunTime = 100;
 
-    public function __construct($verbose = false, $maxRunTime = 50)
+    public function __construct($verbose = false, $maxRunTime = 100)
     {
         $this->verbose = $verbose;
         $this->startTime = microtime(true);
