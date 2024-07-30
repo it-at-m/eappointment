@@ -65,7 +65,7 @@ class Mail extends BaseController
                 }
             } else {
                 $batchSize = min(count($this->messagesQueue), max(1, ceil(count($this->messagesQueue) / 12)));
-                $this->log("Messages queue" . count($this->messagesQueue) . " has more than 10 items, processing in batches of $batchSize...");
+                $this->log("Messages queue " . count($this->messagesQueue) . " items has more than 10 items, processing in batches of $batchSize...");
                 $batches = array_chunk(iterator_to_array($this->messagesQueue), $batchSize);
                 $this->log("Messages divided into " . count($batches) . " batches.");
                 $commandsWithIds = [];
@@ -81,8 +81,8 @@ class Mail extends BaseController
                     $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedBatch) . " " . escapeshellarg($actionStr);
                     //$this->log("Prepared command for batch #$index with IDs: $idsStr");
                     $commandsWithIds[] = ['command' => $command, 'ids' => $idsStr];
+                    $this->startProcess($command, $index, $idsStr);
                 }
-                $this->executeCommandsSimultaneously($commandsWithIds);
             }
         } else {
             $resultList[] = array(
