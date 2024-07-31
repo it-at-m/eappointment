@@ -425,10 +425,31 @@ class View extends BaseView {
     onPrintProcessMail(event) {
         stopEvent(event);
         this.selectedProcess = $(event.currentTarget).data('id');
-        $(event.currentTarget).closest('.message').fadeOut().remove();
-        window.open(`${this.includeUrl}/process/queue/?print=1&printType=mail&selectedprocess=${this.selectedProcess}`)
-        this.selectedProcess = null;
-        this.loadAppointmentForm();
+    
+        // URL for mail_confirmation.twig
+        const url = `${this.includeUrl}/process/queue/?print=1&printType=mail&selectedprocess=${this.selectedProcess}`;
+        
+        // Ajax request to get content from mail_confirmation.twig
+        $.ajax({
+            url: url,
+            success(data) {
+                // Creating new window
+                const printWindow = window.open('', '', 'height=800,width=1000');
+                printWindow.document.write(data);
+                printWindow.document.write(`
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            window.close();
+                        }
+                    <\/script>`
+                );
+                printWindow.document.close();
+            },
+            error() {
+                alert('Der Inhalt konnte nicht geladen werden.');
+            }
+        });
     }
 
     onSendCustomMail($container, event) {
