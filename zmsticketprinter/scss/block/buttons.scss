@@ -34,6 +34,7 @@ div.warteschlangebutton_gross a.eintragen {
     display:block;
     text-align:center;
     padding: 0px 35px;
+    user-select: none;
 }
 
 div.variablerwarteschlangebutton {
@@ -57,6 +58,7 @@ div.variablerwarteschlangebutton a.eintragen {
     padding-right: 10px;
     width: 455px;
     display:block;
+    user-select: none;	
 }
 
 div.variablerwarteschlangebutton a.eintragen,
@@ -67,12 +69,14 @@ div.warteschlangebutton_gross a.eintragen {
     padding:0px;
     margin:0px;
     text-decoration:none;
+    user-select: none;
 }
 
 div.variablerwarteschlangebutton button.disabled {
 	color:#fff;
 	background: url(img/multibutton_disabled.png) 0 24px no-repeat;
     background-size: cover;
+	user-select: none;
 }
 
 button.buttonTelefonnummernachtragen
@@ -89,6 +93,7 @@ button.buttonTelefonnummernachtragen
     top: 665px;
     padding: 38px 121px;
     position:absolute;
+	user-select: none;
 }
 
 a.button {
@@ -97,6 +102,7 @@ a.button {
     vertical-align: middle;
     line-height: auto;
     text-decoration:none;
+	user-select: none;
 }
 
 a.button.ja_nein, .ja_nein {
@@ -108,6 +114,7 @@ a.button.ja_nein, .ja_nein {
     font-weight: bold;
     height: 141px;
     width: 314px;
+	user-select: none;
 }
 
 .smsbuttons
@@ -117,6 +124,7 @@ a.button.ja_nein, .ja_nein {
     top:545px;
     width:700px;
     display:table;
+	user-select: none;
 }
 .smsbuttons .nachtrag
 {
@@ -130,16 +138,19 @@ a.button.ja_nein, .ja_nein {
     margin: 0px 0 0 0px;
     padding:0;
     width: 439px;
+	user-select: none;
 }
 
 .smsbuttons .nachtrag.active
 {
     background: url(img/handynummer_uebermitteln_a.png) 5px 10px no-repeat;
+	user-select: none;
 }
 
 .smsbuttons .nachtrag.disabled
 {
     background: url(img/handynummer_uebermitteln_i.png) 5px 10px no-repeat;
+	user-select: none;
 }
 
 .smsbuttons .abbrechen
@@ -153,6 +164,7 @@ a.button.ja_nein, .ja_nein {
     height: 80px;
     width: 210px;
     line-height: 80px;
+	user-select: none;
 }
 
 #message .back
@@ -166,14 +178,17 @@ a.button.ja_nein, .ja_nein {
     height: 80px;
     width: 210px;
     line-height: 80px;
+	user-select: none;
 }
 
 .smsbuttons .abbrechen.active
 {
     background: url(img/abbrechen_a.png) 5px 10px no-repeat;
+	user-select: none;
 }
 .smsbuttons .hilfe
 {
 	margin-top: 20px;
     font-size: 20px;
+	user-select: none;
 }
