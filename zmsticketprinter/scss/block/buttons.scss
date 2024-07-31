@@ -3,6 +3,7 @@ div.wartebuttonbereich_einzeilig {
     top: 295px;
     width: 875px;
     left: 160px;
+    user-select: none;
 }
 
 div.wartebuttonbereich_zweizeilig
@@ -11,6 +12,7 @@ div.wartebuttonbereich_zweizeilig
 	top:180px;
 	width:1005px;
 	left:35px;
+    user-select: none;
 }
 
 div.wartebuttonbereich_zweizeilig_tief {
@@ -18,6 +20,7 @@ div.wartebuttonbereich_zweizeilig_tief {
     top: 295px;
     width: 875px;
     left: 95px;
+    user-select: none;
 }
 
 div.warteschlangebutton_gross button.eintragen,
@@ -40,6 +43,7 @@ div.warteschlangebutton_gross a.eintragen {
 div.variablerwarteschlangebutton {
     float: left;
     margin-right: 25px;
+    user-select: none;
 }
 
 div.variablerwarteschlangebutton button.eintragen,
