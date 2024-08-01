@@ -90,8 +90,8 @@ class Calendar
         \BO\Zmsentities\Workstation $workstation
     ) {
         $showAllInCluster = $cluster && 1 == $workstation->queue['clusterEnabled'];
-        $scope = new Scope($workstation->getScope());
         $scopeList = $workstation->getScopeList($cluster);
+        $scope = $scopeList->getFirst();
 
         $dayList = new \BO\Zmsentities\Collection\DayList();
 
