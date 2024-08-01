@@ -40,17 +40,7 @@ class CalendarWeekTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-01/',
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-02/',
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-03/',
+                    'url' => '/scope/141/process/2016-04-01/?showWeek=1',
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
             ]
