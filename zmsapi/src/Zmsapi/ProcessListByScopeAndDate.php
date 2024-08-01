@@ -24,8 +24,21 @@ class ProcessListByScopeAndDate extends BaseController
     ) {
         (new Helper\User($request))->checkRights('basic');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $showWeek = Validator::param('showWeek')->isNumber()->setDefault(0)->getValue();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
         $dateTime = $dateTime->modify(\App::$now->format('H:i'));
+        $dates = [$dateTime];
+
+        if ($showWeek) {
+            $dates = [];
+            $startDate = clone $dateTime->modify('Monday this week');
+            $endDate = clone $dateTime->modify('Sunday this week');
+
+            while ($startDate <= $endDate) {
+                $dates[] = $startDate;
+                $startDate = $startDate->modify('+1 day');
+            }
+        }
 
         $query = new Query();
         $scope = $query->readWithWorkstationCount($args['id'], \App::$now, 0);
@@ -39,7 +52,7 @@ class ProcessListByScopeAndDate extends BaseController
         );
 
         $archivedProcesses =
-            (new ProcessStatusArchived())->readListByScopeAndDate($scope->getId(), $dateTime);
+            (new ProcessStatusArchived())->readListByScopesAndDates([$scope->getId()], $dates);
 
         $message = Response\Message::create($request);
         $message->data = $queueList->toProcessList()->withResolveLevel($resolveReferences);
