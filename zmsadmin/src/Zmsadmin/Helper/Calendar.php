@@ -100,6 +100,7 @@ class Calendar
                 ->readGetResult('/cluster/'. $cluster->id .'/process/'. $this->dateTime->format('Y-m-d') .'/?showWeek=1')
                 ->getCollection();
         } else {
+            var_dump('/scope/'. $scope->id .'/process/'. $this->dateTime->format('Y-m-d') .'/?showWeek=1');
             $bookedProcessList = \App::$http
                 ->readGetResult('/scope/'. $scope->id .'/process/'. $this->dateTime->format('Y-m-d') .'/?showWeek=1')
                 ->getCollection();
