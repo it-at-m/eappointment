@@ -50,7 +50,7 @@ class Mail extends BaseController
                         break;
                     }
                     try {
-                        $this->sendQueueItem($action, $item);
+                        $this->sendQueueItem($action, $item['id']);
                     } catch (\Exception $exception) {
                         $log = new Mimepart(['mime' => 'text/plain']);
                         $log->content = $exception->getMessage();
@@ -70,15 +70,14 @@ class Mail extends BaseController
                 $this->log("Messages divided into " . count($batches) . " batches.");
                 $processHandles = [];
                 foreach ($batches as $index => $batch) {
-                    $encodedBatch = base64_encode(json_encode($batch));
-                    $actionStr = is_array($action) ? json_encode($action) : ($action === false ? 'false' : ($action === true ? 'true' : (string)$action));
-    
                     $ids = array_map(function ($message) {
                         return $message['id'];
                     }, $batch);
+                    $encodedIds = base64_encode(json_encode($ids));
+                    $actionStr = is_array($action) ? json_encode($action) : ($action === false ? 'false' : ($action === true ? 'true' : (string)$action));
+
                     $idsStr = implode(', ', $ids);
-    
-                    $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedBatch) . " " . escapeshellarg($actionStr);
+                    $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedIds) . " " . escapeshellarg($actionStr);
                     $processHandles[] = $this->startProcess($command, $index, $idsStr);
                 }
                 $this->monitorProcesses($processHandles);
@@ -91,12 +90,18 @@ class Mail extends BaseController
         return $resultList;
     }
 
-    public function sendQueueItem($action, $item)
+    public function sendQueueItem($action, $itemId)
     {
+        $item = $this->getMailById($itemId);
+        if (!$item) {
+            $this->log("Failed to fetch mail data for ID: $itemId");
+            return ['errorInfo' => 'Failed to fetch mail data'];
+        }
+
         $result = [];
         $entity = new \BO\Zmsentities\Mail($item);
         $mailer = $this->getValidMailer($entity);
-        if (!$mailer) {
+        if (! $mailer) {
             throw new \Exception("No valid mailer");
         }
     
@@ -315,7 +320,7 @@ class Mail extends BaseController
             $this->log("Failed to start process batch #$batchIndex for IDs: $ids");
             return null;
         }
-    }         
+    }
 
     private function getMailById($itemId)
     {
@@ -330,5 +335,4 @@ class Mail extends BaseController
             return null;
         }
     }
-
 }

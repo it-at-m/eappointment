@@ -61,9 +61,7 @@ class BaseController
 
     protected function removeEntityOlderThanOneHour($entity)
     {
-        error_log("hey");
         if (3600 < \App::$now->getTimestamp() - $entity->createTimestamp) {
-            error_log("what");
             $this->log("Delete Entity: removeEntityOlderThanOneHour start - " . \App::$now->format('c'));
             $this->deleteEntityFromQueue($entity);
             $this->log("Delete Entity: removeEntityOlderThanOneHour finished - " . \App::$now->format('c'));
@@ -110,7 +108,7 @@ class BaseController
         if (!$entity->hasContent()) {
             throw new \BO\Zmsmessaging\Exception\MailWithoutContent();
         }
-
+        
         if ($entity instanceof Mail) {
             $isMail = Validator::value($entity->getRecipient())->isMail()->getValue();
             if (!$isMail) {

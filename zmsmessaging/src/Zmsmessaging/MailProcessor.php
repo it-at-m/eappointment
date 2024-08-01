@@ -20,7 +20,7 @@ class MailProcessor extends Mail
 }
 
 if ($argc > 2) {
-    $encodedBatch = $argv[1];
+    $encodedIds = $argv[1];
     $action = $argv[2];
     $decodedAction = json_decode($action, true);
     if (json_last_error() === JSON_ERROR_NONE) {
@@ -29,21 +29,20 @@ if ($argc > 2) {
         $action = $action === 'false' ? false : ($action === 'true' ? true : $action);
     }
     $processor = new MailProcessor();
-    $batch = json_decode(base64_decode($encodedBatch), true);
-    foreach ($batch as $item) {
+    $ids = json_decode(base64_decode($encodedIds), true);
+    foreach ($ids as $id) {
         try {
-            $processor->sendQueueItem($action, $item);
+            $processor->sendQueueItem($action, $id);
         } catch (\Exception $exception) {
             $log = new Mimepart(['mime' => 'text/plain']);
             $log->content = $exception->getMessage();
-            if (isset($item['process']) && isset($item['process']['id'])) {
+            if (isset($id['process']) && isset($id['process']['id'])) {
                 $processor->log("Init Queue Exception message: ". $log->content .' - '. \App::$now->format('c'));
                 $processor->log("Init Queue Exception log readPostResult start - ". \App::$now->format('c'));
-                \App::$http->readPostResult('/log/process/'. $item['process']['id'] .'/', $log, ['error' => 1]);
+                \App::$http->readPostResult('/log/process/'. $id['process']['id'] .'/', $log, ['error' => 1]);
                 $processor->log("Init Queue Exception log readPostResult finished - ". \App::$now->format('c'));
             }
             //\App::$log->error($log->content);
         }
     }
 }
-

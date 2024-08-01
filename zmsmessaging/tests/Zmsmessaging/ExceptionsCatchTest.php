@@ -24,13 +24,17 @@ class ExceptionsCatchTest extends Base
                     'response' => $this->readFixture("GET_mails_queue_no_department.json"),
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/mails/1234/',
+                    'response' => $this->readFixture("GET_mails_queue_no_department.json")
+                ],
+                /*[
                     'function' => 'readDeleteResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
-                ]
+                ]*/
             ]
         );
-
         \App::$messaging = new \BO\Zmsmessaging\Mail();
         $resultList = \App::$messaging->initQueueTransmission();
         $this->assertEquals(0, count($resultList));
@@ -90,6 +94,11 @@ class ExceptionsCatchTest extends Base
         $this->setApiCalls(
             [
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/mails/1234/',
+                    'response' => $this->readFixture("GET_mails_queue_old.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/log/process/123456/',
                     'response' => $this->readFixture("POST_log.json"),
@@ -108,7 +117,7 @@ class ExceptionsCatchTest extends Base
                     'function' => 'readDeleteResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
-                ],
+                ]
             ]
         );
 
