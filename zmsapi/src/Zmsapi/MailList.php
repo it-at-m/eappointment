@@ -24,7 +24,13 @@ class MailList extends BaseController
         (new Helper\User($request))->checkRights('superuser');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $limit = Validator::param('limit')->isNumber()->setDefault(300)->getValue();
-        $mailList = (new Query())->readList($resolveReferences, $limit);
+        $onlyIds = Validator::param('onlyIds')->isBoolean()->setDefault(false)->getValue();
+        
+        if ($onlyIds) {
+            $mailList = (new Query())->readIdsList($resolveReferences, $limit);
+        } else {
+            $mailList = (new Query())->readList($resolveReferences, $limit);
+        }
 
         $message = Response\Message::create($request);
         $message->data = $mailList;
@@ -33,5 +39,4 @@ class MailList extends BaseController
         $response = Render::withJson($response, $message, 200);
         return $response;
     }
-    
 }
