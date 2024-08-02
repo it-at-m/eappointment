@@ -11,6 +11,7 @@ use \BO\Mellon\Validator;
 use \BO\Zmsdb\Cluster as Query;
 use \BO\Zmsdb\ProcessStatusArchived;
 use \BO\Zmsentities\Collection\ProcessList as ProcessListCollection;
+use BO\Zmsentities\Collection\QueueList;
 
 class ProcessListByClusterAndDate extends BaseController
 {
@@ -46,7 +47,23 @@ class ProcessListByClusterAndDate extends BaseController
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
-        $queueList = $query->readQueueList($cluster->id, $dateTime, $resolveReferences ? $resolveReferences + 1 : 1);
+
+        $queueList = new QueueList();
+        foreach ($dates as $date) {
+            $dateQueueList = $query->readQueueList(
+                $cluster->id,
+                $date,
+                $resolveReferences ? $resolveReferences + 1 : 1
+            );
+
+            if (! $dateQueueList) {
+                continue;
+            }
+
+            /** @var QueueList $dateQueueList */
+            $queueList->addList($dateQueueList);
+        }
+
         $allArchivedProcesses = new ProcessListCollection();
         $scopeIds = $cluster->scopes->getIds();
 

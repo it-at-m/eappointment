@@ -10,6 +10,7 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Scope as Query;
 use \BO\Zmsdb\ProcessStatusArchived;
+use BO\Zmsentities\Collection\QueueList;
 
 class ProcessListByScopeAndDate extends BaseController
 {
@@ -47,11 +48,15 @@ class ProcessListByScopeAndDate extends BaseController
         if (! $scope || ! $scope->getId()) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        $queueList = $query->readQueueListWithWaitingTime(
-            $scope,
-            $dateTime,
-            $resolveReferences? $resolveReferences + 1 : 1 // resolveReferences is for process, for queue we have to +1
-        );
+
+        $queueList = new QueueList();
+        foreach ($dates as $date) {
+            $queueList->addList($query->readQueueListWithWaitingTime(
+                $scope,
+                $date,
+                $resolveReferences? $resolveReferences + 1 : 1 // resolveReferences is for process, for queue we have to +1
+            ));
+        }
 
         $archivedProcesses =
             (new ProcessStatusArchived())->readListByScopesAndDates([$scope->getId()], $dates);
