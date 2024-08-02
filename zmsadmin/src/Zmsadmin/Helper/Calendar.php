@@ -147,7 +147,7 @@ class Calendar
     public function toProcessListByHour(ProcessList $processList)
     {
         $list = array();
-        $oldList = clone $processList;
+        $oldList = $processList;
         $oldList->sortByArrivalTime();
         foreach ($oldList as $process) {
             if (in_array($process->status, [ 'confirmed', 'free'])) {
@@ -159,15 +159,13 @@ class Calendar
                 if (!isset($list[$hour][intval($appointment['date'])])) {
                     $list[$hour][intval($appointment['date'])] = new ProcessList();
                 }
-                $list[$hour][intval($appointment['date'])]->addEntity(clone $process);
+                $list[$hour][intval($appointment['date'])]->addEntity($process);
 
                 unset($process);
                 ksort($list[$hour]);
             }
         }
         ksort($list);
-
-        unset($processList);
         return $list;
     }
 
