@@ -8,6 +8,7 @@
   },
   "data":[
      {
+        "$schema": "https://schema.berlin.de/queuemanagement/mail.json",
         "id":"1234",
         "createTimestamp":"1459504500"
      }
