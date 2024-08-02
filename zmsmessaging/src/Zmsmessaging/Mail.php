@@ -22,21 +22,37 @@ class Mail extends BaseController
     {
         parent::__construct($verbose, $maxRunTime);
         $this->processMailScript = $this->findProcessMailScript($processMailScript);
-        //$this->cpuLimit = $this->getCpuLimit();
         $this->ramLimit = $this->getMemoryLimit();
-        //$this->log("MailProcessor.php path: " . $this->processMailScript);
-        $this->log("Read Mail QueueList start with limit ". \App::$mails_per_minute ." - ". \App::$now->format('c'));
-        $queueList = \App::$http->readGetResult('/mails/', [
-            'resolveReferences' => 2,
-            'limit' => \App::$mails_per_minute
-        ])->getCollection();
-        if (null !== $queueList) {
-            $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
-            $this->log("QueueList sorted by createTimestamp - ". \App::$now->format('c'));
-        } else {
-            $this->log("QueueList is null - " . \App::$now->format('c'));
+        $this->log("Read Mail QueueList start with limit " . \App::$mails_per_minute . " - " . \App::$now->format('c'));
+    
+        try {
+            $response = \App::$http->readGetResult('/mails/', [
+                'resolveReferences' => 2,
+                'limit' => \App::$mails_per_minute,
+                'onlyIds' => true // Fetch only IDs and timestamps
+            ]);
+    
+            if ($response && $response->getData()) {
+                $this->log("Successfully fetched mail queue list.");
+                $queueList = $response->getData();
+                if (!empty($queueList)) {
+                    usort($queueList, function($a, $b) {
+                        return $a['createTimestamp'] <=> $b['createTimestamp'];
+                    });
+                    $this->messagesQueue = $queueList;
+                    $this->log("QueueList sorted by createTimestamp - " . \App::$now->format('c'));
+                } else {
+                    $this->log("QueueList is empty - " . \App::$now->format('c'));
+                }
+            } else {
+                $this->log("Failed to fetch mail queue list - response is null or data is missing - " . \App::$now->format('c'));
+            }
+        } catch (\Exception $e) {
+            $this->log("Exception while fetching mail queue list: " . $e->getMessage() . " - " . \App::$now->format('c'));
         }
     }
+    
+    
 
     public function initQueueTransmission($action = false)
     {

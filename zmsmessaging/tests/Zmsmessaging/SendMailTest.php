@@ -19,8 +19,7 @@ class SendMailTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/mails/',
                     'parameters' => [
-                        'resolveReferences' => 2,
-                        'limit' => 200
+                        "resolveReferences" => 2, "limit" => 200, "onlyIds" => true
                     ],
                     'response' => $this->readFixture("GET_mails_queue.json"),
                 ],
@@ -52,10 +51,9 @@ class SendMailTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/mails/',
                     'parameters' => [
-                        'resolveReferences' => 2,
-                        'limit' => 200
+                        "resolveReferences" => 2, "limit" => 200, "onlyIds" => true
                     ],
-                    'response' => $this->readFixture("GET_queue_empty.json"),
+                    'response' => $this->readFixture("GET_mails_queue_id_only.json"),
                 ],
             ]
         );
@@ -74,10 +72,9 @@ class SendMailTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/mails/',
                     'parameters' => [
-                        'resolveReferences' => 2,
-                        'limit' => 200
+                        "resolveReferences" => 2, "limit" => 200, "onlyIds" => true
                     ],
-                    'response' => $this->readFixture("GET_mails_queue_no_content.json")
+                    'response' => $this->readFixture("GET_mails_queue.json"),
                 ],
                 [
                     'function' => 'readGetResult',

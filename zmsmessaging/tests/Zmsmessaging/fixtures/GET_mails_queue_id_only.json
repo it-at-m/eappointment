@@ -1,0 +1,15 @@
+{
+  "$schema":"http://zms-load.muenchen.de/terminvereinbarung/api/2/",
+  "meta":{
+     "$schema":"https://schema.berlin.de/queuemanagement/metaresult.json",
+     "error":false,
+     "generated":"2024-08-02T16:02:21+02:00",
+     "server":"Zmsapi-ENV (2cf5f7f)"
+  },
+  "data":[
+     {
+        "id":"1234",
+        "createTimestamp":"1459504500"
+     }
+  ]
+}

@@ -11,8 +11,7 @@ class DeleteFromQueueTest extends Base
                 'function' => 'readGetResult',
                 'url' => '/mails/',
                 'parameters' => [
-                    'resolveReferences' => 2,
-                    'limit' => 200
+                    "resolveReferences" => 2, "limit" => 200, "onlyIds" => true
                 ],
                 'response' => $this->readFixture("GET_mails_queue.json"),
             ],
