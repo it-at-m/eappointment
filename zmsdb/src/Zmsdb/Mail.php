@@ -32,24 +32,7 @@ class Mail extends Base
         return $mail;
     }
 
-    public function readIdsList($resolveReferences = 1, $limit = 300, $order = 'ASC')
-    {
-        $mailList = new Collection();
-        $query = new Query\MailQueue(Query\Base::SELECT);
-        $query
-            ->addSelectColumn('id')
-            ->addOrderBy('createTimestamp', $order)
-            ->addLimit($limit);
-        $result = $this->fetchList($query, new Entity());
-        if (count($result)) {
-            foreach ($result as $item) {
-                $mailList->addEntity(['id' => $item['id']]);
-            }
-        }
-        return $mailList;
-    }
-
-    public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC')
+    public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC', $onlyIds = false)
     {
         $mailList = new Collection();
         $query = new Query\MailQueue(Query\Base::SELECT);
@@ -59,6 +42,13 @@ class Mail extends Base
             ->addOrderBy('createTimestamp', $order)
             ->addLimit($limit);
         $result = $this->fetchList($query, new Entity());
+        
+        if ($onlyIds) {
+            return array_map(function ($item) {
+                return $item['id'];
+            }, $result);
+        }
+
         if (count($result)) {
             foreach ($result as $item) {
                 $entity = new Entity($item);
