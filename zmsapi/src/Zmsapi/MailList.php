@@ -28,12 +28,6 @@ class MailList extends BaseController
         
         $mailList = (new Query())->readList($resolveReferences, $limit, 'ASC', $onlyIds);
 
-        if ($onlyIds) {
-            $mailList = array_map(function ($mail) {
-                return $mail->id;
-            }, $mailList);
-        }
-
         $message = Response\Message::create($request);
         $message->data = $mailList;
 
