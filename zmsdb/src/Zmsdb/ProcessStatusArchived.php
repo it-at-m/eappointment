@@ -58,6 +58,8 @@ class ProcessStatusArchived extends Process
             ->addConditionScopeIds($scopeIds)
             ->addResolvedReferences($resolveReferences)
             ->addConditionTimes($dateTimes);
+
+        var_dump($query->getSql());
         return $this->readResolvedList($query, $resolveReferences);
     }
 
