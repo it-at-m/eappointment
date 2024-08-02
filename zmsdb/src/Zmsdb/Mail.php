@@ -31,7 +31,7 @@ class Mail extends Base
         }
         return $mail;
     }
-    
+
     public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC', $onlyIds = false)
     {
         $mailList = new Collection();
@@ -46,7 +46,10 @@ class Mail extends Base
 
         if ($onlyIds) {
             return array_map(function ($item) {
-                return $item['id'];
+                return [
+                    'id' => $item['id'],
+                    'createTimestamp' => $item['createTimestamp']
+                ];
             }, $result);
         }
 

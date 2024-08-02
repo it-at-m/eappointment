@@ -28,7 +28,8 @@ class Mail extends BaseController
         $this->log("Read Mail QueueList start with limit ". \App::$mails_per_minute ." - ". \App::$now->format('c'));
         $queueList = \App::$http->readGetResult('/mails/', [
             'resolveReferences' => 2,
-            'limit' => \App::$mails_per_minute
+            'limit' => \App::$mails_per_minute,
+            'onlyIds' => true
         ])->getCollection();
         if (null !== $queueList) {
             $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
