@@ -165,6 +165,7 @@ class Calendar
                 ksort($list[$hour]);
             }
         }
+        
         ksort($list);
         return $list;
     }
