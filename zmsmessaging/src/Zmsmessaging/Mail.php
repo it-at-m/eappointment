@@ -31,6 +31,7 @@ class Mail extends BaseController
             'limit' => \App::$mails_per_minute,
             'onlyIds' => true
         ])->getCollection();
+        error_log($queueList);
         if (null !== $queueList) {
             $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
             $this->log("QueueList sorted by createTimestamp - ". \App::$now->format('c'));
