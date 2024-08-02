@@ -41,8 +41,6 @@ class ProcessListByScopeAndDate extends BaseController
             }
         }
 
-        var_dump($dates);
-
         $query = new Query();
         $scope = $query->readWithWorkstationCount($args['id'], \App::$now, 0);
         if (! $scope || ! $scope->getId()) {
