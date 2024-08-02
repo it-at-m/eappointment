@@ -160,10 +160,14 @@ class Calendar
                     $list[$hour][intval($appointment['date'])] = new ProcessList();
                 }
                 $list[$hour][intval($appointment['date'])]->addEntity(clone $process);
+
+                unset($process);
                 ksort($list[$hour]);
             }
         }
         ksort($list);
+
+        unset($processList);
         return $list;
     }
 
