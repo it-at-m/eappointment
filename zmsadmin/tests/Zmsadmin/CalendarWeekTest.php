@@ -40,7 +40,7 @@ class CalendarWeekTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-03-28/',
+                    'url' => '/scope/141/process/2016-03-28',
                     'parameters' => ['showWeek' => 1],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
@@ -85,7 +85,7 @@ class CalendarWeekTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-03-28/',
+                    'url' => '/scope/141/process/2016-03-28',
                     'parameters' => ['showWeek' => 1],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
@@ -130,7 +130,7 @@ class CalendarWeekTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-03-28/',
+                    'url' => '/scope/141/process/2016-03-28',
                     'parameters' => ['showWeek' => 1],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
@@ -169,7 +169,7 @@ class CalendarWeekTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-12-26/',
+                    'url' => '/scope/141/process/2016-12-26',
                     'parameters' => ['showWeek' => 1],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
