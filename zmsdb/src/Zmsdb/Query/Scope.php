@@ -142,6 +142,7 @@ class Scope extends Base implements MappingInterface
             'contact__country' => self::expression('"Germany"'),
             'lastChange' => 'scope.updateTimestamp',
             'preferences__appointment__deallocationDuration' => 'scope.loeschdauer',
+            'preferences__appointment__infoForAppointment' => 'scope.info_for_appointment',
             'preferences__appointment__endInDaysDefault' => 'scope.Termine_bis',
             'preferences__appointment__multipleSlotsEnabled' => 'scope.mehrfachtermine',
             'preferences__appointment__reservationDuration' => 'scope.reservierungsdauer',
@@ -288,6 +289,7 @@ class Scope extends Base implements MappingInterface
         $data['standortkuerzel'] = $entity->shortName;
         $data['Adresse'] = (isset($entity->contact['street'])) ? $entity->contact['street'] : '';
         $data['loeschdauer'] = $entity->getPreference('appointment', 'deallocationDuration');
+        $data['info_for_appointment'] = $entity->getPreference('appointment', 'infoForAppointment');
         $data['Termine_bis'] = $entity->getPreference('appointment', 'endInDaysDefault');
         $data['Termine_ab'] = $entity->getPreference('appointment', 'startInDaysDefault');
         $data['mehrfachtermine'] = $entity->getPreference('appointment', 'multipleSlotsEnabled', true);
@@ -306,6 +308,7 @@ class Scope extends Base implements MappingInterface
         $data['captcha_activated_required'] = $entity->getPreference('client', 'captchaActivatedRequired');
         $data['appointments_per_mail'] = (int) $entity->getPreference('client', 'appointmentsPerMail');
         $data['slots_per_appointment'] = (int) $entity->getPreference('client', 'slotsPerAppointment');
+        $data['info_for_appointment'] = $entity->getPreference('appointment', 'infoForAppointment');
         $data['whitelisted_mails'] = $entity->getPreference('client', 'whitelistedMails');
         $data['admin_mail_on_appointment'] = $entity->getPreference('client', 'adminMailOnAppointment', true);
         $data['admin_mail_on_deleted'] = $entity->getPreference('client', 'adminMailOnDeleted');
