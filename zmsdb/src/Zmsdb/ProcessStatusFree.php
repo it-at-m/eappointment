@@ -24,8 +24,6 @@ class ProcessStatusFree extends Process
         $days = [$selectedDate];
 
         var_dump('---');
-        var_dump($calendar->getFirstDay());
-        var_dump($calendar->getLastDay(false));
         if ($calendar->getLastDay(false)) {
             $days = [];
             while ($selectedDate <= $calendar->getLastDay(false)) {
