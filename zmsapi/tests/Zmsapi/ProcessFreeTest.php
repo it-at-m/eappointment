@@ -138,6 +138,7 @@ class ProcessFreeTest extends Base
 
         $res = json_decode((string)$response->getBody(), true)['data'];
 
+        var_dump('OVDE');
         foreach ($res as $result) {
             var_dump($result['appointments']);
         }
