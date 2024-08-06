@@ -103,7 +103,6 @@ class ProcessFreeTest extends Base
     // request with 2 slots in scope 148 so 4 slots for 2 requests
     public function testGettingAvailableSlotsFor2Requests()
     {
-        var_dump('OVDE');
         \App::$now->modify('2016-05-24 15:00');
         $response = $this->render([], [
             '__body' => '{
@@ -136,14 +135,13 @@ class ProcessFreeTest extends Base
         foreach(json_decode((string)$response->getBody(), true)['data'] as $processData) {
             $this->assertEquals(4, $processData['appointments'][0]['slotCount']);
         }
-        
+
         $this->assertEquals(19, count(json_decode((string)$response->getBody(), true)['data']));
         $this->assertStringContainsString('"date":"1464337800"', (string)$response->getBody());
     }
 
-    public function testGettingAvailableSlotsFor2Requests2Days()
+    public function testGettingAvailableSlotsFor2Requests3Days()
     {
-        var_dump('OVDE');
         \App::$now->modify('2016-05-24 15:00');
         $response = $this->render([], [
             '__body' => '{
@@ -155,7 +153,7 @@ class ProcessFreeTest extends Base
                 "lastDay": {
                     "year": 2016,
                     "month": 5,
-                    "day": 28
+                    "day": 29
                 },
                 "requests": [
                     {
@@ -182,7 +180,7 @@ class ProcessFreeTest extends Base
             $this->assertEquals(4, $processData['appointments'][0]['slotCount']);
         }
 
-        $this->assertEquals(19, count(json_decode((string)$response->getBody(), true)['data']));
+        $this->assertEquals(21, count(json_decode((string)$response->getBody(), true)['data']));
         $this->assertStringContainsString('"date":"1464337800"', (string)$response->getBody());
     }
 
