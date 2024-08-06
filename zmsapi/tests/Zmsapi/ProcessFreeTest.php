@@ -103,6 +103,7 @@ class ProcessFreeTest extends Base
     // request with 2 slots in scope 148 so 4 slots for 2 requests
     public function testGettingAvailableSlotsFor2Requests()
     {
+        var_dump('OVDE');
         \App::$now->modify('2016-05-24 15:00');
         $response = $this->render([], [
             '__body' => '{
@@ -138,7 +139,6 @@ class ProcessFreeTest extends Base
 
         $res = json_decode((string)$response->getBody(), true)['data'];
 
-        var_dump('OVDE');
         foreach ($res as $result) {
             var_dump($result['appointments']);
         }
