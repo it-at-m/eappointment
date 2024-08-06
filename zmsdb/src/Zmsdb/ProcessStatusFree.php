@@ -1,6 +1,7 @@
 <?php
 namespace BO\Zmsdb;
 
+use BO\Zmsentities\Day;
 use \BO\Zmsentities\Process as Entity;
 use \BO\Zmsentities\Collection\ProcessList as Collection;
 
@@ -21,13 +22,20 @@ class ProcessStatusFree extends Process
         $dayquery->writeTemporaryScopeList($calendar, $slotsRequired);
         $selectedDate = $calendar->getFirstDay();
         $processList = new Collection();
+        $days = [];
+
+        while ($selectedDate <= $calendar->getLastDay()) {
+            $days[] = $selectedDate;
+            $currentDate = $currentDate->modify('+1 day');
+        }
+
         $processData = $this->fetchHandle(
-            Query\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAY
+            sprintf(
+                Query\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAYS,
+                Query\ProcessStatusFree::buildDaysCondition($days)
+            )
             . ($groupData ? Query\ProcessStatusFree::GROUPBY_SELECT_PROCESSLIST_DAY : ''),
             [
-                'year' => $selectedDate->format('Y'),
-                'month' => $selectedDate->format('m'),
-                'day' => $selectedDate->format('d'),
                 'slotType' => $slotType,
                 'forceRequiredSlots' =>
                     ($slotsRequired === null || $slotsRequired < 1) ? 1 : intval($slotsRequired),
