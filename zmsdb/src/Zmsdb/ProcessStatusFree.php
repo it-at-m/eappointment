@@ -25,7 +25,7 @@ class ProcessStatusFree extends Process
 
         while ($selectedDate <= $calendar->getLastDay()) {
             $days[] = $selectedDate;
-            $currentDate = $currentDate->modify('+1 day');
+            $selectedDate = $selectedDate->modify('+1 day');
         }
 
         $processData = $this->fetchHandle(
