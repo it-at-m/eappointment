@@ -117,7 +117,7 @@ class Calendar
 
         /** @var ProcessList $freeProcessList */
         $freeProcessList = $this->readAvailableSlotsFromDayAndScopeList($scopeList);
-        $freeProcessListByDate = $this->splitByDate($freeProcessList);
+        $freeProcessListByDate = $freeProcessList ? $this->splitByDate($freeProcessList) : [];
 
         while ($currentDate <= $endDate) {
             $day = (new Day)->setDateTime($currentDate);
