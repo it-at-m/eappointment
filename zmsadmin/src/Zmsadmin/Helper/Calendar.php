@@ -28,6 +28,8 @@ class Calendar
         }
 
         $this->calendar = new Entity();
+        $this->calendar->firstDay = new Day();
+        $this->calendar->lastDay = new Day();
     }
 
     public function getDateTime()
