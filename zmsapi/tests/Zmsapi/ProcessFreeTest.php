@@ -135,6 +135,8 @@ class ProcessFreeTest extends Base
         foreach(json_decode((string)$response->getBody(), true)['data'] as $processData) {
             $this->assertEquals(4, $processData['appointments'][0]['slotCount']);
         }
+
+        var_dump(json_decode((string)$response->getBody(), true)['data']);
         $this->assertEquals(19, count(json_decode((string)$response->getBody(), true)['data']));
         $this->assertStringContainsString('"date":"1464337800"', (string)$response->getBody());
     }
