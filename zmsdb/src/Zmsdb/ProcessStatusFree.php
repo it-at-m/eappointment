@@ -28,6 +28,8 @@ class ProcessStatusFree extends Process
                 $selectedDate = $selectedDate->modify('+1 day');
                 $days[] = $selectedDate;
             }
+
+            var_dump($days);
         }
 
         $processData = $this->fetchHandle(
