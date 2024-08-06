@@ -58,9 +58,9 @@ class ProcessStatusFree extends Base
         $sqlPats = [];
 
         foreach ($days as $day) {
-            $sqlPats[] = '(c.year = "' . $day->format('Y') . '"
-                        AND c.month = "' . $day->format('m') . '"
-                        AND s.day = "' . $day->format('d') . '"
+            $sqlPats[] = '(c.year = ' . $day->format('Y') . '
+                        AND c.month = ' . $day->format('m') . '
+                        AND s.day = ' . $day->format('d') . '
                         AND c.year = s.year
                         AND c.month = s.month)';
         }
