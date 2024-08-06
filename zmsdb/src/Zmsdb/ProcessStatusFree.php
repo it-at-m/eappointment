@@ -32,8 +32,6 @@ class ProcessStatusFree extends Process
                 $days[] = $selectedDate;
                 $selectedDate = $selectedDate->modify('+1 day');
             }
-
-            //var_dump($days);
         }
 
         var_dump($days);

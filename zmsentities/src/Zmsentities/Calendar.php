@@ -18,7 +18,7 @@ class Calendar extends Schema\Entity
     {
         return [
             'firstDay' => new Day(),
-            'lastDay' => new Day(),
+            'lastDay' => null,
             'days' => new Collection\DayList(),
             'clusters' => [ ],
             'providers' => [ ],
