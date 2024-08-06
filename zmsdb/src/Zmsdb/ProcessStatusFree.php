@@ -23,6 +23,9 @@ class ProcessStatusFree extends Process
         $processList = new Collection();
         $days = [$selectedDate];
 
+        var_dump('---');
+        var_dump($calendar->getFirstDay());
+        var_dump($calendar->getLastDay());
         if ($calendar->getLastDay()) {
             while ($selectedDate <= $calendar->getLastDay()) {
                 $selectedDate = $selectedDate->modify('+1 day');
