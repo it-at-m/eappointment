@@ -65,8 +65,11 @@ class Calendar
         $slotsRequired = 0
     ) {
         $this->calendar->scopes = $scopeList;
-        $this->calendar->firstDay->setDateTime($this->dateTime);
-        $this->calendar->lastDay->setDateTime($this->dateTime);
+        $startDate = clone $this->dateTime->modify('Monday this week');
+        $endDate = clone $this->dateTime->modify('Sunday this week');
+        $this->calendar->firstDay->setDateTime($startDate);
+        $this->calendar->lastDay->setDateTime($endDate);
+
         try {
             $slots = \App::$http->readPostResult(
                 '/process/status/free/',
@@ -112,6 +115,10 @@ class Calendar
         $endDate = clone $this->dateTime->modify('Sunday this week');
         $currentDate = $startDate;
 
+        /** @var ProcessList $freeProcessList */
+        $freeProcessList = $this->readAvailableSlotsFromDayAndScopeList($scopeList);
+        $freeProcessListByDate = $this->splitByDate($freeProcessList);
+
         while ($currentDate <= $endDate) {
             $day = (new Day)->setDateTime($currentDate);
             $day->status = Day::DETAIL;
@@ -121,8 +128,8 @@ class Calendar
             if ($currentDate->format('Y-m-d') >= \App::$now->format('Y-m-d')) {
                 $freeProcessList = $this->readAvailableSlotsFromDayAndScopeList($scopeList);
 
-                if ($freeProcessList) {
-                    $processList->addList($freeProcessList);
+                if (isset($freeProcessListByDate[$currentDate->format('Y-m-d')])) {
+                    $processList->addList($freeProcessListByDate[$currentDate->format('Y-m-d')]);
                 }
 
                 if (isset($processListByDate[$currentDate->format('Y-m-d')])) {

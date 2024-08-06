@@ -41,6 +41,12 @@ class ProcessStatusFree extends Process
                     ($slotsRequired === null || $slotsRequired < 1) ? 1 : intval($slotsRequired),
             ]
         );
+
+        var_dump(sprintf(
+            Query\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAYS,
+            Query\ProcessStatusFree::buildDaysCondition($days)
+        ));
+
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
             $process = new \BO\Zmsentities\Process($item);
             $process->requests = $calendar->requests;
