@@ -33,7 +33,6 @@ class ProcessStatusFree extends Process
         }
 
         var_dump($days);
-        var_dump(Query\ProcessStatusFree::buildDaysCondition($days));
 
         $processData = $this->fetchHandle(
             sprintf(
