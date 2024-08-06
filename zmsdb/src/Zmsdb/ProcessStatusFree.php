@@ -23,7 +23,6 @@ class ProcessStatusFree extends Process
         $processList = new Collection();
         $days = [$selectedDate];
 
-        var_dump('---');
         if ($calendar->getLastDay(false)) {
             $days = [];
             while ($selectedDate <= $calendar->getLastDay(false)) {
@@ -31,8 +30,6 @@ class ProcessStatusFree extends Process
                 $selectedDate = $selectedDate->modify('+1 day');
             }
         }
-
-        var_dump($days);
 
         $processData = $this->fetchHandle(
             sprintf(
