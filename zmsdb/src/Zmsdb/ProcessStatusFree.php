@@ -21,11 +21,13 @@ class ProcessStatusFree extends Process
         $dayquery->writeTemporaryScopeList($calendar, $slotsRequired);
         $selectedDate = $calendar->getFirstDay();
         $processList = new Collection();
-        $days = [];
+        $days = [$selectedDate];
 
-        while ($selectedDate <= $calendar->getLastDay()) {
-            $days[] = $selectedDate;
-            $selectedDate = $selectedDate->modify('+1 day');
+        if ($calendar->getLastDay()) {
+            while ($selectedDate <= $calendar->getLastDay()) {
+                $selectedDate = $selectedDate->modify('+1 day');
+                $days[] = $selectedDate;
+            }
         }
 
         $processData = $this->fetchHandle(
