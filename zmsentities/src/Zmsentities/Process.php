@@ -616,7 +616,7 @@ class Process extends Schema\Entity
 
     public function getWaitedMinutes($defaultTime = 'now')
     {
-        return round($this->getWaitedSeconds($defaultTime) / 60, 0);
+        return $this->getWaitedSeconds($defaultTime) / 60;
     }
 
     public function getWaySeconds($defaultTime = 'now')
@@ -632,7 +632,7 @@ class Process extends Schema\Entity
 
     public function getWayMinutes($defaultTime = 'now')
     {
-        return round($this->getWaySeconds($defaultTime) / 60, 0);
+        return $this->getWaySeconds($defaultTime) / 60;
     }
 
     public function toDerefencedAmendment()
