@@ -126,8 +126,6 @@ class Calendar
 
             $this->dateTime = $currentDate;
             if ($currentDate->format('Y-m-d') >= \App::$now->format('Y-m-d')) {
-                $freeProcessList = $this->readAvailableSlotsFromDayAndScopeList($scopeList);
-
                 if (isset($freeProcessListByDate[$currentDate->format('Y-m-d')])) {
                     $processList->addList($freeProcessListByDate[$currentDate->format('Y-m-d')]);
                 }

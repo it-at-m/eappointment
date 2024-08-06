@@ -42,11 +42,6 @@ class ProcessStatusFree extends Process
             ]
         );
 
-        var_dump(sprintf(
-            Query\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAYS,
-            Query\ProcessStatusFree::buildDaysCondition($days)
-        ));
-
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
             $process = new \BO\Zmsentities\Process($item);
             $process->requests = $calendar->requests;
