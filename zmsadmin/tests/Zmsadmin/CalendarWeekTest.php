@@ -136,7 +136,7 @@ class CalendarWeekTest extends Base
                 ]
             ]
         );
-        $response = $this->render($this->arguments, $this->parameters, []);
+        $response = $this->render($this->arguments, ['year' => 2016, 'weeknr' => 22], []);
         $this->assertStringContainsString('timeslot--free', (string)$response->getBody());
         $this->assertStringContainsString('Jetzt einen Termin um 13:10 buchen', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
