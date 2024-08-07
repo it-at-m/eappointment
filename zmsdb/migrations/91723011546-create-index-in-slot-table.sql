@@ -1,0 +1,1 @@
+ALTER TABLE `slot` ADD INDEX `date_index` (`year`, `month`, `day`);
