@@ -22,6 +22,7 @@ class ProcessStatusFree extends Process
         $selectedDate = $calendar->getFirstDay();
         $processList = new Collection();
         $days = [$selectedDate];
+        $scopeList = [];
 
         if ($calendar->getLastDay(false)) {
             $days = [];
@@ -51,7 +52,12 @@ class ProcessStatusFree extends Process
                 $process->appointments->getFirst()->date,
                 'Y-m-d H:i:s'
             );
-            $process->scope = $calendar->scopes->getEntity($process->scope->id);
+
+            if (! isset($scopeList[$process->scope->id])) {
+                $scopeList[$process->scope->id] = $calendar->scopes->getEntity($process->scope->id);
+            }
+
+            $process->scope = $scopeList[$process->scope->id];
             $process->queue['withAppointment'] = 1;
             $process->appointments->getFirst()->scope = $process->scope;
             $processList->addEntity($process);
