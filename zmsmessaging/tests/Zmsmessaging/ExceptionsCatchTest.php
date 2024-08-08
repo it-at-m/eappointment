@@ -18,7 +18,7 @@ class ExceptionsCatchTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/mails/',
                     'parameters' => [
-                        'resolveReferences' => 2,
+                        'resolveReferences' => 0,
                         'limit' => 300,
                         'onlyIds' => true 
                     ],
@@ -109,7 +109,7 @@ class ExceptionsCatchTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/mails/',
                     'parameters' => [
-                        'resolveReferences' => 2,
+                        'resolveReferences' => 0,
                         'limit' => 300,
                         "onlyIds" => true
                     ],
