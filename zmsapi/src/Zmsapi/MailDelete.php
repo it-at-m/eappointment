@@ -22,7 +22,7 @@ class MailDelete extends BaseController
     ) {
         (new Helper\User($request))->checkRights('superuser');
         $query = new Query();
-        $mail = $query->readEntity($args['id'], 0);
+        $mail = $query->readEntity($args['id']);
         if ($mail && ! $mail->hasId()) {
             throw new Exception\Mail\MailNotFound();
         }
