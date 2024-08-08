@@ -23,7 +23,7 @@ class MailGet extends BaseController
     ) {
         (new Helper\User($request))->checkRights('superuser');
         $mailId = $args['id'];
-        $mail = (new Query())->readEntity($mailId);
+        $mail = (new Query())->readEntity($mailId, 0);
         
         if (!$mail || !$mail->hasId()) {
             throw new Exception\Mail\MailNotFound();
