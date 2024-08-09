@@ -32,7 +32,45 @@ class Mail extends Base
         return $mail;
     }
 
-    public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC')
+    public function readEntities(array $itemIds, $resolveReferences = 1, $onlyIds = false)
+    {
+        $mailList = new Collection();
+        $query = Query\MailQueue::QUERY_MULTI_READ;
+        
+        $inQuery = implode(',', array_fill(0, count($itemIds), '?'));
+        $query = str_replace('?', $inQuery, $query);
+    
+        $result = $this->fetchResults($query, $itemIds);
+        
+        if ($result === false) {
+            error_log("Query failed: " . $query);
+            return $mailList;
+        }
+    
+        if ($onlyIds) {
+            // Return only the ID and createTimestamp for each result
+            return array_map(function ($item) {
+                return [
+                    '$schema' => "https://schema.berlin.de/queuemanagement/mail.json",
+                    'id' => $item['id'],
+                    'createTimestamp' => $item['createTimestamp']
+                ];
+            }, $result);
+        }
+        
+        if (is_array($result) && count($result)) {
+            foreach ($result as $item) {
+                $entity = new Entity($item);
+                $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                if ($entity instanceof Entity) {
+                    $mailList->addEntity($entity);
+                }
+            }
+        }
+        return $mailList;
+    }    
+
+    public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC', $onlyIds = false)
     {
         $mailList = new Collection();
         $query = new Query\MailQueue(Query\Base::SELECT);
@@ -41,7 +79,19 @@ class Mail extends Base
             ->addResolvedReferences($resolveReferences)
             ->addOrderBy('createTimestamp', $order)
             ->addLimit($limit);
+    
         $result = $this->fetchList($query, new Entity());
+    
+        if ($onlyIds) {
+            return array_map(function ($item) {
+                return [
+                    '$schema' => "https://schema.berlin.de/queuemanagement/mail.json", // Include the schema here
+                    'id' => $item['id'],
+                    'createTimestamp' => $item['createTimestamp']
+                ];
+            }, $result);
+        }
+    
         if (count($result)) {
             foreach ($result as $item) {
                 $entity = new Entity($item);
@@ -178,6 +228,15 @@ class Mail extends Base
         $query = Query\MailQueue::QUERY_DELETE;
         $status = $this->perform($query, [$itemId]);
         return $status;
+    }
+
+    public function deleteEntities(array $itemIds)
+    {
+        $query = Query\MailQueue::QUERY_MULTI_DELETE;
+        $placeholders = implode(',', array_fill(0, count($itemIds), '?'));
+        $query = str_replace('?', $placeholders, $query);
+
+        return $this->perform($query, $itemIds);
     }
 
     public function readReminderLastRun($now)

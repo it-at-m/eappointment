@@ -35,7 +35,7 @@ if ($verbose) {
             //print_r($mail->Body);
             echo "\033[01;32mTest mail with ID ". $mail['id'] ." successfully \033[0m \n";
             //echo "MIME: ". trim($mail['mime']) ."\n";
-            echo "RECIPIENTS: ". json_encode($mail['recipients']) ."\n";
+            //echo "RECIPIENTS: ". json_encode($mail['recipients']) ."\n";
             echo "CUSTOM HEADERS: ". json_encode($mail['customHeaders']) ."\n";
             //echo "\033[01;31mDELETE NOTICE: Items will not be deleted in verbose mode \033[0m \n\n";
         }

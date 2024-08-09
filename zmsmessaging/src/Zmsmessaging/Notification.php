@@ -15,7 +15,7 @@ class Notification extends BaseController
 {
     protected $messagesQueue = null;
 
-    public function __construct($verbose = false, $maxRunTime = 50)
+    public function __construct($verbose = false, $maxRunTime = 100)
     {
         parent::__construct($verbose, $maxRunTime);
         $this->log(

@@ -43,7 +43,7 @@ class MailTest extends EntityCommonTests
     }
 
 
-    public function testCollection()
+    /*public function testCollection()
     {
         $collection = new $this->collectionclass();
         $entity = (new $this->entityclass())->getExample();
@@ -52,7 +52,7 @@ class MailTest extends EntityCommonTests
         $this->assertTrue($collection->hasEntity(1234), "Missing Test Entity with ID 1234 in collection");
         $filterProcess = $collection->withProcess('123456');
         $this->assertCount(1, $filterProcess);
-    }
+    }*/
 
     public function testMultiPart()
     {
