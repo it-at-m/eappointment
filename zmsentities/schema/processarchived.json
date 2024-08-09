@@ -211,6 +211,7 @@
             "amendmentLabel": "Zusatzinformationen zum Anliegen",
             "customTextfieldLabel": "Zusatzfeld zum Anliegen",
             "emailRequired": false,
+            "emailConfirmationActivated": true,
             "adminMailOnAppointment": false,
             "adminMailOnDeleted": false,
             "adminMailOnUpdated": false,
