@@ -32,7 +32,7 @@ class Mail extends Base
         return $mail;
     }
 
-    public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC', $onlyIds = false)
+    public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC')
     {
         $mailList = new Collection();
         $query = new Query\MailQueue(Query\Base::SELECT);
@@ -41,19 +41,7 @@ class Mail extends Base
             ->addResolvedReferences($resolveReferences)
             ->addOrderBy('createTimestamp', $order)
             ->addLimit($limit);
-    
         $result = $this->fetchList($query, new Entity());
-    
-        if ($onlyIds) {
-            return array_map(function ($item) {
-                return [
-                    '$schema' => "https://schema.berlin.de/queuemanagement/mail.json", // Include the schema here
-                    'id' => $item['id'],
-                    'createTimestamp' => $item['createTimestamp']
-                ];
-            }, $result);
-        }
-    
         if (count($result)) {
             foreach ($result as $item) {
                 $entity = new Entity($item);
@@ -64,25 +52,24 @@ class Mail extends Base
             }
         }
         return $mailList;
-    }    
+    }
 
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $mail, $resolveReferences)
     {
         $multiPart = $this->readMultiPartByQueueId($mail->id);
-
         $mail->addMultiPart($multiPart);
         if (1 <= $resolveReferences) {
-            $processQuery = new \BO\Zmsdb\Process();
+            /*$processQuery = new \BO\Zmsdb\Process();
+            $authData = $processQuery->readAuthKeyByProcessId($mail->process['id']);
             $mail->process = $processQuery
                 ->readEntity(
-                    $mail->process['id'], 
-                    resolveReferences: $resolveReferences - 1
-                );
+                    $mail->process['id'],
+                    is_array($authData) ? $authData['authKey'] : null,
+                    $resolveReferences - 1
+                );*/
             $mail->department = (new \BO\Zmsdb\Department())
                 ->readEntity($mail->department['id'], $resolveReferences - 1);
-            
         }
-
         return $mail;
     }
 
