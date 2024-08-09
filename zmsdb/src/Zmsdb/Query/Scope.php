@@ -157,6 +157,7 @@ class Scope extends Base implements MappingInterface
             'preferences__client__amendmentLabel' => 'scope.anmerkungLabel',
             'preferences__client__emailFrom' => 'scopemail.absenderadresse',
             'preferences__client__emailRequired' => 'scope.emailPflichtfeld',
+            'preferences__client__emailConfirmationActivated' => 'scope.email_confirmation_activated',
             'preferences__client__telephoneActivated' => 'scope.telefonaktiviert',
             'preferences__client__telephoneRequired' => 'scope.telefonPflichtfeld',
             'preferences__client__appointmentsPerMail' => 'scope.appointments_per_mail',
@@ -300,6 +301,7 @@ class Scope extends Base implements MappingInterface
         $data['anmerkungPflichtfeld'] = $entity->getPreference('client', 'amendmentActivated', true);
         $data['anmerkungLabel'] = $entity->getPreference('client', 'amendmentLabel');
         $data['emailPflichtfeld'] = $entity->getPreference('client', 'emailRequired', true);
+        $data['email_confirmation_activated'] = $entity->getPreference('client', 'emailConfirmationActivated', true);
         $data['telefonaktiviert'] = $entity->getPreference('client', 'telephoneActivated', true);
         $data['telefonPflichtfeld'] = $entity->getPreference('client', 'telephoneRequired', true);
         $data['custom_text_field_active'] = $entity->getPreference('client', 'customTextfieldActivated', true);
@@ -380,6 +382,9 @@ class Scope extends Base implements MappingInterface
         }
         if (!$data[$this->getPrefixed('preferences__client__telephoneActivated')]) {
             $data[$this->getPrefixed("preferences__client__telephoneRequired")] = 0;
+        }
+        if (!$data[$this->getPrefixed('preferences__client__emailConfirmationActivated')]) {
+            $data[$this->getPrefixed("preferences__client__emailConfirmationActivated")] = 0;
         }
         if (!$data[$this->getPrefixed('contact__email')]) {
             $data[$this->getPrefixed("preferences__client__adminMailOnAppointment")] = 0;
