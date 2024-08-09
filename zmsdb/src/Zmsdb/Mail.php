@@ -69,19 +69,20 @@ class Mail extends Base
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $mail, $resolveReferences)
     {
         $multiPart = $this->readMultiPartByQueueId($mail->id);
+
         $mail->addMultiPart($multiPart);
         if (1 <= $resolveReferences) {
             $processQuery = new \BO\Zmsdb\Process();
-            $authData = $processQuery->readAuthKeyByProcessId($mail->process['id']);
             $mail->process = $processQuery
                 ->readEntity(
-                    $mail->process['id'],
-                    is_array($authData) ? $authData['authKey'] : null,
-                    $resolveReferences - 1
+                    $mail->process['id'], 
+                    resolveReferences: $resolveReferences - 1
                 );
             $mail->department = (new \BO\Zmsdb\Department())
                 ->readEntity($mail->department['id'], $resolveReferences - 1);
+            
         }
+
         return $mail;
     }
 
