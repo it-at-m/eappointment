@@ -1,7 +1,6 @@
 <?php
 /**
  * @package ZMS API
- * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
 namespace BO\Zmsapi;
@@ -22,20 +21,45 @@ class MailDelete extends BaseController
     ) {
         (new Helper\User($request))->checkRights('superuser');
         $query = new Query();
+
+        // Check if multiple IDs are provided via query parameter
+        $ids = $request->getQueryParams()['ids'] ?? null;
+
+        if ($ids) {
+            // Multiple deletion
+            $itemIds = array_map('intval', explode(',', $ids));
+            if (empty($itemIds)) {
+                throw new \InvalidArgumentException('No valid IDs provided for deletion.');
+            }
+
+            if (!$query->deleteEntities($itemIds)) {
+                throw new Exception\Mail\MailDeleteFailed();
+            }
+
+            $message = Response\Message::create($request);
+            $message->data = ['deleted' => $itemIds];
+            $response = Render::withLastModified($response, time(), '0');
+            $response = Render::withJson($response, $message->setUpdatedMetaData(), 200);
+            return $response;
+        }
+
+        // Single deletion (using path parameter)
+        if (!isset($args['id'])) {
+            throw new \InvalidArgumentException('No valid ID provided for deletion.');
+        }
+
         $mail = $query->readEntity($args['id']);
-        if ($mail && ! $mail->hasId()) {
+        if ($mail && !$mail->hasId()) {
             throw new Exception\Mail\MailNotFound();
         }
 
-        // @codeCoverageIgnoreStart
-        if (! $query->deleteEntity($mail->id)) {
+        // Delete the single entity
+        if (!$query->deleteEntity($mail->id)) {
             throw new Exception\Mail\MailDeleteFailed();
         }
-        // @codeCoverageIgnoreEnd
 
         $message = Response\Message::create($request);
         $message->data = $mail;
-
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), 200);
         return $response;

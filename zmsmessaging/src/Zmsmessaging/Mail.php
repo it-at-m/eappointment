@@ -150,11 +150,6 @@ class Mail extends BaseController
                         'attachments' => $result->getAttachments(),
                         'customHeaders' => $result->getCustomHeaders(),
                     ];
-                    //$this->log("Mail sent successfully with ID: " . $result['id']);
-                    if ($action) {
-                        $this->deleteEntityFromQueue($entity);
-                        $this->log("Mail deleted from queue with ID: " . $result['id']);
-                    }
                 } else {
                     $results[] = [
                         'errorInfo' => $result->ErrorInfo
@@ -167,54 +162,19 @@ class Mail extends BaseController
             }
         }
     
+        // Delete all processed items at once if the action is set to true
+        if ($action && !empty($itemIds)) {
+            try {
+                $this->deleteEntitiesFromQueue($itemIds);
+                $this->log("All processed mails deleted from queue: " . implode(', ', $itemIds));
+            } catch (\Exception $e) {
+                $this->log("Error deleting processed mails: " . $e->getMessage());
+            }
+        }
+    
         return $results;
     }
     
-
-    public function sendQueueItem($action, $itemId)
-    {
-        $item = $this->getMailById($itemId);
-        if (!$item) {
-            $this->log("Failed to fetch mail data for ID: $itemId");
-            return ['errorInfo' => 'Failed to fetch mail data'];
-        }
-
-        $result = [];
-        $entity = new \BO\Zmsentities\Mail($item);
-        $mailer = $this->getValidMailer($entity);
-        if (! $mailer) {
-            throw new \Exception("No valid mailer");
-        }
-    
-        try {
-            $result = $this->sendMailer($entity, $mailer, $action);
-            if ($result instanceof PHPMailer) {
-                $result = array(
-                    'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
-                    'recipients' => $result->getAllRecipientAddresses(),
-                    'mime' => $result->getMailMIME(),
-                    'attachments' => $result->getAttachments(),
-                    'customHeaders' => $result->getCustomHeaders(),
-                );
-                $this->log("Mail sent successfully with ID: " . $result['id']);
-                if ($action) {
-                    $this->deleteEntityFromQueue($entity);
-                    $this->log("Mail deleted from queue with ID: " . $result['id']);
-                }
-            } else {
-                $result = array(
-                    'errorInfo' => $result->ErrorInfo
-                );
-                $this->log("Mail send failed with error: " . $result['errorInfo']);
-            }
-        } catch (\Exception $e) {
-            $this->log("Exception while sending mail: " . $e->getMessage());
-            $result = array(
-                'errorInfo' => $e->getMessage()
-            );
-        }
-        return $result;
-    }
     
     protected function getValidMailer(\BO\Zmsentities\Mail $entity)
     {
@@ -416,4 +376,22 @@ class Mail extends BaseController
             return null;
         }
     }
+
+
+    private function deleteEntitiesFromQueue(array $itemIds)
+    {
+        $endpoint = '/mails/';
+        $params = [
+            'ids' => implode(',', $itemIds)
+        ];
+    
+        try {
+            $response = \App::$http->readDeleteResult($endpoint, $params);
+            return $response;
+        } catch (\Exception $e) {
+            $this->log("Error deleting mail data: " . $e->getMessage() . "\n\n");
+            throw new \Exception("Failed to delete mail data");
+        }
+    }
+    
 }

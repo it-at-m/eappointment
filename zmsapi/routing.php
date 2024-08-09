@@ -1809,6 +1809,39 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/mails/":
+ *      delete:
+ *          summary: delete mail(s) by ID(s)
+ *          tags:
+ *              - mail
+ *          parameters:
+ *              -   name: ids
+ *                  description: comma-separated list of mail IDs (used for multiple deletions)
+ *                  in: query
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: successfully deleted
+ *              400:
+ *                  description: "invalid request format or missing IDs"
+ *              404:
+ *                  description: "could not find mail(s) or mail(s) already sent"
+ */
+\App::$slim->delete(
+    '/mails/',
+    '\BO\Zmsapi\MailDelete'
+)
+    ->setName("MailDeleteMultiple");
+
+
+/**
+ *  @swagger
  *  "/mails/{id:\d{1,11}}/":
  *      delete:
  *          summary: delete mail(s) by ID(s)
