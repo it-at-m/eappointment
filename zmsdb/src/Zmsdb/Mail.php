@@ -111,22 +111,23 @@ class Mail extends Base
     
         if (1 <= $resolveReferences) {
             $processQuery = new \BO\Zmsdb\Process();
-            
-            $processId = !empty($mail->process['id']) ? $mail->process['id'] : (array_key_exists('processID', $mail) ? $mail['processID'] : null);
+    
+            $processId = !empty($mail->process['id']) ? $mail->process['id'] : (isset($mail->processID) ? $mail->processID : null);
             $authData = $processQuery->readAuthKeyByProcessId($processId);
-            
+    
             $mail->process = $processQuery->readEntity(
                 $processId,
                 is_array($authData) ? $authData['authKey'] : null,
                 $resolveReferences - 1
             );
-            
-            $departmentId = !empty($mail->department['id']) ? $mail->department['id'] : (array_key_exists('departmentID', $mail) ? $mail['departmentID'] : null);
+    
+            $departmentId = !empty($mail->department['id']) ? $mail->department['id'] : (isset($mail->departmentID) ? $mail->departmentID : null);
             $mail->department = (new \BO\Zmsdb\Department())->readEntity($departmentId, $resolveReferences - 1);
         }
-        
+    
         return $mail;
-    }    
+    }
+       
 
     public function writeInQueueWithAdmin(Entity $mail)
     {
