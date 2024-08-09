@@ -108,20 +108,25 @@ class Mail extends Base
     {
         $multiPart = $this->readMultiPartByQueueId($mail->id);
         $mail->addMultiPart($multiPart);
+    
         if (1 <= $resolveReferences) {
             $processQuery = new \BO\Zmsdb\Process();
-            $authData = $processQuery->readAuthKeyByProcessId(!empty($mail->process['id']) ? $mail->process['id'] : (array_key_exists('processID', $mail) ? $mail['processID'] : null));
-            $mail->process = $processQuery
-                ->readEntity(
-                    !empty($mail->process['id']) ? $mail->process['id'] : (array_key_exists('processID', $mail) ? $mail['processID'] : null),
-                    is_array($authData) ? $authData['authKey'] : null,
-                    $resolveReferences - 1
-                );
-            $mail->department = (new \BO\Zmsdb\Department())
-                ->readEntity(!empty($mail->department['id']) ? $mail->department['id'] : (array_key_exists('departmentID', $mail) ? $mail['departmentID'] : null), $resolveReferences - 1);
+            
+            $processId = !empty($mail->process['id']) ? $mail->process['id'] : (array_key_exists('processID', $mail) ? $mail['processID'] : null);
+            $authData = $processQuery->readAuthKeyByProcessId($processId);
+            
+            $mail->process = $processQuery->readEntity(
+                $processId,
+                is_array($authData) ? $authData['authKey'] : null,
+                $resolveReferences - 1
+            );
+            
+            $departmentId = !empty($mail->department['id']) ? $mail->department['id'] : (array_key_exists('departmentID', $mail) ? $mail['departmentID'] : null);
+            $mail->department = (new \BO\Zmsdb\Department())->readEntity($departmentId, $resolveReferences - 1);
         }
+        
         return $mail;
-    }
+    }    
 
     public function writeInQueueWithAdmin(Entity $mail)
     {
