@@ -30,19 +30,18 @@ if ($argc > 2) {
     }
     $processor = new MailProcessor();
     $ids = json_decode(base64_decode($encodedIds), true);
-    foreach ($ids as $id) {
-        try {
-            $processor->sendQueueItem($action, $id);
-        } catch (\Exception $exception) {
-            $log = new Mimepart(['mime' => 'text/plain']);
-            $log->content = $exception->getMessage();
-            if (isset($id['process']) && isset($id['process']['id'])) {
-                $processor->log("Init Queue Exception message: ". $log->content .' - '. \App::$now->format('c'));
-                $processor->log("Init Queue Exception log readPostResult start - ". \App::$now->format('c'));
-                \App::$http->readPostResult('/log/process/'. $id['process']['id'] .'/', $log, ['error' => 1]);
-                $processor->log("Init Queue Exception log readPostResult finished - ". \App::$now->format('c'));
+    try {
+        $results = $processor->sendQueueItems($action, $ids);
+        // You can log or handle the results as needed
+        foreach ($results as $result) {
+            if (isset($result['errorInfo'])) {
+                $processor->log("Error processing mail item: " . $result['errorInfo']);
+            } else {
+                $processor->log("Successfully processed mail item with ID: " . $result['id']);
             }
-            //\App::$log->error($log->content);
         }
+    } catch (\Exception $exception) {
+        $processor->log("Error processing batch: " . $exception->getMessage());
     }
 }
+

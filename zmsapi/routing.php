@@ -1721,8 +1721,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/mails/":
  *      get:
- *          summary: get a list of mails in the send queue
- *          x-since: 2.11
+ *          summary: get a list of mails with optional filters
  *          tags:
  *              - mail
  *          parameters:
@@ -1731,10 +1730,23 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: ids
+ *                  description: comma-separated list of mail IDs to retrieve
+ *                  in: query
+ *                  required: false
+ *                  type: string
  *              -   name: resolveReferences
  *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
  *                  in: query
  *                  type: integer
+ *              -   name: limit
+ *                  description: "Maximum number of results to return"
+ *                  in: query
+ *                  type: integer
+ *              -   name: onlyIds
+ *                  description: "If true, only IDs are returned"
+ *                  in: query
+ *                  type: boolean
  *          responses:
  *              200:
  *                  description: returns a list, might be empty
@@ -1797,17 +1809,22 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/mails/{id}/":
+ *  "/mails/{id:\d{1,11}}/":
  *      delete:
- *          summary: delete a mail in the send queue
+ *          summary: delete mail(s) by ID(s)
  *          tags:
  *              - mail
  *          parameters:
  *              -   name: id
- *                  description: mail number
+ *                  description: mail ID (used for single deletion)
  *                  in: path
- *                  required: true
+ *                  required: false
  *                  type: integer
+ *              -   name: ids
+ *                  description: comma-separated list of mail IDs (used for multiple deletions)
+ *                  in: query
+ *                  required: false
+ *                  type: string
  *              -   name: X-Authkey
  *                  required: true
  *                  description: authentication key to identify user for testing access rights
@@ -1815,9 +1832,11 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: string
  *          responses:
  *              200:
- *                  description: succesfully deleted
+ *                  description: successfully deleted
+ *              400:
+ *                  description: "invalid request format or missing IDs"
  *              404:
- *                  description: "could not find mail or mail already sent"
+ *                  description: "could not find mail(s) or mail(s) already sent"
  */
 \App::$slim->delete(
     '/mails/{id:\d{1,11}}/',
@@ -1827,9 +1846,9 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/mails/{id}/":
+ *  "/mails/{id:\d{1,11}}/":
  *      get:
- *          summary: get a mail by ID
+ *          summary: get a single mail by ID
  *          tags:
  *              - mail
  *          parameters:

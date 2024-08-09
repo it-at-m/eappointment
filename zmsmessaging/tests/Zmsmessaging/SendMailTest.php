@@ -25,9 +25,13 @@ class SendMailTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/mails/1234/',
+                    'url' => '/mails/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'ids' => '1234'
+                    ],
                     'response' => $this->readFixture("GET_mail.json")
-                ]
+                ],
             ]
         );
 
@@ -78,7 +82,11 @@ class SendMailTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/mails/1234/',
+                    'url' => '/mails/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'ids' => '1234'
+                    ],
                     'response' => $this->readFixture("GET_mail_no_content.json")
                 ],
                 [

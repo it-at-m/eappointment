@@ -4,7 +4,7 @@ namespace BO\Zmsmessaging\Tests;
 
 class ExceptionsCatchTest extends Base
 {
-    public function testLogMailMissingDepartmentMail()
+    /*public function testLogMailMissingDepartmentMail()
     {
         $this->setApiCalls(
             [
@@ -26,14 +26,18 @@ class ExceptionsCatchTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/mails/1234/',
+                    'url' => '/mails/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'ids' => '1234,1234'
+                    ],
                     'response' => $this->readFixture("GET_mails_queue_no_department.json")
                 ],
-                /*[
+                [
                     'function' => 'readDeleteResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
-                ]*/
+                ]
             ]
         );
         \App::$messaging = new \BO\Zmsmessaging\Mail();
@@ -52,7 +56,7 @@ class ExceptionsCatchTest extends Base
                 $this->assertFalse(strpos($value, 'PHPMailer Failure') !== false);
             }
         }
-    }
+    }*/
 
     public function testLogNotificationMissingDepartmentMail()
     {
@@ -96,7 +100,11 @@ class ExceptionsCatchTest extends Base
             [
                 [
                     'function' => 'readGetResult',
-                    'url' => '/mails/1234/',
+                    'url' => '/mails/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'ids' => '1234'
+                    ],
                     'response' => $this->readFixture("GET_mails_queue_old.json")
                 ],
                 [

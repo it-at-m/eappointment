@@ -32,6 +32,44 @@ class Mail extends Base
         return $mail;
     }
 
+    public function readEntities(array $itemIds, $resolveReferences = 1, $onlyIds = false)
+    {
+        $mailList = new Collection();
+        $query = Query\MailQueue::QUERY_MULTI_READ;
+        
+        $inQuery = implode(',', array_fill(0, count($itemIds), '?'));
+        $query = str_replace('?', $inQuery, $query);
+    
+        $result = $this->fetchResults($query, $itemIds);
+        
+        if ($result === false) {
+            error_log("Query failed: " . $query);
+            return $mailList;
+        }
+    
+        if ($onlyIds) {
+            // Return only the ID and createTimestamp for each result
+            return array_map(function ($item) {
+                return [
+                    '$schema' => "https://schema.berlin.de/queuemanagement/mail.json",
+                    'id' => $item['id'],
+                    'createTimestamp' => $item['createTimestamp']
+                ];
+            }, $result);
+        }
+        
+        if (is_array($result) && count($result)) {
+            foreach ($result as $item) {
+                $entity = new Entity($item);
+                $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                if ($entity instanceof Entity) {
+                    $mailList->addEntity($entity);
+                }
+            }
+        }
+        return $mailList;
+    }    
+
     public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC', $onlyIds = false)
     {
         $mailList = new Collection();
@@ -71,14 +109,14 @@ class Mail extends Base
         $multiPart = $this->readMultiPartByQueueId($mail->id);
         $mail->addMultiPart($multiPart);
         if (1 <= $resolveReferences) {
-            /*$processQuery = new \BO\Zmsdb\Process();
+            $processQuery = new \BO\Zmsdb\Process();
             $authData = $processQuery->readAuthKeyByProcessId($mail->process['id']);
             $mail->process = $processQuery
                 ->readEntity(
                     $mail->process['id'],
                     is_array($authData) ? $authData['authKey'] : null,
                     $resolveReferences - 1
-                );*/
+                );
             $mail->department = (new \BO\Zmsdb\Department())
                 ->readEntity($mail->department['id'], $resolveReferences - 1);
         }
@@ -190,6 +228,15 @@ class Mail extends Base
         $query = Query\MailQueue::QUERY_DELETE;
         $status = $this->perform($query, [$itemId]);
         return $status;
+    }
+
+    public function deleteEntities(array $itemIds)
+    {
+        $query = Query\MailQueue::QUERY_MULTI_DELETE;
+        $placeholders = implode(',', array_fill(0, count($itemIds), '?'));
+        $query = str_replace('?', $placeholders, $query);
+
+        return $this->perform($query, $itemIds);
     }
 
     public function readReminderLastRun($now)

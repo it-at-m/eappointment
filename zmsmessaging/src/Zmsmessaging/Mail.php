@@ -46,24 +46,40 @@ class Mail extends BaseController
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
             if (count($this->messagesQueue) <= 20) {
-                $this->log("Messages queue has less than or 10 items, sending immediately...");
+                $this->log("Messages queue has less than or equal to 20 items, sending immediately...");
+
+                // Collect all IDs
+                $itemIds = [];
                 foreach ($this->messagesQueue as $item) {
                     if ($this->maxRunTime < $this->getSpendTime()) {
-                        $this->log("Max Runtime exceeded - ". \App::$now->format('c'));
+                        $this->log("Max Runtime exceeded - " . \App::$now->format('c'));
                         break;
                     }
-                    try {
-                        $this->sendQueueItem($action, $item['id']);
-                    } catch (\Exception $exception) {
-                        $log = new Mimepart(['mime' => 'text/plain']);
-                        $log->content = $exception->getMessage();
-                        if (isset($item['process']) && isset($item['process']['id'])) {
-                            $this->log("Init Queue Exception message: ". $log->content .' - '. \App::$now->format('c'));
-                            $this->log("Init Queue Exception log readPostResult start - ". \App::$now->format('c'));
-                            \App::$http->readPostResult('/log/process/'. $item['process']['id'] .'/', $log, ['error' => 1]);
-                            $this->log("Init Queue Exception log readPostResult finished - ". \App::$now->format('c'));
+                    $itemIds[] = $item['id'];
+                }
+            
+                // Send all items at once
+                try {
+                    $results = $this->sendQueueItems($action, $itemIds);
+                    // Handle the results
+                    foreach ($results as $result) {
+                        if (isset($result['errorInfo'])) {
+                            $this->log("Error processing mail item: " . $result['errorInfo']);
+                        } else {
+                            $this->log("Successfully processed mail item with ID: " . $result['id']);
                         }
-                        //\App::$log->error($log->content);
+                    }
+                } catch (\Exception $exception) {
+                    $log = new Mimepart(['mime' => 'text/plain']);
+                    $log->content = $exception->getMessage();
+                    $this->log("Exception during batch processing: " . $log->content . ' - ' . \App::$now->format('c'));
+            
+                    // Log the exception for each item in the batch
+                    foreach ($this->messagesQueue as $item) {
+                        if (isset($item['process']) && isset($item['process']['id'])) {
+                            $this->log("Logging exception for process ID: " . $item['process']['id']);
+                            \App::$http->readPostResult('/log/process/' . $item['process']['id'] . '/', $log, ['error' => 1]);
+                        }
                     }
                 }
             } else {
@@ -92,6 +108,68 @@ class Mail extends BaseController
         }
         return $resultList;
     }
+
+    public function sendQueueItems($action, array $itemIds)
+    {
+        // Fetch all mail items in one go
+        $endpoint = '/mails/';
+        $params = [
+            'resolveReferences' => 2,
+            'ids' => implode(',', $itemIds)
+        ];
+    
+        try {
+            $response = \App::$http->readGetResult($endpoint, $params);
+            $mailItems = $response->getCollection();
+        } catch (\Exception $e) {
+            $this->log("Error fetching mail data: " . $e->getMessage() . "\n\n");
+            return ['errorInfo' => 'Failed to fetch mail data'];
+        }
+    
+        if (empty($mailItems)) {
+            $this->log("No mail items found for the provided IDs.");
+            return ['errorInfo' => 'No mail items found'];
+        }
+    
+        $results = [];
+        foreach ($mailItems as $item) {
+            $entity = new \BO\Zmsentities\Mail($item);
+            $mailer = $this->getValidMailer($entity);
+            if (!$mailer) {
+                $this->log("No valid mailer for mail ID: " . $entity->id);
+                continue;
+            }
+    
+            try {
+                $result = $this->sendMailer($entity, $mailer, $action);
+                if ($result instanceof PHPMailer) {
+                    $results[] = [
+                        'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
+                        'recipients' => $result->getAllRecipientAddresses(),
+                        'mime' => $result->getMailMIME(),
+                        'attachments' => $result->getAttachments(),
+                        'customHeaders' => $result->getCustomHeaders(),
+                    ];
+                    //$this->log("Mail sent successfully with ID: " . $result['id']);
+                    if ($action) {
+                        $this->deleteEntityFromQueue($entity);
+                        $this->log("Mail deleted from queue with ID: " . $result['id']);
+                    }
+                } else {
+                    $results[] = [
+                        'errorInfo' => $result->ErrorInfo
+                    ];
+                    $this->log("Mail send failed with error: " . $result['errorInfo']);
+                }
+            } catch (\Exception $e) {
+                $this->log("Exception while sending mail ID " . $entity->id . ": " . $e->getMessage());
+                $results[] = ['errorInfo' => $e->getMessage()];
+            }
+        }
+    
+        return $results;
+    }
+    
 
     public function sendQueueItem($action, $itemId)
     {

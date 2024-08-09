@@ -224,6 +224,18 @@ abstract class Base
         return $this->writeItem($query);
     }
 
+    public function fetchResults($sql, $parameters = null)
+    {
+        return static::pdoExceptionHandler(function () use ($sql, $parameters) {
+            $this->getWriter(); //Switch to writer for perform
+            $prepared = $this->fetchPreparedStatement($sql);
+            $prepared->execute($parameters);
+            $results = $prepared->fetchAll(\PDO::FETCH_ASSOC);
+            $prepared->closeCursor();
+            return $results;
+        });
+    }
+
     public function perform($sql, $parameters = null)
     {
         return static::pdoExceptionHandler(function () use ($sql, $parameters) {
