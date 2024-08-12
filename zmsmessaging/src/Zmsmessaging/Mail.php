@@ -238,6 +238,10 @@ class Mail extends BaseController
             }
         }
 
+        print("**");
+        print($entity['department']['email']);
+        print("**");
+
         $this->log("Build Mailer: new PHPMailer() - ". \App::$now->format('c'));
         $mailer = new PHPMailer(true);
         $mailer->CharSet = 'UTF-8';
