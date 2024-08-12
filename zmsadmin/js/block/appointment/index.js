@@ -39,7 +39,7 @@ class View extends RequestView {
         this.selectedProcess = this.options.selectedProcess;
         this.selectedScope = this.options.selectedScope;
         this.clusterEnabled = this.options.clusterEnabled || false;
-        this.emailConfirmationActivated = this.options.emailConfirmationActivated || false;
+        this.emailConfirmationActivated = this.options.emailConfirmationActivated || 0;
         this.slotsRequired = this.options.slotsRequired;
         this.slotType = this.options.slotType;
         this.constructOnly = this.options.constructOnly;

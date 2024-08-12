@@ -22,7 +22,7 @@ class View extends BaseView {
         this.selectedDate = options['selected-date'];
         this.selectedProcess = options['selected-process'];
         this.clusterEnabled = options['cluster-enabled'] || false;
-        this.emailConfirmationActivated = options['email-confirmation-activated'] || false;
+        this.emailConfirmationActivated = options['email-confirmation-activated'] || 0;
         this.selectedScope = options['selected-scope'] || 0;
         this.calledProcess = options['called-process'];
         this.slotType = 'intern';
