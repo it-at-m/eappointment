@@ -247,7 +247,7 @@
                                 "description": "Im Tresen können Termine damit mehreren Zeitslots zugeordnet werden.",
                                 "name": "preferences[appointment][multipleSlotsEnabled]",
                                 "value": 1,
-                                "checked": scope.preferences.appointment.multipleSlotsEnabled|default(0)
+                                "checked": scope is defined ? (scope.preferences.appointment.multipleSlotsEnabled|default(0)) : 1
                             }
                         }]
                     ) }}
@@ -318,7 +318,6 @@
                     ) }}
 				</div>
 			</fieldset>
-
 			<fieldset>
 				<legend>Internetbuchung</legend>
 				<div class="panel--heavy">
@@ -339,7 +338,6 @@
                                 }
                             }]
                         ) }}
-
 					{{ formgroup(
                         {
                             "legend": "Telefoneingabefeld:",
@@ -615,8 +613,6 @@
                     ) }}
 				</div>
 			</fieldset>
-
-
 			<fieldset>
 				<legend>Abholer</legend>
 				<div class="panel--heavy">
@@ -884,6 +880,20 @@
                             }
                         }]
                     ) }}
+
+					{% if workstation.useraccount.rights.superuser %}
+						{{ formgroup(
+							{"label": "Information zu Terminbuchung im Bürgerfrontend:", "description": "Dieser Text erscheint im Bürgerfrontend."},
+							[{
+								"type":"textarea",
+								"parameter": {
+									"name": "preferences[appointment][infoForAppointment]",
+									"maxlength": 5000,
+									"value": scope.preferences.appointment.infoForAppointment|default(''),
+								}
+							}]
+						) }}
+					{% endif %}
 
 					<fieldset>
 						<legend class="label">Bild für Aufrufanlage:</legend>

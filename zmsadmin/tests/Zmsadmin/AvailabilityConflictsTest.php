@@ -78,6 +78,7 @@ class AvailabilityConflictsTest extends Base
                             "preferences": {
                                 "appointment": {
                                     "deallocationDuration": "10",
+                                    "infoForAppointment": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "0",
                                     "reservationDuration": "20",
@@ -540,6 +541,7 @@ class AvailabilityConflictsTest extends Base
                             "preferences": {
                                 "appointment": {
                                     "deallocationDuration": "10",
+                                    "infoForAppointment": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "0",
                                     "reservationDuration": "20",
@@ -1003,6 +1005,7 @@ class AvailabilityConflictsTest extends Base
                             "preferences": {
                                 "appointment": {
                                     "deallocationDuration": "10",
+                                    "infoForAppointment": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "0",
                                     "reservationDuration": "20",
@@ -1468,6 +1471,7 @@ class AvailabilityConflictsTest extends Base
                         "preferences": {
                             "appointment": {
                                 "deallocationDuration": "10",
+                                "infoForAppointment": "",
                                 "endInDaysDefault": "60",
                                 "multipleSlotsEnabled": "0",
                                 "reservationDuration": "20",
