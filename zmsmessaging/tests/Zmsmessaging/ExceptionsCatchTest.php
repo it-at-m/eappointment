@@ -19,7 +19,7 @@ class ExceptionsCatchTest extends Base
                     'url' => '/mails/',
                     'parameters' => [
                         'resolveReferences' => 0,
-                        'limit' => 300,
+                        'limit' => 600,
                         'onlyIds' => true 
                     ],
                     'response' => $this->readFixture("GET_mails_queue_no_department.json"),
@@ -118,7 +118,7 @@ class ExceptionsCatchTest extends Base
                     'url' => '/mails/',
                     'parameters' => [
                         'resolveReferences' => 0,
-                        'limit' => 300,
+                        'limit' => 600,
                         "onlyIds" => true
                     ],
                     'response' => $this->readFixture("GET_mails_queue_old.json")

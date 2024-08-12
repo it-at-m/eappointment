@@ -6,9 +6,10 @@
  */
 namespace BO\Zmsmessaging;
 
-use \BO\Mellon\Validator;
 use \BO\Zmsentities\Mail;
+use \BO\Zmsentities\Notification;
 use \BO\Zmsentities\Mimepart;
+use \BO\Mellon\Validator;
 
 class BaseController
 {
@@ -107,8 +108,7 @@ class BaseController
         }
         if (! $entity->hasContent()) {
             throw new \BO\Zmsmessaging\Exception\MailWithoutContent();
-        }
-        
+        }        
         if ($entity instanceof Mail) {
             $isMail = Validator::value($entity->getRecipient())->isMail()->getValue();
             if (!$isMail) {
