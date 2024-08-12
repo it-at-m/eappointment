@@ -8,7 +8,7 @@ use \BO\Zmsentities\Mail as Entity;
 
 class MailTest extends Base
 {
-    /*public function testBasic()
+    public function testBasic()
     {
         $now = static::$now;
         $input = $this->getTestEntity();
@@ -41,7 +41,7 @@ class MailTest extends Base
 
         $entity = $query->readEntity($entityId);
         $this->assertFalse($entity->hasId($entityId), "Deleted Mail still exists in Database.");
-    }*/
+    }
 
     public function testWriteInQueueWithAdmin()
     {
@@ -78,7 +78,7 @@ class MailTest extends Base
         $this->assertStringContainsString('18:52', $entity->getHtmlPart());
     }
 
-    /*public function testWriteInQueueWithPickupStatus()
+    public function testWriteInQueueWithPickupStatus()
     {
         $now = static::$now;
         $entity = $this->getTestEntity();
@@ -87,7 +87,7 @@ class MailTest extends Base
         $entity = (new Query)->writeInQueue($entity, $now);
         $this->assertEntity("\\BO\\Zmsentities\\Mail", $entity);
         $this->assertEquals('1', $entity->getFirstClient()->emailSendCount);
-    }*/
+    }
 
     public function testExceptionWithoutMail()
     {

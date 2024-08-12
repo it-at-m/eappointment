@@ -111,7 +111,7 @@ class Mail extends Base
                 ->readEntity($mail->department['id'], $resolveReferences - 1);
         }
         return $mail;
-    }   
+    }
 
     public function writeInQueueWithAdmin(Entity $mail)
     {
