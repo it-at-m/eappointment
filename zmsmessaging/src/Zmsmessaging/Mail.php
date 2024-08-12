@@ -43,8 +43,8 @@ class Mail extends BaseController
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
-            if (count($this->messagesQueue) <= 20) {
-                $this->log("Messages queue has less than or equal to 20 items, sending immediately...");
+            if (count($this->messagesQueue) <= 600) {
+                $this->log("Messages queue has less than or equal to 600 items, sending immediately...");
 
                 $itemIds = [];
                 foreach ($this->messagesQueue as $item) {
