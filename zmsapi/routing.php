@@ -1722,6 +1722,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/mails/":
  *      get:
  *          summary: get a list of mails with optional filters
+ *          x-since: 2.11
  *          tags:
  *              - mail
  *          parameters:

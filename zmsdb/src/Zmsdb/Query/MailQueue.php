@@ -16,12 +16,6 @@ class MailQueue extends Base
             WHERE mq.id=?
     ';
 
-    const QUERY_MULTI_READ = '
-        SELECT * 
-        FROM '. self::TABLE .' 
-        WHERE id IN (?)
-    ';
-
     const QUERY_MULTI_DELETE = '
         DELETE mq, mp
         FROM '. self::TABLE .' mq

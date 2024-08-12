@@ -22,14 +22,11 @@ class MailList extends BaseController
         array $args
     ) {
         (new Helper\User($request))->checkRights('superuser');
-        
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $limit = Validator::param('limit')->isNumber()->setDefault(300)->getValue();
         $onlyIds = Validator::param('onlyIds')->isBool()->setDefault(false)->getValue();
         $ids = Validator::param('ids')->isString()->setDefault('')->getValue();
-
         $query = new Query();
-
         if (!empty($ids)) {
             $itemIds = array_map('intval', explode(',', $ids));
             $mailList = $query->readEntities($itemIds, $resolveReferences, $limit, 'ASC', $onlyIds);

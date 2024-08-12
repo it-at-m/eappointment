@@ -18,7 +18,7 @@ class Mail extends BaseController
     private $cpuLimit;
     private $ramLimit;
 
-    public function __construct($verbose = false, $maxRunTime = 100, $processMailScript = __DIR__ . '/MailProcessor.php')
+    public function __construct($verbose = false, $maxRunTime = 50, $processMailScript = __DIR__ . '/MailProcessor.php')
     {
         parent::__construct($verbose, $maxRunTime);
         $this->processMailScript = $this->findProcessMailScript($processMailScript);
@@ -39,8 +39,6 @@ class Mail extends BaseController
         }
     }
     
-    
-
     public function initQueueTransmission($action = false)
     {
         $resultList = [];
@@ -48,7 +46,6 @@ class Mail extends BaseController
             if (count($this->messagesQueue) <= 20) {
                 $this->log("Messages queue has less than or equal to 20 items, sending immediately...");
 
-                // Collect all IDs
                 $itemIds = [];
                 foreach ($this->messagesQueue as $item) {
                     if ($this->maxRunTime < $this->getSpendTime()) {
@@ -168,7 +165,6 @@ class Mail extends BaseController
         return $results;
     }
     
-    
     protected function getValidMailer(\BO\Zmsentities\Mail $entity)
     {
         $message = '';
@@ -230,10 +226,6 @@ class Mail extends BaseController
                 $icsPart = $mimepart->getContent();
             }
         }
-
-        print("**");
-        print($entity['department']['email']);
-        print("**");
 
         $this->log("Build Mailer: new PHPMailer() - ". \App::$now->format('c'));
         $mailer = new PHPMailer(true);
@@ -352,7 +344,7 @@ class Mail extends BaseController
             return [
                 'process' => $process,
                 'pipes' => $pipes,
-                'ids' => $ids  // Include IDs in the handle
+                'ids' => $ids
             ];
         } else {
             $this->log("Failed to start process batch #$batchIndex for IDs: $ids");

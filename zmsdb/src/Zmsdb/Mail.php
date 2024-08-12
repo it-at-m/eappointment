@@ -32,7 +32,6 @@ class Mail extends Base
         return $mail;
     }
     
-
     public function readEntities(array $itemIds, $resolveReferences = 1, $limit = 300, $order = 'ASC', $onlyIds = false)
     {
         $mailList = new Collection();
@@ -43,7 +42,6 @@ class Mail extends Base
                        ->addOrderBy('createTimestamp', 'ASC')
                        ->addLimit(100);
         $result = $this->fetchList($query, new Entity());
-    
         if ($onlyIds) {
             return array_map(function ($item) {
                 return [
@@ -63,10 +61,7 @@ class Mail extends Base
             }
         }  
         return $mailList;
-    }
-    
-     
-      
+    }     
 
     public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC', $onlyIds = false)
     {
@@ -77,9 +72,7 @@ class Mail extends Base
             ->addResolvedReferences($resolveReferences)
             ->addOrderBy('createTimestamp', $order)
             ->addLimit($limit);
-    
-        $result = $this->fetchList($query, new Entity());
-    
+        $result = $this->fetchList($query, new Entity());    
         if ($onlyIds) {
             return array_map(function ($item) {
                 return [
@@ -88,8 +81,7 @@ class Mail extends Base
                     'createTimestamp' => $item['createTimestamp']
                 ];
             }, $result);
-        }
-    
+        }   
         if (count($result)) {
             foreach ($result as $item) {
                 $entity = new Entity($item);
@@ -119,8 +111,7 @@ class Mail extends Base
                 ->readEntity($mail->department['id'], $resolveReferences - 1);
         }
         return $mail;
-    }
-       
+    }   
 
     public function writeInQueueWithAdmin(Entity $mail)
     {
@@ -234,7 +225,6 @@ class Mail extends Base
         $query = Query\MailQueue::QUERY_MULTI_DELETE;
         $placeholders = implode(',', array_fill(0, count($itemIds), '?'));
         $query = str_replace('?', $placeholders, $query);
-
         return $this->perform($query, $itemIds);
     }
 
