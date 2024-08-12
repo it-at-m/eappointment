@@ -57,11 +57,9 @@ class Mail extends BaseController
                     }
                     $itemIds[] = $item['id'];
                 }
-            
-                // Send all items at once
+
                 try {
                     $results = $this->sendQueueItems($action, $itemIds);
-                    // Handle the results
                     foreach ($results as $result) {
                         if (isset($result['errorInfo'])) {
                             $this->log("Error processing mail item: " . $result['errorInfo']);
@@ -73,8 +71,6 @@ class Mail extends BaseController
                     $log = new Mimepart(['mime' => 'text/plain']);
                     $log->content = $exception->getMessage();
                     $this->log("Exception during batch processing: " . $log->content . ' - ' . \App::$now->format('c'));
-            
-                    // Log the exception for each item in the batch
                     foreach ($this->messagesQueue as $item) {
                         if (isset($item['process']) && isset($item['process']['id'])) {
                             $this->log("Logging exception for process ID: " . $item['process']['id']);
@@ -111,7 +107,6 @@ class Mail extends BaseController
 
     public function sendQueueItems($action, array $itemIds)
     {
-        // Fetch all mail items in one go
         $endpoint = '/mails/';
         $params = [
             'resolveReferences' => 2,
@@ -161,8 +156,6 @@ class Mail extends BaseController
                 $results[] = ['errorInfo' => $e->getMessage()];
             }
         }
-    
-        // Delete all processed items at once if the action is set to true
         if ($action && !empty($itemIds)) {
             try {
                 $this->deleteEntitiesFromQueue($itemIds);

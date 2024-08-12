@@ -54,4 +54,12 @@ class MailQueue extends Base
         $this->query->orderBy('mailQueue.'. $parameter, $order);
         return $this;
     }
+
+    public function addWhereIn($column, array $itemIds)
+    {
+        if (!empty($itemIds)) {
+            $this->query->where($column, 'IN', $itemIds);
+        }
+        return $this;
+    }
 }

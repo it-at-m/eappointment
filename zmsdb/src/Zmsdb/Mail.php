@@ -31,34 +31,29 @@ class Mail extends Base
         }
         return $mail;
     }
+    
 
-    public function readEntities(array $itemIds, $resolveReferences = 1, $onlyIds = false)
+    public function readEntities(array $itemIds, $resolveReferences = 1, $limit = 300, $order = 'ASC', $onlyIds = false)
     {
         $mailList = new Collection();
-        $query = Query\MailQueue::QUERY_MULTI_READ;
-        
-        $inQuery = implode(',', array_fill(0, count($itemIds), '?'));
-        $query = str_replace('?', $inQuery, $query);
-    
-        $result = $this->fetchResults($query, $itemIds);
-        
-        if ($result === false) {
-            error_log("Query failed: " . $query);
-            return $mailList;
-        }
+        $query = new Query\MailQueue(Query\Base::SELECT);
+        $query->addEntityMapping()
+                       ->addResolvedReferences($resolveReferences)
+                       ->addWhereIn('id', $itemIds)
+                       ->addOrderBy('createTimestamp', 'ASC')
+                       ->addLimit(100);
+        $result = $this->fetchList($query, new Entity());
     
         if ($onlyIds) {
-            // Return only the ID and createTimestamp for each result
             return array_map(function ($item) {
                 return [
                     '$schema' => "https://schema.berlin.de/queuemanagement/mail.json",
-                    'id' => $item['id'],
-                    'createTimestamp' => $item['createTimestamp']
+                    'id' => $item->id,
+                    'createTimestamp' => $item->createTimestamp
                 ];
             }, $result);
         }
-        
-        if (is_array($result) && count($result)) {
+        if (count($result)) {
             foreach ($result as $item) {
                 $entity = new Entity($item);
                 $entity = $this->readResolvedReferences($entity, $resolveReferences);
@@ -66,9 +61,12 @@ class Mail extends Base
                     $mailList->addEntity($entity);
                 }
             }
-        }
+        }  
         return $mailList;
-    }    
+    }
+    
+     
+      
 
     public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC', $onlyIds = false)
     {
@@ -108,23 +106,18 @@ class Mail extends Base
     {
         $multiPart = $this->readMultiPartByQueueId($mail->id);
         $mail->addMultiPart($multiPart);
-    
         if (1 <= $resolveReferences) {
             $processQuery = new \BO\Zmsdb\Process();
-    
-            $processId = !empty($mail->process['id']) ? $mail->process['id'] : (isset($mail->processID) ? $mail->processID : null);
-            $authData = $processQuery->readAuthKeyByProcessId($processId);
-    
-            $mail->process = $processQuery->readEntity(
-                $processId,
-                is_array($authData) ? $authData['authKey'] : null,
-                $resolveReferences - 1
-            );
-    
-            $departmentId = !empty($mail->department['id']) ? $mail->department['id'] : (isset($mail->departmentID) ? $mail->departmentID : null);
-            $mail->department = (new \BO\Zmsdb\Department())->readEntity($departmentId, $resolveReferences - 1);
+            $authData = $processQuery->readAuthKeyByProcessId($mail->process['id']);
+            $mail->process = $processQuery
+                ->readEntity(
+                    $mail->process['id'],
+                    is_array($authData) ? $authData['authKey'] : null,
+                    $resolveReferences - 1
+                );
+            $mail->department = (new \BO\Zmsdb\Department())
+                ->readEntity($mail->department['id'], $resolveReferences - 1);
         }
-    
         return $mail;
     }
        

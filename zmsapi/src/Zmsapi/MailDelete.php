@@ -22,11 +22,9 @@ class MailDelete extends BaseController
         (new Helper\User($request))->checkRights('superuser');
         $query = new Query();
 
-        // Check if multiple IDs are provided via query parameter
         $ids = $request->getQueryParams()['ids'] ?? null;
 
         if ($ids) {
-            // Multiple deletion
             $itemIds = array_map('intval', explode(',', $ids));
             if (empty($itemIds)) {
                 throw new \InvalidArgumentException('No valid IDs provided for deletion.');
@@ -43,7 +41,6 @@ class MailDelete extends BaseController
             return $response;
         }
 
-        // Single deletion (using path parameter)
         if (!isset($args['id'])) {
             throw new \InvalidArgumentException('No valid ID provided for deletion.');
         }
@@ -53,7 +50,6 @@ class MailDelete extends BaseController
             throw new Exception\Mail\MailNotFound();
         }
 
-        // Delete the single entity
         if (!$query->deleteEntity($mail->id)) {
             throw new Exception\Mail\MailDeleteFailed();
         }
