@@ -160,25 +160,11 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             $existingEntry['waitingcalculated']
             : $queueEntry['waitingTimeEstimate'];
 
-        $waitingCount = 0;
-        if (! $isWithAppointment) {
-            $waitingCount = $queueList->withOutAppointment()->withoutStatus(['fake'])->count();
-        } else {
-            $queues = $queueList->withAppointment()->withoutStatus(['fake']);
-            foreach ($queues as $queue) {
-                if ($queue->waitingTime > 0) {
-                    $waitingCount++;
-                }
-            }
-        }
-
-        $waitingCount = $existingEntry['waitingcount'] > $waitingCount ?
-            $existingEntry['waitingcount'] : $waitingCount;
         $this->perform(
             Query\ExchangeWaitingscope::getQueryUpdateByDateTime($now, $isWithAppointment),
             [
                 'waitingcalculated' => $waitingCalculated,
-                'waitingcount' => $waitingCount,
+                'waitingcount' => $existingEntry['waitingcount'],
                 'waitingtime' => $existingEntry['waitingtime'],
                 'waytime' => $existingEntry['waytime'],
                 'scopeid' => $scope->id,
@@ -226,4 +212,46 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         );
         return $this;
     }
+
+    public function updateWaitingStatistics(
+        \BO\Zmsentities\Process $process,
+        \DateTimeInterface $now
+    ) {
+        if ($now > (new \DateTime())) {
+            return $this;
+        }
+    
+        $newWaitingTime = $process->getWaitedMinutes($now);
+        $newWayTime = $process->getWayMinutes($now);
+    
+        $existingEntry = $this->readByDateTime(
+            $process->scope,
+            $process->getArrivalTime($now),
+            $process->isWithAppointment()
+        );
+    
+        $waitingCount = $existingEntry['waitingcount'] + 1;
+    
+        $averageWaitingTime = ($existingEntry['waitingtime'] * $existingEntry['waitingcount'] + $newWaitingTime) / $waitingCount;
+        $averageWayTime = ($existingEntry['waytime'] * $existingEntry['waitingcount'] + $newWayTime) / $waitingCount;
+    
+        $this->perform(
+            Query\ExchangeWaitingscope::getQueryUpdateByDateTime(
+                $process->getArrivalTime($now),
+                $process->isWithAppointment()
+            ),
+            [
+                'waitingcalculated' => $existingEntry['waitingcalculated'],
+                'waitingcount' => $waitingCount,
+                'waitingtime' => $averageWaitingTime,
+                'waytime' => $averageWayTime,
+                'scopeid' => $process->scope->id,
+                'date' => $now->format('Y-m-d'),
+                'hour' => $now->format('H')
+            ]
+        );
+    
+        return $this;
+    }
+
 }

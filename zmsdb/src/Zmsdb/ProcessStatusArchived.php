@@ -165,7 +165,7 @@ class ProcessStatusArchived extends Process
         Log::writeLogEntry("ARCHIVE (Archive::writeNewArchivedProcess) $archiveId -> $process ", $process->id);
 
         if ($calculateStatistic) {
-            (new ExchangeWaitingscope())->writeWaitingTime($process, $now);
+            (new ExchangeWaitingscope())->updateWaitingStatistics($process, $now);
 
             if ($process->isWithAppointment()) {
                 (new ExchangeWaitingscope())->writeWaitingTimeCalculated(
