@@ -345,10 +345,11 @@ class Process extends Schema\Entity
 
     public function getShowUpTime($default = 'now', $timezone = null)
     {
-        $showUpTime = $this->toProperty()->queue->showUpTime->get();
+        $showUpTime = $this->toProperty()->showUpTime->get();
         $showDateTime = Helper\DateTime::create($default, $timezone);
         if ($showUpTime) {
-            $showDateTime = $showDateTime->setTimestamp($showUpTime);
+            list($hours, $minutes, $seconds) = explode(':', $showUpTime);
+            $showDateTime = $showDateTime->setTime($hours, $minutes, $seconds);
         }
         return $showDateTime;
     }
