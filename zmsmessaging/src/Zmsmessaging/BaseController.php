@@ -131,18 +131,16 @@ class BaseController
                     if ($status['running']) {
                         $running = true;
                     } else {
-                        // Directly log the combined item IDs and process IDs
                         $this->log("Processing finished for IDs: " . $handle['ids']);
                         proc_close($handle['process']);
                         $handle['process'] = null;
                     }
                 }
             }
-            usleep(500000); // Sleep for half a second
+            usleep(500000);
         }
         $this->log("All processes have finished");
     }
-    
 
     public function log($message)
     {
