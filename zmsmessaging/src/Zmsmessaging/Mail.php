@@ -36,13 +36,11 @@ class Mail extends BaseController
         } else {
             $this->log("QueueList is null - " . \App::$now->format('c'));
         }
-        $this->log("Messages queue count - " . count($this->messagesQueue));
     }
     
     public function initQueueTransmission($action = false)
     {
         $resultList = [];
-    
         if ($this->messagesQueue && count($this->messagesQueue)) {
             $this->log("Messages queue count: " . count($this->messagesQueue));
 
@@ -50,7 +48,7 @@ class Mail extends BaseController
                 $this->log("Max Runtime exceeded before processing started - " . \App::$now->format('c'));
                 return $resultList;
             }
-    
+            $this->log("Messages queue count - " . count($this->messagesQueue));
             if (count($this->messagesQueue) <= 100) {
                 $this->log("Messages queue has less than or equal to 100 items, sending immediately...");
     
