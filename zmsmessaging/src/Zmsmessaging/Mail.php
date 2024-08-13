@@ -81,17 +81,12 @@ class Mail extends BaseController
                         $this->log("Max Runtime exceeded during batch processing - " . \App::$now->format('c'));
                         break;
                     }
-    
-                    $ids = array_map(function ($message) {
-                        return $message['id'];
-                    }, $batch);
-                    $encodedIds = base64_encode(json_encode($ids));
+                
+                    $encodedIds = base64_encode(json_encode($batch));
                     $actionStr = is_array($action) ? json_encode($action) : ($action === false ? 'false' : ($action === true ? 'true' : (string)$action));
-    
-                    $idsStr = implode(', ', $ids);
                     $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedIds) . " " . escapeshellarg($actionStr);
-                    $processHandles[] = $this->startProcess($command, $index, $idsStr);
-                }
+                    $processHandles[] = $this->startProcess($command, $index, $batch);
+                }                
     
                 if ($this->maxRunTime >= $this->getSpendTime()) {
                     $this->monitorProcesses($processHandles);
@@ -322,28 +317,34 @@ class Mail extends BaseController
         return $files;
     }
     
-    private function startProcess($command, $batchIndex, $ids)
+    private function startProcess($command, $batchIndex, $batch)
     {
-        //$this->log("Starting process batch #$batchIndex with IDs: $ids");
         $descriptorSpec = [
             0 => ["pipe", "r"], // stdin
             1 => ["pipe", "w"], // stdout
             2 => ["pipe", "w"]  // stderr
         ];
     
+        // Collect IDs and process IDs
+        $idsWithProcess = array_map(function ($message) {
+            return '[' . $message['id'] . ', ' . $message['process']['id'] . ']';
+        }, $batch);
+    
+        $idsStr = implode(', ', $idsWithProcess);
+    
         $process = proc_open($command, $descriptorSpec, $pipes);
         if (is_resource($process)) {
-            //$this->log("Process batch #$batchIndex started successfully for IDs: $ids");
             return [
                 'process' => $process,
                 'pipes' => $pipes,
-                'ids' => $ids
+                'ids' => $idsStr,  // Pass the combined string here
             ];
         } else {
-            $this->log("Failed to start process batch #$batchIndex for IDs: $ids");
+            $this->log("Failed to start process batch #$batchIndex for IDs: $idsStr");
             return null;
         }
     }
+    
 
     private function getMailById($itemId)
     {
