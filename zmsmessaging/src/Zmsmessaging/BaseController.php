@@ -169,7 +169,7 @@ class BaseController
         }
     
         // Explicitly flush the output buffer
-        echo $text . "\n";
+        //echo $text . "\n";
         flush();
     }    
 
