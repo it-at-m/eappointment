@@ -139,7 +139,6 @@ class BaseController
                         fclose($handle['pipes'][2]);
     
                         // Log the output captured from the child process
-                        $this->log("Processing finished for IDs: " . $handle['ids']);
                         if (trim($output)) {
                             $this->log("Process stdout: " . trim($output));
                         }
