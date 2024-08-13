@@ -349,7 +349,7 @@ class Process extends Schema\Entity
         $showDateTime = Helper\DateTime::create($default, $timezone);
         if ($showUpTime) {
             list($hours, $minutes, $seconds) = explode(':', $showUpTime);
-            $showDateTime = $showDateTime->setTime($hours, $minutes, $seconds);
+            $showDateTime = $showDateTime->setTime(intval($hours), intval($minutes), intval($seconds));
         }
         return $showDateTime;
     }
