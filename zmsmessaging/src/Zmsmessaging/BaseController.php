@@ -125,16 +125,13 @@ class BaseController
 
     protected function monitorProcesses($processHandles)
     {
-        $this->log("Monitoring processes");
-        $running = true;
-    
+        $running = true; 
         while ($running) {
             $running = false;
             foreach ($processHandles as &$handle) {
                 if (is_resource($handle['process'])) {
                     $status = proc_get_status($handle['process']);
                     if ($status['running']) {
-                        //$this->logResourceUsage();
                         $running = true;
                     } else {
                         $this->log("Process finished for IDs: " . $handle['ids']);
@@ -143,87 +140,10 @@ class BaseController
                     }
                 }
             }
-            usleep(1000000);
+            usleep(500000);
         }
         $this->log("All processes have finished");
         $this->logTotalExecutionTime();
-    }
-    
-    protected function logResourceUsage()
-    {
-        $cpuUsage = $this->getCpuUsage();
-        $cpuLimit = $this->getCpuLimit();
-        $memoryUsage = $this->getMemoryUsage();
-        $memoryLimit = $this->getMemoryLimit();
-
-        if ($cpuLimit !== null) {
-            $cpuLimitPercent = ($cpuUsage / $cpuLimit) * 100;
-        } else {
-            $cpuLimitPercent = 0;
-        }
-
-        if ($memoryLimit !== null) {
-            $memoryLimitPercent = ($memoryUsage / $memoryLimit) * 100;
-        } else {
-            $memoryLimitPercent = 0;
-        }
-
-        //$this->log(sprintf("Current CPU usage: %07.2f%% of %.2f limit", $cpuLimitPercent, $cpuLimit ?? 0));
-        $this->log(sprintf("Current Memory usage: %07.2f%% of %dMB limit", $memoryLimitPercent, $memoryLimit ?? 0));
-    }
-
-    protected function getCpuLimit()
-    {
-        $quotaFile = '/sys/fs/cgroup/cpu/cpu.cfs_quota_us';
-        $periodFile = '/sys/fs/cgroup/cpu/cpu.cfs_period_us';
-
-        if (file_exists($quotaFile) && file_exists($periodFile)) {
-            $quota = intval(file_get_contents($quotaFile));
-            $period = intval(file_get_contents($periodFile));
-
-            if ($quota > 0 && $period > 0) {
-                return $quota / 1000; // Convert microseconds to milliseconds
-            }
-        }
-
-        return null;
-    }
-
-    protected function getCpuUsage()
-    {
-        $usageFile = '/sys/fs/cgroup/cpu/cpuacct.usage';
-        if (file_exists($usageFile)) {
-            $usage = intval(file_get_contents($usageFile));
-            return $usage / 1e6; // Convert nanoseconds to milliseconds
-        }
-        return 0;
-    }
-
-    protected function getMemoryLimit()
-    {
-        $memLimitFile = '/sys/fs/cgroup/memory/memory.limit_in_bytes';
-        if (file_exists($memLimitFile)) {
-            $memLimit = intval(file_get_contents($memLimitFile)) / (1024 * 1024); // Convert to MB
-            return $memLimit > 0 ? $memLimit : null;
-        }
-        return null;
-    }
-
-    protected function getMemoryUsage()
-    {
-        $memUsageFile = '/sys/fs/cgroup/memory/memory.usage_in_bytes';
-        if (file_exists($memUsageFile)) {
-            $memUsage = intval(file_get_contents($memUsageFile)) / (1024 * 1024); // Convert to MB
-            return $memUsage;
-        }
-        return null;
-    }
-
-    protected function logTotalExecutionTime()
-    {
-        $endTime = microtime(true);
-        $executionTime = $endTime - $this->startTime;
-        $this->log(sprintf("Total execution time: %07.3f seconds", $executionTime));
     }
 
     public function log($message)
