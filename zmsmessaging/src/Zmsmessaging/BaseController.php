@@ -134,7 +134,7 @@ class BaseController
                 if (is_resource($handle['process'])) {
                     $status = proc_get_status($handle['process']);
                     if ($status['running']) {
-                        $this->logResourceUsage();
+                        //$this->logResourceUsage();
                         $running = true;
                     } else {
                         $this->log("Process finished for IDs: " . $handle['ids']);
@@ -143,7 +143,7 @@ class BaseController
                     }
                 }
             }
-            usleep(100000000);
+            usleep(1000000);
         }
         $this->log("All processes have finished");
         $this->logTotalExecutionTime();
