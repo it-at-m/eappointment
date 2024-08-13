@@ -131,6 +131,8 @@ class Mail extends BaseController
         }
     
         $results = [];
+        $processedItems = []; // Array to hold processed item IDs and process IDs
+    
         foreach ($mailItems as $item) {
             $entity = new \BO\Zmsentities\Mail($item);
             $mailer = $this->getValidMailer($entity);
@@ -159,7 +161,11 @@ class Mail extends BaseController
                 $this->log("Exception while sending mail ID " . $entity->id . ": " . $e->getMessage());
                 $results[] = ['errorInfo' => $e->getMessage()];
             }
+    
+            // Add the processed item and its process ID to the array
+            $processedItems[] = '[' . $entity->id . ', ' . $entity['process']['id'] . ']';
         }
+    
         if ($action && !empty($itemIds)) {
             try {
                 $this->deleteEntitiesFromQueue($itemIds);
@@ -167,9 +173,13 @@ class Mail extends BaseController
                 $this->log("Error deleting processed mails: " . $e->getMessage());
             }
         }
-        $this->log("Processing finished for IDs: " . implode(', ', $itemIds)); 
+    
+        // Log the processed items with both item ID and process ID
+        $this->log("Processing finished for IDs: " . implode(', ', $processedItems));
+    
         return $results;
     }
+    
     
     protected function getValidMailer(\BO\Zmsentities\Mail $entity)
     {
@@ -310,19 +320,6 @@ class Mail extends BaseController
         }
 
         return $files;
-    }
-
-    private function executeCommandsSimultaneously($commandsWithIds)
-    {
-        $processHandles = [];
-    
-        foreach ($commandsWithIds as $index => $commandWithIds) {
-            $command = $commandWithIds['command'];
-            $ids = $commandWithIds['ids'];
-            $processHandles[] = $this->startProcess($command, $index, $ids);
-        }
-    
-        $this->monitorProcesses($processHandles);
     }
     
     private function startProcess($command, $batchIndex, $ids)

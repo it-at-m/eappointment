@@ -32,7 +32,7 @@ class Mail extends Base
         return $mail;
     }
     
-    public function readEntities(array $itemIds, $resolveReferences = 1, $limit = 500, $order = 'ASC', $onlyIds = false)
+    public function readEntities(array $itemIds, $resolveReferences = 1, $limit = 300, $order = 'ASC', $onlyIds = false)
     {
         $mailList = new Collection();
         $query = new Query\MailQueue(Query\Base::SELECT);
@@ -63,7 +63,7 @@ class Mail extends Base
         return $mailList;
     }     
 
-    public function readList($resolveReferences = 1, $limit = 500, $order = 'ASC', $onlyIds = false)
+    public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC', $onlyIds = false)
     {
         $mailList = new Collection();
         $query = new Query\MailQueue(Query\Base::SELECT);
