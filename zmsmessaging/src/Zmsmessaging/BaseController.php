@@ -140,7 +140,7 @@ class BaseController
     
                         // Log the output captured from the child process
                         if (trim($output)) {
-                            $this->log("Process stdout: " . trim($output));
+                            //$this->log("Process stdout: " . trim($output));
                         }
                         if (trim($errorOutput)) {
                             $this->log("Process stderr: " . trim($errorOutput));

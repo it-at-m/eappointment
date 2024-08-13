@@ -30,7 +30,6 @@ class Mail extends BaseController
         ])->getCollection();
         if (null !== $queueList) {
             $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
-            $this->log("QueueList sorted by createTimestamp - ". \App::$now->format('c'));
         } else {
             $this->log("QueueList is null - " . \App::$now->format('c'));
         }
