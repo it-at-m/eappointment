@@ -23,8 +23,7 @@ class Mail extends BaseController
         parent::__construct($verbose, $maxRunTime);
         $this->processMailScript = $this->findProcessMailScript($processMailScript);
         //$this->cpuLimit = $this->getCpuLimit();
-        $this->ramLimit = $this->getMemoryLimit();
-        //$this->log("MailProcessor.php path: " . $this->processMailScript);
+        //$this->ramLimit = $this->getMemoryLimit();
         $this->log("Read Mail QueueList start with limit ". \App::$mails_per_minute ." - ". \App::$now->format('c'));
         $queueList = \App::$http->readGetResult('/mails/', [
             'resolveReferences' => 0,
@@ -37,70 +36,86 @@ class Mail extends BaseController
         } else {
             $this->log("QueueList is null - " . \App::$now->format('c'));
         }
+        $this->log("Messages queue count - " . count($this->messagesQueue));
     }
     
     public function initQueueTransmission($action = false)
     {
         $resultList = [];
+    
         if ($this->messagesQueue && count($this->messagesQueue)) {
+            $this->log("Messages queue count: " . count($this->messagesQueue));
+
+            if ($this->maxRunTime < $this->getSpendTime()) {
+                $this->log("Max Runtime exceeded before processing started - " . \App::$now->format('c'));
+                return $resultList;
+            }
+    
             if (count($this->messagesQueue) <= 100) {
                 $this->log("Messages queue has less than or equal to 100 items, sending immediately...");
-
+    
                 $itemIds = [];
                 foreach ($this->messagesQueue as $item) {
                     if ($this->maxRunTime < $this->getSpendTime()) {
-                        $this->log("Max Runtime exceeded - " . \App::$now->format('c'));
+                        $this->log("Max Runtime exceeded during message loop - " . \App::$now->format('c'));
                         break;
                     }
                     $itemIds[] = $item['id'];
                 }
-
-                try {
-                    $results = $this->sendQueueItems($action, $itemIds);
-                    foreach ($results as $result) {
-                        if (isset($result['errorInfo'])) {
-                            $this->log("Error processing mail item: " . $result['errorInfo']);
-                        } else {
-                            $this->log("Successfully processed mail item with ID: " . $result['id']);
+    
+                if (!empty($itemIds)) {
+                    try {
+                        $results = $this->sendQueueItems($action, $itemIds);
+                        foreach ($results as $result) {
+                            if (isset($result['errorInfo'])) {
+                                $this->log("Error processing mail item: " . $result['errorInfo']);
+                            } else {
+                                $this->log("Successfully processed mail item with ID: " . $result['id']);
+                            }
                         }
-                    }
-                } catch (\Exception $exception) {
-                    $log = new Mimepart(['mime' => 'text/plain']);
-                    $log->content = $exception->getMessage();
-                    $this->log("Exception during batch processing: " . $log->content . ' - ' . \App::$now->format('c'));
-                    foreach ($this->messagesQueue as $item) {
-                        if (isset($item['process']) && isset($item['process']['id'])) {
-                            $this->log("Logging exception for process ID: " . $item['process']['id']);
-                            \App::$http->readPostResult('/log/process/' . $item['process']['id'] . '/', $log, ['error' => 1]);
-                        }
+                    } catch (\Exception $exception) {
+                        $this->handleProcessingException($exception);
                     }
                 }
             } else {
                 $batchSize = min(count($this->messagesQueue), max(1, ceil(count($this->messagesQueue) / 12)));
-                $this->log("Messages queue " . count($this->messagesQueue) . " items has more than 10 items, processing in batches of $batchSize...");
+                $this->log("More than 100 items, processing in batches of $batchSize...");
                 $batches = array_chunk(iterator_to_array($this->messagesQueue), $batchSize);
                 $this->log("Messages divided into " . count($batches) . " batches.");
+    
                 $processHandles = [];
                 foreach ($batches as $index => $batch) {
+                    if ($this->maxRunTime < $this->getSpendTime()) {
+                        $this->log("Max Runtime exceeded during batch processing - " . \App::$now->format('c'));
+                        break;
+                    }
+    
                     $ids = array_map(function ($message) {
                         return $message['id'];
                     }, $batch);
                     $encodedIds = base64_encode(json_encode($ids));
                     $actionStr = is_array($action) ? json_encode($action) : ($action === false ? 'false' : ($action === true ? 'true' : (string)$action));
-
+    
                     $idsStr = implode(', ', $ids);
                     $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedIds) . " " . escapeshellarg($actionStr);
                     $processHandles[] = $this->startProcess($command, $index, $idsStr);
                 }
-                $this->monitorProcesses($processHandles);
+    
+                if ($this->maxRunTime >= $this->getSpendTime()) {
+                    $this->monitorProcesses($processHandles);
+                } else {
+                    $this->log("Max Runtime exceeded before process monitoring started - " . \App::$now->format('c'));
+                }
             }
         } else {
             $resultList[] = array(
                 'errorInfo' => 'No mail entry found in Database...'
             );
         }
+    
         return $resultList;
     }
+    
 
     public function sendQueueItems($action, array $itemIds)
     {
@@ -211,7 +226,6 @@ class Mail extends BaseController
      */
     protected function readMailer(\BO\Zmsentities\Mail $entity)
     {
-        $this->log("Build Mailer: testEntity() - ". \App::$now->format('c'));
         $this->testEntity($entity);
         $encoding = 'base64';
         foreach ($entity->multipart as $part) {
@@ -226,8 +240,6 @@ class Mail extends BaseController
                 $icsPart = $mimepart->getContent();
             }
         }
-
-        $this->log("Build Mailer: new PHPMailer() - ". \App::$now->format('c'));
         $mailer = new PHPMailer(true);
         $mailer->CharSet = 'UTF-8';
         $mailer->SMTPDebug = \App::$smtp_debug;
@@ -239,12 +251,9 @@ class Mail extends BaseController
         $mailer->AltBody = (isset($textPart)) ? $textPart : '';
         $mailer->Body = (isset($htmlPart)) ? $htmlPart : '';
         $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
-        $this->log("Build Mailer: addAddress() - ". \App::$now->format('c') . " arguments: "
-            . $entity->getRecipient() . ' - ' . $entity->client['familyName']);
         $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
 
         if (null !== $entity->getIcsPart()) {
-            $this->log("Build Mailer: AddStringAttachment() - ". \App::$now->format('c'));
             $mailer->AddStringAttachment(
                 $icsPart,
                 "Termin.ics",
@@ -280,10 +289,10 @@ class Mail extends BaseController
             //$this->log("MailProcessor.php found at $path");
             return realpath($path);
         } else {
-            $this->log("MailProcessor.php not found at $path. Searching for file...");
+            //$this->log("MailProcessor.php not found at $path. Searching for file...");
             $files = $this->searchFile(__DIR__, 'MailProcessor.php');
             if (!empty($files)) {
-                $this->log("MailProcessor.php found at " . $files[0]);
+                //$this->log("MailProcessor.php found at " . $files[0]);
                 return realpath($files[0]);
             } else {
                 $this->log("MailProcessor.php could not be found.");
@@ -294,16 +303,13 @@ class Mail extends BaseController
 
     private function searchFile($directory, $filename)
     {
-        $this->log("Starting file search in directory: $directory for filename: $filename");
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($directory),
             \RecursiveIteratorIterator::SELF_FIRST
         );
-
         $files = [];
         foreach ($iterator as $file) {
             if ($file->getFilename() === $filename) {
-                $this->log("File found: " . $file->getPathname());
                 $files[] = $file->getPathname();
             }
         }
@@ -317,7 +323,6 @@ class Mail extends BaseController
 
     private function executeCommandsSimultaneously($commandsWithIds)
     {
-        //$this->log("Executing commands simultaneously...");
         $processHandles = [];
     
         foreach ($commandsWithIds as $index => $commandWithIds) {

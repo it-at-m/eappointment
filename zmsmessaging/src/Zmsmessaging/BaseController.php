@@ -143,7 +143,7 @@ class BaseController
                     }
                 }
             }
-            usleep(50000000);
+            usleep(100000000);
         }
         $this->log("All processes have finished");
         $this->logTotalExecutionTime();
