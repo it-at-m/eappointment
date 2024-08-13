@@ -51,12 +51,9 @@ class BaseController
             throw new Exception\SendingFailed();
         }
         // @codeCoverageIgnoreEnd
-        $this->log("Send Mailer: sending succeeded - ". \App::$now->format('c'));
         $log = new Mimepart(['mime' => 'text/plain']);
         $log->content = ($entity instanceof Mail) ? $entity->subject : $entity->message;
-        $this->log("Send Mailer: log readPostResult start - ". \App::$now->format('c'));
         \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $log);
-        $this->log("Send Mailer: log readPostResult finished - ". \App::$now->format('c'));
         return $mailer;
     }
 
@@ -134,7 +131,7 @@ class BaseController
                     if ($status['running']) {
                         $running = true;
                     } else {
-                        $this->log("Process finished for IDs: " . $handle['ids']);
+                        $this->log("Processing finished for IDs: " . $handle['ids']);
                         proc_close($handle['process']);
                         $handle['process'] = null;
                     }
@@ -143,7 +140,6 @@ class BaseController
             usleep(500000);
         }
         $this->log("All processes have finished");
-        $this->logTotalExecutionTime();
     }
 
     public function log($message)

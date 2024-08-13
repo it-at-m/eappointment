@@ -22,8 +22,6 @@ class Mail extends BaseController
     {
         parent::__construct($verbose, $maxRunTime);
         $this->processMailScript = $this->findProcessMailScript($processMailScript);
-        //$this->cpuLimit = $this->getCpuLimit();
-        //$this->ramLimit = $this->getMemoryLimit();
         $this->log("Read Mail QueueList start with limit ". \App::$mails_per_minute ." - ". \App::$now->format('c'));
         $queueList = \App::$http->readGetResult('/mails/', [
             'resolveReferences' => 0,
@@ -42,15 +40,13 @@ class Mail extends BaseController
     {
         $resultList = [];
         if ($this->messagesQueue && count($this->messagesQueue)) {
-            $this->log("Messages queue count: " . count($this->messagesQueue));
-
             if ($this->maxRunTime < $this->getSpendTime()) {
                 $this->log("Max Runtime exceeded before processing started - " . \App::$now->format('c'));
                 return $resultList;
             }
             $this->log("Messages queue count - " . count($this->messagesQueue));
             if (count($this->messagesQueue) <= 100) {
-                $this->log("Messages queue has less than or equal to 100 items, sending immediately...");
+                $this->log("Less than or equal to 100 items, sending immediately.");
     
                 $itemIds = [];
                 foreach ($this->messagesQueue as $item) {
@@ -67,8 +63,6 @@ class Mail extends BaseController
                         foreach ($results as $result) {
                             if (isset($result['errorInfo'])) {
                                 $this->log("Error processing mail item: " . $result['errorInfo']);
-                            } else {
-                                $this->log("Successfully processed mail item with ID: " . $result['id']);
                             }
                         }
                     } catch (\Exception $exception) {
@@ -77,7 +71,7 @@ class Mail extends BaseController
                 }
             } else {
                 $batchSize = min(count($this->messagesQueue), max(1, ceil(count($this->messagesQueue) / 12)));
-                $this->log("More than 100 items, processing in batches of $batchSize...");
+                $this->log("More than 100 items, processing in batches of $batchSize.");
                 $batches = array_chunk(iterator_to_array($this->messagesQueue), $batchSize);
                 $this->log("Messages divided into " . count($batches) . " batches.");
     
@@ -169,12 +163,11 @@ class Mail extends BaseController
         if ($action && !empty($itemIds)) {
             try {
                 $this->deleteEntitiesFromQueue($itemIds);
-                $this->log("All processed mails deleted from queue: " . implode(', ', $itemIds));
             } catch (\Exception $e) {
                 $this->log("Error deleting processed mails: " . $e->getMessage());
             }
         }
-    
+        $this->log("Processing finished for IDs: " . implode(', ', $itemIds)); 
         return $results;
     }
     

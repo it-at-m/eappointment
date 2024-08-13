@@ -32,12 +32,9 @@ if ($argc > 2) {
     $ids = json_decode(base64_decode($encodedIds), true);
     try {
         $results = $processor->sendQueueItems($action, $ids);
-        // You can log or handle the results as needed
         foreach ($results as $result) {
             if (isset($result['errorInfo'])) {
                 $processor->log("Error processing mail item: " . $result['errorInfo']);
-            } else {
-                $processor->log("Successfully processed mail item with ID: " . $result['id']);
             }
         }
     } catch (\Exception $exception) {
