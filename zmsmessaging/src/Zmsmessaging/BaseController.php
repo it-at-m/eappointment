@@ -122,7 +122,7 @@ class BaseController
 
     protected function monitorProcesses($processHandles)
     {
-        $running = true; 
+        $running = true;
         while ($running) {
             $running = false;
             foreach ($processHandles as &$handle) {
@@ -131,14 +131,22 @@ class BaseController
                     if ($status['running']) {
                         $running = true;
                     } else {
-                        // Capture logs from the child process (stdout)
-                        $output = stream_get_contents($handle['pipes'][1]);
+                        // Capture logs from the child process (stdout and stderr)
+                        $output = stream_get_contents($handle['pipes'][1]);  // stdout
+                        $errorOutput = stream_get_contents($handle['pipes'][2]);  // stderr
+    
                         fclose($handle['pipes'][1]);
-                        
+                        fclose($handle['pipes'][2]);
+    
                         // Log the output captured from the child process
                         $this->log("Processing finished for IDs: " . $handle['ids']);
-                        $this->log("Process output: " . trim($output));
-        
+                        if (trim($output)) {
+                            $this->log("Process stdout: " . trim($output));
+                        }
+                        if (trim($errorOutput)) {
+                            $this->log("Process stderr: " . trim($errorOutput));
+                        }
+    
                         proc_close($handle['process']);
                         $handle['process'] = null;
                     }
@@ -150,23 +158,26 @@ class BaseController
     }
     
     
+    
 
     public function log($message)
     {
         if (is_array($message)) {
             $message = print_r($message, true);
         }
-
+    
         $time = $this->getSpendTime();
         $memory = memory_get_usage() / (1024 * 1024);
-        $text = sprintf("[Init Messaging log %07.3fs %07.1fmb] %s", $time, $memory, $message);
-        static::$logList[] = $text;
+        $text = sprintf("[MailProcessor log %07.3fs %07.1fmb] %s", $time, $memory, $message);
+    
         if ($this->verbose) {
-            error_log('verbose is: ' . $this->verbose);
             error_log($text);
         }
-        return $this;
-    }
+    
+        // Explicitly flush the output buffer
+        echo $text . "\n";
+        flush();
+    }    
 
     protected function convertCollectionToArray($collection)
     {
