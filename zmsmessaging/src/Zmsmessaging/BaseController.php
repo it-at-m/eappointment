@@ -135,14 +135,12 @@ class BaseController
                         $errorOutput = stream_get_contents($handle['pipes'][2]);  // stderr   
                         fclose($handle['pipes'][1]);
                         fclose($handle['pipes'][2]);
-                        $this->log("-");
                         if (trim($output)) { 
-                            $this->log("Process stdout: " . trim($output));
+                            $this->log("Process stdout: " . trim($output) . "\n\n-\n\n");
                         }
                         if (trim($errorOutput)) {
-                            $this->log("Process stderr: " . trim($errorOutput));
+                            $this->log("Process stderr: " . trim($errorOutput) . "\n\n-\n\n");
                         }
-                        $this->log("-");
     
                         proc_close($handle['process']);
                         $handle['process'] = null;
