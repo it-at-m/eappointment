@@ -13,7 +13,7 @@ class DeleteMailsFailedTest extends Base
                 'function' => 'readGetResult',
                 'url' => '/mails/',
                 'parameters' => [
-                    'resolveReferences' => 0, 'limit' => 600, 'onlyIds' => true
+                    'resolveReferences' => 0, 'limit' => 500, 'onlyIds' => true
                 ],
                 'response' => $this->readFixture("GET_mails_queue_id_only.json"),
             ],
