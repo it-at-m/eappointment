@@ -165,11 +165,11 @@ class BaseController
         $text = sprintf("[MailProcessor log %07.3fs %07.1fmb] %s", $time, $memory, $message);
     
         if ($this->verbose) {
-            error_log($text);
+            //error_log($text);
         }
     
         // Explicitly flush the output buffer
-        //echo $text . "\n";
+        echo $text . "\n";
         flush();
     }    
 
