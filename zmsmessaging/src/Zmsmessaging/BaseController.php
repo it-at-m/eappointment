@@ -131,16 +131,24 @@ class BaseController
                     if ($status['running']) {
                         $running = true;
                     } else {
+                        // Capture logs from the child process (stdout)
+                        $output = stream_get_contents($handle['pipes'][1]);
+                        fclose($handle['pipes'][1]);
+                        
+                        // Log the output captured from the child process
                         $this->log("Processing finished for IDs: " . $handle['ids']);
+                        $this->log("Process output: " . trim($output));
+    
                         proc_close($handle['process']);
                         $handle['process'] = null;
                     }
                 }
             }
-            usleep(500000);
+            usleep(500000);  // Sleep for 0.5 seconds between checks
         }
         $this->log("All processes have finished");
     }
+    
 
     public function log($message)
     {
