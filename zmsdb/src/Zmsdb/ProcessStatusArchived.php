@@ -166,14 +166,6 @@ class ProcessStatusArchived extends Process
 
         if ($calculateStatistic) {
             (new ExchangeWaitingscope())->updateWaitingStatistics($process, $now);
-
-            if ($process->isWithAppointment()) {
-                (new ExchangeWaitingscope())->writeWaitingTimeCalculated(
-                    $process->scope,
-                    $now,
-                    true
-                );
-            }
         }
         
         return $this->readArchivedEntity($archiveId, $resolveReferences);
