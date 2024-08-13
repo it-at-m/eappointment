@@ -16,6 +16,8 @@ class MailProcessor extends Mail
     public function __construct($verbose = false, $maxRunTime = 50)
     {
         parent::__construct($verbose, $maxRunTime);
+        ob_implicit_flush(true); // Enable implicit flushing
+        ob_end_flush();          // Flush output buffer
     }
 }
 
@@ -41,4 +43,3 @@ if ($argc > 2) {
         $processor->log("Error processing batch: " . $exception->getMessage());
     }
 }
-

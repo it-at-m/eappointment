@@ -138,7 +138,7 @@ class BaseController
                         // Log the output captured from the child process
                         $this->log("Processing finished for IDs: " . $handle['ids']);
                         $this->log("Process output: " . trim($output));
-    
+        
                         proc_close($handle['process']);
                         $handle['process'] = null;
                     }
@@ -148,6 +148,7 @@ class BaseController
         }
         $this->log("All processes have finished");
     }
+    
     
 
     public function log($message)
