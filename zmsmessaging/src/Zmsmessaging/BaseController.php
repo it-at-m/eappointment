@@ -131,29 +131,26 @@ class BaseController
                     if ($status['running']) {
                         $running = true;
                     } else {
-                        // Capture logs from the child process (stdout and stderr)
                         $output = stream_get_contents($handle['pipes'][1]);  // stdout
-                        $errorOutput = stream_get_contents($handle['pipes'][2]);  // stderr
-    
+                        $errorOutput = stream_get_contents($handle['pipes'][2]);  // stderr   
                         fclose($handle['pipes'][1]);
                         fclose($handle['pipes'][2]);
-    
-                        // Log the output captured from the child process
-                        if (trim($output)) {
-                            //$this->log("Process stdout: " . trim($output));
+                        $this->log("-");
+                        if (trim($output)) { 
+                            $this->log("Process stdout: " . trim($output));
                         }
                         if (trim($errorOutput)) {
                             $this->log("Process stderr: " . trim($errorOutput));
                         }
+                        $this->log("-");
     
                         proc_close($handle['process']);
                         $handle['process'] = null;
                     }
                 }
             }
-            usleep(500000);  // Sleep for 0.5 seconds between checks
+            usleep(500000);
         }
-        $this->log("All processes have finished");
     }
     
     
