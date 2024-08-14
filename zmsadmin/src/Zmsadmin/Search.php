@@ -36,7 +36,9 @@ class Search extends BaseController
         ])->getCollection();
 
         $scopeIds = $workstation->getUseraccount()->getDepartmentList()->getUniqueScopeList()->getIds();
-        $processList = $this->filterProcessListForUserRights($processList, $scopeIds);
+        if (!$workstation->hasSuperUseraccount()) {
+            $processList = $this->filterProcessListForUserRights($processList, $scopeIds);
+        }
 
         $processList = $processList ? $processList : new \BO\Zmsentities\Collection\ProcessList();
         if (preg_match('#^\d{4,}$#', $queryString) && $workstation->hasAuditAccount()) {
