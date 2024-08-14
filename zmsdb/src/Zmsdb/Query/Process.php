@@ -676,9 +676,6 @@ class Process extends Base implements MappingInterface
         $parentProcess = 0,
         $previousStatus = null
     ) {
-        error_log("hey");
-        error_log("Previous Status: " . $previousStatus);
-        error_log("Current Status: " . $process->status);
         $this->addValuesIPAdress($process);
         $this->addValuesStatusData($process, $dateTime);
         if (0 === $parentProcess) {
