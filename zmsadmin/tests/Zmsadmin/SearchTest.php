@@ -24,12 +24,6 @@ class SearchTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/process/search/',
                     'parameters' => [
                         'resolveReferences' => 1,
@@ -52,12 +46,6 @@ class SearchTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
@@ -92,12 +80,6 @@ class SearchTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_workstation_basic.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
