@@ -119,9 +119,6 @@ class ProcessStatusArchived extends Base implements MappingInterface
     }
     public function addValuesNewArchive(\BO\Zmsentities\Process $process, \DateTimeInterface $now)
     {
-        error_log("*********");
-        error_log($process->getWayMinutes());
-        error_log("*********");
         $processingTimeStr = $process->getProcessingTime();
         $bearbeitungszeit = null;
 
