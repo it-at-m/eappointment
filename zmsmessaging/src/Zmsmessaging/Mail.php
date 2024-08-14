@@ -154,6 +154,7 @@ class Mail extends BaseController
         $this->log("Build Mailer: new PHPMailer() - ". \App::$now->format('c'));
         $mailer = new PHPMailer(true);
         $mailer->CharSet = 'UTF-8';
+        $mailer->SMTPDebug = \App::$smtp_debug;
         $mailer->SetLanguage("de");
         $mailer->Encoding = $encoding;
         $mailer->IsHTML(true);
@@ -162,9 +163,10 @@ class Mail extends BaseController
         $mailer->AltBody = (isset($textPart)) ? $textPart : '';
         $mailer->Body = (isset($htmlPart)) ? $htmlPart : '';
         $mailer->SetFrom($entity['department']['email'], $entity['department']['name']);
-        $this->log("Build Mailer: addAddress() - ". \App::$now->format('c'));
+        $this->log("Build Mailer: addAddress() - ". \App::$now->format('c') . " arguments: "
+            . $entity->getRecipient() . ' - ' . $entity->client['familyName']);
         $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
-            
+
         if (null !== $entity->getIcsPart()) {
             $this->log("Build Mailer: AddStringAttachment() - ". \App::$now->format('c'));
             $mailer->AddStringAttachment(

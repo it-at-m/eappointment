@@ -1,3 +1,45 @@
+## Release Muc-10
+    
+<h2>        Aufgabe
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2154'>ZMS-2154</a>] -         zmsticketprinter Header und Footer ausblenden
+</li>
+</ul>
+    
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2315'>ZMS-2315</a>] -         Anzeige (Layout) von 2x DL im e-Kiosk werden nicht nebeneinander angezeigt 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2340'>ZMS-2340</a>] -         Ticketprinter Uhr bleibt stehen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2341'>ZMS-2341</a>] -         zmsproxymuc pm2 macht Logs kaputt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2348'>ZMS-2348</a>] -         Zeitzonen-Bug in der Bürgeransicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2476'>ZMS-2476</a>] -         Dienstleistung wird an falschem Standort gebucht + es werden zu viele Dienstleistungen angezeigt
+</li>
+</ul>
+                                                                                                                                                                        
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2335'>ZMS-2335</a>] -         URL für Terminvereinbarung kann nicht verändert werden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2336'>ZMS-2336</a>] -         Anpassung Worklfow eKiosk Terminbuchung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2356'>ZMS-2356</a>] -         Anpassung Bezeichnung der Anmerkung in den Öffnungszeiten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2357'>ZMS-2357</a>] -         Begrenzung der Anzahl an kombinierbaren Dienstleistungen ist in den Standorteinstellungen möglich
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2359'>ZMS-2359</a>] -         Anpassung E-Mail Templates
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2407'>ZMS-2407</a>] -         Anpassung der Layouts Aufrufanzeige - ganzen Bildschirm verwenden
+</li>
+</ul>
+                                                    
+
 ## Release Muc-9
                         
 <h2>        Bug

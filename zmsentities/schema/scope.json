@@ -263,7 +263,15 @@
                             ],
                             "description": "true if client is required to enter a custom text field address",
                             "default": false
-                        },                      
+                        },
+                        "captchaActivatedRequired": {
+                            "type": [
+                                "boolean",
+                                "number"
+                            ],
+                            "description": "true if client is required to pass a captcha in the citizen frontend",
+                            "default": false
+                        },
                         "emailFrom": {
                             "type": "string",
                             "description": "Mail address for sending mails to clients",
@@ -324,6 +332,14 @@
                                 "number"
                             ],
                             "description": "deleted mail is sent to admin",
+                            "default": false
+                        },
+                        "adminMailOnMailSent": {
+                            "type": [
+                                "boolean",
+                                "number"
+                            ],
+                            "description": "mail is sent to admin when client receives a mail",
                             "default": false
                         }
                     }

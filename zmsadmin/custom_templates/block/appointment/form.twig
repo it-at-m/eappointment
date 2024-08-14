@@ -20,9 +20,9 @@
     {% block board_body %}
         {% include "element/helper/messageHandler.twig" %}
 
-        {% set addRequestAuralMessage = "Die folgende Dientsleistung wurde zur Liste der ausgewählten Dienstleistungen hinzugefügt" %}
-        {% set cleanupRequestAuralMessage = "Die Auswahl der Dientsleistungen wurde zurückgesetzt" %}
-        {% set removeRequestAuralMessage = "Die folgende Dientsleistung ist nicht mehr ausgewählt" %}
+        {% set addRequestAuralMessage = "Die folgende Dienstleistung wurde zur Liste der ausgewählten Dienstleistungen hinzugefügt" %}
+        {% set cleanupRequestAuralMessage = "Die Auswahl der Dienstleistungen wurde zurückgesetzt" %}
+        {% set removeRequestAuralMessage = "Die folgende Dienstleistung ist nicht mehr ausgewählt" %}
         {% set chooseRequestFirst = "Wählen Sie bitte zuerst die Dienstleistungen und die Anzahl der Slots aus bevor Sie das Datum (Zugriffschlüssel m) und die Uhrzeit (Zugriffschlüssel z) auswählen." %}
 
         <form data-formData="{{ formData|json_encode }}" data-saved-process="{{ selectedProcess.id }}">
@@ -258,7 +258,7 @@
                                 "parameter": {
                                     "name": "amendment",
                                     "rows": "3",
-                                    "maxlength": 300,
+                                    "maxlength": 500,
                                     "value": selectedProcess.amendment,
                                     "accesskey":"w"
                                 }
@@ -333,34 +333,48 @@
                         </div>
                         <div>
                             {% set requestsOptions = [] %}
-                            {% for request in requestList %}
-                                {% set slotCount = request.timeSlotCount %}
-                                {% if request.id in selectedRequests %}
+                            {% for requestGroup in requestsByCount %}
+                                {% set slotCount = requestGroup.request.timeSlotCount %}
+                                {% if requestGroup.request.id in selectedRequests %}
                                     {% set checked = "1" %}
                                 {% else %}
                                     {% set checked = "0" %}
                                 {% endif %}
-                                {% set requestsOptions = requestsOptions|merge([{ "value": request.id, "name": request.name, "data": {'slots': slotCount}, "selected": checked }]) %}
+                                {% set requestsOptions = requestsOptions|merge([{ "value": requestGroup.request.id, "name": requestGroup.request.name, "data": {"count": requestGroup.count, "slots": slotCount}, "selected": checked }]) %}
                             {% endfor %}
-                            {{ formgroup(
-                                {
-                                    "groupTag": "fieldset",
-                                    "legend": "Ausgewählte Dienstleistungen",
-                                    "id": "deselect-requests"
-                                },
-                                [{
-                                    "type": "checkboxDeselect",
-                                    "parameter": {
-                                        "ariaLabel": "Dienstleistungen Abwahlliste",
-                                        "accesskey":"h",
-                                        "height": "auto",
-                                        "min-height": "5em",
-                                        "max-height": "20em",
-                                        "name": "requests[]",
-                                        "options": requestsOptions,
-                                    }
-                                }]
-                            ) }}
+
+                            <fieldset class="form-group">
+                                <legend class="label">Ausgewählte Dienstleistungen
+                                </legend>
+                                <div class="controls ">
+                                    <div class="formelements">
+                                        <div class="checkboxdeselect" id="deselect-requests">
+                                            <ul aria-label="Dienstleistungen Abwahlliste" class="checkbox-list inner" style="height:auto; overflow: auto; margin: 0px">
+                                                {% for option in requestsOptions %}
+                                                <li style="display: none;">
+                                                    <div class="form-check" style="padding-left: unset">
+                                                        <label>
+                                                            <input class="minus" type="button" value="-" aria-label="Anzahl der Dienstleistung verringern auf {{ option.data.count - 1 }}" />
+                                                            <span class="request-count">{{ option.data.count }}</span>
+                                                            <input class="plus" type="button" value="+" aria-label="Anzahl der Dienstleistung erhöhen auf {{ option.data.count + 1 }}" />
+
+                                                            <span class="hidden-inputs">
+                                                                {% for i in 1..option.data.count %}
+                                                                    <input style="display: none" class="form-check-input" type="checkbox" tabindex="0" name="requests[]" value="{{ option.value }}" data-slots="{{ option.data.slots }}">
+                                                                {% endfor %}
+                                                            </span>
+
+                                                            <span>{{ option.name }}</span>
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
                             <button type="button" class="link clear-list" name="clear-list" accesskey="l">Liste leeren</button>
                         </div>
                         {% else %}
