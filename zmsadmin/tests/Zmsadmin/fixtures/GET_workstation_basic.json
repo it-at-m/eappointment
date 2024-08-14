@@ -16,6 +16,7 @@
                 "department": "0",
                 "organisation": "0",
                 "scope": "0",
+                "audit": "1",
                 "sms": "1",
                 "superuser": "0",
                 "ticketprinter": "0",
