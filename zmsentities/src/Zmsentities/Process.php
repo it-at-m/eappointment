@@ -607,11 +607,6 @@ class Process extends Schema\Entity
      */
     public function getWaitedSeconds($defaultTime = 'now')
     {
-        error_log("---------waited-----------");
-        error_log($this->getArrivalTime($defaultTime));
-        error_log($this->getCallTime($defaultTime));
-        error_log($this->getCallTime($defaultTime)->getTimestamp() - $this->getArrivalTime($defaultTime)->getTimestamp());
-        error_log("--------waited------------");
         return $this->getCallTime($defaultTime)->getTimestamp() - $this->getArrivalTime($defaultTime)->getTimestamp();
     }
 
@@ -622,13 +617,7 @@ class Process extends Schema\Entity
 
     public function getWaySeconds($defaultTime = 'now')
     {
-        error_log("----------way----------");
-        error_log($this->getShowUpTime($defaultTime));
-        error_log($this->getCallTime($defaultTime));
-        error_log($this->getShowUpTime($defaultTime)->getTimestamp() - $this->getCallTime($defaultTime)->getTimestamp());
-        error_log("----------way----------");
         return $this->getShowUpTime($defaultTime)->getTimestamp() - $this->getCallTime($defaultTime)->getTimestamp();
-
     }
 
     public function getWayMinutes($defaultTime = 'now')
