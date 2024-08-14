@@ -76,7 +76,7 @@ class Search extends BaseController
 
         foreach ($processList as $process) {
             if (in_array($process->scope->id, $scopeIds)) {
-                $list->addEntity($process);
+                $list->addEntity(clone $process);
             }
         }
 
@@ -93,7 +93,7 @@ class Search extends BaseController
 
         foreach ($logList as $log) {
             if (isset($log->scope_id) && in_array($log->scope_id, $scopeIds)) {
-                $list->addEntity($log);
+                $list->addEntity(clone $log);
             }
         }
 
