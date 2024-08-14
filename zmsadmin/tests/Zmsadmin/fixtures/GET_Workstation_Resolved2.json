@@ -39,6 +39,13 @@
                                 "name": "Häschenschule"
                             },
                             "$ref": "/scope/1/"
+                        },
+                        {
+                            "id": "141",
+                            "contact": {
+                                "name": "Häschenschule"
+                            },
+                            "$ref": "/scope/141/"
                         }
                     ],
                     "links": [

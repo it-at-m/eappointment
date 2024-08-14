@@ -22,6 +22,34 @@
                 "ticketprinter": "0",
                 "useraccount": "0"
             },
+            "departments": [
+                {
+                    "id": "74",
+                    "scopes": [
+                        {
+                            "id": "380",
+                            "contact": {
+                                "name": "Bürgeramt Halemweg (Außenstelle)"
+                            },
+                            "$ref": "/scope/380/"
+                        },
+                        {
+                            "id": "1",
+                            "contact": {
+                                "name": "Häschenschule"
+                            },
+                            "$ref": "/scope/1/"
+                        },
+                        {
+                            "id": "141",
+                            "contact": {
+                                "name": "Häschenschule"
+                            },
+                            "$ref": "/scope/141/"
+                        }
+                    ]
+                }
+            ],
             "id": "testuser",
             "lastLogin": 1459461600
         },
