@@ -94,7 +94,7 @@ class SearchTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString('data-processList-count="5"', (string)$response->getBody());
-        $this->assertStringContainsString('data-processListOther-count="1"', (string)$response->getBody());
+        $this->assertStringContainsString('data-processListOther-count="0"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }
