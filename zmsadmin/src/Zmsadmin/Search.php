@@ -35,6 +35,8 @@ class Search extends BaseController
             'resolveReferences' => 1,
         ])->getCollection();
 
+        var_dump($processList->count());
+
         $scopeIds = $workstation->getUseraccount()->getDepartmentList()->getUniqueScopeList()->getIds();
         if (!$workstation->hasSuperUseraccount()) {
             $processList = $this->filterProcessListForUserRights($processList, $scopeIds);
