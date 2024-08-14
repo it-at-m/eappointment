@@ -33,10 +33,11 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $process;
     }
 
-    public function readById($processId)
+    public function readById($processId, $resolveReferences = 1)
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
             ->addConditionProcessId($processId);
 
         return $this->fetchOne($query, new Entity());
