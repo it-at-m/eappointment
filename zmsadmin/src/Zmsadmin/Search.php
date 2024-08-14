@@ -6,6 +6,10 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsdb\Query\Process;
+use BO\Zmsentities\Collection\LogList;
+use BO\Zmsentities\Collection\ProcessList;
+
 /**
   * Handle requests concerning services
   *
@@ -21,7 +25,7 @@ class Search extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $validator = $request->getAttribute('validator');
         $queryString = $validator->getParameter('query')
             ->isString()
@@ -30,13 +34,16 @@ class Search extends BaseController
             'query' => $queryString,
             'resolveReferences' => 1,
         ])->getCollection();
+
+        $scopeIds = $workstation->getUseraccount()->getDepartmentList()->getUniqueScopeList()->getIds();
+        $processList = $this->filterProcessListForUserRights($processList, $scopeIds);
+
         $processList = $processList ? $processList : new \BO\Zmsentities\Collection\ProcessList();
-        if (preg_match('#^\d{4,}$#', $queryString) && $workstation->hasSuperUseraccount()) {
+        if (preg_match('#^\d{4,}$#', $queryString) && $workstation->hasAuditAccount()) {
             $logList = \App::$http->readGetResult("/log/process/$queryString/")->getCollection();
+            $logList = $this->filterLogListForUserRights($logList, $scopeIds);
         }
-        if (!isset($logList) || !$logList) {
-            $logList = new \BO\Zmsentities\Collection\LogList();
-        }
+
         $processListOther = new \BO\Zmsentities\Collection\ProcessList();
         if (!$workstation->hasSuperUseraccount()) {
             $processListOther = $processList->withOutScopeId($workstation->scope['id']);
@@ -55,5 +62,39 @@ class Search extends BaseController
                 'menuActive' => 'search'
             )
         );
+    }
+
+    private function filterProcessListForUserRights(?ProcessList $processList, array $scopeIds)
+    {
+        if (empty($processList)) {
+            return new ProcessList();
+        }
+
+        $list = new ProcessList();
+
+        foreach ($processList as $process) {
+            if (in_array($process->scope->id, $scopeIds)) {
+                $list->addEntity($process);
+            }
+        }
+
+        return $list;
+    }
+
+    private function filterLogListForUserRights(?LogList $logList, array $scopeIds)
+    {
+        if (!isset($logList) || !$logList) {
+            $logList = new LogList();
+        }
+
+        $list = new LogList();
+
+        foreach ($logList as $log) {
+            if (isset($log->scope_id) && in_array($log->scope_id, $scopeIds)) {
+                $list->addEntity($log);
+            }
+        }
+
+        return $list;
     }
 }

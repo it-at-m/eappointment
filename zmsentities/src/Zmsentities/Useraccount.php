@@ -21,6 +21,7 @@ class Useraccount extends Schema\Entity
             'rights' => [
                 "availability" => false,
                 "basic" => true,
+                "audit" => false,
                 "cluster" => false,
                 "department" => false,
                 "organisation" => false,

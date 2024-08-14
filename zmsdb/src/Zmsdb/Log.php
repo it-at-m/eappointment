@@ -15,15 +15,16 @@ class Log extends Base
 
     public static $operator = 'lib';
 
-    public static function writeLogEntry($message, $referenceId, $type = self::PROCESS)
+    public static function writeLogEntry($message, $referenceId, $type = self::PROCESS, ?int $scopeId = null)
     {
         $message .= " [" . static::$operator . "]";
         $log = new static();
-        $sql = "INSERT INTO `log` SET `message`=:message, `reference_id`=:referenceId, `type`=:type";
+        $sql = "INSERT INTO `log` SET `message`=:message, `reference_id`=:referenceId, `type`=:type, `scope_id`=:scopeId";
         $parameters = [
             "message" => $message . static::backtraceLogEntry(),
             "referenceId" => $referenceId,
             "type" => $type,
+            "scopeId" => $scopeId,
             ];
         //error_log("$message ".static::backtraceLogEntry());
         return $log->perform($sql, $parameters);
