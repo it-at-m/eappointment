@@ -53,6 +53,7 @@ class ProcessDeleteMail extends BaseController
         $collection = ProcessConfirmationMail::getProcessListOverview($process, $config);
 
         $mail = (new \BO\Zmsentities\Mail)
+            ->setTemplateProvider(new \BO\Zmsdb\Helper\MailTemplateProvider($process))
             ->toResolvedEntity($collection, $config, 'deleted')
             ->withDepartment($department);
         $mail->testValid();

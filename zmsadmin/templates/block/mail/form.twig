@@ -19,9 +19,9 @@
                         Es steht entweder keine E-Mail-Adresse zur Verfügung oder die Vorgangsnummer ist nicht korrekt angegeben!
                     </div>
                 {% else %}
-                    {% set defaultSubject = "Info zu Ihrer Wartenummer %d am %s"|format(process.queue.number, process.appointments|first.date|date("d.m.Y")) %}
+                    {% set defaultSubject = "Information zu Ihrer Wartenummer %d am %s"|format(process.queue.number, process.appointments|first.date|date("d.m.Y")) %}
                     {% if process.queue.withAppointment %}
-                        {% set defaultSubject = "Info zu Ihrem Termin %d am %s um %s Uhr"|format(process.queue.number, process.appointments|first.date|date('d.m.Y'), process.appointments|first.date|date('H:i')) %}
+                        {% set defaultSubject = "Information zu Ihrem Termin %d am %s um %s Uhr"|format(process.queue.number, process.appointments|first.date|date('d.m.Y'), process.appointments|first.date|date('H:i')) %}
                     {% endif %}
                     {{ formgroup(
                         {"label": "Betreff der E-Mail:", "errors": form.subject.messages},

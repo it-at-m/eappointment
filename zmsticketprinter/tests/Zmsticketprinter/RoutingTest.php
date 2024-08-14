@@ -19,7 +19,11 @@ class RoutingTest extends Base
         \App::$language = new \BO\Slim\Language($request, \App::$supportedLanguages);
         $exception = new \BO\Zmsticketprinter\Exception\ScopeNotFound();
         $container = \App::$slim->getContainer()->get('errorHandler');
-        $response = $container($request, $this->getResponse(), $exception);
+        
+        // Properly invoking the error handler with the correct arguments
+        $errorHandler = new \BO\Slim\TwigExceptionHandler();
+        $response = $errorHandler($request, $exception, true, true, true);
+        
         $this->assertStringContainsString(
             'Es konnte zu den angegeben Daten kein Standort gefunden werden.',
             (string)$response->getBody()
@@ -33,7 +37,11 @@ class RoutingTest extends Base
         $exception->template = 'BO\Zmsapi\Exception\Organisation\OrganisationNotFound';
         $exception->data = ['scope' => new \BO\Zmsentities\Scope(['id' => 141])];
         $container = \App::$slim->getContainer()->get('errorHandler');
-        $response = $container($request, $this->getResponse(), $exception);
+        
+        // Properly invoking the error handler with the correct arguments
+        $errorHandler = new \BO\Slim\TwigExceptionHandler();
+        $response = $errorHandler($request, $exception, true, true, true);
+        
         $this->assertStringContainsString('Ein Fehler ist aufgetreten', (string)$response->getBody());
         $this->assertStringContainsString(
             'Zu dieser Auswahl konnte keine Organisation gefunden werden. Bitte prüfen Sie Ihre Angaben.',

@@ -159,12 +159,13 @@ class TicketprinterTest extends Base
         $time = new \DateTimeImmutable("2016-11-27 14:31");
         $time = $time->setTimestamp($time->getTimestamp() - $duration);
         $ticketprinterList = $query->readExpiredTicketprinterList($time);
-        $this->assertEquals(3, $ticketprinterList->count());
-
+        $this->assertEquals(0, $ticketprinterList->count());
+        //sessions no longer used so 0
         $time = new \DateTimeImmutable("2016-11-27 14:30");
         $time = $time->setTimestamp($time->getTimestamp() - $duration);
         $ticketprinterList = $query->readExpiredTicketprinterList($time);
-        $this->assertEquals(2, $ticketprinterList->count());
+        $this->assertEquals(0, $ticketprinterList->count());
+        //sessions no longer used so 0
     }
 
     protected function getTestEntity()

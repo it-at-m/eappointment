@@ -22,12 +22,13 @@ class OrganisationHash extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $ticketprinterName = Validator::param('name')->isString()->setDefault('')->getValue();
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $organisation = (new Query())->readEntity($args['id']);
         if (! $organisation) {
             throw new Exception\Organisation\OrganisationNotFound();
         }
+        //$ticketprinterName = Validator::param('name')->isString()->setDefault('')->getValue();
+        $ticketprinterName = "Ticket Printer for " . $organisation->name;
         $ticketprinter = (new Ticketprinter())->writeEntityWithHash($organisation->id, $ticketprinterName);
 
         $message = Response\Message::create($request);

@@ -15,6 +15,21 @@ class QueueDestinationTest extends Base
         return [
             [
                 'function' => 'readPostResult',
+                'url' => '/calldisplay/',
+                'response' => $this->readFixture("GET_calldisplay.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/scope/141/',
+                'parameters' => [
+                    'keepLessData' => [
+                        'status'
+                    ]
+                ],
+                'response' => $this->readFixture("GET_scope_141.json")
+            ],
+            [
+                'function' => 'readPostResult',
                 'url' => '/calldisplay/queue/',
                 'parameters' => [
                     'statusList' => ['called', 'pickup']

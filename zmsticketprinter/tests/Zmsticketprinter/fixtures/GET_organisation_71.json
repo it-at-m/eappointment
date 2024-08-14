@@ -133,7 +133,7 @@
     "ticketprinters": [
       {
         "enabled": "1",
-        "hash": "710caa9f2e7547a52106d6b00868c5cf3a",
+        "hash": "71abcdefghijklmnopqrstuvwxyz",
         "id": "2",
         "lastUpdate": "1481533240",
         "name": ""

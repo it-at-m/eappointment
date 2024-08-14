@@ -16,6 +16,11 @@ class QueueTest extends Base
             [
                 [
                     'function' => 'readPostResult',
+                    'url' => '/calldisplay/',
+                    'response' => $this->readFixture("GET_calldisplay.json")
+                ],
+                [
+                    'function' => 'readPostResult',
                     'url' => '/calldisplay/queue/',
                     'parameters' => [
                         'statusList' => ['called', 'pickup']
