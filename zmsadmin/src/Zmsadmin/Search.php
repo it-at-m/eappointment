@@ -57,7 +57,7 @@ class Search extends BaseController
                 'workstation' => $workstation,
                 'processList' => $processList,
                 'processListOther' => $processListOther,
-                'logList' => $logList,
+                'logList' => $logList ?? [],
                 'searchQuery' => $queryString,
                 'menuActive' => 'search'
             )
