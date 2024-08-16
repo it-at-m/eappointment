@@ -183,6 +183,7 @@ class MailTest extends Base
                             "whitelistedMails" => "",
                             "customTextfieldLabel" => "",
                             "emailRequired" => "1",
+                            "emailConfirmationActivated" => "1",
                             "telephoneActivated" => "1",
                             "telephoneRequired" => "1"
                         ],
