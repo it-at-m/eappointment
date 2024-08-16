@@ -5,7 +5,6 @@ namespace BO\Zmscitizenapi\Tests;
 class ScopesListTest extends Base
 {
     public function testRendering() {
-        // Mock the API call to return a predefined fixture
         $this->setApiCalls([
             [
                 'function' => 'readGetResult',
@@ -16,11 +15,7 @@ class ScopesListTest extends Base
                 'response' => $this->readFixture("GET_SourceGet_dldb.json"), // Use the same fixture as before
             ]
         ]);
-
-        // Render the response JSON
         $responseData = $this->renderJson();
-
-        // Define the expected output based on the fixture
         $expectedResponse = [
             "scopes" => [
                 [
@@ -56,7 +51,6 @@ class ScopesListTest extends Base
             ]
         ];
 
-        // Assert that the actual response matches the expected response
         $this->assertEqualsCanonicalizing($expectedResponse, $responseData);
     }
 }
