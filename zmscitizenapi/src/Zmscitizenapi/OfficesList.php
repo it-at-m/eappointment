@@ -14,10 +14,7 @@ class OfficesList extends BaseController
             'resolveReferences' => 2,
         ])->getEntity();
 
-        $scopeList = $sources->getScopeList();
-        if (is_null($scopeList) || count($scopeList) === 0) {
-            $scopeList = [];
-        }
+        $scopeList = $sources->getScopeList() ?? [];
 
         $providerProjectionList = [];
 
