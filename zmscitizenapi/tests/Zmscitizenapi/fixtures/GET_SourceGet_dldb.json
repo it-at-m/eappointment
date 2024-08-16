@@ -71,7 +71,8 @@
         "source": "unittest",
         "data": {
           "json": "data",
-          "key": "value"
+          "key": "value",
+          "combinable": ["9999998", "9999999"]
         }
       }
     ],
