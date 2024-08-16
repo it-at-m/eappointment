@@ -22,7 +22,7 @@ class ServicesList extends BaseController
             $servicesProjectionList[] = [
                 "id" => $request->getId(),
                 "name" => $request->getName(),
-                "maxQuantity" => $additionalData['maxQuantity'] ?? 1
+                "maxQuantity" => $additionalData['maxQuantity'] ?? 1,
             ];
         }
 
