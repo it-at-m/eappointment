@@ -15,6 +15,10 @@ class OfficesList extends BaseController
         ])->getEntity();
 
         $scopeList = $sources->getScopeList();
+        if (is_null($scopeList) || count($scopeList) === 0) {
+            $scopeList = [];
+        }
+
         $providerProjectionList = [];
 
         foreach ($sources->getProviderList() as $provider) {
@@ -50,5 +54,4 @@ class OfficesList extends BaseController
             "offices" => $providerProjectionList,
         ]);
     }
-    
 }
