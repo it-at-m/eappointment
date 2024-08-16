@@ -10,6 +10,24 @@ class ServicesList extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
-        return Render::withJson($response, []);
+        $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
+            'resolveReferences' => 2,
+        ])->getEntity();
+
+        $requestList = $sources->getRequestList() ?? [];
+        $servicesProjectionList = [];
+
+        foreach ($requestList as $request) {
+            $additionalData = $request->getAdditionalData();
+            $servicesProjectionList[] = [
+                "id" => $request->getId(),
+                "name" => $request->getName(),
+                "maxQuantity" => $additionalData['maxQuantity'] ?? 1
+            ];
+        }
+
+        return Render::withJson($response, [
+            "services" => $servicesProjectionList,
+        ]);
     }
 }

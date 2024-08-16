@@ -14,7 +14,7 @@ class OfficesList extends BaseController
             'resolveReferences' => 2,
         ])->getEntity();
 
-        $scopeList = $sources->getScopeList();
+        $scopeList = $sources->getScopeList() ?? [];
         $providerProjectionList = [];
 
         foreach ($sources->getProviderList() as $provider) {
