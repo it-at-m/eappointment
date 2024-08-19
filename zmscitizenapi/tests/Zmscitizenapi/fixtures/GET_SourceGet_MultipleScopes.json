@@ -1,0 +1,52 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+      "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+      "error": false,
+      "generated": "2019-02-08T14:45:15+01:00",
+      "server": "Zmsapi-ENV (v2.19.02-38-g0ba2cba)"
+    },
+    "data": {
+      "$schema": "https://schema.berlin.de/queuemanagement/source.json",
+      "source": "unittest",
+      "scopes": [
+        {
+          "id": "1",
+          "provider": {
+            "id": "9999998",
+            "source": "unittest"
+          },
+          "shortName": "Scope 1",
+          "preferences": {
+            "client": {
+              "telephoneActivated": "1",
+              "telephoneRequired": "0",
+              "customTextfieldActivated": "1",
+              "customTextfieldRequired": "0",
+              "customTextfieldLabel": "Custom Label",
+              "captchaActivatedRequired": "1"
+            }
+          }
+        },
+        {
+          "id": "2",
+          "provider": {
+            "id": "9999999",
+            "source": "unittest"
+          },
+          "shortName": "Scope 2",
+          "preferences": {
+            "client": {
+              "telephoneActivated": "0",
+              "telephoneRequired": "1",
+              "customTextfieldActivated": "0",
+              "customTextfieldRequired": "1",
+              "customTextfieldLabel": "",
+              "captchaActivatedRequired": "0"
+            }
+          }
+        }
+      ]
+    }
+  }
+  
