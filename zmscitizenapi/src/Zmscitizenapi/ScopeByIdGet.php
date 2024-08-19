@@ -11,11 +11,16 @@ class ScopeByIdGet extends BaseController
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
         $scopeIds = explode(',', $request->getQueryParams()['scopeId'] ?? '');
+        $scopeIds = array_unique($scopeIds); // Ensure scope IDs are unique
 
         if (empty($scopeIds) || $scopeIds == ['']) {
+            $responseContent = [
+                'scopes' => [],
+                'error' => 'Invalid scopeId(s)',
+            ];
             $response = $response->withStatus(400)
                                  ->withHeader('Content-Type', 'application/json');
-            $response->getBody()->write(json_encode(['error' => 'Invalid scopeId(s)']));
+            $response->getBody()->write(json_encode($responseContent));
             return $response;
         }
 
@@ -42,6 +47,7 @@ class ScopeByIdGet extends BaseController
                         "telephoneRequired" => $scopeItem->getTelephoneRequired(),
                         "customTextfieldActivated" => $scopeItem->getCustomTextfieldActivated(),
                         "customTextfieldRequired" => $scopeItem->getCustomTextfieldRequired(),
+                        "customTextfieldLabel" => $scopeItem->getCustomTextfieldLabel(),
                         "captchaActivatedRequired" => $scopeItem->getCaptchaActivatedRequired(),
                     ];
                     $found = true;
@@ -54,9 +60,13 @@ class ScopeByIdGet extends BaseController
         }
 
         if (empty($scopes)) {
+            $responseContent = [
+                'scopes' => [],
+                'error' => 'Scope(s) not found',
+            ];
             $response = $response->withStatus(404)
                                  ->withHeader('Content-Type', 'application/json');
-            $response->getBody()->write(json_encode(['error' => 'Scope(s) not found']));
+            $response->getBody()->write(json_encode($responseContent));
             return $response;
         }
 
