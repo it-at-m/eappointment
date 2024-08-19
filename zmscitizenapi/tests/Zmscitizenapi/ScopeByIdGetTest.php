@@ -16,7 +16,7 @@ class ScopeByIdGetTest extends Base
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_SourceGet_MultipleScopes.json"),
+                'response' => $this->readFixture("GET_SourceGet_Scopes.json"),
             ]
         ]);
         $response = $this->render([], [
@@ -51,7 +51,7 @@ class ScopeByIdGetTest extends Base
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_SourceGet_MultipleScopes.json"),
+                'response' => $this->readFixture("GET_SourceGet_Scopes.json"),
             ]
         ]);
         $response = $this->render([], [
@@ -99,7 +99,7 @@ class ScopeByIdGetTest extends Base
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_SourceGet_MultipleScopes.json"),
+                'response' => $this->readFixture("GET_SourceGet_Scopes.json"),
             ]
         ]);
         $response = $this->render([], [
@@ -131,7 +131,7 @@ class ScopeByIdGetTest extends Base
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_SourceGet_MultipleScopes.json"),
+                'response' => $this->readFixture("GET_SourceGet_Scopes.json"),
             ]
         ]);    
         $response = $this->render([], [
