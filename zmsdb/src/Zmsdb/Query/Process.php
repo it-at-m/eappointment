@@ -236,6 +236,7 @@ class Process extends Base implements MappingInterface
             ),
             'queue__destinationHint' => 'processuser.aufrufzusatz',
             'queue__waitingTime' => 'process.wartezeit',
+            'queue__wayTime' => 'process.wegezeit',
             'queue__withAppointment' => self::expression(
                 'IF(`process`.`wartenummer`,
                     "0",
@@ -682,6 +683,7 @@ class Process extends Base implements MappingInterface
             $this->addProcessingTimeData($process, $dateTime, $previousStatus);
             $this->addValuesQueueData($process);
             $this->addValuesWaitingTimeData($process, $previousStatus);
+            $this->addValuesWayTimeData($process);
         }
         if ($process->isWithAppointment()) {
             $this->addValuesFollowingProcessData($process, $parentProcess);
@@ -929,6 +931,16 @@ class Process extends Base implements MappingInterface
 
             // Format and store the time in HH:MM:SS
             $data['wartezeit'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+        }
+        $this->addValues($data);
+    }
+
+    protected function addValuesWayTimeData($process)
+    {
+        $data = array();
+        if ($process['status'] == 'processing') {
+            $wegezeit = $process->getWayMinutes();
+            $data['wegezeit'] = $wegezeit > 0 ? $wegezeit : 0;
         }
         $this->addValues($data);
     }

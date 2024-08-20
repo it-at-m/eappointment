@@ -44,6 +44,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
             'scope__id' => 'process.StandortID',
             '__clientsCount' => 'process.AnzahlPersonen',
             'waitingTime' => 'process.wartezeit',
+            'wayTime' => 'process.wegezeit',
             'processingTime' => 'process.bearbeitungszeit',
             'name' => 'process.name',
             'services' => 'process.dienstleistungen',
@@ -144,6 +145,8 @@ class ProcessStatusArchived extends Base implements MappingInterface
             'mitTermin' => ($process->toQueue($now)->withAppointment) ? 1 : 0,
             'nicht_erschienen' => ('missed' == $process->queue['status']) ? 1 : 0,
             'Timestamp' => $process->getArrivalTime()->format('H:i:s'),
+            'wartezeit' => ($process->getWaitedSeconds() > 0) ? $process->getWaitedMinutes() : 0,
+            'wegezeit' => ($process->getWaySeconds() > 0) ? $process->getWayMinutes() : 0,
             'bearbeitungszeit' => ($bearbeitungszeit > 0) ? $bearbeitungszeit : 0,
             'wartezeit' => ($warteZeit > 0) ? $warteZeit : 0,
             'AnzahlPersonen' => $process->getClients()->count()
