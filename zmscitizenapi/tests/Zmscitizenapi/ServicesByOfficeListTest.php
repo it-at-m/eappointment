@@ -22,7 +22,7 @@ class ServicesByOfficeListTest extends Base
         $expectedResponse = [
             'services' => [
                 [
-                    'id' => '9999998',
+                    'id' => '1',
                     'name' => 'Unittest Source Dienstleistung',
                     'maxQuantity' => 1,
                 ]
@@ -49,12 +49,12 @@ class ServicesByOfficeListTest extends Base
         $expectedResponse = [
             'services' => [
                 [
-                    'id' => '9999998',
+                    'id' => '1',
                     'name' => 'Unittest Source Dienstleistung',
                     'maxQuantity' => 1,
                 ],
                 [
-                    'id' => '9999999',
+                    'id' => '2',
                     'name' => 'Unittest Source Dienstleistung 2',
                     'maxQuantity' => 1,
                 ]
@@ -118,7 +118,7 @@ class ServicesByOfficeListTest extends Base
         $expectedResponse = [
             'services' => [
                 [
-                    'id' => '9999998',
+                    'id' => '1',
                     'name' => 'Unittest Source Dienstleistung',
                     'maxQuantity' => 1,
                 ]
@@ -147,7 +147,7 @@ class ServicesByOfficeListTest extends Base
         $expectedResponse = [
             'services' => [
                 [
-                    'id' => '9999998',
+                    'id' => '1',
                     'name' => 'Unittest Source Dienstleistung',
                     'maxQuantity' => 1,
                 ]
