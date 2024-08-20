@@ -54,7 +54,7 @@
     ],
     "requests": [
       {
-        "id": "9999998",
+        "id": "1",
         "link": "https://www.berlinonline.de",
         "name": "Unittest Source Dienstleistung",
         "group": "Unittests",
@@ -64,7 +64,7 @@
         }
       },
       {
-        "id": "9999999",
+        "id": "2",
         "link": "https://www.berlinonline.de",
         "name": "Unittest Source Dienstleistung 2",
         "group": "Unittests",
@@ -72,7 +72,7 @@
         "data": {
           "json": "data",
           "key": "value",
-          "combinable": ["9999998", "9999999"]
+          "combinable": ["1", "2"]
         }
       }
     ],
@@ -124,8 +124,8 @@
           "source": "unittest"
         },
         "request": {
-          "id": "9999998",
-          "$ref": "/request/unittest/9999998/"
+          "id": "1",
+          "$ref": "/request/unittest/1/"
         },
         "source": "unittest",
         "slots": "2"
@@ -136,8 +136,8 @@
           "source": "unittest"
         },
         "request": {
-          "id": "9999998",
-          "$ref": "/request/unittest/9999998/"
+          "id": "1",
+          "$ref": "/request/unittest/1/"
         },
         "source": "unittest",
         "slots": "1"
@@ -148,8 +148,8 @@
           "source": "unittest"
         },
         "request": {
-          "id": "9999999",
-          "$ref": "/request/unittest/9999999/"
+          "id": "2",
+          "$ref": "/request/unittest/2/"
         },
         "source": "unittest",
         "slots": "1"
