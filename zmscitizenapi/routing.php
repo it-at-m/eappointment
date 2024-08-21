@@ -64,6 +64,12 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("AppointmentGet");
 
+\App::$slim->get(
+    '/captcha-details/',
+    '\BO\Zmscitizenapi\CaptchaGet'
+)
+    ->setName("CaptchaGet");
+
 \App::$slim->post(
     '/reserve-appointment/',
     '\BO\Zmscitizenapi\AppointmentReserve'
