@@ -1,0 +1,11 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% block headline %}
+    {{ headline1("Dummy Confirmation") }}
+{% endblock %}
+
+{% block content %}
+    <pre>
+        {{previewHtml | raw}}
+    </pre>
+{% endblock %}

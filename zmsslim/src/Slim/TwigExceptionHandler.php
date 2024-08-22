@@ -38,7 +38,11 @@ class TwigExceptionHandler implements ErrorHandlerInterface
         
         $decoratedRequest = \BO\Slim\Middleware\ZmsSlimRequest::getDecoratedRequest($request);
         $response = \App::$slim->getResponseFactory()->createResponse();
-        return static::withHtml($decoratedRequest, $response, $exception);
+        //return static::withHtml($decoratedRequest, $response, $exception);
+        //print_r($exception);
+        echo $exception->getMessage();
+        echo $exception->getTraceAsString();
+        die(125738);
     }
 
     public static function withHtml(

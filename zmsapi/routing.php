@@ -1147,6 +1147,11 @@ use \Psr\Http\Message\ResponseInterface;
         ->setName("MailTemplatesDelete");
         
 
+\App::$slim->get(
+        '/preview-mailtemplates/{templateName}/',
+        '\BO\Zmsapi\MailTemplatesPreview'
+    )
+        ->setName("MailTemplatesPreview");
 
 
 
