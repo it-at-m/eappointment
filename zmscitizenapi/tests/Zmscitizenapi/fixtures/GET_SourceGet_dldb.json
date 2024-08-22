@@ -114,6 +114,63 @@
         }
       }
     ],
+    "days": [
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+        "year": "2024",
+        "month": "08",
+        "day": "21",
+        "status": "bookable",
+        "freeAppointments": {
+          "public": 10,
+          "intern": 5,
+          "callcenter": 0,
+          "type": "sum"
+        }
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+        "year": "2024",
+        "month": "08",
+        "day": "22",
+        "status": "bookable",
+        "freeAppointments": {
+          "public": 15,
+          "intern": 10,
+          "callcenter": 0,
+          "type": "sum"
+        }
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+        "year": "2024",
+        "month": "08",
+        "day": "23",
+        "status": "bookable",
+        "freeAppointments": {
+          "public": 12,
+          "intern": 7,
+          "callcenter": 0,
+          "type": "sum"
+        }
+      }
+    ],
+    "firstDay": {
+      "year": "2024",
+      "month": "08",
+      "day": "21"
+    },
+    "lastDay": {
+      "year": "2024",
+      "month": "08",
+      "day": "23"
+    },
+    "processing": {
+      "slotinfo": {
+        "9999998": 3
+      }
+    },
+    "freeProcesses": [],
     "label": "Unittest Source",
     "editable": "1",
     "lastChange": 1549546997,
