@@ -9,7 +9,7 @@
 {% block pagetype %}customized{% endblock %}
 {% block content %}
 
-	{% if enabled %}
+	{% if enabled and not hasDisabledButton %}
 		{% if buttonDisplay == "button_single" %}
 		<div class="werbeblock_oben">
 		</div>
@@ -20,7 +20,9 @@
 
     	{{ block(buttonDisplay) }}
 	{% else %}
-		E-Kiosk ist nicht aktiviert.
+		<div style="font-size: 40px; text-align: center; padding: 10px; border-radius: 5px; font-weight: bold;">
+			Kundenservice ist geschlossen.
+		</div>
 	{% endif %}
 
 	{% if department.preferences.notifications.enabled %}
