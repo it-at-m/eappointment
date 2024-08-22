@@ -69,7 +69,7 @@ use Slim\Routing\RouteCollectorProxy;
  \App::$slim->post('/mailtemplates/createCustomization/', \BO\Zmsadmin\Helper\MailTemplateCreateCustomization::class)
      ->setName("MailTemplateCreateCustomization");
 
-\App::$slim->get('/mailtemplates/dummyConfirmation/', \BO\Zmsadmin\Helper\MailTemplateDummyConfirmation::class)
+\App::$slim->get('/mailtemplates/dummyConfirmation/{mailStatus}/', \BO\Zmsadmin\Helper\MailTemplateDummyConfirmation::class)
      ->setName("MailTemplateDummyConfirmation");
      
 

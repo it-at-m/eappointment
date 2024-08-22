@@ -30,8 +30,12 @@ class MailTemplatesPreview extends BaseController
         
         //$config = (new MailTemplatesQuery())->readListByProvider($providerId);
         
+        $mailStatus = $args['mailStatus'];
+        $providerId = $args['providerId'];
+
         $mainProcessExample = ((new \BO\Zmsentities\Process)->getExample());
         $mainProcessExample->id = 987654;
+        $mainProcessExample->scope->provider['id'] = $providerId;
         $dateTime = new \DateTimeImmutable("2015-10-23 08:00:00", new \DateTimeZone('Europe/Berlin'));
         $mainProcessExample->getFirstAppointment()->setDateTime($dateTime);
         $mainProcessExample->requests[] = (new \BO\Zmsentities\Request())->getExample();
@@ -40,7 +44,7 @@ class MailTemplatesPreview extends BaseController
         $config = (new Config())->readEntity();
         $mail = (new \BO\Zmsentities\Mail())
             ->setTemplateProvider(new \BO\Zmsdb\Helper\MailTemplateProvider($mainProcessExample))
-            ->toResolvedEntity($mainProcessExample, $config, 'appointment');
+            ->toResolvedEntity($mainProcessExample, $config, $mailStatus);
 
         $message = Response\Message::create($request);
         $message->data = array('xy'=>'hallo','previewHtml'=>$mail->getHtmlPart(),'previewPlain'=>$mail->getPlainPart());

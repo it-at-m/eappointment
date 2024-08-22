@@ -1148,7 +1148,7 @@ use \Psr\Http\Message\ResponseInterface;
         
 
 \App::$slim->get(
-        '/preview-mailtemplates/{templateName}/',
+        '/preview-mailtemplates/{mailStatus}/{providerId}/',
         '\BO\Zmsapi\MailTemplatesPreview'
     )
         ->setName("MailTemplatesPreview");

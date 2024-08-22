@@ -12,8 +12,12 @@
         array $args
     ) {
 
-        $result = \App::$http->readGetResult('/preview-mailtemplates/testing/', ['resolveReferences' => 0]);
+        $mailStatus = $args['mailStatus'];
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $providerId = $workstation->scope['provider']['id'];
+        $result = \App::$http->readGetResult("/preview-mailtemplates/$mailStatus/$providerId/", ['resolveReferences' => 0]);
         $data = json_decode($result->getResponse()->getBody()->getContents())->data;
+        
         //print_r($result->getResponse()->getBody()->getContents());
         //print_r($data);
         //print_r($data->previewHtml);
