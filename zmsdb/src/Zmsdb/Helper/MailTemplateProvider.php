@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsapi\Helper;
+namespace BO\Zmsdb\Helper;
 
 
 class MailTemplateProvider 

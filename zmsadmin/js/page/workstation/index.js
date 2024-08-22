@@ -22,6 +22,7 @@ class View extends BaseView {
         this.selectedDate = options['selected-date'];
         this.selectedProcess = options['selected-process'];
         this.clusterEnabled = options['cluster-enabled'] || false;
+        this.emailConfirmationActivated = options['email-confirmation-activated'] || 0;
         this.selectedScope = options['selected-scope'] || 0;
         this.calledProcess = options['called-process'];
         this.slotType = 'intern';
@@ -557,6 +558,7 @@ class View extends BaseView {
             selectedProcess: this.selectedProcess,
             selectedScope: this.selectedScope,
             clusterEnabled: this.clusterEnabled,
+            emailConfirmationActivated: this.emailConfirmationActivated,
             includeUrl: this.includeUrl,
             slotsRequired: this.slotsRequired || 1,
             slotType: this.slotType,

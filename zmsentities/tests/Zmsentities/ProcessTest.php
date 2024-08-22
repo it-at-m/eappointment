@@ -170,16 +170,16 @@ class ProcessTest extends EntityCommonTests
     {
         $entity = $this->getExample();
         $minutes = $entity->getWaitedMinutes();
-        $this->assertEquals(896, $minutes);
+        $this->assertEquals(896.1167, round($minutes, 4));
         $entity->queue->withAppointment = 0;
         $entity->getFirstAppointment()->setDateByString('2016-04-01 00:00');
         $minutes = $entity->getWaitedMinutes();
-        $this->assertEquals(1, $minutes);
+        $this->assertEquals(0.75, $minutes);
 
         $now = new \DateTimeImmutable();
         $now = $now->setTimestamp($entity->queue['callTime']);
         $entity->queue['callTime'] = null;
-        $this->assertEquals(1, $entity->getWaitedMinutes($now));
+        $this->assertEquals(0.75, $entity->getWaitedMinutes($now));
     }
 
     public function testToDereferencedAmendment()
