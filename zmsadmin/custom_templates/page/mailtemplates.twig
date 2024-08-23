@@ -2,11 +2,10 @@
 {% from 'element/helper/snippets.twig' import headline1 %}
 {% block headline %}
     {{ headline1("Mail Templates") }}
-    <button class="button button-submit" onclick="previewConfirmation()">Gedöhns</button>
-    <a href="/terminvereinbarung/admin/mailtemplates/dummyPreview/appointment/" class="button button-submit">Confirmation Preview</a>
-    <a href="/terminvereinbarung/admin/mailtemplates/dummyPreview/deleted/" class="button button-submit">Delete Preview</a>
-    <a href="/terminvereinbarung/admin/mailtemplates/dummyPreview/preconfirmed/" class="button button-submit">Preconfirmed Preview</a>
-    <a href="/terminvereinbarung/admin/mailtemplates/dummyPreview/reminder/" class="button button-submit">Reminder Preview</a>
+    <button class="button button-submit" onclick="previewEmail('appointment')">Confirmation</button>
+    <button class="button button-submit" onclick="previewEmail('deleted')">Delete</button>
+    <button class="button button-submit" onclick="previewEmail('preconfirmed')">Preconfirmed</button>
+    <button class="button button-submit" onclick="previewEmail('reminder')">Reminder</button>
     <div id="preview-container">
 
     </div>
@@ -171,14 +170,14 @@
             .catch((error) => console.error('Error:', error));
         }
 
-        function previewConfirmation() {
+        function previewEmail(mailStatus) {
 
             templateObjects.forEach((templateObject) => {
                 templateObject.templateContent = getContentOfEditor(templateObject.elementId)
             });
             console.log(templateObjects);
-
-            const url = '{{ includeUrl() }}/mailtemplates/previewEmail/confirmation/';
+            
+            const url = '{{ includeUrl() }}/mailtemplates/previewEmail/'+mailStatus+'/';
             const data = {
                 hallo: 5,
                 templates: templateObjects

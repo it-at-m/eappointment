@@ -42,22 +42,11 @@
         $templateProvider = new MailTemplateArrayProvider();
         $templateProvider->setTemplates($templates);
 
-        $config = array(
-            'appointments'=>array(
-                'urlChange'=>'hallihallo',
-                'urlAppointments'=>'hallihallo'
-            ),
-            'notifications'=>array(
-                'confirmationContent'=>'hallihallo',
-                'headsUpContent'=>'hallihallo'
-            )
-        );
-
         $config = new \BO\Zmsentities\Config();
 
         $mail = (new \BO\Zmsentities\Mail())
             ->setTemplateProvider($templateProvider)
-            ->toResolvedEntity($mainProcessExample, $config, 'appointment');
+            ->toResolvedEntity($mainProcessExample, $config, $mailStatus);
 
         return \BO\Slim\Render::withJson(
             $response,
