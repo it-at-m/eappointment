@@ -53,26 +53,6 @@ class Index extends BaseController
             }
         }
 
-//        incase we want the custom template, then the close message maybe should not be in the default template
-//        if ($hasDisabledButton) {
-//            $template = (new Helper\TemplateFinder('specific_template_name')); // No need for setCustomizedTemplate here
-//        } else {
-//            // Existing logic for template selection if all buttons are enabled
-//            if (1 == count($ticketprinter->buttons) && 'scope' == $ticketprinter->buttons[0]['type']) {
-//                return Render::redirect(
-//                    'TicketprinterByScope',
-//                    array(
-//                        'scopeId' => $ticketprinter->buttons[0]['scope']['id']
-//                    ),
-//                    $this->getQueryString($validator, $ticketprinter, $defaultTemplate)
-//                );
-//            }
-//            $template = (new Helper\TemplateFinder($defaultTemplate->getValue()))
-//                ->setCustomizedTemplate($ticketprinter, $organisation); // Keep setCustomizedTemplate here for other cases
-//        }
-
-
-
         if (1 == count($ticketprinter->buttons) && 'scope' == $ticketprinter->buttons[0]['type']) {
             return Render::redirect(
                 'TicketprinterByScope',
