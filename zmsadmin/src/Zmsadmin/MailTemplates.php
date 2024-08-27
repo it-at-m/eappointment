@@ -56,30 +56,6 @@ class MailTemplates extends BaseController
         $processListExample->addEntity($processExample2);
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
 
-        if ($request->getMethod() === 'POST') {
-            $input = $request->getParsedBody();
-            $entity = clone $config;
-            $entity->setPreference($input['key'], $input['property'], $input['value']);
-            $entity = \App::$http->readPostResult(
-                '/config/',
-                $entity
-            )->getEntity();
-            return \BO\Slim\Render::redirect(
-                'configinfo',
-                array(
-                    'title' => 'Konfiguration System',
-                    'workstation' => $workstation,
-                    'config' => $config,
-                    'processExample' => $mainProcessExample,
-                    'processListExample' => $processListExample,
-                    'menuActive' => 'configinfo'
-                ),
-                array(
-                    'success' => 'config_saved'
-                )
-            );
-        }
-
         return \BO\Slim\Render::withHtml(
             $response,
             'page/mailtemplates.twig',
