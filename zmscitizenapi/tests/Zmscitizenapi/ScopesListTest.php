@@ -4,6 +4,9 @@ namespace BO\Zmscitizenapi\Tests;
 
 class ScopesListTest extends Base
 {
+
+    protected $classname = "ScopesList";
+
     public function testRendering() {
         $this->setApiCalls([
             [

@@ -6,6 +6,9 @@ use BO\Slim\Render;
 
 class ScopeByIdGetTest extends Base
 {
+
+    protected $classname = "ScopeByIdGet";
+
     public function testRendering()
     {
         $this->setApiCalls([

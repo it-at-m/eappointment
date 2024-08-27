@@ -11,7 +11,7 @@ class OfficesByServiceList extends BaseController
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
         $serviceIds = explode(',', $request->getQueryParams()['serviceId'] ?? '');
-        $serviceIds = array_unique($serviceIds); // Ensure service IDs are unique
+        $serviceIds = array_unique($serviceIds);
 
         if (empty($serviceIds) || $serviceIds == ['']) {
             $responseContent = [
@@ -45,11 +45,11 @@ class OfficesByServiceList extends BaseController
                                 ];
                                 $addedOfficeIds[] = $provider->id;
                                 $found = true;
-                                break; // Once the provider is added, break to avoid unnecessary loops
+                                break;
                             }
                         }
                     } else {
-                        $found = true; // The office was already added, so mark as found
+                        $found = true;
                     }
                 }
             }

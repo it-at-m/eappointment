@@ -17,7 +17,6 @@ class AvailableAppointmentsList extends BaseController
         $serviceIds = explode(',', $queryParams['serviceId'] ?? '');
         $serviceCounts = explode(',', $queryParams['serviceCount'] ?? '1');
 
-        // Validate required parameters
         if (!$date || !$officeId || empty($serviceIds)) {
             $responseContent = [
                 'appointmentTimestamps' => [],
@@ -30,7 +29,6 @@ class AvailableAppointmentsList extends BaseController
         }
 
         try {
-            // Prepare the calendar entity
             $calendar = new CalendarEntity();
             $calendar->firstDay = $this->convertDateToDayMonthYear($date);
             $calendar->lastDay = $this->convertDateToDayMonthYear($date);
@@ -38,7 +36,6 @@ class AvailableAppointmentsList extends BaseController
                 ['id' => $officeId, 'source' => 'dldb']
             ];
 
-            // Prepare requests based on serviceIds and serviceCounts
             $calendar->requests = [];
             foreach ($serviceIds as $index => $serviceId) {
                 $slotCount = isset($serviceCounts[$index]) ? intval($serviceCounts[$index]) : 1;
@@ -51,7 +48,6 @@ class AvailableAppointmentsList extends BaseController
                 }
             }
 
-            // Make the API call to fetch free time slots
             try {
                 $freeSlots = \App::$http->readPostResult('/process/status/free/', $calendar)->getCollection();
             } catch (\Exception $e) {
@@ -68,7 +64,6 @@ class AvailableAppointmentsList extends BaseController
                 return $response;
             }
 
-            // Check if freeSlots is null or empty before processing
             if (empty($freeSlots)) {
                 $responseContent = [
                     'appointmentTimestamps' => [],
@@ -82,10 +77,8 @@ class AvailableAppointmentsList extends BaseController
                 return $response;
             }
 
-            // Current timestamp for filtering
             $currentTimestamp = time();
 
-            // Convert the available slots to timestamps and filter them
             $appointmentTimestamps = [];
             foreach ($freeSlots as $slot) {
                 foreach ($slot->appointments as $appointment) {
@@ -98,7 +91,6 @@ class AvailableAppointmentsList extends BaseController
                 }
             }
 
-            // Check if there are no available timestamps
             if (empty($appointmentTimestamps)) {
                 $responseContent = [
                     'appointmentTimestamps' => [],
@@ -112,10 +104,8 @@ class AvailableAppointmentsList extends BaseController
                 return $response;
             }
 
-            // Sort timestamps before returning
             sort($appointmentTimestamps);
 
-            // Return the available appointments
             $responseContent = [
                 'appointmentTimestamps' => $appointmentTimestamps,
                 'lastModified' => round(microtime(true) * 1000)

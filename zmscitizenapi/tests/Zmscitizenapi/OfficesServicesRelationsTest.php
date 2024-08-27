@@ -4,6 +4,9 @@ namespace BO\Zmscitizenapi\Tests;
 
 class OfficesServicesRelationsTest extends Base
 {
+
+    protected $classname = "OfficesServicesRelations";
+
     public function testRendering()
     {
         $this->setApiCalls([

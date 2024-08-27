@@ -11,7 +11,7 @@ class ServicesByOfficeList extends BaseController
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
         $officeIds = explode(',', $request->getQueryParams()['officeId'] ?? '');
-        $officeIds = array_unique($officeIds); // Ensure office IDs are unique
+        $officeIds = array_unique($officeIds);
 
         if (empty($officeIds) || $officeIds == ['']) {
             $responseContent = [
