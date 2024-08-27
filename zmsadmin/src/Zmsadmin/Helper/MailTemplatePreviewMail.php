@@ -44,9 +44,19 @@
 
         $config = new \BO\Zmsentities\Config();
 
-        $mail = (new \BO\Zmsentities\Mail())
+        try {
+            $mail = (new \BO\Zmsentities\Mail())
             ->setTemplateProvider($templateProvider)
             ->toResolvedEntity($mainProcessExample, $config, $mailStatus);
+        }
+        catch( \Exception $e) {
+            return \BO\Slim\Render::withJson(
+                $response,
+                array(
+                    'error'=>$e->getMessage()
+                )
+            );
+        }
 
         return \BO\Slim\Render::withJson(
             $response,

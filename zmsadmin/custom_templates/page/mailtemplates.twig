@@ -193,10 +193,15 @@
             .then(response => response.json())
             .then(data => {
                 console.log('Preview Result:', data);
-                document.getElementById('preview-container').innerHTML=data.previewHtml;
+                if (data.error) {
+                    document.getElementById('preview-container').innerHTML='<div style="margin:10px;font-size:20px;color:red;">Beim Rendern des Mail-Templates ist ein Fehler aufgetreten!</div>';
+                    console.error(data.error);
+                } else {
+                    document.getElementById('preview-container').innerHTML=data.previewHtml;
+                }
             })
             .catch((error) => {
-                document.getElementById('preview-container').innerHTML='<div style="margin:10px;font-size:20px;color:red;">Beim Rendern des Mail-Templates ist ein Fehler aufgetreten!</div>';
+                document.getElementById('preview-container').innerHTML='<div style="margin:10px;font-size:20px;color:red;">Beim Aufruf der Preview ist ein Fehler aufgetreten!</div>';
                 console.error('Error:', error)
             });
         }
