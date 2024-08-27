@@ -190,12 +190,22 @@
                 },
                 body: JSON.stringify(data), 
             })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Preview Result:', data);
-                document.getElementById('preview-container').innerHTML=data.previewHtml;
+            .then(response => response.text()) // First, get the response as text
+            .then(text => {
+                try {
+                    // Try to parse the text as JSON
+                    const data = JSON.parse(text);
+                    console.log('Preview Result:', data);
+                    document.getElementById('preview-container').innerHTML = data.previewHtml;
+                } catch (error) {
+                    // If JSON parsing fails, handle the error and display the response text
+                    throw new Error(`Invalid JSON: ${text}`);
+                }
             })
-            .catch((error) => console.error('Error:', error));
+            .catch((error) => {
+                document.getElementById('preview-container').innerHTML = '<div style="margin:10px;font-size:20px;color:red;">Beim Rendern des Mail-Templates ist ein Fehler aufgetreten!</div>';
+                console.error('Error:', error.message); // Log the error with the original response text
+            });
         }
 
     </script>
