@@ -11,7 +11,7 @@ class ScopeByIdGet extends BaseController
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
         $scopeIds = explode(',', $request->getQueryParams()['scopeId'] ?? '');
-        $scopeIds = array_unique($scopeIds); // Ensure scope IDs are unique
+        $scopeIds = array_unique($scopeIds);
 
         if (empty($scopeIds) || $scopeIds == ['']) {
             $responseContent = [

@@ -2,10 +2,46 @@
 
 namespace BO\Zmscitizenapi\Tests;
 
+use BO\Zmscitizenapi\CaptchaGet;
+
 class CaptchaGetTest extends Base
 {
-    public function testRendering() {
-        $responseData = $this->renderJson();
-        $this->assertEqualsCanonicalizing([], $responseData);
+    protected $classname = "CaptchaGet";
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        putenv('FRIENDLYCAPTCHA_SITEKEY=FAKE_SITE_KEY');
+        putenv('FRIENDLYCAPTCHA_ENDPOINT=https://api.friendlycaptcha.com/api/v1/siteverify');
+        putenv('FRIENDLYCAPTCHA_ENDPOINT_PUZZLE=https://api.friendlycaptcha.com/api/v1/puzzle');
+        putenv('CAPTCHA_ENABLED=1');
+    }
+
+    public function tearDown(): void
+    {
+        putenv('FRIENDLYCAPTCHA_SITEKEY');
+        putenv('FRIENDLYCAPTCHA_ENDPOINT');
+        putenv('FRIENDLYCAPTCHA_ENDPOINT_PUZZLE');
+        putenv('CAPTCHA_ENABLED');
+        
+        parent::tearDown();
+    }
+
+    public function testCaptchaDetails()
+    {
+        $parameters = [];
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string)$response->getBody(), true);
+
+        $expectedDetails = [
+            'siteKey' => 'FAKE_SITE_KEY',
+            'captchaEndpoint' => 'https://api.friendlycaptcha.com/api/v1/siteverify',
+            'puzzle' => 'https://api.friendlycaptcha.com/api/v1/puzzle',
+            'captchaEnabled' => true
+        ];
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals($expectedDetails, $responseBody);
     }
 }

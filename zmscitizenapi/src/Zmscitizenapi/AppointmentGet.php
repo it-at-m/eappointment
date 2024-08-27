@@ -13,7 +13,6 @@ class AppointmentGet extends BaseController
         $processId = $request->getQueryParams()['processId'] ?? null;
         $authKey = $request->getQueryParams()['authKey'] ?? null;
 
-        // Validate processId
         if (!$processId || !is_numeric($processId) || intval($processId) <= 0) {
             $responseContent = [
                 'errors' => [
@@ -28,7 +27,6 @@ class AppointmentGet extends BaseController
             return $this->createJsonResponse($response, $responseContent, 400);
         }
 
-        // Validate authKey
         if (!$authKey || !is_string($authKey)) {
             $responseContent = [
                 'errors' => [
@@ -44,7 +42,6 @@ class AppointmentGet extends BaseController
         }
 
         try {
-            // Call ZMS API ProcessGet endpoint for validation and data retrieval
             $process = $this->getProcessFromZmsApi($processId, $authKey);
 
             if (!$process) {
@@ -59,7 +56,6 @@ class AppointmentGet extends BaseController
             return $this->createJsonResponse($response, $responseData, 200);
 
         } catch (\Exception $e) {
-            // Check if the exception message indicates a "not found" error
             if (strpos($e->getMessage(), 'kein Termin gefunden') !== false) {
                 $responseContent = [
                     'errorMessage' => 'Termin wurde nicht gefunden',
@@ -76,7 +72,7 @@ class AppointmentGet extends BaseController
 
     protected function getProcessFromZmsApi($processId, $authKey)
     {
-        $resolveReferences = 2; // Default to 2, can be changed if necessary
+        $resolveReferences = 2;
         $process = \App::$http->readGetResult("/process/{$processId}/{$authKey}/", [
             'resolveReferences' => $resolveReferences
         ])->getEntity();
@@ -94,7 +90,6 @@ class AppointmentGet extends BaseController
         $mainServiceId = null;
         $mainServiceCount = 0;
 
-        // Handle different structures for requests
         if (isset($myProcess->requests)) {
             $requests = is_array($myProcess->requests) ? $myProcess->requests : iterator_to_array($myProcess->requests);
 
