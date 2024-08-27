@@ -30,6 +30,15 @@ class MailTemplates extends BaseController
             }
         }
 
+        $priorityNames = [
+            'mail_preconfirmed.twig',
+            'mail_confirmation.twig',
+            'mail_reminder.twig',
+            'mail_admin_delete.twig'
+        ];
+
+        $mergedMailTemplates->prioritizeByName($priorityNames);
+
         $mainProcessExample = ((new \BO\Zmsentities\Process)->getExample());
         $mainProcessExample->id = 987654;
         $dateTime = new \DateTimeImmutable("2015-10-23 08:00:00", new \DateTimeZone('Europe/Berlin'));
@@ -87,31 +96,4 @@ class MailTemplates extends BaseController
             )
         );
     }
-
-
-    function mergeMailTemplates($generalTemplates, $customTemplates) {
-        $customTemplatesByName = [];
-
-        if ($customTemplates) {
-            foreach ($customTemplates as $template) {
-                $template['isCustom'] = true; // Add isCustom property to custom templates
-                $customTemplatesByName[$template['name']] = $template;
-            }
-        }
-
-        $mergedTemplates = [];
-
-        if ($generalTemplates) {
-            foreach ($generalTemplates as $template) {
-                if (isset($customTemplatesByName[$template['name']])) {
-                    $mergedTemplates[] = $customTemplatesByName[$template['name']];
-                } else {
-                    $mergedTemplates[] = $template;
-                }
-            }
-        }
-
-        return $mergedTemplates;
-    }
-
 }
