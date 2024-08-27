@@ -23,8 +23,6 @@ class MailTemplates extends BaseController
         $providerId = $workstation->scope['provider']['id'];
         $config = \App::$http->readGetResult('/config/')->getEntity();
 
-        $mailtemplates = \App::$http->readGetResult('/mailtemplates/')->getCollection();
-        $customMailtemplates = \App::$http->readGetResult('/custom-mailtemplates/'.$providerId.'/')->getCollection();
         $mergedMailTemplates = \App::$http->readGetResult('/merged-mailtemplates/'.$providerId.'/')->getCollection();
         forEach($mergedMailTemplates as $template) {
             if ($template['provider']) {
