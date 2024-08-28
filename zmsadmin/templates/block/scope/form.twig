@@ -374,6 +374,22 @@
 
                 {{ formgroup(
                     {
+                        "legend": "E-Mail-Bestätigung:",
+                        "groupTag": "fieldset"
+                    },
+                    [{
+                        "type":"checkbox",
+                        "parameter": {
+                            "label": "Standardmäßig aktivieren",
+                            "name": "preferences[client][emailConfirmationActivated]",
+                            "value": 1,
+                            "checked": scope.preferences.client.emailConfirmationActivated|default(0),
+                        }
+                    }]
+                ) }}
+
+                {{ formgroup(
+                    {
                         "label": "Anzahl an maximal buchbaren Slots pro Termin:"
                     },
                     [{

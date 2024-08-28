@@ -19,11 +19,13 @@ class RightsLevelManager
         'availability' => 20,
         'ticketprinter' => 15,
         'sms' => 10,
+        'audit' => 5,
         'basic' => 0
     );
 
     public static $accessRights = array(
         'superuser' => 1,
+        'audit' => 1,
         'organisation' => 1,
         'department' => 1,
         'scope' => 1

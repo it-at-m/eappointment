@@ -40,6 +40,19 @@ class Index extends BaseController
         $department = \App::$http->readGetResult('/scope/'. $scope->id . '/department/')->getEntity();
         $organisation = $ticketprinterHelper->getOrganisation();
 
+
+        /*
+         *Check whether at least one button is not active (no opening hours stored or location deactivated)
+         *the value will be transferd to the template.
+        */
+        $hasDisabledButton = false;
+        foreach ($ticketprinter->buttons as $button) {
+            if (!isset($button['enabled']) || $button['enabled'] != 1) {
+                $hasDisabledButton = true;
+                break;
+            }
+        }
+
         if (1 == count($ticketprinter->buttons) && 'scope' == $ticketprinter->buttons[0]['type']) {
             return Render::redirect(
                 'TicketprinterByScope',
@@ -51,7 +64,6 @@ class Index extends BaseController
         }
         $template = (new Helper\TemplateFinder($defaultTemplate->getValue()))
             ->setCustomizedTemplate($ticketprinter, $organisation);
-
         return Render::withHtml(
             $response,
             $template->getTemplate(),
@@ -64,7 +76,8 @@ class Index extends BaseController
                 'organisation' => $organisation,
                 'department' => $department,
                 'buttonDisplay' => $template->getButtonTemplateType($ticketprinter),
-                'config' => $config
+                'config' => $config,
+                'hasDisabledButton' => $hasDisabledButton
             )
         );
     }
