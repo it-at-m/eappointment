@@ -14,28 +14,57 @@ class AvailableAppointmentsList extends BaseController
         $queryParams = $request->getQueryParams();
         $date = $queryParams['date'] ?? null;
         $officeId = $queryParams['officeId'] ?? null;
-        $serviceIds = explode(',', $queryParams['serviceId'] ?? '');
-        $serviceCounts = explode(',', $queryParams['serviceCount'] ?? '1');
-
-        if (!$date || !$officeId || empty($serviceIds)) {
-            $responseContent = [
-                'appointmentTimestamps' => [],
-                'error' => 'Missing or invalid parameters'
+        $serviceIds = isset($queryParams['serviceId']) ? explode(',', $queryParams['serviceId']) : [];
+        $serviceCounts = isset($queryParams['serviceCount']) ? explode(',', $queryParams['serviceCount']) : [];
+    
+        $errors = [];
+    
+        if (!$date) {
+            $errors[] = [
+                'type' => 'field',
+                'msg' => 'date is required and must be a valid date',
+                'path' => 'date',
+                'location' => 'body'
             ];
-            $response = $response->withStatus(400)
-                                 ->withHeader('Content-Type', 'application/json');
-            $response->getBody()->write(json_encode($responseContent));
-            return $response;
         }
-
+    
+        if (!$officeId || !is_numeric($officeId)) {
+            $errors[] = [
+                'type' => 'field',
+                'msg' => 'officeId should be a 32-bit integer',
+                'path' => 'officeId',
+                'location' => 'body'
+            ];
+        }
+    
+        if (empty($serviceIds[0]) || !preg_match('/^\d+(,\d+)*$/', $queryParams['serviceId'] ?? '')) {
+            $errors[] = [
+                'type' => 'field',
+                'msg' => 'serviceId should be a comma-separated string of integers',
+                'path' => 'serviceId',
+                'location' => 'body'
+            ];
+        }
+    
+        if (empty($serviceCounts[0]) || !preg_match('/^\d+(,\d+)*$/', $queryParams['serviceCount'] ?? '')) {
+            $errors[] = [
+                'type' => 'field',
+                'msg' => 'serviceCount should be a comma-separated string of integers',
+                'path' => 'serviceCount',
+                'location' => 'body'
+            ];
+        }
+        if (!empty($errors)) {
+            $responseContent = ['errors' => $errors];
+            return $this->createJsonResponse($response, $responseContent, 400);
+        }
+    
         try {
             $calendar = new CalendarEntity();
             $calendar->firstDay = $this->convertDateToDayMonthYear($date);
             $calendar->lastDay = $this->convertDateToDayMonthYear($date);
-            $calendar->providers = [
-                ['id' => $officeId, 'source' => 'dldb']
-            ];
-
+            $calendar->providers = [['id' => $officeId, 'source' => 'dldb']];
+    
             $calendar->requests = [];
             foreach ($serviceIds as $index => $serviceId) {
                 $slotCount = isset($serviceCounts[$index]) ? intval($serviceCounts[$index]) : 1;
@@ -47,9 +76,13 @@ class AvailableAppointmentsList extends BaseController
                     ];
                 }
             }
-
+    
             try {
-                $freeSlots = \App::$http->readPostResult('/process/status/free/', $calendar)->getCollection();
+                $freeSlots = \App::$http->readPostResult('/process/status/free/', $calendar);
+                if (!$freeSlots || !method_exists($freeSlots, 'getCollection')) {
+                    throw new \Exception('Invalid response from API');
+                }
+                $freeSlots = $freeSlots->getCollection();
             } catch (\Exception $e) {
                 error_log('Error in AvailableAppointmentsList during API request: ' . $e->getMessage());
                 $responseContent = [
@@ -58,12 +91,9 @@ class AvailableAppointmentsList extends BaseController
                     'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar',
                     'lastModified' => round(microtime(true) * 1000)
                 ];
-                $response = $response->withStatus(500)
-                                     ->withHeader('Content-Type', 'application/json');
-                $response->getBody()->write(json_encode($responseContent));
-                return $response;
+                return $this->createJsonResponse($response, $responseContent, 500);
             }
-
+    
             if (empty($freeSlots)) {
                 $responseContent = [
                     'appointmentTimestamps' => [],
@@ -71,26 +101,22 @@ class AvailableAppointmentsList extends BaseController
                     'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar',
                     'lastModified' => round(microtime(true) * 1000)
                 ];
-                $response = $response->withStatus(404)
-                                     ->withHeader('Content-Type', 'application/json');
-                $response->getBody()->write(json_encode($responseContent));
-                return $response;
+                return $this->createJsonResponse($response, $responseContent, 404);
             }
-
+    
             $currentTimestamp = time();
-
+    
             $appointmentTimestamps = [];
             foreach ($freeSlots as $slot) {
                 foreach ($slot->appointments as $appointment) {
                     $timestamp = (int)$appointment->date;
-
-                    // Ensure the timestamp is unique and in the future
+    
                     if (!in_array($timestamp, $appointmentTimestamps) && $timestamp > $currentTimestamp) {
                         $appointmentTimestamps[] = $timestamp;
                     }
                 }
             }
-
+    
             if (empty($appointmentTimestamps)) {
                 $responseContent = [
                     'appointmentTimestamps' => [],
@@ -98,37 +124,29 @@ class AvailableAppointmentsList extends BaseController
                     'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar',
                     'lastModified' => round(microtime(true) * 1000)
                 ];
-                $response = $response->withStatus(404)
-                                     ->withHeader('Content-Type', 'application/json');
-                $response->getBody()->write(json_encode($responseContent));
-                return $response;
+                return $this->createJsonResponse($response, $responseContent, 404);
             }
-
+    
             sort($appointmentTimestamps);
-
+    
             $responseContent = [
                 'appointmentTimestamps' => $appointmentTimestamps,
                 'lastModified' => round(microtime(true) * 1000)
             ];
-            $response = $response->withStatus(200)
-                                 ->withHeader('Content-Type', 'application/json');
-            $response->getBody()->write(json_encode($responseContent, JSON_NUMERIC_CHECK));
-            return $response;
-
+            return $this->createJsonResponse($response, $responseContent, 200);
+    
         } catch (\Exception $e) {
             error_log('Error in AvailableAppointmentsList: ' . $e->getMessage());
             $responseContent = [
                 'appointmentTimestamps' => [],
-                'errorCode' => 'appointmentNotAvailable',
-                'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar',
+                'errorCode' => 'noAppointmentForThisScope',
+                'errorMessage' => 'An diesem Standort gibt es aktuell leider keine freien Termine',
                 'lastModified' => round(microtime(true) * 1000)
             ];
-            $response = $response->withStatus(500)
-                                 ->withHeader('Content-Type', 'application/json');
-            $response->getBody()->write(json_encode($responseContent));
-            return $response;
+            return $this->createJsonResponse($response, $responseContent, 500);
         }
     }
+    
 
     private function convertDateToDayMonthYear($dateString)
     {
@@ -138,5 +156,13 @@ class AvailableAppointmentsList extends BaseController
             'month' => (int) $date->format('m'),
             'year' => (int) $date->format('Y'),
         ];
+    }
+
+    private function createJsonResponse(ResponseInterface $response, array $content, int $statusCode): ResponseInterface
+    {
+        $response = $response->withStatus($statusCode)
+                             ->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write(json_encode($content, JSON_NUMERIC_CHECK));
+        return $response;
     }
 }
