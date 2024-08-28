@@ -40,17 +40,8 @@ class CalendarWeekTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-01/',
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-02/',
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-03/',
+                    'url' => '/scope/141/process/2016-03-28/',
+                    'parameters' => ['showWeek' => 1],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
             ]
@@ -94,17 +85,8 @@ class CalendarWeekTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-01/',
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-02/',
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-03/',
+                    'url' => '/scope/141/process/2016-03-28/',
+                    'parameters' => ['showWeek' => 1],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
             ]
@@ -148,24 +130,15 @@ class CalendarWeekTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-01/',
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-02/',
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-03/',
+                    'url' => '/scope/141/process/2016-05-30/',
+                    'parameters' => ['showWeek' => 1],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
             ]
         );
-        $response = $this->render($this->arguments, $this->parameters, []);
+        $response = $this->render(['year' => 2016, 'weeknr' => 22], $this->parameters, []);
         $this->assertStringContainsString('timeslot--free', (string)$response->getBody());
-        $this->assertStringContainsString('Jetzt einen Termin um 15:20 buchen', (string)$response->getBody());
+        $this->assertStringContainsString('Jetzt einen Termin um 13:10 buchen', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -197,33 +170,7 @@ class CalendarWeekTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-12-26/',
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],[
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-12-27/',
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],[
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-12-28/',
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],[
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-12-29/',
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-12-30/',
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-12-31/',
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2017-01-01/',
+                    'parameters' => ['showWeek' => 1],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
             ]
