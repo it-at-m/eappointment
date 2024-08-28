@@ -51,6 +51,17 @@ class ProcessStatusArchived extends Process
         return $this->readResolvedList($query, $resolveReferences);
     }
 
+    public function readListByScopesAndDates($scopeIds, $dateTimes, $resolveReferences = 0)
+    {
+        $query = new Query\ProcessStatusArchived(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addConditionScopeIds($scopeIds)
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionTimes($dateTimes);
+
+        return $this->readResolvedList($query, $resolveReferences);
+    }
+
     public function readListForStatistic($dateTime, \BO\Zmsentities\Scope $scope, $limit = 500, $resolveReferences = 0)
     {
         $query = new Query\ProcessStatusArchived(Query\Base::SELECT);

@@ -11,6 +11,7 @@ use \BO\Mellon\Validator;
 use \BO\Zmsdb\Cluster as Query;
 use \BO\Zmsdb\ProcessStatusArchived;
 use \BO\Zmsentities\Collection\ProcessList as ProcessListCollection;
+use BO\Zmsentities\Collection\QueueList;
 
 class ProcessListByClusterAndDate extends BaseController
 {
@@ -25,28 +26,56 @@ class ProcessListByClusterAndDate extends BaseController
     ) {
         (new Helper\User($request))->checkRights('basic');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $showWeek = Validator::param('showWeek')->isNumber()->setDefault(0)->getValue();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
         $dateTime = $dateTime->modify(\App::$now->format('H:i'));
+        $dates = [$dateTime];
+
+        if ($showWeek) {
+            $dates = [];
+            $startDate = clone $dateTime->modify('Monday this week');
+            $endDate = clone $dateTime->modify('Sunday this week');
+
+            while ($startDate <= $endDate) {
+                $dates[] = $startDate;
+                $startDate = $startDate->modify('+1 day');
+            }
+        }
 
         $query = new Query();
         $cluster = $query->readEntity($args['id'], 0);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
-        $queueList = $query->readQueueList($cluster->id, $dateTime, $resolveReferences ? $resolveReferences + 1 : 1);
-        $allArchivedProcesses = new ProcessListCollection();
-        foreach ($cluster->scopes as $scope) {
-            $archivedProcesses =
-                (new ProcessStatusArchived())->readListByScopeAndDate($scope->id, $dateTime);
 
-            if ($archivedProcesses instanceof ProcessListCollection) {
-                foreach ($archivedProcesses as $process) {
-                    $allArchivedProcesses[] = $process;
-                }
-            } else {
-                error_log("Expected ProcessListCollection, received " . gettype($archivedProcesses));
+        $queueList = new QueueList();
+        foreach ($dates as $date) {
+            $dateQueueList = $query->readQueueList(
+                $cluster->id,
+                $date,
+                $resolveReferences ? $resolveReferences + 1 : 1
+            );
+
+            if (! $dateQueueList) {
+                continue;
             }
+
+            /** @var QueueList $dateQueueList */
+            $queueList->addList($dateQueueList);
         }
+
+        $allArchivedProcesses = new ProcessListCollection();
+        $scopeIds = $cluster->scopes->getIds();
+
+        $archivedProcesses =
+            (new ProcessStatusArchived())->readListByScopesAndDates($scopeIds, $dates);
+
+        if ($archivedProcesses instanceof ProcessListCollection) {
+            $allArchivedProcesses = $archivedProcesses;
+        } else {
+            error_log("Expected ProcessListCollection, received " . gettype($archivedProcesses));
+        }
+
         $message = Response\Message::create($request);
         $message->data = $queueList->toProcessList()->withResolveLevel($resolveReferences);
 

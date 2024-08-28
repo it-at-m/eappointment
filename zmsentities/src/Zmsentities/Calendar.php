@@ -18,7 +18,7 @@ class Calendar extends Schema\Entity
     {
         return [
             'firstDay' => new Day(),
-            'lastDay' => new Day(),
+            'lastDay' => null,
             'days' => new Collection\DayList(),
             'clusters' => [ ],
             'providers' => [ ],
@@ -247,8 +247,12 @@ class Calendar extends Schema\Entity
         return $dateTime->modify('00:00:00');
     }
 
-    public function getLastDay()
+    public function getLastDay($createIfNotProvided = true)
     {
+        if (! $createIfNotProvided && ! isset($this['lastDay'])) {
+            return null;
+        }
+
         if (isset($this['lastDay'])) {
             $dateTime = $this->getDateTimeFromDate(
                 array(
