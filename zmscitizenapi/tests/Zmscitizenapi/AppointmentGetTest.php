@@ -129,6 +129,40 @@ class AppointmentGetTest extends Base
         $this->assertEquals('authKey should be a string', $responseBody['errors'][0]['msg']);
     }
 
+    public function testBothParametersMissing()
+    {
+        $parameters = [];
+
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string)$response->getBody(), true);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertArrayHasKey('errors', $responseBody);
+        $errors = $responseBody['errors'];
+
+        $this->assertCount(2, $errors);
+
+        $this->assertContains(
+            [
+                'type' => 'field',
+                'msg' => 'processId should be a 32-bit integer',
+                'path' => 'processId',
+                'location' => 'query'
+            ],
+            $errors
+        );
+
+        $this->assertContains(
+            [
+                'type' => 'field',
+                'msg' => 'authKey should be a string',
+                'path' => 'authKey',
+                'location' => 'query'
+            ],
+            $errors
+        );
+    }
+
     public function testAppointmentNotFound()
     {
         $this->setApiCalls(
