@@ -92,7 +92,9 @@ class AvailableDaysList extends BaseController
             error_log('Error in AvailableDaysList: ' . $e->getMessage());
             $responseContent = [
                 'availableDays' => [],
-                'error' => 'Unexpected error: ' . $e->getMessage()
+                'errorCode' => 'noAppointmentForThisScope',
+                'errorMessage' => 'An diesem Standort gibt es aktuell leider keine freien Termine',
+                'lastModified' => round(microtime(true) * 1000)
             ];
             $response = $response->withStatus(500)
                                  ->withHeader('Content-Type', 'application/json');
