@@ -55,15 +55,29 @@
                     <div class="grid__item one-half SLOTCNT">
                         {% if scope.preferences.appointment.multipleSlotsEnabled or selectedProcess.scope.preferences.appointment.multipleSlotsEnabled %}
                             {% set slotCountOptions = [] %}
-                            {% for slotCount in 1..20 %}
-                                {% if selectedProcess.appointments|first.slotCount == slotCount %}
-                                    {% set selected = "selected" %}
-                                {% else %}
-                                    {% set selected = "" %}
-                                {% endif %}
-                                {% set duration = slotTimeInMinutes * slotCount %}
-                                {% set slotCountOptions = slotCountOptions|merge([{ "value": slotCount, "name": duration, "selected":selected}]) %}
-                            {% endfor %}
+                            {# loop from 1 to 20(default) only when scope.preferences.client.slotsPerAppointment(maximal buchbaren Slots pro Termin) is not defined #}
+                            {% if scope.preferences.client.slotsPerAppointment is defined %}
+                                {% for slotCount in 1..scope.preferences.client.slotsPerAppointment %}
+                                    {% if selectedProcess.appointments|first.slotCount == slotCount %}
+                                        {% set selected = "selected" %}
+                                    {% else %}
+                                        {% set selected = "" %}
+                                    {% endif %}
+                                    {% set duration = slotTimeInMinutes * slotCount %}
+                                    {% set slotCountOptions = slotCountOptions|merge([{ "value": slotCount, "name": duration, "selected":selected}]) %}
+                                {% endfor %}
+                            {% else %}
+                                {% for slotCount in 1..20 %}
+                                    {% if selectedProcess.appointments|first.slotCount == slotCount or slotCount == 23 %}
+                                        {% set selected = "selected" %}
+                                    {% else %}
+                                        {% set selected = "" %}
+                                    {% endif %}
+                                    {% set duration = slotTimeInMinutes * slotCount %}
+                                    {% set slotCountOptions = slotCountOptions|merge([{ "value": slotCount, "name": duration, "selected":selected}]) %}
+                                {% endfor %}
+                            {% endif %}
+
                             {{ formgroup(
                                 {"label": "Termindauer in Minuten"},
                                 [{

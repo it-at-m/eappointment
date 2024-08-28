@@ -42,9 +42,35 @@ class AppointmentForm extends BaseController
         
         $selectedScope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation, $selectedProcess, 2);
 
+        echo "<pre>";
+        // Access the 'slotTimeInMinutes' value
+        $slotTime = $selectedScope->provider->data['slotTimeInMinutes'];
+        echo "slotTimeInMinutes: ";
+        print_r($slotTime);
+        echo "\n";
+        // Access the 'multipleSlotsEnabled' value
+        $multipleSlotsEnabled = $selectedScope->preferences['appointment']['multipleSlotsEnabled'];
+        echo "multipleSlotsEnabled: ";
+        print_r($multipleSlotsEnabled);
+        echo "\n";
+        // Access the 'slotsPerAppointment' value
+        $slotsPerAppointment = $selectedScope['preferences']['client']['slotsPerAppointment'];
+        echo "slotsPerAppointment: ";
+        print_r($slotsPerAppointment);
+        echo "\n";
+        echo "</pre>";
+
+        //Liste der Diensleistungen
         $requestList = ($selectedScope && $selectedScope->hasId())
             ? Helper\AppointmentFormHelper::readRequestList($request, $workstation, $selectedScope)
             : null;
+
+        echo "requestList:\n";
+        // var_dump($requestList);
+        echo "getName:\n";
+        print_r($requestList->getFirst()->getName());
+        echo "getAdditionalData:\n";
+        print_r($requestList->getFirst()->getGroup());
 
         $freeProcessList = ($selectedScope)
             ? Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation, 2)
