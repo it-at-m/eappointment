@@ -338,9 +338,20 @@ class Process extends Schema\Entity
         return $this->toProperty()->amendment->get();
     }
 
-    public function getShowUpTime()
+    /*public function getShowUpTime()
     {
         return $this->toProperty()->showUpTime->get();
+    }*/
+
+    public function getShowUpTime($default = 'now', $timezone = null)
+    {
+        $showUpTime = $this->toProperty()->showUpTime->get();
+        $showDateTime = Helper\DateTime::create($default, $timezone);
+        if ($showUpTime) {
+            list($hours, $minutes, $seconds) = explode(':', $showUpTime);
+            $showDateTime = $showDateTime->setTime(intval($hours), intval($minutes), intval($seconds));
+        }
+        return $showDateTime;
     }
 
     public function getWaitingTime()
@@ -555,6 +566,7 @@ class Process extends Schema\Entity
         $queue = new Queue($this->queue);
         $queue->withAppointment = ($this->getFirstAppointment()->hasTime()) ? true : false;
         $queue->waitingTime = ($queue->waitingTime) ? $queue->waitingTime : 0;
+        $queue->wayTime = ($queue->wayTime) ? $queue->wayTime : 0;
         if ($queue->withAppointment) {
             $queue->number = $this->id;
         } else {
@@ -600,7 +612,17 @@ class Process extends Schema\Entity
 
     public function getWaitedMinutes($defaultTime = 'now')
     {
-        return round($this->getWaitedSeconds($defaultTime) / 60, 0);
+        return $this->getWaitedSeconds($defaultTime) / 60;
+    }
+
+    public function getWaySeconds($defaultTime = 'now')
+    {
+        return $this->getShowUpTime($defaultTime)->getTimestamp() - $this->getCallTime($defaultTime)->getTimestamp();
+    }
+
+    public function getWayMinutes($defaultTime = 'now')
+    {
+        return $this->getWaySeconds($defaultTime) / 60;
     }
 
     public function toDerefencedAmendment()

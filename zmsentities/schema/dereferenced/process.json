@@ -32,6 +32,7 @@
             "lastCallTime": 1447922938,
             "number": "123",
             "waitingTime": 2,
+            "wayTime": 2,
             "withAppointment": 1,
             "status": "queued"
         },
@@ -252,6 +253,7 @@
                 "lastCallTime": 0,
                 "number": "123",
                 "waitingTime": 2,
+                "wayTime": 2,
                 "withAppointment": false,
                 "status": "confirmed"
             },
@@ -293,6 +295,10 @@
                     "description": "number to display on a call display"
                 },
                 "waitingTime": {
+                    "type": "number",
+                    "description": "minutes since arrival of client"
+                },
+                "wayTime": {
                     "type": "number",
                     "description": "minutes since arrival of client"
                 },
@@ -548,6 +554,7 @@
                         "amendmentLabel": "Zusatzinformationen zum Anliegen",
                         "customTextfieldLabel": "Zusatzfeld zum Anliegen",
                         "emailRequired": false,
+                        "emailConfirmationActivated": true,
                         "adminMailOnAppointment": false,
                         "adminMailOnDeleted": false,
                         "adminMailOnUpdated": false,
@@ -784,6 +791,14 @@
                                     ],
                                     "description": "true if client is required to enter an email address",
                                     "default": false
+                                },
+                                "emailConfirmationActivated": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if email confirmation is activated",
+                                    "default": true
                                 },
                                 "telephoneActivated": {
                                     "type": [

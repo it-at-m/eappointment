@@ -22,9 +22,11 @@ class ExchangeWaitingdepartment extends Base implements Interfaces\ExchangeSubje
         $entity->addDictionaryEntry('hour', 'string', 'hour of report entry');
         $entity->addDictionaryEntry('waitingcount', 'number', 'amount of waiting spontaneous clients');
         $entity->addDictionaryEntry('waitingtime', 'number', 'real waitingtime for spontaneous clients');
+        $entity->addDictionaryEntry('waytime', 'number', 'real waytime for spontaneous clients');
         $entity->addDictionaryEntry('waitingcalculated', 'number', 'calculated waitingtime for spontaneous clients');
         $entity->addDictionaryEntry('waitingcount_termin', 'number', 'amount of waiting clients with termin');
         $entity->addDictionaryEntry('waitingtime_termin', 'number', 'real waitingtime with termin');
+        $entity->addDictionaryEntry('waytime_termin', 'number', 'real waytime with appointment');
         $entity->addDictionaryEntry('waitingcalculated_termin', 'number', 'calculated waitingtime with termin');
         $subjectIdList = explode(',', $subjectid);
         foreach ($subjectIdList as $subjectid) {
@@ -48,9 +50,11 @@ class ExchangeWaitingdepartment extends Base implements Interfaces\ExchangeSubje
                         $entry[sprintf('wartende_ab_%02s_spontan', $hour)],
                         $entry[sprintf('echte_zeit_ab_%02s_spontan', $hour)],
                         $entry[sprintf('zeit_ab_%02s_spontan', $hour)],
+                        $entry[sprintf('wegezeit_ab_%02s_spontan', $hour)],
                         $entry[sprintf('wartende_ab_%02s_termin', $hour)],
                         $entry[sprintf('echte_zeit_ab_%02s_termin', $hour)],
                         $entry[sprintf('zeit_ab_%02s_termin', $hour)],
+                        $entry[sprintf('wegezeit_ab_%02s_termin', $hour)],
                     ]);
                 }
             }
