@@ -98,8 +98,9 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
     
         $this->assertEquals(500, $response->getStatusCode());
-        $this->assertArrayHasKey('error', $responseBody);
-        $this->assertEquals('Unexpected error: DateTime::__construct(): Failed to parse time string (invalid-date) at position 0 (i): The timezone could not be found in the database', $responseBody['error']);
+        $this->assertArrayHasKey('errorCode', $responseBody);
+        $this->assertArrayHasKey('errorMessage', $responseBody);
+        $this->assertEquals('An diesem Standort gibt es aktuell leider keine freien Termine', $responseBody['errorMessage']);
         $this->assertArrayHasKey('availableDays', $responseBody);
         $this->assertEmpty($responseBody['availableDays']);
     }
