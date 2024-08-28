@@ -34,7 +34,7 @@ class MailTemplates extends BaseController
             'mail_preconfirmed.twig',
             'mail_confirmation.twig',
             'mail_reminder.twig',
-            'mail_admin_delete.twig'
+            'mail_delete.twig'
         ];
 
         $mergedMailTemplates->prioritizeByName($priorityNames);
