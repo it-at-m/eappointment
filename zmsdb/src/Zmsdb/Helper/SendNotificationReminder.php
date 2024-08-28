@@ -107,7 +107,11 @@ class SendNotificationReminder
         $this->log("INFO: $processCount Create notification: $entity->message");
         if ($commit) {
             $notification = (new \BO\Zmsdb\Notification)->writeInQueue($entity, $this->dateTime);
-            Log::writeLogEntry("Write Reminder (Notification::writeInQueue) $entity ", $process->getId());
+            Log::writeLogEntry("Write Reminder (Notification::writeInQueue) $entity ",
+                $process->getId(),
+                Log::PROCESS,
+                $process->getScopeId()
+            );
             $this->log(
                 "INFO: $processCount Notification has been written in queue successfully with ID ".
                 $notification->getId()

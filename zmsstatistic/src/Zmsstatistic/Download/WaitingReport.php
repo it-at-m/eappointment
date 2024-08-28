@@ -20,7 +20,9 @@ class WaitingReport extends Base
         'waitingcalculated' => 'maximal berechnete Wartezeit Spontankunden',
         'waitingcount_termin' => 'maximal Wartende Terminkunden',
         'waitingtime_termin' => 'maximal gemessene Wartezeit Terminkunden',
-        'waitingcalculated_termin' => 'maximal berechnete Wartezeit Terminkunden'
+        'waitingcalculated_termin' => 'maximal berechnete Wartezeit Terminkunden',
+        'waytime' => 'maximal gemessene Wegezeit Spontankunden',
+        'waytime_termin' => 'maximal gemessene Wegezeit Terminkunden',
     ];
     
     /**
