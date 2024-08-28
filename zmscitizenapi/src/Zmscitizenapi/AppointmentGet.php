@@ -13,31 +13,28 @@ class AppointmentGet extends BaseController
         $processId = $request->getQueryParams()['processId'] ?? null;
         $authKey = $request->getQueryParams()['authKey'] ?? null;
 
+        $errors = [];
+
         if (!$processId || !is_numeric($processId) || intval($processId) <= 0) {
-            $responseContent = [
-                'errors' => [
-                    [
-                        'type' => 'field',
-                        'msg' => 'processId should be a 32-bit integer',
-                        'path' => 'processId',
-                        'location' => 'body'
-                    ]
-                ]
+            $errors[] = [
+                'type' => 'field',
+                'msg' => 'processId should be a 32-bit integer',
+                'path' => 'processId',
+                'location' => 'query'
             ];
-            return $this->createJsonResponse($response, $responseContent, 400);
         }
 
         if (!$authKey || !is_string($authKey)) {
-            $responseContent = [
-                'errors' => [
-                    [
-                        'type' => 'field',
-                        'msg' => 'authKey should be a string',
-                        'path' => 'authKey',
-                        'location' => 'body'
-                    ]
-                ]
+            $errors[] = [
+                'type' => 'field',
+                'msg' => 'authKey should be a string',
+                'path' => 'authKey',
+                'location' => 'query'
             ];
+        }
+
+        if (!empty($errors)) {
+            $responseContent = ['errors' => $errors];
             return $this->createJsonResponse($response, $responseContent, 400);
         }
 
