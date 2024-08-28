@@ -32,33 +32,12 @@ class AvailableAppointmentsListTest extends Base
 
         $this->assertArrayHasKey('appointmentTimestamps', $responseBody);
         $this->assertNotEmpty($responseBody['appointmentTimestamps']);
-
         $this->assertTrue(is_array($responseBody['appointmentTimestamps']));
         $this->assertTrue(count($responseBody['appointmentTimestamps']) > 0);
         $this->assertTrue(is_numeric($responseBody['appointmentTimestamps'][0]));
 
         $this->assertArrayHasKey('lastModified', $responseBody);
         $this->assertTrue(is_numeric($responseBody['lastModified']));
-    }
-
-    public function testMissingParameters()
-    {
-        $parameters = [
-            'date' => '2024-08-29',
-            'serviceId' => '1063424',
-            'serviceCount' => '1',
-        ];
-
-        $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
-
-        $this->assertEquals(400, $response->getStatusCode());
-
-        $this->assertArrayHasKey('error', $responseBody);
-        $this->assertEquals('Missing or invalid parameters', $responseBody['error']);
-
-        $this->assertArrayHasKey('appointmentTimestamps', $responseBody);
-        $this->assertEmpty($responseBody['appointmentTimestamps']);
     }
 
     public function testEmptyAppointments()
@@ -72,6 +51,7 @@ class AvailableAppointmentsListTest extends Base
                 ]
             ]
         );
+        
         $parameters = [
             'date' => '2024-08-29',
             'officeId' => '102522',
@@ -94,4 +74,211 @@ class AvailableAppointmentsListTest extends Base
         $this->assertEmpty($responseBody['appointmentTimestamps']);
     }
 
+    public function testDateMissing()
+    {
+        $parameters = [
+            'officeId' => '102522',
+            'serviceId' => '1063424',
+            'serviceCount' => '1',
+        ];
+
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string)$response->getBody(), true);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertArrayHasKey('errors', $responseBody);
+        $this->assertContains(
+            ['type' => 'field', 'msg' => 'date is required and must be a valid date', 'path' => 'date', 'location' => 'body'],
+            $responseBody['errors']
+        );
+    }
+
+    public function testOfficeIdMissing()
+    {
+        $parameters = [
+            'date' => '2024-08-29',
+            'serviceId' => '1063424',
+            'serviceCount' => '1',
+        ];
+
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string)$response->getBody(), true);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertArrayHasKey('errors', $responseBody);
+        $this->assertContains(
+            ['type' => 'field', 'msg' => 'officeId should be a 32-bit integer', 'path' => 'officeId', 'location' => 'body'],
+            $responseBody['errors']
+        );
+    }
+
+    public function testServiceIdMissing()
+    {
+        $parameters = [
+            'date' => '2024-08-29',
+            'officeId' => '102522',
+            'serviceCount' => '1',
+        ];
+
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string)$response->getBody(), true);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertArrayHasKey('errors', $responseBody);
+        $this->assertContains(
+            ['type' => 'field', 'msg' => 'serviceId should be a comma-separated string of integers', 'path' => 'serviceId', 'location' => 'body'],
+            $responseBody['errors']
+        );
+    }
+
+    public function testServiceCountMissing()
+    {
+        $parameters = [
+            'date' => '2024-08-29',
+            'officeId' => '102522',
+            'serviceId' => '1063424',
+        ];
+
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string)$response->getBody(), true);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertArrayHasKey('errors', $responseBody);
+        $this->assertContains(
+            ['type' => 'field', 'msg' => 'serviceCount should be a comma-separated string of integers', 'path' => 'serviceCount', 'location' => 'body'],
+            $responseBody['errors']
+        );
+    }
+
+    public function testDateAndOfficeIdMissing()
+    {
+        $parameters = [
+            'serviceId' => '1063424',
+            'serviceCount' => '1',
+        ];
+
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string)$response->getBody(), true);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertArrayHasKey('errors', $responseBody);
+        $this->assertContains(
+            ['type' => 'field', 'msg' => 'date is required and must be a valid date', 'path' => 'date', 'location' => 'body'],
+            $responseBody['errors']
+        );
+        $this->assertContains(
+            ['type' => 'field', 'msg' => 'officeId should be a 32-bit integer', 'path' => 'officeId', 'location' => 'body'],
+            $responseBody['errors']
+        );
+    }
+
+    public function testDateAndServiceIdMissing()
+    {
+        $parameters = [
+            'officeId' => '102522',
+            'serviceCount' => '1',
+        ];
+
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string)$response->getBody(), true);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertArrayHasKey('errors', $responseBody);
+        $this->assertContains(
+            ['type' => 'field', 'msg' => 'date is required and must be a valid date', 'path' => 'date', 'location' => 'body'],
+            $responseBody['errors']
+        );
+        $this->assertContains(
+            ['type' => 'field', 'msg' => 'serviceId should be a comma-separated string of integers', 'path' => 'serviceId', 'location' => 'body'],
+            $responseBody['errors']
+        );
+    }
+
+    public function testDateAndServiceCountMissing()
+    {
+        $parameters = [
+            'officeId' => '102522',
+            'serviceId' => '1063424',
+        ];
+
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string)$response->getBody(), true);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertArrayHasKey('errors', $responseBody);
+        $this->assertContains(
+            ['type' => 'field', 'msg' => 'date is required and must be a valid date', 'path' => 'date', 'location' => 'body'],
+            $responseBody['errors']
+        );
+        $this->assertContains(
+            ['type' => 'field', 'msg' => 'serviceCount should be a comma-separated string of integers', 'path' => 'serviceCount', 'location' => 'body'],
+            $responseBody['errors']
+        );
+    }
+
+    public function testOfficeIdAndServiceIdMissing()
+    {
+        $parameters = [
+            'date' => '2024-08-29',
+            'serviceCount' => '1',
+        ];
+
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string)$response->getBody(), true);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertArrayHasKey('errors', $responseBody);
+        $this->assertContains(
+            ['type' => 'field', 'msg' => 'officeId should be a 32-bit integer', 'path' => 'officeId', 'location' => 'body'],
+            $responseBody['errors']
+        );
+        $this->assertContains(
+            ['type' => 'field', 'msg' => 'serviceId should be a comma-separated string of integers', 'path' => 'serviceId', 'location' => 'body'],
+            $responseBody['errors']
+        );
+    }
+
+    public function testOfficeIdAndServiceCountMissing()
+    {
+        $parameters = [
+            'date' => '2024-08-29',
+            'serviceId' => '1063424',
+        ];
+
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string)$response->getBody(), true);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertArrayHasKey('errors', $responseBody);
+        $this->assertContains(
+            ['type' => 'field', 'msg' => 'officeId should be a 32-bit integer', 'path' => 'officeId', 'location' => 'body'],
+            $responseBody['errors']
+        );
+        $this->assertContains(
+            ['type' => 'field', 'msg' => 'serviceCount should be a comma-separated string of integers', 'path' => 'serviceCount', 'location' => 'body'],
+            $responseBody['errors']
+        );
+    }
+
+    public function testServiceIdAndServiceCountMissing()
+    {
+        $parameters = [
+            'date' => '2024-08-29',
+            'officeId' => '102522',
+        ];
+
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string)$response->getBody(), true);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertArrayHasKey('errors', $responseBody);
+        $this->assertContains(
+            ['type' => 'field', 'msg' => 'serviceId should be a comma-separated string of integers', 'path' => 'serviceId', 'location' => 'body'],
+            $responseBody['errors']
+        );
+        $this->assertContains(
+            ['type' => 'field', 'msg' => 'serviceCount should be a comma-separated string of integers', 'path' => 'serviceCount', 'location' => 'body'],
+            $responseBody['errors']
+        );
+    }
 }
