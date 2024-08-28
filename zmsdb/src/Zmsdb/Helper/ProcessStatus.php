@@ -28,7 +28,11 @@ class ProcessStatus extends \BO\Zmsdb\Process
         $entity = call_user_func_array(array($this, $statusList[$status]), array($process));
         $query->addValuesStatusData($entity, $dateTime);
         $checksum = ($userAccount) ? sha1($process->id . '-' . $userAccount->getId()) : '';
-        Log::writeLogEntry("UPDATE (ProcessStatus::writeUpdatedStatus) $process $checksum ", $process->id);
+        Log::writeLogEntry("UPDATE (ProcessStatus::writeUpdatedStatus) $process $checksum ",
+            $process->id,
+            Log::PROCESS,
+            $process->getScopeId()
+        );
         $this->writeItem($query, 'process', $query::TABLE);
         $this->perform(\BO\Zmsdb\Query\Process::QUERY_UPDATE_FOLLOWING_PROCESS, [
             'reserved' => ($process->status == 'reserved') ? 1 : 0,

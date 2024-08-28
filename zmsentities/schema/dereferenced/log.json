@@ -5,7 +5,8 @@
         "type": "buerger",
         "reference": "12345",
         "ts": "12345678",
-        "message": "A simple log entry"
+        "message": "A simple log entry",
+        "scope_id": "50"
     },
     "required": [
         "type",
@@ -28,6 +29,10 @@
         "message": {
             "type": "string",
             "description": "Descriptive log entry"
+        },
+        "scope_id": {
+            "type": "number",
+            "description": "Scope for which is log created"
         }
     }
 }

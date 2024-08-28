@@ -8,6 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
+use BO\Zmsdb\Log;
 use \BO\Zmsdb\Workstation;
 use \BO\Zmsdb\Useraccount;
 
@@ -38,7 +39,11 @@ class WorkstationDelete extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
 
-        \BO\Zmsdb\Log::writeLogEntry("LOGOUT (WorkstattionDelete::readResponse) ".$args['loginname'], 0);
+        \BO\Zmsdb\Log::writeLogEntry("LOGOUT (WorkstattionDelete::readResponse) ".$args['loginname'],
+            0,
+            Log::PROCESS,
+            $workstation->getScope()->getId()
+        );
 
         return $response;
     }

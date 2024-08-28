@@ -162,7 +162,11 @@ class ProcessStatusArchived extends Process
         $query->addValuesNewArchive($process, $now);
         $this->writeItem($query);
         $archiveId = $this->getWriter()->lastInsertId();
-        Log::writeLogEntry("ARCHIVE (Archive::writeNewArchivedProcess) $archiveId -> $process ", $process->id);
+        Log::writeLogEntry("ARCHIVE (Archive::writeNewArchivedProcess) $archiveId -> $process ",
+            $process->id,
+            Log::PROCESS,
+            $process->getScopeId()
+        );
 
         if ($calculateStatistic) {
             (new ExchangeWaitingscope())->updateWaitingStatistics($process, $now);

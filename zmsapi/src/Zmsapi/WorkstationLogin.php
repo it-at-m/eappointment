@@ -8,6 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
+use BO\Zmsdb\Log;
 use \BO\Zmsdb\Workstation;
 use \BO\Zmsdb\Useraccount;
 
@@ -60,7 +61,11 @@ class WorkstationLogin extends BaseController
             $resolveReferences
         );
 
-        \BO\Zmsdb\Log::writeLogEntry("LOGIN (WorkstattionLogin::getLoggedInWorkstation) ".$useraccount->id, 0);
+        \BO\Zmsdb\Log::writeLogEntry("LOGIN (WorkstattionLogin::getLoggedInWorkstation) ".$useraccount->id,
+            0,
+            Log::PROCESS,
+            $workstation->getScope()->getId()
+        );
 
         return $workstation;
     }
