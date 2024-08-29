@@ -77,9 +77,32 @@ class ProcessStatusArchived extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionScopeIds($scopeIds)
+    {
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) use ($scopeIds) {
+            foreach ($scopeIds as $scopeId) {
+                $condition
+                    ->orWith('process.StandortID', '=', $scopeId);
+            }
+        });
+        return $this;
+    }
+
+
     public function addConditionTime(\DateTimeInterface $now)
     {
         $this->query->where('process.Datum', '=', $now->format('Y-m-d'));
+        return $this;
+    }
+
+    public function addConditionTimes(array $dateTimes)
+    {
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) use ($dateTimes) {
+            foreach ($dateTimes as $dateTime) {
+                $condition
+                    ->orWith('process.Datum', '=', $dateTime->format('Y-m-d'));
+            }
+        });
         return $this;
     }
 
