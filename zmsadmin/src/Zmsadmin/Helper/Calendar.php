@@ -64,13 +64,20 @@ class Calendar
     public function readAvailableSlotsFromDayAndScopeList(
         \BO\Zmsentities\Collection\ScopeList $scopeList,
         $slotType = 'intern',
-        $slotsRequired = 0
+        $slotsRequired = 0,
+        $forWeek = false
     ) {
         $this->calendar->scopes = $scopeList;
-        $startDate = clone $this->dateTime->modify('Monday this week');
-        $endDate = clone $this->dateTime->modify('Sunday this week');
-        $this->calendar->firstDay->setDateTime($startDate);
-        $this->calendar->lastDay->setDateTime($endDate);
+
+        $this->calendar->firstDay->setDateTime($this->dateTime);
+        $this->calendar->lastDay->setDateTime($this->dateTime);
+
+        if ($forWeek) {
+            $startDate = clone $this->dateTime->modify('Monday this week');
+            $endDate = clone $this->dateTime->modify('Sunday this week');
+            $this->calendar->firstDay->setDateTime($startDate);
+            $this->calendar->lastDay->setDateTime($endDate);
+        }
 
         try {
             $slots = \App::$http->readPostResult(
@@ -118,7 +125,12 @@ class Calendar
         $currentDate = $startDate;
 
         /** @var ProcessList $freeProcessList */
-        $freeProcessList = $this->readAvailableSlotsFromDayAndScopeList($scopeList);
+        $freeProcessList = $this->readAvailableSlotsFromDayAndScopeList(
+            $scopeList,
+            'intern',
+            0,
+            true
+        );
         $freeProcessListByDate = $freeProcessList ? $this->splitByDate($freeProcessList) : [];
 
         while ($currentDate <= $endDate) {
