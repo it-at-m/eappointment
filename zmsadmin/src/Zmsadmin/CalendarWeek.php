@@ -34,12 +34,13 @@ class CalendarWeek extends BaseController
             $selectedWeek;
         
         // HTTP requests
+        /** @var \BO\Zmsentities\Workstation $workstation */
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
         $cluster = $workstationRequest->readCluster();
         $calendar = new Helper\Calendar(null, $selectedWeek, $selectedYear);
-        $dayList = $calendar->readWeekDayListWithProcessList($workstation->getScopeList($cluster));
-        //var_dump($dayList);exit;
+
+        $dayList = $calendar->readWeekDayListWithProcessList($cluster, $workstation);
 
         // rendering
         return \BO\Slim\Render::withHtml(
