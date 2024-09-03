@@ -56,28 +56,16 @@
                         {% if scope.preferences.appointment.multipleSlotsEnabled or selectedProcess.scope.preferences.appointment.multipleSlotsEnabled %}
                             {% set slotCountOptions = [] %}
                             {# loop from 1 to 20(default) only when scope.preferences.client.slotsPerAppointment(maximal buchbaren Slots pro Termin) is not defined #}
-                            {% if scope.preferences.client.slotsPerAppointment is defined %}
-                                {% for slotCount in 1..scope.preferences.client.slotsPerAppointment %}
-                                    {% if selectedProcess.appointments|first.slotCount == slotCount %}
-                                        {% set selected = "selected" %}
-                                    {% else %}
-                                        {% set selected = "" %}
-                                    {% endif %}
-                                    {% set duration = slotTimeInMinutes * slotCount %}
-                                    {% set slotCountOptions = slotCountOptions|merge([{ "value": slotCount, "name": duration, "selected":selected}]) %}
-                                {% endfor %}
-                            {% else %}
-                                {% for slotCount in 1..20 %}
-                                    {% if selectedProcess.appointments|first.slotCount == slotCount or slotCount == 23 %}
-                                        {% set selected = "selected" %}
-                                    {% else %}
-                                        {% set selected = "" %}
-                                    {% endif %}
-                                    {% set duration = slotTimeInMinutes * slotCount %}
-                                    {% set slotCountOptions = slotCountOptions|merge([{ "value": slotCount, "name": duration, "selected":selected}]) %}
-                                {% endfor %}
-                            {% endif %}
-
+                            {% set maxSlots = scope.preferences.client.slotsPerAppointment|default(20) %}
+                            {% for slotCount in 1..maxSlots %}
+                                {% if selectedProcess.appointments|first.slotCount == slotCount %}
+                                    {% set selected = "selected" %}
+                                {% else %}
+                                    {% set selected = "" %}
+                                {% endif %}
+                                {% set duration = slotTimeInMinutes * slotCount %}
+                                {% set slotCountOptions = slotCountOptions|merge([{ "value": slotCount, "name": duration, "selected":selected}]) %}
+                            {% endfor %}
                             {{ formgroup(
                                 {"label": "Termindauer in Minuten"},
                                 [{
@@ -404,5 +392,20 @@
                 </div>
             </div>
         </form>
+        {#warningText if the number of slots is exceeded#}
+        <div id="exceeded-slot-count" style="
+           color: #8a6d3b;
+           background-color: #fcf8e3;
+           border: 1px solid #faebcc;
+           padding: 10px;
+           margin-top: 10px;
+           border-radius: 4px;
+           font-size: 14px;
+           display: flex;
+           align-items: center;
+           ">
+            <span style="font-size: 20px; color: #f0ad4e; margin-right: 10px;">&#9888;</span>
+            Der Termin ist zu lang. Bitte wählen Sie weniger Dienstleistungen.
+        </div>
     {% endblock %}
 {% endembed %}
