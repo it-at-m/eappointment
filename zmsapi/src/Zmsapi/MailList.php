@@ -31,9 +31,9 @@ class MailList extends BaseController
         if ($onlyIds) {
             if (!empty($ids)) {
                 $itemIds = array_map('intval', explode(',', $ids));
-                $result = $query->readEntityIds($itemIds, $limit, 'ASC');
+                $result = $query->readEntitiesIds($itemIds, $resolveReferences,  $limit, 'ASC');
             } else {
-                $result = $query->readAllIds($limit, 'ASC');
+                $result = $query->readListIds($resolveReferences, $limit, 'ASC');
             }
         } else {
             if (!empty($ids)) {
