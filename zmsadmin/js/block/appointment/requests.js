@@ -97,6 +97,12 @@ class View extends BaseView {
         }
         slotCount = slotCount == 0 ? 1 : slotCount;
         $('#appointmentForm_slotCount').val(Math.ceil(slotCount)).trigger('change');
+        // Prüfen, ob Anzahl der Slots überschritten wird ($('#appointmentForm_slotCount')) -> Standortskonfig
+        if (slotCount > $('#appointmentForm_slotCount option:last').val()) {
+            $('#exceeded-slot-count').show()
+        }else {
+            $('#exceeded-slot-count').hide()
+        }
     }
 }
 
