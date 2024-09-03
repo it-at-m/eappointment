@@ -40,7 +40,7 @@ class Mail extends Base
                        ->addResolvedReferences($resolveReferences)
                        ->addWhereIn('id', $itemIds)
                        ->addOrderBy('createTimestamp', 'ASC')
-                       ->addLimit(100);
+                       ->addLimit($limit);
         $result = $this->fetchList($query, new Entity());
         if ($onlyIds) {
             return array_map(function ($item) {
