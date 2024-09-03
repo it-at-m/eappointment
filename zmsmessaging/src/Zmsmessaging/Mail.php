@@ -105,7 +105,6 @@ class Mail extends BaseController
         return $resultList;
     }
     
-
     public function sendQueueItems($action, array $itemIds)
     {
         $endpoint = '/mails/';
@@ -128,7 +127,8 @@ class Mail extends BaseController
         }
     
         $results = [];
-        $processedItems = []; // Array to hold processed item IDs and process IDs
+        $processedItems = [];
+        $successfullySentIds = [];
     
         foreach ($mailItems as $item) {
             $entity = new \BO\Zmsentities\Mail($item);
@@ -148,6 +148,7 @@ class Mail extends BaseController
                         'attachments' => $result->getAttachments(),
                         'customHeaders' => $result->getCustomHeaders(),
                     ];
+                    $successfullySentIds[] = $entity->id;
                 } else {
                     $results[] = [
                         'errorInfo' => $result->ErrorInfo
@@ -159,25 +160,22 @@ class Mail extends BaseController
                 $results[] = ['errorInfo' => $e->getMessage()];
             }
     
-            // Add the processed item and its process ID to the array
             $processedItems[] = '[' . $entity->id . ', ' . $entity['process']['id'] . ']';
         }
     
-        if ($action && !empty($itemIds)) {
+        if ($action && !empty($successfullySentIds)) {
             try {
-                $this->deleteEntitiesFromQueue($itemIds);
+                $this->deleteEntitiesFromQueue($successfullySentIds);
             } catch (\Exception $e) {
                 $this->log("Error deleting processed mails: " . $e->getMessage());
             }
         }
     
-        // Log the processed items with both item ID and process ID
         $this->log("Processing finished for IDs: " . implode(', ', $processedItems));
     
         return $results;
     }
-    
-    
+      
     protected function getValidMailer(\BO\Zmsentities\Mail $entity)
     {
         $message = '';
