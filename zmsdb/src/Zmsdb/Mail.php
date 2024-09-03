@@ -32,66 +32,68 @@ class Mail extends Base
         return $mail;
     }
     
-    public function readEntities(array $itemIds, $resolveReferences = 1, $limit = 300, $order = 'ASC', $onlyIds = false)
+    public function readEntities(array $itemIds, $resolveReferences = 1, $limit = 300, $order = 'ASC')
     {
         $mailList = new Collection();
         $query = new Query\MailQueue(Query\Base::SELECT);
         $query->addEntityMapping()
-                       ->addResolvedReferences($resolveReferences)
-                       ->addWhereIn('id', $itemIds)
-                       ->addOrderBy('createTimestamp', 'ASC')
-                       ->addLimit($limit);
+              ->addResolvedReferences($resolveReferences)
+              ->addWhereIn('id', $itemIds)
+              ->addOrderBy('createTimestamp', 'ASC')
+              ->addLimit($limit);
         $result = $this->fetchList($query, new Entity());
-        if ($onlyIds) {
-            return array_map(function ($item) {
-                return [
-                    '$schema' => "https://schema.berlin.de/queuemanagement/mail.json",
-                    'id' => $item->id,
-                    'createTimestamp' => $item->createTimestamp
-                ];
-            }, $result);
-        }
-        if (count($result)) {
-            foreach ($result as $item) {
-                $entity = new Entity($item);
-                $entity = $this->readResolvedReferences($entity, $resolveReferences);
-                if ($entity instanceof Entity) {
-                    $mailList->addEntity($entity);
-                }
+
+        foreach ($result as $item) {
+            $entity = new Entity($item);
+            $entity = $this->readResolvedReferences($entity, $resolveReferences);
+            if ($entity instanceof Entity) {
+                $mailList->addEntity($entity);
             }
-        }  
+        }
+        
         return $mailList;
     }     
 
-    public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC', $onlyIds = false)
+    public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC')
     {
         $mailList = new Collection();
         $query = new Query\MailQueue(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
-            ->addOrderBy('createTimestamp', $order)
-            ->addLimit($limit);
-        $result = $this->fetchList($query, new Entity());    
-        if ($onlyIds) {
-            return array_map(function ($item) {
-                return [
-                    '$schema' => "https://schema.berlin.de/queuemanagement/mail.json", // Include the schema here
-                    'id' => $item['id'],
-                    'createTimestamp' => $item['createTimestamp']
-                ];
-            }, $result);
-        }   
-        if (count($result)) {
-            foreach ($result as $item) {
-                $entity = new Entity($item);
-                $entity = $this->readResolvedReferences($entity, $resolveReferences);
-                if ($entity instanceof Entity) {
-                    $mailList->addEntity($entity);
-                }
+        $query->addEntityMapping()
+              ->addResolvedReferences($resolveReferences)
+              ->addOrderBy('createTimestamp', $order)
+              ->addLimit($limit);
+        $result = $this->fetchList($query, new Entity());
+        
+        foreach ($result as $item) {
+            $entity = new Entity($item);
+            $entity = $this->readResolvedReferences($entity, $resolveReferences);
+            if ($entity instanceof Entity) {
+                $mailList->addEntity($entity);
             }
         }
+        
         return $mailList;
+    }
+
+    public function readEntityIds(array $itemIds, $limit = 300, $order = 'ASC')
+    {
+        $query = new Query\MailQueue(Query\Base::SELECT);
+        $query->selectFields(['id', 'createTimestamp'])
+              ->addWhereIn('id', $itemIds)
+              ->addOrderBy('createTimestamp', $order)
+              ->addLimit($limit);
+
+        return $this->fetchAll($query);
+    }
+
+    public function readAllIds($limit = 300, $order = 'ASC')
+    {
+        $query = new Query\MailQueue(Query\Base::SELECT);
+        $query->selectFields(['id', 'createTimestamp'])
+              ->addOrderBy('createTimestamp', $order)
+              ->addLimit($limit);
+
+        return $this->fetchAll($query);
     }
 
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $mail, $resolveReferences)

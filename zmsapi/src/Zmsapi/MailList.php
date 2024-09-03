@@ -27,15 +27,25 @@ class MailList extends BaseController
         $onlyIds = Validator::param('onlyIds')->isBool()->setDefault(false)->getValue();
         $ids = Validator::param('ids')->isString()->setDefault('')->getValue();
         $query = new Query();
-        if (!empty($ids)) {
-            $itemIds = array_map('intval', explode(',', $ids));
-            $mailList = $query->readEntities($itemIds, $resolveReferences, $limit, 'ASC', $onlyIds);
+        
+        if ($onlyIds) {
+            if (!empty($ids)) {
+                $itemIds = array_map('intval', explode(',', $ids));
+                $result = $query->readEntityIds($itemIds, $limit, 'ASC');
+            } else {
+                $result = $query->readAllIds($limit, 'ASC');
+            }
         } else {
-            $mailList = $query->readList($resolveReferences, $limit, 'ASC', $onlyIds);
+            if (!empty($ids)) {
+                $itemIds = array_map('intval', explode(',', $ids));
+                $result = $query->readEntities($itemIds, $resolveReferences, $limit, 'ASC');
+            } else {
+                $result = $query->readList($resolveReferences, $limit, 'ASC');
+            }
         }
 
         $message = Response\Message::create($request);
-        $message->data = $mailList;
+        $message->data = $result;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);

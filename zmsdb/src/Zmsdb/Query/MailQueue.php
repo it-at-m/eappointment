@@ -56,4 +56,10 @@ class MailQueue extends Base
         }
         return $this;
     }
+
+    public function selectFields(array $fields)
+    {
+        $this->query->select($fields);
+        return $this;
+    }
 }
