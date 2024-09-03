@@ -13,15 +13,13 @@ use \PHPMailer\PHPMailer\Exception as PHPMailerException;
 class Mail extends BaseController
 {
     protected $messagesQueue = null;
-    private $processMailScript;
     protected $startTime;
     private $cpuLimit;
     private $ramLimit;
 
-    public function __construct($verbose = false, $maxRunTime = 50, $processMailScript = __DIR__ . '/MailProcessor.php')
+    public function __construct($verbose = false, $maxRunTime = 50)
     {
         parent::__construct($verbose, $maxRunTime);
-        $this->processMailScript = $this->findProcessMailScript($processMailScript);
         $this->log("Read Mail QueueList start with limit ". \App::$mails_per_minute ." - ". \App::$now->format('c'));
         $queueList = \App::$http->readGetResult('/mails/', [
             'resolveReferences' => 0,
@@ -88,7 +86,7 @@ class Mail extends BaseController
                     $actionStr = is_array($action) ? json_encode($action) : ($action === false ? 'false' : ($action === true ? 'true' : (string)$action));
     
                     $idsStr = implode(', ', $ids);
-                    $command = "php " . escapeshellarg($this->processMailScript) . " " . escapeshellarg($encodedIds) . " " . escapeshellarg($actionStr);
+                    $command = "php " . escapeshellarg(__DIR__ . '/MailProcessor.php') . " " . escapeshellarg($encodedIds) . " " . escapeshellarg($actionStr);
                     $processHandles[] = $this->startProcess($command, $index, $idsStr);
                 }
     
@@ -280,45 +278,6 @@ class Mail extends BaseController
         }
 
         return $mailer;
-    }
-
-    private function findProcessMailScript($path)
-    {
-        //$this->log("Searching for MailProcessor.php at $path");
-        if (file_exists($path)) {
-            //$this->log("MailProcessor.php found at $path");
-            return realpath($path);
-        } else {
-            //$this->log("MailProcessor.php not found at $path. Searching for file...");
-            $files = $this->searchFile(__DIR__, 'MailProcessor.php');
-            if (!empty($files)) {
-                //$this->log("MailProcessor.php found at " . $files[0]);
-                return realpath($files[0]);
-            } else {
-                $this->log("MailProcessor.php could not be found.");
-                throw new \Exception("MailProcessor.php could not be found.");
-            }
-        }
-    }
-
-    private function searchFile($directory, $filename)
-    {
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($directory),
-            \RecursiveIteratorIterator::SELF_FIRST
-        );
-        $files = [];
-        foreach ($iterator as $file) {
-            if ($file->getFilename() === $filename) {
-                $files[] = $file->getPathname();
-            }
-        }
-
-        if (empty($files)) {
-            $this->log("No files found during search.");
-        }
-
-        return $files;
     }
     
     private function startProcess($command, $batchIndex, $ids)
