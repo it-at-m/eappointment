@@ -1,5 +1,8 @@
 
+{# SMS Modul nicht aktiviert, daher wird nur geprüft, ob eine Benachrichtigung per Mail möglich ist#}
+{# UnitTests in DialogHandlerDeleteTest.php müssen angepasst werden #}
 
+{#
 {% embed "block/scaffholding/board.twig" with {'class': 'dialog'} %}
     {% block board_title %}<i aria-hidden="true" title="{{ ("Eintrag löschen")|trans }}" class="fas fa-info-circle"></i> {% trans %}Eintrag löschen{% endtrans %}{% endblock %}
     {% block board_body %}
@@ -32,6 +35,38 @@
             <a data-action-abort class="button button--diamond button-abort" href="#">Abbruch</a>
             <a data-action-ok data-id="{{ id }}" data-name="{{ name }}" class="button button--destructive button-ok" href="#">Eintrag löschen</a>
         </div>
+    {% endblock %}
+
+{% endembed %}
+#}
+
+{% embed "block/scaffholding/board.twig" with {'class': 'dialog'} %}
+
+    {% block board_title %}<i aria-hidden="true" title="{{ ("Eintrag löschen")|trans }}" class="fas fa-info-circle"></i> {% trans %}Eintrag löschen{% endtrans %}{% endblock %}
+
+    {% block board_body %}
+
+        <p>
+            {% if settings.isWithAppointment %}
+                {% if settings.hasMail %}
+                    {{ "Wenn Sie den Vorgang mit der Nummer %d (%s) löschen wollen, klicken Sie auf \"Eintrag löschen\".
+
+                    (Der Kunde wird darüber per E-Mail informiert.)"|trans|format(id, name)|nl2br }}
+                {% else %}
+                    {{ "Wenn Sie den Vorgang mit der Nummer %d (%s) löschen wollen, klicken Sie auf \"Eintrag löschen\".
+
+                    (Beachten Sie, dass der Kunde darüber nicht per eMail informiert werden kann.)"|trans|format(id, name)|nl2br }}
+                {% endif %}
+            {% else %}
+                {{ "Wenn Sie den Vorgang mit der Nummer %d (%s) löschen wollen, klicken Sie auf \"Eintrag löschen\"."|trans|format(id, name)|nl2br }}
+            {% endif %}
+        </p>
+
+        <div class="form-actions">
+            <a data-action-abort class="button button--diamond button-abort" href="#">Abbruch</a>
+            <a data-action-ok data-id="{{ id }}" data-name="{{ name }}" class="button button--destructive button-ok" href="#">Eintrag löschen</a>
+        </div>
+
     {% endblock %}
 
 {% endembed %}

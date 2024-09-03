@@ -120,11 +120,12 @@
     "lastChange": 1566566542,
     "preferences": {
         "appointment": {
-        "deallocationDuration": "30",
-        "endInDaysDefault": "60",
-        "multipleSlotsEnabled": "0",
-        "reservationDuration": "30",
-        "startInDaysDefault": "2"
+            "deallocationDuration": "30",
+            "infoForAppointment": "",
+            "endInDaysDefault": "60",
+            "multipleSlotsEnabled": "0",
+            "reservationDuration": "30",
+            "startInDaysDefault": "2"
         },
         "client": {
         "alternateAppointmentUrl": "",

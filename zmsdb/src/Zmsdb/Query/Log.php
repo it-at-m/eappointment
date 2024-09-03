@@ -26,6 +26,7 @@ class Log extends Base
         return [
             'type' => 'log.type',
             'reference' => 'log.reference_id',
+            'scope_id' => 'log.scope_id',
             'message' => 'log.message',
             'ts' => 'log.ts'
         ];

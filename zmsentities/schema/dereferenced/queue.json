@@ -8,6 +8,7 @@
         "lastCallTime": 0,
         "number": "123",
         "waitingTime": 2,
+        "wayTime": 2,
         "withAppointment": false,
         "status": "confirmed"
     },
@@ -49,6 +50,10 @@
             "description": "number to display on a call display"
         },
         "waitingTime": {
+            "type": "number",
+            "description": "minutes since arrival of client"
+        },
+        "wayTime": {
             "type": "number",
             "description": "minutes since arrival of client"
         },

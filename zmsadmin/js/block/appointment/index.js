@@ -39,6 +39,7 @@ class View extends RequestView {
         this.selectedProcess = this.options.selectedProcess;
         this.selectedScope = this.options.selectedScope;
         this.clusterEnabled = this.options.clusterEnabled || false;
+        this.emailConfirmationActivated = this.options.emailConfirmationActivated || 0;
         this.slotsRequired = this.options.slotsRequired;
         this.slotType = this.options.slotType;
         this.constructOnly = this.options.constructOnly;
@@ -255,8 +256,7 @@ class View extends RequestView {
         }).loadButtons().then(() => {
             this.bindEvents();
         });
-
-        this.$.find('input[name=sendMailConfirmation]').prop('checked', hasFreeAppointments)
+        this.$.find('input[name=sendMailConfirmation]').prop('checked', hasFreeAppointments && this.emailConfirmationActivated)
     }
 
     auralMessage(message) {
