@@ -15,12 +15,14 @@ use Psr\Http\Message\ResponseInterface;
 class WaitingReport extends Base
 {
     protected $reportParts = [
-        'waitingcount' => 'maximal Wartende Spontankunden',
-        'waitingtime' => 'maximal gemessene Wartezeit Spontankunden',
+        'waitingcount' => 'Wartende Spontankunden',
+        'waitingtime' => 'gemessene Wartezeit Spontankunden',
         'waitingcalculated' => 'maximal berechnete Wartezeit Spontankunden',
-        'waitingcount_termin' => 'maximal Wartende Terminkunden',
-        'waitingtime_termin' => 'maximal gemessene Wartezeit Terminkunden',
-        'waitingcalculated_termin' => 'maximal berechnete Wartezeit Terminkunden'
+        'waitingcount_termin' => 'Wartende Terminkunden',
+        'waitingtime_termin' => 'gemessene Wartezeit Terminkunden',
+        'waitingcalculated_termin' => 'maximal berechnete Wartezeit Terminkunden',
+        'waytime' => 'gemessene Wegezeit Spontankunden',
+        'waytime_termin' => 'gemessene Wegezeit Terminkunden',
     ];
     
     /**
@@ -84,21 +86,27 @@ class WaitingReport extends Base
         $totals = array_pop($entity->data);
         $reportTotal['max'][] = 'Tagesmaximum Spontankunden der gemessenen Zeit';
         $reportTotal['average'][] = 'Tagesdurchschnitt Spontankunden der gemessenen Zeit';
+        $reportTotal['average_waytime'][] = 'Tagesdurchschnitt Wegezeit Spontankunden';
         $reportTotal['max'][] = $totals['max_waitingtime'];
         $reportTotal['average'][] = $totals['average_waitingtime'];
+        $reportTotal['average_waytime'][] = $totals['average_waytime'];
         foreach ($entity->data as $entry) {
             $reportTotal['max'][] = $entry['max_waitingtime'];
             $reportTotal['average'][] = $entry['average_waitingtime'];
+            $reportTotal['average_waytime'][] = $entry['average_waytime'];
         }
         $sheet->fromArray($reportTotal, null, 'A'. ($sheet->getHighestRow() + 1));
 
         $reportTotal2['max'][] = 'Tagesmaximum Terminkunden der gemessenen Zeit';
         $reportTotal2['average'][] = 'Tagesdurchschnitt Terminkunden der gemessenen Zeit';
+        $reportTotal2['average_waytime'][] = 'Tagesdurchschnitt Wegezeit Terminkunden';
         $reportTotal2['max'][] = $totals['max_waitingtime_termin'];
         $reportTotal2['average'][] = $totals['average_waitingtime_termin'];
+        $reportTotal2['average_waytime'][] = $totals['average_waytime_termin'];
         foreach ($entity->data as $entry) {
             $reportTotal2['max'][] = $entry['max_waitingtime_termin'];
             $reportTotal2['average'][] = $entry['average_waitingtime_termin'];
+            $reportTotal2['average_waytime'][] = $entry['average_waytime_termin'];
         }
         $sheet->fromArray($reportTotal2, null, 'A'. ($sheet->getHighestRow() + 1));
     }

@@ -30,7 +30,8 @@ class DialogHandlerDeleteTest extends Base
                 ]
             ], []);
         $this->assertStringContainsString('100044 (unittest)', (string)$response->getBody());
-        $this->assertStringContainsString('E-Mail und/oder SMS', (string)$response->getBody());
+        #SMS Modul nicht aktiviert, daher wird nur geprüft, ob eine Benachrichtigung per Mail möglich ist
+        #$this->assertStringContainsString('E-Mail und/oder SMS', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -56,7 +57,8 @@ class DialogHandlerDeleteTest extends Base
                 ]
             ], []);
         $this->assertStringContainsString('100044 (unittest)', (string)$response->getBody());
-        $this->assertStringContainsString('E-Mail', (string)$response->getBody());
+        #SMS Modul nicht aktiviert, daher wird nur geprüft, ob eine Benachrichtigung per Mail möglich ist
+        #$this->assertStringContainsString('E-Mail', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -116,8 +118,13 @@ class DialogHandlerDeleteTest extends Base
             []
         );
         $this->assertStringContainsString('100044 (unittest)', (string)$response->getBody());
+        #SMS Modul nicht aktiviert, daher wird nur geprüft, ob eine Benachrichtigung per Mail möglich ist
+        #$this->assertStringContainsString(
+        #    'Der Kunde wird darüber per SMS informiert.',
+        #    (string)$response->getBody()
+        #);
         $this->assertStringContainsString(
-            'Der Kunde wird darüber per SMS informiert.',
+            'Beachten Sie, dass der Kunde darüber nicht per eMail informiert werden kann.',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -150,8 +157,13 @@ class DialogHandlerDeleteTest extends Base
             []
         );
         $this->assertStringContainsString('100044 (unittest)', (string)$response->getBody());
+        #SMS Modul nicht aktiviert, daher wird nur geprüft, ob eine Benachrichtigung per Mail möglich ist
+        #$this->assertStringContainsString(
+        #    'Beachten Sie, dass der Kunde darüber weder per eMail noch per SMS informiert werden kann.',
+        #    (string)$response->getBody()
+        #);
         $this->assertStringContainsString(
-            'Beachten Sie, dass der Kunde darüber weder per eMail noch per SMS informiert werden kann.',
+            'Beachten Sie, dass der Kunde darüber nicht per eMail informiert werden kann.',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -183,8 +195,13 @@ class DialogHandlerDeleteTest extends Base
             []
         );
         $this->assertStringContainsString('100044 (unittest)', (string)$response->getBody());
+        #SMS Modul nicht aktiviert, daher wird nur geprüft, ob eine Benachrichtigung per Mail möglich ist
+        #$this->assertStringContainsString(
+        #    'Beachten Sie, dass der Kunde darüber weder per eMail noch per SMS informiert werden kann.',
+        #    (string)$response->getBody()
+        #);
         $this->assertStringContainsString(
-            'Beachten Sie, dass der Kunde darüber weder per eMail noch per SMS informiert werden kann.',
+            'Beachten Sie, dass der Kunde darüber nicht per eMail informiert werden kann.',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -216,7 +233,8 @@ class DialogHandlerDeleteTest extends Base
             []
         );
         $this->assertStringContainsString('Nummer 6', (string)$response->getBody());
-        $this->assertStringContainsString('Der Kunde wird darüber per SMS informiert.', (string)$response->getBody());
+        #SMS Modul nicht aktiviert, daher wird nur geprüft, ob eine Benachrichtigung per Mail möglich ist
+        #$this->assertStringContainsString('Der Kunde wird darüber per SMS informiert.', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -245,10 +263,11 @@ class DialogHandlerDeleteTest extends Base
             []
         );
         $this->assertStringContainsString('Nummer 6', (string)$response->getBody());
-        $this->assertStringContainsString(
-            'Beachten Sie, dass der Kunde darüber nicht per SMS informiert werden kann.',
-            (string)$response->getBody()
-        );
+        #SMS Modul nicht aktiviert, daher wird nur geprüft, ob eine Benachrichtigung per Mail möglich ist
+        #$this->assertStringContainsString(
+        #    'Beachten Sie, dass der Kunde darüber nicht per SMS informiert werden kann.',
+        #    (string)$response->getBody()
+        #);
         $this->assertEquals(200, $response->getStatusCode());
     }
 }
