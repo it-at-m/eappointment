@@ -11,6 +11,7 @@
 
 	{% if enabled and not hasDisabledButton %}
 		{% if buttonDisplay == "button_single" %}
+			{{ block("IntroMultiButtonText") }}
 		<div class="werbeblock_oben">
 		</div>
 		{% set buttonLabelPrefix = "Wartenummer für " %}
