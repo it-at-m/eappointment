@@ -11,7 +11,7 @@ div.wartebuttonbereich_zweizeilig
 {
 	position: absolute;
 	top:180px;
-	width:1005px;
+	width:1010px;
 	//left:35px;
     left: 50%;
     transform: translateX(-50%);
@@ -42,6 +42,7 @@ div.warteschlangebutton_gross a.eintragen {
 
 div.variablerwarteschlangebutton {
     float: left;
+    margin-left: 25px;
     margin-right: 25px;
 }
 

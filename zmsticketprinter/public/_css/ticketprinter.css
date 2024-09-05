@@ -192,7 +192,7 @@
   }
 
   div.wartebuttonbereich_zweizeilig {
-    width: 1005px;
+    width: 1010px;
     position: absolute;
     top: 180px;
     left: 50%;
@@ -222,6 +222,7 @@
 
   div.variablerwarteschlangebutton {
     float: left;
+    margin-left: 25px;
     margin-right: 25px;
   }
 
