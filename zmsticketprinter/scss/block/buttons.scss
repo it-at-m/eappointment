@@ -113,6 +113,10 @@ a.button.ja_nein, .ja_nein {
     font-weight: bold;
     height: 141px;
     width: 314px;
+
+    display: flex;
+    justify-content: center; /* Vertikale Zentrierung */
+    align-items: center; /* Horizontale Zentrierung */
 }
 
 .smsbuttons

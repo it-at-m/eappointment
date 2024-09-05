@@ -283,11 +283,14 @@
     color: #fff;
     background: url("ja_nein.489dd3d5.png") 0 5px no-repeat;
     border: 0;
+    justify-content: center;
+    align-items: center;
     width: 314px;
     height: 141px;
     font-family: Arial, sans-serif;
     font-size: 42px;
     font-weight: bold;
+    display: flex;
   }
 
   .smsbuttons {
