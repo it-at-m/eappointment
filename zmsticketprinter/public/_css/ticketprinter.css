@@ -184,7 +184,7 @@
   }
 
   div.wartebuttonbereich_einzeilig {
-    width: 875px;
+    width: auto;
     position: absolute;
     top: 295px;
     left: 50%;
