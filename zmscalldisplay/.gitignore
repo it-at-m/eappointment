@@ -8,6 +8,8 @@ config.php
 bower_components
 tests/*.html
 public/_tests
+public/_js/
+public/_libs/
 cache
 .DS_Store
 vendor.old
