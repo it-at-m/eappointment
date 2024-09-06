@@ -71,10 +71,6 @@ class Dldb extends \BO\Zmsdb\Base
         foreach ($providers as $provider) {
             $providerData = $provider->data;
 
-            if (!isset($providerData['forceSlotTimeUpdate']) || !$providerData['forceSlotTimeUpdate']) {
-                continue;
-            }
-
             $scopes = (new \BO\Zmsdb\Scope())->readByProviderId($provider->getId());
             foreach ($scopes as $scope) {
                 $availabilities = (new \BO\Zmsdb\Availability())->readList($scope->getId());
@@ -85,12 +81,14 @@ class Dldb extends \BO\Zmsdb\Base
                     }
 
                     $availability->slotTimeInMinutes = $providerData['slotTimeInMinutes'];
-                    $updatedEntity =
-                        (new \BO\Zmsdb\Availability())->updateEntity($availability->getId(), $availability, 2);
+                    $updatedEntity = (new \BO\Zmsdb\Availability())
+                        ->updateEntity($availability->getId(), $availability, 2);
 
-                    (new \BO\Zmsdb\Slot)->writeByAvailability($updatedEntity, \App::$now);
-                    (new \BO\Zmsdb\Helper\CalculateSlots(\App::DEBUG))
-                        ->writePostProcessingByScope($updatedEntity->scope, \App::$now);
+                    //if (isset($providerData['forceSlotTimeUpdate']) && $providerData['forceSlotTimeUpdate']) {
+                    //    (new \BO\Zmsdb\Slot)->writeByAvailability($updatedEntity, \App::$now);
+                    //    (new \BO\Zmsdb\Helper\CalculateSlots(\App::DEBUG))
+                    //        ->writePostProcessingByScope($updatedEntity->scope, \App::$now);
+                    //}
                 }
             }
         }
