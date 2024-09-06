@@ -22,7 +22,7 @@ class Dldb extends \BO\Zmsdb\Base
         self::$importPath = $path;
     }
 
-    public function startImport($verbose = true)
+    public function startImport($verbose = true, $updateAvailability = true)
     {
         if (!static::$importPath) {
             throw new \Exception('No data path given');
@@ -37,7 +37,7 @@ class Dldb extends \BO\Zmsdb\Base
         \BO\Zmsdb\Connection\Select::setTransaction();
 
         $this->writeRequestList();
-        $this->writeProviderList();
+        $this->writeProviderList($updateAvailability);
         $this->writeRequestRelationList();
         $this->writeLastUpdate($verbose);
 
@@ -62,7 +62,7 @@ class Dldb extends \BO\Zmsdb\Base
         }
     }
 
-    protected function writeProviderList()
+    protected function writeProviderList($updateAvailability = true)
     {
         $startTime = microtime(true);
         (new \BO\Zmsdb\Provider())->writeDeleteListBySource('dldb');
@@ -70,6 +70,10 @@ class Dldb extends \BO\Zmsdb\Base
 
         foreach ($providers as $provider) {
             $providerData = $provider->data;
+
+            if (!$updateAvailability) {
+                continue;
+            }
 
             $scopes = (new \BO\Zmsdb\Scope())->readByProviderId($provider->getId());
             foreach ($scopes as $scope) {
