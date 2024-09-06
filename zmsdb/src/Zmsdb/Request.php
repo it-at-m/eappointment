@@ -55,6 +55,16 @@ class Request extends Base
         return $collection;
     }
 
+    public function readRequestsByIds($ids, $resolveReferences = 0)
+    {
+        $query = new Query\Request(Query\Base::SELECT);
+        $query->setResolveLevel($resolveReferences);
+        $query->addConditionIds($ids);
+        $query->addEntityMapping();
+
+        return $this->readCollection($query);
+    }
+
     public function readRequestByArchiveId($archiveId, $resolveReferences = 0)
     {
         $collection = new Collection();
@@ -180,5 +190,9 @@ class Request extends Base
         if (! (new Source())->readEntity($source)) {
             throw new Exception\Source\UnknownDataSource();
         }
+    }
+
+    public function readByIds($requestId)
+    {
     }
 }

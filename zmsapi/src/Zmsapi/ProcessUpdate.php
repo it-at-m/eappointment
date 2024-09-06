@@ -39,9 +39,9 @@ class ProcessUpdate extends BaseController
         $this->testProcessData($entity, ! $initiator);
 
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
+        $workstation = (new Helper\User($request))->checkRights();
 
         if ($slotType || $slotsRequired) {
-            $workstation = (new Helper\User($request))->checkRights();
             $process = Process::init()->updateEntityWithSlots(
                 $entity,
                 \App::$now,
@@ -57,9 +57,21 @@ class ProcessUpdate extends BaseController
                 throw new Exception\Process\ApiclientInvalid();
             }
             $entity->apiclient = $apiClient;
-            $process = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
+            $process = (new Process)->updateEntity(
+                $entity,
+                \App::$now,
+                $resolveReferences,
+                null,
+                $workstation->getUseraccount()
+            );
         } else {
-            $process = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
+            $process = (new Process)->updateEntity(
+                $entity,
+                \App::$now,
+                $resolveReferences,
+                null,
+                $workstation->getUseraccount()
+            );
         }
        
         if ($initiator && $process->hasScopeAdmin() && $process->sendAdminMailOnUpdated()) {

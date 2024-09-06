@@ -42,7 +42,8 @@ class WorkstationDelete extends BaseController
         \BO\Zmsdb\Log::writeLogEntry("LOGOUT (WorkstattionDelete::readResponse) ".$args['loginname'],
             0,
             Log::PROCESS,
-            $workstation->getScope()->getId()
+            $workstation->getScope()->getId(),
+            $workstation->getUseraccount()->getId()
         );
 
         return $response;

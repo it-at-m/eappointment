@@ -42,7 +42,13 @@ class WorkstationProcess extends BaseController
         $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 1);
         $previousStatus = $process->status;
         $process->status = 'called';
-        $process = (new Query())->updateEntity($process, \App::$now, 0, $previousStatus);
+        $process = (new Query())->updateEntity(
+            $process,
+            \App::$now,
+            0,
+            $previousStatus,
+            $workstation->getUseraccount()
+        );
 
         $process = new \BO\Zmsentities\Process($input);
         $this->testProcess($process, $workstation, $allowClusterWideCall);

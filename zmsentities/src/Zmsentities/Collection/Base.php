@@ -226,6 +226,16 @@ class Base extends \ArrayObject implements \JsonSerializable
         }
     }
 
+    public function getAsArray()
+    {
+        $array = [];
+        foreach ($this as $key => $item) {
+            $array[] = $item;
+        }
+
+        return $array;
+    }
+
     public function jsonSerialize()
     {
         return $this->getArrayCopy();
