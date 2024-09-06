@@ -112,9 +112,16 @@ class ProcessStatusArchived extends Process
     public function writeEntityFinished(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now,
-        bool $calculateStatistic = false
+        bool $calculateStatistic = false,
+        ?\BO\Zmsentities\Useraccount $useraccount = null
     ) {
-        $process = $this->updateEntity($process, $now, 1);
+        $process = $this->updateEntity(
+            $process,
+            $now,
+            1,
+            null,
+            $useraccount
+        );
         $archived = null;
         if ($this->writeBlockedEntity($process)) {
             $archived = $this->writeNewArchivedProcess($process, $now, 0, $calculateStatistic);
@@ -173,11 +180,7 @@ class ProcessStatusArchived extends Process
         $query->addValuesNewArchive($process, $now);
         $this->writeItem($query);
         $archiveId = $this->getWriter()->lastInsertId();
-        Log::writeLogEntry("ARCHIVE (Archive::writeNewArchivedProcess) $archiveId -> $process ",
-            $process->id,
-            Log::PROCESS,
-            $process->getScopeId()
-        );
+        Log::writeProcessLog("ARCHIVE (Archive::writeNewArchivedProcess) $archiveId -> $process ", $process);
 
         if ($calculateStatistic) {
             (new ExchangeWaitingscope())->updateWaitingStatistics($process, $now);

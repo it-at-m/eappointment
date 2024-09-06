@@ -27,6 +27,8 @@ class Log extends Base
             'type' => 'log.type',
             'reference' => 'log.reference_id',
             'scope_id' => 'log.scope_id',
+            'user_id' => 'log.user_id',
+            'data' => 'log.data',
             'message' => 'log.message',
             'ts' => 'log.ts'
         ];
