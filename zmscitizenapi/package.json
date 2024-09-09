@@ -5,10 +5,9 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "preinstall": "npm i --location=global @apidevtools/swagger-cli",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "preinstall": "",
     "build": "node ./bin/build_swagger.js",
-    "doc": "npm run build && swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml"
+    "doc": "npm run build && npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml"
   },
   "keywords": [
     "eappointment"

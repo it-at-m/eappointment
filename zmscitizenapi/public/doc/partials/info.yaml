@@ -16,36 +16,7 @@ info:
        * collecting statistics like waiting time or served clients per day
        * emergency call for employees
 
-       This documentation covers the API-level access to these features.
-
-       ## Common parameters for requests
-
-       ### Header X-JsonCompressLevel
-
-       Setting the header "X-JsonCompressLevel" with a value of 1 or higher enables a json schema based compression. On a value of 1 and higher, default value for properties are omitted. To have a combine the default values in the entity schema with the response. With a value of 2 and higher (not implemented yet), repeating values are referenced inline with a "$ref" property. A JSON-Schema dereferencing is required.
-
-       This header is useful on results with a lot of items.
-
-       ### Parameter resolveReferences
-
-       Most calls support the parameter "resolveReferences". Usually by fetching an entity, it includes an amount of sub entities. For example, a department has a list of scopes. Fetching a department usually does not include the scopes. If you need the scopes of the department, use the parameter "resolveReferences" with a value of 1. This resolves one level of sub entities. If you need for example the availabilities (opening hours) of the scopes, use a value of 2 to fetch two sublevels of entities. Beware, that a high value results in a lot of data which might be redundant.
-
-       Why using a parameter like this and not different api calls? The overhead for an api call is usually on around 20ms. Fetching a list for different entities can easily result in 20 additional requests to fetch the required data. So using this parameter might result having a 10 times higher performance compared to mulitple calls.
-
-       ### Experimental GraphQL parameter
-
-       There is an experimental "gql" parameter to reduce the download size of fetched data. Sometimes only a part of the data is required for the desired operation. This parameter supports a simplified GraphQL query. It is experimental in a sense, that the amount of the supported GraphQL features might change.
-
-       Currently only the selection of desired fields are supported. To get a scope with only the ID and the name, a query like this accomplishes this.
-
-       `/api/2/scope/141/?gql={id+contact{name}}`
-
-       As difference to the GraphQL implementation, a whole sub section might be retrieved by not adding details. But beware of using this, for a stricter GraphQL implementation in the future might break this behavior. To get all contents of `scope.contact` a query like this currently solves this.
-
-       `/api/2/scope/141/?gql={id+contact}`
-
-       The API is currently not GraphQL compatible. A request does not get faster on the server for requesting not every property. But there might be a performance increase on the client side for there is less data to download and decode.
-       
+       This documentation covers the Citizen Frontend Bürgeransicht API-level access to these features.       
   termsOfService: 'http://service.berlin.de/terminvereinbarung/'
   contact:
     name: Mathias Fischer

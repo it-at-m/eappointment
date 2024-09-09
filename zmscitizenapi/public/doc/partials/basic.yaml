@@ -5,12 +5,3 @@ consumes:
   - application/json
 produces:
   - application/json
-securityDefinitions:
-  httpauth:
-    type: basic
-    description: |
-        The API uses two variants of authentication. An application can use basic authentication via HTTP for identification. As an alternative, there is a header with the name "X-Authkey". This key can be optained by accessing "/workstation/login/".
-
-        According to the application settings, there might be different rights to use API methods. Further rights depend on the settings for the authorized useraccount.
-security:
-    - httpauth: []
