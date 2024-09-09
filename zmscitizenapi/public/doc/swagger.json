@@ -16,7 +16,7 @@
       "name": "Commercial",
       "url": "http://www.berlinonline.net"
     },
-    "version": "2.25.00-muc11-196-g298ff3727"
+    "version": "2.25.00-muc11-197-gfc1f0d011"
   },
   "basePath": "/terminvereinbarung/api/2",
   "schemes": [
@@ -61,7 +61,1263 @@
       "description": "Neben dem \"provider\" gibt es einen \"scope\". Dieser \"scope\" umfasst vor allem einem Terminkalender und daneben einen Warteraum (oder auch Aufrufanlage, \"calldisplay\") und Arbeitsplätze (\"workstation\"). Wenn mehrere \"scope\"-Objekte sich einen Warteraum (\"calldisplay\") und Arbeitsplätze (\"workstation\") teilen, können diese von einem \"cluster\" zusammengefasst werden. Dabei müssen die \"scope\" im Falle eines \"cluster\" nicht zum selben \"provider\" gehören.\n"
     }
   ],
-  "paths": {},
+  "paths": {
+    "/services/": {
+      "get": {
+        "summary": "Get the list of services",
+        "tags": [
+          "services"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of services",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "$ref": "#/definitions/metaresult"
+                },
+                "data": {
+                  "type": "object",
+                  "description": "Lists all services and includes details, including their IDs, names, and maximum quantities.",
+                  "properties": {
+                    "services": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "maxQuantity": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "maxQuantity"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "services"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scopes/": {
+      "get": {
+        "summary": "Get the list of scopes",
+        "tags": [
+          "scopes"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of scopes",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "$ref": "#/definitions/metaresult"
+                },
+                "data": {
+                  "type": "object",
+                  "description": "Details a list of all scopes, which are locations or units handling client requests, including their configuration and availability options.",
+                  "properties": {
+                    "scopes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "provider": {
+                            "type": "object",
+                            "properties": {
+                              "$schema": {
+                                "type": "string"
+                              },
+                              "id": {
+                                "type": "string"
+                              },
+                              "source": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "$schema",
+                              "id",
+                              "source"
+                            ]
+                          },
+                          "shortName": {
+                            "type": "string"
+                          },
+                          "telephoneActivated": {
+                            "type": "string"
+                          },
+                          "telephoneRequired": {},
+                          "customTextfieldActivated": {
+                            "type": "string"
+                          },
+                          "customTextfieldRequired": {},
+                          "customTextfieldLabel": {
+                            "type": "string"
+                          },
+                          "captchaActivatedRequired": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "provider",
+                          "shortName",
+                          "telephoneActivated",
+                          "telephoneRequired",
+                          "customTextfieldActivated",
+                          "customTextfieldRequired",
+                          "customTextfieldLabel",
+                          "captchaActivatedRequired"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "scopes"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/offices/": {
+      "get": {
+        "summary": "Get the list of offices",
+        "tags": [
+          "offices"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of offices",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "$ref": "#/definitions/metaresult"
+                },
+                "data": {
+                  "type": "object",
+                  "description": "Lists all offices and includes details, such as their IDs, names, and configuration options.",
+                  "properties": {
+                    "offices": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "scope": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "provider": {
+                                "type": "object",
+                                "properties": {
+                                  "$schema": {
+                                    "type": "string"
+                                  },
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "source": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "$schema",
+                                  "id",
+                                  "source"
+                                ]
+                              },
+                              "shortName": {
+                                "type": "string"
+                              },
+                              "telephoneActivated": {
+                                "type": "string"
+                              },
+                              "telephoneRequired": {},
+                              "customTextfieldActivated": {
+                                "type": "string"
+                              },
+                              "customTextfieldRequired": {},
+                              "customTextfieldLabel": {
+                                "type": "string"
+                              },
+                              "captchaActivatedRequired": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "provider",
+                              "shortName",
+                              "telephoneActivated",
+                              "telephoneRequired",
+                              "customTextfieldActivated",
+                              "customTextfieldRequired",
+                              "customTextfieldLabel",
+                              "captchaActivatedRequired"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "offices"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/offices-and-services/": {
+      "get": {
+        "summary": "Get the relations between offices and services",
+        "tags": [
+          "offices-services"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of office-service relations",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "$ref": "#/definitions/metaresult"
+                },
+                "data": {
+                  "type": "object",
+                  "description": "Contains information about offices, services, and their relations. Includes details about each office, available services, and how they are related.",
+                  "properties": {
+                    "offices": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "scope": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "provider": {
+                                "type": "object",
+                                "properties": {
+                                  "$schema": {
+                                    "type": "string"
+                                  },
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "source": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "$schema",
+                                  "id",
+                                  "source"
+                                ]
+                              },
+                              "shortName": {
+                                "type": "string"
+                              },
+                              "telephoneActivated": {
+                                "type": "string"
+                              },
+                              "telephoneRequired": {},
+                              "customTextfieldActivated": {
+                                "type": "string"
+                              },
+                              "customTextfieldRequired": {},
+                              "customTextfieldLabel": {
+                                "type": "string"
+                              },
+                              "captchaActivatedRequired": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "provider",
+                              "shortName",
+                              "telephoneActivated",
+                              "telephoneRequired",
+                              "customTextfieldActivated",
+                              "customTextfieldRequired",
+                              "customTextfieldLabel",
+                              "captchaActivatedRequired"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name"
+                        ]
+                      }
+                    },
+                    "services": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "maxQuantity": {
+                            "type": "number"
+                          },
+                          "combinable": {
+                            "type": "object",
+                            "properties": {
+                              "10300808": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "10300814": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "10300817": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "required": [
+                              "10300814"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "maxQuantity"
+                        ]
+                      }
+                    },
+                    "relations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "officeId": {
+                            "type": "string"
+                          },
+                          "serviceId": {
+                            "type": "string"
+                          },
+                          "slots": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "officeId",
+                          "serviceId",
+                          "slots"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "offices",
+                    "services",
+                    "relations"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scope-by-id/": {
+      "get": {
+        "summary": "Get a scope by ID",
+        "tags": [
+          "scopes"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Scope ID",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scope details",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "$ref": "#/definitions/metaresult"
+                },
+                "data": {
+                  "type": "object",
+                  "description": "Defines the scope, which represents a location or unit for processing client requests, including its configuration and availability options.",
+                  "properties": {
+                    "scopes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "provider": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "source": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "source"
+                            ]
+                          },
+                          "shortName": {
+                            "type": "string"
+                          },
+                          "telephoneActivated": {
+                            "type": "string"
+                          },
+                          "telephoneRequired": {
+                            "type": "number"
+                          },
+                          "customTextfieldActivated": {
+                            "type": "string"
+                          },
+                          "customTextfieldRequired": {
+                            "type": "number"
+                          },
+                          "customTextfieldLabel": {
+                            "type": "string"
+                          },
+                          "captchaActivatedRequired": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "provider",
+                          "shortName",
+                          "telephoneActivated",
+                          "telephoneRequired",
+                          "customTextfieldActivated",
+                          "customTextfieldRequired",
+                          "customTextfieldLabel",
+                          "captchaActivatedRequired"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "scopes"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Scope not found"
+          }
+        }
+      }
+    },
+    "/services-by-office/": {
+      "get": {
+        "summary": "Get the services offered by a specific office",
+        "tags": [
+          "services"
+        ],
+        "parameters": [
+          {
+            "name": "officeId",
+            "description": "Office ID",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of services for the office",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "$ref": "#/definitions/metaresult"
+                },
+                "data": {
+                  "type": "object",
+                  "description": "Lists services associated with specific offices.",
+                  "properties": {
+                    "services": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "maxQuantity": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "maxQuantity"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "services"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/offices-by-service/": {
+      "get": {
+        "summary": "Get the offices that offer a specific service",
+        "tags": [
+          "offices"
+        ],
+        "parameters": [
+          {
+            "name": "serviceId",
+            "description": "Service ID",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of offices offering the service",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "$ref": "#/definitions/metaresult"
+                },
+                "data": {
+                  "type": "object",
+                  "description": "Lists offices associated with specific services.",
+                  "properties": {
+                    "offices": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "offices"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/available-days/": {
+      "get": {
+        "summary": "Get the list of available days for appointments",
+        "tags": [
+          "appointments"
+        ],
+        "parameters": [
+          {
+            "name": "officeId",
+            "description": "Office ID",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "serviceId",
+            "description": "Service ID",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of available days",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "$ref": "#/definitions/metaresult"
+                },
+                "data": {
+                  "type": "object",
+                  "description": "Contains available days for scheduling appointments and the last modification time for this data.",
+                  "properties": {
+                    "availableDays": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "lastModified": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "availableDays",
+                    "lastModified"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/available-appointments/": {
+      "get": {
+        "summary": "Get available appointments for a specific day",
+        "tags": [
+          "appointments"
+        ],
+        "parameters": [
+          {
+            "name": "date",
+            "description": "Date in format YYYY-MM-DD",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "officeId",
+            "description": "Office ID",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "serviceId",
+            "description": "Service ID",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of available appointments",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "$ref": "#/definitions/metaresult"
+                },
+                "data": {
+                  "type": "object",
+                  "description": "Lists available appointment timestamps and the last modification time for the appointment data.",
+                  "properties": {
+                    "appointmentTimestamps": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      }
+                    },
+                    "lastModified": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "appointmentTimestamps",
+                    "lastModified"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/appointment/": {
+      "get": {
+        "summary": "Get an appointment by process ID",
+        "tags": [
+          "appointments"
+        ],
+        "parameters": [
+          {
+            "name": "processId",
+            "description": "Process ID",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "authKey",
+            "description": "Authentication key",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Appointment details",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "$ref": "#/definitions/metaresult"
+                },
+                "data": {
+                  "type": "object",
+                  "description": "Includes a message that indicates the result or status of an appointment-related operation.",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string"
+                      },
+                      "msg": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "location": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Appointment not found"
+          }
+        }
+      }
+    },
+    "/captcha-details/": {
+      "get": {
+        "summary": "Get CAPTCHA details",
+        "tags": [
+          "captcha"
+        ],
+        "responses": {
+          "200": {
+            "description": "CAPTCHA details",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "$ref": "#/definitions/metaresult"
+                },
+                "data": {
+                  "type": "object",
+                  "description": "Provides CAPTCHA configuration details including site key, endpoint, puzzle status, and CAPTCHA enablement.",
+                  "properties": {
+                    "siteKey": {
+                      "type": "string"
+                    },
+                    "captchaEndpoint": {
+                      "type": "string"
+                    },
+                    "puzzle": {
+                      "type": "boolean"
+                    },
+                    "captchaEnabled": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "siteKey",
+                    "captchaEndpoint",
+                    "puzzle",
+                    "captchaEnabled"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reserve-appointment/": {
+      "post": {
+        "summary": "Reserve an appointment",
+        "tags": [
+          "appointments"
+        ],
+        "parameters": [
+          {
+            "name": "appointment",
+            "description": "Appointment reservation data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "description": "Includes a message confirming that an appointment has been successfully reserved.",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "message"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reservation successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "$ref": "#/definitions/metaresult"
+                },
+                "data": {
+                  "$ref": "#/paths/~1appointment~1/get/responses/200/schema/properties/data"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string"
+                      },
+                      "msg": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "location": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Appointment not found"
+          }
+        }
+      }
+    },
+    "/update-appointment/": {
+      "post": {
+        "summary": "Update an appointment",
+        "tags": [
+          "appointments"
+        ],
+        "parameters": [
+          {
+            "name": "appointment",
+            "description": "Appointment update data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "description": "Provides a message indicating the result of an appointment update operation.",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "message"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Update successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "$ref": "#/definitions/metaresult"
+                },
+                "data": {
+                  "$ref": "#/paths/~1appointment~1/get/responses/200/schema/properties/data"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string"
+                      },
+                      "msg": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "location": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Appointment not found"
+          }
+        }
+      }
+    },
+    "/confirm-appointment/": {
+      "post": {
+        "summary": "Confirm an appointment",
+        "tags": [
+          "appointments"
+        ],
+        "parameters": [
+          {
+            "name": "appointment",
+            "description": "Appointment confirmation data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "description": "Contains a message confirming the successful confirmation of an appointment.",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "message"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Confirmation successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "$ref": "#/definitions/metaresult"
+                },
+                "data": {
+                  "$ref": "#/paths/~1appointment~1/get/responses/200/schema/properties/data"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string"
+                      },
+                      "msg": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "location": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Appointment not found"
+          }
+        }
+      }
+    },
+    "/preconfirm-appointment/": {
+      "post": {
+        "summary": "Preconfirm an appointment",
+        "tags": [
+          "appointments"
+        ],
+        "parameters": [
+          {
+            "name": "appointment",
+            "description": "Appointment preconfirmation data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "description": "Provides a message indicating the successful pre-confirmation of an appointment.",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "message"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Preconfirmation successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "$ref": "#/definitions/metaresult"
+                },
+                "data": {
+                  "$ref": "#/paths/~1appointment~1/get/responses/200/schema/properties/data"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string"
+                      },
+                      "msg": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "location": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Appointment not found"
+          }
+        }
+      }
+    },
+    "/cancel-appointment/": {
+      "post": {
+        "summary": "Cancel an appointment",
+        "tags": [
+          "appointments"
+        ],
+        "parameters": [
+          {
+            "name": "appointment",
+            "description": "Appointment cancellation data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "description": "Includes a message indicating the result of a canceled appointment request.",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "message"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cancellation successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "$ref": "#/definitions/metaresult"
+                },
+                "data": {
+                  "$ref": "#/paths/~1appointment~1/get/responses/200/schema/properties/data"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string"
+                      },
+                      "msg": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "location": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Appointment not found"
+          }
+        }
+      }
+    }
+  },
   "definitions": {
     "apikey": {
       "type": "object",

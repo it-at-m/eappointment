@@ -1,0 +1,10 @@
+{
+    "type": "object",
+    "description": "Includes a message indicating the result of a canceled appointment request.",
+    "properties": {
+      "message": {
+        "type": "string"
+      }
+    },
+    "required": ["message"]
+}

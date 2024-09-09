@@ -1,0 +1,154 @@
+{
+  "type": "object",
+  "description": "Contains information about offices, services, and their relations. Includes details about each office, available services, and how they are related.",
+  "properties": {
+    "offices": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "object",
+                "properties": {
+                  "$schema": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "$schema",
+                  "id",
+                  "source"
+                ]
+              },
+              "shortName": {
+                "type": "string"
+              },
+              "telephoneActivated": {
+                "type": "string"
+              },
+              "telephoneRequired": {},
+              "customTextfieldActivated": {
+                "type": "string"
+              },
+              "customTextfieldRequired": {},
+              "customTextfieldLabel": {
+                "type": "string"
+              },
+              "captchaActivatedRequired": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "provider",
+              "shortName",
+              "telephoneActivated",
+              "telephoneRequired",
+              "customTextfieldActivated",
+              "customTextfieldRequired",
+              "customTextfieldLabel",
+              "captchaActivatedRequired"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      }
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "maxQuantity": {
+            "type": "number"
+          },
+          "combinable": {
+            "type": "object",
+            "properties": {
+              "10300808": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "10300814": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "10300817": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "10300814"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "maxQuantity"
+        ]
+      }
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "officeId": {
+            "type": "string"
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "slots": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "officeId",
+          "serviceId",
+          "slots"
+        ]
+      }
+    }
+  },
+  "required": [
+    "offices",
+    "services",
+    "relations"
+  ]
+}

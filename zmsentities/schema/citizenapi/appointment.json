@@ -1,0 +1,10 @@
+{
+    "type": "object",
+    "description": "Includes a message that indicates the result or status of an appointment-related operation.",
+    "properties": {
+      "message": {
+        "type": "string"
+      }
+    },
+    "required": ["message"]
+}
